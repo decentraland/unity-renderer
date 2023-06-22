@@ -9,12 +9,12 @@ using RaycastHit = DCL.ECSComponents.RaycastHit;
 
 namespace DCL.ECS7.InternalComponents
 {
-    public interface InternalComponent
+    public interface IInternalComponent
     {
         bool dirty { get; set; }
     }
 
-    public struct InternalTexturizable : InternalComponent
+    public struct InternalTexturizable : IInternalComponent
     {
         public bool dirty { get; set; }
         public IList<Renderer> renderers;
@@ -26,7 +26,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalMaterial : InternalComponent
+    public struct InternalMaterial : IInternalComponent
     {
         public bool dirty { get; set; }
         public Material material;
@@ -40,7 +40,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalVideoMaterial : InternalComponent
+    public struct InternalVideoMaterial : IInternalComponent
     {
         public readonly struct VideoTextureData
         {
@@ -66,7 +66,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalVideoPlayer : InternalComponent
+    public struct InternalVideoPlayer : IInternalComponent
     {
         public readonly struct MaterialAssigned
         {
@@ -86,7 +86,7 @@ namespace DCL.ECS7.InternalComponents
         public IList<MaterialAssigned> assignedMaterials;
     }
 
-    public struct InternalColliders : InternalComponent
+    public struct InternalColliders : IInternalComponent
     {
         public bool dirty { get; set; }
         public KeyValueSet<Collider, uint> colliders;
@@ -98,7 +98,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalRenderers : InternalComponent
+    public struct InternalRenderers : IInternalComponent
     {
         public bool dirty { get; set; }
         public IList<Renderer> renderers;
@@ -110,13 +110,13 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalAudioSource : InternalComponent
+    public struct InternalAudioSource : IInternalComponent
     {
         public bool dirty { get; set; }
         public AudioSource audioSource;
     }
 
-    public struct InternalSceneBoundsCheck : InternalComponent
+    public struct InternalSceneBoundsCheck : IInternalComponent
     {
         public bool dirty { get; set; }
         public Vector3 entityPosition;
@@ -140,7 +140,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalVisibility : InternalComponent
+    public struct InternalVisibility : IInternalComponent
     {
         public bool dirty { get; set; }
         public bool visible;
@@ -152,7 +152,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalInputEventResults : InternalComponent
+    public struct InternalInputEventResults : IInternalComponent
     {
         public struct EventData
         {
@@ -171,7 +171,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalUiContainer : InternalComponent
+    public struct InternalUiContainer : IInternalComponent
     {
         public bool dirty { get; set; }
         public readonly VisualElement rootElement;
@@ -195,7 +195,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalPointerEvents : InternalComponent
+    public struct InternalPointerEvents : IInternalComponent
     {
         public readonly struct Entry
         {
@@ -235,7 +235,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalRegisteredUiPointerEvents : InternalComponent
+    public struct InternalRegisteredUiPointerEvents : IInternalComponent
     {
         public bool dirty { get; set; }
         public EventCallback<PointerDownEvent> OnPointerDownCallback;
@@ -244,20 +244,20 @@ namespace DCL.ECS7.InternalComponents
         public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
     }
 
-    public struct InternalRaycast : InternalComponent
+    public struct InternalRaycast : IInternalComponent
     {
         public bool dirty { get; set; }
         public PBRaycast raycastModel;
     }
 
-    public struct InternalGltfContainerLoadingState : InternalComponent
+    public struct InternalGltfContainerLoadingState : IInternalComponent
     {
         public bool dirty { get; set; }
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
     }
 
-    public struct InternalEngineInfo : InternalComponent
+    public struct InternalEngineInfo : IInternalComponent
     {
         public bool dirty { get; set; }
         public uint SceneTick;
@@ -273,7 +273,7 @@ namespace DCL.ECS7.InternalComponents
         }
     }
 
-    public struct InternalUIInputResults : InternalComponent
+    public struct InternalUIInputResults : IInternalComponent
     {
         public readonly struct Result
         {

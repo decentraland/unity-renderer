@@ -4,7 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 
-public class RemoveOnConditionHandler<T> : IECSComponentHandler<T> where T : InternalComponent
+public class RemoveOnConditionHandler<T> : IECSComponentHandler<T> where T : IInternalComponent
 {
 
     private readonly IInternalECSComponent<T> thisComponent;

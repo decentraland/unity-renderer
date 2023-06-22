@@ -22,7 +22,7 @@ namespace Tests
 {
     public class ECSRaycastSystemShould
     {
-        private class KeepEntityAliveModel : InternalComponent { public bool dirty { get; set; } }
+        private class KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
 
         private ECSRaycastSystem system;
         private IECSComponentWriter componentWriter;
@@ -59,7 +59,7 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            var keepEntityAliveComponent = new InternalECSComponent<IInternalComponent>(
                 0, componentsManager, componentsFactory, null,
                 new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
                 executors);

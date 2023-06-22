@@ -22,17 +22,17 @@ public readonly struct ComponentIdentifier
 
 public readonly struct ComponentWriteData
 {
-    public readonly InternalComponent Data;
+    public readonly IInternalComponent Data;
     public readonly bool IsDelayedRemoval;
 
-    public ComponentWriteData(InternalComponent data, bool isDelayedRemoval)
+    public ComponentWriteData(IInternalComponent data, bool isDelayedRemoval)
     {
         this.Data = data;
         this.IsDelayedRemoval = isDelayedRemoval;
     }
 }
 
-public class InternalECSComponent<T> : IInternalECSComponent<T> where T: InternalComponent
+public class InternalECSComponent<T> : IInternalECSComponent<T> where T: IInternalComponent
 {
     private readonly ECSComponentsFactory componentsFactory;
     private readonly int componentId;

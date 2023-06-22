@@ -238,7 +238,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             int sceneNumber = markAsDirty[i].key.SceneNumber;
             long entityId = markAsDirty[i].key.EntityId;
             int componentId = markAsDirty[i].key.ComponentId;
-            InternalComponent data = markAsDirty[i].value.Data;
+            IInternalComponent data = markAsDirty[i].value.Data;
             bool isRemoval = markAsDirty[i].value.IsDelayedRemoval;
 
             if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
@@ -263,7 +263,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             int sceneNumber = resetDirtyComponents[i].key.SceneNumber;
             long entityId = resetDirtyComponents[i].key.EntityId;
             int componentId = resetDirtyComponents[i].key.ComponentId;
-            InternalComponent data = resetDirtyComponents[i].value.Data;
+            IInternalComponent data = resetDirtyComponents[i].value.Data;
             bool isRemoval = resetDirtyComponents[i].value.IsDelayedRemoval;
 
             if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))

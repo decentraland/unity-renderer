@@ -14,7 +14,7 @@ namespace Tests
 {
     public class MeshColliderHandlerShould
     {
-        private class KeepEntityAliveModel : InternalComponent { public bool dirty { get; set; } }
+        private class KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
 
         private MeshColliderHandler handler;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -40,7 +40,7 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+            var keepEntityAliveComponent = new InternalECSComponent<IInternalComponent>(
                 0, componentsManager, componentsFactory, null,
                 new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
                 executors);
