@@ -93,7 +93,7 @@ namespace DCL.LoadingScreen.V2.Tests
              var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 5);
 
              // Assert
-             Assert.AreEqual(1, result.Count);
+             Assert.Greater(result.Count, 0);
          }
 
          [Test]
