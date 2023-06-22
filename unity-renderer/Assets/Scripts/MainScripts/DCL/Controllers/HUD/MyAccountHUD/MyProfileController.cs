@@ -95,6 +95,7 @@ namespace DCL.MyAccount
         {
             cts = cts.SafeRestart();
             LoadOwnedNamesAsync(cts.Token).Forget();
+            ShowLinks(ownUserProfile);
         }
 
         private void CloseSection() =>
@@ -179,7 +180,8 @@ namespace DCL.MyAccount
         }
 
         private void ShowLinks(UserProfile userProfile) =>
-            view.SetLinks(userProfile.Links.Select(link => (link.title, link.url)).ToList());
+            view.SetLinks(userProfile.Links?.Select(link => (link.title, link.url)).ToList()
+                ?? new List<(string title, string url)>());
 
         private void GoFromClaimedToNonClaimName() =>
             view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
