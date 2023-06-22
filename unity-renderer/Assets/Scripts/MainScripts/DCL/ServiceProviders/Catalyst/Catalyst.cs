@@ -17,7 +17,7 @@ public class Catalyst : ICatalyst
     public string lambdasUrl { get; private set; }
 
     private string realmDomain = "https://peer.decentraland.org";
-    private string realmContentServerUrl = "https://peer.decentraland.org/content";
+    private string realmContentServerUrl = "https://peer.decentraland.org/content/";
 
     private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
 
@@ -46,12 +46,26 @@ public class Catalyst : ICatalyst
                 realmContentServerUrl = aboutContent.Get().PublicUrl;
         }
 
-        if (!realmContentServerUrl.EndsWith('/'))
-            realmContentServerUrl += "/";
+        NormalizeUrls();
 
         playerRealm.OnChange += PlayerRealmOnChange;
         aboutContent.OnChange += PlayerRealmAboutContentOnChange;
         aboutLambdas.OnChange += PlayerRealmAboutLambdasOnChange;
+    }
+
+    private void NormalizeUrls()
+    {
+        lambdasUrl = GetNormalizedUrl(lambdasUrl);
+        realmContentServerUrl = GetNormalizedUrl(realmContentServerUrl);
+    }
+
+    private string GetNormalizedUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return url;
+        if (!url.EndsWith('/'))
+            url += "/";
+
+        return url;
     }
 
     public void Dispose()
@@ -226,13 +240,18 @@ public class Catalyst : ICatalyst
         realmDomain = current.domain;
         lambdasUrl = $"{realmDomain}/lambdas";
         realmContentServerUrl = current.contentServerUrl;
+        NormalizeUrls();
     }
 
     private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo current, AboutResponse.Types.LambdasInfo previous)
     {
         lambdasUrl = current.PublicUrl;
+        NormalizeUrls();
     }
 
-    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous) =>
+    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous)
+    {
         realmContentServerUrl = current.PublicUrl;
+        NormalizeUrls();
+    }
 }
