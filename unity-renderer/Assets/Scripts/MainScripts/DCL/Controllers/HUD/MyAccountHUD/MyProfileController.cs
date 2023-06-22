@@ -196,9 +196,13 @@ namespace DCL.MyAccount
             ShowLinks(userProfile);
         }
 
-        private void ShowLinks(UserProfile userProfile) =>
+        private void ShowLinks(UserProfile userProfile)
+        {
             view.SetLinks(userProfile.Links?.Select(link => (link.title, link.url)).ToList()
-                ?? new List<(string title, string url)>());
+                          ?? new List<(string title, string url)>());
+
+            view.EnableOrDisableAddLinksOption(userProfile.Links == null || userProfile.Links?.Count < 5);
+        }
 
         private void GoFromClaimedToNonClaimName() =>
             view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);

@@ -215,6 +215,9 @@ namespace DCL.MyAccount
         public void ClearLinkInput() =>
             linkListView.ClearInput();
 
+        public void EnableOrDisableAddLinksOption(bool enabled) =>
+            linkListView.EnableOrDisableAddNewLinkOption(enabled);
+
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
 

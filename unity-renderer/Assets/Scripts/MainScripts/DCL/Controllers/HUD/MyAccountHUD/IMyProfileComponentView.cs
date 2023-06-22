@@ -23,5 +23,6 @@ namespace DCL.MyAccount
         void SetAboutDescription(string newDesc);
         void SetLinks(List<(string title, string url)> links);
         void ClearLinkInput();
+        void EnableOrDisableAddLinksOption(bool enabled);
     }
 }

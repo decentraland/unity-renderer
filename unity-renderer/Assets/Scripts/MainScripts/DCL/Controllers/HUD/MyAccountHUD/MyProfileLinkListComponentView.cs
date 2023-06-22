@@ -17,6 +17,7 @@ namespace DCL.MyAccount
 
         private readonly List<MyProfileLinkComponentView> links = new ();
         private readonly Regex httpRegex = new (@"^https?:\/\/(?:www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&\/=]*)$");
+        private bool isAddEnabled = true;
 
         public event Action<(string title, string url)> OnAddedNew;
         public event Action<(string title, string url)> OnRemoved;
@@ -57,10 +58,17 @@ namespace DCL.MyAccount
             newLinkUrl.text = "";
         }
 
+        public void EnableOrDisableAddNewLinkOption(bool enabled)
+        {
+            isAddEnabled = enabled;
+            EnableOrDisableAddButton();
+        }
+
         private void EnableOrDisableAddButton()
         {
             addButton.interactable = newLinkTitle.text.Length > 0 && newLinkUrl.text.Length > 0
-                                                                  && httpRegex.IsMatch(newLinkUrl.text);
+                                                                  && httpRegex.IsMatch(newLinkUrl.text)
+                                                                  && isAddEnabled;
         }
     }
 }
