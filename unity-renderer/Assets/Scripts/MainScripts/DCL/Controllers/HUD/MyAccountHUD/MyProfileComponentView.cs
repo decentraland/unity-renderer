@@ -111,13 +111,9 @@ namespace DCL.MyAccount
                 claimedNameDropdown.SelectOption(newName, false);
                 claimedNameDropdown.SetTitle(newName);
             }
-            else
-            {
-                claimedNameInputField.text = newName;
-                //nonClaimedHashtag
-                nonClaimedNameInputField.text = newName;
-                //nonClaimedHashtag
-            }
+
+            claimedNameInputField.text = newName;
+            nonClaimedNameInputField.text = newName;
         }
 
         public void SetClaimBannerActive(bool isActive)
