@@ -23,6 +23,7 @@ namespace DCL.Quests
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
+        private readonly ITeleportController teleportController;
 
         private CancellationTokenSource disposeCts = null;
         private CancellationTokenSource profileCts = null;
@@ -38,7 +39,8 @@ namespace DCL.Quests
             IQuestLogComponentView questLogComponentView,
             IUserProfileBridge userProfileBridge,
             IPlayerPrefs playerPrefs,
-            DataStore dataStore)
+            DataStore dataStore,
+            ITeleportController teleportController)
         {
             this.questsService = questsService;
             this.questTrackerComponentView = questTrackerComponentView;
@@ -48,6 +50,7 @@ namespace DCL.Quests
             this.userProfileBridge = userProfileBridge;
             this.playerPrefs = playerPrefs;
             this.dataStore = dataStore;
+            this.teleportController = teleportController;
 
             disposeCts = new CancellationTokenSource();
             quests = new ();
@@ -80,7 +83,7 @@ namespace DCL.Quests
         }
 
         private void JumpIn(Vector2Int obj) =>
-            Environment.i.world.teleportController.Teleport(obj.x, obj.y);
+            teleportController.Teleport(obj.x, obj.y);
 
         private void ChangePinnedQuest(string questId, bool isPinned)
         {
@@ -173,8 +176,7 @@ namespace DCL.Quests
 
         private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false)
         {
-            if (!quests.ContainsKey(questInstance.Id))
-                quests.Add(questInstance.Id, questInstance);
+            quests.TryAdd(questInstance.Id, questInstance);
 
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {

@@ -57,7 +57,8 @@ public class QuestsPlugin : IPlugin
             questLogComponentView,
             userProfileBridge,
             new DefaultPlayerPrefs(),
-            DataStore.i);
+            DataStore.i,
+            Environment.i.world.teleportController);
     }
 
     public async UniTask<ClientQuestsService> GetClientQuestsService()
