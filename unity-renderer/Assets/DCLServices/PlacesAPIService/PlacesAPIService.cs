@@ -3,12 +3,9 @@ using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
 using MainScripts.DCL.Controllers.HotScenes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace DCLServices.PlacesAPIService
 {
@@ -152,7 +149,7 @@ namespace DCLServices.PlacesAPIService
             await client.SetPlaceFavorite(placeUUID, isFavorite, ct);
         }
 
-        private void CachePlace(IHotScenesController.PlaceInfo placeInfo)
+        internal void CachePlace(IHotScenesController.PlaceInfo placeInfo)
         {
             placesById[placeInfo.id] = placeInfo;
 
