@@ -46,4 +46,7 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public UniTask<UserProfile> SaveLinks(List<UserProfileModel.Link> links, CancellationToken cancellationToken) =>
         UserProfileController.i.SaveLinks(links, cancellationToken);
+
+    public void LogOut() =>
+        WebInterface.LogOut();
 }

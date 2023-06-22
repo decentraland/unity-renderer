@@ -14,6 +14,7 @@ namespace DCL.MyAccount
         private IMyAccountCardComponentView view;
         private DataStore dataStore;
         private IBrowserBridge browserBridge;
+        private IUserProfileBridge userProfileBridge;
 
         [SetUp]
         public void SetUp()
@@ -21,7 +22,7 @@ namespace DCL.MyAccount
             view = Substitute.For<IMyAccountCardComponentView>();
             dataStore = new DataStore();
 
-            IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
             UserProfile userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
             userProfile.UpdateData(new UserProfileModel
@@ -69,7 +70,7 @@ namespace DCL.MyAccount
         {
             view.OnSignOutClicked += Raise.Event<Action>();
 
-            browserBridge.Received(1).LogOut();
+            userProfileBridge.Received(1).LogOut();
         }
 
         [Test]

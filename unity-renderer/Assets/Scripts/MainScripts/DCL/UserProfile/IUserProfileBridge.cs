@@ -16,4 +16,5 @@ public interface IUserProfileBridge
     void SignUp();
     void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false);
     UniTask<UserProfile> SaveLinks(List<UserProfileModel.Link> links, CancellationToken cancellationToken);
+    void LogOut();
 }
