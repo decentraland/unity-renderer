@@ -98,7 +98,7 @@ namespace DCL.Backpack
         {
             Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
             foreach (KeyValuePair<string, WearableItem> keyValuePair in keyValuePairs)
-                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false);
+                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false, false);
 
             foreach (string forcedCategory in model.forceRender)
                 UpdateOverrideHides(forcedCategory, false, false);
@@ -118,10 +118,10 @@ namespace DCL.Backpack
             }
 
             if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
-                EquipWearable(outfit.outfit.bodyShape, setAsDirty: false);
+                EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable, setAsDirty: false);
+                EquipWearable(outfitWearable, setAsDirty: false, updateAvatarPreview: false);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
@@ -528,7 +528,7 @@ namespace DCL.Backpack
             UnEquipWearable(wearable, UnequipWearableSource.None, setAsDirty);
         }
 
-        private void UnEquipWearable(string wearableId, UnequipWearableSource source, bool setAsDirty = true)
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source, bool setAsDirty = true, bool updateAvatarPreview = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -536,12 +536,13 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable, source, setAsDirty);
+            UnEquipWearable(wearable, source, setAsDirty, updateAvatarPreview);
         }
 
         private void UnEquipWearable(WearableItem wearable,
             UnequipWearableSource source = UnequipWearableSource.None,
-            bool setAsDirty = true)
+            bool setAsDirty = true,
+            bool updateAvatarPreview = true)
         {
             string wearableId = wearable.id;
 
@@ -558,7 +559,8 @@ namespace DCL.Backpack
             if (setAsDirty)
                 avatarIsDirty = true;
 
-            UpdateAvatarModel(model.ToAvatarModel());
+            if(updateAvatarPreview)
+                UpdateAvatarModel(model.ToAvatarModel());
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
