@@ -5,6 +5,7 @@
 // file: decentraland/renderer/quests/quests.proto
 using Cysharp.Threading.Tasks;
 using rpc_csharp;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Decentraland.Quests {
 public interface IClientQuestsService
@@ -15,9 +16,9 @@ public interface IClientQuestsService
 
   UniTask<EventResponse> SendEvent(EventRequest request);
 
-  IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request);
+  IUniTaskAsyncEnumerable<UserUpdate> Subscribe(Empty request);
 
-  UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request);
+  UniTask<GetAllQuestsResponse> GetAllQuests(Empty request);
 
   UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request);
 }
@@ -47,12 +48,12 @@ public class ClientQuestsService : IClientQuestsService
       return module.CallUnaryProcedure<EventResponse>("SendEvent", request);
   }
 
-  public IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request)
+  public IUniTaskAsyncEnumerable<UserUpdate> Subscribe(Empty request)
   {
       return module.CallServerStream<UserUpdate>("Subscribe", request);
   }
 
-  public UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request)
+  public UniTask<GetAllQuestsResponse> GetAllQuests(Empty request)
   {
       return module.CallUnaryProcedure<GetAllQuestsResponse>("GetAllQuests", request);
   }

@@ -183,7 +183,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2893424587675337290}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -320,7 +320,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2893424587675337290}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c5a46d6e8b3d645649baea76db91f811, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7ff198699317441fb8a438d0b4643ab4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -397,7 +397,7 @@ RectTransform:
   m_Children:
   - {fileID: 6976874557321712101}
   m_Father: {fileID: 2893424587675337290}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -672,7 +672,7 @@ RectTransform:
   m_Children:
   - {fileID: 6720434224705730970}
   m_Father: {fileID: 2893424587675337290}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -748,12 +748,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2893424587675337290}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 633, y: 100}
+  m_SizeDelta: {x: 637, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3528201986404067547
 CanvasRenderer:
@@ -824,11 +824,11 @@ RectTransform:
   m_Children:
   - {fileID: 4466068637378558262}
   - {fileID: 4622814477100424101}
-  - {fileID: 1663694359405299276}
   - {fileID: 4568415797989075387}
   - {fileID: 8554035168044675270}
   - {fileID: 5767659780155552057}
   - {fileID: 410032830020984521}
+  - {fileID: 1663694359405299276}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -856,19 +856,30 @@ MonoBehaviour:
     questName: MyQuest
     questImageUri: 
     isPinned: 1
+    questModel:
+      questName: 
+      questCreator: 
+      questDescription: 
+      questId: 
+      isPinned: 0
+      coordinates: {x: 0, y: 0}
+      questSteps: []
+      questRewards: []
   questName: {fileID: 7027256138643246735}
   questCreator: {fileID: 5338740450652071097}
   pinnedIcon: {fileID: 3261236996376990718}
   focusOutline: {fileID: 1921251067693670875}
   selectedOutline: {fileID: 7645475464720699265}
-  background: {fileID: 4472876402795006251}
+  background: {fileID: 1615146274383542417}
+  imageBackground: {fileID: 4472876402795006251}
   backgroundImage: {fileID: 5671349472727418851}
   deselectedNameColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
   selectedNameColor: {r: 0, g: 0, b: 0, a: 1}
   deselectedCreatorColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
   selectedCreatorColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
-  selectedBackgroundColor: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
+  selectedBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   deselectedBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  deselectedBackgroundColorTransparent: {r: 0, g: 0, b: 0, a: 0.14901961}
 --- !u!1001 &735823675655482092
 PrefabInstance:
   m_ObjectHideFlags: 0
