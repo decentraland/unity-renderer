@@ -80,8 +80,6 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
             sdk7 = true
         };
 
-        executorsDictionary[sceneNumber] = new CRDTExecutor(scene, componentsManager);
-
         // methods: `CreateEntity` `RemoveEntity` `GetSceneTransform`
         scene._entityCreator = (id) =>
         {
@@ -102,6 +100,8 @@ public class ECS7TestUtilsScenesAndEntities : IDisposable
         };
 
         scene._go = go;
+
+        executorsDictionary[sceneNumber] = new CRDTExecutor(scene, componentsManager);
 
         return scene;
     }
