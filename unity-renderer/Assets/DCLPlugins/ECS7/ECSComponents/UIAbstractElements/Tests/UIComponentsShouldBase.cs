@@ -6,6 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 namespace DCL.ECSComponents.UIAbstractElements.Tests
 {
@@ -27,7 +28,7 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
             entity = scene.CreateEntity(1111);
 
             uiInputResultsComponent = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
-            uiInputResults = new InternalUIInputResults();
+            uiInputResults = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>());
 
             uiInputResultsComponent.GetFor(scene, entity).Returns(_ =>
             {

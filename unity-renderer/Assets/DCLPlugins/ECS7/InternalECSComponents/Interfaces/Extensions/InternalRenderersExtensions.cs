@@ -22,7 +22,7 @@ namespace DCL.ECS7.InternalComponents
 
             if (model.Value.renderers.Count == 0)
             {
-                renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers());
+                renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers(new List<Renderer>()));
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace DCL.ECS7.InternalComponents
 
             if (model.Value.renderers.Count == 0)
             {
-                renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers());
+                renderersInternalComponent.RemoveFor(scene, entity, new InternalRenderers(new List<Renderer>()));
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace DCL.ECS7.InternalComponents
             if (!renderer)
                 return;
 
-            var model = renderersInternalComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
+            var model = renderersInternalComponent.GetFor(scene, entity)?.model ?? new InternalRenderers(new List<Renderer>());
             model.renderers.Add(renderer);
             renderersInternalComponent.PutFor(scene, entity, model);
         }

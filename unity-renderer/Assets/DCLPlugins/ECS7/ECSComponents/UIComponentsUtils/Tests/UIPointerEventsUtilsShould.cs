@@ -63,7 +63,7 @@ namespace DCL.ECSComponents.Tests
         {
             ECSComponentData<InternalUIInputResults> internalCompData = new ECSComponentData<InternalUIInputResults>
             {
-                model = new InternalUIInputResults()
+                model = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>())
             };
 
             var inputResultsComp = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();

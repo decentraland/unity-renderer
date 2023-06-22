@@ -73,12 +73,7 @@ namespace DCL.ECS7
             if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
 
             engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
-                new InternalEngineInfo()
-                {
-                    SceneTick = 0,
-                    SceneInitialRunTime = Time.realtimeSinceStartup,
-                    SceneInitialFrameCount = Time.frameCount
-                });
+                new InternalEngineInfo(0, Time.realtimeSinceStartup));
         }
 
         public void Dispose()

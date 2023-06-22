@@ -893,7 +893,7 @@ namespace Tests
                 }
 
                 internalCollidersComponent.PutFor(scene, entityCollider,
-                    new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() {{ collider, mergedLayers }}});
+                    new InternalColliders(new KeyValueSet<Collider, uint>() { { collider, mergedLayers } }));
             }
 
             return entityCollider;

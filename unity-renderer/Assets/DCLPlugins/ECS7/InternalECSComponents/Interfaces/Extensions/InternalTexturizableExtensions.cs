@@ -31,7 +31,7 @@ namespace DCL.ECS7.InternalComponents
             if (renderers == null)
                 return;
 
-            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable(new List<Renderer>());
             for (int i = 0; i < renderers.Count; i++)
             {
                 model.renderers.Add(renderers[i]);
@@ -60,7 +60,7 @@ namespace DCL.ECS7.InternalComponents
             if (renderer == null)
                 return;
 
-            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable(new List<Renderer>());
             model.renderers.Add(renderer);
             texurizableInternalComponent.PutFor(scene, entity, model);
         }

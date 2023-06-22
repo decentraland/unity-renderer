@@ -90,7 +90,7 @@ namespace ECSSystems.UIInputSenderSystem
         private KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalUIInputResults>> CreateComponentData(bool dirty,
             params (IMessage resultMessage, int componentId)[] results)
         {
-            var model = new InternalUIInputResults();
+            var model = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>());
             model.dirty = dirty;
 
             foreach (var result in results) { model.Results.Enqueue(new InternalUIInputResults.Result(result.resultMessage, result.componentId)); }

@@ -201,7 +201,8 @@ namespace Tests
             const int childEntityId = 111;
             const int parentEntityId = 112;
 
-            var childModel = new InternalUiContainer(childEntityId) { parentId = parentEntityId };
+            var childModel = new InternalUiContainer(childEntityId);
+            childModel.parentId = parentEntityId;
             childModel.components.Add(1);
 
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
@@ -606,7 +607,8 @@ namespace Tests
 
             const int entityId = 111;
 
-            var entityModel = new InternalUiContainer(entityId) { shouldSort = false };
+            var entityModel = new InternalUiContainer(entityId);
+            entityModel.shouldSort = false;
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 

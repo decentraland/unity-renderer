@@ -6,6 +6,7 @@ using DCL.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Tests
 {
@@ -52,7 +53,7 @@ namespace Tests
                 entity.entityId,
                 visibilityComponent.ComponentId);
 
-            var model = new InternalVisibility();
+            var model = new InternalVisibility(true);
             visibilityComponent.PutFor(scene, entity, model);
 
             Assert.AreEqual(model, markAsDirtyComponent[componentIdentifier].Data);
@@ -69,9 +70,9 @@ namespace Tests
         [Test]
         public void ScheduleRemoveComponentWithDefault()
         {
-            var defaultVisibility = new InternalVisibility();
-            renderersComponent.PutFor(scene, entity, new InternalRenderers());
-            visibilityComponent.PutFor(scene, entity, new InternalVisibility() { visible = !defaultVisibility.visible });
+            var defaultVisibility = new InternalVisibility(true);
+            renderersComponent.PutFor(scene, entity, new InternalRenderers(new List<Renderer>()));
+            visibilityComponent.PutFor(scene, entity, new InternalVisibility(!defaultVisibility.visible));
             visibilityComponent.RemoveFor(scene, entity, defaultVisibility);
 
             ComponentIdentifier visibilityComponentIdentifier = new ComponentIdentifier(scene.sceneData.sceneNumber,
@@ -94,7 +95,7 @@ namespace Tests
         [Test]
         public void RemoveComponentWithoutDefault()
         {
-            visibilityComponent.PutFor(scene, entity, new InternalVisibility());
+            visibilityComponent.PutFor(scene, entity, new InternalVisibility(true));
             Assert.AreEqual(1, markAsDirtyComponent.Count);
 
             visibilityComponent.RemoveFor(scene, entity);

@@ -19,7 +19,7 @@ namespace DCL.ECS7.InternalComponents
                 if (!createComponentIfMissing)
                     return;
 
-                finalModel = new InternalSceneBoundsCheck();
+                finalModel = new InternalSceneBoundsCheck(new Bounds());
             }
             else
             {
@@ -44,7 +44,7 @@ namespace DCL.ECS7.InternalComponents
         public static void OnTransformScaleRotationChanged(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck(new Bounds());
 
             // Mesh bounds need to be recalculated
             model.meshesDirty = true;
@@ -65,7 +65,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetRenderers(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, IList<Renderer> newRenderersCollection)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck(new Bounds());
             model.renderers = newRenderersCollection;
             model.meshesDirty = true;
 
@@ -75,7 +75,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetPhysicsColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, uint> newCollidersCollection)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck(new Bounds());
             model.physicsColliders = newCollidersCollection;
             model.meshesDirty = true;
 
@@ -85,7 +85,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetPointerColliders(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, KeyValueSet<Collider, uint> newCollidersCollection)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck(new Bounds());
             model.pointerColliders = newCollidersCollection;
             model.meshesDirty = true;
 
@@ -95,7 +95,7 @@ namespace DCL.ECS7.InternalComponents
         public static void RegisterOnSceneBoundsStateChangeCallback(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, Action<bool> callback)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck();
+            var model = sbcInternalComponent.GetFor(scene, entity)?.model ?? new InternalSceneBoundsCheck(new Bounds());
             model.OnSceneBoundsStateChange += callback;
 
             sbcInternalComponent.PutFor(scene, entity, model);

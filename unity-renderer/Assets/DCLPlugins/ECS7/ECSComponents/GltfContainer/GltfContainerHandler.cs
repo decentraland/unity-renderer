@@ -366,7 +366,7 @@ namespace DCL.ECSComponents
 
                 if ((colliderLayer & LAYER_PHYSICS) != 0)
                 {
-                    physicColliders ??= new InternalColliders();
+                    physicColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
                     physicColliders.Value.colliders.Add(collider, colliderLayer);
                     currentPhysicColliders.Add(collider);
                     hasPhysicColliders = true;
@@ -374,7 +374,7 @@ namespace DCL.ECSComponents
 
                 if ((colliderLayer & LAYER_POINTER) != 0)
                 {
-                    pointerColliders ??= new InternalColliders();
+                    pointerColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
                     pointerColliders.Value.colliders.Add(collider, colliderLayer);
                     currentPointerColliders.Add(collider);
                     hasPointerColliders = true;
@@ -382,7 +382,7 @@ namespace DCL.ECSComponents
 
                 if (hasCustomLayer)
                 {
-                    customColliders ??= new InternalColliders();
+                    customColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
                     customColliders.Value.colliders.Add(collider, colliderLayer);
                     currentCustomLayerColliders.Add(collider);
                     hasCustomColliders = true;
@@ -414,7 +414,7 @@ namespace DCL.ECSComponents
             if (rendererHashSet == null || rendererHashSet.Count == 0)
                 return;
 
-            var model = renderersComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
+            var model = renderersComponent.GetFor(scene, entity)?.model ?? new InternalRenderers(new List<Renderer>());
 
             foreach (Renderer renderer in rendererHashSet)
             {

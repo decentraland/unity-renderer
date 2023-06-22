@@ -22,10 +22,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public IList<Renderer> renderers;
 
-        public InternalTexturizable(List<Renderer> initialRenderers = null)
+        public InternalTexturizable(List<Renderer> initialRenderers)
         {
             this.dirty = false;
-            this.renderers = initialRenderers ?? new List<Renderer>();
+            this.renderers = initialRenderers;
         }
     }
 
@@ -35,7 +35,7 @@ namespace DCL.ECS7.InternalComponents
         public Material material;
         public bool castShadows;
 
-        public InternalMaterial(Material material = null, bool castShadows = true)
+        public InternalMaterial(Material material, bool castShadows)
         {
             this.dirty = false;
             this.material = material;
@@ -61,7 +61,7 @@ namespace DCL.ECS7.InternalComponents
         public Material material;
         public IList<VideoTextureData> videoTextureDatas;
 
-        public InternalVideoMaterial(Material material = null, IList<VideoTextureData> videoTextureDatas = null)
+        public InternalVideoMaterial(Material material, IList<VideoTextureData> videoTextureDatas)
         {
             this.dirty = false;
             this.material = material;
@@ -88,13 +88,13 @@ namespace DCL.ECS7.InternalComponents
         public WebVideoPlayer videoPlayer;
         public IList<MaterialAssigned> assignedMaterials;
 
-        public InternalVideoPlayer(WebVideoPlayer videoPlayer = null, IList<MaterialAssigned> assignedMaterials = null)
-        {
-            this.dirty = false;
-            this.removed = false;
-            this.videoPlayer = videoPlayer;
-            this.assignedMaterials = assignedMaterials;
-        }
+        // public InternalVideoPlayer(WebVideoPlayer videoPlayer, IList<MaterialAssigned> assignedMaterials)
+        // {
+        //     this.dirty = false;
+        //     this.removed = false;
+        //     this.videoPlayer = videoPlayer;
+        //     this.assignedMaterials = assignedMaterials;
+        // }
     }
 
     public struct InternalColliders : InternalComponent
@@ -102,10 +102,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public KeyValueSet<Collider, uint> colliders;
 
-        public InternalColliders(KeyValueSet<Collider, uint> colliders = null)
+        public InternalColliders(KeyValueSet<Collider, uint> colliders)
         {
             this.dirty = false;
-            this.colliders = colliders ?? new KeyValueSet<Collider, uint>();
+            this.colliders = colliders;
         }
     }
 
@@ -114,10 +114,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public IList<Renderer> renderers;
 
-        public InternalRenderers(IList<Renderer> renderers = null)
+        public InternalRenderers(IList<Renderer> renderers)
         {
             this.dirty = false;
-            this.renderers = renderers ?? new List<Renderer>();
+            this.renderers = renderers;
         }
     }
 
@@ -126,31 +126,31 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public AudioSource audioSource;
 
-        public InternalAudioSource(AudioSource audioSource = null)
-        {
-            this.dirty = false;
-            this.audioSource = audioSource;
-        }
+        // public InternalAudioSource(AudioSource audioSource = null)
+        // {
+        //     this.dirty = false;
+        //     this.audioSource = audioSource;
+        // }
     }
 
     public struct InternalSceneBoundsCheck : InternalComponent
     {
         public bool dirty { get; set; }
-        public Vector3 entityPosition; // Vector3.zero
-        public Bounds entityLocalMeshBounds; //  new Bounds()
-        public bool meshesDirty; // false
+        public Vector3 entityPosition;
+        public Bounds entityLocalMeshBounds;
+        public bool meshesDirty;
         public IList<Renderer> renderers;
         public KeyValueSet<Collider, uint> physicsColliders;
         public KeyValueSet<Collider, uint> pointerColliders;
         public Action<bool> OnSceneBoundsStateChange;
 
-        public InternalSceneBoundsCheck(IList<Renderer> renderers = null)
+        public InternalSceneBoundsCheck(Bounds entityLocalMeshBounds)
         {
             this.dirty = false;
             this.entityPosition = Vector3.zero;
-            this.entityLocalMeshBounds = new Bounds();
+            this.entityLocalMeshBounds = entityLocalMeshBounds;
             this.meshesDirty = false;
-            this.renderers = renderers;
+            this.renderers = null;
             this.physicsColliders = null;
             this.pointerColliders = null;
             this.OnSceneBoundsStateChange = null;
@@ -162,7 +162,7 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public bool visible;
 
-        public InternalVisibility(bool visible = true)
+        public InternalVisibility(bool visible)
         {
             this.dirty = false;
             this.visible = visible;
@@ -181,10 +181,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public readonly IList<EventData> events;
 
-        public InternalInputEventResults(List<EventData> events = null)
+        public InternalInputEventResults(List<EventData> events)
         {
             this.dirty = false;
-            this.events = events ?? new List<EventData>(20);
+            this.events = events;
         }
     }
 
@@ -245,10 +245,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public readonly List<Entry> PointerEvents;
 
-        public InternalPointerEvents(List<Entry> PointerEvents = null)
+        public InternalPointerEvents(List<Entry> pointerEvents)
         {
             this.dirty = false;
-            this.PointerEvents = PointerEvents ?? new List<Entry>();
+            this.PointerEvents = pointerEvents;
         }
     }
 
@@ -260,18 +260,18 @@ namespace DCL.ECS7.InternalComponents
         public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
         public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
 
-        public InternalRegisteredUiPointerEvents(
-            EventCallback<PointerDownEvent> onPointerDownCallback = null,
-            EventCallback<PointerUpEvent> OnPointerUpCallback = null,
-            EventCallback<PointerEnterEvent> OnPointerEnterCallback = null,
-            EventCallback<PointerLeaveEvent> OnPointerLeaveCallback = null)
-        {
-            this.dirty = false;
-            this.OnPointerDownCallback = onPointerDownCallback;
-            this.OnPointerUpCallback = OnPointerUpCallback;
-            this.OnPointerEnterCallback = OnPointerEnterCallback;
-            this.OnPointerLeaveCallback = OnPointerLeaveCallback;
-        }
+        // public InternalRegisteredUiPointerEvents(
+        //     EventCallback<PointerDownEvent> onPointerDownCallback = null,
+        //     EventCallback<PointerUpEvent> OnPointerUpCallback = null,
+        //     EventCallback<PointerEnterEvent> OnPointerEnterCallback = null,
+        //     EventCallback<PointerLeaveEvent> OnPointerLeaveCallback = null)
+        // {
+        //     this.dirty = false;
+        //     this.OnPointerDownCallback = onPointerDownCallback;
+        //     this.OnPointerUpCallback = OnPointerUpCallback;
+        //     this.OnPointerEnterCallback = OnPointerEnterCallback;
+        //     this.OnPointerLeaveCallback = OnPointerLeaveCallback;
+        // }
     }
 
     public struct InternalRaycast : InternalComponent
@@ -279,11 +279,11 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public PBRaycast raycastModel;
 
-        public InternalRaycast(PBRaycast raycastModel)
-        {
-            this.dirty = false;
-            this.raycastModel = raycastModel;
-        }
+        // public InternalRaycast(PBRaycast raycastModel)
+        // {
+        //     this.dirty = false;
+        //     this.raycastModel = raycastModel;
+        // }
     }
 
     public struct InternalGltfContainerLoadingState : InternalComponent
@@ -292,12 +292,12 @@ namespace DCL.ECS7.InternalComponents
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
 
-        public InternalGltfContainerLoadingState(LoadingState loadingState = LoadingState.Unknown, bool gltfContainerRemoved = false)
-        {
-            this.dirty = false;
-            this.LoadingState = loadingState;
-            this.GltfContainerRemoved = gltfContainerRemoved;
-        }
+        // public InternalGltfContainerLoadingState(LoadingState loadingState = LoadingState.Unknown, bool gltfContainerRemoved = false)
+        // {
+        //     this.dirty = false;
+        //     this.LoadingState = loadingState;
+        //     this.GltfContainerRemoved = gltfContainerRemoved;
+        // }
     }
 
     public struct InternalEngineInfo : InternalComponent
@@ -307,7 +307,7 @@ namespace DCL.ECS7.InternalComponents
         public float SceneInitialRunTime;
         public float SceneInitialFrameCount;
 
-        public InternalEngineInfo(uint sceneTick = 0, float sceneInitialRunTime = 0)
+        public InternalEngineInfo(uint sceneTick, float sceneInitialRunTime)
         {
             this.dirty = false;
             this.SceneTick = sceneTick;
@@ -333,10 +333,10 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public readonly Queue<Result> Results;
 
-        public InternalUIInputResults(Queue<Result> results = null)
+        public InternalUIInputResults(Queue<Result> results)
         {
             this.dirty = false;
-            this.Results = results ?? new Queue<Result>();
+            this.Results = results;
         }
     }
 }

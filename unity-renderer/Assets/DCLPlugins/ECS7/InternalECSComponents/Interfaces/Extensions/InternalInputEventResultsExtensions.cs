@@ -11,7 +11,7 @@ namespace DCL.ECS7.InternalComponents
         {
             var entityId = data.hit?.EntityId?? SpecialEntityId.SCENE_ROOT_ENTITY;
 
-            var model = component.GetFor(scene, entityId)?.model ?? new InternalInputEventResults();
+            var model = component.GetFor(scene, entityId)?.model ?? new InternalInputEventResults(new List<InternalInputEventResults.EventData>(20));
 
             model.events.Add(data);
 

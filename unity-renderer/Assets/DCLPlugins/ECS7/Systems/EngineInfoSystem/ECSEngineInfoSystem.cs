@@ -44,7 +44,7 @@ namespace ECSSystems.ECSEngineInfoSystem
                     new PBEngineInfo()
                     {
                         TickNumber = model.SceneTick,
-                        FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialRunTime),
+                        FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialFrameCount),
                         TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
                     });
             }
