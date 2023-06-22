@@ -55,7 +55,7 @@ namespace DCL.MyAccount
 
         private void OnSignOutClicked()
         {
-            settings.SaveSettings();
+            settings?.SaveSettings();
             browserBridge.LogOut();
         }
 
