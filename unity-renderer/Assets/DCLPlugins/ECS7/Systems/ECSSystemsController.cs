@@ -75,14 +75,13 @@ public class ECSSystemsController : IDisposable
             context.CameraModePool, context.PointerLockPool, context.TransformPool, context.TransformComponent,
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
-        //context.componentWriter
         playerTransformSystem = new ECSPlayerTransformSystem(context.ComponentWriters, context.TransformPool,
             context.TransformComponent, DataStore.i.ecs7.scenes,
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
         ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(
             context.internalEcsComponents.uiInputResultsComponent,
-            null);
+            context.ComponentWriters);
 
         ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
             context.internalEcsComponents.raycastComponent,
