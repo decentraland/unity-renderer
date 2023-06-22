@@ -18,6 +18,8 @@ namespace Tests
 {
     public class ECSNFTShapeShould
     {
+        private class KeepEntityAliveModel : InternalComponent { public bool dirty { get; set; } }
+
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECSNFTShapeComponentHandler handler;
 
@@ -49,12 +51,10 @@ namespace Tests
                 assetRetriever,
                 renderersComponent);
 
-            // TODO: Fix This...
-            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-            //     0, manager, factory, null,
-            //     new KeyValueSet<ComponentIdentifier, ComponentWriteData>(), executors);
-
-            // keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, manager, factory, null,
+                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(), executors);
+            keepEntityAliveComponent.PutFor(scene, entity, new KeepEntityAliveModel());
         }
 
         [TearDown]

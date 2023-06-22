@@ -14,6 +14,8 @@ namespace Tests
 {
     public class MeshColliderHandlerShould
     {
+        private class KeepEntityAliveModel : InternalComponent { public bool dirty { get; set; } }
+
         private MeshColliderHandler handler;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -27,12 +29,6 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
 
-            // TODO: Fix This...
-            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-            //     0, componentsManager, componentsFactory, null,
-            //     new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-            //     executors);
-
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             handler = new MeshColliderHandler(
@@ -44,7 +40,11 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 
-            // keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentsFactory, null,
+                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+                executors);
+            keepEntityAliveComponent.PutFor(scene, entity, new KeepEntityAliveModel());
         }
 
         [TearDown]

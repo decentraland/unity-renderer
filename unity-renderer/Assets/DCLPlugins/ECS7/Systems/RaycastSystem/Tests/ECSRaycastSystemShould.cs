@@ -22,6 +22,8 @@ namespace Tests
 {
     public class ECSRaycastSystemShould
     {
+        private class KeepEntityAliveModel : InternalComponent { public bool dirty { get; set; } }
+
         private ECSRaycastSystem system;
         private IECSComponentWriter componentWriter;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -43,12 +45,6 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
-            // TODO: Fix this...
-            // var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-            //     0, componentsManager, componentsFactory, null,
-            //     new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-            //     executors);
-
             componentWriter = Substitute.For<IECSComponentWriter>();
             system = new ECSRaycastSystem(
                 internalComponents.raycastComponent,
@@ -62,7 +58,13 @@ namespace Tests
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
-            // keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
+
+            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
+                0, componentsManager, componentsFactory, null,
+                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
+                executors);
+            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new KeepEntityAliveModel());
+
             sceneStateHandler = new SceneStateHandler(
                 Substitute.For<CRDTServiceContext>(),
                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
