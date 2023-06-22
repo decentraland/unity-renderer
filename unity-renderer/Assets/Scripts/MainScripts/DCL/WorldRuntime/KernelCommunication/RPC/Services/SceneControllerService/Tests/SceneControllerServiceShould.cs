@@ -336,9 +336,6 @@ namespace Tests
             yield return UniTask.ToCoroutine(async () =>
             {
                 const int TEST_SCENE_NUMBER = 666;
-                const int ENTITY_ID = 1;
-                const int COMPONENT_ID = 1;
-                byte[] outgoingCrdtBytes = new byte[] { 0, 0, 0, 0 };
 
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
                 await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
@@ -355,26 +352,11 @@ namespace Tests
                               getCurrentStateFinished = true;
                           });
 
-                var protocol = new CRDTProtocol() { };
-                var msg = protocol.CreateLwwMessage(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CrdtMessage>());
-                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(msg.ComponentId, msg.EntityId, msg);
                 await new WaitUntil(() => getCurrentStateFinished, 3);
 
                 Assert.IsTrue(getCurrentStateFinished);
                 Assert.IsFalse(sceneHasStateStored);
-                Assert.IsFalse(responsePayload.IsEmpty);
-
-                using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
-                {
-                    while (iterator.MoveNext())
-                    {
-                        var responseCrdt = (CrdtMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.EntityId, ENTITY_ID);
-                        Assert.AreEqual(responseCrdt.ComponentId, COMPONENT_ID);
-                        Assert.IsTrue(AreEqual(outgoingCrdtBytes, (byte[])responseCrdt.Data));
-                    }
-                }
+                Assert.IsTrue(responsePayload.IsEmpty);
             });
         }
 
@@ -427,10 +409,6 @@ namespace Tests
                               getCurrentStateFinished = true;
                           });
 
-                var outgoingCrdtProtocol = new CRDTProtocol() { };
-                outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CrdtMessage>());
-                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(crdts[0].ComponentId, crdts[0].EntityId, crdts[0]);
                 await new WaitUntil(() => getCurrentStateFinished, 3);
 
                 Assert.IsTrue(getCurrentStateFinished);
@@ -450,7 +428,7 @@ namespace Tests
                     }
                 }
 
-                Assert.AreEqual(crdts.Length, index);
+                Assert.AreEqual(1, index);
             });
         }
 

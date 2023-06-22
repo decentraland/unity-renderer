@@ -218,18 +218,6 @@ namespace RPC.Services
 
                 sendCrdtMemoryStream.SetLength(0);
 
-                // if (crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out DualKeyValueSet<int, long, CrdtMessage> sceneCrdtOutgoing))
-                // {
-                //     crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                //
-                //     for (int i = 0; i < sceneCrdtOutgoing.Count; i++)
-                //     {
-                //         CRDTSerializer.Serialize(sendCrdtBinaryWriter, sceneCrdtOutgoing.Pairs[i].value);
-                //     }
-                //
-                //     sceneCrdtOutgoing.Clear();
-                // }
-
                 SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, true);
 
                 reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
@@ -247,13 +235,8 @@ namespace RPC.Services
 
         public async UniTask<CRDTSceneCurrentState> GetCurrentState(GetCurrentStateMessage request, RPCContext context, CancellationToken ct)
         {
-            DualKeyValueSet<int, long, CrdtMessage> outgoingMessages = null;
             CRDTProtocol sceneState = null;
             CRDTServiceContext crdtContext = context.crdt;
-
-            // we wait until messages for scene are set
-            await UniTask.WaitUntil(() => crdtContext.scenesOutgoingCrdts.TryGetValue(sceneNumber, out outgoingMessages),
-                cancellationToken: ct);
 
             await UniTask.SwitchToMainThread(ct);
 
@@ -271,16 +254,7 @@ namespace RPC.Services
             {
                 getStateMemoryStream.SetLength(0);
 
-                // serialize outgoing messages
-                // crdtContext.scenesOutgoingCrdts.Remove(sceneNumber);
-                //
-                // foreach (var msg in outgoingMessages)
-                // {
-                //     CRDTSerializer.Serialize(getStateBinaryWriter, msg.value);
-                // }
-                //
-                // outgoingMessages.Clear();
-                //SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, false);
+                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, false);
 
                 // serialize scene state
                 if (sceneState != null)
@@ -334,7 +308,7 @@ namespace RPC.Services
             if (!crdtContext.CrdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor executor))
                 return;
 
-            if (crdtContext.scenesOutgoingMsgs.TryGetValue(sceneNumber, out var msgs))
+            if (crdtContext.ScenesOutgoingMsgs.TryGetValue(sceneNumber, out var msgs))
             {
                 var pairs = msgs.Pairs;
 

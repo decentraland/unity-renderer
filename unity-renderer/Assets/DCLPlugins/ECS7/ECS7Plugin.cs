@@ -39,7 +39,7 @@ namespace DCL.ECS7
             crdtContext.CrdtExecutors = crdtExecutors;
 
             componentWriters = new Dictionary<int, ComponentWriter>(MAX_EXPECTED_SCENES);
-            scenesOutgoingMsgs = crdtContext.scenesOutgoingMsgs;
+            scenesOutgoingMsgs = crdtContext.ScenesOutgoingMsgs;
 
             componentsFactory = new ECSComponentsFactory();
 
