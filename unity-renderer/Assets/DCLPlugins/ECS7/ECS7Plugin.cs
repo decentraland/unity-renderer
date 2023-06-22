@@ -13,7 +13,6 @@ namespace DCL.ECS7
     {
         private const int MAX_EXPECTED_SCENES = 81; // Scene Load Radius 4 -> max scenes 81
 
-        private readonly ComponentCrdtWriteSystem crdtWriteSystem;
         private readonly IECSComponentWriter componentWriter;
         private readonly ECS7ComponentsComposer componentsComposer;
         private readonly ECSSystemsController systemsController;
@@ -49,12 +48,11 @@ namespace DCL.ECS7
 
             crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager, sceneController, crdtContext);
 
-            crdtWriteSystem = new ComponentCrdtWriteSystem(crdtExecutors, sceneController, DataStore.i.rpc.context);
-            componentWriter = new ECSComponentWriter(crdtWriteSystem.WriteMessage);
+            componentWriter = new ECSComponentWriter();
 
             componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
 
-            SystemsContext systemsContext = new SystemsContext(componentWriter,
+            SystemsContext systemsContext = new SystemsContext(
                 componentWriters,
                 internalEcsComponents,
                 new ComponentGroups(componentsManager),
@@ -71,7 +69,7 @@ namespace DCL.ECS7
                 new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult()))
             );
 
-            systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);
+            systemsController = new ECSSystemsController(systemsContext);
 
             sceneNumberMapping = new Dictionary<int, IParcelScene>(MAX_EXPECTED_SCENES); // Scene Load Radius 4 -> max scenes 81
 
@@ -88,7 +86,6 @@ namespace DCL.ECS7
         public void Dispose()
         {
             componentsComposer.Dispose();
-            crdtWriteSystem.Dispose();
             componentWriter.Dispose();
             systemsController.Dispose();
             internalEcsComponents.Dispose();

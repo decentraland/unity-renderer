@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 public record SystemsContext
 {
-    public readonly IECSComponentWriter componentWriter;
     public readonly IReadOnlyDictionary<int, ComponentWriter> ComponentWriters;
     public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups componentGroups;
@@ -22,7 +21,7 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> UiCanvasInformationPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> PointerEventsResultPool;
 
-    public SystemsContext(IECSComponentWriter componentWriter,
+    public SystemsContext(
         IReadOnlyDictionary<int, ComponentWriter> componentWriters,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
@@ -38,7 +37,6 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool,
         WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool)
     {
-        this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
         this.billboards = billboards;

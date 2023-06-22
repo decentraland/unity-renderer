@@ -28,7 +28,6 @@ public class ECSSystemsController : IDisposable
     private readonly IList<ECS7System> updateSystems;
     private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
-    private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentMarkDirtySystem;
     private readonly ECS7System internalComponentRemoveDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
@@ -39,10 +38,9 @@ public class ECSSystemsController : IDisposable
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
-    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
+    public ECSSystemsController(SystemsContext context)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
-        this.componentWriteSystem = componentWriteSystem;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
 
@@ -84,7 +82,7 @@ public class ECSSystemsController : IDisposable
 
         ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(
             context.internalEcsComponents.uiInputResultsComponent,
-            context.componentWriter);
+            null);
 
         ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
             context.internalEcsComponents.raycastComponent,
@@ -189,7 +187,6 @@ public class ECSSystemsController : IDisposable
     {
         try
         {
-            componentWriteSystem.Invoke();
             internalComponentMarkDirtySystem.Invoke();
         }
         catch (Exception e)
