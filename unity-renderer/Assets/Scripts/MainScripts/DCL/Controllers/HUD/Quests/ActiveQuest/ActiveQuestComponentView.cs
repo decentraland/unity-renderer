@@ -54,6 +54,7 @@ namespace DCL.Quests
         {
             model.questCreator = creator;
             questCreator.text = creator;
+            model.questModel.questCreator = creator;
         }
 
         public void SetQuestId(string questId) =>

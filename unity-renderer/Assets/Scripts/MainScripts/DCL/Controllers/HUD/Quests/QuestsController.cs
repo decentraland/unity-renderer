@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 using Action = Decentraland.Quests.Action;
+using Task = Decentraland.Quests.Task;
 
 namespace DCL.Quests
 {
@@ -19,11 +21,12 @@ namespace DCL.Quests
         private readonly IQuestTrackerComponentView questTrackerComponentView;
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
-        private readonly IQuestLogComponentView questLogComponentView;
+        private readonly QuestLogController questLogController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
         private readonly ITeleportController teleportController;
+        private Service<IWebRequestController> webRequestController;
 
         private CancellationTokenSource disposeCts = null;
         private CancellationTokenSource profileCts = null;
@@ -46,11 +49,12 @@ namespace DCL.Quests
             this.questTrackerComponentView = questTrackerComponentView;
             this.questCompletedComponentView = questCompletedComponentView;
             this.questStartedPopupComponentView = questStartedPopupComponentView;
-            this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
             this.playerPrefs = playerPrefs;
             this.dataStore = dataStore;
             this.teleportController = teleportController;
+
+            questLogController = new QuestLogController(questLogComponentView, userProfileBridge);
 
             disposeCts = new CancellationTokenSource();
             quests = new ();
@@ -58,15 +62,15 @@ namespace DCL.Quests
             StartTrackingQuests(disposeCts.Token).Forget();
             StartTrackingStartedQuests(disposeCts.Token).Forget();
 
-            questLogComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+            questLogController.SetIsGuest(userProfileBridge.GetOwn().isGuest);
 
             questStartedPopupComponentView.OnOpenQuestLog += () => { dataStore.HUDs.questsPanelVisible.Set(true); };
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
-            questLogComponentView.OnPinChange += ChangePinnedQuest;
-            questLogComponentView.OnQuestAbandon += AbandonQuest;
+            questLogController.OnPinChange += ChangePinnedQuest;
+            questLogController.OnQuestAbandon += AbandonQuest;
             questTrackerComponentView.OnJumpIn += JumpIn;
-            questLogComponentView.OnJumpIn += JumpIn;
+            questLogController.OnJumpIn += JumpIn;
 
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
@@ -79,7 +83,7 @@ namespace DCL.Quests
             if(pinnedQuestId.Get().Equals(questId))
                 ChangePinnedQuest(questId, false);
             questsService.AbortQuest(questId).Forget();
-            questLogComponentView.RemoveQuestIfExists(questId);
+            questLogController.RemoveQuestIfExists(questId);
         }
 
         private void JumpIn(Vector2Int obj) =>
@@ -111,7 +115,7 @@ namespace DCL.Quests
         }
 
         private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
-            questLogComponentView.SetAsFullScreenMenuMode(current);
+            questLogController.SetAsFullScreenMenuMode(current);
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
@@ -181,7 +185,7 @@ namespace DCL.Quests
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,
-                questCreator = "userName",
+                questCreator = questInstance.Quest.CreatorAddress,
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
@@ -190,7 +194,7 @@ namespace DCL.Quests
             };
 
             if(questInstance.State.CurrentSteps.Count > 0)
-                questLogComponentView.AddActiveQuest(quest);
+                questLogController.AddActiveQuest(quest).Forget();
             else
             {
                 ChangePinnedQuest(questInstance.Id, false);
@@ -203,15 +207,25 @@ namespace DCL.Quests
                     questCompletedComponentView.SetVisible(true);
                 }
 
-                questLogComponentView.AddCompletedQuest(quest);
+                questLogController.AddCompletedQuest(quest).Forget();
             }
+        }
+
+        private async UniTask<UnityWebRequest> RequestRewards(string questId)
+        {
+            Debug.Log(questId);
+            UnityWebRequest result = await webRequestController.Ref.GetAsync($"https://quests.decentraland.zone/quests/{questId}/rewards");
+            Debug.Log(result.downloadHandler.text);
+            return result;
+
+            //IHotScenesController.PlacesAPIResponse placesAPIResponse = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
         }
 
         public void Dispose()
         {
-            questLogComponentView.OnPinChange -= ChangePinnedQuest;
+            questLogController.OnPinChange -= ChangePinnedQuest;
             questTrackerComponentView.OnJumpIn -= JumpIn;
-            questLogComponentView.OnJumpIn -= JumpIn;
+            questLogController.OnJumpIn -= JumpIn;
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange -= ConfigureQuestLogInFullscreenMenuChanged;
             disposeCts?.SafeCancelAndDispose();
         }

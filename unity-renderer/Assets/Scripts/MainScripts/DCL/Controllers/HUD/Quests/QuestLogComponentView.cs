@@ -39,7 +39,6 @@ namespace DCL.Quests
             completedQuests = new ();
             questsPool = new UnityObjectPool<ActiveQuestComponentView>(activeQuestPrefab, activeQuestsContainer, actionOnDestroy: x => x.Hide());
             questsPool.Prewarm(MAX_QUESTS_COUNT);
-
             InitialiseSectionSelector();
 
             questDetailsComponentView.OnJumpIn += (coords) => OnJumpIn?.Invoke(coords);
@@ -104,7 +103,7 @@ namespace DCL.Quests
             }
         }
 
-        public void AddActiveQuest(QuestDetailsComponentModel activeQuest)
+        public void AddActiveQuest(QuestDetailsComponentModel activeQuest, string creatorName)
         {
             emptyState.SetActive(false);
 
@@ -115,7 +114,7 @@ namespace DCL.Quests
             activeQuestComponentView.SetModel(new ActiveQuestComponentModel()
             {
                 questId = activeQuest.questId,
-                questCreator = activeQuest.questCreator,
+                questCreator = creatorName,
                 questName = activeQuest.questName,
                 questImageUri = "",
                 isPinned = activeQuest.isPinned,
@@ -126,7 +125,7 @@ namespace DCL.Quests
             sectionSelector.GetSection(IN_PROGRESS_SECTION_INDEX).SelectToggle(true);
         }
 
-        public void AddCompletedQuest(QuestDetailsComponentModel completedQuest)
+        public void AddCompletedQuest(QuestDetailsComponentModel completedQuest, string creatorName)
         {
             emptyState.SetActive(false);
 
@@ -144,7 +143,7 @@ namespace DCL.Quests
             completedQuestComponentView.SetModel(new ActiveQuestComponentModel()
             {
                 questId = completedQuest.questId,
-                questCreator = completedQuest.questCreator,
+                questCreator = creatorName,
                 questName = completedQuest.questName,
                 questImageUri = "",
                 isPinned = false,
@@ -214,8 +213,8 @@ namespace DCL.Quests
             if(!string.IsNullOrEmpty(previouslyCompletedSelectedQuest) && completedQuests.TryGetValue(previouslyCompletedSelectedQuest, out ActiveQuestComponentView quest))
                 quest.Deselect();
 
-            questDetailsComponentView.SetModel(questModel);
             questDetailsComponentView.SetFooter(false);
+            questDetailsComponentView.SetModel(questModel);
             previouslyCompletedSelectedQuest = questModel.questId;
         }
 

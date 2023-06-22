@@ -28,6 +28,7 @@ namespace DCL.Quests
         [SerializeField] internal GameObject guestSection;
         [SerializeField] internal GameObject footer;
         [SerializeField] internal RectTransform parentContent;
+        private VerticalLayoutGroup layoutGroup;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         [SerializeField] internal QuestStepComponentView stepPrefab;
@@ -77,7 +78,7 @@ namespace DCL.Quests
             SetCoordinates(model.coordinates);
             SetQuestSteps(model.questSteps);
             SetQuestRewards(model.questRewards);
-
+            
             Utils.ForceRebuildLayoutImmediate(parentContent);
         }
 
@@ -134,6 +135,7 @@ namespace DCL.Quests
                 pooledStep.SetModel(stepModel);
                 usedSteps.Add(pooledStep);
             }
+            Utils.ForceRebuildLayoutImmediate(parentContent);
         }
 
         public void SetQuestRewards(List<QuestRewardComponentModel> questRewards)
@@ -159,6 +161,7 @@ namespace DCL.Quests
                 pooledReward.SetModel(rewardModel);
                 usedRewards.Add(pooledReward);
             }
+            Utils.ForceRebuildLayoutImmediate(parentContent);
         }
 
         public void SetIsGuest(bool isGuest) =>
