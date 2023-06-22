@@ -225,6 +225,10 @@ namespace RPC.Services
                 if (!isFirstMessage)
                     crdtContext.IncreaseSceneTick(sceneNumber);
             }
+            catch (OperationCanceledException _)
+            {
+                // Ignored
+            }
             catch (Exception e)
             {
                 Debug.LogError(e);
@@ -355,7 +359,7 @@ namespace RPC.Services
                         CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessage);
                     }
 
-                    msg.PooledWrappedComponent.Dispose();
+                    msg.Dispose();
                 }
 
                 if (clearMessages)
