@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -80,7 +79,7 @@ namespace DCL.Social.Friends
                 }
 
                 view.SetBodyMessage(friendRequest.MessageBody);
-                view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
+                view.SetTimestamp(friendRequest.Timestamp);
 
                 UserProfile recipientProfile = userProfileBridge.Get(friendRequest.From);
 

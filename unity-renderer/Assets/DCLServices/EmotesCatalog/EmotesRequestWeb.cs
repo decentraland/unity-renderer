@@ -59,7 +59,7 @@ namespace DCLServices.EmotesCatalog
 
         private async UniTask RequestOwnedEmotesAsync(string userId)
         {
-            var url = $"{catalyst.lambdasUrl}users/{userId}/emotes";
+            var url = $"{catalyst.lambdasUrl}/users/{userId}/emotes";
             var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url, cancellationToken: cts.Token);
 
             if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");

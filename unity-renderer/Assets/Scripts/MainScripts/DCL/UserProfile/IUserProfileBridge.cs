@@ -10,7 +10,7 @@ public interface IUserProfileBridge
     UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default);
     UserProfile GetOwn();
     UserProfile Get(string userId);
-    UserProfile GetByName(string userNameOrId);
+    UserProfile GetByName(string userName, bool caseSensitive = true);
     void SignUp();
     void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false);
 }
