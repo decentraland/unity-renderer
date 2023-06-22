@@ -184,7 +184,7 @@ namespace DCL.ECSComponents
                 entity,
                 previousModel?.GetVisibleMeshesCollisionMask() ?? 0,
                 model.GetVisibleMeshesCollisionMask(),
-                collidersHandler.GetVisibleMeshesColliders(),
+                model.GetVisibleMeshesCollisionMask() != 0 ? collidersHandler.GetVisibleMeshesColliders() : null,
                 pointerColliderComponent,
                 physicColliderComponent,
                 customLayerColliderComponent,
