@@ -19,6 +19,17 @@ namespace DCLServices.Lambdas.NamesService
             public string ContractAddress => contractAddress;
             public string Price => price;
 
+            public NameEntry()
+            {
+            }
+
+            public NameEntry(string name, string contractAddress, string price)
+            {
+                this.name = name;
+                this.contractAddress = contractAddress;
+                this.price = price;
+            }
+
             public NftInfo GetNftInfo() =>
                 new()
                 {

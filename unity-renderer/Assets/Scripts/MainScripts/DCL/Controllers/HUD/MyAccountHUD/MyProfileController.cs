@@ -59,11 +59,9 @@ namespace DCL.MyAccount
             view.OnLinkRemoved += OnRemoveLinkRequested;
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
 
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-            {
-                kernelConfig.EnsureConfigInitialized().Then(config => OnKernelConfigChanged(config, null));
-                kernelConfig.OnChange += OnKernelConfigChanged;
-            }
+            kernelConfig.EnsureConfigInitialized()
+                        .Then(config => OnKernelConfigChanged(config, null));
+            kernelConfig.OnChange += OnKernelConfigChanged;
         }
 
         public void Dispose()
@@ -77,9 +75,7 @@ namespace DCL.MyAccount
             view.OnLinkAdded -= OnAddLinkRequested;
             view.OnLinkRemoved -= OnRemoveLinkRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
-
-            if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
-                kernelConfig.OnChange -= OnKernelConfigChanged;
+            kernelConfig.OnChange -= OnKernelConfigChanged;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
@@ -96,7 +92,12 @@ namespace DCL.MyAccount
         private void OpenSection()
         {
             cts = cts.SafeRestart();
-            LoadOwnedNamesAsync(cts.Token).Forget();
+            view.SetLoadingActive(true);
+
+            LoadOwnedNamesAsync(cts.Token)
+               .ContinueWith(() => view.SetLoadingActive(false))
+               .Forget();
+
             LoadAboutDescription();
             ShowLinks(ownUserProfile);
         }
@@ -109,7 +110,7 @@ namespace DCL.MyAccount
             try
             {
                 loadedNames.Clear();
-                view.SetLoadingActive(true);
+
                 var names = await namesService.RequestOwnedNamesAsync(
                     ownUserProfile.userId,
                     1,
@@ -117,13 +118,16 @@ namespace DCL.MyAccount
                     true,
                     ct);
 
+                var optionsToLoad = new List<string>();
+
                 if (names.names is { Count: > 0 })
                 {
-                    var optionsToLoad = new List<string>();
                     optionsToLoad.AddRange(names.names.Select(x => x.Name));
                     view.SetClaimedNameDropdownOptions(optionsToLoad);
                     loadedNames.AddRange(optionsToLoad);
                 }
+                else
+                    view.SetClaimedNameDropdownOptions(optionsToLoad);
             }
             catch (OperationCanceledException) { }
             catch (Exception e) { Debug.LogError(e.Message); }
@@ -136,7 +140,6 @@ namespace DCL.MyAccount
             view.SetClaimedModeAsInput(!ownUserProfile.hasClaimedName);
             view.SetCurrentName(ownUserMainName, ownUserNonClaimedHashtag);
             view.SetClaimBannerActive(loadedNames.Count == 0);
-            view.SetLoadingActive(false);
         }
 
         private void OnNameEdited(string newName)
@@ -158,9 +161,10 @@ namespace DCL.MyAccount
                 return;
             }
 
-            view.SetNonValidNameWarningActive(!IsValidUserName(newName));
-            if (!IsValidUserName(newName))
-                return;
+            bool isValidUserName = IsValidUserName(newName);
+            view.SetNonValidNameWarningActive(!isValidUserName);
+
+            if (!isValidUserName) return;
 
             if (isClaimed)
                 userProfileBridge.SaveVerifiedName(newName);
@@ -231,7 +235,11 @@ namespace DCL.MyAccount
 
             async UniTaskVoid AddAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
             {
-                List<UserProfileModel.Link> links = new (ownUserProfile.Links) { new UserProfileModel.Link(title, url) };
+                List<UserProfileModel.Link> links = new ((IEnumerable<UserProfileModel.Link>) ownUserProfile.Links
+                                                         ?? Array.Empty<UserProfileModel.Link>())
+                {
+                    new UserProfileModel.Link(title, url),
+                };
 
                 try
                 {
