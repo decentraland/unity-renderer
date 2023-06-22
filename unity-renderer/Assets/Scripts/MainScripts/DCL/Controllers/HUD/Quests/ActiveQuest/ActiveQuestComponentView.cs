@@ -15,6 +15,7 @@ namespace DCL.Quests
         [SerializeField] internal GameObject focusOutline;
         [SerializeField] internal GameObject selectedOutline;
         [SerializeField] internal Image background;
+        [SerializeField] internal Image imageBackground;
         [SerializeField] internal ImageComponentView backgroundImage;
 
         [SerializeField] internal Color deselectedNameColor;
@@ -23,8 +24,9 @@ namespace DCL.Quests
         [SerializeField] internal Color selectedCreatorColor;
         [SerializeField] internal Color selectedBackgroundColor;
         [SerializeField] internal Color deselectedBackgroundColor;
+        [SerializeField] internal Color deselectedBackgroundColorTransparent;
 
-        public event Action<string> OnActiveQuestSelected;
+        public event Action<QuestDetailsComponentModel> OnActiveQuestSelected;
 
         internal bool isSelected = false;
 
@@ -36,7 +38,11 @@ namespace DCL.Quests
             SetQuestId(model.questId);
             SetIsPinned(model.isPinned);
             SetQuestImage(model.questImageUri);
+            SetQuestDetailsModel(model.questModel);
         }
+
+        public void SetQuestDetailsModel(QuestDetailsComponentModel questDetailsComponentModel) =>
+            model.questModel = questDetailsComponentModel;
 
         public void SetQuestName(string title)
         {
@@ -71,7 +77,8 @@ namespace DCL.Quests
             selectedOutline.SetActive(false);
             questName.color = deselectedNameColor;
             questCreator.color = deselectedCreatorColor;
-            background.color = deselectedBackgroundColor;
+            background.color = deselectedBackgroundColorTransparent;
+            imageBackground.color = deselectedBackgroundColor;
         }
 
         public override void OnFocus()
@@ -86,13 +93,14 @@ namespace DCL.Quests
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            OnActiveQuestSelected?.Invoke(model.questId);
+            OnActiveQuestSelected?.Invoke(model.questModel);
             isSelected = true;
             focusOutline.SetActive(false);
             selectedOutline.SetActive(true);
             questName.color = selectedNameColor;
             questCreator.color = selectedCreatorColor;
             background.color = selectedBackgroundColor;
+            imageBackground.color = selectedBackgroundColor;
         }
     }
 }
