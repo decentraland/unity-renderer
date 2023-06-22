@@ -122,15 +122,18 @@ public class ECSSystemsController : IDisposable
             DataStore.i.rpc.context.restrictedActions);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.GltfContainerLoadingStatePool,
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.EngineInfoPool,
             context.internalEcsComponents.EngineInfo);
 
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.UiCanvasInformationPool,
             DataStore.i.ecs7.scenes
         );
 

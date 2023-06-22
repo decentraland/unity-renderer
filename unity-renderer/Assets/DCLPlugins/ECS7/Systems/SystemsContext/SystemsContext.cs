@@ -17,6 +17,9 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> TransformPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBVideoEvent>> VideoEventPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBRaycastResult>> RaycastResultPool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> GltfContainerLoadingStatePool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBEngineInfo>> EngineInfoPool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> UiCanvasInformationPool;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IReadOnlyDictionary<int, ComponentWriter> componentWriters,
@@ -28,7 +31,10 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
         WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
         WrappedComponentPool<IWrappedComponent<PBVideoEvent>> videoEventPool,
-        WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool)
+        WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool,
+        WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> gltfContainerLoadingStatePool,
+        WrappedComponentPool<IWrappedComponent<PBEngineInfo>> engineInfoPool,
+        WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
@@ -41,5 +47,8 @@ public record SystemsContext
         ComponentWriters = componentWriters;
         VideoEventPool = videoEventPool;
         RaycastResultPool = raycastResultPool;
+        GltfContainerLoadingStatePool = gltfContainerLoadingStatePool;
+        EngineInfoPool = engineInfoPool;
+        UiCanvasInformationPool = uiCanvasInformationPool;
     }
 }
