@@ -35,7 +35,8 @@ namespace DCL.Backpack
                 characterPreviewFactory,
                 Substitute.For<IPreviewCameraRotationController>(),
                 Substitute.For<IPreviewCameraPanningController>(),
-                Substitute.For<IPreviewCameraZoomController>());
+                Substitute.For<IPreviewCameraZoomController>(),
+                Substitute.For<DataStore>());
         }
 
         [TearDown]

@@ -14,14 +14,15 @@ namespace DCL.Backpack
             IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
+            DataStore dataStore = DataStore.i;
+
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(
             Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
             new PreviewCameraRotationController(),
             new PreviewCameraPanningController(),
-            new PreviewCameraZoomController());
-
-            DataStore dataStore = DataStore.i;
+            new PreviewCameraZoomController(),
+            dataStore);
 
             var backpackAnalyticsService = new BackpackAnalyticsService(
                 Environment.i.platform.serviceProviders.analytics,
