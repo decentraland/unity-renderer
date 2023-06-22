@@ -86,11 +86,31 @@ public class UserProfileModel
     public bool hasConnectedWeb3 = true;
 
     public int tutorialFlagsMask;
-    public List<string> blocked;
-    public List<string> muted;
+    public List<string> blocked = new ();
+    public List<string> muted = new ();
     public int tutorialStep;
     public bool hasClaimedName;
     public List<Link> links;
+
+    public static UserProfileModel FallbackModel(string name, int id)
+    {
+        var fallbackId = $"{name}_{id}";
+
+        return new UserProfileModel
+        {
+            // Required fields (otherwise exceptions will be thrown by UserProfile.OnUpdate subscribers)
+            userId = fallbackId,
+            name = name,
+            description = "There was a problem with loading this profile. This is a fallback profile",
+
+            avatar = AvatarModel.FallbackModel(name, id),
+
+            // Optional (exceptions-free) fields
+            ethAddress = fallbackId,
+            email = fallbackId,
+            baseUrl = fallbackId,
+        };
+    }
 
     public bool Equals(UserProfileModel model)
     {

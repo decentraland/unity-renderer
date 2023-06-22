@@ -69,9 +69,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },
+            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
-            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
             { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
             { ExploreSection.MyAccount, (isMyAccountInitialized, myAccountVisible) },
@@ -109,9 +109,9 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
+        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
 
@@ -137,7 +137,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
-        view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.MyAccount, DataStore.i.exploreV2.configureMyAccountSectionInFullscreenMenu);
@@ -334,6 +333,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+        if(currentOpenSection == ExploreSection.Quest)
+            view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
 
         ChangeVisibilityVarForSwitchedSections();
 

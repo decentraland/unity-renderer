@@ -71,6 +71,7 @@ public class UserProfileController : MonoBehaviour
             return;
 
         var model = JsonUtility.FromJson<UserProfileModelDTO>(payload).ToUserProfileModel();
+
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
 
