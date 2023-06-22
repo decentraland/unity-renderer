@@ -48,10 +48,10 @@ Shader "Custom/LoadingBackgroundGaussianBlur-Faster"
             {
                 fixed4 originalColor = tex2D(_MainTex, i.uv);
 
-                // If pixel is transparent, don't modify it.
+                // If pixel is transparent, interpret as black.
                 if (originalColor.a == 0.0)
                 {
-                    return originalColor;
+                    originalColor = float4(0.0, 0.0, 0.0, 1.0);
                 }
 
                 //declare stuff
@@ -63,15 +63,15 @@ Shader "Custom/LoadingBackgroundGaussianBlur-Faster"
                 //create the 1-D kernel
                 float sigma = _Sigma;
                 float Z = 0.0;
-                for (int j = 0; j <= kSize; ++j)
+                for (int j1 = 0; j1 <= kSize; ++j1)
                 {
-                    kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
+                    kernel[kSize+j1] = kernel[kSize-j1] = normpdf(float(j1), sigma);
                 }
                 
                 //get the normalization factor (as the gaussian has been clamped)
-                for (int j = 0; j < mSize; ++j)
+                for (int j2 = 0; j2 < mSize; ++j2)
                 {
-                    Z += kernel[j];
+                    Z += kernel[j2];
                 }
                 
                 //read out the texels
@@ -79,7 +79,13 @@ Shader "Custom/LoadingBackgroundGaussianBlur-Faster"
                 {
                     for (int y=-kSize; y <= kSize; ++y)
                     {
-                        final_colour += kernel[kSize+y]*kernel[kSize+x]*tex2D(_MainTex, i.uv + float2(x,y)*_MainTex_TexelSize.xy).rgb;
+                        float2 sampleUV = i.uv + float2(x,y)*_MainTex_TexelSize.xy;
+                        
+                        //check if the sampled pixel is within UV range
+                        if (sampleUV.x >= 0.0 && sampleUV.x <= 1.0 && sampleUV.y >= 0.0 && sampleUV.y <= 1.0)
+                        {
+                            final_colour += kernel[kSize+y]*kernel[kSize+x]*tex2D(_MainTex, sampleUV).rgb;
+                        }
                     }
                 }
                 

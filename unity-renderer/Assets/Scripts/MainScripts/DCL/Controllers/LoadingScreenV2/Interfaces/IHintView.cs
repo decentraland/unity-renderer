@@ -6,7 +6,7 @@ namespace DCL.LoadingScreen.V2
 {
     public interface IHintView
     {
-        void Initialize(Hint hint, Texture2D texture, bool startAsActive = false);
+        void Initialize(Hint hint, Texture2D texture, float fadeDuration, bool startAsActive);
         void ToggleHint(bool active);
     }
 }

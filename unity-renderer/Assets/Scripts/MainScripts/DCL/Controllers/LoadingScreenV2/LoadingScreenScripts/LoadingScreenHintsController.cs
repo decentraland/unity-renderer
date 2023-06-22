@@ -17,8 +17,9 @@ namespace DCL.LoadingScreen.V2
     public class LoadingScreenHintsController: ILoadingScreenHintsController
     {
         private const int MAX_HINTS = 15;
+        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(2f);
+        private readonly float FADE_DURATION = 0.5f;
         private const string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(1f);
         private readonly HintRequestService hintRequestService;
         private readonly IAddressableResourceProvider addressableProvider;
         private readonly ILoadingScreenView loadingScreenView;
@@ -102,7 +103,7 @@ namespace DCL.LoadingScreen.V2
 
                 if (index < hintViewPool.Count)
                 {
-                    hintViewPool[index].Initialize(hintResult.Key, hintResult.Value, index == 0);
+                    hintViewPool[index].Initialize(hintResult.Key, hintResult.Value, FADE_DURATION, index == 0);
                     intializedHints.Add(hintViewPool[index]);
                 }
                 index++;

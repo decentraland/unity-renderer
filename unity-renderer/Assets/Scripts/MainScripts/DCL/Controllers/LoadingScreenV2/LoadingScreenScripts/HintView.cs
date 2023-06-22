@@ -19,9 +19,9 @@ namespace DCL.LoadingScreen.V2
         [FormerlySerializedAs("hintBagroundImage")] [SerializeField] private Image hintBackgroundImage;
         [SerializeField] private CanvasGroup canvasGroup;
 
-        private const float FADE_DURATION = 0.4f;
+        private const float FADE_DURATION = 0.5f;
 
-        public void Initialize(Hint hint, Texture2D texture, bool startAsActive = false)
+        public void Initialize(Hint hint, Texture2D texture, float fadeDuration = FADE_DURATION, bool startAsActive = false)
         {
             try
             {
