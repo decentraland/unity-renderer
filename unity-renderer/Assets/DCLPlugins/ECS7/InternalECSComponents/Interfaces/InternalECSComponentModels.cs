@@ -7,9 +7,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
-// TODO: Which internal properties can be turned to READONLY ???
-// TODO: Check every model constructor is being called correctly
-
 namespace DCL.ECS7.InternalComponents
 {
     public interface InternalComponent
@@ -87,14 +84,6 @@ namespace DCL.ECS7.InternalComponents
         public bool removed;
         public WebVideoPlayer videoPlayer;
         public IList<MaterialAssigned> assignedMaterials;
-
-        // public InternalVideoPlayer(WebVideoPlayer videoPlayer, IList<MaterialAssigned> assignedMaterials)
-        // {
-        //     this.dirty = false;
-        //     this.removed = false;
-        //     this.videoPlayer = videoPlayer;
-        //     this.assignedMaterials = assignedMaterials;
-        // }
     }
 
     public struct InternalColliders : InternalComponent
@@ -125,12 +114,6 @@ namespace DCL.ECS7.InternalComponents
     {
         public bool dirty { get; set; }
         public AudioSource audioSource;
-
-        // public InternalAudioSource(AudioSource audioSource = null)
-        // {
-        //     this.dirty = false;
-        //     this.audioSource = audioSource;
-        // }
     }
 
     public struct InternalSceneBoundsCheck : InternalComponent
@@ -259,31 +242,12 @@ namespace DCL.ECS7.InternalComponents
         public EventCallback<PointerUpEvent> OnPointerUpCallback;
         public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
         public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
-
-        // public InternalRegisteredUiPointerEvents(
-        //     EventCallback<PointerDownEvent> onPointerDownCallback = null,
-        //     EventCallback<PointerUpEvent> OnPointerUpCallback = null,
-        //     EventCallback<PointerEnterEvent> OnPointerEnterCallback = null,
-        //     EventCallback<PointerLeaveEvent> OnPointerLeaveCallback = null)
-        // {
-        //     this.dirty = false;
-        //     this.OnPointerDownCallback = onPointerDownCallback;
-        //     this.OnPointerUpCallback = OnPointerUpCallback;
-        //     this.OnPointerEnterCallback = OnPointerEnterCallback;
-        //     this.OnPointerLeaveCallback = OnPointerLeaveCallback;
-        // }
     }
 
     public struct InternalRaycast : InternalComponent
     {
         public bool dirty { get; set; }
         public PBRaycast raycastModel;
-
-        // public InternalRaycast(PBRaycast raycastModel)
-        // {
-        //     this.dirty = false;
-        //     this.raycastModel = raycastModel;
-        // }
     }
 
     public struct InternalGltfContainerLoadingState : InternalComponent
@@ -291,13 +255,6 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public LoadingState LoadingState;
         public bool GltfContainerRemoved;
-
-        // public InternalGltfContainerLoadingState(LoadingState loadingState = LoadingState.Unknown, bool gltfContainerRemoved = false)
-        // {
-        //     this.dirty = false;
-        //     this.LoadingState = loadingState;
-        //     this.GltfContainerRemoved = gltfContainerRemoved;
-        // }
     }
 
     public struct InternalEngineInfo : InternalComponent
