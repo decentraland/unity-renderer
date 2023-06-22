@@ -67,7 +67,8 @@ namespace DCL.ECS7
                 new WrappedComponentPool<IWrappedComponent<PBRaycastResult>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBRaycastResult>(new PBRaycastResult())),
                 new WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBGltfContainerLoadingState>(new PBGltfContainerLoadingState())),
                 new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo())),
-                new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation()))
+                new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation())),
+                new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult()))
             );
 
             systemsController = new ECSSystemsController(crdtWriteSystem.LateUpdate, systemsContext);

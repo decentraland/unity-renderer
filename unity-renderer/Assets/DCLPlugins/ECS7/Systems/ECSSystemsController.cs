@@ -162,7 +162,8 @@ public class ECSSystemsController : IDisposable
             ECSInputSenderSystem.CreateSystem(
                 context.internalEcsComponents.inputEventResultsComponent,
                 context.internalEcsComponents.EngineInfo,
-                context.componentWriter),
+                context.ComponentWriters,
+                context.PointerEventsResultPool),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,

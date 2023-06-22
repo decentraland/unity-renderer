@@ -20,6 +20,7 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> GltfContainerLoadingStatePool;
     public readonly WrappedComponentPool<IWrappedComponent<PBEngineInfo>> EngineInfoPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> UiCanvasInformationPool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> PointerEventsResultPool;
 
     public SystemsContext(IECSComponentWriter componentWriter,
         IReadOnlyDictionary<int, ComponentWriter> componentWriters,
@@ -34,7 +35,8 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool,
         WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> gltfContainerLoadingStatePool,
         WrappedComponentPool<IWrappedComponent<PBEngineInfo>> engineInfoPool,
-        WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool)
+        WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool,
+        WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool)
     {
         this.componentWriter = componentWriter;
         this.internalEcsComponents = internalEcsComponents;
@@ -50,5 +52,6 @@ public record SystemsContext
         GltfContainerLoadingStatePool = gltfContainerLoadingStatePool;
         EngineInfoPool = engineInfoPool;
         UiCanvasInformationPool = uiCanvasInformationPool;
+        PointerEventsResultPool = pointerEventsResultPool;
     }
 }
