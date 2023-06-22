@@ -706,7 +706,7 @@ SpriteAtlas:
   - ChatOff
   - LargeGradientBottom
   - ArrowGradient
-  - NotFavoriteIcon
+  - FavouriteToggleOff
   - ContainerOutline100
   - MarketplaceOn
   - MicrophoneVoiceChat
@@ -722,7 +722,7 @@ SpriteAtlas:
   - OutlineRightRect12
   - Cursor
   - Container24Shadow4
-  - FavoriteIcon
+  - FavouriteToggleOn
   - ToggleCheckOn
   - UnpublishIconOutline
   - Button12
