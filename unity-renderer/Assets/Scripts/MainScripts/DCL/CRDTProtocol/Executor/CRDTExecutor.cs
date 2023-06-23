@@ -20,12 +20,6 @@ namespace DCL.CRDT
             ownerScene = scene;
             crdtProtocol = new CRDTProtocol();
             ecsManager = componentsManager;
-
-            //create entities for camera and player
-            var cameraEntity = GetOrCreateEntity(scene, SpecialEntityId.CAMERA_ENTITY);
-            var playerEntity = GetOrCreateEntity(scene, SpecialEntityId.PLAYER_ENTITY);
-            componentsManager.GetOrCreateComponent(ComponentID.TRANSFORM, scene, cameraEntity);
-            componentsManager.GetOrCreateComponent(ComponentID.TRANSFORM, scene, playerEntity);
         }
 
         public void Dispose()
@@ -88,6 +82,14 @@ namespace DCL.CRDT
             {
                 RemoveComponent(ownerScene, entityId, componentId);
             }
+        }
+
+        public void GenerateInitialEntities()
+        {
+            var cameraEntity = GetOrCreateEntity(ownerScene, SpecialEntityId.CAMERA_ENTITY);
+            var playerEntity = GetOrCreateEntity(ownerScene, SpecialEntityId.PLAYER_ENTITY);
+            ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, cameraEntity);
+            ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, playerEntity);
         }
 
         private void PutComponent(IParcelScene scene, long entityId, int componentId, object data)
