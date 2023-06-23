@@ -142,8 +142,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     private async UniTask RequestAllFromApiAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> pageOne, _ ) = await placesAPIService.GetMostActivePlaces(0, 10, ct);
-        (IReadOnlyList<PlaceInfo> pageTwo, _ ) = await placesAPIService.GetMostActivePlaces(1, 10, ct);
+        const int PAGE_SIZE = 8;
+
+        (IReadOnlyList<PlaceInfo> pageOne, _ ) = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+        (IReadOnlyList<PlaceInfo> pageTwo, _ ) = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
         placesFromAPI.Clear();
         placesFromAPI.AddRange(pageOne);
         placesFromAPI.AddRange(pageTwo);
