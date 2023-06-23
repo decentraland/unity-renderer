@@ -5,9 +5,9 @@ using UnityEngine;
 
 public interface IUserProfileBridge
 {
-    void SaveVerifiedName(string name);
-    void SaveUnverifiedName(string name);
-    void SaveDescription(string description);
+    UniTask<UserProfile> SaveVerifiedName(string name, CancellationToken cancellationToken);
+    UniTask<UserProfile> SaveUnverifiedName(string name, CancellationToken cancellationToken);
+    UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken);
     void RequestFullUserProfile(string userId);
     UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default);
     UserProfile GetOwn();

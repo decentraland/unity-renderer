@@ -20,6 +20,9 @@ public class UserProfileController : MonoBehaviour
 
     private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
     private UniTaskCompletionSource<UserProfile> saveLinkTask;
+    private UniTaskCompletionSource<UserProfile> saveUnverifiedNameTask;
+    private UniTaskCompletionSource<UserProfile> saveVerifiedNameTask;
+    private UniTaskCompletionSource<UserProfile> saveDescriptionTask;
     private bool baseWearablesAlreadyRequested = false;
 
     public static UserProfileDictionary userProfilesCatalog
@@ -79,6 +82,24 @@ public class UserProfileController : MonoBehaviour
         {
             saveLinkTask.TrySetResult(ownUserProfile);
             saveLinkTask = null;
+        }
+
+        if (saveVerifiedNameTask != null)
+        {
+            saveVerifiedNameTask.TrySetResult(ownUserProfile);
+            saveVerifiedNameTask = null;
+        }
+
+        if (saveUnverifiedNameTask != null)
+        {
+            saveUnverifiedNameTask.TrySetResult(ownUserProfile);
+            saveUnverifiedNameTask = null;
+        }
+
+        if (saveDescriptionTask != null)
+        {
+            saveDescriptionTask.TrySetResult(ownUserProfile);
+            saveDescriptionTask = null;
         }
     }
 
@@ -175,5 +196,53 @@ public class UserProfileController : MonoBehaviour
         return saveLinkTask.Task
                            .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
                            .AttachExternalCancellation(cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveVerifiedName(string name, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (saveVerifiedNameTask != null)
+            return saveVerifiedNameTask.Task.AttachExternalCancellation(cancellationToken);
+
+        saveVerifiedNameTask = new UniTaskCompletionSource<UserProfile>();
+
+        WebInterface.SendSaveUserVerifiedName(name);
+
+        return saveVerifiedNameTask.Task
+                                   .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
+                                   .AttachExternalCancellation(cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveUnverifiedName(string name, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (saveUnverifiedNameTask != null)
+            return saveUnverifiedNameTask.Task.AttachExternalCancellation(cancellationToken);
+
+        saveUnverifiedNameTask = new UniTaskCompletionSource<UserProfile>();
+
+        WebInterface.SendSaveUserUnverifiedName(name);
+
+        return saveUnverifiedNameTask.Task
+                                     .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
+                                     .AttachExternalCancellation(cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (saveDescriptionTask != null)
+            return saveDescriptionTask.Task.AttachExternalCancellation(cancellationToken);
+
+        saveDescriptionTask = new UniTaskCompletionSource<UserProfile>();
+
+        WebInterface.SendSaveUserDescription(description);
+
+        return saveDescriptionTask.Task
+                                  .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
+                                  .AttachExternalCancellation(cancellationToken);
     }
 }

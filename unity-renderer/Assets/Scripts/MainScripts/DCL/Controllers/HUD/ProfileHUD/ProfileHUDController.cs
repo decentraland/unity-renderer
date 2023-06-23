@@ -1,12 +1,15 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.MyAccount;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
@@ -42,6 +45,8 @@ public class ProfileHUDController : IHUD
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private Coroutine fetchManaIntervalRoutine = null;
     private Coroutine fetchPolygonManaIntervalRoutine = null;
+    private CancellationTokenSource saveNameCancellationToken;
+    private CancellationTokenSource saveDescriptionCancellationToken;
 
     private Regex nameRegex = null;
 
@@ -179,6 +184,8 @@ public class ProfileHUDController : IHUD
         dataStore.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
 
         myAccountCardController.Dispose();
+        saveNameCancellationToken.SafeCancelAndDispose();
+        saveDescriptionCancellationToken.SafeCancelAndDispose();
     }
 
     protected virtual GameObject GetViewPrefab()
@@ -200,7 +207,8 @@ public class ProfileHUDController : IHUD
         if (nameRegex != null && !nameRegex.IsMatch(newName))
             return;
 
-        userProfileBridge.SaveUnverifiedName(newName);
+        saveNameCancellationToken = saveNameCancellationToken.SafeRestart();
+        userProfileBridge.SaveUnverifiedName(newName, saveNameCancellationToken.Token).Forget();
     }
 
     private void UpdateProfileDescription(string description)
@@ -208,7 +216,8 @@ public class ProfileHUDController : IHUD
         if (!ownUserProfile.hasConnectedWeb3 || view.IsDesciptionIsLongerThanMaxCharacters())
             return;
 
-        userProfileBridge.SaveDescription(description);
+        saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
+        userProfileBridge.SaveDescription(description, saveDescriptionCancellationToken.Token).Forget();
         socialAnalytics.SendProfileEdit(description.Length, ContainsLinks(description), PlayerActionSource.ProfileEditHUD);
     }
 

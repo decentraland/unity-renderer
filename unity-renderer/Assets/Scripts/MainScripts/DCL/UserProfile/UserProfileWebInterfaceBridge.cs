@@ -8,11 +8,14 @@ using UnityEngine;
 
 public class UserProfileWebInterfaceBridge : IUserProfileBridge
 {
-    public void SaveVerifiedName(string name) => WebInterface.SendSaveUserVerifiedName(name);
+    public UniTask<UserProfile> SaveVerifiedName(string name, CancellationToken cancellationToken) =>
+        UserProfileController.i.SaveVerifiedName(name, cancellationToken);
 
-    public void SaveUnverifiedName(string name) => WebInterface.SendSaveUserUnverifiedName(name);
+    public UniTask<UserProfile> SaveUnverifiedName(string name, CancellationToken cancellationToken) =>
+        UserProfileController.i.SaveUnverifiedName(name, cancellationToken);
 
-    public void SaveDescription(string description) => WebInterface.SendSaveUserDescription(description);
+    public UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken) =>
+        UserProfileController.i.SaveDescription(description, cancellationToken);
 
     public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
 

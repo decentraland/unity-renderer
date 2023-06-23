@@ -265,7 +265,7 @@ namespace DCL.MyAccount
             view.Received(1).SetNonValidNameWarningActive(false);
 
             view.Received(1).SetNonValidNameWarningActive(false);
-            userProfileBridge.Received(1).SaveUnverifiedName(VALID_NAME);
+            userProfileBridge.Received(1).SaveUnverifiedName(VALID_NAME, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -276,7 +276,7 @@ namespace DCL.MyAccount
             view.Received(1).SetNonValidNameWarningActive(false);
 
             view.Received(1).SetNonValidNameWarningActive(false);
-            userProfileBridge.Received(1).SaveVerifiedName(VALID_NAME);
+            userProfileBridge.Received(1).SaveVerifiedName(VALID_NAME, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -294,7 +294,7 @@ namespace DCL.MyAccount
 
             view.OnAboutDescriptionSubmitted += Raise.Event<Action<string>>(ANOTHER_DESCRIPTION);
 
-            userProfileBridge.SaveDescription(ANOTHER_DESCRIPTION);
+            userProfileBridge.SaveDescription(ANOTHER_DESCRIPTION, Arg.Any<CancellationToken>());
         }
 
         [TestCase("l1", "http://whatever.com", "l0")]

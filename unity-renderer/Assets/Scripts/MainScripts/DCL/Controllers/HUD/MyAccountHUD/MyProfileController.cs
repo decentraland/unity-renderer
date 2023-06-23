@@ -25,6 +25,8 @@ namespace DCL.MyAccount
         private readonly List<string> loadedNames = new ();
 
         private CancellationTokenSource saveLinkCancellationToken = new ();
+        private CancellationTokenSource saveNameCancellationToken = new ();
+        private CancellationTokenSource saveDescriptionCancellationToken = new ();
         private CancellationTokenSource cts;
         private Regex nameRegex;
 
@@ -81,6 +83,10 @@ namespace DCL.MyAccount
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
             kernelConfig.OnChange -= OnKernelConfigChanged;
             userProfileBridge.GetOwn().OnUpdate -= OnOwnUserProfileUpdate;
+
+            saveLinkCancellationToken.SafeCancelAndDispose();
+            saveNameCancellationToken.SafeCancelAndDispose();
+            saveDescriptionCancellationToken.SafeCancelAndDispose();
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
@@ -182,12 +188,18 @@ namespace DCL.MyAccount
 
             if (!isValidUserName) return;
 
-            if (isClaimed)
-                userProfileBridge.SaveVerifiedName(newName);
-            else
-                userProfileBridge.SaveUnverifiedName(newName);
+            async UniTaskVoid SaveNameAsync(string newName, bool isClaimed, CancellationToken cancellationToken)
+            {
+                if (isClaimed)
+                    await userProfileBridge.SaveVerifiedName(newName, cancellationToken);
+                else
+                    await userProfileBridge.SaveUnverifiedName(newName, cancellationToken);
 
-            myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+            }
+
+            saveNameCancellationToken = saveNameCancellationToken.SafeRestart();
+            SaveNameAsync(newName, isClaimed, saveNameCancellationToken.Token).Forget();
         }
 
         private void OnAboutDescriptionSubmitted(string newDesc)
@@ -195,9 +207,15 @@ namespace DCL.MyAccount
             if (newDesc == ownUserProfile.description)
                 return;
 
-            userProfileBridge.SaveDescription(newDesc);
+            async UniTaskVoid SaveDescriptionAsync(string newDesc, CancellationToken cancellationToken)
+            {
+                await userProfileBridge.SaveDescription(newDesc, cancellationToken);
 
-            myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+            }
+
+            saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
+            SaveDescriptionAsync(newDesc, saveDescriptionCancellationToken.Token).Forget();
         }
 
         private void LoadAboutDescription() =>
