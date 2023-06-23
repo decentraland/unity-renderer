@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,11 +16,13 @@ namespace DCL.Quests
         public event Action<string, bool> OnPinChange;
         public event Action<Vector2Int> OnJumpIn;
         public event Action<string> OnQuestAbandon;
+        private CancellationTokenSource disposeCts;
 
         public QuestLogController(
             IQuestLogComponentView questLogComponentView,
             IUserProfileBridge userProfileBridge)
         {
+            disposeCts = new CancellationTokenSource();
             this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
 
@@ -28,15 +31,15 @@ namespace DCL.Quests
             questLogComponentView.OnJumpIn += (coords) => OnJumpIn?.Invoke(coords);
         }
 
-        public async UniTaskVoid AddActiveQuest(QuestDetailsComponentModel activeQuest)
+        public async UniTaskVoid AddActiveQuest(QuestDetailsComponentModel activeQuest, CancellationToken ct = default)
         {
-            string creatorName = await GetUsername(activeQuest.questCreator, CancellationToken.None);
+            string creatorName = await GetUsername(activeQuest.questCreator, CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token);
             questLogComponentView.AddActiveQuest(activeQuest, creatorName);
         }
 
-        public async UniTaskVoid AddCompletedQuest(QuestDetailsComponentModel completedQuest)
+        public async UniTaskVoid AddCompletedQuest(QuestDetailsComponentModel completedQuest, CancellationToken ct = default)
         {
-            string creatorName = await GetUsername(completedQuest.questCreator, CancellationToken.None);
+            string creatorName = await GetUsername(completedQuest.questCreator, CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token);
             questLogComponentView.AddCompletedQuest(completedQuest, creatorName);
         }
 
@@ -59,6 +62,7 @@ namespace DCL.Quests
             return profile.userName.ToUpper();
         }
 
-        public void Dispose() { }
+        public void Dispose() =>
+            disposeCts?.SafeCancelAndDispose();
     }
 }

@@ -5,7 +5,10 @@ using Decentraland.Quests;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Threading;
+using DCL;
 using UnityEngine;
+using UnityEngine.Networking;
+using DCLServices.QuestsService;
 
 namespace DCLServices.QuestsService
 {
@@ -26,16 +29,23 @@ namespace DCLServices.QuestsService
         private readonly AsyncEnumerableWithEvent<QuestInstance> questUpdated = new ();
 
         public IReadOnlyDictionary<string, QuestInstance> QuestInstances => questInstances;
+        public IReadOnlyDictionary<string, object> QuestRewards { get; }
+
         internal readonly Dictionary<string, QuestInstance> questInstances = new ();
 
         internal readonly IClientQuestsService clientQuestsService;
+        internal readonly IQuestRewardsResolver questRewardsResolver;
+        private Service<IWebRequestController> webRequestController;
         internal readonly Dictionary<string, UniTaskCompletionSource<Quest>> definitionCache = new ();
+        internal readonly Dictionary<string, UniTaskCompletionSource<IReadOnlyList<QuestReward>>> rewardsCache = new ();
+
         internal readonly CancellationTokenSource disposeCts = new ();
         internal readonly UniTaskCompletionSource gettingInitialState = new ();
 
-        public QuestsService(IClientQuestsService clientQuestsService)
+        public QuestsService(IClientQuestsService clientQuestsService, IQuestRewardsResolver questRewardsResolver)
         {
             this.clientQuestsService = clientQuestsService;
+            this.questRewardsResolver = questRewardsResolver;
             Subscribe().Forget();
         }
 
@@ -142,6 +152,30 @@ namespace DCLServices.QuestsService
             }
 
             return definitionCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        public UniTask<IReadOnlyList<QuestReward>> GetQuestRewards(string questId, CancellationToken cancellationToken = default)
+        {
+            UniTaskCompletionSource<IReadOnlyList<QuestReward>> rewardsCompletionSource;
+
+            async UniTask<IReadOnlyList<QuestReward>> RetrieveTask()
+            {
+                IReadOnlyList<QuestReward> response = await questRewardsResolver.ResolveRewards(questId, cancellationToken);
+
+                if (rewardsCache.TryGetValue(questId, out rewardsCompletionSource))
+                    rewardsCache[questId].TrySetResult(response);
+
+                return response;
+            }
+
+            if (!rewardsCache.TryGetValue(questId, out rewardsCompletionSource))
+            {
+                rewardsCompletionSource = new UniTaskCompletionSource<IReadOnlyList<QuestReward>>();
+                rewardsCache[questId] = rewardsCompletionSource;
+                RetrieveTask().Forget();
+            }
+
+            return rewardsCompletionSource.Task.AttachExternalCancellation(cancellationToken);
         }
 
         public void Dispose()

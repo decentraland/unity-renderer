@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using Action = Decentraland.Quests.Action;
 using Task = Decentraland.Quests.Task;
 
@@ -39,11 +38,11 @@ namespace DCL.Quests
             IQuestTrackerComponentView questTrackerComponentView,
             IQuestCompletedComponentView questCompletedComponentView,
             IQuestStartedPopupComponentView questStartedPopupComponentView,
-            IQuestLogComponentView questLogComponentView,
             IUserProfileBridge userProfileBridge,
             IPlayerPrefs playerPrefs,
             DataStore dataStore,
-            ITeleportController teleportController)
+            ITeleportController teleportController,
+            QuestLogController questLogController)
         {
             this.questsService = questsService;
             this.questTrackerComponentView = questTrackerComponentView;
@@ -53,8 +52,7 @@ namespace DCL.Quests
             this.playerPrefs = playerPrefs;
             this.dataStore = dataStore;
             this.teleportController = teleportController;
-
-            questLogController = new QuestLogController(questLogComponentView, userProfileBridge);
+            this.questLogController = questLogController;
 
             disposeCts = new CancellationTokenSource();
             quests = new ();
@@ -209,16 +207,6 @@ namespace DCL.Quests
 
                 questLogController.AddCompletedQuest(quest).Forget();
             }
-        }
-
-        private async UniTask<UnityWebRequest> RequestRewards(string questId)
-        {
-            Debug.Log(questId);
-            UnityWebRequest result = await webRequestController.Ref.GetAsync($"https://quests.decentraland.zone/quests/{questId}/rewards");
-            Debug.Log(result.downloadHandler.text);
-            return result;
-
-            //IHotScenesController.PlacesAPIResponse placesAPIResponse = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
         }
 
         public void Dispose()

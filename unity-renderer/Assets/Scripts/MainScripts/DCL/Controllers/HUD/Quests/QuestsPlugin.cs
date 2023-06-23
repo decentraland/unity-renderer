@@ -38,7 +38,7 @@ public class QuestsPlugin : IPlugin
 
     private async UniTaskVoid InstantiateUIs(CancellationTokenSource cts)
     {
-        questService = new QuestsService(await GetClientQuestsService());
+        questService = new QuestsService(await GetClientQuestsService(), new QuestRewardsResolver());
         await UniTask.SwitchToMainThread(cts.Token);
 
         questTrackerComponentView = await resourceProvider.Instantiate<QuestTrackerComponentView>(QUEST_TRACKER_HUD, $"_{QUEST_TRACKER_HUD}", cts.Token);
@@ -54,11 +54,11 @@ public class QuestsPlugin : IPlugin
             questTrackerComponentView,
             questCompletedComponentView,
             questStartedPopupComponentView,
-            questLogComponentView,
             userProfileBridge,
             new DefaultPlayerPrefs(),
             DataStore.i,
-            Environment.i.world.teleportController);
+            Environment.i.world.teleportController,
+            new QuestLogController(questLogComponentView, userProfileBridge));
     }
 
     public async UniTask<ClientQuestsService> GetClientQuestsService()

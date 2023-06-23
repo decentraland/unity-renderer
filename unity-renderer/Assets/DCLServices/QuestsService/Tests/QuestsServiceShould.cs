@@ -35,7 +35,7 @@ namespace DCLServices.QuestsService.Tests
                            },
                        }));
 
-            questsService = new QuestsService(client);
+            questsService = new QuestsService(client, Substitute.For<IQuestRewardsResolver>());
 
             channel.Writer.TryWrite(new UserUpdate()
             {
