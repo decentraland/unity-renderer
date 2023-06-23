@@ -8,7 +8,9 @@ using ECSSystems.ECSEngineInfoSystem;
 using NSubstitute;
 using NUnit.Framework;
 using RPC.Context;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -48,9 +50,11 @@ namespace Tests
             sceneStateHandler.Dispose();
         }
 
-        [Test]
-        public void UpdateEngineInfoComponentCorrectly()
+        [UnityTest]
+        public IEnumerator UpdateEngineInfoComponentCorrectly()
         {
+            Assert.IsNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+
             sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
             Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
@@ -64,10 +68,13 @@ namespace Tests
                 ComponentID.ENGINE_INFO,
                 Arg.Is<PBEngineInfo>((componentModel) =>
                     componentModel.TickNumber == 1
-                    && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0)
+                    && componentModel.TotalRuntime >= 0
+                    && componentModel.FrameNumber == 0)
             );
             componentWriter.ClearReceivedCalls();
+
+            // Wait for the next frame
+            yield return null;
 
             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
             system.Update();
@@ -79,7 +86,7 @@ namespace Tests
                 Arg.Is<PBEngineInfo>((componentModel) =>
                     componentModel.TickNumber == 2
                     && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0)
+                    && componentModel.FrameNumber == 1)
             );
         }
     }
