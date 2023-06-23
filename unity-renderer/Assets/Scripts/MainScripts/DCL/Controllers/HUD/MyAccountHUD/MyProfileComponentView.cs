@@ -157,8 +157,10 @@ namespace DCL.MyAccount
             }
             else
             {
-                claimedNameDropdown.SelectOption(string.Empty, false);
-                claimedNameDropdown.SetTitle(string.Empty);
+                claimedNameDropdown.SelectOption(
+                    model.loadedClaimedNames.Count == 0 ? string.Empty : model.loadedClaimedNames[0],
+                    model.loadedClaimedNames.Count != 0);
+                claimedNameDropdown.SetTitle(model.loadedClaimedNames.Count == 0 ? string.Empty : model.loadedClaimedNames[0]);
             }
         }
 
