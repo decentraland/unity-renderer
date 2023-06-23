@@ -37,7 +37,7 @@ namespace Tests
             texturizableComponent = internalComponent.texturizableComponent;
 
             handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
-                Substitute.For<IInternalECSComponent<InternalRenderers>>());
+                internalComponent.renderersComponent);
 
             var keepEntityAliveComponent = new InternalECSComponent<IInternalComponent>(
                 0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
