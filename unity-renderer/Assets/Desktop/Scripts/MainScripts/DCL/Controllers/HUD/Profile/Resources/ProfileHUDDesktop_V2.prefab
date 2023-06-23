@@ -2067,7 +2067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
-  myAccountCardView: {fileID: 0}
+  myAccountCardView: {fileID: 5820957184762391409}
   mainRootLayout: {fileID: 6563585885374507901}
   loadingSpinner: {fileID: 5588771719188994011}
   copyToast: {fileID: 2200202084644440778}
@@ -2166,6 +2166,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5820957184762391409 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3277300894489606655, guid: 0f02993942607204bb37508b41ec4d98,
+    type: 3}
+  m_PrefabInstance: {fileID: 9057722315283518094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fed548e78fef46f0aef41ad7b8280a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5822874856817382712 stripped
