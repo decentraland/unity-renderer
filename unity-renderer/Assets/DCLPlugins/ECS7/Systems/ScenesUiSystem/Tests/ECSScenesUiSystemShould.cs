@@ -159,7 +159,7 @@ namespace Tests
 
             // add ui element to scene
             const int entityId = 111;
-            var model = new InternalUiContainer(0);
+            var model = new InternalUiContainer(entityId);
             model.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, model);
 
