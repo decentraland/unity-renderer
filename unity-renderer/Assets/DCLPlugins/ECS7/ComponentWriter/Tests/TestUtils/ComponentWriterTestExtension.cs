@@ -37,6 +37,36 @@ namespace TestUtils
             }
         }
 
+        public static void Append_Called<T>(
+            this DualKeyValueSet<long, int, WriteData> msgs,
+            long expectedEntityId,
+            int expectedComponentId,
+            Func<T, bool> expresionComparer) where T: class
+        {
+            if (!AssertWriteMessage(msgs, expectedEntityId, expectedComponentId, CrdtMessageType.APPEND_COMPONENT, expresionComparer))
+            {
+                throw new Exception($"Expected to receive a call, but a no call was received");
+            }
+        }
+
+        public static void Append_NotCalled(
+            this DualKeyValueSet<long, int, WriteData> msgs,
+            long expectedEntityId,
+            int expectedComponentId)
+        {
+            var pairs = msgs.Pairs;
+
+            for (int i = 0; i < pairs.Count; i++)
+            {
+                if (pairs[i].key2 == expectedComponentId
+                    && pairs[i].key1 == expectedEntityId
+                    && pairs[i].value.MessageType == CrdtMessageType.APPEND_COMPONENT)
+                {
+                    throw new Exception($"Expected not to receive a call, but a call was received");
+                }
+            }
+        }
+
         public static void Remove_Called(
             this DualKeyValueSet<long, int, WriteData> msgs,
             long expectedEntityId,
