@@ -1,0 +1,22 @@
+{
+  "name": "DCL.ComponentWriter.TestUtils",
+  "references": [
+    "GUID:ac62e852826a4b36aeb22931dad73edb",
+    "GUID:acb0f5633d7c47aba96ee6b61c872d94",
+    "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+    "GUID:1e10040ab6604cbe8ad0921047d49e65"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Google.Protobuf.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

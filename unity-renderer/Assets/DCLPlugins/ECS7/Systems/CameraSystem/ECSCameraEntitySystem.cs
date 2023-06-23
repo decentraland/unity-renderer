@@ -9,7 +9,6 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 namespace ECSSystems.CameraSystem
