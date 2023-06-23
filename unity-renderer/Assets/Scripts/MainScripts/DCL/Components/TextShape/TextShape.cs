@@ -231,41 +231,27 @@ namespace DCL.Components
             vTextAlign = vTextAlign.ToLower();
             hTextAlign = hTextAlign.ToLower();
 
-            switch (vTextAlign)
-            {
-                case "top":
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.TopLeft;
-                        case "right":
-                            return TextAlignmentOptions.TopRight;
-                        default:
-                            return TextAlignmentOptions.Top;
-                    }
-
-                case "bottom":
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.BottomLeft;
-                        case "right":
-                            return TextAlignmentOptions.BottomRight;
-                        default:
-                            return TextAlignmentOptions.Bottom;
-                    }
-
-                default: // center
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.Left;
-                        case "right":
-                            return TextAlignmentOptions.Right;
-                        default:
-                            return TextAlignmentOptions.Center;
-                    }
-            }
+            return vTextAlign switch
+                   {
+                       "top" => hTextAlign switch
+                                {
+                                    "left" => TextAlignmentOptions.TopLeft,
+                                    "right" => TextAlignmentOptions.TopRight,
+                                    _ => TextAlignmentOptions.Top
+                                },
+                       "bottom" => hTextAlign switch
+                                   {
+                                       "left" => TextAlignmentOptions.BottomLeft,
+                                       "right" => TextAlignmentOptions.BottomRight,
+                                       _ => TextAlignmentOptions.Bottom
+                                   },
+                       _ => hTextAlign switch
+                            {
+                                "left" => TextAlignmentOptions.Left,
+                                "right" => TextAlignmentOptions.Right,
+                                _ => TextAlignmentOptions.Center
+                            }
+                   };
         }
 
         private void PrepareRectTransform()

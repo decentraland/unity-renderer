@@ -253,7 +253,10 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         {
                             if (msgPayload is Protocol.EntityComponentDestroy payload)
+                            {
                                 scene.componentsManagerLegacy.EntityComponentRemove(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
+                            }
+
                             break;
                         }
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:

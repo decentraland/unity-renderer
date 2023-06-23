@@ -95,7 +95,6 @@ namespace DCL
 #endif
         }
 
-
         ProfilerMarker m_AddPool = new ("VV.Factory.AddPool");
 
         private void EnsurePoolForItem(Item item)

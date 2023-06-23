@@ -81,7 +81,7 @@ namespace DCL.Components
 
             entity.OnRemoved -= OnEntityRemoved;
 
-            System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
+            System.Type thisType = overridenAttachedType ?? GetType();
             scene.componentsManagerLegacy.RemoveSharedComponent(entity, thisType, false);
 
             attachedEntities.Remove(entity);

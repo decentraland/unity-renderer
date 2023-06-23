@@ -8,6 +8,7 @@ using DCL.Models;
 using DCL.Rendering;
 using UnityEngine;
 using Decentraland.Sdk.Ecs6;
+using Unity.Profiling;
 
 namespace DCL
 {
@@ -301,13 +302,10 @@ namespace DCL
                     if (iterator.Current.Value is ICleanable cleanableComponent)
                         cleanableComponent.Cleanup();
 
-                    if (!(iterator.Current.Value is IPoolableObjectContainer poolableContainer))
+                    if (iterator.Current.Value is not IPoolableObjectContainer poolableContainer)
                         continue;
 
-                    if (poolableContainer.poolableObject == null)
-                        continue;
-
-                    poolableContainer.poolableObject.Release();
+                    poolableContainer.poolableObject?.Release();
                 }
             }
             entitiesComponents.Remove(entity.entityId);
@@ -526,12 +524,18 @@ namespace DCL
             return disposableComponent;
         }
 
+        ProfilerMarker removeComponentMarker = new ProfilerMarker("VV.EntityComponentRemove");
+
         public void EntityComponentRemove(long entityId, string componentName)
         {
+            Debug.Log("ECSManager - EntityComponentRemove");
+
+            removeComponentMarker.Begin(componentName);
             IDCLEntity entity = scene.GetEntityById(entityId);
 
             if (entity == null)
             {
+                removeComponentMarker.End();
                 return;
             }
 
@@ -540,18 +544,22 @@ namespace DCL
                 case "shape":
                     if (entity.meshesInfo.currentShape is BaseShape baseShape)
                     {
+                        Debug.Log("Removing shape component");
                         baseShape.DetachFrom(entity);
                     }
-
+                    removeComponentMarker.End();
                     return;
 
                 case ComponentNameLiterals.OnClick:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component))
                         {
+                            Debug.Log("Removing UUID_ON_CLICK component");
+
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_CLICK);
                         }
+                        removeComponentMarker.End();
 
                         return;
                     }
@@ -559,55 +567,76 @@ namespace DCL
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component))
                         {
+                            Debug.Log("Removing UUID_ON_DOWN component");
+
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_DOWN);
                         }
-                    }
+                    }                    removeComponentMarker.End();
+
                     return;
                 case ComponentNameLiterals.OnPointerUp:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component))
                         {
+                            Debug.Log("Removing UUID_ON_UP component");
+
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_UP);
                         }
-                    }
+                    }                    removeComponentMarker.End();
+
                     return;
                 case ComponentNameLiterals.OnPointerHoverEnter:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER, out IEntityComponent component))
                         {
+                            Debug.Log("Removing UUID_ON_HOVER_ENTER component");
+
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_ENTER);
                         }
-                    }
+                    }                    removeComponentMarker.End();
+
                     return;
                 case ComponentNameLiterals.OnPointerHoverExit:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT, out IEntityComponent component))
                         {
+                            Debug.Log("Removing UUID_ON_HOVER_EXIT component");
+
                             Utils.SafeDestroy(component.GetTransform().gameObject);
                             RemoveComponent(entity, CLASS_ID_COMPONENT.UUID_ON_HOVER_EXIT);
                         }
-                    }
+                    }                    removeComponentMarker.End();
+
                     return;
                 case "transform":
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
                         {
+                            Debug.Log("Removing transform (AVATAR_ATTACH) component");
+
                             component.Cleanup();
                             RemoveComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH);
                         }
-                    }
+                    }                    removeComponentMarker.End();
+
                     return;
 
                 default:
                     {
                         IEntityComponent component = GetComponentsDictionary(entity).FirstOrDefault(kp => kp.Value.componentName == componentName).Value;
+
                         if (component == null)
+                        {
+                            removeComponentMarker.End();
                             break;
+                        }
 
                         RemoveComponent(entity, (CLASS_ID_COMPONENT)component.GetClassId());
+
+                        Debug.Log($"Removing default {(CLASS_ID_COMPONENT)component.GetClassId()} component");
 
                         if (component is ICleanable cleanableComponent)
                             cleanableComponent.Cleanup();
@@ -617,6 +646,8 @@ namespace DCL
                         {
                             if (poolableContainer.poolableObject != null)
                             {
+                                Debug.Log($"And it is poolable");
+
                                 poolableContainer.poolableObject.Release();
                                 released = true;
                             }
@@ -625,6 +656,8 @@ namespace DCL
                         {
                             Utils.SafeDestroy(component.GetTransform()?.gameObject);
                         }
+
+                        removeComponentMarker.End();
                         break;
                     }
             }

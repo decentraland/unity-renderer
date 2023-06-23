@@ -92,8 +92,9 @@ namespace DCL.Components
 
         protected override string referencesContainerPrefabName => "UIText";
 
-        public UIText()
+        public UIText(UIShapePool pool) : base(pool)
         {
+            this.pool = pool;
             model = new Model();
         }
 
@@ -118,6 +119,7 @@ namespace DCL.Components
             ApplyModelChanges(referencesContainer.text, model);
             if (shouldMarkDirty) MarkLayoutDirty();
         }
+
         private bool ShouldMarkDirty()
         {
             TextMeshProUGUI text = referencesContainer.text;
@@ -163,14 +165,6 @@ namespace DCL.Components
 
             referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
-        }
-
-        public override void Dispose()
-        {
-            if (referencesContainer != null)
-                Utils.SafeDestroy(referencesContainer.gameObject);
-
-            base.Dispose();
         }
 
         private static void ApplyModelChanges(TMP_Text text, Model model)

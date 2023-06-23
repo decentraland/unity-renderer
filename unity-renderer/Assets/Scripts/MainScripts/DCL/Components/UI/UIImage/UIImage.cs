@@ -69,8 +69,9 @@ namespace DCL.Components
         private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();
         private bool isDisposed;
 
-        public UIImage()
+        public UIImage(UIShapePool pool) : base(pool)
         {
+            this.pool = pool;
             model = new Model();
         }
 
@@ -170,11 +171,7 @@ namespace DCL.Components
             dclTexture?.DetachFrom(this);
 
             if (referencesContainer != null)
-            {
                 referencesContainer.image.texture = null;
-                Utils.SafeDestroy(referencesContainer.gameObject);
-                referencesContainer = null;
-            }
 
             base.Dispose();
         }

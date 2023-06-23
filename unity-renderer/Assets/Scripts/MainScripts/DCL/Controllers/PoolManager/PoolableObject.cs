@@ -56,14 +56,6 @@ namespace DCL
 
         public void Release()
         {
-            if (this == null)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning("Release == null??! This shouldn't happen");
-#endif
-                return;
-            }
-
             if (pool != null)
             {
                 pool.Release(this);
