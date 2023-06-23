@@ -122,7 +122,9 @@ namespace DCL.MyAccount
 
                 if (names.names is { Count: > 0 })
                 {
-                    optionsToLoad.AddRange(names.names.Select(x => x.Name));
+                    optionsToLoad.AddRange(names.names
+                                                .OrderBy(x => x.Name)
+                                                .Select(x => x.Name));
                     view.SetClaimedNameDropdownOptions(optionsToLoad);
                     loadedNames.AddRange(optionsToLoad);
                 }
