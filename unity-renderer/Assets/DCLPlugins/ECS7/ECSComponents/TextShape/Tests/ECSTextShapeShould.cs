@@ -1,6 +1,5 @@
 ﻿using DCL;
 using DCL.Controllers;
-using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -34,10 +33,7 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(111);
 
-            var componentsFactory = new ECSComponentsFactory();
-            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-            var executors = new Dictionary<int, ICRDTExecutor>();
-            renderersInternalComponent = (new InternalECSComponents(componentsManager, componentsFactory, executors)).renderersComponent;
+            renderersInternalComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
             ECSComponentData<InternalRenderers> internalCompData = null;
             renderersInternalComponent.GetFor(scene, entity).Returns(info => internalCompData);
 
@@ -68,6 +64,7 @@ namespace Tests
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
+            Environment.Dispose();
         }
 
         [Test]
