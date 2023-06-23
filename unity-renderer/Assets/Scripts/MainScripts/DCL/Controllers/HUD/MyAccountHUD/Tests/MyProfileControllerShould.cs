@@ -145,9 +145,9 @@ namespace DCL.MyAccount
                                                                          && l.Count == givenOwnedNames.Count));
 
             view.Received(1).SetClaimedNameMode(true);
-            view.Received(1).SetClaimedModeAsInput(false);
+            view.Received(1).SetClaimedNameModeAsInput(false);
             view.Received(1).SetCurrentName(OWNED_NAME_1, "");
-            view.Received(1).SetClaimBannerActive(false);
+            view.Received(1).SetClaimNameBannerActive(false);
         }
 
         [Test]
@@ -158,9 +158,9 @@ namespace DCL.MyAccount
             view.Received(1).SetClaimedNameDropdownOptions(Arg.Is<List<string>>(l => l.Count == 0));
 
             view.Received(1).SetClaimedNameMode(false);
-            view.Received(1).SetClaimedModeAsInput(true);
+            view.Received(1).SetClaimedNameModeAsInput(true);
             view.Received(1).SetCurrentName(NOT_OWNED_NAME_PREFIX, NOT_OWNED_NAME_SUFFIX);
-            view.Received(1).SetClaimBannerActive(true);
+            view.Received(1).SetClaimNameBannerActive(true);
         }
 
         [Test]

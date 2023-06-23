@@ -1386,10 +1386,9 @@ namespace DCL.Interface
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
-
-            var payload = new SaveAvatarPayload()
+            var payload = new SaveAvatarPayload
             {
-                avatar = avatar.ToAvatarModelDto(),
+                avatar = AvatarModelDTO.FromAvatarModel(avatar),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow

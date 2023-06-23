@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 
-[System.Serializable]
+[Serializable]
 public class UserProfileModelDTO
 {
     public string userId;
@@ -14,7 +15,7 @@ public class UserProfileModelDTO
     public ulong updated_at;
     public int version;
     public AvatarModelDTO avatar;
-    public UserProfileModel.Snapshots snapshots = new UserProfileModel.Snapshots();
+    public UserProfileModel.Snapshots snapshots = new ();
 
     public bool hasConnectedWeb3 = true;
 
@@ -24,6 +25,18 @@ public class UserProfileModelDTO
     public int tutorialStep;
     public bool hasClaimedName = false;
     public List<UserProfileModel.Link> links;
+
+    public string country;
+    public string employmentStatus;
+    public string gender;
+    public string pronouns;
+    public string relationshipStatus;
+    public string sexualOrientation;
+    public string language;
+    public string profession;
+    public long birthdate;
+    public string realName;
+    public string hobbies;
 
     public UserProfileModel ToUserProfileModel()
     {
@@ -48,6 +61,17 @@ public class UserProfileModelDTO
                 tutorialStep = this.tutorialStep,
                 hasClaimedName = this.hasClaimedName,
                 links = this.links,
+                country = this.country,
+                employmentStatus = this.employmentStatus,
+                gender = this.gender,
+                pronouns = this.pronouns,
+                relationshipStatus = this.relationshipStatus,
+                sexualOrientation = this.sexualOrientation,
+                language = this.language,
+                profession = this.profession,
+                birthdate = DateTimeOffset.FromUnixTimeSeconds(this.birthdate).DateTime,
+                realName = this.realName,
+                hobbies = this.hobbies,
             };
 
         return userProfileModel;

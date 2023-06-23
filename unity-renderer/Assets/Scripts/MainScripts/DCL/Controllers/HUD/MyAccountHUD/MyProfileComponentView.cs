@@ -81,7 +81,7 @@ namespace DCL.MyAccount
             };
             claimNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
             claimedNameGoToNonClaimedNameButton.onClick.AddListener(() => OnGoFromClaimedToNonClaimNameClicked?.Invoke());
-            claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedModeAsInput(false));
+            claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedNameModeAsInput(false));
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
 
             aboutInputText.onValueChanged.AddListener(newDesc => UpdateAboutCharLimit(newDesc.Length, aboutInputText.characterLimit));
@@ -111,8 +111,8 @@ namespace DCL.MyAccount
         {
             SetClaimedNameMode(model.IsClaimedMode);
             SetCurrentName(model.MainName, model.NonClaimedHashtag);
-            SetClaimBannerActive(model.ShowClaimBanner);
-            SetClaimedModeAsInput(model.ShowInputForClaimedMode);
+            SetClaimNameBannerActive(model.ShowClaimBanner);
+            SetClaimedNameModeAsInput(model.ShowInputForClaimedMode);
             SetClaimedNameDropdownOptions(model.loadedClaimedNames);
             SetAboutDescription(model.AboutDescription);
         }
@@ -141,13 +141,13 @@ namespace DCL.MyAccount
             nonClaimedNameInputField.text = newName;
         }
 
-        public void SetClaimBannerActive(bool isActive)
+        public void SetClaimNameBannerActive(bool isActive)
         {
             model.ShowClaimBanner = isActive;
             claimNameBanner.SetActive(!model.IsClaimedMode && isActive);
         }
 
-        public void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false)
+        public void SetClaimedNameModeAsInput(bool isInput, bool cleanInputField = false)
         {
             model.ShowInputForClaimedMode = isInput;
             claimedNameInputContainer.SetActive(isInput);
@@ -251,6 +251,14 @@ namespace DCL.MyAccount
             linksCanvasGroup.alpha = isEnabled ? 1f : DISABLED_SECTION_ALPHA;
             linksCanvasGroup.interactable = isEnabled;
             linksCanvasGroup.blocksRaycasts = isEnabled;
+        }
+
+        public void SetAdditionalInfoOptions(AdditionalInfoOptionsModel model)
+        {
+        }
+
+        public void SetAdditionalInfoValues(Dictionary<string, string> values)
+        {
         }
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>

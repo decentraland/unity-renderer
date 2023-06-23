@@ -1,6 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public interface IUserProfileBridge
@@ -8,6 +10,9 @@ public interface IUserProfileBridge
     UniTask<UserProfile> SaveVerifiedName(string name, CancellationToken cancellationToken);
     UniTask<UserProfile> SaveUnverifiedName(string name, CancellationToken cancellationToken);
     UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken);
+    UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
+        string sexualOrientation, string language, string profession, DateTime? birthDate,
+        string realName, string hobbies, CancellationToken cancellationToken);
     void RequestFullUserProfile(string userId);
     UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default);
     UserProfile GetOwn();

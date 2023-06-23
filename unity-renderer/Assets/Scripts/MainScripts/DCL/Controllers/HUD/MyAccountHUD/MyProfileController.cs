@@ -27,7 +27,8 @@ namespace DCL.MyAccount
         private CancellationTokenSource saveLinkCancellationToken = new ();
         private CancellationTokenSource saveNameCancellationToken = new ();
         private CancellationTokenSource saveDescriptionCancellationToken = new ();
-        private CancellationTokenSource cts;
+        private CancellationTokenSource additionalInfoCancellationToken = new ();
+        private CancellationTokenSource lifeTimeCancellationToken;
         private Regex nameRegex;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
@@ -59,15 +60,18 @@ namespace DCL.MyAccount
             view.OnAboutDescriptionSubmitted += OnAboutDescriptionSubmitted;
             view.OnLinkAdded += OnAddLinkRequested;
             view.OnLinkRemoved += OnRemoveLinkRequested;
+
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
+
+            bool isOwnUserInitialized = !string.IsNullOrEmpty(ownUserProfile.userId);
+
+            if (isOwnUserInitialized)
+                OnOwnUserProfileUpdated(ownUserProfile);
 
             kernelConfig.EnsureConfigInitialized()
                         .Then(config => OnKernelConfigChanged(config, null));
-            kernelConfig.OnChange += OnKernelConfigChanged;
 
-            userProfileBridge.GetOwn().OnUpdate += OnOwnUserProfileUpdate;
-            if (!string.IsNullOrEmpty(userProfileBridge.GetOwn().userId))
-                OnOwnUserProfileUpdate(userProfileBridge.GetOwn());
+            kernelConfig.OnChange += OnKernelConfigChanged;
         }
 
         public void Dispose()
@@ -82,24 +86,15 @@ namespace DCL.MyAccount
             view.OnLinkRemoved -= OnRemoveLinkRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
             kernelConfig.OnChange -= OnKernelConfigChanged;
-            userProfileBridge.GetOwn().OnUpdate -= OnOwnUserProfileUpdate;
 
             saveLinkCancellationToken.SafeCancelAndDispose();
             saveNameCancellationToken.SafeCancelAndDispose();
             saveDescriptionCancellationToken.SafeCancelAndDispose();
+            additionalInfoCancellationToken.SafeCancelAndDispose();
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
             nameRegex = new Regex(current.profiles.nameValidRegex);
-
-        private void OnOwnUserProfileUpdate(UserProfile userProfile)
-        {
-            if (userProfile == null)
-                return;
-
-            view.SetAboutEnabled(!userProfile.isGuest);
-            view.SetLinksEnabled(!userProfile.isGuest);
-        }
 
         private void OnMyAccountSectionVisibleChanged(bool isVisible, bool _)
         {
@@ -111,21 +106,23 @@ namespace DCL.MyAccount
 
         private void OpenSection()
         {
-            cts = cts.SafeRestart();
+            lifeTimeCancellationToken = lifeTimeCancellationToken.SafeRestart();
             view.SetLoadingActive(true);
 
-            LoadOwnedNamesAsync(cts.Token)
+            LoadAndShowOwnedNamesAsync(lifeTimeCancellationToken.Token)
                .ContinueWith(() => view.SetLoadingActive(false))
                .Forget();
 
-            LoadAboutDescription();
+            ShowAboutDescription(ownUserProfile);
             ShowLinks(ownUserProfile);
+            ShowAdditionalInfoOptions(ownUserProfile);
+            ShowAdditionalInfoValues(ownUserProfile);
         }
 
         private void CloseSection() =>
-            cts.SafeCancelAndDispose();
+            lifeTimeCancellationToken.SafeCancelAndDispose();
 
-        private async UniTask LoadOwnedNamesAsync(CancellationToken ct)
+        private async UniTask LoadAndShowOwnedNamesAsync(CancellationToken ct)
         {
             try
             {
@@ -145,6 +142,7 @@ namespace DCL.MyAccount
                     optionsToLoad.AddRange(names.names
                                                 .OrderBy(x => x.Name)
                                                 .Select(x => x.Name));
+
                     view.SetClaimedNameDropdownOptions(optionsToLoad);
                     loadedNames.AddRange(optionsToLoad);
                 }
@@ -159,9 +157,9 @@ namespace DCL.MyAccount
         private void RefreshNamesSectionStatus()
         {
             view.SetClaimedNameMode(loadedNames.Count > 0);
-            view.SetClaimedModeAsInput(!ownUserProfile.hasClaimedName);
+            view.SetClaimedNameModeAsInput(!ownUserProfile.hasClaimedName);
             view.SetCurrentName(ownUserMainName, ownUserNonClaimedHashtag);
-            view.SetClaimBannerActive(loadedNames.Count == 0);
+            view.SetClaimNameBannerActive(loadedNames.Count == 0);
         }
 
         private void OnNameEdited(string newName)
@@ -218,8 +216,11 @@ namespace DCL.MyAccount
             SaveDescriptionAsync(newDesc, saveDescriptionCancellationToken.Token).Forget();
         }
 
-        private void LoadAboutDescription() =>
-            view.SetAboutDescription(ownUserProfile.description);
+        private void ShowAboutDescription(UserProfile userProfile)
+        {
+            view.SetAboutDescription(userProfile.description);
+            view.SetAboutEnabled(!userProfile.isGuest);
+        }
 
         private bool IsValidUserName(string newName) =>
             nameRegex == null || nameRegex.IsMatch(newName);
@@ -230,8 +231,9 @@ namespace DCL.MyAccount
                 return;
 
             RefreshNamesSectionStatus();
-            LoadAboutDescription();
+            ShowAboutDescription(userProfile);
             ShowLinks(userProfile);
+            ShowAdditionalInfoValues(userProfile);
         }
 
         private void ShowLinks(UserProfile userProfile)
@@ -240,10 +242,11 @@ namespace DCL.MyAccount
                           ?? new List<(string title, string url)>());
 
             view.EnableOrDisableAddLinksOption(userProfile.Links == null || userProfile.Links?.Count < 5);
+            view.SetLinksEnabled(!userProfile.isGuest);
         }
 
         private void GoFromClaimedToNonClaimName() =>
-            view.SetClaimedModeAsInput(true, ownUserProfile.hasClaimedName);
+            view.SetClaimedNameModeAsInput(true, ownUserProfile.hasClaimedName);
 
         private void OnClaimNameRequested() =>
             browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);
@@ -269,7 +272,7 @@ namespace DCL.MyAccount
 
             async UniTaskVoid AddAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
             {
-                List<UserProfileModel.Link> links = new ((IEnumerable<UserProfileModel.Link>) ownUserProfile.Links
+                List<UserProfileModel.Link> links = new ((IEnumerable<UserProfileModel.Link>)ownUserProfile.Links
                                                          ?? Array.Empty<UserProfileModel.Link>())
                 {
                     new UserProfileModel.Link(title, url),
@@ -277,9 +280,8 @@ namespace DCL.MyAccount
 
                 try
                 {
-                    UserProfile profile = await userProfileBridge.SaveLinks(links, cancellationToken);
+                    await userProfileBridge.SaveLinks(links, cancellationToken);
 
-                    ShowLinks(profile);
                     view.ClearLinkInput();
                     myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 }
@@ -311,6 +313,185 @@ namespace DCL.MyAccount
 
             saveLinkCancellationToken = saveLinkCancellationToken.SafeRestart();
             RemoveAndSaveLinkAsync(obj.title, obj.url, saveLinkCancellationToken.Token).Forget();
+        }
+
+        private void ShowAdditionalInfoOptions(UserProfile userProfile)
+        {
+            List<AdditionalInfoOptionsModel.Option> options = new ();
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Country",
+                OnValueSubmitted = country =>
+                    SaveAdditionalInfo(country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(null, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Gender",
+                OnValueSubmitted = gender =>
+                    SaveAdditionalInfo(userProfile.Country, gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, null, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Pronouns",
+                OnValueSubmitted = pronouns =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, null, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Relationship Status",
+                OnValueSubmitted = relationshipStatus =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, relationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, null,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Sexual Orientation",
+                OnValueSubmitted = sexualOrientation =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        sexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        null, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Language",
+                OnValueSubmitted = language =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, null, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Profession",
+                OnValueSubmitted = profession =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, null,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Birth Date",
+                OnValueSubmitted = birthDate =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        DateTime.Parse(birthDate), userProfile.RealName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        null, userProfile.RealName, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Real Name",
+                OnValueSubmitted = realName =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, realName, userProfile.Hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, null, userProfile.Hobbies),
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Hobbies",
+                OnValueSubmitted = hobbies =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, hobbies),
+                OnRemoved = () =>
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, null),
+            });
+
+            view.SetAdditionalInfoOptions(new AdditionalInfoOptionsModel
+            {
+                Options = options,
+            });
+        }
+
+        private void SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
+            string sexualOrientation, string language, string profession, DateTime? birthDate,
+            string realName, string hobbies)
+        {
+            async UniTaskVoid SaveAdditionalInfoAsync(string country, string gender, string pronouns, string relationshipStatus,
+                string sexualOrientation, string language, string profession, DateTime? birthDate,
+                string realName, string hobbies, CancellationToken cancellationToken)
+            {
+                await userProfileBridge.SaveAdditionalInfo(country, gender, pronouns, relationshipStatus,
+                    sexualOrientation, language, profession, birthDate, realName, hobbies, cancellationToken);
+            }
+
+            additionalInfoCancellationToken = additionalInfoCancellationToken.SafeRestart();
+
+            SaveAdditionalInfoAsync(country, gender, pronouns, relationshipStatus,
+                    sexualOrientation, language, profession, birthDate,
+                    realName, hobbies, additionalInfoCancellationToken.Token)
+               .Forget();
+        }
+
+        private void ShowAdditionalInfoValues(UserProfile userProfile)
+        {
+            Dictionary<string, string> values = new ()
+            {
+                { "Country", userProfile.Country },
+                { "Gender", userProfile.Gender },
+                { "Pronouns", userProfile.Pronouns },
+                { "Relationship Status", userProfile.RelationshipStatus },
+                { "Sexual Orientation", userProfile.SexualOrientation },
+                { "Language", userProfile.Language },
+                { "Profession", userProfile.Profession },
+                { "Birth Date", userProfile.BirthDate?.ToShortDateString() },
+                { "Real Name", userProfile.RealName },
+                { "Hobbies", userProfile.Hobbies },
+            };
+
+            view.SetAdditionalInfoValues(values);
         }
     }
 }

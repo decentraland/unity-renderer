@@ -15,8 +15,8 @@ namespace DCL.MyAccount
 
         void SetClaimedNameMode(bool isClaimed);
         void SetCurrentName(string newName, string nonClaimedHashtag);
-        void SetClaimBannerActive(bool isActive);
-        void SetClaimedModeAsInput(bool isInput, bool cleanInputField = false);
+        void SetClaimNameBannerActive(bool isActive);
+        void SetClaimedNameModeAsInput(bool isInput, bool cleanInputField = false);
         void SetClaimedNameDropdownOptions(List<string> claimedNamesList);
         void SetLoadingActive(bool isActive);
         void SetNonValidNameWarningActive(bool isActive);
@@ -26,5 +26,7 @@ namespace DCL.MyAccount
         void ClearLinkInput();
         void EnableOrDisableAddLinksOption(bool enabled);
         void SetLinksEnabled(bool isEnabled);
+        void SetAdditionalInfoOptions(AdditionalInfoOptionsModel model);
+        void SetAdditionalInfoValues(Dictionary<string,string> values);
     }
 }

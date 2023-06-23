@@ -91,6 +91,17 @@ public class UserProfileModel
     public int tutorialStep;
     public bool hasClaimedName;
     public List<Link> links;
+    public string country;
+    public string employmentStatus;
+    public string gender;
+    public string pronouns;
+    public string relationshipStatus;
+    public string sexualOrientation;
+    public string language;
+    public string profession;
+    public DateTime birthdate;
+    public string realName;
+    public string hobbies;
 
     public static UserProfileModel FallbackModel(string name, int id)
     {
