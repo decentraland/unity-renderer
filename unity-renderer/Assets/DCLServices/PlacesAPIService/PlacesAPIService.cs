@@ -3,6 +3,7 @@ using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
 using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace DCLServices.PlacesAPIService
 {
     public interface IPlacesAPIService: IService
     {
-        UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
+        UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct, bool renewCache = false);
 
@@ -34,6 +35,7 @@ namespace DCLServices.PlacesAPIService
         internal bool composedFavoritesDirty = true;
         internal readonly List<IHotScenesController.PlaceInfo> composedFavorites = new ();
         internal UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>> serverFavoritesCompletionSource = null;
+        internal DateTime serverFavoritesLastRetrieval = DateTime.MinValue;
         internal readonly Dictionary<string, bool> localFavorites = new ();
 
         internal readonly CancellationTokenSource disposeCts = new ();
@@ -44,7 +46,7 @@ namespace DCLServices.PlacesAPIService
         }
         public void Initialize() { }
 
-        public async UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
+        public async UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
         {
             var createNewPointer = false;
 
@@ -60,14 +62,17 @@ namespace DCLServices.PlacesAPIService
             {
                 activePlacesPagePointers[pageSize] = pagePointer = new LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>(
                     $"", // not needed, the consumer will compose the URL
-                    pageSize, ct, this);
+                    pageSize, disposeCts.Token, this, TimeSpan.FromSeconds(30));
             }
 
-            var pageResponse = await pagePointer.GetPageAsync(pageNumber, ct);
+            (IHotScenesController.PlacesAPIResponse response, bool _) = await pagePointer.GetPageAsync(pageNumber, ct);
 
-            foreach (IHotScenesController.PlaceInfo place in pageResponse.response.data) { CachePlace(place); }
+            foreach (IHotScenesController.PlaceInfo place in response.data)
+            {
+                CachePlace(place);
+            }
 
-            return pageResponse.response.data;
+            return (response.data, response.total);
         }
 
         public async UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct, bool renewCache = false)
@@ -96,6 +101,8 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false)
         {
+            const int CACHE_EXPIRATION = 30; // Seconds
+
             // We need to pass the source to avoid conflicts with parallel calls forcing renewCache
             async UniTask RetrieveFavorites(UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>> source)
             {
@@ -109,8 +116,9 @@ namespace DCLServices.PlacesAPIService
                 source.TrySetResult(favorites);
             }
 
-            if (serverFavoritesCompletionSource == null || renewCache)
+            if (serverFavoritesCompletionSource == null || renewCache || (serverFavoritesLastRetrieval - DateTime.Now) > TimeSpan.FromSeconds(CACHE_EXPIRATION))
             {
+                serverFavoritesLastRetrieval = DateTime.Now;
                 serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
                 RetrieveFavorites(serverFavoritesCompletionSource).Forget();
             }

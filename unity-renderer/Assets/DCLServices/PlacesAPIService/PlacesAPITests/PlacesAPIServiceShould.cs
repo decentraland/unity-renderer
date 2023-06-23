@@ -4,6 +4,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -48,10 +49,10 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
 
             // Assert
             client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
-            Assert.AreEqual(pageSize, result.Count);
+            Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
-                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result[i]);
+                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result.places[i]);
             }
         }
 
@@ -104,7 +105,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Arrange
             var wholeCatalog = placesCatalog.Values.ToList();
             var pagePointer = new LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>("/", 4, default, service);
-            pagePointer.cachedPages.Add(pageNumber, new IHotScenesController.PlacesAPIResponse()
+            pagePointer.cachedPages.Add(pageNumber, (new IHotScenesController.PlacesAPIResponse()
             {
                 pageNum = pageNumber,
                 pageSize = pageSize,
@@ -112,7 +113,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 total = pageSize,
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
-            });
+            }, DateTime.Now));
             service.activePlacesPagePointers.Add(pageSize, pagePointer);
 
             // Act
@@ -120,10 +121,10 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
 
             // Assert
             client.DidNotReceiveWithAnyArgs().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
-            Assert.AreEqual(pageSize, result.Count);
+            Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
-                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result[i]);
+                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result.places[i]);
             }
         }
 
@@ -143,7 +144,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                        data = wholeCatalog.Skip(x.ArgAt<int>(0) * x.ArgAt<int>(1)).Take(x.ArgAt<int>(1)).ToList(),
                    }));
             var pagePointer = new LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>("/", 4, default, service);
-            pagePointer.cachedPages.Add(pageNumber, new IHotScenesController.PlacesAPIResponse()
+            pagePointer.cachedPages.Add(pageNumber, (new IHotScenesController.PlacesAPIResponse()
             {
                 pageNum = pageNumber,
                 pageSize = pageSize,
@@ -151,7 +152,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 total = pageSize,
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
-            });
+            }, DateTime.Now));
             service.activePlacesPagePointers.Add(pageSize, pagePointer);
 
             // Act
@@ -159,10 +160,10 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
 
             // Assert
             client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
-            Assert.AreEqual(pageSize, result.Count);
+            Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
-                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result[i]);
+                Assert.AreEqual(wholeCatalog[(pageNumber * pageSize) + i], result.places[i]);
             }
         }
 
@@ -335,6 +336,30 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.positions[0]]);
             Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.positions[1]]);
             Assert.AreEqual("newTest1", result[1].description);
+        }
+
+        [Test]
+        public async Task RetrieveFavoritesIntoMultipleCalls()
+        {
+            // Arrange
+            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
+            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
+            client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
+
+            // Act
+            (IReadOnlyList<IHotScenesController.PlaceInfo> firstCall, IReadOnlyList<IHotScenesController.PlaceInfo> secondCall) = await UniTask.WhenAll(service.GetFavorites(default), service.GetFavorites(default));
+
+            // Assert
+            Assert.AreEqual(place0,  firstCall[0]);
+            Assert.AreEqual(place0,  secondCall[0]);
+            Assert.AreEqual(place0, service.placesById[place0.id]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.positions[0]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.positions[1]]);
+            Assert.AreEqual(place1, firstCall[1]);
+            Assert.AreEqual(place1, secondCall[1]);
+            Assert.AreEqual(place1, service.placesById[place1.id]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.positions[0]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.positions[1]]);
         }
 
         private void PreparePlacesCatalog()

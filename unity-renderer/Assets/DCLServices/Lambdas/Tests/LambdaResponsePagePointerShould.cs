@@ -71,13 +71,13 @@ namespace DCLServices.Lambdas.Tests
         {
             MockSuccess();
             var r = await pointer.GetPageAsync(2, CancellationToken.None);
-            Assert.IsTrue(pointer.CachedPages.TryGetValue(2, out var page));
-            Assert.AreEqual(r.response, page);
+            Assert.IsTrue(pointer.CachedPages.TryGetValue(2, out var pageResult));
+            Assert.AreEqual(r.response, pageResult);
             Assert.IsTrue(r.success);
-            Assert.AreEqual(1, page.field1);
-            Assert.AreEqual("str", page.field2);
-            Assert.AreEqual(2, page.pageNum);
-            Assert.AreEqual(PAGE_SIZE, page.pageSize);
+            Assert.AreEqual(1, pageResult.page.field1);
+            Assert.AreEqual("str", pageResult.page.field2);
+            Assert.AreEqual(2, pageResult.page.pageNum);
+            Assert.AreEqual(PAGE_SIZE, pageResult.page.pageSize);
         }
 
         [Test]

@@ -1,3 +1,6 @@
+using DCL;
+using DCLServices.PlacesAPIService;
+
 /// <summary>
 /// Plugin feature that initialize the ExploreV2 Desktop feature.
 /// </summary>
@@ -12,7 +15,7 @@ public class ExploreV2FeatureDesktop : IPlugin
     }
 
     internal virtual IExploreV2MenuComponentController CreateController() =>
-        new ExploreV2MenuComponentControllerDesktop();
+        new ExploreV2MenuComponentControllerDesktop(Environment.i.serviceLocator.Get<IPlacesAPIService>());
 
     public void Dispose()
     {

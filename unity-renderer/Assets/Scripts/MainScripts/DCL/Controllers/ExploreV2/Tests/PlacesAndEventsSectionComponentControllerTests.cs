@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Social.Friends;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,7 +16,13 @@ public class PlacesAndEventsSectionComponentControllerTests
     {
         placesAndEventsSectionComponentView = Substitute.For<IPlacesAndEventsSectionComponentView>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesAndEventsSectionComponentController = new PlacesAndEventsSectionComponentController(placesAndEventsSectionComponentView, exploreV2Analytics, DataStore.i, Substitute.For<IUserProfileBridge>(), Substitute.For<IFriendsController>());
+        placesAndEventsSectionComponentController = new PlacesAndEventsSectionComponentController(
+            placesAndEventsSectionComponentView,
+            exploreV2Analytics,
+            DataStore.i,
+            Substitute.For<IUserProfileBridge>(),
+            Substitute.For<IFriendsController>()
+            , Substitute.For<IPlacesAPIService>());
     }
 
     [TearDown]

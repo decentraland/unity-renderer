@@ -29,7 +29,8 @@
         "GUID:9a1d7e67f710d724584ebbbd5614bcf1",
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:6afcac5154f98e846bbd9f27e454b57a",
-        "GUID:e7f9ac14a58e0b84e81407a90a1ba77a"
+        "GUID:e7f9ac14a58e0b84e81407a90a1ba77a",
+        "GUID:006c0e0a70294dbba8a4cbcfb77e1f7d"
     ],
     "includePlatforms": [
         "Editor",
