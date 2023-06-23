@@ -107,6 +107,12 @@ namespace DCL.Quests
         {
             emptyState.SetActive(false);
 
+            if (activeQuests.ContainsKey(activeQuest.questId))
+            {
+                questsPool.Release(activeQuests[activeQuest.questId]);
+                activeQuests.Remove(activeQuest.questId);
+            }
+
             activeQuests.TryAdd(activeQuest.questId, questsPool.Get());
 
             ActiveQuestComponentView activeQuestComponentView = activeQuests[activeQuest.questId];
