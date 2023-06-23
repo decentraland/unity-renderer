@@ -16,6 +16,7 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject loadingContainer;
 
         [Header("Names")]
+        [SerializeField] internal GameObject nameTypeSelectorContainer;
         [SerializeField] internal GameObject nonClaimedNameModeContainer;
         [SerializeField] internal TMP_InputField nonClaimedNameInputField;
         [SerializeField] internal GameObject claimNameBanner;
@@ -23,9 +24,13 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject claimedNameModeContainer;
         [SerializeField] internal DropdownComponentView claimedNameDropdown;
         [SerializeField] internal Button claimedNameGoToNonClaimedNameButton;
+        [SerializeField] internal TMP_Text claimedNameGoToNonClaimedNameButtonText;
+        [SerializeField] internal GameObject claimedNameGoToNonClaimedNameSelectionMark;
         [SerializeField] internal GameObject claimedNameInputContainer;
         [SerializeField] internal TMP_InputField claimedNameInputField;
         [SerializeField] internal Button claimedNameBackToClaimedNamesListButton;
+        [SerializeField] internal TMP_Text claimedNameBackToClaimedNamesListButtonText;
+        [SerializeField] internal GameObject claimedNameBackToClaimedNamesListSelectionMark;
         [SerializeField] internal Button claimedNameUniqueNameButton;
         [SerializeField] internal GameObject nameValidationsContainer;
         [SerializeField] internal TMP_Text nameCharCounter;
@@ -115,6 +120,7 @@ namespace DCL.MyAccount
         public void SetClaimedNameMode(bool isClaimed)
         {
             model.IsClaimedMode = isClaimed;
+            nameTypeSelectorContainer.SetActive(isClaimed);
             nonClaimedNameModeContainer.SetActive(!isClaimed);
             claimedNameModeContainer.SetActive(isClaimed);
             nameValidationsContainer.SetActive(!isClaimed || model.ShowInputForClaimedMode);
@@ -146,15 +152,22 @@ namespace DCL.MyAccount
             model.ShowInputForClaimedMode = isInput;
             claimedNameInputContainer.SetActive(isInput);
             claimedNameDropdown.gameObject.SetActive(!isInput);
-            claimedNameGoToNonClaimedNameButton.gameObject.SetActive(!isInput);
             nameValidationsContainer.SetActive(isInput);
             nameValidationsContainer.SetActive(!model.IsClaimedMode || isInput);
+
+            claimedNameGoToNonClaimedNameSelectionMark.SetActive(isInput);
+            claimedNameBackToClaimedNamesListSelectionMark.SetActive(!isInput);
+            claimedNameGoToNonClaimedNameButtonText.fontStyle = isInput ? FontStyles.Bold : FontStyles.Normal;
+            claimedNameBackToClaimedNamesListButtonText.fontStyle = isInput ? FontStyles.Normal : FontStyles.Bold;
 
             if (cleanInputField)
                 claimedNameInputField.text = string.Empty;
 
             if (isInput)
+            {
+                claimedNameInputField.Select();
                 return;
+            }
 
             if (model.loadedClaimedNames.Contains(model.MainName))
             {
