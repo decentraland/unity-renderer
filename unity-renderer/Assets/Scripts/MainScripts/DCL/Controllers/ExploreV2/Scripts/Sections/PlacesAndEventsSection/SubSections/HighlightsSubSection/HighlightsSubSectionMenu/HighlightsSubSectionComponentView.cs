@@ -21,13 +21,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     private const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     private const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
-    private Func<UniTask> setPlacesTask = null;
-    private Func<UniTask> setLiveEventsTask = null;
-    private Func<UniTask> setTrendingTask = null;
+    private Func<CancellationToken, UniTask> setPlacesTask = null;
+    private Func<CancellationToken, UniTask> setLiveEventsTask = null;
+    private Func<CancellationToken, UniTask> setTrendingTask = null;
     private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
     private readonly CancellationTokenSource disposeCts = new ();
-    private CancellationTokenSource setPlacesCts = new ();
-    private CancellationTokenSource updateVisualsCts = new ();
+    private CancellationTokenSource setPlacesCts;
+    private CancellationTokenSource updateVisualsCts;
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
@@ -110,6 +110,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         disposeCts?.SafeCancelAndDispose();
         setPlacesCts?.SafeCancelAndDispose();
+        updateVisualsCts?.SafeCancelAndDispose();
 
         trendingPlacesAndEvents.Dispose();
         featuredPlaces.Dispose();
@@ -228,7 +229,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
         setPlacesCts?.SafeCancelAndDispose();
         setPlacesCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
-        setPlacesTask = () => SetPlacesAsync(places, setPlacesCts.Token);
+        setPlacesTask = (ct) => SetPlacesAsync(places, CancellationTokenSource.CreateLinkedTokenSource(setPlacesCts.Token, ct).Token);
     }
 
     private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
@@ -259,7 +260,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         SetLiveAsLoading(false);
         liveEventsNoDataText.gameObject.SetActive(events.Count == 0);
 
-        setLiveEventsTask = () => SetLiveEventsAsync(events, liveEvents, liveEventCardsPool, disposeCts.Token);
+        setLiveEventsTask = (ct) => SetLiveEventsAsync(events, liveEvents, liveEventCardsPool, disposeCts.Token);
     }
 
     private async UniTask SetLiveEventsAsync(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool, CancellationToken cancellationToken)
@@ -286,7 +287,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         SetTrendingPlacesAndEventsAsLoading(false);
 
-        setTrendingTask = () => SetTrendingsAsync(places, events, disposeCts.Token);
+        setTrendingTask = (ct) => SetTrendingsAsync(places, events, CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token, ct).Token);
     }
 
     private async UniTask SetTrendingsAsync(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events, CancellationToken cancellationToken)
@@ -334,19 +335,19 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         {
             if (setPlacesTask != null)
             {
-                await setPlacesTask.Invoke();
+                await setPlacesTask.Invoke(ct);
                 setPlacesTask = null;
             }
 
             if (setLiveEventsTask != null)
             {
-                await setLiveEventsTask.Invoke();
+                await setLiveEventsTask.Invoke(ct);
                 setLiveEventsTask = null;
             }
 
             if(setTrendingTask != null)
             {
-                await setTrendingTask.Invoke();
+                await setTrendingTask.Invoke(ct);
                 setTrendingTask = null;
             }
 
