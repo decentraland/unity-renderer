@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
@@ -26,6 +27,7 @@ public class HighlightsSubSectionComponentControllerTests
     {
         highlightsSubSectionComponentView = Substitute.For<IHighlightsSubSectionComponentView>();
         placesAPIService = Substitute.For<IPlacesAPIService>();
+        placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<PlaceInfo> places, int total)>((new List<PlaceInfo>(), 0)));
         eventsAPIController = Substitute.For<IEventsAPIController>();
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
