@@ -1,87 +1,98 @@
-// using DCL.Controllers;
-// using DCL.CRDT;
-// using DCL.ECS7;
-// using DCL.ECSComponents;
-// using DCL.ECSRuntime;
-// using DCL.Models;
-// using ECSSystems.ECSEngineInfoSystem;
-// using NSubstitute;
-// using NUnit.Framework;
-// using RPC.Context;
-// using System.Collections.Generic;
-//
-// namespace Tests
-// {
-//     public class ECSEngineInfoSystemShould
-//     {
-//         private ECSEngineInfoSystem system;
-//         private IECSComponentWriter componentWriter;
-//         private ECS7TestUtilsScenesAndEntities testUtils;
-//         private ECS7TestScene scene;
-//         private InternalECSComponents internalComponents;
-//         private SceneStateHandler sceneStateHandler;
-//
-//         [SetUp]
-//         protected void SetUp()
-//         {
-//             var componentsFactory = new ECSComponentsFactory();
-//             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
-//             var executors = new Dictionary<int, ICRDTExecutor>();
-//             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-//             componentWriter = Substitute.For<IECSComponentWriter>();
-//             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
-//
-//             scene = testUtils.CreateScene(666);
-//
-//             sceneStateHandler = new SceneStateHandler(
-//                 Substitute.For<CRDTServiceContext>(),
-//                 new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
-//                 internalComponents.EngineInfo,
-//                 internalComponents.GltfContainerLoadingStateComponent);
-//             system = new ECSEngineInfoSystem(componentWriter, internalComponents.EngineInfo);
-//         }
-//
-//         [TearDown]
-//         protected void TearDown()
-//         {
-//             testUtils.Dispose();
-//             sceneStateHandler.Dispose();
-//         }
-//
-//         [Test]
-//         public void UpdateEngineInfoComponentCorrectly()
-//         {
-//             sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
-//
-//             Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
-//
-//             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-//             system.Update();
-//
-//             componentWriter.Received(1).PutComponent(
-//                 Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
-//                 SpecialEntityId.SCENE_ROOT_ENTITY,
-//                 ComponentID.ENGINE_INFO,
-//                 Arg.Is<PBEngineInfo>((componentModel) =>
-//                     componentModel.TickNumber == 1
-//                     && componentModel.TotalRuntime > 0
-//                     && componentModel.FrameNumber > 0)
-//             );
-//             componentWriter.ClearReceivedCalls();
-//
-//             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-//             system.Update();
-//
-//             componentWriter.Received(1).PutComponent(
-//                 Arg.Is<int>((sceneNumberParam) => sceneNumberParam == scene.sceneData.sceneNumber),
-//                 SpecialEntityId.SCENE_ROOT_ENTITY,
-//                 ComponentID.ENGINE_INFO,
-//                 Arg.Is<PBEngineInfo>((componentModel) =>
-//                     componentModel.TickNumber == 2
-//                     && componentModel.TotalRuntime > 0
-//                     && componentModel.FrameNumber > 0)
-//             );
-//         }
-//     }
-// }
+using DCL.Controllers;
+using DCL.CRDT;
+using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Models;
+using ECSSystems.ECSEngineInfoSystem;
+using NSubstitute;
+using NUnit.Framework;
+using RPC.Context;
+using System.Collections.Generic;
+using TestUtils;
+
+namespace Tests
+{
+    public class ECSEngineInfoSystemShould
+    {
+        private ECSEngineInfoSystem system;
+        private ECS7TestUtilsScenesAndEntities testUtils;
+        private ECS7TestScene scene;
+        private InternalECSComponents internalComponents;
+        private SceneStateHandler sceneStateHandler;
+        private WrappedComponentPool<IWrappedComponent<PBEngineInfo>> componentPool;
+        private DualKeyValueSet<long, int, WriteData> outgoingMessages;
+
+        [SetUp]
+        protected void SetUp()
+        {
+            var componentsFactory = new ECSComponentsFactory();
+            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
+
+            scene = testUtils.CreateScene(666);
+
+            sceneStateHandler = new SceneStateHandler(
+                Substitute.For<CRDTServiceContext>(),
+                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                internalComponents.EngineInfo,
+                internalComponents.GltfContainerLoadingStateComponent);
+
+            outgoingMessages = new DualKeyValueSet<long, int, WriteData>();
+
+            var componentsWriter = new Dictionary<int, ComponentWriter>()
+            {
+                { scene.sceneData.sceneNumber, new ComponentWriter(outgoingMessages) }
+            };
+
+            componentPool = new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(0, () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo()));
+
+            system = new ECSEngineInfoSystem(componentsWriter,componentPool, internalComponents.EngineInfo);
+        }
+
+        [TearDown]
+        protected void TearDown()
+        {
+            testUtils.Dispose();
+            sceneStateHandler.Dispose();
+        }
+
+        [Test]
+        public void UpdateEngineInfoComponentCorrectly()
+        {
+            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
+
+            Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            system.Update();
+
+            outgoingMessages.Put_Called<PBEngineInfo>(
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.ENGINE_INFO,
+                (componentModel) =>
+                    componentModel.TickNumber == 1
+                    && componentModel.TotalRuntime > 0
+                    && componentModel.FrameNumber > 0
+                );
+            outgoingMessages.Clear_Calls();
+
+            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            system.Update();
+
+            outgoingMessages.Put_Called<PBEngineInfo>(
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.ENGINE_INFO,
+                (componentModel) =>
+                    componentModel.TickNumber == 2
+                    && componentModel.TotalRuntime > 0
+                    && componentModel.FrameNumber > 0
+            );
+        }
+    }
+}
 
