@@ -87,7 +87,7 @@ namespace ECSSystems.UiCanvasInformationSystem
             componentModel.Height = Screen.height;
             componentModel.DevicePixelRatio = lastDevicePixelRatio;
 
-            writer.Put(SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.GLTF_CONTAINER_LOADING_STATE, componentPooled);
+            writer.Put(SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.UI_CANVAS_INFORMATION, componentPooled);
         }
 
         private void OnSceneAdded(IParcelScene scene)
