@@ -39,6 +39,9 @@ namespace RPC.Services
         private readonly MemoryStream getStateMemoryStream;
         private readonly BinaryWriter getStateBinaryWriter;
 
+        private readonly MemoryStream serializeComponentBuffer;
+        private readonly CodedOutputStream serializeComponentStream;
+
         private readonly CRDTSceneMessage reusableCrdtMessageResult = new CRDTSceneMessage();
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
@@ -58,6 +61,9 @@ namespace RPC.Services
 
             getStateMemoryStream = new MemoryStream();
             getStateBinaryWriter = new BinaryWriter(getStateMemoryStream);
+
+            serializeComponentBuffer = new MemoryStream();
+            serializeComponentStream = new CodedOutputStream(serializeComponentBuffer);
         }
 
         private void OnPortClose()
@@ -218,7 +224,7 @@ namespace RPC.Services
 
                 sendCrdtMemoryStream.SetLength(0);
 
-                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, true);
+                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, serializeComponentBuffer, serializeComponentStream, true);
 
                 reusableCrdtMessageResult.Payload = ByteString.CopyFrom(sendCrdtMemoryStream.ToArray());
 
@@ -258,7 +264,7 @@ namespace RPC.Services
             {
                 getStateMemoryStream.SetLength(0);
 
-                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, false);
+                SendSceneMessages(crdtContext, sceneNumber, sendCrdtBinaryWriter, serializeComponentBuffer, serializeComponentStream, false);
 
                 // serialize scene state
                 if (sceneState != null)
@@ -304,10 +310,12 @@ namespace RPC.Services
             return defaultSendBatchResult;
         }
 
-        private static readonly MemoryStream buffer = new MemoryStream();
-        private static readonly CodedOutputStream stream = new CodedOutputStream(buffer);
-
-        private static void SendSceneMessages(CRDTServiceContext crdtContext, int sceneNumber, BinaryWriter sendCrdtBinaryWriter, bool clearMessages)
+        private static void SendSceneMessages(CRDTServiceContext crdtContext,
+            int sceneNumber,
+            BinaryWriter sendCrdtBinaryWriter,
+            MemoryStream serializeComponentBuffer,
+            CodedOutputStream serializeComponentStream,
+            bool clearMessages)
         {
             if (!crdtContext.CrdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor executor))
                 return;
@@ -334,15 +342,15 @@ namespace RPC.Services
                     CrdtMessage crdtMessage;
 
                     if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT || msg.MessageType == CrdtMessageType.PUT_COMPONENT)
-                        msg.PooledWrappedComponent.WrappedComponentBase.SerializeTo(buffer, stream);
+                        msg.PooledWrappedComponent.WrappedComponentBase.SerializeTo(serializeComponentBuffer, serializeComponentStream);
 
                     if (msg.MessageType == CrdtMessageType.APPEND_COMPONENT)
                     {
-                        crdtMessage = crdtProtocol.CreateSetMessage(entityId, componentId, buffer.ToArray());
+                        crdtMessage = crdtProtocol.CreateSetMessage(entityId, componentId, serializeComponentBuffer.ToArray());
                     }
                     else if (msg.MessageType == CrdtMessageType.PUT_COMPONENT)
                     {
-                        crdtMessage = crdtProtocol.CreateLwwMessage(entityId, componentId, buffer.ToArray());
+                        crdtMessage = crdtProtocol.CreateLwwMessage(entityId, componentId, serializeComponentBuffer.ToArray());
                     }
                     else
                     {
