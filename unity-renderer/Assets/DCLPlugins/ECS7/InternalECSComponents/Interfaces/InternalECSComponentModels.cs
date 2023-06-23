@@ -186,8 +186,8 @@ namespace DCL.ECS7.InternalComponents
             this.dirty = false;
             this.components = new HashSet<int>();
             this.parentElement = null;
-            this.parentId = -1;
-            this.rightOf = -1;
+            this.parentId = 0;
+            this.rightOf = 0;
             this.shouldSort = false;
 
             this.rootElement = new VisualElement();
