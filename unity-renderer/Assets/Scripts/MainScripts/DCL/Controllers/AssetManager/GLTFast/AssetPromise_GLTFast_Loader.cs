@@ -26,7 +26,7 @@ namespace DCL
         private readonly CancellationTokenSource cancellationSource;
 
         private readonly IMaterialGenerator gltFastMaterialGenerator;
-        private readonly ConsoleLogger consoleLogger;
+        private readonly GltfastEditorLogger consoleLogger;
 
         private static IDeferAgent staticDeferAgent;
         private bool isLoading = false;
@@ -47,7 +47,7 @@ namespace DCL
             gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl, AssetPromiseKeeper_Texture.i);
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
-            consoleLogger = new ConsoleLogger();
+            consoleLogger = new GltfastEditorLogger();
         }
 
         private static string GetDirectoryName(string fullPath)
@@ -141,6 +141,50 @@ namespace DCL
 
         private bool FileToUrl(string fileName, out string fileHash) =>
             contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out fileHash);
+    }
+
+    public class GltfastEditorLogger : ICodeLogger
+    {
+        public LogCode LastErrorCode { get; private set; }
+
+        public void Error(LogCode code, params string[] messages)
+        {
+            LastErrorCode = code;
+            Debug.LogError(LogMessages.GetFullMessage(code, messages));
+        }
+
+        public void Warning(LogCode code, params string[] messages)
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning(LogMessages.GetFullMessage(code, messages));
+#endif
+        }
+
+        public void Info(LogCode code, params string[] messages)
+        {
+#if UNITY_EDITOR
+            Debug.Log(LogMessages.GetFullMessage(code, messages));
+#endif
+        }
+
+        public void Error(string message)
+        {
+            Debug.LogError(message);
+        }
+
+        public void Warning(string message)
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning(message);
+#endif
+        }
+
+        public void Info(string message)
+        {
+#if UNITY_EDITOR
+            Debug.Log(message);
+#endif
+        }
     }
 
     public class GltFastLoadException : Exception
