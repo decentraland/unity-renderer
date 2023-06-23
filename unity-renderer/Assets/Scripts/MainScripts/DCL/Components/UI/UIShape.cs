@@ -162,7 +162,7 @@ namespace DCL.Components
             referencesContainer = pool.TakeUIShape();// uiGameObject.GetComponent<T>();
 
             if (parentUIComponent != null)
-                referencesContainer.transform.parent = parentUIComponent?.childHookRectTransform;
+                referencesContainer.transform.SetParent(parentUIComponent?.childHookRectTransform, false);
 
             referencesContainer.rectTransform.SetToMaxStretch();
 
@@ -410,7 +410,10 @@ namespace DCL.Components
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
             if (referencesContainer != null)
+            {
                 pool.ReleaseUIShape(referencesContainer);
+                referencesContainer = null;
+            }
 
             screenSize.OnChange -= OnScreenResize;
 

@@ -119,12 +119,9 @@ namespace DCL.Components
         void InitializeCanvas()
         {
             if (VERBOSE)
-            {
                 Debug.Log("Started canvas initialization in " + id);
-            }
 
-            GameObject canvasGameObject = new GameObject("UIScreenSpace");
-            canvasGameObject.layer = LayerMask.NameToLayer("UI");
+            GameObject canvasGameObject = new GameObject("UIScreenSpace") { layer = LayerMask.NameToLayer("UI") };
             canvasGameObject.transform.SetParent(scene.GetSceneTransform());
             canvasGameObject.transform.ResetLocalTRS();
 
@@ -144,9 +141,7 @@ namespace DCL.Components
             canvas.sortingOrder = -1;
 
             if (scene.isPersistent && scene.sceneData.sceneNumber != EnvironmentSettings.AVATAR_GLOBAL_SCENE_NUMBER)
-            {
                 canvas.sortingOrder -= 1;
-            }
 
             // We create a middleman-gameobject to change the size of the parcel-devs accessible canvas, to have its bottom limit at the taskbar height, etc.
             GameObject resizedPanel = new GameObject("ResizeUIArea");

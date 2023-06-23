@@ -4,26 +4,17 @@ using DCL.Models;
 
 public class UIComponentsPlugin : IPlugin
 {
-    private UIShapePool inputTextPool = new ("UIInputText");
-    private UIShapePool fullScreenPool = new UIShapePool("");
-    private UIShapePool screenSpacePool = new UIShapePool("");
-    private UIShapePool containerRectPool = new ("UIContainerRect");
-    private UIShapePool scrollRectPool = new ("UIScrollRect");
-    private UIShapePool containerStackPool = new ( "UIContainerRect");
-    private UIShapePool imagePool = new ("UIImage");
-    private UIShapePool textPool = new ("UIText");
+    private readonly UIShapePool inputTextPool = new ("UIInputText");
+    private readonly UIShapePool fullScreenPool = new UIShapePool("");
+    private readonly UIShapePool screenSpacePool = new UIShapePool("");
+    private readonly UIShapePool containerRectPool = new ("UIContainerRect");
+    private readonly UIShapePool scrollRectPool = new ("UIScrollRect");
+    private readonly UIShapePool containerStackPool = new ( "UIContainerRect");
+    private readonly UIShapePool imagePool = new ("UIImage", 3);
+    private readonly UIShapePool textPool = new ("UIText", 3);
 
     public UIComponentsPlugin()
     {
-        inputTextPool = new ("UIInputText");
-         fullScreenPool = new UIShapePool("");
-         screenSpacePool = new UIShapePool("");
-         containerRectPool = new ("UIContainerRect");
-         scrollRectPool = new ("UIScrollRect");
-         containerStackPool = new ( "UIContainerRect");
-         imagePool = new ("UIImage");
-         textPool = new ("UIText");
-
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 
         // UI
