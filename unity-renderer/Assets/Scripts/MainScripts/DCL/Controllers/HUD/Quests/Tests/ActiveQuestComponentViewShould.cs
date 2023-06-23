@@ -70,8 +70,8 @@ namespace DCL.Quests
         {
             string questId = "asdasdads";
             string receivedQuestId = "";
-            activeQuestComponentView.SetQuestId(questId);
-            activeQuestComponentView.OnActiveQuestSelected += s => receivedQuestId = s;
+            activeQuestComponentView.SetQuestDetailsModel(new QuestDetailsComponentModel(){questId = questId});
+            activeQuestComponentView.OnActiveQuestSelected += s => receivedQuestId = s.questId;
             activeQuestComponentView.OnPointerClick(null);
 
             Assert.AreEqual(questId, receivedQuestId, "Even for selected quest was not invoked or was carrying the wrong quest id");
@@ -91,7 +91,7 @@ namespace DCL.Quests
             Assert.False(activeQuestComponentView.selectedOutline.activeInHierarchy, "selected outline was not correctly set");
             Assert.AreEqual(activeQuestComponentView.deselectedNameColor, activeQuestComponentView.questName.color, "Name color not correctly set");
             Assert.AreEqual(activeQuestComponentView.deselectedCreatorColor, activeQuestComponentView.questCreator.color, "Creator color not correctly set");
-            Assert.AreEqual(activeQuestComponentView.deselectedBackgroundColor, activeQuestComponentView.background.color, "Background color not correctly set");
+            Assert.AreEqual(activeQuestComponentView.deselectedBackgroundColorTransparent, activeQuestComponentView.background.color, "Background color not correctly set");
         }
     }
 }

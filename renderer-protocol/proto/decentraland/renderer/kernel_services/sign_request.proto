@@ -22,6 +22,16 @@ message SignBodyRequest {
     string metadata = 3;
 }
 
+message GetSignedHeadersRequest {    
+	string url = 1;
+	map<string, string> metadata = 2;
+}
+
+message GetSignedHeadersResponse{
+    string message = 1;
+}
+
 service SignRequestKernelService {
     rpc GetRequestSignature(SignBodyRequest) returns (SignBodyResponse) {}
+    rpc GetSignedHeaders(GetSignedHeadersRequest) returns (GetSignedHeadersResponse) {}
 }

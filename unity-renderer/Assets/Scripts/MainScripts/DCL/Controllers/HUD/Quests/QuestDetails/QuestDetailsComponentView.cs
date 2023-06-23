@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -12,17 +13,21 @@ namespace DCL.Quests
     {
         private const int MAX_REWARDS_COUNT = 5;
         private const int MAX_STEPS_COUNT = 10;
+        private const string COMPLETED_PANEL = "CompletedQuests";
+        private const string PROGRESS_PANEL = "InProgressQuests";
 
         [SerializeField] internal TMP_Text questName;
         [SerializeField] internal TMP_Text questCreator;
         [SerializeField] internal TMP_Text questDescription;
         [SerializeField] internal Transform stepsParent;
         [SerializeField] internal Transform rewardsParent;
-        [SerializeField] internal Button jumpInButton;
         [SerializeField] internal Button pinButton;
+        [SerializeField] internal TMP_Text pinButtonText;
         [SerializeField] internal Button abandonButton;
         [SerializeField] internal GameObject rewardsSection;
         [SerializeField] internal GameObject guestSection;
+        [SerializeField] internal GameObject footer;
+        [SerializeField] internal RectTransform parentContent;
 
         [SerializeField] internal QuestRewardComponentView rewardPrefab;
         [SerializeField] internal QuestStepComponentView stepPrefab;
@@ -39,12 +44,11 @@ namespace DCL.Quests
 
         public override void Awake()
         {
-            jumpInButton.onClick.RemoveAllListeners();
-            jumpInButton.onClick.AddListener(() => InvokeJumpIn(model.coordinates));
             pinButton.onClick.RemoveAllListeners();
             pinButton.onClick.AddListener(() =>
             {
                 model.isPinned = !model.isPinned;
+                pinButtonText.text = model.isPinned ? "PINNED" : "PIN";
                 OnPinChange?.Invoke(model.questId, model.isPinned);
             });
             abandonButton.onClick.RemoveAllListeners();
@@ -65,6 +69,7 @@ namespace DCL.Quests
 
         public override void RefreshControl()
         {
+            SetIsPinned(model.isPinned);
             SetQuestId(model.questId);
             SetQuestName(model.questName);
             SetQuestCreator(model.questCreator);
@@ -72,6 +77,14 @@ namespace DCL.Quests
             SetCoordinates(model.coordinates);
             SetQuestSteps(model.questSteps);
             SetQuestRewards(model.questRewards);
+
+            Utils.ForceRebuildLayoutImmediate(parentContent);
+        }
+
+        public void SetFooter(bool isFooterVisible)
+        {
+            abandonButton.gameObject.SetActive(isFooterVisible);
+            pinButton.gameObject.SetActive(isFooterVisible);
         }
 
         public void SetQuestName(string nameText)
@@ -98,18 +111,20 @@ namespace DCL.Quests
         public void SetCoordinates(Vector2Int coordinates) =>
             model.coordinates = coordinates;
 
-        public void SetIsPinned(bool isPinned) =>
+        public void SetIsPinned(bool isPinned)
+        {
             model.isPinned = isPinned;
+            pinButtonText.text = isPinned ? "PINNED" : "PIN";
+        }
 
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps)
         {
             model.questSteps = questSteps;
 
-            for (var i = 0; i < stepsParent.childCount; i++)
-                Destroy(stepsParent.GetChild(i));
-
             foreach (var pooledStep in usedSteps)
                 stepsPool.Release(pooledStep);
+
+            usedSteps.Clear();
 
             foreach (var stepModel in questSteps)
             {
@@ -125,9 +140,6 @@ namespace DCL.Quests
         {
             model.questRewards = questRewards;
 
-            for (var i = 0; i < rewardsParent.childCount; i++)
-                Destroy(rewardsParent.GetChild(i));
-
             if (questRewards == null || questRewards.Count == 0)
             {
                 rewardsSection.SetActive(false);
@@ -139,6 +151,8 @@ namespace DCL.Quests
             foreach (var pooledReward in usedRewards)
                 rewardsPool.Release(pooledReward);
 
+            usedRewards.Clear();
+
             foreach (var rewardModel in questRewards)
             {
                 QuestRewardComponentView pooledReward = rewardsPool.Get();
@@ -149,6 +163,12 @@ namespace DCL.Quests
 
         public void SetIsGuest(bool isGuest) =>
             guestSection.SetActive(isGuest);
+
+        public void SetPanel(string panelName)
+        {
+            footer.SetActive(panelName.Equals(PROGRESS_PANEL));
+            footer.SetActive(panelName.Equals(COMPLETED_PANEL));
+        }
 
         private void InvokeJumpIn(Vector2Int coordinates) =>
             OnJumpIn?.Invoke(coordinates);
