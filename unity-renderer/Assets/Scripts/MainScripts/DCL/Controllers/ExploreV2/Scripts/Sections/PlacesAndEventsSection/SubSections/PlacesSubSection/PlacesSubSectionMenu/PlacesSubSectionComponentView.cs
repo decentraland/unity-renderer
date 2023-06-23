@@ -145,6 +145,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetActive(bool isActive)
     {
+        if (canvas.enabled == isActive)
+            return;
         canvas.enabled = isActive;
 
         if (isActive)
