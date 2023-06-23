@@ -37,6 +37,26 @@ namespace TestUtils
             }
         }
 
+        public static void Remove_Called(
+            this DualKeyValueSet<long, int, WriteData> msgs,
+            long expectedEntityId,
+            int expectedComponentId)
+        {
+            var pairs = msgs.Pairs;
+
+            for (int i = 0; i < pairs.Count; i++)
+            {
+                if (pairs[i].key2 == expectedComponentId
+                    && pairs[i].key1 == expectedEntityId
+                    && pairs[i].value.MessageType == CrdtMessageType.DELETE_COMPONENT)
+                {
+                    return;
+                }
+            }
+
+            throw new Exception($"Expected not to receive a call, but a call was received");
+        }
+
         public static void Clear_Calls(this DualKeyValueSet<long, int, WriteData> msgs)
         {
             msgs.Clear();
