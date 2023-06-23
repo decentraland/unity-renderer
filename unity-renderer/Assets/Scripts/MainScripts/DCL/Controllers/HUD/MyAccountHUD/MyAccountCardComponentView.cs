@@ -37,6 +37,9 @@ namespace DCL.MyAccount
         public override void Hide(bool instant = false) =>
             gameObject.SetActive(false);
 
+        public void SetSignOutButtonActive(bool isActive) =>
+            signOutButton.gameObject.SetActive(isActive);
+
         public override void Dispose()
         {
             previewProfileButton.onClick.RemoveAllListeners();

@@ -12,5 +12,6 @@ namespace DCL.MyAccount
 
         void Show(bool instant = false);
         void Hide(bool instant = false);
+        void SetSignOutButtonActive(bool isActive);
     }
 }

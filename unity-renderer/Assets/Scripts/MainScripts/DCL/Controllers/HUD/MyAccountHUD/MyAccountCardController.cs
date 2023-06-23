@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCL.SettingsCommon;
+using System;
 
 namespace DCL.MyAccount
 {
@@ -33,6 +34,10 @@ namespace DCL.MyAccount
             view.OnSignOutClicked += OnSignOutClicked;
             view.OnTermsOfServiceClicked += OnTermsOfServiceClicked;
             view.OnPrivacyPolicyClicked += OnPrivacyPolicyClicked;
+
+            userProfileBridge.GetOwn().OnUpdate += OnOwnUserProfileUpdate;
+            if (!string.IsNullOrEmpty(userProfileBridge.GetOwn().userId))
+                OnOwnUserProfileUpdate(userProfileBridge.GetOwn());
         }
 
         public void Dispose()
@@ -42,6 +47,15 @@ namespace DCL.MyAccount
             view.OnSignOutClicked -= OnSignOutClicked;
             view.OnTermsOfServiceClicked -= OnTermsOfServiceClicked;
             view.OnPrivacyPolicyClicked -= OnPrivacyPolicyClicked;
+            userProfileBridge.GetOwn().OnUpdate -= OnOwnUserProfileUpdate;
+        }
+
+        private void OnOwnUserProfileUpdate(UserProfile userProfile)
+        {
+            if (userProfile == null)
+                return;
+
+            view.SetSignOutButtonActive(!userProfile.isGuest);
         }
 
         private void OnPreviewProfileClicked()
