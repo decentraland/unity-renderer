@@ -62,6 +62,10 @@ namespace DCL.MyAccount
             kernelConfig.EnsureConfigInitialized()
                         .Then(config => OnKernelConfigChanged(config, null));
             kernelConfig.OnChange += OnKernelConfigChanged;
+
+            userProfileBridge.GetOwn().OnUpdate += OnOwnUserProfileUpdate;
+            if (!string.IsNullOrEmpty(userProfileBridge.GetOwn().userId))
+                OnOwnUserProfileUpdate(userProfileBridge.GetOwn());
         }
 
         public void Dispose()
@@ -76,10 +80,20 @@ namespace DCL.MyAccount
             view.OnLinkRemoved -= OnRemoveLinkRequested;
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
             kernelConfig.OnChange -= OnKernelConfigChanged;
+            userProfileBridge.GetOwn().OnUpdate -= OnOwnUserProfileUpdate;
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
             nameRegex = new Regex(current.profiles.nameValidRegex);
+
+        private void OnOwnUserProfileUpdate(UserProfile userProfile)
+        {
+            if (userProfile == null)
+                return;
+
+            view.SetAboutEnabled(!userProfile.isGuest);
+            view.SetLinksEnabled(!userProfile.isGuest);
+        }
 
         private void OnMyAccountSectionVisibleChanged(bool isVisible, bool _)
         {

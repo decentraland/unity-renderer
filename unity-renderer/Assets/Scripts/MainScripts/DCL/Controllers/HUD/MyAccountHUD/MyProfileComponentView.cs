@@ -9,6 +9,8 @@ namespace DCL.MyAccount
 {
     public class MyProfileComponentView : BaseComponentView<MyProfileModel>, IMyProfileComponentView
     {
+        private const float DISABLED_SECTION_ALPHA = 0.7f;
+
         [Header("General")]
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
@@ -28,11 +30,15 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject nameValidationsContainer;
         [SerializeField] internal TMP_Text nameCharCounter;
         [SerializeField] internal GameObject nonValidNameWarning;
-        [SerializeField] internal MyProfileLinkListComponentView linkListView;
 
         [Header("About")]
         [SerializeField] internal TMP_InputField aboutInputText;
         [SerializeField] internal TMP_Text aboutCharCounter;
+        [SerializeField] internal CanvasGroup aboutCanvasGroup;
+
+        [Header("Links")]
+        [SerializeField] internal MyProfileLinkListComponentView linkListView;
+        [SerializeField] internal CanvasGroup linksCanvasGroup;
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
@@ -197,6 +203,13 @@ namespace DCL.MyAccount
             aboutInputText.text = newDesc;
         }
 
+        public void SetAboutEnabled(bool isEnabled)
+        {
+            aboutCanvasGroup.alpha = isEnabled ? 1f : DISABLED_SECTION_ALPHA;
+            aboutCanvasGroup.interactable = isEnabled;
+            aboutCanvasGroup.blocksRaycasts = isEnabled;
+        }
+
         public void SetLoadingActive(bool isActive)
         {
             loadingContainer.SetActive(isActive);
@@ -219,6 +232,13 @@ namespace DCL.MyAccount
 
         public void EnableOrDisableAddLinksOption(bool enabled) =>
             linkListView.EnableOrDisableAddNewLinkOption(enabled);
+
+        public void SetLinksEnabled(bool isEnabled)
+        {
+            linksCanvasGroup.alpha = isEnabled ? 1f : DISABLED_SECTION_ALPHA;
+            linksCanvasGroup.interactable = isEnabled;
+            linksCanvasGroup.blocksRaycasts = isEnabled;
+        }
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";
