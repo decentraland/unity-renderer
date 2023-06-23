@@ -45,7 +45,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public Texture2D TakeSnapshot(int width, int height)
         {
-            RenderTexture rt = new RenderTexture(width * SUPER_SAMPLING, height * SUPER_SAMPLING, 32, GraphicsFormat.R16G16B16A16_SFloat);
+            //To enable Post Processing effect add GraphicsFormat.R16G16B16A16_SFloat to the render texture
+            RenderTexture rt = new RenderTexture(width * SUPER_SAMPLING, height * SUPER_SAMPLING, 32);
             camera.targetTexture = rt;
             Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
             camera.Render();
