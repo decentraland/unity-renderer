@@ -3,10 +3,12 @@ using NUnit.Framework;
 using System.Collections;
 using NSubstitute;
 using SocialFeaturesAnalytics;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class ProfileHUDTests : IntegrationTestSuite_Legacy
 {
+    private UserProfile userProfile;
     private ProfileHUDController controller;
     private BaseComponentView baseView;
     private IUserProfileBridge userProfileBridge;
@@ -18,7 +20,9 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+        userProfile = ScriptableObject.CreateInstance<UserProfile>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        userProfileBridge.GetOwn().Returns(userProfile);
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
@@ -29,6 +33,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
     [UnityTearDown]
     protected override IEnumerator TearDown()
     {
+        Object.Destroy(userProfile);
         controller.Dispose();
         baseView.Dispose();
         CommonScriptableObjects.allUIHidden.Set(allUIHiddenOriginalValue);
