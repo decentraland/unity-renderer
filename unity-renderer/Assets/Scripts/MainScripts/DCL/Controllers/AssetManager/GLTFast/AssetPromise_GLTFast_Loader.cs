@@ -155,16 +155,14 @@ namespace DCL
             Debug.LogError(LogMessages.GetFullMessage(code, messages));
         }
 
-        [Conditional("UNITY_EDITOR")]
         public void Warning(LogCode code, params string[] messages)
         {
             Debug.LogWarning(LogMessages.GetFullMessage(code, messages));
         }
 
-        [Conditional("UNITY_EDITOR")]
         public void Info(LogCode code, params string[] messages)
         {
-            Debug.Log(LogMessages.GetFullMessage(code, messages));
+            LogVerbose(LogMessages.GetFullMessage(code, messages));
         }
 
         public void Error(string message)
@@ -172,14 +170,24 @@ namespace DCL
             Debug.LogError(message);
         }
 
-        [Conditional("UNITY_EDITOR")]
         public void Warning(string message)
+        {
+            LogWarning(message);
+        }
+
+        public void Info(string message)
+        {
+            LogVerbose(message);
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void LogWarning(string message)
         {
             Debug.LogWarning(message);
         }
 
         [Conditional("UNITY_EDITOR")]
-        public void Info(string message)
+        private void LogVerbose(string message)
         {
             Debug.Log(message);
         }
