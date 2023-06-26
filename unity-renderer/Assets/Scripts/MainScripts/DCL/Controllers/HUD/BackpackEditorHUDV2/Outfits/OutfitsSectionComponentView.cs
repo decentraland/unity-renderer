@@ -114,6 +114,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
     public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
     {
         SetSlotsAsLoading(outfitsToShow);
+        AudioScriptableObjects.listItemAppear.ResetPitch();
         foreach (OutfitItem outfitItem in outfitsToShow)
         {
             outfits[outfitItem.slot] = outfitItem;
@@ -125,6 +126,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
             outfitComponentViews[outfitItem.slot].SetOutfit(outfitItem);
             await characterPreviewController.TryUpdateModelAsync(GenerateAvatarModel(outfitItem));
             Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
+            AudioScriptableObjects.listItemAppear.Play(true);
             outfitComponentViews[outfitItem.slot].SetOutfitPreviewImage(bodySnapshot);
             outfitComponentViews[outfitItem.slot].SetIsLoading(false);
         }

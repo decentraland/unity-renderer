@@ -4012,6 +4012,7 @@ GameObject:
   - component: {fileID: 369936347188194217}
   - component: {fileID: 2497892104949740892}
   - component: {fileID: 415548664755361149}
+  - component: {fileID: 6684820053749793580}
   m_Layer: 5
   m_Name: OutfitButton
   m_TagString: Untagged
@@ -4122,6 +4123,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6684820053749793580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7434593196046200920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &7603287708958496135
 GameObject:
   m_ObjectHideFlags: 0
