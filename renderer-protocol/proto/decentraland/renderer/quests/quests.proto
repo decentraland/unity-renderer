@@ -122,6 +122,7 @@ message Quest {
   string description = 3;
   QuestDefinition definition = 4;
   string creator_address = 5;
+  string image_url = 6;
 }
 
 message QuestInstance {

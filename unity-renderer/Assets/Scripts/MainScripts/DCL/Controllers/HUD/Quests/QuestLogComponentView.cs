@@ -122,7 +122,7 @@ namespace DCL.Quests
                 questId = activeQuest.questId,
                 questCreator = creatorName,
                 questName = activeQuest.questName,
-                questImageUri = "",
+                questImageUri = activeQuest.questImageUri,
                 isPinned = activeQuest.isPinned,
                 questModel = activeQuest
             });
@@ -151,7 +151,7 @@ namespace DCL.Quests
                 questId = completedQuest.questId,
                 questCreator = creatorName,
                 questName = completedQuest.questName,
-                questImageUri = "",
+                questImageUri = completedQuest.questImageUri,
                 isPinned = false,
                 questModel = completedQuest
             });

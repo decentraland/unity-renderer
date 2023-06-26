@@ -12,6 +12,7 @@ namespace DCL.Quests
         public string questDescription;
         public string questId = "";
         public bool isPinned = false;
+        public string questImageUri;
         public Vector2Int coordinates;
         public List<QuestStepComponentModel> questSteps;
         public List<QuestRewardComponentModel> questRewards;

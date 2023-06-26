@@ -818,6 +818,7 @@ MonoBehaviour:
     title: 
     rewards: []
   rewardsSection: {fileID: 2111371425988300921}
+  rewardsNotification: {fileID: 8881129071117342164}
   questTitle: {fileID: 500246516949219318}
   rewardsContainer: {fileID: 1798156650007868679}
   confirmButton: {fileID: 1018855186851495725}

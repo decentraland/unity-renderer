@@ -187,6 +187,7 @@ namespace DCL.Quests
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
+                questImageUri = questInstance.Quest.ImageUrl,
                 questSteps = GetQuestSteps(questInstance, true),
                 questRewards = new List<QuestRewardComponentModel>()
             };
@@ -200,8 +201,8 @@ namespace DCL.Quests
                 if (showCompletedQuestHUD)
                 {
                     questCompletedComponentView.SetTitle(quest.questName);
-                    questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
                     questCompletedComponentView.SetRewards(new List<QuestRewardComponentModel>());
+                    questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
                     questCompletedComponentView.SetVisible(true);
                 }
 
