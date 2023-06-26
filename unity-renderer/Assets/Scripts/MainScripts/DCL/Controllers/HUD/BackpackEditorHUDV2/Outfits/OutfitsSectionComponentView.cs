@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DG.Tweening;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
@@ -74,6 +75,7 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
     {
         outfitComponentViews[indexToBeDiscarded].SetIsEmpty(true);
         OnOutfitDiscarded?.Invoke(outfits[indexToBeDiscarded]);
+        DeleteAnimation(outfitComponentViews[indexToBeDiscarded].transform);
         outfits[indexToBeDiscarded] = new OutfitItem(){slot = indexToBeDiscarded};
         OnUpdateLocalOutfits?.Invoke(outfits);
         discardOutfitModal.SetActive(false);
@@ -198,6 +200,13 @@ public class OutfitsSectionComponentView : BaseComponentView, IOutfitsSectionCom
         Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
         outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
         outfitComponentViews[outfitIndex].SetIsLoading(false);
+        SaveAnimation(outfitComponentViews[outfitIndex].gameObject.transform);
         OnUpdateLocalOutfits?.Invoke(outfits);
     }
+
+    private void SaveAnimation(Transform transformToAnimate) =>
+        transformToAnimate.DOJump(transformToAnimate.position, 20, 1, 0.6f);
+
+    private void DeleteAnimation(Transform transformToAnimate) =>
+        transformToAnimate.DOPunchPosition(new Vector3(5, 2, 1), 0.6f);
 }
