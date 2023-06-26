@@ -107,15 +107,49 @@ namespace DCL.Social.Passports
                     string filteredDescription = await FilterProfanityContentAsync(userProfile.description)
                        .AttachExternalCancellation(ct);
 
+                    List<(Sprite logo, string title, string value)> additionalFields = new ();
                     List<(string title, string url)> links;
 
                     if (isMyAccountEnabled)
+                    {
+                        if (!string.IsNullOrEmpty(ownUserProfile.Gender))
+                            additionalFields.Add((null, "GENDER", ownUserProfile.Gender));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.Country))
+                            additionalFields.Add((null, "COUNTRY", ownUserProfile.Country));
+
+                        if (ownUserProfile.BirthDate != null && ownUserProfile.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                            additionalFields.Add((null, "BIRTH DATE", ownUserProfile.BirthDate.Value.ToShortDateString()));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.Pronouns))
+                            additionalFields.Add((null, "PRONOUNS", ownUserProfile.Pronouns));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.RelationshipStatus))
+                            additionalFields.Add((null, "RELATIONSHIP STATUS", ownUserProfile.RelationshipStatus));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.SexualOrientation))
+                            additionalFields.Add((null, "SEXUAL ORIENTATION", ownUserProfile.SexualOrientation));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.Language))
+                            additionalFields.Add((null, "LANGUAGE", ownUserProfile.Language));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.Profession))
+                            additionalFields.Add((null, "PROFESSION", ownUserProfile.Profession));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.Hobbies))
+                            additionalFields.Add((null, "HOBBIES", ownUserProfile.Hobbies));
+
+                        if (!string.IsNullOrEmpty(ownUserProfile.RealName))
+                            additionalFields.Add((null, "REAL NAME", ownUserProfile.RealName));
+
                         links = ownUserProfile.Links?.Select(link => (link.title, link.url)).ToList()
                                 ?? new List<(string title, string url)>();
+                    }
                     else
                         filteredDescription = ExtractLinks(filteredDescription, out links);
 
                     view.SetDescription(filteredDescription);
+                    view.SetAdditionalInfo(additionalFields);
                     view.SetLinks(links);
                     view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
                     LoadAndShowOwnedNamesAsync(userProfile, ct).Forget();

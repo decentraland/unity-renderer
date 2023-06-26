@@ -3,7 +3,6 @@ using DCLServices.Lambdas.NamesService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TMPro;
 using UIComponents.Scripts.Utils;
 using UnityEngine;
@@ -58,6 +57,8 @@ namespace DCL.Social.Passports
         [SerializeField] private Transform nftLandsCarouselContent;
         [SerializeField] private GameObject wearableUIReferenceObject;
         [SerializeField] private GameObject nftPageUIReferenceObject;
+        [SerializeField] private GameObject additionalInfoContainer;
+        [SerializeField] private GameObject additionalInfoPrefabReference;
         [SerializeField] private GameObject linksContainer;
         [SerializeField] private GameObject linksTitle;
         [SerializeField] private GameObject linkPrefabReference;
@@ -216,6 +217,20 @@ namespace DCL.Social.Passports
                 descriptionText.gameObject.SetActive(true);
                 description = AddCoordinateLinks(description);
                 descriptionText.text = description;
+            }
+        }
+
+        public void SetAdditionalInfo(List<(Sprite logo, string title, string value)> additionalFields)
+        {
+            additionalInfoContainer.SetActive(additionalFields.Count > 0);
+
+            foreach (Transform child in additionalInfoContainer.transform)
+                Destroy(child.gameObject);
+
+            foreach (var additionalField in additionalFields)
+            {
+                AdditionalInfoEntryView newAdditionalField = Instantiate(additionalInfoPrefabReference, additionalInfoContainer.transform).GetComponent<AdditionalInfoEntryView>();
+                newAdditionalField.SetInfo(additionalField.logo, additionalField.title, additionalField.value);
             }
         }
 
