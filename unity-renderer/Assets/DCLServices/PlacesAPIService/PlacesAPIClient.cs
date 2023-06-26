@@ -94,7 +94,6 @@ namespace DCLServices.PlacesAPIService
         {
             const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true";
             UnityWebRequest result = await webRequestController.GetAsync(URL, isSigned: true, cancellationToken: ct);
-            Debug.Log(result.downloadHandler.text);
             var response = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
 
             if (response == null)
