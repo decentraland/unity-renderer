@@ -66,7 +66,7 @@ namespace DCLServices.PlacesAPIService
                 throw new Exception($"Error parsing place info:\n{result.downloadHandler.text}");
 
             if (response.data.Count == 0)
-                throw new Exception($"No place info retrieved:\n{result.downloadHandler.text}");
+                throw new NotAPlaceException(coords);
 
             return response.data[0];
         }
@@ -83,6 +83,9 @@ namespace DCLServices.PlacesAPIService
 
             if (response == null)
                 throw new Exception($"Error parsing place info:\n{result.downloadHandler.text}");
+
+            if (response.ok == false)
+                throw new NotAPlaceException(placeUUID);
 
             if (response.data == null)
                 throw new Exception($"No place info retrieved:\n{result.downloadHandler.text}");
@@ -109,9 +112,7 @@ namespace DCLServices.PlacesAPIService
         {
             const string URL = BASE_URL + "/{0}/favorites";
             string payload = "{\"favorites\":" + isFavorite.ToString().ToLower() + "}";
-            Debug.Log(string.Format(URL, placeUUID));
             var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), payload, isSigned: true, cancellationToken: ct);
-            Debug.Log(result.downloadHandler.text);
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
 

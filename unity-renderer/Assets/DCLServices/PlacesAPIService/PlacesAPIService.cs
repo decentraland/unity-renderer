@@ -21,6 +21,11 @@ namespace DCLServices.PlacesAPIService
         UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
+        UniTask SetPlaceFavorite(Vector2Int coords, bool isFavorite, CancellationToken ct);
+
+        UniTask<bool> IsFavoritePlace(IHotScenesController.PlaceInfo placeInfo, CancellationToken ct, bool renewCache = false);
+        UniTask<bool> IsFavoritePlace(Vector2Int coords, CancellationToken ct, bool renewCache = false);
+        UniTask<bool> IsFavoritePlace(string placeUUID, CancellationToken ct, bool renewCache = false);
     }
 
     public class PlacesAPIService : IPlacesAPIService, ILambdaServiceConsumer<IHotScenesController.PlacesAPIResponse>
@@ -116,8 +121,9 @@ namespace DCLServices.PlacesAPIService
                 source.TrySetResult(favorites);
             }
 
-            if (serverFavoritesCompletionSource == null || renewCache || (serverFavoritesLastRetrieval - DateTime.Now) > TimeSpan.FromSeconds(CACHE_EXPIRATION))
+            if (serverFavoritesCompletionSource == null || renewCache || (DateTime.Now - serverFavoritesLastRetrieval) > TimeSpan.FromSeconds(CACHE_EXPIRATION))
             {
+                localFavorites.Clear();
                 serverFavoritesLastRetrieval = DateTime.Now;
                 serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
                 RetrieveFavorites(serverFavoritesCompletionSource).Forget();
@@ -155,6 +161,53 @@ namespace DCLServices.PlacesAPIService
             localFavorites[placeUUID] = isFavorite;
             composedFavoritesDirty = true;
             await client.SetPlaceFavorite(placeUUID, isFavorite, ct);
+        }
+
+        public async UniTask SetPlaceFavorite(Vector2Int coords, bool isFavorite, CancellationToken ct)
+        {
+            var place = await GetPlace(coords, ct);
+            await SetPlaceFavorite(place.id, isFavorite, ct);
+        }
+
+        public async UniTask<bool> IsFavoritePlace(IHotScenesController.PlaceInfo placeInfo, CancellationToken ct, bool renewCache = false)
+        {
+            var favorites = await GetFavorites(ct, renewCache);
+
+            foreach (IHotScenesController.PlaceInfo favorite in favorites)
+            {
+                if (favorite.id == placeInfo.id)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public async UniTask<bool> IsFavoritePlace(Vector2Int coords, CancellationToken ct, bool renewCache = false)
+        {
+            // We could call IsFavoritePlace with the placeInfo and avoid code repetition, but this way we can have the calls in parallel
+            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(coords, ct, renewCache), GetFavorites(ct, renewCache));
+
+            foreach (IHotScenesController.PlaceInfo favorite in favorites)
+            {
+                if (favorite.id == placeInfo.id)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public async UniTask<bool> IsFavoritePlace(string placeUUID, CancellationToken ct, bool renewCache = false)
+        {
+            // We could call IsFavoritePlace with the placeInfo and avoid code repetition, but this way we can have the calls in parallel
+            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(placeUUID, ct, renewCache), GetFavorites(ct, renewCache));
+
+            foreach (IHotScenesController.PlaceInfo favorite in favorites)
+            {
+                if (favorite.id == placeInfo.id)
+                    return true;
+            }
+
+            return false;
         }
 
         internal void CachePlace(IHotScenesController.PlaceInfo placeInfo)
