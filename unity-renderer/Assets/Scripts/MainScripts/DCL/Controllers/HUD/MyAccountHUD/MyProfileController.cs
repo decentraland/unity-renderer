@@ -4,6 +4,7 @@ using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -23,6 +24,13 @@ namespace DCL.MyAccount
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly KernelConfig kernelConfig;
         private readonly IMyAccountAnalyticsService myAccountAnalyticsService;
+        private readonly IProfileAdditionalInfoValueListProvider countryListProvider;
+        private readonly IProfileAdditionalInfoValueListProvider genderListProvider;
+        private readonly IProfileAdditionalInfoValueListProvider sexualOrientationProvider;
+        private readonly IProfileAdditionalInfoValueListProvider employmentStatusProvider;
+        private readonly IProfileAdditionalInfoValueListProvider relationshipStatusProvider;
+        private readonly IProfileAdditionalInfoValueListProvider languageListProvider;
+        private readonly IProfileAdditionalInfoValueListProvider pronounListProvider;
         private readonly List<string> loadedNames = new ();
 
         private CancellationTokenSource saveLinkCancellationToken = new ();
@@ -44,7 +52,14 @@ namespace DCL.MyAccount
             IBrowserBridge browserBridge,
             MyAccountSectionHUDController myAccountSectionHUDController,
             KernelConfig kernelConfig,
-            IMyAccountAnalyticsService myAccountAnalyticsService)
+            IMyAccountAnalyticsService myAccountAnalyticsService,
+            IProfileAdditionalInfoValueListProvider countryListProvider,
+            IProfileAdditionalInfoValueListProvider genderListProvider,
+            IProfileAdditionalInfoValueListProvider sexualOrientationProvider,
+            IProfileAdditionalInfoValueListProvider employmentStatusProvider,
+            IProfileAdditionalInfoValueListProvider relationshipStatusProvider,
+            IProfileAdditionalInfoValueListProvider languageListProvider,
+            IProfileAdditionalInfoValueListProvider pronounListProvider)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -54,6 +69,13 @@ namespace DCL.MyAccount
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.kernelConfig = kernelConfig;
             this.myAccountAnalyticsService = myAccountAnalyticsService;
+            this.countryListProvider = countryListProvider;
+            this.genderListProvider = genderListProvider;
+            this.sexualOrientationProvider = sexualOrientationProvider;
+            this.employmentStatusProvider = employmentStatusProvider;
+            this.relationshipStatusProvider = relationshipStatusProvider;
+            this.languageListProvider = languageListProvider;
+            this.pronounListProvider = pronounListProvider;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited += OnNameEdited;
@@ -332,11 +354,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Country",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetCountryList(),
                 OnValueSubmitted = country =>
                 {
                     SaveAdditionalInfo(country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Country", country);
                 },
@@ -344,7 +368,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(null, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Country");
                 },
@@ -353,11 +377,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Gender",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetGenderList(),
                 OnValueSubmitted = gender =>
                 {
                     SaveAdditionalInfo(userProfile.Country, gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Gender", gender);
                 },
@@ -365,7 +391,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, null, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Gender");
                 },
@@ -374,11 +400,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Pronouns",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetPronounList(),
                 OnValueSubmitted = pronouns =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Pronouns", pronouns);
                 },
@@ -386,7 +414,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, null, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Pronouns");
                 },
@@ -395,11 +423,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Relationship Status",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetRelationshipStatusList(),
                 OnValueSubmitted = relationshipStatus =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, relationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Relationship Status", relationshipStatus);
                 },
@@ -407,7 +437,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, null,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Relationship Status");
                 },
@@ -416,11 +446,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Sexual Orientation",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetSexualOrientationList(),
                 OnValueSubmitted = sexualOrientation =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         sexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Sexual Orientation", sexualOrientation);
                 },
@@ -428,7 +460,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         null, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Sexual Orientation");
                 },
@@ -437,11 +469,13 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Language",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetLanguageList(),
                 OnValueSubmitted = language =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Language", language);
                 },
@@ -449,7 +483,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, null, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Language");
                 },
@@ -458,11 +492,12 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Profession",
+                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
                 OnValueSubmitted = profession =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Profession", profession);
                 },
@@ -470,7 +505,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, null,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Profession");
                 },
@@ -479,11 +514,14 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Birth Date",
+                InputType = AdditionalInfoOptionsModel.InputType.Date,
+                DateFormat = "dd/MM/yyyy",
                 OnValueSubmitted = birthDate =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        DateTime.Parse(birthDate), userProfile.RealName, userProfile.Hobbies);
+                        DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);
                 },
@@ -491,7 +529,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        null, userProfile.RealName, userProfile.Hobbies);
+                        null, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Birth Date");
                 },
@@ -500,11 +538,12 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Real Name",
+                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
                 OnValueSubmitted = realName =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, realName, userProfile.Hobbies);
+                        userProfile.BirthDate, realName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Real Name", realName);
                 },
@@ -512,7 +551,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, null, userProfile.Hobbies);
+                        userProfile.BirthDate, null, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Real Name");
                 },
@@ -521,11 +560,12 @@ namespace DCL.MyAccount
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Hobbies",
+                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
                 OnValueSubmitted = hobbies =>
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, hobbies);
+                        userProfile.BirthDate, userProfile.RealName, hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Hobbies", hobbies);
                 },
@@ -533,9 +573,32 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, null);
+                        userProfile.BirthDate, userProfile.RealName, null, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Hobbies");
+                },
+            });
+
+            options.Add(new AdditionalInfoOptionsModel.Option
+            {
+                Name = "Employment Status",
+                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                Values = GetEmploymentStatusList(),
+                OnValueSubmitted = employmentStatus =>
+                {
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, employmentStatus);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Employment Status", employmentStatus);
+                },
+                OnRemoved = () =>
+                {
+                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, null);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Employment Status");
                 },
             });
 
@@ -545,23 +608,45 @@ namespace DCL.MyAccount
             });
         }
 
+        private string[] GetEmploymentStatusList() =>
+            employmentStatusProvider.Provide();
+
+        private string[] GetLanguageList() =>
+            languageListProvider.Provide();
+
+        private string[] GetSexualOrientationList() =>
+            sexualOrientationProvider.Provide();
+
+        private string[] GetRelationshipStatusList() =>
+            relationshipStatusProvider.Provide();
+
+        private string[] GetPronounList() =>
+            pronounListProvider.Provide();
+
+        private string[] GetGenderList() =>
+            genderListProvider.Provide();
+
+        private string[] GetCountryList() =>
+            countryListProvider.Provide();
+
         private void SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
             string sexualOrientation, string language, string profession, DateTime? birthDate,
-            string realName, string hobbies)
+            string realName, string hobbies, string employmentStatus)
         {
             async UniTaskVoid SaveAdditionalInfoAsync(string country, string gender, string pronouns, string relationshipStatus,
                 string sexualOrientation, string language, string profession, DateTime? birthDate,
-                string realName, string hobbies, CancellationToken cancellationToken)
+                string realName, string hobbies, string employmentStatus, CancellationToken cancellationToken)
             {
                 await userProfileBridge.SaveAdditionalInfo(country, gender, pronouns, relationshipStatus,
-                    sexualOrientation, language, profession, birthDate, realName, hobbies, cancellationToken);
+                    sexualOrientation, language, profession, birthDate, realName, hobbies, employmentStatus, cancellationToken);
             }
 
             additionalInfoCancellationToken = additionalInfoCancellationToken.SafeRestart();
 
             SaveAdditionalInfoAsync(country, gender, pronouns, relationshipStatus,
                     sexualOrientation, language, profession, birthDate,
-                    realName, hobbies, additionalInfoCancellationToken.Token)
+                    realName, hobbies, employmentStatus,
+                    additionalInfoCancellationToken.Token)
                .Forget();
         }
 

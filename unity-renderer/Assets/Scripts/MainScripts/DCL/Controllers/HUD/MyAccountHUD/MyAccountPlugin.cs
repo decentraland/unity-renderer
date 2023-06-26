@@ -21,7 +21,28 @@ namespace DCL.MyAccount
         private async void Initialize(CancellationToken ct)
         {
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                     .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
+                                                        .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
+
+            ProfileAdditionalInfoValueListScriptableObject countryListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                           .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Countries", "ProfileCountries", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject genderListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                          .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Genders", "ProfileGenders", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject sexualOrientationProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                                 .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/SexualOrientations", "ProfileSexualOrientations", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject employmentStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                                .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/EmploymentStatus", "ProfileEmploymentStatus", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject relationshipStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                                  .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/RelationshipStatus", "ProfileRelationshipStatus", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject languageListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                            .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Languages", "ProfileLanguages", ct);
+
+            ProfileAdditionalInfoValueListScriptableObject pronounListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                           .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Pronouns", "ProfilePronouns", ct);
 
             var dataStore = DataStore.i;
 
@@ -37,7 +58,14 @@ namespace DCL.MyAccount
                 new WebInterfaceBrowserBridge(),
                 myAccountSectionHUDController,
                 KernelConfig.i,
-                new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics));
+                new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics),
+                countryListProvider,
+                genderListProvider,
+                sexualOrientationProvider,
+                employmentStatusProvider,
+                relationshipStatusProvider,
+                languageListProvider,
+                pronounListProvider);
         }
 
         public void Dispose()

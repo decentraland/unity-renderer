@@ -32,6 +32,13 @@ namespace DCL.MyAccount
         private IBrowserBridge browserBridge;
         private KernelConfig kernelConfig;
         private IMyAccountAnalyticsService myAccountAnalyticsService;
+        private IProfileAdditionalInfoValueListProvider countryListProvider;
+        private IProfileAdditionalInfoValueListProvider genderListProvider;
+        private IProfileAdditionalInfoValueListProvider sexualOrientationProvider;
+        private IProfileAdditionalInfoValueListProvider employmentStatusProvider;
+        private IProfileAdditionalInfoValueListProvider relationshipStatusProvider;
+        private IProfileAdditionalInfoValueListProvider languageListProvider;
+        private IProfileAdditionalInfoValueListProvider pronounListProvider;
 
         [SetUp]
         public void SetUp()
@@ -74,6 +81,13 @@ namespace DCL.MyAccount
             });
 
             myAccountAnalyticsService = Substitute.For<IMyAccountAnalyticsService>();
+            countryListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            genderListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            sexualOrientationProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            employmentStatusProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            relationshipStatusProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            languageListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
+            pronounListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
 
             controller = new MyProfileController(view,
                 dataStore,
@@ -82,7 +96,14 @@ namespace DCL.MyAccount
                 browserBridge,
                 myAccountSectionController,
                 kernelConfig,
-                myAccountAnalyticsService);
+                myAccountAnalyticsService,
+                countryListProvider,
+                genderListProvider,
+                sexualOrientationProvider,
+                employmentStatusProvider,
+                relationshipStatusProvider,
+                languageListProvider,
+                pronounListProvider);
         }
 
         [TearDown]

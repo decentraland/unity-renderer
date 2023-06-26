@@ -12,7 +12,7 @@ public interface IUserProfileBridge
     UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken);
     UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
         string sexualOrientation, string language, string profession, DateTime? birthDate,
-        string realName, string hobbies, CancellationToken cancellationToken);
+        string realName, string hobbies, string employmentStatus, CancellationToken cancellationToken);
     void RequestFullUserProfile(string userId);
     UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default);
     UserProfile GetOwn();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +15,6 @@ namespace DCL.MyAccount
         [SerializeField] private RectTransform linksContainer;
 
         private readonly List<MyProfileLinkComponentView> links = new ();
-        private readonly Regex httpRegex = new (@"^https?:\/\/(?:www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&\/=]*)$");
         private bool isAddEnabled = true;
 
         public event Action<(string title, string url)> OnAddedNew;
@@ -67,7 +65,6 @@ namespace DCL.MyAccount
         private void EnableOrDisableAddButton()
         {
             addButton.interactable = newLinkTitle.text.Length > 0 && newLinkUrl.text.Length > 0
-                                                                  && httpRegex.IsMatch(newLinkUrl.text)
                                                                   && isAddEnabled;
         }
     }
