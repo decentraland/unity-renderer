@@ -5,8 +5,10 @@ using DCL.GLTFast.Wrappers;
 using GLTFast;
 using GLTFast.Logging;
 using GLTFast.Materials;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 // Disable async call not being awaited warning
 #pragma warning disable CS4014
@@ -153,18 +155,16 @@ namespace DCL
             Debug.LogError(LogMessages.GetFullMessage(code, messages));
         }
 
+        [Conditional("UNITY_EDITOR")]
         public void Warning(LogCode code, params string[] messages)
         {
-#if UNITY_EDITOR
             Debug.LogWarning(LogMessages.GetFullMessage(code, messages));
-#endif
         }
 
+        [Conditional("UNITY_EDITOR")]
         public void Info(LogCode code, params string[] messages)
         {
-#if UNITY_EDITOR
             Debug.Log(LogMessages.GetFullMessage(code, messages));
-#endif
         }
 
         public void Error(string message)
@@ -172,18 +172,16 @@ namespace DCL
             Debug.LogError(message);
         }
 
+        [Conditional("UNITY_EDITOR")]
         public void Warning(string message)
         {
-#if UNITY_EDITOR
             Debug.LogWarning(message);
-#endif
         }
 
+        [Conditional("UNITY_EDITOR")]
         public void Info(string message)
         {
-#if UNITY_EDITOR
             Debug.Log(message);
-#endif
         }
     }
 

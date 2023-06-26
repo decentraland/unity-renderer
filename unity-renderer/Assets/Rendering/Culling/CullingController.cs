@@ -161,7 +161,7 @@ namespace DCL.Rendering
 
             foreach (Renderer r in renderers)
             {
-                if (!r)
+                if (r == null)
                     continue;
 
                 if (Time.realtimeSinceStartup - currentStartTime >= CullingControllerSettings.MAX_TIME_BUDGET)
