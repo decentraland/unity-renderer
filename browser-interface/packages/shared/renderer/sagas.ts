@@ -53,6 +53,7 @@ import { waitForRendererInstance } from './sagas-helper'
 import { getClientPort } from './selectors'
 import { RendererModules, RENDERER_INITIALIZE } from './types'
 import { adjectives, animals, colors, Config, uniqueNamesGenerator } from 'unique-names-generator'
+import {saveToPersistentStorage} from "../../lib/browser";
 
 export function* rendererSaga() {
   yield takeEvery(SEND_PROFILE_TO_RENDERER_REQUEST, handleSubmitProfileToRenderer)
@@ -247,16 +248,22 @@ function* initializeRenderer(action: InitializeRenderer) {
 function* sendSignUpToRenderer(action: SignUpSetIsSignUp) {
   if (action.payload.isSignUp) {
     if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
+      trackEvent('seamless_login tos shown', {})
+      yield call(saveToPersistentStorage, 'tos_popup_shown', true)
       const userId: string = yield select(getCurrentUserId)
       yield put(sendProfileToRenderer(userId))
+      var profileInfo = yield select(getInformationToSubmitProfileFromStore, userId)
+
       const config: Config = {
         dictionaries: [ adjectives.filter((word) => word.length <= 5), colors.filter((word) => word.length <= 5), animals.filter((word) => word.length <= 5)],
-        separator: '-',
+        separator: '',
         style: 'capital'
       }
-      const randomName = uniqueNamesGenerator(config)
-      trackEvent('seamless_login tos accepted', {})
-      store.dispatch(signUp('', randomName))
+      let name = profileInfo.profile?.data?.name
+      if(!name || name === 'Guest')
+        name = uniqueNamesGenerator(config)
+      store.dispatch(signUp('', name))
+
       getUnityInstance().ShowAvatarEditorInSignIn()
     } else {
       getUnityInstance().ShowAvatarEditorInSignIn()
