@@ -157,7 +157,7 @@ namespace DCL
 
         public void Warning(LogCode code, params string[] messages)
         {
-            Debug.LogWarning(LogMessages.GetFullMessage(code, messages));
+            LogWarning(LogMessages.GetFullMessage(code, messages));
         }
 
         public void Info(LogCode code, params string[] messages)
