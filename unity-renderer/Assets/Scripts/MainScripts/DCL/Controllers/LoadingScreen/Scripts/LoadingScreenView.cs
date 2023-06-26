@@ -15,6 +15,7 @@ namespace DCL.LoadingScreen
         [SerializeField] private RawImage rawImage;
         [SerializeField] private RectTransform hintContainer;
         [SerializeField] private GameObject teleportLoadingAnimation;
+        // [SerializeField] private HintDotsView hintDotsView;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
