@@ -36,7 +36,8 @@ namespace DCL.MyAccount
                 Environment.i.serviceLocator.Get<INamesService>(),
                 new WebInterfaceBrowserBridge(),
                 myAccountSectionHUDController,
-                KernelConfig.i);
+                KernelConfig.i,
+                new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics));
         }
 
         public void Dispose()

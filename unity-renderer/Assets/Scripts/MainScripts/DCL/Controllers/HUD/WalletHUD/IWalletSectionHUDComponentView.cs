@@ -7,7 +7,7 @@ namespace DCL.Wallet
     public interface IWalletSectionHUDComponentView
     {
         event Action OnCopyWalletAddress;
-        event Action OnBuyManaClicked;
+        event Action<bool> OnBuyManaClicked;
         event Action OnLearnMoreClicked;
 
         IConnectWalletComponentView currentConnectWalletView { get; }

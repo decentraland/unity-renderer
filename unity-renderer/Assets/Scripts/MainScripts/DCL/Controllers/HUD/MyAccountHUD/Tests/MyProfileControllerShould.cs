@@ -31,6 +31,7 @@ namespace DCL.MyAccount
         private INamesService namesService;
         private IBrowserBridge browserBridge;
         private KernelConfig kernelConfig;
+        private IMyAccountAnalyticsService myAccountAnalyticsService;
 
         [SetUp]
         public void SetUp()
@@ -72,13 +73,16 @@ namespace DCL.MyAccount
                 }
             });
 
+            myAccountAnalyticsService = Substitute.For<IMyAccountAnalyticsService>();
+
             controller = new MyProfileController(view,
                 dataStore,
                 userProfileBridge,
                 namesService,
                 browserBridge,
                 myAccountSectionController,
-                kernelConfig);
+                kernelConfig,
+                myAccountAnalyticsService);
         }
 
         [TearDown]
@@ -266,6 +270,7 @@ namespace DCL.MyAccount
 
             view.Received(1).SetNonValidNameWarningActive(false);
             userProfileBridge.Received(1).SaveUnverifiedName(VALID_NAME, Arg.Any<CancellationToken>());
+            myAccountAnalyticsService.Received(1).SendPlayerSwapNameAnalytic(false, Arg.Any<int>());
         }
 
         [Test]
@@ -277,6 +282,7 @@ namespace DCL.MyAccount
 
             view.Received(1).SetNonValidNameWarningActive(false);
             userProfileBridge.Received(1).SaveVerifiedName(VALID_NAME, Arg.Any<CancellationToken>());
+            myAccountAnalyticsService.Received(1).SendPlayerSwapNameAnalytic(true, Arg.Any<int>());
         }
 
         [Test]
@@ -285,6 +291,7 @@ namespace DCL.MyAccount
             view.OnClaimNameClicked += Raise.Event<Action>();
 
             browserBridge.Received(1).OpenUrl("https://builder.decentraland.org/claim-name");
+            myAccountAnalyticsService.Received(1).SendPlayerOpenClaimNameAnalytic();
         }
 
         [Test]
@@ -295,6 +302,7 @@ namespace DCL.MyAccount
             view.OnAboutDescriptionSubmitted += Raise.Event<Action<string>>(ANOTHER_DESCRIPTION);
 
             userProfileBridge.SaveDescription(ANOTHER_DESCRIPTION, Arg.Any<CancellationToken>());
+            myAccountAnalyticsService.Received(1).SendProfileInfoEditAnalytic(ANOTHER_DESCRIPTION.Length);
         }
 
         [TestCase("l1", "http://whatever.com", "l0")]
@@ -344,6 +352,8 @@ namespace DCL.MyAccount
                                                                         && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
 
             view.Received(1).EnableOrDisableAddLinksOption(expectedLinks.Count < 5);
+
+            myAccountAnalyticsService.Received(1).SendProfileLinkAddAnalytic(title, url);
         }
 
         [Test]
@@ -424,6 +434,8 @@ namespace DCL.MyAccount
             view.Received(1)
                 .SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == expectedLinks.Count
                                                                         && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
+
+            myAccountAnalyticsService.Received(1).SendProfileLinkRemoveAnalytic("l1", "l1");
         }
     }
 }

@@ -30,7 +30,7 @@ namespace DCL.Wallet
         [SerializeField] internal GameObject polygonManaBalanceLoading;
 
         public event Action OnCopyWalletAddress;
-        public event Action OnBuyManaClicked;
+        public event Action<bool> OnBuyManaClicked;
         public event Action OnLearnMoreClicked;
 
         public IConnectWalletComponentView currentConnectWalletView => connectWalletView;
@@ -45,8 +45,8 @@ namespace DCL.Wallet
             thisTransform = transform;
 
             copyWalletAddressButton.onClick.AddListener(CopyWalletAddress);
-            buyEthereumManaButton.onClick.AddListener(() => OnBuyManaClicked?.Invoke());
-            buyPolygonManaButton.onClick.AddListener(() => OnBuyManaClicked?.Invoke());
+            buyEthereumManaButton.onClick.AddListener(() => OnBuyManaClicked?.Invoke(false));
+            buyPolygonManaButton.onClick.AddListener(() => OnBuyManaClicked?.Invoke(true));
         }
 
         public override void Dispose()

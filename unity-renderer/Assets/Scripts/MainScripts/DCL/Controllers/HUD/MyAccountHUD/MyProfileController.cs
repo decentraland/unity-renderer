@@ -22,6 +22,7 @@ namespace DCL.MyAccount
         private readonly IBrowserBridge browserBridge;
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly KernelConfig kernelConfig;
+        private readonly IMyAccountAnalyticsService myAccountAnalyticsService;
         private readonly List<string> loadedNames = new ();
 
         private CancellationTokenSource saveLinkCancellationToken = new ();
@@ -42,7 +43,8 @@ namespace DCL.MyAccount
             INamesService namesService,
             IBrowserBridge browserBridge,
             MyAccountSectionHUDController myAccountSectionHUDController,
-            KernelConfig kernelConfig)
+            KernelConfig kernelConfig,
+            IMyAccountAnalyticsService myAccountAnalyticsService)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -51,6 +53,7 @@ namespace DCL.MyAccount
             this.browserBridge = browserBridge;
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.kernelConfig = kernelConfig;
+            this.myAccountAnalyticsService = myAccountAnalyticsService;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             view.OnCurrentNameEdited += OnNameEdited;
@@ -194,6 +197,7 @@ namespace DCL.MyAccount
                     await userProfileBridge.SaveUnverifiedName(newName, cancellationToken);
 
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                myAccountAnalyticsService.SendPlayerSwapNameAnalytic(isClaimed, loadedNames.Count);
             }
 
             saveNameCancellationToken = saveNameCancellationToken.SafeRestart();
@@ -210,6 +214,7 @@ namespace DCL.MyAccount
                 await userProfileBridge.SaveDescription(newDesc, cancellationToken);
 
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                myAccountAnalyticsService.SendProfileInfoEditAnalytic(newDesc.Length);
             }
 
             saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
@@ -248,8 +253,11 @@ namespace DCL.MyAccount
         private void GoFromClaimedToNonClaimName() =>
             view.SetClaimedNameModeAsInput(true, ownUserProfile.hasClaimedName);
 
-        private void OnClaimNameRequested() =>
+        private void OnClaimNameRequested()
+        {
             browserBridge.OpenUrl(CLAIM_UNIQUE_NAME_URL);
+            myAccountAnalyticsService.SendPlayerOpenClaimNameAnalytic();
+        }
 
         private (string mainName, string nonClaimedHashtag) SplitUserName(string userName)
         {
@@ -284,6 +292,7 @@ namespace DCL.MyAccount
 
                     view.ClearLinkInput();
                     myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                    myAccountAnalyticsService.SendProfileLinkAddAnalytic(title, url);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
@@ -306,6 +315,7 @@ namespace DCL.MyAccount
 
                     ShowLinks(profile);
                     myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                    myAccountAnalyticsService.SendProfileLinkRemoveAnalytic(title, url);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
@@ -323,130 +333,210 @@ namespace DCL.MyAccount
             {
                 Name = "Country",
                 OnValueSubmitted = country =>
+                {
                     SaveAdditionalInfo(country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Country", country);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(null, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Country");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Gender",
                 OnValueSubmitted = gender =>
+                {
                     SaveAdditionalInfo(userProfile.Country, gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Gender", gender);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, null, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Gender");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Pronouns",
                 OnValueSubmitted = pronouns =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Pronouns", pronouns);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, null, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Pronouns");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Relationship Status",
                 OnValueSubmitted = relationshipStatus =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, relationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Relationship Status", relationshipStatus);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, null,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Relationship Status");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Sexual Orientation",
                 OnValueSubmitted = sexualOrientation =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         sexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Sexual Orientation", sexualOrientation);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         null, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Sexual Orientation");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Language",
                 OnValueSubmitted = language =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Language", language);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, null, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Language");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Profession",
                 OnValueSubmitted = profession =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Profession", profession);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, null,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies),
+                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Profession");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Birth Date",
                 OnValueSubmitted = birthDate =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        DateTime.Parse(birthDate), userProfile.RealName, userProfile.Hobbies),
+                        DateTime.Parse(birthDate), userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        null, userProfile.RealName, userProfile.Hobbies),
+                        null, userProfile.RealName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Birth Date");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Real Name",
                 OnValueSubmitted = realName =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, realName, userProfile.Hobbies),
+                        userProfile.BirthDate, realName, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Real Name", realName);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, null, userProfile.Hobbies),
+                        userProfile.BirthDate, null, userProfile.Hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Real Name");
+                },
             });
 
             options.Add(new AdditionalInfoOptionsModel.Option
             {
                 Name = "Hobbies",
                 OnValueSubmitted = hobbies =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, hobbies),
+                        userProfile.BirthDate, userProfile.RealName, hobbies);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Hobbies", hobbies);
+                },
                 OnRemoved = () =>
+                {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, null),
+                        userProfile.BirthDate, userProfile.RealName, null);
+
+                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Hobbies");
+                },
             });
 
             view.SetAdditionalInfoOptions(new AdditionalInfoOptionsModel

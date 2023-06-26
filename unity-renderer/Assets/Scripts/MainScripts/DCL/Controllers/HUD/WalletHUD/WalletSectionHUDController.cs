@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Helpers;
+using DCL.MyAccount;
 using DCL.Tasks;
 using System;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace DCL.Wallet
         private readonly IClipboard clipboard;
         private readonly IBrowserBridge browserBridge;
         private readonly ITheGraph theGraph;
+        private readonly IMyAccountAnalyticsService myAccountAnalyticsService;
 
         private CancellationTokenSource fetchEthereumManaCancellationToken;
         private CancellationTokenSource fetchPolygonManaCancellationToken;
@@ -31,7 +33,8 @@ namespace DCL.Wallet
             IUserProfileBridge userProfileBridge,
             IClipboard clipboard,
             IBrowserBridge browserBridge,
-            ITheGraph theGraph)
+            ITheGraph theGraph,
+            IMyAccountAnalyticsService myAccountAnalyticsService)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -39,6 +42,7 @@ namespace DCL.Wallet
             this.clipboard = clipboard;
             this.browserBridge = browserBridge;
             this.theGraph = theGraph;
+            this.myAccountAnalyticsService = myAccountAnalyticsService;
 
             dataStore.exploreV2.configureWalletSectionInFullscreenMenu.OnChange += ConfigureWalletSectionInFullscreenMenuChanged;
             ConfigureWalletSectionInFullscreenMenuChanged(dataStore.exploreV2.configureWalletSectionInFullscreenMenu.Get(), null);
@@ -177,8 +181,11 @@ namespace DCL.Wallet
             clipboard.WriteText(ownUserProfile.userId);
         }
 
-        private void GoToManaPurchaseUrl() =>
+        private void GoToManaPurchaseUrl(bool isPolygonNetwork)
+        {
             browserBridge.OpenUrl(URL_MANA_PURCHASE);
+            myAccountAnalyticsService.SendPlayerWalletBuyManaAnalytic(isPolygonNetwork);
+        }
 
         private void GoToLearnMoreUrl() =>
             browserBridge.OpenUrl(URL_MANA_INFO);
