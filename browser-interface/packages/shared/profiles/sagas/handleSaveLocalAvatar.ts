@@ -10,20 +10,19 @@ import { RootState } from 'shared/store/rootTypes'
 import type { SaveProfileDelta } from '../actions'
 import { deployProfile, profileSuccess, saveProfileFailure } from '../actions'
 import { validateAvatar } from '../schemaValidation'
-import { getCurrentUserProfileDirty } from '../selectors'
 import { localProfilesRepo } from './local/localProfilesRepo'
+import { requestProfile } from './content/requestProfile'
 
 function getInformationForSaveAvatar(state: RootState) {
   return {
     userId: getCurrentUserId(state),
-    savedProfile: getCurrentUserProfileDirty(state),
     identity: getCurrentIdentity(state),
     network: getCurrentNetwork(state)
   }
 }
 
 export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
-  const { userId, savedProfile, identity, network } = (yield select(getInformationForSaveAvatar)) as ReturnType<
+  const { userId, identity, network } = (yield select(getInformationForSaveAvatar)) as ReturnType<
     typeof getInformationForSaveAvatar
   >
   if (userId !== identity?.address) {
@@ -37,6 +36,8 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
     defaultLogger.error(`The saga handleSaveLocalAvatar was called when no ${userId} was available`)
     return
   }
+
+  const savedProfile = yield call(requestProfile, userId)
 
   try {
     const currentVersion: number = Math.max(savedProfile?.version || 0, 0)
