@@ -6,9 +6,9 @@ using DCL;
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
     const string FOOTSTEP_NAME = "footstep", HEART_NAME = "heart";
-    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
+    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho", ANIM_NAME_CRY = "Cry", ANIM_NAME_HANDS_IN_AIR = "hands_in_the_air";
     const float MIN_EVENT_WAIT_TIME = 0.1f;
-    const float HOHOHO_OFFSET = 1.5f;
+    const float HOHOHO_OFFSET = 1.5f, HEAD_OFFSET = 1.2f;
 
     AudioEvent footstepLight;
     AudioEvent footstepSlide;
@@ -141,6 +141,28 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlaySticker(ANIM_NAME_HOHOHO, transform.position + Vector3.up * HOHOHO_OFFSET, Vector3.zero, true);
+    }
+
+    public void AnimEvent_Cry()
+    {
+        if (LastEventWasTooRecent())
+            return;
+
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_CRY))
+            return;
+
+        PlaySticker(ANIM_NAME_CRY, transform.position + Vector3.up * HEAD_OFFSET, Vector3.zero, true);
+    }
+
+    public void AnimEvent_HandsInTheAir()
+    {
+        if (LastEventWasTooRecent())
+            return;
+
+        if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HANDS_IN_AIR))
+            return;
+
+        PlaySticker(ANIM_NAME_HANDS_IN_AIR, transform.position + Vector3.up * HEAD_OFFSET, Vector3.zero, true);
     }
 
     void PlayAudioEvent(AudioEvent audioEvent)
