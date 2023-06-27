@@ -1,7 +1,10 @@
 using System;
 
-[Serializable]
-public record OutfitComponentModel
+namespace DCL.Backpack
 {
-    public OutfitItem outfitItem;
+    [Serializable]
+    public record OutfitComponentModel
+    {
+        public OutfitItem outfitItem;
+    }
 }

@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Backpack;
 using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;

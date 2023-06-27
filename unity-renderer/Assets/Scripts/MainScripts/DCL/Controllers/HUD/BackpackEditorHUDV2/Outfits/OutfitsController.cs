@@ -9,85 +9,88 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-public class OutfitsController : IDisposable
+namespace DCL.Backpack
 {
-    private readonly LambdaOutfitsService lambdaOutfitsService;
-    private readonly IUserProfileBridge userProfileBridge;
-    private readonly IOutfitsSectionComponentView view;
-    private readonly IBackpackAnalyticsService backpackAnalyticsService;
-    public event Action<OutfitItem> OnOutfitEquipped;
-
-    private CancellationTokenSource cts;
-    private OutfitItem[] localOutfits;
-    private bool shouldDeploy;
-
-    public OutfitsController(
-        IOutfitsSectionComponentView view,
-        LambdaOutfitsService lambdaOutfitsService,
-        IUserProfileBridge userProfileBridge,
-        DataStore dataStore,
-        IBackpackAnalyticsService backpackAnalyticsService)
+    public class OutfitsController : IDisposable
     {
-        this.view = view;
-        this.lambdaOutfitsService = lambdaOutfitsService;
-        this.userProfileBridge = userProfileBridge;
-        this.backpackAnalyticsService = backpackAnalyticsService;
+        private readonly LambdaOutfitsService lambdaOutfitsService;
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly IOutfitsSectionComponentView view;
+        private readonly IBackpackAnalyticsService backpackAnalyticsService;
+        public event Action<OutfitItem> OnOutfitEquipped;
 
-        view.OnOutfitEquipped += OutfitEquip;
-        view.OnOutfitDiscarded += DiscardOutfit;
-        view.OnOutfitSaved += SaveOutfit;
-        view.OnUpdateLocalOutfits += UpdateLocalOutfits;
+        private CancellationTokenSource cts;
+        private OutfitItem[] localOutfits;
+        private bool shouldDeploy;
 
-        dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
-    }
+        public OutfitsController(
+            IOutfitsSectionComponentView view,
+            LambdaOutfitsService lambdaOutfitsService,
+            IUserProfileBridge userProfileBridge,
+            DataStore dataStore,
+            IBackpackAnalyticsService backpackAnalyticsService)
+        {
+            this.view = view;
+            this.lambdaOutfitsService = lambdaOutfitsService;
+            this.userProfileBridge = userProfileBridge;
+            this.backpackAnalyticsService = backpackAnalyticsService;
 
-    private void SaveOutfit(OutfitItem outfit) =>
-        backpackAnalyticsService.SendOutfitSave(outfit.slot);
+            view.OnOutfitEquipped += OutfitEquip;
+            view.OnOutfitDiscarded += DiscardOutfit;
+            view.OnOutfitSaved += SaveOutfit;
+            view.OnUpdateLocalOutfits += UpdateLocalOutfits;
 
-    private void DiscardOutfit(OutfitItem outfit) =>
-        backpackAnalyticsService.SendOutfitDelete(outfit.slot);
+            dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
+        }
 
-    private void OutfitEquip(OutfitItem outfit)
-    {
-        backpackAnalyticsService.SendOutfitEquipped(outfit.slot);
-        OnOutfitEquipped?.Invoke(outfit);
-    }
+        private void SaveOutfit(OutfitItem outfit) =>
+            backpackAnalyticsService.SendOutfitSave(outfit.slot);
 
-    private void ChangedVisibility(bool current, bool previous)
-    {
-        if(shouldDeploy)
-            WebInterface.SaveUserOutfits(localOutfits);
-    }
+        private void DiscardOutfit(OutfitItem outfit) =>
+            backpackAnalyticsService.SendOutfitDelete(outfit.slot);
 
-    private void UpdateLocalOutfits(OutfitItem[] outfits)
-    {
-        shouldDeploy = true;
-        localOutfits = outfits;
-    }
+        private void OutfitEquip(OutfitItem outfit)
+        {
+            backpackAnalyticsService.SendOutfitEquipped(outfit.slot);
+            OnOutfitEquipped?.Invoke(outfit);
+        }
 
-    public void RequestOwnedOutfits()
-    {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        RequestOwnedOutfitsAsync().Forget();
-    }
+        private void ChangedVisibility(bool current, bool previous)
+        {
+            if (shouldDeploy)
+                WebInterface.SaveUserOutfits(localOutfits);
+        }
 
-    private async UniTask RequestOwnedOutfitsAsync()
-    {
-        (IReadOnlyList<OutfitItem> outfits, int totalAmount) requestOwnedOutfits = await lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: cts.Token);
-        view.ShowOutfits(requestOwnedOutfits.outfits.ToArray()).Forget();
-    }
+        private void UpdateLocalOutfits(OutfitItem[] outfits)
+        {
+            shouldDeploy = true;
+            localOutfits = outfits;
+        }
 
-    public void UpdateAvatarPreview(AvatarModel newAvatarModel) =>
-        view.UpdateAvatarPreview(newAvatarModel);
+        public void RequestOwnedOutfits()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+            RequestOwnedOutfitsAsync().Forget();
+        }
 
-    public void Dispose()
-    {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = null;
-        view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
-        view.OnOutfitEquipped -= OutfitEquip;
+        private async UniTask RequestOwnedOutfitsAsync()
+        {
+            (IReadOnlyList<OutfitItem> outfits, int totalAmount) requestOwnedOutfits = await lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: cts.Token);
+            view.ShowOutfits(requestOwnedOutfits.outfits.ToArray()).Forget();
+        }
+
+        public void UpdateAvatarPreview(AvatarModel newAvatarModel) =>
+            view.UpdateAvatarPreview(newAvatarModel);
+
+        public void Dispose()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
+            view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
+            view.OnOutfitEquipped -= OutfitEquip;
+        }
     }
 }

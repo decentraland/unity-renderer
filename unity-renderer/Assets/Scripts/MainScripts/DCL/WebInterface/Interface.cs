@@ -1,3 +1,4 @@
+using DCL.Backpack;
 using System;
 using System.Collections.Generic;
 using DCL.CameraTool;
