@@ -5,6 +5,7 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,27 +26,16 @@ namespace DCL.Backpack
 
         public event Action OnBackButtonPressed;
         public event Action<OutfitItem> OnOutfitEquipped;
-        public event Action<OutfitItem> OnOutfitDiscarded;
+        public event Action<int> OnOutfitDiscarded;
         public event Action<OutfitItem> OnOutfitSaved;
-        public event Action<OutfitItem[]> OnUpdateLocalOutfits;
+        public event Action<int> OnOutfitLocalSave;
         public event Action OnTrySaveAsGuest;
 
-        private readonly AvatarModel currentAvatarModel = new AvatarModel();
-        private OutfitItem[] outfits;
         private int indexToBeDiscarded;
 
         public override void Awake()
         {
             base.Awake();
-
-            outfits = new OutfitItem[]
-            {
-                new () { slot = 0 },
-                new () { slot = 1 },
-                new () { slot = 2 },
-                new () { slot = 3 },
-                new () { slot = 4 }
-            };
 
             backButton.onClick.RemoveAllListeners();
             backButton.onClick.AddListener(() => OnBackButtonPressed?.Invoke());
@@ -79,10 +69,8 @@ namespace DCL.Backpack
         private void CompleteDiscardOutfit()
         {
             outfitComponentViews[indexToBeDiscarded].SetIsEmpty(true);
-            OnOutfitDiscarded?.Invoke(outfits[indexToBeDiscarded]);
+            OnOutfitDiscarded?.Invoke(indexToBeDiscarded);
             DeleteAnimation(outfitComponentViews[indexToBeDiscarded].transform);
-            outfits[indexToBeDiscarded] = new OutfitItem() { slot = indexToBeDiscarded };
-            OnUpdateLocalOutfits?.Invoke(outfits);
             discardOutfitModal.SetActive(false);
         }
 
@@ -90,17 +78,8 @@ namespace DCL.Backpack
 
         private void DiscardOutfit(int outfitIndex)
         {
-            if (outfits[outfitIndex].outfit == null) return;
-
             indexToBeDiscarded = outfitIndex;
             discardOutfitModal.SetActive(true);
-        }
-
-        public void UpdateAvatarPreview(AvatarModel newAvatarModel)
-        {
-            currentAvatarModel.CopyFrom(newAvatarModel);
-            characterPreviewController.SetEnabled(true);
-            characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
         }
 
         public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
@@ -115,20 +94,20 @@ namespace DCL.Backpack
             characterPreviewController.SetFocus(PreviewCameraFocus.BodySnapshot);
         }
 
-        public async UniTask<bool> ShowOutfit(OutfitItem outfit, AvatarModel newModel)
+        public async UniTask<bool> ShowOutfit(OutfitItem outfit, AvatarModel newModel, CancellationToken ct)
         {
-            outfits[outfit.slot] = outfit;
-
             if (string.IsNullOrEmpty(outfit.outfit.bodyShape))
                 return false;
 
+            characterPreviewController.SetEnabled(true);
             outfitComponentViews[outfit.slot].SetIsEmpty(false);
             outfitComponentViews[outfit.slot].SetOutfit(outfit);
-            await characterPreviewController.TryUpdateModelAsync(newModel);
+            await characterPreviewController.TryUpdateModelAsync(newModel, ct);
             Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
             AudioScriptableObjects.listItemAppear.Play(true);
             outfitComponentViews[outfit.slot].SetOutfitPreviewImage(bodySnapshot);
             outfitComponentViews[outfit.slot].SetIsLoading(false);
+            characterPreviewController.SetEnabled(false);
             return true;
         }
 
@@ -148,15 +127,7 @@ namespace DCL.Backpack
         private void OnEquipOutfit(OutfitItem outfitItem) =>
             OnOutfitEquipped?.Invoke(outfitItem);
 
-        private void OnSaveOutfit(int outfitIndex) =>
-            SaveOutfitAsync(outfitIndex).Forget();
-
-        public void SetIsGuest(bool isGuest)
-        {
-            this.isGuest = isGuest;
-        }
-
-        private async UniTaskVoid SaveOutfitAsync(int outfitIndex)
+        private void OnSaveOutfit(int outfitIndex)
         {
             if (isGuest)
             {
@@ -166,29 +137,13 @@ namespace DCL.Backpack
 
             outfitComponentViews[outfitIndex].SetIsLoading(true);
             outfitComponentViews[outfitIndex].SetIsEmpty(false);
+            OnOutfitLocalSave?.Invoke(outfitIndex);
+            SaveAnimation(outfitComponentViews[outfitIndex].transform);
+        }
 
-            var outfitItem = new OutfitItem()
-            {
-                outfit = new OutfitItem.Outfit()
-                {
-                    bodyShape = currentAvatarModel.bodyShape,
-                    eyes = new OutfitItem.eyes() { color = currentAvatarModel.eyeColor },
-                    hair = new OutfitItem.hair() { color = currentAvatarModel.hairColor },
-                    skin = new OutfitItem.skin() { color = currentAvatarModel.skinColor },
-                    wearables = new List<string>(currentAvatarModel.wearables).ToArray(),
-                    forceRender = new List<string>(currentAvatarModel.forceRender).ToArray()
-                },
-                slot = outfitIndex
-            };
-
-            outfitComponentViews[outfitIndex].SetModel(new OutfitComponentModel() { outfitItem = outfitItem });
-            outfits[outfitIndex] = outfitItem;
-            OnOutfitSaved?.Invoke(outfitItem);
-            Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
-            outfitComponentViews[outfitIndex].SetOutfitPreviewImage(bodySnapshot);
-            outfitComponentViews[outfitIndex].SetIsLoading(false);
-            SaveAnimation(outfitComponentViews[outfitIndex].gameObject.transform);
-            OnUpdateLocalOutfits?.Invoke(outfits);
+        public void SetIsGuest(bool isGuest)
+        {
+            this.isGuest = isGuest;
         }
 
         private void SaveAnimation(Transform transformToAnimate) =>

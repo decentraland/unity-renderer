@@ -123,12 +123,12 @@ namespace DCL.Backpack
             EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable, setAsDirty: false, updateAvatarPreview: false);
+                EquipWearable(outfitWearable, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
             foreach (string forcedCategory in outfit.outfit.forceRender)
-                UpdateOverrideHides(forcedCategory, true, false);
+                UpdateOverrideHides(forcedCategory, true, true);
         }
 
         private void OnOutfitsOpened()
