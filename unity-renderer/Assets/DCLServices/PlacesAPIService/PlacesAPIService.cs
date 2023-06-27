@@ -214,7 +214,7 @@ namespace DCLServices.PlacesAPIService
         {
             placesById[placeInfo.id] = placeInfo;
 
-            foreach (Vector2Int placeInfoPosition in placeInfo.positions) { placesByCoords[placeInfoPosition] = placeInfo; }
+            foreach (Vector2Int placeInfoPosition in placeInfo.Positions) { placesByCoords[placeInfoPosition] = placeInfo; }
         }
 
         public async UniTask<(IHotScenesController.PlacesAPIResponse response, bool success)> CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken ct)

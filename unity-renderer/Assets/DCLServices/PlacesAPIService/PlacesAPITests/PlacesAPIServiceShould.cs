@@ -67,8 +67,8 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                        total = x.ArgAt<int>(1),
                        data = new List<IHotScenesController.PlaceInfo>()
                        {
-                           placesCatalog["0Column"], //will add positions {0,0} {0,1} {0,2} and {0,3}
-                           placesCatalog["Square50,50"], //will add positions {50,50} {50,51} {51,50} and {51,51}
+                           placesCatalog["0Column"], //will add Positions {0,0} {0,1} {0,2} and {0,3}
+                           placesCatalog["Square50,50"], //will add Positions {50,50} {50,51} {51,50} and {51,51}
                            placesCatalog["60,60"],
                        },
                    }));
@@ -184,8 +184,8 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             Assert.AreEqual(placesCatalog[id], result);
             Assert.AreEqual(1, service.placesById.Count);
             Assert.AreEqual(result, service.placesById[id]);
-            Assert.AreEqual(result.positions.Length, service.placesByCoords.Count);
-            foreach (Vector2Int coords in result.positions)
+            Assert.AreEqual(result.Positions.Length, service.placesByCoords.Count);
+            foreach (Vector2Int coords in result.Positions)
             {
                 Assert.AreEqual(result, service.placesByCoords[coords]);
             }
@@ -216,7 +216,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             var newPlace = new IHotScenesController.PlaceInfo()
             {
                 id = id,
-                positions = new []{new Vector2Int(0,0)},
+                Positions = new []{new Vector2Int(0,0)},
             };
             client.Configure().GetPlace(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(x => new UniTask<IHotScenesController.PlaceInfo>(newPlace));
             service.placesById.Add(id, placesCatalog[id]);
@@ -244,7 +244,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             IHotScenesController.PlaceInfo place = new IHotScenesController.PlaceInfo()
             {
                 id = "test",
-                positions = coords.ToArray(),
+                Positions = coords.ToArray(),
             };
             foreach (var coord in coords)
             {
@@ -264,8 +264,8 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         public async Task RetrieveFavoritesFromServer()
         {
             // Arrange
-            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
-            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
+            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
+            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
             client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
 
             // Act
@@ -274,20 +274,20 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Assert
             Assert.AreEqual(place0, result[0]);
             Assert.AreEqual(place0, service.placesById[place0.id]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[0]]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[1]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[0]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[1]]);
             Assert.AreEqual(place1, result[1]);
             Assert.AreEqual(place1, service.placesById[place1.id]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[0]]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[1]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[0]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[1]]);
         }
 
         [Test]
         public async Task RetrieveCachedFavorites()
         {
             // Arrange
-            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
-            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
+            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
+            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
             service.CachePlace(place0);
             service.CachePlace(place1);
             service.serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
@@ -299,26 +299,26 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Assert
             Assert.AreEqual(place0, result[0]);
             Assert.AreEqual(place0, service.placesById[place0.id]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[0]]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[1]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[0]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[1]]);
             Assert.AreEqual(place1, result[1]);
             Assert.AreEqual(place1, service.placesById[place1.id]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[0]]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[1]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[0]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[1]]);
         }
 
         [Test]
         public async Task RetrieveFavoritesFromServerWhenCacheIgnored()
         {
             // Arrange
-            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, description = "test0"};
-            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, description = "test1"};
+            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, description = "test0"};
+            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, description = "test1"};
             service.CachePlace(place0);
             service.CachePlace(place1);
             service.serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
             service.serverFavoritesCompletionSource.TrySetResult(new List<IHotScenesController.PlaceInfo>(){place0, place1});
-            var newPlace0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, description = "newTest0"};
-            var newPlace1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, description = "newTest1"};
+            var newPlace0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, description = "newTest0"};
+            var newPlace1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, description = "newTest1"};
             client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { newPlace0, newPlace1 }));
 
             // Act
@@ -328,13 +328,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             client.Received().GetFavorites(Arg.Any<CancellationToken>());
             Assert.AreEqual(newPlace0, result[0]);
             Assert.AreEqual(newPlace0, service.placesById[newPlace0.id]);
-            Assert.AreEqual(newPlace0, service.placesByCoords[newPlace0.positions[0]]);
-            Assert.AreEqual(newPlace0, service.placesByCoords[newPlace0.positions[1]]);
+            Assert.AreEqual(newPlace0, service.placesByCoords[newPlace0.Positions[0]]);
+            Assert.AreEqual(newPlace0, service.placesByCoords[newPlace0.Positions[1]]);
             Assert.AreEqual("newTest0", result[0].description);
             Assert.AreEqual(newPlace1, result[1]);
             Assert.AreEqual(newPlace1, service.placesById[newPlace1.id]);
-            Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.positions[0]]);
-            Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.positions[1]]);
+            Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.Positions[0]]);
+            Assert.AreEqual(newPlace1, service.placesByCoords[newPlace1.Positions[1]]);
             Assert.AreEqual("newTest1", result[1].description);
         }
 
@@ -342,8 +342,8 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         public async Task RetrieveFavoritesIntoMultipleCalls()
         {
             // Arrange
-            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
-            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
+            var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
+            var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
             client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
 
             // Act
@@ -353,13 +353,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             Assert.AreEqual(place0,  firstCall[0]);
             Assert.AreEqual(place0,  secondCall[0]);
             Assert.AreEqual(place0, service.placesById[place0.id]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[0]]);
-            Assert.AreEqual(place0, service.placesByCoords[place0.positions[1]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[0]]);
+            Assert.AreEqual(place0, service.placesByCoords[place0.Positions[1]]);
             Assert.AreEqual(place1, firstCall[1]);
             Assert.AreEqual(place1, secondCall[1]);
             Assert.AreEqual(place1, service.placesById[place1.id]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[0]]);
-            Assert.AreEqual(place1, service.placesByCoords[place1.positions[1]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[0]]);
+            Assert.AreEqual(place1, service.placesByCoords[place1.Positions[1]]);
         }
 
         private void PreparePlacesCatalog()
@@ -367,14 +367,14 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
 #region helper functions
             void AddPlaceInColumn(int column, int length)
             {
-                Vector2Int[] positions = new Vector2Int[length];
+                Vector2Int[] Positions = new Vector2Int[length];
 
-                for (int i = 0; i < length; i++) { positions[i] = new Vector2Int(column, i); }
+                for (int i = 0; i < length; i++) { Positions[i] = new Vector2Int(column, i); }
 
                 var place = new IHotScenesController.PlaceInfo()
                 {
                     id = $"{column}Column",
-                    positions = positions
+                    Positions = Positions
                 };
 
                 placesCatalog.Add(place.id, place);
@@ -382,17 +382,17 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
 
             void AddPlaceInSquare(Vector2Int basePosition, int squareSize)
             {
-                Vector2Int[] positions = new Vector2Int[squareSize * squareSize];
+                Vector2Int[] Positions = new Vector2Int[squareSize * squareSize];
 
                 for (int i = 0; i < squareSize; i++)
                 {
-                    for (int j = 0; j < squareSize; j++) { positions[(i * squareSize) + j] = new Vector2Int(basePosition.x + i, basePosition.y + j); }
+                    for (int j = 0; j < squareSize; j++) { Positions[(i * squareSize) + j] = new Vector2Int(basePosition.x + i, basePosition.y + j); }
                 }
 
                 var place = new IHotScenesController.PlaceInfo()
                 {
                     id = $"Square{basePosition.x},{basePosition.y}",
-                    positions = positions
+                    Positions = Positions
                 };
 
                 placesCatalog.Add(place.id, place);
@@ -403,7 +403,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 var place = new IHotScenesController.PlaceInfo()
                 {
                     id = $"{basePosition.x},{basePosition.y}",
-                    positions = new[] { basePosition }
+                    Positions = new[] { basePosition }
                 };
 
                 placesCatalog.Add(place.id, place);

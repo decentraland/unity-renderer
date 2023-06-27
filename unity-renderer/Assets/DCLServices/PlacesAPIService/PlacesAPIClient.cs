@@ -115,8 +115,6 @@ namespace DCLServices.PlacesAPIService
             var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), payload, isSigned: true, cancellationToken: ct);
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
-
-
         }
     }
 }
