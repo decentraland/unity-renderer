@@ -168,11 +168,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 625283535875262909}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -102}
+  m_AnchoredPosition: {x: 0, y: 18}
   m_SizeDelta: {x: 737, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4161306013349778477
@@ -1080,7 +1080,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &5674188681382852263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1136,7 +1136,9 @@ MonoBehaviour:
     questCreator: 
     questDescription: 
     questId: 
+    questDefinitionId: 
     isPinned: 0
+    questImageUri: 
     coordinates: {x: 0, y: 0}
     questSteps: []
     questRewards: []
@@ -2393,8 +2395,8 @@ RectTransform:
   - {fileID: 342479409130168933}
   - {fileID: 63037728160804133}
   - {fileID: 5190828361767331818}
-  - {fileID: 4969721536069907527}
   - {fileID: 8494160872116742532}
+  - {fileID: 4969721536069907527}
   m_Father: {fileID: 1372722719431325109}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2997,11 +2999,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 625283535875262909}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -27}
+  m_AnchoredPosition: {x: 0, y: -49}
   m_SizeDelta: {x: 737, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6445233750715127710
