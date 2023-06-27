@@ -5,6 +5,7 @@ using DCLServices.QuestsService;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Action = Decentraland.Quests.Action;
@@ -76,7 +77,7 @@ namespace DCL.Quests
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
-            ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true);
+            ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true, false);
         }
 
         private void AbandonQuest(string questId)
@@ -91,8 +92,14 @@ namespace DCL.Quests
         private void JumpIn(Vector2Int obj) =>
             teleportController.Teleport(obj.x, obj.y);
 
-        private void ChangePinnedQuest(string questId, bool isPinned)
+        private void ChangePinnedQuest(string questId, bool isPinned) =>
+            ChangePinnedQuest(questId, isPinned, true);
+
+        private void ChangePinnedQuest(string questId, bool isPinned, bool sendAnalytics)
         {
+            if(sendAnalytics)
+                questAnalyticsService.SendPinnedQuest(questId, isPinned);
+
             string previousPinnedQuestId = pinnedQuestId.Get();
 
             pinnedQuestId.Set(isPinned ? questId : "");
@@ -116,8 +123,11 @@ namespace DCL.Quests
             AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]);
         }
 
-        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
+        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous)
+        {
+            Debug.Log("AAA");
             questLogController.SetAsFullScreenMenuMode(current);
+        }
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
@@ -144,7 +154,7 @@ namespace DCL.Quests
                 questAnalyticsService.SendQuestStarted(questStateUpdate.Quest.Id);
 
                 if(string.IsNullOrEmpty(pinnedQuestId.Get()) || quests.ContainsKey(pinnedQuestId.Get()))
-                    ChangePinnedQuest(questStateUpdate.Id, true);
+                    ChangePinnedQuest(questStateUpdate.Id, true, false);
             }
         }
 
@@ -181,7 +191,7 @@ namespace DCL.Quests
             return questSteps;
         }
 
-        private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false)
+        private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false, bool isQuestUpdate = false)
         {
             quests.TryAdd(questInstance.Id, questInstance);
 
@@ -198,11 +208,14 @@ namespace DCL.Quests
                 questRewards = new List<QuestRewardComponentModel>()
             };
 
-            if(questInstance.State.CurrentSteps.Count > 0)
+            if (questInstance.State.CurrentSteps.Count > 0)
+            {
                 questLogController.AddActiveQuest(quest).Forget();
+                questAnalyticsService.SendQuestProgressed(questInstance.Quest.Id, questInstance.State.CurrentSteps.Keys.ToList(), questInstance.State.CurrentSteps.Keys.ToList());
+            }
             else
             {
-                ChangePinnedQuest(questInstance.Id, false);
+                ChangePinnedQuest(questInstance.Id, false, false);
 
                 if (showCompletedQuestHUD)
                 {
