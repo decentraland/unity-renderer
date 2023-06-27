@@ -684,6 +684,9 @@ namespace DCL.MyAccount
             if (!string.IsNullOrEmpty(userProfile.Language))
                 values["Language"] = ("Language", userProfile.Language);
 
+            if (!string.IsNullOrEmpty(userProfile.EmploymentStatus))
+                values["Employment Status"] = ("Employment Status", userProfile.EmploymentStatus);
+
             if (!string.IsNullOrEmpty(userProfile.Profession))
                 values["Profession"] = ("Profession", userProfile.Profession);
 
