@@ -85,6 +85,7 @@ namespace DCL.Quests
                 ChangePinnedQuest(questId, false);
             questsService.AbortQuest(questId).Forget();
             questLogController.RemoveQuestIfExists(questId);
+            questAnalyticsService.SendQuestCancelled(questId);
         }
 
         private void JumpIn(Vector2Int obj) =>
@@ -140,6 +141,7 @@ namespace DCL.Quests
                 AddOrUpdateQuestToLog(questStateUpdate);
                 questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
                 questStartedPopupComponentView.SetVisible(true);
+                questAnalyticsService.SendQuestStarted(questStateUpdate.Quest.Id);
 
                 if(string.IsNullOrEmpty(pinnedQuestId.Get()) || quests.ContainsKey(pinnedQuestId.Get()))
                     ChangePinnedQuest(questStateUpdate.Id, true);
@@ -222,6 +224,7 @@ namespace DCL.Quests
                     name = questReward.name
                 });
             }
+            questAnalyticsService.SendQuestCompleted(questInstance.Quest.Id);
             questCompletedComponentView.SetTitle(questInstance.Quest.Name);
             questCompletedComponentView.SetRewards(questRewards);
             questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
