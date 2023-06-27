@@ -10,7 +10,7 @@ namespace DCL.Quests
         public string questName;
         public string questCreator;
         public string questDescription;
-        public string questId;
+        public string questId = "";
         public bool isPinned = false;
         public Vector2Int coordinates;
         public List<QuestStepComponentModel> questSteps;

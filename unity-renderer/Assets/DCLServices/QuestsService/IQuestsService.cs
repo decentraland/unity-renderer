@@ -9,11 +9,9 @@ namespace DCLServices.QuestsService
 {
     public interface IQuestsService : IDisposable
     {
-        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestStarted { get; }
-        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestUpdated { get; }
-        IReadOnlyDictionary<string, QuestStateWithData> CurrentState { get; }
-
-        void SetUserId(string userId);
+        public IAsyncEnumerableWithEvent<QuestInstance> QuestStarted { get; }
+        public IAsyncEnumerableWithEvent<QuestInstance> QuestUpdated { get; }
+        IReadOnlyDictionary<string, QuestInstance> QuestInstances { get; }
 
         UniTask<StartQuestResponse> StartQuest(string questId);
 

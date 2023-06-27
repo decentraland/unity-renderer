@@ -9,6 +9,8 @@ using UnityEngine.Rendering;
 using DCL.Shaders;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
+using System;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -45,7 +47,7 @@ namespace DCL.Components
             {
                 if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.Material)
                     return Utils.SafeUnimplemented<PBRMaterial, Model>(expected: ComponentBodyPayload.PayloadOneofCase.Material, actual: pbModel.PayloadCase);
-                
+
                 var pb = new Model();
                 if (pbModel.Material.HasMetallic) pb.metallic = pbModel.Material.Metallic;
                 if (pbModel.Material.HasRoughness) pb.roughness = pbModel.Material.Roughness;
@@ -63,7 +65,7 @@ namespace DCL.Components
                 if (pbModel.Material.AlbedoColor != null) pb.albedoColor = pbModel.Material.AlbedoColor.AsUnityColor();
                 if (pbModel.Material.EmissiveColor != null) pb.emissiveColor = pbModel.Material.EmissiveColor.AsUnityColor();
                 if (pbModel.Material.ReflectivityColor != null) pb.reflectivityColor = pbModel.Material.ReflectivityColor.AsUnityColor();
-                
+
                 return pb;
             }
         }
@@ -159,7 +161,11 @@ namespace DCL.Components
             var fetchAlpha = FetchTexture(ShaderUtils.AlphaTexture, model.alphaTexture, (int)TextureType.Alpha);
             var fetchBump = FetchTexture(ShaderUtils.BumpMap, model.bumpTexture, (int)TextureType.Bump);
 
-            yield return UniTask.WhenAll(fetchEmission, fetchBaseMap, fetchAlpha, fetchBump).ToCoroutine();
+            yield return UniTask.WhenAll(fetchEmission, fetchBaseMap, fetchAlpha, fetchBump).ToCoroutine(e =>
+            {
+                if (e is not OperationCanceledException)
+                    throw e;
+            });
 
             foreach (IDCLEntity entity in attachedEntities)
                 InitMaterial(entity);
