@@ -187,6 +187,27 @@ public class UserProfileController : MonoBehaviour
             "description", cancellationToken);
     }
 
+    public UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
+        string sexualOrientation, string language, string profession, DateTime? birthDate, string realName, string hobbies,
+        string employmentStatus, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() => WebInterface.SaveAdditionalInfo(new WebInterface.SaveAdditionalInfoPayload
+            {
+                country = country,
+                gender = gender,
+                pronouns = pronouns,
+                relationshipStatus = relationshipStatus,
+                sexualOrientation = sexualOrientation,
+                language = language,
+                profession = profession,
+                birthdate = birthDate?.ToShortDateString() ?? "",
+                realName = realName,
+                hobbies = hobbies,
+                employmentStatus = employmentStatus,
+            }),
+            "additional-info", cancellationToken);
+    }
+
     private UniTask<UserProfile> SaveUserProfile(Action webInterfaceCall, string operationType, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

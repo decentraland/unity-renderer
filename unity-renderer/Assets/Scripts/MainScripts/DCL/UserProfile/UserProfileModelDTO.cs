@@ -69,7 +69,7 @@ public class UserProfileModelDTO
                 sexualOrientation = this.sexualOrientation,
                 language = this.language,
                 profession = this.profession,
-                birthdate = DateTimeOffset.FromUnixTimeSeconds(this.birthdate).DateTime,
+                birthdate = birthdate == 0 ? null : DateTimeOffset.FromUnixTimeSeconds(this.birthdate).DateTime,
                 realName = this.realName,
                 hobbies = this.hobbies,
             };

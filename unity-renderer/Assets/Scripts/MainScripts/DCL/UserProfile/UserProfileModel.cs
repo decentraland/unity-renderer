@@ -99,7 +99,7 @@ public class UserProfileModel
     public string sexualOrientation;
     public string language;
     public string profession;
-    public DateTime birthdate;
+    public DateTime? birthdate;
     public string realName;
     public string hobbies;
 

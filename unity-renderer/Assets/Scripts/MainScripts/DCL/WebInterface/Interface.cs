@@ -868,6 +868,22 @@ namespace DCL.Interface
             public List<Link> links;
         }
 
+        [Serializable]
+        public class SaveAdditionalInfoPayload
+        {
+            public string country;
+            public string employmentStatus;
+            public string gender;
+            public string pronouns;
+            public string relationshipStatus;
+            public string sexualOrientation;
+            public string language;
+            public string profession;
+            public string birthdate;
+            public string realName;
+            public string hobbies;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -1974,6 +1990,11 @@ namespace DCL.Interface
         public static void SaveProfileLinks(SaveLinksPayload payload)
         {
             SendMessage("SaveProfileLinks", payload);
+        }
+
+        public static void SaveAdditionalInfo(SaveAdditionalInfoPayload payload)
+        {
+            SendMessage("SaveProfileAdditionalInfo", payload);
         }
     }
 }

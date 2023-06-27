@@ -18,9 +18,11 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
         UserProfileController.i.SaveDescription(description, cancellationToken);
 
     public UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus, string sexualOrientation,
-        string language, string profession, DateTime? birthDate, string realName, string hobbies, string employmentStatus,
+        string language, string profession, DateTime? birthDate, string realName, string hobbies,
+        string employmentStatus,
         CancellationToken cancellationToken) =>
-        throw new NotImplementedException();
+        UserProfileController.i.SaveAdditionalInfo(country, gender, pronouns, relationshipStatus, sexualOrientation,
+            language, profession, birthDate, realName, hobbies, employmentStatus, cancellationToken);
 
     public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
 
