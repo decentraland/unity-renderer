@@ -504,6 +504,12 @@ export class BrowserInterface {
     store.dispatch(saveProfileDelta({ links: changes.links }))
   }
 
+  public SaveProfileAdditionalInfo(changes: { country: string, employmentStatus: string, gender: string,
+    pronouns: string, relationshipStatus: string, sexualOrientation: string, language: string,
+    profession: string, birthdate: number, realName: string, hobbies: string}) {
+    store.dispatch(saveProfileDelta(changes))
+  }
+
   public GetFriends(getFriendsRequest: GetFriendsPayload) {
     getFriends(getFriendsRequest).catch(defaultLogger.error)
   }

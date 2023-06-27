@@ -200,12 +200,12 @@ public class UserProfileController : MonoBehaviour
                 sexualOrientation = sexualOrientation,
                 language = language,
                 profession = profession,
-                birthdate = birthDate?.ToShortDateString() ?? "",
+                birthdate = birthDate != null ? new DateTimeOffset(birthDate.Value).ToUnixTimeSeconds() : 0,
                 realName = realName,
                 hobbies = hobbies,
                 employmentStatus = employmentStatus,
             }),
-            "additional-info", cancellationToken);
+            "additional_info", cancellationToken);
     }
 
     private UniTask<UserProfile> SaveUserProfile(Action webInterfaceCall, string operationType, CancellationToken cancellationToken)

@@ -879,7 +879,7 @@ namespace DCL.Interface
             public string sexualOrientation;
             public string language;
             public string profession;
-            public string birthdate;
+            public long birthdate;
             public string realName;
             public string hobbies;
         }
