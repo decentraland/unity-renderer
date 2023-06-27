@@ -104,11 +104,11 @@ namespace DCL.Social.Friends
 
                 try
                 {
-                    await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
+                    var friendRequest = await friendsController.RequestFriendshipAsync(recipientId, messageBody, cancellationToken);
 
                     socialAnalytics.SendFriendRequestSent(userProfileBridge.GetOwn().userId,
                         recipientId, messageBody.Length,
-                        (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get());
+                        (PlayerActionSource)dataStore.HUDs.sendFriendRequestSource.Get(), friendRequest.FriendRequestId);
 
                     view.ShowSendSuccess();
 

@@ -265,7 +265,7 @@ public class UserContextMenu : MonoBehaviour
         else
         {
             friendsController.RequestFriendship(userId);
-            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu, "");
         }
     }
 
@@ -285,7 +285,7 @@ public class UserContextMenu : MonoBehaviour
 
                 GetSocialAnalytics()
                    .SendFriendRequestCancelled(request.From, request.To,
-                        PlayerActionSource.ProfileContextMenu.ToString());
+                        PlayerActionSource.ProfileContextMenu.ToString(), request.FriendRequestId);
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
@@ -301,7 +301,7 @@ public class UserContextMenu : MonoBehaviour
 
             GetSocialAnalytics()
                .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
-                    PlayerActionSource.ProfileContextMenu.ToString());
+                    PlayerActionSource.ProfileContextMenu.ToString(), "");
         }
     }
 

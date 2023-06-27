@@ -102,15 +102,17 @@ namespace DCL.Social.Friends
         {
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
+            var friendRequestId = "frid";
+
             friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
-                             .Returns(UniTask.FromResult(new FriendRequest("frid", new DateTime(100), OWN_ID, RECIPIENT_ID, bodyMessage)));
+                             .Returns(UniTask.FromResult(new FriendRequest(friendRequestId, new DateTime(100), OWN_ID, RECIPIENT_ID, bodyMessage)));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>(bodyMessage);
             view.OnSend += Raise.Event<Action>();
 
             socialAnalytics.Received(1)
                            .SendFriendRequestSent(OWN_ID, RECIPIENT_ID, bodyMessage.Length,
-                                PlayerActionSource.Passport);
+                                PlayerActionSource.Passport, friendRequestId);
 
             friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, bodyMessage, Arg.Any<CancellationToken>());
             view.Received(1).ShowSendSuccess();
@@ -128,7 +130,7 @@ namespace DCL.Social.Friends
             view.OnMessageBodyChanged += Raise.Event<Action<string>>("hey");
             view.OnSend += Raise.Event<Action>();
 
-            socialAnalytics.DidNotReceiveWithAnyArgs().SendFriendRequestSent(default, default, default, default);
+            socialAnalytics.DidNotReceiveWithAnyArgs().SendFriendRequestSent(default, default, default, default, default);
             view.DidNotReceiveWithAnyArgs().ShowSendSuccess();
             friendsController.Received(1).RequestFriendshipAsync(RECIPIENT_ID, "hey", Arg.Any<CancellationToken>());
             view.Received().Show();

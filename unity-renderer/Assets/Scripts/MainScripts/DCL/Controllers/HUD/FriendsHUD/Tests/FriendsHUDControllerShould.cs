@@ -20,6 +20,7 @@ namespace DCl.Social.Friends
         private const string OTHER_USER_NAME = "woah";
         private const int FRIENDS_COUNT = 7;
         private const int FRIEND_REQUEST_SHOWN = 5;
+        private const string FRIEND_REQUEST_ID = "requestId";
 
         private FriendsHUDController controller;
         private IFriendsHUDComponentView view;
@@ -97,7 +98,7 @@ namespace DCl.Social.Friends
         {
             friendsController.RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("requestId", new DateTime(100), OWN_USER_ID, OTHER_USER_ID, "")));
+                                  new FriendRequest(FRIEND_REQUEST_ID, new DateTime(100), OWN_USER_ID, OTHER_USER_ID, "")));
 
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
@@ -106,7 +107,7 @@ namespace DCl.Social.Friends
             friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>());
 
             socialAnalytics.Received(1)
-                           .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
+                           .SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD, FRIEND_REQUEST_ID);
 
             view.Received(1).ShowRequestSendSuccess();
         }
@@ -116,14 +117,14 @@ namespace DCl.Social.Friends
         {
             friendsController.RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>())
                              .Returns(UniTask.FromResult(
-                                  new FriendRequest("requestId", new DateTime(100), OWN_USER_ID, OTHER_USER_ID, "")));
+                                  new FriendRequest(FRIEND_REQUEST_ID, new DateTime(100), OWN_USER_ID, OTHER_USER_ID, "")));
 
             friendsController.ContainsStatus(OTHER_USER_ID, FriendshipStatus.FRIEND).Returns(false);
 
             view.OnFriendRequestSent += Raise.Event<Action<string>>(OTHER_USER_ID);
 
             friendsController.Received(1).RequestFriendshipAsync(OTHER_USER_ID, "", Arg.Any<CancellationToken>());
-            socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD);
+            socialAnalytics.Received(1).SendFriendRequestSent(OWN_USER_ID, OTHER_USER_ID, 0, PlayerActionSource.FriendsHUD, FRIEND_REQUEST_ID);
             view.Received(1).ShowRequestSendSuccess();
         }
 

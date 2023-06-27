@@ -22,14 +22,16 @@ namespace DCL.Social.Friends
 
                 socialAnalytics.SendFriendRequestError(null, null,
                     source,
-                    description);
+                    description,
+                    request.FriendRequestId);
 
                 return;
             }
 
             socialAnalytics.SendFriendRequestError(request.From, request.To,
                 source,
-                description);
+                description,
+                "");
         }
 
         public static void ReportFriendRequestErrorToAnalyticsByUserId(this Exception e, string userId,
@@ -42,7 +44,8 @@ namespace DCL.Social.Friends
                 source,
                 e is FriendshipException fe
                     ? fe.ErrorCode.ToString()
-                    : FriendRequestErrorCodes.Unknown.ToString());
+                    : FriendRequestErrorCodes.Unknown.ToString(),
+                request?.FriendRequestId);
         }
 
         public static void ReportFriendRequestErrorToAnalyticsAsSender(this Exception e, string recipientId,
@@ -53,7 +56,8 @@ namespace DCL.Social.Friends
                 source,
                 e is FriendshipException fe
                     ? fe.ErrorCode.ToString()
-                    : FriendRequestErrorCodes.Unknown.ToString());
+                    : FriendRequestErrorCodes.Unknown.ToString(),
+                "");
         }
     }
 }

@@ -63,8 +63,8 @@ namespace SocialFeaturesAnalytics
             if (toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("to", toPlayerType.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "to", toPlayerType.ToString() } };
 
             analytics.SendAnalytic(PLAYER_MUTED, data);
         }
@@ -76,13 +76,16 @@ namespace SocialFeaturesAnalytics
             if (toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("to", toPlayerType.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "to", toPlayerType.ToString() } };
 
             analytics.SendAnalytic(PLAYER_UNMUTED, data);
         }
 
-        public void SendVoiceMessageStartedByFirstTime() { analytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME, new Dictionary<string, string>()); }
+        public void SendVoiceMessageStartedByFirstTime()
+        {
+            analytics.SendAnalytic(VOICE_MESSAGE_STARTED_BY_FIRST_TIME, new Dictionary<string, string>());
+        }
 
         public void SendVoiceMessage(double messageLength, VoiceMessageSource source, string fromUserId)
         {
@@ -91,23 +94,28 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("length", messageLength.ToString());
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "length", messageLength.ToString() },
+                { "source", source.ToString() },
+            };
 
             analytics.SendAnalytic(VOICE_MESSAGE_SENT, data);
         }
 
         public void SendVoiceChannelConnection(int numberOfPeers)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("numberOfPeers", numberOfPeers.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "numberOfPeers", numberOfPeers.ToString() } };
 
             analytics.SendAnalytic(VOICE_CHANNEL_CONNECTION, data);
         }
 
-        public void SendVoiceChannelDisconnection() { analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>()); }
+        public void SendVoiceChannelDisconnection()
+        {
+            analytics.SendAnalytic(VOICE_CHANNEL_DISCONNECTION, new Dictionary<string, string>());
+        }
 
         public void SendClickedOnCollectibles()
         {
@@ -116,56 +124,56 @@ namespace SocialFeaturesAnalytics
 
         public void SendStartedConversation(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_STARTED_CONVERSATION, data);
         }
 
         public void SendNftBuy(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_BUY_NFT, data);
         }
 
         public void SendInspectAvatar(double timeSpent)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("timeSpent", timeSpent.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "timeSpent", timeSpent.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_INSPECT_AVATAR, data);
         }
 
         public void SendLinkClick(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_CLICK_LINK, data);
         }
 
         public void SendCopyWallet(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_WALLET_COPY, data);
         }
 
         public void SendCopyUsername(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_USERNAME_COPY, data);
         }
 
         public void SendJumpInToPlayer(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "source", source.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
         }
@@ -174,9 +182,9 @@ namespace SocialFeaturesAnalytics
         {
             var data = new Dictionary<string, string>
             {
-                ["source"] = source.ToString(),
-                ["descriptionLength"] = descriptionLength.ToString(),
-                ["hasLinks"] = hasLinks.ToString(),
+                { "source", source.ToString() },
+                { "descriptionLength", descriptionLength.ToString() },
+                { "hasLinks", hasLinks.ToString() },
             };
 
             analytics.SendAnalytic(PASSPORT_EDIT_PROFILE, data);
@@ -184,25 +192,27 @@ namespace SocialFeaturesAnalytics
 
         public void SendVoiceChatPreferencesChanged(VoiceChatAllow preference)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("allow", preference.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "allow", preference.ToString() } };
 
             analytics.SendAnalytic(VOICE_CHAT_PREFERENCES_CHANGED, data);
         }
 
-        public void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription)
+        public void SendFriendRequestError(string senderId, string recipientId, string source, string errorDescription, string friendRequestId)
         {
             var data = new Dictionary<string, string>
             {
-                ["source"] = source,
-                ["from"] = senderId,
-                ["to"] = recipientId,
-                ["description"] = errorDescription,
+                { "source", source },
+                { "description", errorDescription },
+                { "senderId", senderId },
+                { "receiverId", recipientId },
+                { "friendRequestId", friendRequestId },
             };
+
             analytics.SendAnalytic(FRIEND_REQUEST_ERROR, data);
         }
 
-        public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source)
+        public void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source, string friendRequestId)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -210,19 +220,25 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null || toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            // TODO (FRIEND REQUESTS): retro-compatibility, remove this param in the future
-            data.Add("text_length", messageLength.ToString());
-            data.Add("attached_message_length", messageLength.ToString());
-            data.Add("attached_message", messageLength > 0 ? "true" : "false");
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "to ", toPlayerType.ToString() },
+
+                // TODO (FRIEND REQUESTS): retro-compatibility, remove this param in the future
+                { "text_length", messageLength.ToString() },
+                { "attached_message_length", messageLength.ToString() },
+                { "attached_message", messageLength > 0 ? "true" : "false" },
+                { "source", source.ToString() },
+                { "senderId", fromUserId },
+                { "receiverId", toUserId },
+                { "friendRequestId", friendRequestId },
+            };
 
             analytics.SendAnalytic(FRIEND_REQUEST_SENT, data);
         }
 
-        public void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage)
+        public void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage, string friendRequestId)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -230,16 +246,21 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null || toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("source", source);
-            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "to", toPlayerType.ToString() },
+                { "source", source },
+                { "has_body_message", hasBodyMessage ? "true" : "false" },
+                { "friendRequestId", friendRequestId },
+                { "senderId", fromUserId },
+                { "receiverId", toUserId },
+            };
 
             analytics.SendAnalytic(FRIEND_REQUEST_APPROVED, data);
         }
 
-        public void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage)
+        public void SendFriendRequestRejected(string fromUserId, string toUserId, string source, bool hasBodyMessage, string friendRequestId)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -247,16 +268,21 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null || toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("source", source);
-            data.Add("has_body_message", hasBodyMessage ? "true" : "false");
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "to", toPlayerType.ToString() },
+                { "source", source },
+                { "has_body_message", hasBodyMessage ? "true" : "false" },
+                { "senderId", fromUserId },
+                { "receiverId", toUserId },
+                { "friendRequestId", friendRequestId },
+            };
 
             analytics.SendAnalytic(FRIEND_REQUEST_REJECTED, data);
         }
 
-        public void SendFriendRequestCancelled(string fromUserId, string toUserId, string source)
+        public void SendFriendRequestCancelled(string fromUserId, string toUserId, string source, string friendRequestId)
         {
             PlayerType? fromPlayerType = GetPlayerTypeByUserId(fromUserId);
             PlayerType? toPlayerType = GetPlayerTypeByUserId(toUserId);
@@ -264,10 +290,15 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null || toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("source", source);
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "to", toPlayerType.ToString() },
+                { "source", source },
+                { "friendRequestId", friendRequestId },
+                { "senderId", fromUserId },
+                { "receiverId", toUserId },
+            };
 
             analytics.SendAnalytic(FRIEND_REQUEST_CANCELLED, data);
         }
@@ -280,10 +311,14 @@ namespace SocialFeaturesAnalytics
             if (fromPlayerType == null || toPlayerType == null)
                 return;
 
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("from", fromPlayerType.ToString());
-            data.Add("to", toPlayerType.ToString());
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "from", fromPlayerType.ToString() },
+                { "to", toPlayerType.ToString() },
+                { "source", source.ToString() },
+                { "senderId", fromUserId },
+                { "receiverId", toUserId },
+            };
 
             analytics.SendAnalytic(FRIEND_DELETED, data);
         }
@@ -302,7 +337,7 @@ namespace SocialFeaturesAnalytics
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
-                {"source", source.ToString()},
+                { "source", source.ToString() },
             };
 
             analytics.SendAnalytic(MENTION_CREATED, data);
@@ -312,8 +347,8 @@ namespace SocialFeaturesAnalytics
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
-                {"source", source.ToString()},
-                {"found", found.ToString()}
+                { "source", source.ToString() },
+                { "found", found.ToString() }
             };
 
             analytics.SendAnalytic(PASSPORT_OPENED, data);
@@ -321,8 +356,8 @@ namespace SocialFeaturesAnalytics
 
         public void SendPassportClose(double timeSpent)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("time_spent", timeSpent.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+                { { "time_spent", timeSpent.ToString() } };
 
             analytics.SendAnalytic(PASSPORT_CLOSED, data);
         }
@@ -340,119 +375,139 @@ namespace SocialFeaturesAnalytics
 
         public void SendPlayerUnblocked(bool isFriend, PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("friend", isFriend.ToString());
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "friend", isFriend.ToString() },
+                { "source", source.ToString() },
+            };
 
             analytics.SendAnalytic(PLAYER_UNBLOCKED, data);
         }
 
         public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("issue_type", issueType.ToString());
-            data.Add("text_length", messageLength.ToString());
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "issue_type", issueType.ToString() },
+                { "text_length", messageLength.ToString() },
+                { "source", source.ToString() },
+            };
 
             analytics.SendAnalytic(PLAYER_REPORT, data);
         }
 
         public void SendPlayerJoin(PlayerActionSource source)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("source", source.ToString());
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "source", source.ToString() },
+            };
 
             analytics.SendAnalytic(PLAYER_JOIN, data);
         }
 
-        public void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source, string parcelLocation)
+        public void SendPlayEmote(string emoteId, string emoteName, string rarity, bool isBaseEmote, UserProfile.EmoteSource source,
+            string parcelLocation)
         {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("id", emoteId);
-            data.Add("name", emoteName);
-            data.Add("rarity", rarity);
-            data.Add("isBase", isBaseEmote.ToString());
-            data.Add("source", source.ToString());
-            data.Add("parcel_location", parcelLocation);
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "id", emoteId },
+                { "name", emoteName },
+                { "rarity", rarity },
+                { "isBase", isBaseEmote.ToString() },
+                { "source", source.ToString() },
+                { "parcel_location", parcelLocation },
+            };
 
             analytics.SendAnalytic(PLAY_EMOTE, data);
         }
 
         public void SendEmptyChannelCreated(string channelName, ChannelJoinedSource source)
         {
+            string command = source switch
+                             {
+                                 ChannelJoinedSource.Command => "command",
+                                 ChannelJoinedSource.Link => "link",
+                                 ChannelJoinedSource.Search => "create_search",
+                                 _ => ""
+                             };
+
             var data = new Dictionary<string, string>
             {
-                ["source"] = source switch
-                {
-                    ChannelJoinedSource.Command => "command",
-                    ChannelJoinedSource.Link => "link",
-                    ChannelJoinedSource.Search => "create_search",
-                    _ => ""
-                },
-                ["channel"] = channelName
+                { "source", command },
+                { "channel", channelName },
             };
+
             analytics.SendAnalytic(EMPTY_CHANNEL_CREATED, data);
         }
 
         public void SendPopulatedChannelJoined(string channelName, ChannelJoinedSource source, string method)
         {
+            string conversationList = source switch
+                                      {
+                                          ChannelJoinedSource.Command => "command",
+                                          ChannelJoinedSource.Link => "link",
+                                          ChannelJoinedSource.Search => "search",
+                                          ChannelJoinedSource.ConversationList => "conversation_list",
+                                          _ => ""
+                                      };
+
             var data = new Dictionary<string, string>
             {
-                ["source"] = source switch
-                {
-                    ChannelJoinedSource.Command => "command",
-                    ChannelJoinedSource.Link => "link",
-                    ChannelJoinedSource.Search => "search",
-                    ChannelJoinedSource.ConversationList => "conversation_list",
-                    _ => ""
-                },
-                ["channel"] = channelName,
-                ["method"] = method
+                { "source", conversationList },
+                { "channel", channelName },
+                { "method", method },
             };
+
             analytics.SendAnalytic(POPULATED_CHANNEL_JOINED, data);
         }
 
         public void SendLeaveChannel(string channelId, ChannelLeaveSource source)
         {
+            string conversationList = source switch
+                                      {
+                                          ChannelLeaveSource.Chat => "chat",
+                                          ChannelLeaveSource.Command => "command",
+                                          ChannelLeaveSource.Search => "search",
+                                          ChannelLeaveSource.ConversationList => "conversation_list",
+                                          _ => ""
+                                      };
+
             var data = new Dictionary<string, string>
             {
-                ["source"] = source switch
-                {
-                    ChannelLeaveSource.Chat => "chat",
-                    ChannelLeaveSource.Command => "command",
-                    ChannelLeaveSource.Search => "search",
-                    ChannelLeaveSource.ConversationList => "conversation_list",
-                    _ => ""
-                },
-                ["channel"] = channelId
+                { "source", conversationList },
+                { "channel", channelId },
             };
+
             analytics.SendAnalytic(CHANNEL_LEAVE, data);
         }
 
         public void SendChannelSearch(string text)
         {
             var data = new Dictionary<string, string>
-            {
-                ["search"] = text
-            };
+                { { "search", text } };
+
             analytics.SendAnalytic(CHANNEL_SEARCH, data);
         }
 
         public void SendChannelLinkClicked(string channel, bool joinAccepted, ChannelLinkSource source)
         {
+            string profile = source switch
+                             {
+                                 ChannelLinkSource.Chat => "chat",
+                                 ChannelLinkSource.Event => "event",
+                                 ChannelLinkSource.Place => "place",
+                                 ChannelLinkSource.Profile => "profile",
+                                 _ => ""
+                             };
+
             var data = new Dictionary<string, string>
             {
-                ["source"] = source switch
-                {
-                    ChannelLinkSource.Chat => "chat",
-                    ChannelLinkSource.Event => "event",
-                    ChannelLinkSource.Place => "place",
-                    ChannelLinkSource.Profile => "profile",
-                    _ => ""
-                },
-                ["channel"] = channel,
-                ["result"] = joinAccepted ? "joined" : "cancel"
+                { "source", profile },
+                { "channel", channel },
+                { "result", joinAccepted ? "joined" : "cancel" },
             };
+
             analytics.SendAnalytic(CHANNEL_LINK_CLICK, data);
         }
 
@@ -465,6 +520,7 @@ namespace SocialFeaturesAnalytics
 
             if (userProfile == null)
                 return null;
+
             return userProfile.isGuest ? PlayerType.Guest : PlayerType.Wallet;
         }
     }
