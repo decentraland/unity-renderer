@@ -18,20 +18,22 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public UserProfile GetOwn() => UserProfile.GetOwnUserProfile();
 
-    public void AddUserProfileToCatalog(UserProfileModel userProfileModel)
-    {
-        UserProfileController.i.AddUserProfileToCatalog(userProfileModel);
-    }
-
     public UserProfile Get(string userId)
     {
         if (userId == null) return null;
         return UserProfileController.userProfilesCatalog.Get(userId);
     }
 
-    public UserProfile GetByName(string userNameOrId)
+    public UserProfile GetByName(string userName, bool caseSensitive)
     {
-        return UserProfileController.userProfilesCatalog.GetValues().FirstOrDefault(p => p.userName == userNameOrId);
+        return UserProfileController.userProfilesCatalog.GetValues()
+                                    .FirstOrDefault(p =>
+                                     {
+                                         if (caseSensitive)
+                                             return p.userName == userName;
+
+                                         return p.userName.Equals(userName, StringComparison.OrdinalIgnoreCase);
+                                     });
     }
 
     public void SignUp() => WebInterface.RedirectToSignUp();

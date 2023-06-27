@@ -103,7 +103,7 @@ namespace DCL.Social.Friends
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
             friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
-                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, bodyMessage)));
+                             .Returns(UniTask.FromResult(new FriendRequest("frid", new DateTime(100), OWN_ID, RECIPIENT_ID, bodyMessage)));
 
             view.OnMessageBodyChanged += Raise.Event<Action<string>>(bodyMessage);
             view.OnSend += Raise.Event<Action>();
@@ -140,7 +140,7 @@ namespace DCL.Social.Friends
             dataStore.HUDs.sendFriendRequestSource.Set(0);
             dataStore.HUDs.sendFriendRequest.Set(RECIPIENT_ID, true);
             friendsController.RequestFriendshipAsync(RECIPIENT_ID, Arg.Any<string>(), Arg.Any<CancellationToken>())
-                             .Returns(UniTask.FromResult(new FriendRequest("frid", 100, OWN_ID, RECIPIENT_ID, "")));
+                             .Returns(UniTask.FromResult(new FriendRequest("frid", new DateTime(100), OWN_ID, RECIPIENT_ID, "")));
             view.ClearReceivedCalls();
 
             view.OnSend += Raise.Event<Action>();

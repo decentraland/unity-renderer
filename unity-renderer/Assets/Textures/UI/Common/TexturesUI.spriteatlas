@@ -100,6 +100,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 511aa971d8654400498da53ce8f013b7, type: 3}
   - {fileID: 21300000, guid: 0d4bfb71b11af4dc0967886c03434d5b, type: 3}
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
+  - {fileID: 21300000, guid: ef2d91a1c841c4a87929659f0044d26e, type: 3}
   - {fileID: 21300000, guid: 04162ca1b011c47e7a21c573dc2c8a14, type: 3}
   - {fileID: 21300000, guid: db7198b10e7b549a68d088ccdf7377cf, type: 3}
   - {fileID: 21300000, guid: a6b6c8b1877c9c7498c971402965bdc0, type: 3}
@@ -126,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 147d94c24838a2647bbaf2fb16ac913c, type: 3}
   - {fileID: 21300000, guid: 166eccd2b230b3a45b65e30f02348cd6, type: 3}
   - {fileID: 21300000, guid: 37cde3e27276a4d81864268dd0573014, type: 3}
+  - {fileID: 21300000, guid: 73cbe8e2d0378405aa20d597bdb2c82b, type: 3}
   - {fileID: 21300000, guid: a628efe28360b426c8ca23b43ad06c2b, type: 3}
   - {fileID: 21300000, guid: 04c3edf2ef4a747ffbe6f20a72aac0d9, type: 3}
   - {fileID: 21300000, guid: 569775035d3b6654dbb4fcafc21d438b, type: 3}
@@ -143,7 +145,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 94352b53817657c429ced2d35262394c, type: 3}
   - {fileID: 21300000, guid: db1616631e9344b4aa7ce7fdb5218656, type: 3}
   - {fileID: 21300000, guid: 09d7c763693b246d7bdb6df137a6f0cc, type: 3}
-  - {fileID: 21300000, guid: 257bf8731440e4fa392f389916143102, type: 3}
   - {fileID: 21300000, guid: c553839314f3e4d218eed6729f828916, type: 3}
   - {fileID: 21300000, guid: 3f0f9693166cb48a9b43e5e4bbd00332, type: 3}
   - {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
@@ -233,6 +234,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9e9156e761f2c4570a5f469435d77a16, type: 3}
   - {fileID: 21300000, guid: 9ef211f7dbe2c4e13911b4054a18334b, type: 3}
   - {fileID: 21300000, guid: e0fcedf7c3fa64d24b85a27aa8bb93a9, type: 3}
+  - {fileID: 21300000, guid: c5cc621826be242249ff1d0eea9d2bc3, type: 3}
   - {fileID: 21300000, guid: dcbf4a1870c524ae5a2d1bad9d1bf3ea, type: 3}
   - {fileID: 21300000, guid: 7fa4c0281629e43abbcb190d00fe187a, type: 3}
   - {fileID: 21300000, guid: 08d52e28c31ca4d049008be051e8b8a1, type: 3}
@@ -266,6 +268,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 801b2e4946a664b06873a855ca5bd8ef, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
+  - {fileID: 21300000, guid: 7ff198699317441fb8a438d0b4643ab4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
   - {fileID: 21300000, guid: 46524689a799e4be9941af9ef6f45a89, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
@@ -443,11 +446,12 @@ SpriteAtlas:
   - SpeakerOn
   - ContainerRadius6
   - VoiceChatCross
-  - DecentralandIsologotipo68
+  - DCLLogo
   - TopRect12
   - SceneInfoContainer
   - Button16
   - BlockedUser
+  - QuestCompleted
   - Checkmark
   - ManaIcon
   - RectangleGreen
@@ -474,13 +478,14 @@ SpriteAtlas:
   - PolygonManaIcon
   - MicrophoneVoiceChatOn
   - HomeIconOutline
+  - Quest on
   - DisclaimerBackground
   - NFTContainer
   - BrightLoading
   - BackgroundSaturation
   - ContainerRectLeft20
   - ContainerRadius10@2x
-  - DCLLogoColor
+  - DCLIcnColor
   - Outline1Radius12
   - ButtonFlatWhite
   - ExitFullScreenIcon
@@ -491,7 +496,6 @@ SpriteAtlas:
   - Frame24
   - AcceptButton
   - CopyIcn
-  - QuestOn
   - IconBellActive
   - OkIcon
   - ContainerRadius20
@@ -559,7 +563,7 @@ SpriteAtlas:
   - BackgroundPattern
   - CheckmarkContainer
   - ContainerRadius20Shadow
-  - PlacesIcon
+  - PlacesIcn
   - ProfileHudTopContainer
   - no-image-icon-32
   - ChatOn
@@ -581,6 +585,7 @@ SpriteAtlas:
   - IconClock
   - AudioIcon
   - MapIcon
+  - QuestButton
   - JoinVoiceChat
   - GeneralIcon
   - NFTFrame
@@ -589,7 +594,7 @@ SpriteAtlas:
   - NFTStarUniqueContainer
   - ContainerRadius20@2x
   - Square32x32
-  - HighlightsIcon
+  - HighlightsIcn
   - Container12
   - UIicon
   - PromoteChannelsToastBackground
@@ -614,6 +619,7 @@ SpriteAtlas:
   - HideUIIconNew
   - Ellipse128
   - SearchChannelIcon
+  - PinIcon
   - FriendsOff
   - FloorLight
   - MessageIcon
@@ -695,12 +701,12 @@ SpriteAtlas:
   - HelpIcn
   - SettingsOff
   - VoiceChatPlayer
-  - FavoritesIcon
+  - FavoritesIcn
   - HideNameIcon
   - ChatOff
   - LargeGradientBottom
   - ArrowGradient
-  - NotFavoriteIcon
+  - FavouriteToggleOff
   - ContainerOutline100
   - MarketplaceOn
   - MicrophoneVoiceChat
@@ -708,7 +714,7 @@ SpriteAtlas:
   - ContainerStroke10
   - LeftClick
   - Home
-  - EventsIcon
+  - EventsIcn
   - Div
   - EllipticalShadow
   - rectangle_100
@@ -716,7 +722,7 @@ SpriteAtlas:
   - OutlineRightRect12
   - Cursor
   - Container24Shadow4
-  - FavoriteIcon
+  - FavouriteToggleOn
   - ToggleCheckOn
   - UnpublishIconOutline
   - Button12

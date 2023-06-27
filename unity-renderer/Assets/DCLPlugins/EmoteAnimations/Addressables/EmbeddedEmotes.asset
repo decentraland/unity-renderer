@@ -757,3 +757,51 @@ MonoBehaviour:
     femaleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
     maleAnimation: {fileID: 7400000, guid: 7a1e6b1cc6adaf84aaf73a11aa4b8dbd, type: 2}
     dontShowInBackpack: 1
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: cry
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Cry
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
+    rarity: 
+    description: cry
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: d5fa31a07ca528042a25926bb7bb6b84, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 48d5289f72fa0ed41a5e5cea57031c8f, type: 2}
+    dontShowInBackpack: 0
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: hands_in_the_air
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Hands in the Air
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
+    rarity: 
+    description: hands_in_the_air
+    issuedId: 0
+    femaleAnimation: {fileID: 7400000, guid: 5b477e0785418fc45a0c0a6cc0f080b0, type: 2}
+    maleAnimation: {fileID: 7400000, guid: 81e0d8cf9d0386e47870900cd8f1514a, type: 2}
+    dontShowInBackpack: 0

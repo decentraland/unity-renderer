@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using System.Threading;
 using Decentraland.Renderer.KernelServices;
+using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
 using SignBodyRequest = Decentraland.Renderer.KernelServices.SignBodyRequest;
@@ -32,4 +33,13 @@ public class RPCSignRequest : IRPCSignRequest
         return response;
     }
 
+    public async UniTask<string> RequestSignedHeaders(string url, IDictionary<string, string> metadata, CancellationToken cancellationToken)
+    {
+        var request = new GetSignedHeadersRequest() { Url = url };
+        request.Metadata.Add(metadata);
+        var response = await rpc.SignRequestKernelService()
+                                .GetSignedHeaders(request)
+                                .AttachExternalCancellation(cancellationToken);
+        return response.Message;
+    }
 }

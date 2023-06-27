@@ -14,6 +14,8 @@ public interface ISignRequestKernelService<Context>
 
   UniTask<SignBodyResponse> GetRequestSignature(SignBodyRequest request, Context context, CancellationToken ct);
 
+  UniTask<GetSignedHeadersResponse> GetSignedHeaders(GetSignedHeadersRequest request, Context context, CancellationToken ct);
+
 }
 
 public static class SignRequestKernelServiceCodeGen
@@ -25,6 +27,7 @@ public static class SignRequestKernelServiceCodeGen
     var result = new ServerModuleDefinition<Context>();
       
     result.definition.Add("GetRequestSignature", async (payload, context, ct) => { var res = await service.GetRequestSignature(SignBodyRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("GetSignedHeaders", async (payload, context, ct) => { var res = await service.GetSignedHeaders(GetSignedHeadersRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }
