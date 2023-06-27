@@ -334,7 +334,9 @@ namespace RPC.Services
                         && msg.MessageType != CrdtMessageType.PUT_COMPONENT
                         && msg.MessageType != CrdtMessageType.DELETE_COMPONENT)
                     {
-                        msg.PooledWrappedComponent.Dispose();
+                        if (clearMessages)
+                            msg.Dispose();
+
                         continue;
                     }
 
@@ -367,7 +369,8 @@ namespace RPC.Services
                         CRDTSerializer.Serialize(sendCrdtBinaryWriter, crdtMessage);
                     }
 
-                    msg.Dispose();
+                    if (clearMessages)
+                        msg.Dispose();
                 }
 
                 if (clearMessages)
