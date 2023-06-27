@@ -1,13 +1,17 @@
-using DCL;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
+using TMPro;
+using Unity.Profiling;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Bootstrapper : MonoBehaviour
 {
     [SerializeField] private GameObject webGLPrefab;
     [SerializeField] private GameObject desktopPrefab;
-    [SerializeField] private InputField text;
+    [SerializeField] private TMP_Text text;
+    [SerializeField] private TMP_Text text1;
+    [SerializeField] private TMP_Text text2;
+
+    private ProfilerRecorder gcAllocatedInFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
 
 #if UNITY_EDITOR
     private enum Platform
@@ -39,31 +43,9 @@ public class Bootstrapper : MonoBehaviour
     private bool started;
     void Update()
     {
-        if( profService == null)
-            profService = Environment.i?.serviceLocator?.Get<IProfilerRecordsService>();
-        else
-        {
-            started = true;
-            profService.StartRecordGCAllocatedInFrame();
-            Avarage();
-            text.text = gc.ToString();
-        }
-    }
-
-    int frameCounter = 0;
-    float updateInterval = 0.3f; // Time in seconds between updates
-    float nextUpdate = 0.0f;
-    float gc = 0.0f;
-
-    void Avarage()
-    {
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-
-        if (Time.unscaledTime > nextUpdate)
-        {
-            gc = profService.GcAllocatedInFrame/ 1024f;
-            nextUpdate = Time.unscaledTime + updateInterval;
-        }
+        text.text = $"{gcAllocatedInFrameRecorder.LastValue}";
+        text1.text = $"{gcAllocatedInFrameRecorder.CurrentValue}";
+        text2.text = $"{gcAllocatedInFrameRecorder.IsRunning}";
     }
 
 #else
