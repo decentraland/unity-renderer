@@ -1,3 +1,4 @@
+using DCL.LoadingScreen.V2;
 using System;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ namespace DCL.LoadingScreen
         ILoadingScreenTimeoutView GetTimeoutView();
 
         RectTransform GetHintContainer();
+
+        HintDotsView GetHintDotsView();
 
         void ToggleTeleportLoadingAnimation(bool active);
     }

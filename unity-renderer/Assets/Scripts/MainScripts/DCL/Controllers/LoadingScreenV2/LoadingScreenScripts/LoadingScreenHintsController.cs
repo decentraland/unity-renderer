@@ -23,6 +23,7 @@ namespace DCL.LoadingScreen.V2
         private readonly HintRequestService hintRequestService;
         private readonly IAddressableResourceProvider addressableProvider;
         private readonly ILoadingScreenView loadingScreenView;
+        private readonly HintDotsView hintDotsView;
 
         internal HintView hintViewPrefab;
         internal HintViewManager hintViewManager;
@@ -38,6 +39,7 @@ namespace DCL.LoadingScreen.V2
             this.addressableProvider = addressableProvider;
             this.hintRequestService = hintRequestService;
             this.loadingScreenView = loadingScreenView;
+            this.hintDotsView = loadingScreenView.GetHintDotsView();
 
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
@@ -109,7 +111,9 @@ namespace DCL.LoadingScreen.V2
                 index++;
             }
 
-            hintViewManager = new HintViewManager(intializedHints, SHOWING_TIME_HINTS);
+            if (hintDotsView != null)
+                hintDotsView.Initialize(intializedHints.Count);
+            hintViewManager = new HintViewManager(intializedHints, SHOWING_TIME_HINTS, hintDotsView);
 
             StartHintsCarousel();
             OnRequestHintsCompleted?.Invoke();

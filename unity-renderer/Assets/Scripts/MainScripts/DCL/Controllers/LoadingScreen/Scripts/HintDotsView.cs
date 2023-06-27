@@ -27,21 +27,25 @@ namespace DCL.LoadingScreen.V2
             if (dotsList == null)
                 throw new WarningException("HintDotsView - DotsList is not assigned!");
 
-            if (dotsCount <= 0)
+            if (hintsAmount <= 0)
                 throw new WarningException("HintDotsView - DotsCount is not valid!");
 
+            dotsCount = hintsAmount;
             dotsImages = new List<Image>();
-            for (int i = 0; i < dotsCount; i++)
+            var dotsListLength = dotsList.Length;
+
+            for (int i = 0; i < dotsListLength && i < dotsCount; i++)
             {
                 dotsList[i].gameObject.SetActive(true);
                 dotsImages.Add(dotsList[i].GetComponent<Image>());
+                dotsList[i].gameObject.SetActive(true);
             }
 
             currentDotIndex = 0;
-            UpdateActiveDot(currentDotIndex);
+            ToggleDot(currentDotIndex);
         }
 
-        public void UpdateActiveDot(int index)
+        public void ToggleDot(int index)
         {
             if (index < 0 || index > dotsCount)
                 return;
@@ -51,13 +55,13 @@ namespace DCL.LoadingScreen.V2
 
             // Set current dot to active state
             dotsList[index].sizeDelta = bigSize;
-            dotsImages[index].GetComponent<Image>().color = activeColor;
+            dotsImages[index].color = activeColor;
 
             if (currentDotIndex != previousDotIndex)
             {
                 // Set previous dot to inactive state
                 dotsList[previousDotIndex].sizeDelta = smallSize;
-                dotsImages[previousDotIndex].GetComponent<Image>().color = inactiveColor;
+                dotsImages[previousDotIndex].color = inactiveColor;
             }
         }
     }
