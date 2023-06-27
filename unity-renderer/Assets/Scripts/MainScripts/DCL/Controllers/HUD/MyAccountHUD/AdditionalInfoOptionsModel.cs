@@ -18,6 +18,7 @@ namespace DCL.MyAccount
             public Action<string> OnValueSubmitted;
             public Action OnRemoved;
 
+            public bool IsAvailable { get; set; }
             public string Name { get; set; }
             public InputType InputType { get; set; }
             [CanBeNull] public string[] Values { get; set; }

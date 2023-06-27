@@ -53,20 +53,24 @@ namespace DCL.MyAccount
         {
             optionsModel = model;
 
-            optionsDropdown.SetOptions(model.Options.Select(pair => new ToggleComponentModel
-                                             {
-                                                 text = pair.Value.Name,
-                                                 id = pair.Key,
-                                                 isOn = false,
-                                                 isTextActive = true,
-                                                 changeTextColorOnSelect = true,
-                                             })
-                                            .ToList());
+            var options = model.Options
+                                             .Where(pair => pair.Value.IsAvailable)
+                                             .Select(pair => new ToggleComponentModel
+                                              {
+                                                  text = pair.Value.Name,
+                                                  id = pair.Key,
+                                                  isOn = false,
+                                                  isTextActive = true,
+                                                  changeTextColorOnSelect = true,
+                                              })
+                                             .ToList();
 
-            if (model.Options.Count > 0)
+            optionsDropdown.SetOptions(options);
+
+            if (options.Count > 0)
             {
-                KeyValuePair<string, AdditionalInfoOptionsModel.Option> firstOption = model.Options.First();
-                ChangeCurrentOption(firstOption.Key, firstOption.Value.Name);
+                ToggleComponentModel option = options[0];
+                ChangeCurrentOption(option.id, option.text);
             }
         }
 
