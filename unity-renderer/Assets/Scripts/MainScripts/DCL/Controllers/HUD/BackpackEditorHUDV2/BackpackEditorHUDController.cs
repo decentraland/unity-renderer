@@ -94,9 +94,6 @@ namespace DCL.Backpack
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
 
-        private void OnEnableOutfitsChanged(bool current, bool previous) =>
-            view.SetOutfitsEnabled(current);
-
         private void OnOutfitEquipped(OutfitItem outfit)
         {
             Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
@@ -116,8 +113,10 @@ namespace DCL.Backpack
                 await wearablesCatalogService.RequestWearableAsync(outfit.outfit.bodyShape, cancellationToken);
             foreach (string outfitWearable in outfit.outfit.wearables)
             {
-                if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable))
-                    await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
+                if (wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable)) continue;
+
+                try { await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken); }
+                catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
             }
 
             EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
