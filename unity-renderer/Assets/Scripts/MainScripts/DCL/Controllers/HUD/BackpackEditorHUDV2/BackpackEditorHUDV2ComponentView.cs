@@ -67,8 +67,7 @@ namespace DCL.Backpack
             ICharacterPreviewFactory characterPreviewFactory,
             IPreviewCameraRotationController avatarPreviewRotationController,
             IPreviewCameraPanningController avatarPreviewPanningController,
-            IPreviewCameraZoomController avatarPreviewZoomController,
-            DataStore dataStore)
+            IPreviewCameraZoomController avatarPreviewZoomController)
         {
             ConfigureSectionSelector();
             backpackPreviewPanel.Initialize(
@@ -79,16 +78,14 @@ namespace DCL.Backpack
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
 
-            outfitButton.gameObject.SetActive(dataStore.HUDs.enableOutfits.Get());
-            dataStore.HUDs.enableOutfits.OnChange += OnEnableOutfitsChanged;
             outfitButton.onClick.RemoveAllListeners();
             outfitButton.onClick.AddListener(ToggleOutfitSection);
 
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
         }
 
-        private void OnEnableOutfitsChanged(bool current, bool previous) =>
-            outfitButton.gameObject.SetActive(current);
+        public void SetOutfitsEnabled(bool isEnabled) =>
+            outfitButton.gameObject.SetActive(isEnabled);
 
         private void ToggleOutfitSection()
         {

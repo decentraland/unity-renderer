@@ -18,6 +18,7 @@ namespace DCL.Backpack
         bool isVisible { get; }
 
         void Dispose();
+        void SetOutfitsEnabled(bool isEnabled);
         void Show(bool instant = false);
         void Hide(bool instant = false);
         void SetAsFullScreenMenuMode(Transform parentTransform);

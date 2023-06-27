@@ -1,13 +1,10 @@
 using Cysharp.Threading.Tasks;
-using DCL;
-using DCL.Backpack;
 using DCL.Interface;
-using DCLServices.WearablesCatalogService;
+using DCL.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
 
 namespace DCL.Backpack
 {
@@ -17,6 +14,7 @@ namespace DCL.Backpack
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IOutfitsSectionComponentView view;
         private readonly IBackpackAnalyticsService backpackAnalyticsService;
+        private readonly DataStore dataStore;
         public event Action<OutfitItem> OnOutfitEquipped;
 
         private CancellationTokenSource cts;
@@ -34,14 +32,20 @@ namespace DCL.Backpack
             this.lambdaOutfitsService = lambdaOutfitsService;
             this.userProfileBridge = userProfileBridge;
             this.backpackAnalyticsService = backpackAnalyticsService;
+            this.dataStore = dataStore;
 
             view.OnOutfitEquipped += OutfitEquip;
             view.OnOutfitDiscarded += DiscardOutfit;
             view.OnOutfitSaved += SaveOutfit;
             view.OnUpdateLocalOutfits += UpdateLocalOutfits;
+            view.OnTrySaveAsGuest += ShowGuestModal;
 
             dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
+            view.SetIsGuest(userProfileBridge.GetOwn().isGuest);
         }
+
+        private void ShowGuestModal() =>
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
 
         private void SaveOutfit(OutfitItem outfit) =>
             backpackAnalyticsService.SendOutfitSave(outfit.slot);
@@ -69,8 +73,7 @@ namespace DCL.Backpack
 
         public void RequestOwnedOutfits()
         {
-            cts?.Cancel();
-            cts?.Dispose();
+            cts.SafeCancelAndDispose();
             cts = new CancellationTokenSource();
             RequestOwnedOutfitsAsync().Forget();
         }
@@ -89,8 +92,13 @@ namespace DCL.Backpack
             cts?.Cancel();
             cts?.Dispose();
             cts = null;
-            view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
             view.OnOutfitEquipped -= OutfitEquip;
+            view.OnOutfitDiscarded -= DiscardOutfit;
+            view.OnOutfitSaved -= SaveOutfit;
+            view.OnUpdateLocalOutfits -= UpdateLocalOutfits;
+            view.OnTrySaveAsGuest -= ShowGuestModal;
+
+            dataStore.HUDs.avatarEditorVisible.OnChange -= ChangedVisibility;
         }
     }
 }

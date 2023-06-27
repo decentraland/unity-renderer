@@ -21,14 +21,15 @@ namespace DCL.Backpack
         [SerializeField] private Button closeDiscardOutfit;
 
         private ICharacterPreviewController characterPreviewController;
-        private IUserProfileBridge userProfileBridge;
-        private DataStore dataStore;
+        private bool isGuest;
 
         public event Action OnBackButtonPressed;
         public event Action<OutfitItem> OnOutfitEquipped;
         public event Action<OutfitItem> OnOutfitDiscarded;
         public event Action<OutfitItem> OnOutfitSaved;
         public event Action<OutfitItem[]> OnUpdateLocalOutfits;
+        public event Action OnTrySaveAsGuest;
+
         private readonly AvatarModel currentAvatarModel = new AvatarModel();
         private OutfitItem[] outfits;
         private int indexToBeDiscarded;
@@ -102,7 +103,7 @@ namespace DCL.Backpack
             characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
         }
 
-        public void Initialize(ICharacterPreviewFactory characterPreviewFactory, IUserProfileBridge profileBridge, DataStore dtaStore)
+        public void Initialize(ICharacterPreviewFactory characterPreviewFactory)
         {
             characterPreviewController = characterPreviewFactory.Create(
                 loadingMode: CharacterPreviewMode.WithoutHologram,
@@ -112,8 +113,6 @@ namespace DCL.Backpack
                 isAvatarShadowActive: true);
 
             characterPreviewController.SetFocus(PreviewCameraFocus.BodySnapshot);
-            this.userProfileBridge = profileBridge;
-            this.dataStore = dtaStore;
         }
 
         public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
@@ -172,11 +171,16 @@ namespace DCL.Backpack
         private void OnSaveOutfit(int outfitIndex) =>
             SaveOutfitAsync(outfitIndex).Forget();
 
+        public void SetIsGuest(bool isGuest)
+        {
+            this.isGuest = isGuest;
+        }
+
         private async UniTaskVoid SaveOutfitAsync(int outfitIndex)
         {
-            if (userProfileBridge.GetOwn().isGuest)
+            if (isGuest)
             {
-                dataStore.HUDs.connectWalletModalVisible.Set(true);
+                OnTrySaveAsGuest?.Invoke();
                 return;
             }
 

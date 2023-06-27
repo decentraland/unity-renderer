@@ -1,7 +1,5 @@
-using DCLServices.WearablesCatalogService;
+using DCL.Backpack;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;

@@ -21,14 +21,13 @@ namespace DCL.Backpack
             Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
             new PreviewCameraRotationController(),
             new PreviewCameraPanningController(),
-            new PreviewCameraZoomController(),
-            dataStore);
+            new PreviewCameraZoomController());
 
             var backpackAnalyticsService = new BackpackAnalyticsService(
                 Environment.i.platform.serviceProviders.analytics,
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
 
-            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(), userProfileBridge, dataStore);
+            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
 
             var outfitsController = new OutfitsController(
                 view.OutfitsSectionComponentView,

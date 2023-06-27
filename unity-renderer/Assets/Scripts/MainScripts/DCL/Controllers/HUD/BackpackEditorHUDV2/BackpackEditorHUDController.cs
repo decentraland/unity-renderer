@@ -91,8 +91,14 @@ namespace DCL.Backpack
 
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
+            view.SetOutfitsEnabled(dataStore.HUDs.enableOutfits.Get());
+            dataStore.HUDs.enableOutfits.OnChange += OnEnableOutfitsChanged;
+
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
+
+        private void OnEnableOutfitsChanged(bool current, bool previous) =>
+            view.SetOutfitsEnabled(current);
 
         private void OnOutfitEquipped(OutfitItem outfit)
         {
@@ -117,8 +123,7 @@ namespace DCL.Backpack
                     await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken);
             }
 
-            if(!string.IsNullOrEmpty(outfit.outfit.bodyShape))
-                EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
+            EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
                 EquipWearable(outfitWearable, setAsDirty: false, updateAvatarPreview: false);
