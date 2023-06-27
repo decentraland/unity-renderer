@@ -89,7 +89,7 @@ public static class PlacesAndEventsCardsFactory
                     placeAuthor = place.contact_name,
                     numberOfUsers = place.user_count,
                     coords = Utils.ConvertStringToVector(place.base_position),
-                    parcels = place.positions,
+                    parcels = place.Positions,
                     isFavorite = place.user_favorite,
                     placeInfo = place
                 });
@@ -115,7 +115,7 @@ public static class PlacesAndEventsCardsFactory
                     placeAuthor = place.contact_name,
                     numberOfUsers = place.user_count,
                     coords = Utils.ConvertStringToVector(place.base_position),
-                    parcels = place.positions,
+                    parcels = place.Positions,
                     isFavorite = place.user_favorite,
                     placeInfo = place
                 });

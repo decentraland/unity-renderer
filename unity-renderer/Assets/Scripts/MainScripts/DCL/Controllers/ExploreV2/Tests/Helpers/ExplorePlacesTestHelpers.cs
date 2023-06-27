@@ -57,7 +57,7 @@ public static class ExplorePlacesTestHelpers
             owner = "Test Creator",
             description = "Test Description",
             title = "Test Name",
-            positions = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+            Positions = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
             realms_detail = new PlaceInfo.Realm[]
             {
                 new PlaceInfo.Realm

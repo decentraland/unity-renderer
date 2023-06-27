@@ -19,7 +19,7 @@ public class MapInfoHandler : IMapDataView
         name = sceneInfo.title;
         creator = sceneInfo.owner;
         description = sceneInfo.description;
-        parcels = sceneInfo.positions;
+        parcels = sceneInfo.Positions;
     }
 
     public bool ContainCoords(Vector2Int coords)
