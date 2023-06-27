@@ -45,6 +45,9 @@ namespace DCL.MyAccount
         [SerializeField] internal MyProfileLinkListComponentView linkListView;
         [SerializeField] internal CanvasGroup linksCanvasGroup;
 
+        [Header("Additional Info")]
+        [SerializeField] internal MyProfileAdditionalInfoListComponentView additionalInfoList;
+
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
         public event Action OnGoFromClaimedToNonClaimNameClicked;
@@ -255,10 +258,12 @@ namespace DCL.MyAccount
 
         public void SetAdditionalInfoOptions(AdditionalInfoOptionsModel model)
         {
+            additionalInfoList.SetOptions(model);
         }
 
-        public void SetAdditionalInfoValues(Dictionary<string, string> values)
+        public void SetAdditionalInfoValues(Dictionary<string, (string title, string value)> values)
         {
+            additionalInfoList.SetValues(values);
         }
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>

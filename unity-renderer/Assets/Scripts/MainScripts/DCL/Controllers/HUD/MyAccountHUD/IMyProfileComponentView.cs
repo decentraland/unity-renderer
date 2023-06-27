@@ -27,6 +27,6 @@ namespace DCL.MyAccount
         void EnableOrDisableAddLinksOption(bool enabled);
         void SetLinksEnabled(bool isEnabled);
         void SetAdditionalInfoOptions(AdditionalInfoOptionsModel model);
-        void SetAdditionalInfoValues(Dictionary<string,string> values);
+        void SetAdditionalInfoValues(Dictionary<string, (string title, string value)> values);
     }
 }

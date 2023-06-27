@@ -128,6 +128,8 @@ public class DropdownComponentView : BaseComponentView, IDropdownComponentView, 
     [Header("Configuration")]
     [SerializeField] internal DropdownComponentModel model;
 
+    public string Title => title.text;
+
     public event Action<bool, string, string> OnOptionSelectionChanged;
 
     internal ToggleComponentView selectAllOptionComponent;

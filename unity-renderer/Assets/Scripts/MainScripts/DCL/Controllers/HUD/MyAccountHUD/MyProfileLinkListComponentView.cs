@@ -26,7 +26,8 @@ namespace DCL.MyAccount
         {
             addButton.onClick.AddListener(() =>
             {
-                if (!newLinkUrl.text.StartsWith("http://") && !newLinkUrl.text.StartsWith("https://"))
+                if (!newLinkUrl.text.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                    && !newLinkUrl.text.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                     newLinkUrl.text = $"https://{newLinkUrl.text}";
 
                 OnAddedNew?.Invoke((title: newLinkTitle.text, url: newLinkUrl.text));

@@ -260,6 +260,7 @@ namespace DCL.MyAccount
             RefreshNamesSectionStatus();
             ShowAboutDescription(userProfile);
             ShowLinks(userProfile);
+            ShowAdditionalInfoOptions(userProfile);
             ShowAdditionalInfoValues(userProfile);
         }
 
@@ -349,258 +350,291 @@ namespace DCL.MyAccount
 
         private void ShowAdditionalInfoOptions(UserProfile userProfile)
         {
-            List<AdditionalInfoOptionsModel.Option> options = new ();
+            Dictionary<string, AdditionalInfoOptionsModel.Option> options = new ();
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Country))
             {
-                Name = "Country",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetCountryList(),
-                OnValueSubmitted = country =>
+                options.Add("Country", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Country",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetCountryList(),
+                    OnValueSubmitted = country =>
+                    {
+                        SaveAdditionalInfo(country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Country", country);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(null, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Country", country);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(null, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Country");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Country");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Gender))
             {
-                Name = "Gender",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetGenderList(),
-                OnValueSubmitted = gender =>
+                options.Add("Gender", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Gender",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetGenderList(),
+                    OnValueSubmitted = gender =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Gender", gender);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, null, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Gender", gender);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, null, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Gender");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Gender");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Pronouns))
             {
-                Name = "Pronouns",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetPronounList(),
-                OnValueSubmitted = pronouns =>
+                options.Add("Pronouns", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Pronouns",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetPronounList(),
+                    OnValueSubmitted = pronouns =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Pronouns", pronouns);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, null, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Pronouns", pronouns);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, null, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Pronouns");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Pronouns");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.RelationshipStatus))
             {
-                Name = "Relationship Status",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetRelationshipStatusList(),
-                OnValueSubmitted = relationshipStatus =>
+                options.Add("Relationship Status", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, relationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Relationship Status",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetRelationshipStatusList(),
+                    OnValueSubmitted = relationshipStatus =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, relationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Relationship Status", relationshipStatus);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, null,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Relationship Status", relationshipStatus);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, null,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Relationship Status");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Relationship Status");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.SexualOrientation))
             {
-                Name = "Sexual Orientation",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetSexualOrientationList(),
-                OnValueSubmitted = sexualOrientation =>
+                options.Add("Sexual Orientation", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        sexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Sexual Orientation",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetSexualOrientationList(),
+                    OnValueSubmitted = sexualOrientation =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            sexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Sexual Orientation", sexualOrientation);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        null, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Sexual Orientation", sexualOrientation);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            null, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Sexual Orientation");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Sexual Orientation");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Language))
             {
-                Name = "Language",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetLanguageList(),
-                OnValueSubmitted = language =>
+                options.Add("Language", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Language",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetLanguageList(),
+                    OnValueSubmitted = language =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Language", language);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, null, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Language", language);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, null, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Language");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Language");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.EmploymentStatus))
             {
-                Name = "Profession",
-                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
-                OnValueSubmitted = profession =>
+                options.Add("Employment Status", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Employment Status",
+                    InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
+                    Values = GetEmploymentStatusList(),
+                    OnValueSubmitted = employmentStatus =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, employmentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Profession", profession);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, null,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Employment Status", employmentStatus);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, null);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Profession");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Employment Status");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Profession))
             {
-                Name = "Birth Date",
-                InputType = AdditionalInfoOptionsModel.InputType.Date,
-                DateFormat = "dd/MM/yyyy",
-                OnValueSubmitted = birthDate =>
+                options.Add("Profession", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                        userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Profession",
+                    InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
+                    OnValueSubmitted = profession =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, profession,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        null, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Profession", profession);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, null,
+                            userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Birth Date");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Profession");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (userProfile.BirthDate == null)
             {
-                Name = "Real Name",
-                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
-                OnValueSubmitted = realName =>
+                options.Add("Birth Date", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, realName, userProfile.Hobbies, userProfile.EmploymentStatus);
+                    Name = "Birth Date",
+                    InputType = AdditionalInfoOptionsModel.InputType.Date,
+                    DateFormat = "dd/MM/yyyy",
+                    OnValueSubmitted = birthDate =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                            userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Real Name", realName);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, null, userProfile.Hobbies, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            null, userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Real Name");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Birth Date");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.RealName))
             {
-                Name = "Hobbies",
-                InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
-                OnValueSubmitted = hobbies =>
+                options.Add("Real Name", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, hobbies, userProfile.EmploymentStatus);
+                    Name = "Real Name",
+                    InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
+                    OnValueSubmitted = realName =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, realName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Hobbies", hobbies);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, null, userProfile.EmploymentStatus);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Real Name", realName);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, null, userProfile.Hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Hobbies");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Real Name");
+                    },
+                });
+            }
 
-            options.Add(new AdditionalInfoOptionsModel.Option
+            if (string.IsNullOrEmpty(userProfile.Hobbies))
             {
-                Name = "Employment Status",
-                InputType = AdditionalInfoOptionsModel.InputType.StrictValueList,
-                Values = GetEmploymentStatusList(),
-                OnValueSubmitted = employmentStatus =>
+                options.Add("Hobbies", new AdditionalInfoOptionsModel.Option
                 {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, employmentStatus);
+                    Name = "Hobbies",
+                    InputType = AdditionalInfoOptionsModel.InputType.FreeFormText,
+                    OnValueSubmitted = hobbies =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, hobbies, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Employment Status", employmentStatus);
-                },
-                OnRemoved = () =>
-                {
-                    SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
-                        userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        userProfile.BirthDate, userProfile.RealName, userProfile.Hobbies, null);
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Hobbies", hobbies);
+                    },
+                    OnRemoved = () =>
+                    {
+                        SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
+                            userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
+                            userProfile.BirthDate, userProfile.RealName, null, userProfile.EmploymentStatus);
 
-                    myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Employment Status");
-                },
-            });
+                        myAccountAnalyticsService.SendProfileInfoAdditionalInfoRemoveAnalytic("Hobbies");
+                    },
+                });
+            }
 
             view.SetAdditionalInfoOptions(new AdditionalInfoOptionsModel
             {
@@ -652,19 +686,37 @@ namespace DCL.MyAccount
 
         private void ShowAdditionalInfoValues(UserProfile userProfile)
         {
-            Dictionary<string, string> values = new ()
-            {
-                { "Country", userProfile.Country },
-                { "Gender", userProfile.Gender },
-                { "Pronouns", userProfile.Pronouns },
-                { "Relationship Status", userProfile.RelationshipStatus },
-                { "Sexual Orientation", userProfile.SexualOrientation },
-                { "Language", userProfile.Language },
-                { "Profession", userProfile.Profession },
-                { "Birth Date", userProfile.BirthDate?.ToShortDateString() },
-                { "Real Name", userProfile.RealName },
-                { "Hobbies", userProfile.Hobbies },
-            };
+            Dictionary<string, (string title, string value)> values = new ();
+
+            if (!string.IsNullOrEmpty(userProfile.Country))
+                values["Country"] = ("Country", userProfile.Country);
+
+            if (!string.IsNullOrEmpty(userProfile.Gender))
+                values["Gender"] = ("Gender", userProfile.Gender);
+
+            if (!string.IsNullOrEmpty(userProfile.Pronouns))
+                values["Pronouns"] = ("Pronouns", userProfile.Pronouns);
+
+            if (!string.IsNullOrEmpty(userProfile.RelationshipStatus))
+                values["Relationship Status"] = ("Relationship Status", userProfile.RelationshipStatus);
+
+            if (!string.IsNullOrEmpty(userProfile.SexualOrientation))
+                values["Sexual Orientation"] = ("Sexual Orientation", userProfile.SexualOrientation);
+
+            if (!string.IsNullOrEmpty(userProfile.Language))
+                values["Language"] = ("Language", userProfile.Language);
+
+            if (!string.IsNullOrEmpty(userProfile.Profession))
+                values["Profession"] = ("Profession", userProfile.Profession);
+
+            if (userProfile.BirthDate != null)
+                values["Birth Date"] = ("Birth Date", userProfile.BirthDate?.ToShortDateString());
+
+            if (!string.IsNullOrEmpty(userProfile.RealName))
+                values["Real Name"] = ("Real Name", userProfile.RealName);
+
+            if (!string.IsNullOrEmpty(userProfile.Hobbies))
+                values["Hobbies"] = ("Hobbies", userProfile.Hobbies);
 
             view.SetAdditionalInfoValues(values);
         }

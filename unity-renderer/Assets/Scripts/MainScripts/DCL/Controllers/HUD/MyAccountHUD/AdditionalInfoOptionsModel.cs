@@ -24,6 +24,6 @@ namespace DCL.MyAccount
             [CanBeNull] public string DateFormat { get; set; }
         }
 
-        public IEnumerable<Option> Options { get; set; }
+        public Dictionary<string, Option> Options { get; set; }
     }
 }
