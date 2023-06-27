@@ -20,6 +20,7 @@ namespace DCL.Backpack
         private CancellationTokenSource cts;
         private OutfitItem[] localOutfits;
         private bool shouldDeploy;
+        private AvatarModel currentAvatarModel;
 
         public OutfitsController(
             IOutfitsSectionComponentView view,
@@ -81,11 +82,33 @@ namespace DCL.Backpack
         private async UniTask RequestOwnedOutfitsAsync()
         {
             (IReadOnlyList<OutfitItem> outfits, int totalAmount) requestOwnedOutfits = await lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: cts.Token);
-            view.ShowOutfits(requestOwnedOutfits.outfits.ToArray()).Forget();
+            //view.ShowOutfits(requestOwnedOutfits.outfits.ToArray()).Forget();
+            OutfitItem[] outfitItems = requestOwnedOutfits.outfits.ToArray();
+            AudioScriptableObjects.listItemAppear.ResetPitch();
+            view.SetSlotsAsLoading(outfitItems);
+
+            foreach (OutfitItem outfitItem in outfitItems)
+                await view.ShowOutfit(outfitItem, GenerateAvatarModel(outfitItem));
         }
 
-        public void UpdateAvatarPreview(AvatarModel newAvatarModel) =>
+        private AvatarModel GenerateAvatarModel(OutfitItem outfitItem)
+        {
+            AvatarModel avatarModel = new AvatarModel();
+            avatarModel.CopyFrom(currentAvatarModel);
+            avatarModel.bodyShape = outfitItem.outfit.bodyShape;
+            avatarModel.wearables = new List<string>(outfitItem.outfit.wearables.ToList());
+            avatarModel.eyeColor = outfitItem.outfit.eyes.color;
+            avatarModel.hairColor = outfitItem.outfit.hair.color;
+            avatarModel.skinColor = outfitItem.outfit.skin.color;
+            avatarModel.forceRender = new HashSet<string>(outfitItem.outfit.forceRender);
+            return avatarModel;
+        }
+
+        public void UpdateAvatarPreview(AvatarModel newAvatarModel)
+        {
+            currentAvatarModel = newAvatarModel;
             view.UpdateAvatarPreview(newAvatarModel);
+        }
 
         public void Dispose()
         {

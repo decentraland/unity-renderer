@@ -93,7 +93,6 @@ namespace DCL
             pluginSystem.Register<MapTexturePlugin>(() => new MapTexturePlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()));
 
             pluginSystem.RegisterWithFlag<QuestsPlugin>(() => new QuestsPlugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), "quests");
-            pluginSystem.RegisterWithFlag<OutfitsPlugin>(()=>new OutfitsPlugin(), "outfits");
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");

@@ -115,31 +115,24 @@ namespace DCL.Backpack
             characterPreviewController.SetFocus(PreviewCameraFocus.BodySnapshot);
         }
 
-        public async UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow)
+        public async UniTask<bool> ShowOutfit(OutfitItem outfit, AvatarModel newModel)
         {
-            SetSlotsAsLoading(outfitsToShow);
-            AudioScriptableObjects.listItemAppear.ResetPitch();
+            outfits[outfit.slot] = outfit;
 
-            foreach (OutfitItem outfitItem in outfitsToShow)
-            {
-                outfits[outfitItem.slot] = outfitItem;
+            if (string.IsNullOrEmpty(outfit.outfit.bodyShape))
+                return false;
 
-                if (string.IsNullOrEmpty(outfitItem.outfit.bodyShape))
-                    continue;
-
-                outfitComponentViews[outfitItem.slot].SetIsEmpty(false);
-                outfitComponentViews[outfitItem.slot].SetOutfit(outfitItem);
-                await characterPreviewController.TryUpdateModelAsync(GenerateAvatarModel(outfitItem));
-                Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
-                AudioScriptableObjects.listItemAppear.Play(true);
-                outfitComponentViews[outfitItem.slot].SetOutfitPreviewImage(bodySnapshot);
-                outfitComponentViews[outfitItem.slot].SetIsLoading(false);
-            }
-
-            await characterPreviewController.TryUpdateModelAsync(currentAvatarModel);
+            outfitComponentViews[outfit.slot].SetIsEmpty(false);
+            outfitComponentViews[outfit.slot].SetOutfit(outfit);
+            await characterPreviewController.TryUpdateModelAsync(newModel);
+            Texture2D bodySnapshot = await characterPreviewController.TakeBodySnapshotAsync();
+            AudioScriptableObjects.listItemAppear.Play(true);
+            outfitComponentViews[outfit.slot].SetOutfitPreviewImage(bodySnapshot);
+            outfitComponentViews[outfit.slot].SetIsLoading(false);
+            return true;
         }
 
-        private void SetSlotsAsLoading(OutfitItem[] outfitsToShow)
+        public void SetSlotsAsLoading(OutfitItem[] outfitsToShow)
         {
             foreach (var outfitItem in outfitsToShow)
             {
@@ -150,19 +143,6 @@ namespace DCL.Backpack
                 }
                 else { outfitComponentViews[outfitItem.slot].SetIsLoading(true); }
             }
-        }
-
-        private AvatarModel GenerateAvatarModel(OutfitItem outfitItem)
-        {
-            AvatarModel avatarModel = new AvatarModel();
-            avatarModel.CopyFrom(currentAvatarModel);
-            avatarModel.bodyShape = outfitItem.outfit.bodyShape;
-            avatarModel.wearables = new List<string>(outfitItem.outfit.wearables.ToList());
-            avatarModel.eyeColor = outfitItem.outfit.eyes.color;
-            avatarModel.hairColor = outfitItem.outfit.hair.color;
-            avatarModel.skinColor = outfitItem.outfit.skin.color;
-            avatarModel.forceRender = new HashSet<string>(outfitItem.outfit.forceRender);
-            return avatarModel;
         }
 
         private void OnEquipOutfit(OutfitItem outfitItem) =>

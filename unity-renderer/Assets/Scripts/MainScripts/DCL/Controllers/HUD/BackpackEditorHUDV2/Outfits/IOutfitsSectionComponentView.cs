@@ -11,7 +11,8 @@ namespace DCL.Backpack
         event Action<OutfitItem[]> OnUpdateLocalOutfits;
         event Action OnTrySaveAsGuest;
 
-        UniTaskVoid ShowOutfits(OutfitItem[] outfitsToShow);
+        public void SetSlotsAsLoading(OutfitItem[] outfitsToShow);
+        UniTask<bool> ShowOutfit(OutfitItem outfit, AvatarModel newModel);
         void UpdateAvatarPreview(AvatarModel newAvatarModel);
         void SetIsGuest(bool isGuest);
     }

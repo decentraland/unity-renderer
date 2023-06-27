@@ -88,12 +88,9 @@ namespace DCL.Backpack
             view.OnColorPickerToggle += OnColorPickerToggled;
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
-
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
-            view.SetOutfitsEnabled(dataStore.HUDs.enableOutfits.Get());
-            dataStore.HUDs.enableOutfits.OnChange += OnEnableOutfitsChanged;
-
+            view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
         }
 
