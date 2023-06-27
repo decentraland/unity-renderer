@@ -72,10 +72,9 @@ namespace ECSSystems.CameraSystem
             lastCameraRotation = cameraRotation;
 
             var currentCameraMode = cameraMode.Get();
-            var cameraModeWrappedComponent = cameraModePool.GetElement();
-            var pooledWrappedComponent = pointerLockPool.GetElement();
-            cameraModeWrappedComponent.WrappedComponent.Model.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
-            pooledWrappedComponent.WrappedComponent.Model.IsPointerLocked = Utils.IsCursorLocked;
+
+            var cameraModeId = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
+            var isCursorLocked = Utils.IsCursorLocked;
 
             Vector3 currentWorldOffset = worldOffset.Get();
             IReadOnlyList<IParcelScene> loadedScenes = this.loadedScenes;
@@ -89,13 +88,18 @@ namespace ECSSystems.CameraSystem
                 if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out ComponentWriter writer))
                     continue;
 
+                var cameraModeWrappedComponent = cameraModePool.Get();
+                var pooledWrappedComponent = pointerLockPool.Get();
+                cameraModeWrappedComponent.WrappedComponent.Model.Mode = cameraModeId;
+                pooledWrappedComponent.WrappedComponent.Model.IsPointerLocked = isCursorLocked;
+
                 writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE, cameraModeWrappedComponent);
                 writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK, pooledWrappedComponent);
 
                 if (!updateTransform)
                     continue;
 
-                var pooledTransformComponent = transformPool.GetElement();
+                var pooledTransformComponent = transformPool.Get();
                 var t = pooledTransformComponent.WrappedComponent.Model;
                 t.position = SetInSceneOffset(scene, ref cameraPosition, ref currentWorldOffset);
                 t.rotation = cameraRotation;
