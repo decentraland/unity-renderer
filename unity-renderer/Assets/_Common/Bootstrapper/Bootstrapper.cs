@@ -1,11 +1,13 @@
 using DCL;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Bootstrapper : MonoBehaviour
 {
     [SerializeField] private GameObject webGLPrefab;
     [SerializeField] private GameObject desktopPrefab;
+    [SerializeField] private InputField text;
 
 #if UNITY_EDITOR
     private enum Platform
@@ -39,14 +41,12 @@ public class Bootstrapper : MonoBehaviour
     {
         if( profService == null)
             profService = Environment.i?.serviceLocator?.Get<IProfilerRecordsService>();
-        else if(!started)
+        else
         {
             started = true;
             profService.StartRecordGCAllocatedInFrame();
-        }
-        else
-        {
             Avarage();
+            text.text = gc.ToString();
         }
     }
 
@@ -64,24 +64,6 @@ public class Bootstrapper : MonoBehaviour
             gc = profService.GcAllocatedInFrame/ 1024f;
             nextUpdate = Time.unscaledTime + updateInterval;
         }
-    }
-
-
-    void OnGUI()
-    {
-        if(profService == null) return;
-
-        int w = Screen.width, h = Screen.height;
-
-        GUIStyle style = new GUIStyle();
-
-        Rect rect = new Rect(0, 0, w, h * 2 / 100);
-        style.alignment = TextAnchor.UpperLeft;
-        style.fontSize = h * 4 / 100;
-        style.normal.textColor = new Color(0.0f, 0.0f, 0.5f, 1.0f);
-
-        var text = $"{gc:0.0}";
-        GUI.Label(rect, text, style);
     }
 
 #else
