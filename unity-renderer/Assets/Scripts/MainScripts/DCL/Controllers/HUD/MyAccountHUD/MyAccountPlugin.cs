@@ -24,25 +24,25 @@ namespace DCL.MyAccount
                                                         .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
 
             ProfileAdditionalInfoValueListScriptableObject countryListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                           .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Countries", "ProfileCountries", ct);
+                                                                                                  .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileCountries", ct);
 
             ProfileAdditionalInfoValueListScriptableObject genderListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                          .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Genders", "ProfileGenders", ct);
+                                                                                          .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileGenders", ct);
 
             ProfileAdditionalInfoValueListScriptableObject sexualOrientationProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                 .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/SexualOrientations", "ProfileSexualOrientations", ct);
+                                                                                                 .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileSexualOrientations", ct);
 
             ProfileAdditionalInfoValueListScriptableObject employmentStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/EmploymentStatus", "ProfileEmploymentStatus", ct);
+                                                                                                .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileEmploymentStatus", ct);
 
             ProfileAdditionalInfoValueListScriptableObject relationshipStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                  .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/RelationshipStatus", "ProfileRelationshipStatus", ct);
+                                                                                                  .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileRelationshipStatus", ct);
 
             ProfileAdditionalInfoValueListScriptableObject languageListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                            .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Languages", "ProfileLanguages", ct);
+                                                                                            .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileLanguages", ct);
 
             ProfileAdditionalInfoValueListScriptableObject pronounListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                           .Instantiate<ProfileAdditionalInfoValueListScriptableObject>("Profiles/AdditionalInfo/Pronouns", "ProfilePronouns", ct);
+                                                                                           .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfilePronouns", ct);
 
             var dataStore = DataStore.i;
 
