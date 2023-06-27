@@ -186,6 +186,7 @@ namespace DCL.Quests
                 questCreator = questInstance.Quest.CreatorAddress,
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
+                questDefinitionId = questInstance.Quest.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
                 questImageUri = questInstance.Quest.ImageUrl,
                 questSteps = GetQuestSteps(questInstance, true),
@@ -200,14 +201,28 @@ namespace DCL.Quests
 
                 if (showCompletedQuestHUD)
                 {
-                    questCompletedComponentView.SetTitle(quest.questName);
-                    questCompletedComponentView.SetRewards(new List<QuestRewardComponentModel>());
-                    questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
-                    questCompletedComponentView.SetVisible(true);
+                    ShowQuestCompleted(questInstance, disposeCts.Token).Forget();
                 }
 
                 questLogController.AddCompletedQuest(quest).Forget();
             }
+        }
+
+        private async UniTaskVoid ShowQuestCompleted(QuestInstance questInstance, CancellationToken ct)
+        {
+            List<QuestRewardComponentModel> questRewards = new List<QuestRewardComponentModel>();
+            foreach (QuestReward questReward in await questsService.GetQuestRewards(questInstance.Quest.Id, ct))
+            {
+                questRewards.Add(new QuestRewardComponentModel()
+                {
+                    imageUri = questReward.image_link,
+                    name = questReward.name
+                });
+            }
+            questCompletedComponentView.SetTitle(questInstance.Quest.Name);
+            questCompletedComponentView.SetRewards(questRewards);
+            questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+            questCompletedComponentView.SetVisible(true);
         }
 
         public void Dispose()

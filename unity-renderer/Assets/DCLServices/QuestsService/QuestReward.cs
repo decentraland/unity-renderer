@@ -1,10 +1,15 @@
+using System;
+using System.Collections.Generic;
+
+[Serializable]
+public class QuestRewardResponse
+{
+    public List<QuestReward> items;
+}
+
+[Serializable]
 public class QuestReward
 {
-    public string imageUri;
     public string name;
-    public QuestReward(string imageUri, string name)
-    {
-        this.imageUri = imageUri;
-        this.name = name;
-    }
+    public string image_link;
 }

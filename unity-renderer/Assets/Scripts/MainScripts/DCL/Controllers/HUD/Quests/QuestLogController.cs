@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
+using DCLServices.QuestsService;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace DCL.Quests
     {
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IQuestLogComponentView questLogComponentView;
+        private readonly IQuestsService questsService;
 
         public event Action<string, bool> OnPinChange;
         public event Action<Vector2Int> OnJumpIn;
@@ -20,11 +22,13 @@ namespace DCL.Quests
 
         public QuestLogController(
             IQuestLogComponentView questLogComponentView,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            IQuestsService questsService)
         {
             disposeCts = new CancellationTokenSource();
             this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
+            this.questsService = questsService;
 
             questLogComponentView.OnPinChange += (id, isPinned) => OnPinChange?.Invoke(id, isPinned);
             questLogComponentView.OnQuestAbandon += (id) => OnQuestAbandon?.Invoke(id);
@@ -34,12 +38,36 @@ namespace DCL.Quests
         public async UniTaskVoid AddActiveQuest(QuestDetailsComponentModel activeQuest, CancellationToken ct = default)
         {
             string creatorName = await GetUsername(activeQuest.questCreator, CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token);
+            List<QuestRewardComponentModel> questRewards = new List<QuestRewardComponentModel>();
+
+            foreach (QuestReward questReward in await questsService.GetQuestRewards(activeQuest.questDefinitionId, ct))
+            {
+                questRewards.Add(new QuestRewardComponentModel()
+                {
+                    imageUri = questReward.image_link,
+                    name = questReward.name
+                });
+                activeQuest.questRewards = questRewards;
+            }
+
             questLogComponentView.AddActiveQuest(activeQuest, creatorName);
         }
 
         public async UniTaskVoid AddCompletedQuest(QuestDetailsComponentModel completedQuest, CancellationToken ct = default)
         {
             string creatorName = await GetUsername(completedQuest.questCreator, CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token);
+            List<QuestRewardComponentModel> questRewards = new List<QuestRewardComponentModel>();
+
+            foreach (QuestReward questReward in await questsService.GetQuestRewards(completedQuest.questDefinitionId, ct))
+            {
+                questRewards.Add(new QuestRewardComponentModel()
+                {
+                    imageUri = questReward.image_link,
+                    name = questReward.name
+                });
+                completedQuest.questRewards = questRewards;
+            }
+
             questLogComponentView.AddCompletedQuest(completedQuest, creatorName);
         }
 
