@@ -212,6 +212,9 @@ namespace ECSSystems.ECSRaycastSystem
         {
             if (hitEntity == null) return null;
 
+            // TODO: figure out how we can cache or pool this hit instance to reduce allocations.
+            // since is part of a protobuf message it life span is uncertain, it could be disposed
+            // after message is sent to the scene or dropped for a new message
             RaycastHit hit = new RaycastHit();
             IDCLEntity entity = hitEntity.Value.Key;
             uint collisionMask = hitEntity.Value.Value;
