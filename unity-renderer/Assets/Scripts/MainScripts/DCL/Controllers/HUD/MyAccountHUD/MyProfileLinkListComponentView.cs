@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ namespace DCL.MyAccount
         [SerializeField] private RectTransform linksContainer;
 
         private readonly List<MyProfileLinkComponentView> links = new ();
+        private readonly Regex httpRegex = new ("^((https?:)?\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w.-]*)*\\/?$");
         private bool isAddEnabled = true;
 
         public event Action<(string title, string url)> OnAddedNew;
@@ -23,7 +25,12 @@ namespace DCL.MyAccount
         private void Awake()
         {
             addButton.onClick.AddListener(() =>
-                OnAddedNew?.Invoke((title: newLinkTitle.text, url: newLinkUrl.text)));
+            {
+                if (!newLinkUrl.text.StartsWith("http://") && !newLinkUrl.text.StartsWith("https://"))
+                    newLinkUrl.text = $"https://{newLinkUrl.text}";
+
+                OnAddedNew?.Invoke((title: newLinkTitle.text, url: newLinkUrl.text));
+            });
 
             newLinkTitle.onValueChanged.AddListener(str => EnableOrDisableAddButton());
             newLinkUrl.onValueChanged.AddListener(str => EnableOrDisableAddButton());
@@ -65,6 +72,7 @@ namespace DCL.MyAccount
         private void EnableOrDisableAddButton()
         {
             addButton.interactable = newLinkTitle.text.Length > 0 && newLinkUrl.text.Length > 0
+                                                                  && httpRegex.IsMatch(newLinkUrl.text)
                                                                   && isAddEnabled;
         }
     }
