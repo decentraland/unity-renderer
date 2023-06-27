@@ -92,7 +92,7 @@ namespace DCL
             {
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    new RPCSocialClientProvider("wss://localhost:8085"));
+                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"));
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
