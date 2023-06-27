@@ -61,6 +61,7 @@ namespace DCL.MyAccount
         private void OnPreviewProfileClicked()
         {
             dataStore.HUDs.currentPlayerId.Set((userProfileBridge.GetOwn().userId, OPEN_PASSPORT_SOURCE));
+            dataStore.exploreV2.profileCardIsOpen.Set(false);
             view.Hide();
         }
 

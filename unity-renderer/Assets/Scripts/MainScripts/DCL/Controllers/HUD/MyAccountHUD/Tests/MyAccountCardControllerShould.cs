@@ -54,6 +54,7 @@ namespace DCL.MyAccount
 
             Assert.AreEqual(OWN_USER_ID, dataStore.HUDs.currentPlayerId.Get().playerId);
             Assert.AreEqual("ProfileHUD", dataStore.HUDs.currentPlayerId.Get().source);
+            Assert.IsFalse(dataStore.exploreV2.profileCardIsOpen.Get());
             view.Received(1).Hide();
         }
 
