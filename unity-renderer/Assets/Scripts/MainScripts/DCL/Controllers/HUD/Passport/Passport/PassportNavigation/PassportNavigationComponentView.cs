@@ -11,6 +11,13 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
+    [Serializable]
+    internal class AdditionalInfoIconMapping
+    {
+        public IPassportNavigationComponentView.AdditionalInfoField name;
+        public Sprite icon;
+    }
+
     public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
     {
         private const string GUEST_TEXT = "is a guest";
@@ -59,6 +66,7 @@ namespace DCL.Social.Passports
         [SerializeField] private GameObject nftPageUIReferenceObject;
         [SerializeField] private GameObject additionalInfoContainer;
         [SerializeField] private GameObject additionalInfoPrefabReference;
+        [SerializeField] internal List<AdditionalInfoIconMapping> additionalInfoIconsMapping;
         [SerializeField] private GameObject linksContainer;
         [SerializeField] private GameObject linksTitle;
         [SerializeField] private GameObject linkPrefabReference;
@@ -218,6 +226,15 @@ namespace DCL.Social.Passports
                 description = AddCoordinateLinks(description);
                 descriptionText.text = description;
             }
+        }
+
+        public Sprite GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField field)
+        {
+            foreach (AdditionalInfoIconMapping iconMapping in additionalInfoIconsMapping)
+                if (iconMapping.name == field)
+                    return iconMapping.icon;
+
+            return null;
         }
 
         public void SetAdditionalInfo(List<(Sprite logo, string title, string value)> additionalFields)

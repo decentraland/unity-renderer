@@ -11,8 +11,8 @@ namespace DCL.Wallet
 {
     public class WalletSectionHUDController
     {
-        private const string URL_MANA_INFO = "https://docs.decentraland.org/examples/get-a-wallet";
-        private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
+        private const string URL_MANA_INFO = "https://docs.decentraland.org/examples/get-a-wallet?utm_source=dcl_explorer";
+        private const string URL_MANA_PURCHASE = "https://account.decentraland.org?utm_source=dcl_explorer";
 
         private readonly IWalletSectionHUDComponentView view;
         private readonly DataStore dataStore;

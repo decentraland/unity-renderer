@@ -14,7 +14,7 @@ namespace DCL.MyAccount
 {
     public class MyProfileController
     {
-        private const string CLAIM_UNIQUE_NAME_URL = "https://builder.decentraland.org/claim-name";
+        private const string CLAIM_UNIQUE_NAME_URL = "https://builder.decentraland.org/claim-name?utm_source=dcl_explorer";
 
         private readonly IMyProfileComponentView view;
         private readonly DataStore dataStore;
