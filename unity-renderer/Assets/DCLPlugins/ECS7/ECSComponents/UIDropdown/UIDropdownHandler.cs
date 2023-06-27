@@ -70,7 +70,7 @@ namespace DCL.ECSComponents.UIDropdown
 
         private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
         {
-            var componentPooled = componentPool.GetElement();
+            var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.index;
             return componentPooled;

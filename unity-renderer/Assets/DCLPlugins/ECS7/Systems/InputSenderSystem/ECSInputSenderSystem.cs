@@ -59,7 +59,7 @@ namespace ECSSystems.InputSenderSystem
                 {
                     InternalInputEventResults.EventData inputEvent = model.events[j];
 
-                    var componentPooled = state.componentPool.GetElement();
+                    var componentPooled = state.componentPool.Get();
                     var componentModel = componentPooled.WrappedComponent.Model;
                     componentModel.Button = inputEvent.button;
                     componentModel.Hit = inputEvent.hit;

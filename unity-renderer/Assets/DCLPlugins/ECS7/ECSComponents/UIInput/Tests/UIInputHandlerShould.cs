@@ -56,7 +56,7 @@ namespace DCL.ECSComponents.UIInput.Tests
             const string TEST_VALUE = "TEST_TEXT";
 
             handler.uiElement.value = TEST_VALUE;
-            var result = pool.GetElement();
+            var result = pool.Get();
             result.WrappedComponent.Model.Value = TEST_VALUE;
 
             Assert.Contains(

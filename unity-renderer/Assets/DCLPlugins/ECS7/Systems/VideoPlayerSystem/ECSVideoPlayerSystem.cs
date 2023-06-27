@@ -104,7 +104,7 @@ namespace ECSSystems.VideoPlayerSystem
 
                 var scene = videoPlayerComponentData.scene;
 
-                var pooledModel = videoPool.GetElement();
+                var pooledModel = videoPool.Get();
                 var model = pooledModel.WrappedComponent.Model;
                 model.State = videoEvent.videoState;
                 model.CurrentOffset = videoPlayerModel.videoPlayer.GetTime();

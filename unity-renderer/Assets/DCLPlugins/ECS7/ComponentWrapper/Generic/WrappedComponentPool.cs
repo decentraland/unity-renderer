@@ -1,34 +1,47 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.ECS7.ComponentWrapper.Generic
 {
     public record WrappedComponentPool<T> where T: class, IWrappedComponent
     {
-        private readonly Queue<PooledWrappedComponent<T>> queue;
         private readonly Func<T> objectFactory;
+        private readonly List<T> list;
 
         public WrappedComponentPool(int capacity, Func<T> objectFactory)
         {
-            queue = new Queue<PooledWrappedComponent<T>>(capacity);
+            list = new List<T>(capacity);
             this.objectFactory = objectFactory;
         }
 
-        public PooledWrappedComponent<T> GetElement()
+        public PooledWrappedComponent<T> Get()
         {
-            if (queue.TryDequeue(out PooledWrappedComponent<T> result))
+            if (list.Count == 0)
             {
-                result.WrappedComponent.ClearFields();
-                return result;
+                return new PooledWrappedComponent<T>(objectFactory(), this);
             }
 
-            result = new PooledWrappedComponent<T>(objectFactory(), this);
+            int index = list.Count - 1;
+            PooledWrappedComponent<T> result = new PooledWrappedComponent<T>(list[index], this);
+            list.RemoveAt(index);
             return result;
         }
 
-        public void AddElement(PooledWrappedComponent<T> element)
+        public void Release(PooledWrappedComponent<T> element)
         {
-            queue.Enqueue(element);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] == element.WrappedComponent)
+                {
+#if UNITY_EDITOR
+                    Debug.LogError($"element {typeof(T)} already released to the pool");
+#endif
+                    return;
+                }
+            }
+
+            list.Add(element.WrappedComponent);
         }
     }
 }

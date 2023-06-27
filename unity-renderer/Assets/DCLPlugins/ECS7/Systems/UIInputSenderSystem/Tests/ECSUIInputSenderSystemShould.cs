@@ -98,7 +98,7 @@ namespace ECSSystems.UIInputSenderSystem
 
             foreach (var result in results)
             {
-                var pooledElement = componentPool.GetElement();
+                var pooledElement = componentPool.Get();
                 model.Results.Enqueue(new InternalUIInputResults.Result(pooledElement, result.componentId));
             }
 

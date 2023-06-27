@@ -80,7 +80,7 @@ namespace ECSSystems.UiCanvasInformationSystem
             if (!componentsWriter.TryGetValue(sceneNumber, out var writer))
                 return;
 
-            var componentPooled = componentPool.GetElement();
+            var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.InteractableArea = interactableArea;
             componentModel.Width = Screen.width;

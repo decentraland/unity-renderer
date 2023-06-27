@@ -45,7 +45,7 @@ namespace ECSSystems.ECSEngineInfoSystem
                 if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
                     continue;
 
-                var componentPooled = componentPool.GetElement();
+                var componentPooled = componentPool.Get();
                 var componentModel = componentPooled.WrappedComponent.Model;
                 componentModel.TickNumber = model.SceneTick;
                 componentModel.FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialRunTime);

@@ -19,7 +19,7 @@ namespace DCL.ECS7.ComponentWrapper.Generic
 
         public void Dispose()
         {
-            pool.AddElement(this);
+            pool.Release(this);
         }
     }
 }

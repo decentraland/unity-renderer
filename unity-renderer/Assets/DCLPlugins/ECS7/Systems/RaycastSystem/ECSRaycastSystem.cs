@@ -78,7 +78,7 @@ namespace ECSSystems.ECSRaycastSystem
                     return;
                 }
 
-                var pooledRaycastResult = raycastResultPool.GetElement();
+                var pooledRaycastResult = raycastResultPool.Get();
                 PBRaycastResult result = pooledRaycastResult.WrappedComponent.Model;
                 result.Direction = ProtoConvertUtils.UnityVectorToPBVector(ray.direction);
                 result.GlobalOrigin = ProtoConvertUtils.UnityVectorToPBVector(ray.origin);

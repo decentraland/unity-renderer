@@ -74,7 +74,7 @@ namespace ECSSystems.PlayerSystem
                 if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
                     continue;
 
-                var pooledTransform = transformPool.GetElement();
+                var pooledTransform = transformPool.Get();
                 var transform = pooledTransform.WrappedComponent.Model;
                 transform.position = SetInSceneOffset(scene, ref avatarPosition, ref currentWorldOffset);
                 transform.rotation = avatarRotation;

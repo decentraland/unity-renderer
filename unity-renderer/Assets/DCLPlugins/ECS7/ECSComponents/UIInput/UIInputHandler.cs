@@ -64,7 +64,7 @@ namespace DCL.ECSComponents.UIInput
 
         private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
         {
-            var componentPooled = componentPool.GetElement();
+            var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = onValueChange.newValue;
             return componentPooled;

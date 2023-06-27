@@ -46,7 +46,7 @@ namespace ECSSystems.GltfContainerLoadingStateSystem
                 }
                 else
                 {
-                    var componentPooled = componentPool.GetElement();
+                    var componentPooled = componentPool.Get();
                     var componentModel = componentPooled.WrappedComponent.Model;
                     componentModel.CurrentState = model.LoadingState;
 

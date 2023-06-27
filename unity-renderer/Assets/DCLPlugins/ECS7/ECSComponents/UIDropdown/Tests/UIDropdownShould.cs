@@ -87,7 +87,7 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             UpdateComponentModel(true, 1);
 
             handler.uiElement.index = 2;
-            var result = pool.GetElement();
+            var result = pool.Get();
             result.WrappedComponent.Model.Value = 2;
 
             bool found = false;
