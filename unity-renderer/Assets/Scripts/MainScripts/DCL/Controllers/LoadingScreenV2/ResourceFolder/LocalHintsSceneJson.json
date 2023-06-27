@@ -14,21 +14,21 @@
     "allowedMediaHostnames": [],
     "loadingScreenHints": [
         {
-            "textureUrl": "https://api.decentraland.org/v1/broken-minimap.png",
+            "textureUrl": "https://api.decentraland.org/v1/minimap.png",
             "title": "local hint title 01",
             "body": "local hint body 1 where you can put a lot of text just to be sure that the hints are working as expected",
             "sourceTag": 2
         },
         {
-          "textureUrl": "https://api.decentraland.org/v1/broken-estatemap.png",
+          "textureUrl": "https://api.decentraland.org/v1/estatemap.png",
           "title": "local hint title 02",
           "body": "local hint body 2222222 where you can put a lot of text just to be sure that the hints are working as expected",
           "sourceTag": 2
         },
         {
           "textureUrl": "https://api.decentraland.org/v1/broken-map.png",
-          "title": "03 local hint title 03",
-          "body": "local hint body 333333 33333 33333 333333 33 33 3333 3333 3333 33333 333 33 3 3 33 333 3333 333333 3",
+          "title": "03 hint 404 error test",
+          "body": "local hint body. This is a test for a 404 error when trying to load the image.",
           "sourceTag": 2
         }
     ]
