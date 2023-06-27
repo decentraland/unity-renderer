@@ -94,6 +94,8 @@ namespace DCL.LoadingScreen.V2
 
         private void UpdateHintView()
         {
+            if (!isIteratingHints) return;
+
             hintViewList[currentHintIndex].ToggleHint(true);
             hintDotsView.ToggleDot(currentHintIndex);
             OnHintChanged?.Invoke();
@@ -106,6 +108,7 @@ namespace DCL.LoadingScreen.V2
 
             foreach (var hintView in hintViewList)
             {
+                hintView.CancelAnyHintToggle();
                 DCL.Helpers.Utils.SafeDestroy(hintView.gameObject);
             }
 

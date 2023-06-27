@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -20,6 +21,7 @@ namespace DCL.LoadingScreen.V2
         [SerializeField] private CanvasGroup canvasGroup;
 
         private const float FADE_DURATION = 0.5f;
+        private CancellationTokenSource fadeCts;
 
         public void Initialize(Hint hint, Texture2D texture, float fadeDuration = FADE_DURATION, bool startAsActive = false)
         {
@@ -58,20 +60,33 @@ namespace DCL.LoadingScreen.V2
         {
             if (this != null)
             {
-                ToggleHintAsync(active).Forget();
+                ToggleHintAsync(active);
             }
         }
 
-        public UniTask ToggleHintAsync(bool active)
+        public void ToggleHintAsync(bool fadeIn)
         {
-            if (this != null)
+            if (fadeCts != null)
             {
-                return Fade(active);
+                fadeCts.Cancel();
+                fadeCts.Dispose();
             }
-            return UniTask.CompletedTask;
+
+            fadeCts = new CancellationTokenSource();
+            Fade(fadeIn, fadeCts.Token).Forget();
         }
 
-        private async UniTask Fade(bool fadeIn)
+        public void CancelAnyHintToggle()
+        {
+            if (fadeCts != null)
+            {
+                fadeCts.Cancel();
+                fadeCts.Dispose();
+                fadeCts = null;
+            }
+        }
+
+        private async UniTask Fade(bool fadeIn, CancellationToken cancellationToken = default)
         {
             if (fadeIn)
             {
@@ -84,6 +99,8 @@ namespace DCL.LoadingScreen.V2
 
             while (elapsedTime < FADE_DURATION)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 elapsedTime += Time.unscaledDeltaTime;
                 float newAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / FADE_DURATION);
                 canvasGroup.alpha = newAlpha;
@@ -97,5 +114,6 @@ namespace DCL.LoadingScreen.V2
                 gameObject.SetActive(false);
             }
         }
+
     }
 }
