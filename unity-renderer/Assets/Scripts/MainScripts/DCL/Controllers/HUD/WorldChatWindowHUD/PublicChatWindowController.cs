@@ -34,6 +34,7 @@ namespace DCL.Chat.HUD
         private BaseDictionary<string, Player> nearbyPlayers => dataStore.player.otherPlayers;
 
         private bool isVisible;
+        private Channel channel;
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
 
@@ -100,7 +101,7 @@ namespace DCL.Chat.HUD
             if (string.IsNullOrEmpty(channelId) || channelId == this.channelId) return;
             this.channelId = channelId;
 
-            var channel = chatController.GetAllocatedChannel(channelId);
+            channel = chatController.GetAllocatedChannel(channelId);
             View.Configure(ToPublicChatModel(channel));
 
             chatHudController.ClearAllEntries();
@@ -170,6 +171,8 @@ namespace DCL.Chat.HUD
         {
             bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
             bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
+
+            message.channelName = channel.Name;
 
             if (isValidMessage)
             {

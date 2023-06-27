@@ -44,5 +44,7 @@ namespace DCL.Interface
         public string recipient;
         public ulong timestamp;
         public string body;
+        public string receiverId;
+        public string channelName;
     }
 }
