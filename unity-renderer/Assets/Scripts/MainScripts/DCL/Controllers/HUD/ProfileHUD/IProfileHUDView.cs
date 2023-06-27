@@ -22,6 +22,7 @@ public interface IProfileHUDView
 
     GameObject GameObject { get; }
     RectTransform ExpandedMenu { get; }
+    RectTransform MyAccountCardLayout { get; }
     RectTransform MyAccountCardMenu { get; }
     MyAccountCardComponentView MyAccountCardView { get; }
     RectTransform TutorialReference { get; }

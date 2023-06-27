@@ -305,7 +305,10 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (Input.GetMouseButton(0) &&
             !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTransform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.ExpandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(DataStore.i.myAccount.isInitialized.Get() ?
+                HUDController.i.profileHud.view.MyAccountCardLayout :
+                HUDController.i.profileHud.view.ExpandedMenu,
+                Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
             !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.MyAccountCardMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
     }

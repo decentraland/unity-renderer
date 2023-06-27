@@ -87,6 +87,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform MyAccountCardLayout => null;
     public RectTransform MyAccountCardMenu => null;
     public MyAccountCardComponentView MyAccountCardView => null;
     public RectTransform TutorialReference => tutorialTooltipReference;

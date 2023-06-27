@@ -5795,6 +5795,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   myAccountCardView: {fileID: 3277300894489606655}
+  myAccountCardLayout: {fileID: 5565645439963945113}
   mainRootLayout: {fileID: 2784901200025860595}
   loadingSpinner: {fileID: 3475705995837572437}
   copyToast: {fileID: 7150535707475580996}

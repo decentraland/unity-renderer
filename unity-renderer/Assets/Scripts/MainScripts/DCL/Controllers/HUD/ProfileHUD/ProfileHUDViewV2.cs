@@ -16,6 +16,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
     [SerializeField] private MyAccountCardComponentView myAccountCardView;
+    [SerializeField] private RectTransform myAccountCardLayout;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal ShowHideAnimator copyToast;
@@ -106,6 +107,7 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform MyAccountCardLayout => myAccountCardLayout;
     public RectTransform MyAccountCardMenu => (RectTransform)myAccountCardView.transform;
     public MyAccountCardComponentView MyAccountCardView => myAccountCardView;
     public RectTransform TutorialReference => tutorialTooltipReference;
