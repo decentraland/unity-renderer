@@ -1,5 +1,4 @@
 using DCL.CameraTool;
-using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
@@ -101,7 +100,7 @@ namespace ECSSystems.CameraSystem
 
                 var pooledTransformComponent = transformPool.Get();
                 var t = pooledTransformComponent.WrappedComponent.Model;
-                t.position = SetInSceneOffset(scene, ref cameraPosition, ref currentWorldOffset);
+                t.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref cameraPosition, ref currentWorldOffset);
                 t.rotation = cameraRotation;
 
                 writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM, pooledTransformComponent);
@@ -121,15 +120,6 @@ namespace ECSSystems.CameraSystem
         private void LoadedScenesOnOnAdded(IParcelScene obj)
         {
             newSceneAdded = true;
-        }
-
-        private static Vector3 SetInSceneOffset(IParcelScene scene, ref Vector3 position, ref Vector3 worldOffset)
-        {
-            Vector3 offsetposition = new Vector3();
-            offsetposition.x = (position.x + worldOffset.x) - scene.sceneData.basePosition.x * ParcelSettings.PARCEL_SIZE;
-            offsetposition.y = (position.y + worldOffset.y);
-            offsetposition.z = (position.z + worldOffset.z) - scene.sceneData.basePosition.y * ParcelSettings.PARCEL_SIZE;
-            return offsetposition;
         }
     }
 }

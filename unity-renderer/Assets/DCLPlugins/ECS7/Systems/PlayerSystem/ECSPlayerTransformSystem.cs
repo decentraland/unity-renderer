@@ -76,7 +76,7 @@ namespace ECSSystems.PlayerSystem
 
                 var pooledTransform = transformPool.Get();
                 var transform = pooledTransform.WrappedComponent.Model;
-                transform.position = SetInSceneOffset(scene, ref avatarPosition, ref currentWorldOffset);
+                transform.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref avatarPosition, ref currentWorldOffset);
                 transform.rotation = avatarRotation;
 
                 writer.Put(SpecialEntityId.PLAYER_ENTITY, ComponentID.TRANSFORM, pooledTransform);
