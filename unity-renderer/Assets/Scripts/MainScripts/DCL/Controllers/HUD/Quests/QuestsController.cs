@@ -125,7 +125,6 @@ namespace DCL.Quests
 
         private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous)
         {
-            Debug.Log("AAA");
             questLogController.SetAsFullScreenMenuMode(current);
         }
 
