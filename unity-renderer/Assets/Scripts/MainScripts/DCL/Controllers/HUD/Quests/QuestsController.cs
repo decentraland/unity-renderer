@@ -25,6 +25,7 @@ namespace DCL.Quests
         private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
         private readonly ITeleportController teleportController;
+        private readonly IQuestAnalyticsService questAnalyticsService;
         private Service<IWebRequestController> webRequestController;
 
         private CancellationTokenSource disposeCts = null;
@@ -42,7 +43,8 @@ namespace DCL.Quests
             IPlayerPrefs playerPrefs,
             DataStore dataStore,
             ITeleportController teleportController,
-            QuestLogController questLogController)
+            QuestLogController questLogController,
+            IQuestAnalyticsService questAnalyticsService)
         {
             this.questsService = questsService;
             this.questTrackerComponentView = questTrackerComponentView;
@@ -53,6 +55,7 @@ namespace DCL.Quests
             this.dataStore = dataStore;
             this.teleportController = teleportController;
             this.questLogController = questLogController;
+            this.questAnalyticsService = questAnalyticsService;
 
             disposeCts = new CancellationTokenSource();
             quests = new ();
