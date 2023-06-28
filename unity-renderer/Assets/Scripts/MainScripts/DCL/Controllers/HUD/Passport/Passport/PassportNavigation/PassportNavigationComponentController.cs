@@ -128,7 +128,7 @@ namespace DCL.Social.Passports
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE),
                                 IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE.ToString().Replace("_", " "),
-                                userProfile.BirthDate.Value.ToShortDateString()));
+                                userProfile.BirthDate.Value.ToString("dd/MM/yyyy")));
 
                         if (!string.IsNullOrEmpty(userProfile.Pronouns))
                             additionalFields.Add((
