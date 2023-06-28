@@ -63,10 +63,8 @@ namespace DCL.Components
             }
         }
 
-        protected override string referencesContainerPrefabName => "UIImage";
-
         DCLTexture dclTexture = null;
-        private readonly DCLTexture.Fetcher dclTextureFetcher = new DCLTexture.Fetcher();
+        private readonly DCLTexture.Fetcher dclTextureFetcher = new ();
         private bool isDisposed;
 
         public UIImage(UIShapePool pool) : base(pool)
@@ -173,8 +171,7 @@ namespace DCL.Components
             if (referencesContainer != null)
             {
                 referencesContainer.image.texture = null;
-                // Utils.SafeDestroy(referencesContainer.gameObject);
-                // referencesContainer = null;
+                referencesContainer = null;
             }
 
             base.Dispose();

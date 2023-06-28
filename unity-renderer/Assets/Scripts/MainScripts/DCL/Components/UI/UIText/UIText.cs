@@ -90,8 +90,6 @@ namespace DCL.Components
             }
         }
 
-        protected override string referencesContainerPrefabName => "UIText";
-
         public UIText(UIShapePool pool) : base(pool)
         {
             this.pool = pool;

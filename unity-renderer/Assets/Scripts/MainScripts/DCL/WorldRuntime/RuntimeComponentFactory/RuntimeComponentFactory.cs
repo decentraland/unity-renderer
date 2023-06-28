@@ -12,22 +12,15 @@ namespace DCL
     public class RuntimeComponentFactory : IRuntimeComponentFactory
     {
         // Temporal delegate for special behaviours. Should be deleted or refactored later.
-        public Dictionary<int, IRuntimeComponentFactory.CreateCondition> createConditions { get; set; } =
-            new Dictionary<int, IRuntimeComponentFactory.CreateCondition>();
+        public Dictionary<int, IRuntimeComponentFactory.CreateCondition> createConditions { get; } = new ();
+        public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; } = new ();
 
-        public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; set; } =
-            new Dictionary<int, IRuntimeComponentFactory.CreateOverride>();
-
-        protected delegate IComponent ComponentBuilder(int classId);
-
-        protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
+        private readonly Dictionary<int, Func<IComponent>> builders = new ();
 
         public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
-            if (builders.ContainsKey(classId))
-                builders[classId] = (id) => builder();
-            else
-                builders.Add(classId, (id) => builder());
+            Debug.Log($"VV:: registering for {classId}");
+            builders[classId] = builder;
         }
 
         public void UnregisterBuilder(int classId)
@@ -40,14 +33,14 @@ namespace DCL
 
         public IComponent CreateComponent(int classId)
         {
-            // if (!builders.ContainsKey(classId))
-            // {
-            //     Debug.LogError(
-            //         $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
-            //     return null;
-            // }
+            if (!builders.ContainsKey(classId))
+            {
+                Debug.LogError(
+                    $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
+                return null;
+            }
 
-            IComponent newComponent = builders[classId](classId);
+            IComponent newComponent = builders[classId]();
 
             return newComponent;
         }

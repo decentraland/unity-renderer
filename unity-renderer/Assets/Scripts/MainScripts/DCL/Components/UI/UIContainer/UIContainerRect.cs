@@ -44,8 +44,6 @@ namespace DCL.Components
             }
         }
 
-        protected override string referencesContainerPrefabName => "UIContainerRect";
-
         public UIContainerRect(UIShapePool pool) : base(pool)
         {
             this.pool = pool;
@@ -84,14 +82,6 @@ namespace DCL.Components
             }
 
             return null;
-        }
-
-        public override void Dispose()
-        {
-            if (referencesContainer != null)
-                Utils.SafeDestroy(referencesContainer.gameObject);
-
-            base.Dispose();
         }
     }
 }

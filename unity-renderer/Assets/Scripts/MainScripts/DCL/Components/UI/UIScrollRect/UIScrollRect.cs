@@ -62,8 +62,6 @@ namespace DCL.Components
             }
         }
 
-        protected override string referencesContainerPrefabName => "UIScrollRect";
-
         public UIScrollRect(UIShapePool pool) : base(pool)
         {
             this.pool = pool;

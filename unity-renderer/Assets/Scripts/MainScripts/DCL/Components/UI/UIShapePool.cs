@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -9,20 +8,27 @@ namespace DCL.Components
     {
         private readonly string prefabPath;
         private readonly ObjectPool<UIReferencesContainer> pool;
+        private readonly Transform root;
 
-        public UIShapePool(string prefabPath, int capacity = 3)
+        public UIShapePool(Transform root, string prefabPath, bool prewarm = false, int capacity = 20)
         {
+            this.root = root;
             this.prefabPath = prefabPath;
 
             pool = new ObjectPool<UIReferencesContainer>(CreateUIShape, OnTakeShapeFromPool, OnReturnShapeToPool, OnDestroyShape, true, capacity);
 
-            Debug.Log("VV::  PooL Created for " + prefabPath);
-            List<UIReferencesContainer> prewarmList = new List<UIReferencesContainer>(capacity);
-            for (var i = 0; i < capacity; i++)
-                prewarmList.Add(pool.Get());
+            if (string.IsNullOrEmpty(prefabPath)) return;
 
-            for (var i = 0; i < capacity; i++)
-                pool.Release(prewarmList[i]);
+            if (prewarm)
+            {
+                var prewarmList = new List<UIReferencesContainer>(capacity);
+
+                for (var i = 0; i < capacity; i++)
+                    prewarmList.Add(pool.Get());
+
+                for (var i = 0; i < capacity; i++)
+                    pool.Release(prewarmList[i]);
+            }
         }
 
         public UIReferencesContainer TakeUIShape() =>
@@ -33,20 +39,20 @@ namespace DCL.Components
 
         private UIReferencesContainer CreateUIShape() =>
             Object.Instantiate(
-                Resources.Load<UIReferencesContainer>(prefabPath), null, false);
+                Resources.Load<UIReferencesContainer>(prefabPath), root, false);
 
-        private void OnTakeShapeFromPool(UIReferencesContainer uiShape)
+        private static void OnTakeShapeFromPool(UIReferencesContainer uiShape)
         {
             uiShape.gameObject.SetActive(true);
         }
 
         private void OnReturnShapeToPool(UIReferencesContainer uiShape)
         {
-            uiShape.transform.SetParent(null, false);
+            uiShape.transform.SetParent(root, false);
             uiShape.gameObject.SetActive(false);
         }
 
-        private void OnDestroyShape(UIReferencesContainer uiShape)
+        private static void OnDestroyShape(UIReferencesContainer uiShape)
         {
             Object.Destroy(uiShape.gameObject);
         }

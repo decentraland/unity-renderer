@@ -56,7 +56,7 @@ namespace DCL.Components
 
             if (referencesContainer == null)
             {
-                referencesContainer = InstantiateUIGameObject<ReferencesContainerType>(referencesContainerPrefabName);
+                referencesContainer = GetUIGameObjectFromPool<ReferencesContainerType>();
 
                 raiseOnAttached = true;
                 firstApplyChangesCall = true;
@@ -174,7 +174,6 @@ namespace DCL.Components
         }
 
         public override string componentName => GetDebugName();
-        protected virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
@@ -219,7 +218,7 @@ namespace DCL.Components
 
 
         ProfilerMarker m_UIShapeInstantiateUIGameObject = new ("VV.UIShape.InstantiateUIGameObject");
-        internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
+        internal T GetUIGameObjectFromPool<T>() where T : UIReferencesContainer
         {
             m_UIShapeInstantiateUIGameObject.Begin();
             Model model = (Model) this.model;
@@ -338,10 +337,14 @@ namespace DCL.Components
 
             Model model = (Model) this.model;
 
-            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
-                model.width.GetScaledValue(parentTransform.rect.width));
-            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                model.height.GetScaledValue(parentTransform.rect.height));
+            if (referencesContainer != null && referencesContainer.layoutElementRT != null)
+            {
+                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                    model.width.GetScaledValue(parentTransform.rect.width));
+
+                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                    model.height.GetScaledValue(parentTransform.rect.height));
+            }
         }
 
         public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
@@ -527,6 +530,11 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            if (referencesContainer != null)
+            {
+                pool.ReleaseUIShape(referencesContainer);
+                referencesContainer = null;
+            }
 
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
