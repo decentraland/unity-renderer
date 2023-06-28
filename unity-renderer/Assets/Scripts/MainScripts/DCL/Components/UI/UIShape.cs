@@ -6,9 +6,9 @@ using DCL.Components.Interfaces;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
+using Unity.Profiling;
 
 namespace DCL.Components
 {
@@ -16,25 +16,39 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
+        protected const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
 
-        public UIShape() { }
+        public UIShape(UIShapePool pool) : base(pool)
+        {
+        }
 
-        new public ModelType model { get { return base.model as ModelType; } set { base.model = value; } }
+        public new ModelType model
+        {
+            get => base.model as ModelType;
+            protected set => base.model = value;
+        }
 
-        new public ReferencesContainerType referencesContainer { get { return base.referencesContainer as ReferencesContainerType; } set { base.referencesContainer = value; } }
+        public new ReferencesContainerType referencesContainer
+        {
+            get => base.referencesContainer as ReferencesContainerType;
+            protected set => base.referencesContainer = value;
+        }
 
-        public override ComponentUpdateHandler CreateUpdateHandler() { return new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this); }
+        public override ComponentUpdateHandler CreateUpdateHandler() =>
+            new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this);
 
         bool raiseOnAttached;
+
         bool firstApplyChangesCall;
 
+        ProfilerMarker m_UIShapePreApplyChanges = new ("VV.UIShape.PreApplyChanges");
 
         /// <summary>
         /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
         /// </summary>
         public void PreApplyChanges(BaseModel newModel)
         {
+            m_UIShapePreApplyChanges.Begin();
             model = (ModelType) newModel;
 
             raiseOnAttached = false;
@@ -51,6 +65,7 @@ namespace DCL.Components
             {
                 raiseOnAttached = true;
             }
+            m_UIShapePreApplyChanges.End();
         }
 
         public override void RaiseOnAppliedChanges()
@@ -76,18 +91,11 @@ namespace DCL.Components
             {
                 UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
-                for (int i = 0; i < parents.Length; i++)
-                {
-                    UIReferencesContainer parent = parents[i];
-                    if (parent.owner != null)
-                    {
-                        parent.owner.OnChildAttached(parentUIComponent, this);
-                    }
-                }
+                for (var i = 0; i < parents.Length; i++)
+                    parents[i].owner?.OnChildAttached(parentUIComponent, this);
             }
         }
     }
-
     public class UIShape : BaseDisposable, IUIRefreshable
     {
         [System.Serializable]
@@ -166,19 +174,21 @@ namespace DCL.Components
         }
 
         public override string componentName => GetDebugName();
-        public virtual string referencesContainerPrefabName => "";
+        protected virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
         public bool isLayoutDirty { get; private set; }
-        protected System.Action OnLayoutRefresh;
+        private System.Action OnLayoutRefresh;
 
         private BaseVariable<Vector2Int> screenSize => DataStore.i.screen.size;
         private BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         public UIShape parentUIComponent { get; protected set; }
+        protected UIShapePool pool;
 
-        public UIShape()
+        public UIShape(UIShapePool pool)
         {
+            this.pool = pool;
             screenSize.OnChange += OnScreenResize;
             model = new Model();
         }
@@ -208,8 +218,10 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
 
 
+        ProfilerMarker m_UIShapeInstantiateUIGameObject = new ("VV.UIShape.InstantiateUIGameObject");
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
+            m_UIShapeInstantiateUIGameObject.Begin();
             Model model = (Model) this.model;
 
             GameObject uiGameObject = null;
@@ -233,12 +245,11 @@ namespace DCL.Components
                 parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
             }
 
-            uiGameObject =
-                Object.Instantiate(
-                    Resources.Load(prefabPath),
-                    parentUIComponent?.childHookRectTransform) as GameObject;
+            // var uiGameObject = Object.Instantiate(Resources.Load(prefabPath), parentUIComponent?.childHookRectTransform) as GameObject;
+            referencesContainer = pool.TakeUIShape();// uiGameObject.GetComponent<T>();
 
-            referencesContainer = uiGameObject.GetComponent<T>();
+            if (parentUIComponent != null)
+                referencesContainer.transform.SetParent(parentUIComponent?.childHookRectTransform, false);
 
             referencesContainer.rectTransform.SetToMaxStretch();
 
@@ -246,10 +257,11 @@ namespace DCL.Components
 
             referencesContainer.owner = this;
 
+            m_UIShapeInstantiateUIGameObject.End();
             return referencesContainer as T;
         }
 
-        public virtual void RequestRefresh()
+        protected void RequestRefresh()
         {
             if (isLayoutDirty) return;
 
@@ -277,7 +289,7 @@ namespace DCL.Components
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
         }
 
-        public virtual void MarkLayoutDirty( System.Action OnRefresh = null )
+        protected void MarkLayoutDirty( System.Action OnRefresh = null )
         {
             UIShape rootParent = GetRootParent();
 
@@ -292,20 +304,31 @@ namespace DCL.Components
                 rootParent.OnLayoutRefresh += OnRefresh;
         }
 
-        public void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        ProfilerMarker m_UIShapeRefreshDCLLayout = new ("VV.UIShape.RefreshDCLLayout");
+        ProfilerMarker m_UIShapeRefreshDCLSize = new ("VV.UIShape.RefreshDCLSize");
+        ProfilerMarker m_UIShapeRefreshDCLAlignmentAndPosition = new ("VV.UIShape.RefreshDCLAlignmentAndPosition");
+
+        protected void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
+            m_UIShapeRefreshDCLLayout.Begin();
             RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
 
             if (refreshSize)
             {
+                m_UIShapeRefreshDCLSize.Begin();
                 RefreshDCLSize(parentRT);
+                m_UIShapeRefreshDCLSize.End();
             }
 
             if (refreshAlignmentAndPosition)
             {
+                m_UIShapeRefreshDCLAlignmentAndPosition.Begin();
                 // Alignment (Alignment uses size so we should always align AFTER resizing)
                 RefreshDCLAlignmentAndPosition(parentRT);
+                m_UIShapeRefreshDCLAlignmentAndPosition.End();
             }
+
+            m_UIShapeRefreshDCLLayout.End();
         }
 
         protected virtual void RefreshDCLSize(RectTransform parentTransform = null)

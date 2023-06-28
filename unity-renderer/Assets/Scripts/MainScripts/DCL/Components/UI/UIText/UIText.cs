@@ -11,8 +11,8 @@ namespace DCL.Components
 {
     public class UIText : UIShape<UITextReferencesContainer, UIText.Model>
     {
-        [System.Serializable]
-        new public class Model : UIShape.Model
+        [Serializable]
+        public new class Model : UIShape.Model
         {
             public float outlineWidth = 0f;
             public Color outlineColor = Color.white;
@@ -90,10 +90,11 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIText";
+        protected override string referencesContainerPrefabName => "UIText";
 
-        public UIText()
+        public UIText(UIShapePool pool) : base(pool)
         {
+            this.pool = pool;
             model = new Model();
         }
 
@@ -165,13 +166,13 @@ namespace DCL.Components
             referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
         }
 
-        public override void Dispose()
-        {
-            if (referencesContainer != null)
-                Utils.SafeDestroy(referencesContainer.gameObject);
-
-            base.Dispose();
-        }
+        // public override void Dispose()
+        // {
+        //     if (referencesContainer != null)
+        //         Utils.SafeDestroy(referencesContainer.gameObject);
+        //
+        //     base.Dispose();
+        // }
 
         private static void ApplyModelChanges(TMP_Text text, Model model)
         {

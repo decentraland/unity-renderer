@@ -44,9 +44,13 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIContainerRect";
+        protected override string referencesContainerPrefabName => "UIContainerRect";
 
-        public UIContainerRect() { model = new Model(); }
+        public UIContainerRect(UIShapePool pool) : base(pool)
+        {
+            this.pool = pool;
+            model = new Model();
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_CONTAINER_RECT; }
 

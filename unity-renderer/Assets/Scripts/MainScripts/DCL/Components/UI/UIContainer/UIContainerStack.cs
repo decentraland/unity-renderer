@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -59,13 +58,17 @@ namespace DCL.Components
             HORIZONTAL
         }
 
-        public override string referencesContainerPrefabName => "UIContainerRect";
+        protected override string referencesContainerPrefabName => "UIContainerRect";
 
         public Dictionary<string, GameObject> stackContainers = new Dictionary<string, GameObject>();
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
-        public UIContainerStack() { model = new Model(); }
+        public UIContainerStack(UIShapePool pool) : base(pool)
+        {
+            this.pool = pool;
+            model = new Model();
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_CONTAINER_STACK; }
 
@@ -175,8 +178,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            if (referencesContainer != null)
-                Utils.SafeDestroy(referencesContainer.gameObject);
+            // if (referencesContainer != null)
+            //     Utils.SafeDestroy(referencesContainer.gameObject);
 
             base.Dispose();
         }

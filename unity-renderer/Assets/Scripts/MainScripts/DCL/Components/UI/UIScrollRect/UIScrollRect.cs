@@ -62,9 +62,13 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIScrollRect";
+        protected override string referencesContainerPrefabName => "UIScrollRect";
 
-        public UIScrollRect() { model = new Model(); }
+        public UIScrollRect(UIShapePool pool) : base(pool)
+        {
+            this.pool = pool;
+            model = new Model();
+        }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -151,7 +155,7 @@ namespace DCL.Components
             if (referencesContainer != null)
             {
                 referencesContainer.scrollRect.onValueChanged.RemoveAllListeners();
-                Utils.SafeDestroy(referencesContainer.gameObject);
+                // Utils.SafeDestroy(referencesContainer.gameObject);
             }
 
             base.Dispose();

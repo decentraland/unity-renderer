@@ -17,7 +17,7 @@ namespace DCL
 
         public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; set; } =
             new Dictionary<int, IRuntimeComponentFactory.CreateOverride>();
-        
+
         protected delegate IComponent ComponentBuilder(int classId);
 
         protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
@@ -40,12 +40,12 @@ namespace DCL
 
         public IComponent CreateComponent(int classId)
         {
-            if (!builders.ContainsKey(classId))
-            {
-                Debug.LogError(
-                    $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
-                return null;
-            }
+            // if (!builders.ContainsKey(classId))
+            // {
+            //     Debug.LogError(
+            //         $"Unknown classId: {classId} - Make sure the component is registered! (You forgot to add a plugin?)");
+            //     return null;
+            // }
 
             IComponent newComponent = builders[classId](classId);
 
