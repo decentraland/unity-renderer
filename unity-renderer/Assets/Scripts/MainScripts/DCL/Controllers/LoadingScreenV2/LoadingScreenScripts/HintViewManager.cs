@@ -9,9 +9,9 @@ namespace DCL.LoadingScreen.V2
     public class HintViewManager : IHintViewManager
     {
         private readonly List<HintView> hintViewList;
-        private CancellationTokenSource cancellationTokenSource;
         private TimeSpan hintShowTime;
         private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
+        private CancellationTokenSource scheduledUpdateCtxSource;
 
         internal bool isIteratingHints = false;
         internal int currentHintIndex = 0;
@@ -36,8 +36,11 @@ namespace DCL.LoadingScreen.V2
 
         public void StopCarousel()
         {
+            if (!isIteratingHints)
+                return;
+
             isIteratingHints = false;
-            cancellationTokenSource?.Cancel();
+            scheduledUpdateCtxSource?.Cancel();
         }
 
         public void CarouselNextHint()
@@ -73,11 +76,11 @@ namespace DCL.LoadingScreen.V2
 
         private async UniTask ScheduleNextUpdate(CancellationToken token)
         {
-            var localCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            scheduledUpdateCtxSource = CancellationTokenSource.CreateLinkedTokenSource(token);
 
             try
             {
-                await UniTask.Delay(hintShowTime, cancellationToken: localCts.Token);
+                await UniTask.Delay(hintShowTime, cancellationToken: scheduledUpdateCtxSource.Token);
                 // Continue with the next hint without stopping the carousel.
                 if (hintViewList.Count > 0)
                     SetHint((currentHintIndex + 1) % hintViewList.Count);
@@ -88,7 +91,7 @@ namespace DCL.LoadingScreen.V2
             }
             finally
             {
-                localCts.Dispose();
+                scheduledUpdateCtxSource.Dispose();
             }
         }
 
@@ -106,7 +109,7 @@ namespace DCL.LoadingScreen.V2
         {
             Debug.Log("FD:: LoadingScreenHintsController - Dispose");
             StopCarousel();
-            cancellationTokenSource?.Dispose();
+            scheduledUpdateCtxSource?.Dispose();
 
             foreach (var hintView in hintViewList)
             {

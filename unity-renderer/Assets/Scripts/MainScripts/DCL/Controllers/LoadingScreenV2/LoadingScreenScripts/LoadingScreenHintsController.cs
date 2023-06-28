@@ -53,7 +53,6 @@ namespace DCL.LoadingScreen.V2
 
         private async void InitializeHintsAsync()
         {
-            Debug.Log("FD:: LoadingScreenHintsController - InitializeHintsAsync");
             cancellationTokenSource = new CancellationTokenSource();
 
             if (addressableProvider == null) {
@@ -117,7 +116,6 @@ namespace DCL.LoadingScreen.V2
 
             if (loadingScreenV2HintsPanelView != null)
             {
-                Debug.Log("FD:: LoadingScreenHintsController - RequestHints - loadingScreenV2HintsPanelView != null");
                 loadingScreenV2HintsPanelView.Initialize(intializedHints.Count);
                 loadingScreenV2HintsPanelView.OnPreviousClicked += CarouselPreviousHint;
                 loadingScreenV2HintsPanelView.OnNextClicked += CarouselNextHint;

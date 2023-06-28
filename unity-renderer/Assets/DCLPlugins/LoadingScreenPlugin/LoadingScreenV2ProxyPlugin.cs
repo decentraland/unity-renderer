@@ -39,19 +39,15 @@ namespace DCLPlugins.LoadingScreenPlugin
             this.addressableProvider = addressableProvider;
             this.cancellationTokenSource = new CancellationTokenSource();
 
-            Debug.Log("FD:: LoadingScreenPlugin - InitializeHintSystem 1");
             sourceWebRequestHandler = new HintSourceSourceWebRequestHandler();
             sceneController = Environment.i.serviceLocator.Get<ISceneController>();
             hintRequestSources = new List<IHintRequestSource>();
             hintRequestSources.Add(new LocalHintRequestSource(LOCAL_HINT_RESOURCE_ADDRESSABLE, SourceTag.Dcl, addressableProvider));
             hintRequestSources.Add(new RemoteHintRequestSource(REMOTE_HINT_URL, SourceTag.Dcl, sourceWebRequestHandler));
             hintRequestSources.Add(new SceneHintRequestSource(SourceTag.Scene, sceneController));
-            Debug.Log("FD:: LoadingScreenPlugin - InitializeHintSystem 2");
 
             hintTextureRequestHandler = new HintTextureRequestHandler();
-            Debug.Log("FD:: LoadingScreenPlugin - InitializeHintSystem 3");
             hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
-            Debug.Log("FD:: LoadingScreenPlugin - InitializeHintSystem 4");
 
             loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
 

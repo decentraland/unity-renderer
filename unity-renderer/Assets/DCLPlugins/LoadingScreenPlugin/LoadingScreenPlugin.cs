@@ -37,7 +37,6 @@ namespace DCLPlugins.LoadingScreenPlugin
         {
             var loadingScreenView = CreateLoadingScreenView();
 
-            Debug.Log("FD:: LoadingScreenPlugin - CreateLoadingScreen");
             // FD:: remove the comment if LoadingScreenV2 is finalized
             // if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
             // {
