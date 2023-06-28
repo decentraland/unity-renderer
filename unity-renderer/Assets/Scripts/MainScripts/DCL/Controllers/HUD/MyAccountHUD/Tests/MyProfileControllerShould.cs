@@ -22,6 +22,7 @@ namespace DCL.MyAccount
         private const string NOT_OWNED_NAME_SUFFIX = "af1b";
         private const string MY_DESCRIPTION = "my description";
         private const string VALID_NAME = "validName";
+        private const string OWN_ETH_ADDRESS = "0xdf9ba5f96abdfbf4bf97bfd9b9a764";
 
         private MyProfileController controller;
         private MyAccountSectionHUDController myAccountSectionController;
@@ -60,6 +61,7 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
+                ethAddress = OWN_ETH_ADDRESS,
             });
 
             userProfileBridge.GetOwn().Returns(userProfile);
@@ -157,6 +159,7 @@ namespace DCL.MyAccount
                 userId = OWN_USER_ID,
                 name = OWNED_NAME_1,
                 hasClaimedName = true,
+                ethAddress = OWN_ETH_ADDRESS,
             });
 
             userProfileBridge.GetOwn().Returns(userProfile);
@@ -171,7 +174,7 @@ namespace DCL.MyAccount
 
             view.Received(1).SetClaimedNameMode(true);
             view.Received(1).SetClaimedNameModeAsInput(false);
-            view.Received(1).SetCurrentName(OWNED_NAME_1, "");
+            view.Received(1).SetCurrentName(OWNED_NAME_1, "a764");
             view.Received(1).SetClaimNameBannerActive(false);
         }
 
@@ -221,7 +224,8 @@ namespace DCL.MyAccount
                     new ("l1", "url1"),
                     new ("l2", "url2"),
                     new ("l3", "url3"),
-                }
+                },
+                ethAddress = OWN_ETH_ADDRESS,
             });
 
             userProfileBridge.GetOwn().Returns(userProfile);
@@ -255,7 +259,8 @@ namespace DCL.MyAccount
                     new ("l3", "url3"),
                     new ("l4", "url4"),
                     new ("l5", "url5"),
-                }
+                },
+                ethAddress = OWN_ETH_ADDRESS,
             });
 
             userProfileBridge.GetOwn().Returns(userProfile);

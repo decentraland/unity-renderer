@@ -281,7 +281,7 @@ namespace DCL.MyAccount
         {
             (string mainName, string nonClaimedHashtag) result = (
                 string.Empty,
-                userProfile.ethAddress.Length >= 4 ? userProfile.ethAddress.Substring(userProfile.ethAddress.Length - 4) : string.Empty);
+                userProfile.ethAddress != null ? userProfile.ethAddress.Length >= 4 ? userProfile.ethAddress.Substring(userProfile.ethAddress.Length - 4) : string.Empty : string.Empty);
 
             string[] splitName = userProfile.userName.Split('#');
 
