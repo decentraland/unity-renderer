@@ -1,4 +1,5 @@
 ﻿using DCL.Browser;
+using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
@@ -83,7 +84,8 @@ namespace DCL.Backpack
                 backpackEmotesSectionController,
                 backpackAnalyticsService,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()));
         }
 
         [TearDown]
