@@ -159,7 +159,7 @@ namespace DCL.MyAccount
             addButton.interactable = DateTime.TryParseExact(str,
                 optionsModel.Options[currentOptionId].DateFormat,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal, out DateTime result);
+                DateTimeStyles.AdjustToUniversal, out DateTime result);
         }
 
         private void UpdateAddButtonInteractabilityByFreeFormText(string str)

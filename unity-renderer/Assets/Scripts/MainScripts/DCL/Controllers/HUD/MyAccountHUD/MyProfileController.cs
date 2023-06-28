@@ -548,9 +548,11 @@ namespace DCL.MyAccount
                 DateFormat = "dd/MM/yyyy",
                 OnValueSubmitted = birthDate =>
                 {
+                    var dateTime = DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal),
+                        dateTime,
                         userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);

@@ -40,6 +40,7 @@ namespace DCL.MyAccount
         private IProfileAdditionalInfoValueListProvider relationshipStatusProvider;
         private IProfileAdditionalInfoValueListProvider languageListProvider;
         private IProfileAdditionalInfoValueListProvider pronounListProvider;
+        private UserProfile ownUserProfile;
 
         [SetUp]
         public void SetUp()
@@ -53,9 +54,9 @@ namespace DCL.MyAccount
             view = Substitute.For<IMyProfileComponentView>();
 
             userProfileBridge = Substitute.For<IUserProfileBridge>();
-            UserProfile userProfile = ScriptableObject.CreateInstance<UserProfile>();
+            ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateData(new UserProfileModel
+            ownUserProfile.UpdateData(new UserProfileModel
             {
                 userId = OWN_USER_ID,
                 name = NOT_OWNED_FULL_NAME,
@@ -64,7 +65,7 @@ namespace DCL.MyAccount
                 ethAddress = OWN_ETH_ADDRESS,
             });
 
-            userProfileBridge.GetOwn().Returns(userProfile);
+            userProfileBridge.GetOwn().Returns(ownUserProfile);
 
             namesService = Substitute.For<INamesService>();
 
@@ -460,6 +461,475 @@ namespace DCL.MyAccount
                                                                         && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
 
             myAccountAnalyticsService.Received(1).SendProfileLinkRemoveAnalytic("l1", "l1");
+        }
+
+        [Test]
+        public void ShowAllAdditionalInfoValues()
+        {
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                birthdate = new DateTime(1990, 12, 25),
+                country = "country",
+                language = "english",
+                gender = "male",
+                pronouns = "he/him",
+                profession = "software dev",
+                employmentStatus = "working",
+                realName = "conito pepote",
+                sexualOrientation = "heterosexual",
+                relationshipStatus = "single",
+                hobbies = "sports, games & art",
+            });
+
+            view.Received(1)
+                .SetAdditionalInfoOptions(Arg.Is<AdditionalInfoOptionsModel>(a =>
+                     a.Options.Count == 11
+                     && a.Options.All(pair => !pair.Value.IsAvailable)));
+
+            view.Received(1)
+                .SetAdditionalInfoValues(Arg.Is<Dictionary<string, (string title, string value)>>(d =>
+                     d.Count == 11
+                     && d["Country"].title == "Country" && d["Country"].value == "country"
+                     && d["Language"].title == "Language" && d["Language"].value == "english"
+                     && d["Gender"].title == "Gender" && d["Gender"].value == "male"
+                     && d["Pronouns"].title == "Pronouns" && d["Pronouns"].value == "he/him"
+                     && d["Profession"].title == "Profession" && d["Profession"].value == "software dev"
+                     && d["Employment Status"].title == "Employment Status" && d["Employment Status"].value == "working"
+                     && d["Real Name"].title == "Real Name" && d["Real Name"].value == "conito pepote"
+                     && d["Sexual Orientation"].title == "Sexual Orientation" && d["Sexual Orientation"].value == "heterosexual"
+                     && d["Relationship Status"].title == "Relationship Status" && d["Relationship Status"].value == "single"
+                     && d["Hobbies"].title == "Hobbies" && d["Hobbies"].value == "sports, games & art"
+                     && d["Birth Date"].title == "Birth Date" && d["Birth Date"].value == "25/12/1990"));
+        }
+
+        [Test]
+        public void ShowAdditionalInfoOptions()
+        {
+            pronounListProvider.Provide().Returns(new[] { "" });
+            countryListProvider.Provide().Returns(new[] { "" });
+            languageListProvider.Provide().Returns(new[] { "" });
+            genderListProvider.Provide().Returns(new[] { "" });
+            employmentStatusProvider.Provide().Returns(new[] { "" });
+            sexualOrientationProvider.Provide().Returns(new[] { "" });
+            relationshipStatusProvider.Provide().Returns(new[] { "" });
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+            });
+
+            view.Received(1)
+                .SetAdditionalInfoOptions(Arg.Is<AdditionalInfoOptionsModel>(a =>
+                     a.Options.Count == 11
+                     && a.Options.All(pair => pair.Value.IsAvailable)
+                     && a.Options["Country"].Name == "Country" && a.Options["Country"].Values.Length > 0 && a.Options["Country"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Language"].Name == "Language" && a.Options["Language"].Values.Length > 0 && a.Options["Language"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Gender"].Name == "Gender" && a.Options["Gender"].Values.Length > 0 && a.Options["Gender"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Pronouns"].Name == "Pronouns" && a.Options["Pronouns"].Values.Length > 0 && a.Options["Pronouns"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Profession"].Name == "Profession" && a.Options["Profession"].InputType == AdditionalInfoOptionsModel.InputType.FreeFormText
+                     && a.Options["Employment Status"].Name == "Employment Status" && a.Options["Employment Status"].Values.Length > 0 && a.Options["Employment Status"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Real Name"].Name == "Real Name" && a.Options["Real Name"].InputType == AdditionalInfoOptionsModel.InputType.FreeFormText
+                     && a.Options["Sexual Orientation"].Name == "Sexual Orientation" && a.Options["Sexual Orientation"].Values.Length > 0 && a.Options["Sexual Orientation"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Relationship Status"].Name == "Relationship Status" && a.Options["Relationship Status"].Values.Length > 0 && a.Options["Relationship Status"].InputType == AdditionalInfoOptionsModel.InputType.StrictValueList
+                     && a.Options["Hobbies"].Name == "Hobbies" && a.Options["Hobbies"].InputType == AdditionalInfoOptionsModel.InputType.FreeFormText
+                     && a.Options["Birth Date"].Name == "Birth Date" && a.Options["Birth Date"].InputType == AdditionalInfoOptionsModel.InputType.Date && a.Options["Birth Date"].DateFormat == "dd/MM/yyyy"));
+
+            view.Received(1)
+                .SetAdditionalInfoValues(Arg.Is<Dictionary<string, (string title, string value)>>(d =>
+                     d.Count == 0));
+        }
+
+        [Test]
+        public void SaveCountry()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Country"].OnValueSubmitted.Invoke("country"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo("country", null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveCountry()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Country"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                country = "country",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveLanguage()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Language"].OnValueSubmitted.Invoke("ES"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, "ES",
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveLanguage()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Language"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                language = "EN",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveGender()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Gender"].OnValueSubmitted.Invoke("female"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, "female", null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveGender()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Gender"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                gender = "female",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SavePronouns()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Pronouns"].OnValueSubmitted.Invoke("she/her"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, "she/her", null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemovePronouns()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Pronouns"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                pronouns = "she/her",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveProfession()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Profession"].OnValueSubmitted.Invoke("qa"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  "qa", null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveProfession()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Profession"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                profession = "qa",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveEmploymentStatus()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Employment Status"].OnValueSubmitted.Invoke("lazy"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, "lazy",
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveEmploymentStatus()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Employment Status"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                employmentStatus = "lazy",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveRealName()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Real Name"].OnValueSubmitted.Invoke("peperote"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, "peperote", null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveRealName()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Real Name"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                realName = "peperote",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveSexualOrientation()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Sexual Orientation"].OnValueSubmitted.Invoke("alot"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, "alot", null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveSexualOrientation()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Sexual Orientation"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                sexualOrientation = "alot",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveRelationshipStatus()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Relationship Status"].OnValueSubmitted.Invoke("free"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, "free", null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveRelationshipStatus()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Relationship Status"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                relationshipStatus = "free",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveHobbies()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Hobbies"].OnValueSubmitted.Invoke("eat"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, "eat", null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveHobbies()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Hobbies"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                hobbies = "eat",
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void SaveBirthDate()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Birth Date"].OnValueSubmitted.Invoke("15/12/1985"));
+
+            dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, Arg.Is<DateTime>(d => d.Day == 15 && d.Month == 12 && d.Year == 1985),
+                                  null, null, null,
+                                  Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void RemoveBirthDate()
+        {
+            view.WhenForAnyArgs(v => v.SetAdditionalInfoOptions(default))
+                .Do(info => info.Arg<AdditionalInfoOptionsModel>().Options["Birth Date"].OnRemoved.Invoke());
+
+            ownUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = OWN_USER_ID,
+                name = NOT_OWNED_FULL_NAME,
+                hasClaimedName = false,
+                description = MY_DESCRIPTION,
+                birthdate = new DateTime(1985, 12, 15),
+            });
+
+            userProfileBridge.Received(1)
+                             .SaveAdditionalInfo(null, null, null, null, null, null,
+                                  null, null, null, null, null,
+                                  Arg.Any<CancellationToken>());
         }
     }
 }
