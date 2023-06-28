@@ -94,7 +94,8 @@ namespace DCL.LoadingScreen.V2
 
         private void UpdateHintView()
         {
-            if (!isIteratingHints) return;
+            // FD:: maybe here we need to check the cancelation token for the carousel
+            // and return if it's canceled
 
             hintViewList[currentHintIndex].ToggleHint(true);
             loadingScreenV2HintsPanelView.ToggleDot(currentHintIndex);
@@ -103,6 +104,7 @@ namespace DCL.LoadingScreen.V2
 
         public void Dispose()
         {
+            Debug.Log("FD:: LoadingScreenHintsController - Dispose");
             StopCarousel();
             cancellationTokenSource?.Dispose();
 
