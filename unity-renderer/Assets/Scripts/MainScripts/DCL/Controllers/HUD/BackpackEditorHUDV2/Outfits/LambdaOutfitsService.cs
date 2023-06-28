@@ -23,12 +23,11 @@ public class LambdaOutfitsService
         string userId,
         CancellationToken cancellationToken)
     {
-        await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
-
         (OutfitsResponse response, bool success) = await lambdasService.Get<OutfitsResponse>(
             OUTFITS_ENDPOINT + userId,
             OUTFITS_ENDPOINT + userId,
             cancellationToken: cancellationToken);
+
 
         if (!success)
             throw new Exception($"The request of outfits for '{userId}' failed!");
