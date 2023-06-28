@@ -27,7 +27,6 @@ namespace DCL.LoadingScreen
         private Vector2Int currentDestination;
         private string currentRealm;
         private bool currentRealmIsWorld;
-        private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
         internal readonly LoadingScreenTimeoutController timeoutController;
         private readonly NotificationsController notificationsController;
@@ -54,7 +53,6 @@ namespace DCL.LoadingScreen
             this.realmDataStore = realmDataStore;
             this.notificationsController = notificationsController;
 
-            tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
             timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState, this);
 

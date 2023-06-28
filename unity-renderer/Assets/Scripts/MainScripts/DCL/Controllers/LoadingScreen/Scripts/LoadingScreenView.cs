@@ -11,7 +11,6 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
-        [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
@@ -37,9 +36,6 @@ namespace DCL.LoadingScreen
             base.Dispose();
             showHideAnimator.OnWillFinishStart -= FadeInFinish;
         }
-
-        public LoadingScreenTipsView GetTipsView() =>
-            tipsView;
 
         public RectTransform GetHintContainer() =>
             hintContainer;

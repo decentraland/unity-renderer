@@ -12,8 +12,6 @@ namespace DCL.LoadingScreen
 
         event Action<ShowHideAnimator> OnFadeInFinish;
 
-        LoadingScreenTipsView GetTipsView();
-
         LoadingScreenPercentageView GetPercentageView();
 
         ILoadingScreenTimeoutView GetTimeoutView();

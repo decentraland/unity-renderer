@@ -49,7 +49,6 @@ namespace DCL.LoadingScreen.Test
             realmDataStore.playerRealmAboutConfiguration.Set(new AboutResponse.Types.AboutConfiguration());
 
             LoadingScreenView auxiliaryViews = LoadingScreenPlugin.CreateLoadingScreenView();
-            loadingScreenView.GetTipsView().Returns(auxiliaryViews.GetTipsView());
             loadingScreenView.GetPercentageView().Returns(auxiliaryViews.GetPercentageView());
             loadingScreenView.GetTimeoutView().Returns(loadingScreenTimeoutView);
             shaderPrewarm.PrewarmAsync(Arg.Any<Action<float>>(), Arg.Any<CancellationToken>()).Returns(UniTask.CompletedTask);
