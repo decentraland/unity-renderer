@@ -58,7 +58,9 @@ export function* profileSaga(): any {
    */
   yield debounce(200, DEPLOY_PROFILE_REQUEST, handleDeployProfile)
 
-  // TODO Juli: check which would be the correct way to handle this
+  /**
+   * Manage a request by the client to deploy outfits
+   */
   yield takeEvery(DEPLOY_OUTFITS_REQUEST, handleDeployOutfits)
 
   /**
