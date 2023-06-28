@@ -81,5 +81,15 @@ namespace DCL.LoadingScreen.V2
             Debug.Log("FD:: HintsPanelView - OnRightClicked");
             OnNextClicked?.Invoke();
         }
+
+        public void CleanUp()
+        {
+            foreach (var dot in dotsList)
+            {
+                dot.gameObject.SetActive(false);
+            }
+            OnPreviousClicked = null;
+            OnNextClicked = null;
+        }
     }
 }

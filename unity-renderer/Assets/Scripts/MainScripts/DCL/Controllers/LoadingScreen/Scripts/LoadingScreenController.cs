@@ -68,6 +68,8 @@ namespace DCL.LoadingScreen
 
         public void Dispose()
         {
+            Debug.Log("FD:: Disposing --> LoadingScreenController");
+
             view.Dispose();
             percentageController.Dispose();
             timeoutController.Dispose();
@@ -102,7 +104,6 @@ namespace DCL.LoadingScreen
                 loadingScreenHintsController.Dispose();
             }
 
-
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
 
@@ -118,24 +119,30 @@ namespace DCL.LoadingScreen
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
+            Debug.Log("FD:: TeleportRequested 1");
             if (onSignUpFlow) return;
-
+            Debug.Log("FD:: TeleportRequested 2");
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
             if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
+                Debug.Log("FD:: TeleportRequested 3");
                 currentDestination = currentDestinationCandidate;
 
-                //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
-                //This is probably going to change with the integration of WORLDS loading screen
-                //Temporarily removing tips until V2
-                //tipsController.StopTips();
+                //On a teleport, to copy previos behaviour, we show the teleporting screen
+                if (loadingScreenHintsController == null)
+                    Debug.Log("FD:: loadingScreenHintsController is null");
+                loadingScreenHintsController.Initialize();
+
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
             }
             else if (IsSceneLoaded(currentDestinationCandidate))
+            {
+                Debug.Log("FD:: TeleportRequested 4");
                 HandlePlayerLoading();
+            }
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,

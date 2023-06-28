@@ -107,14 +107,14 @@ namespace DCL.LoadingScreen.V2
 
         public void Dispose()
         {
-            Debug.Log("FD:: LoadingScreenHintsController - Dispose");
+            Debug.Log("FD:: Disposing --> HntsViewManager");
             StopCarousel();
             scheduledUpdateCtxSource?.Dispose();
 
             foreach (var hintView in hintViewList)
             {
                 hintView.CancelAnyHintToggle();
-                DCL.Helpers.Utils.SafeDestroy(hintView.gameObject);
+                // DCL.Helpers.Utils.SafeDestroy(hintView.gameObject);
             }
 
             hintViewList.Clear();

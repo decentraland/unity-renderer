@@ -10,6 +10,7 @@ namespace DCLPlugins.LoadingScreenPlugin
 {
     public class LoadingScreenV2Plugin : IPlugin
     {
+        // FD:: REMOVE THE PLUGIN WHEN CLEANING UP?
         private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private readonly string LOCAL_HINT_RESOURCE_ADDRESSABLE = "LoadingScreenV2LocalHintsJsonSource";
         // TODO: FD:: the following REMOTE_HINT_URL is a placeholder URL

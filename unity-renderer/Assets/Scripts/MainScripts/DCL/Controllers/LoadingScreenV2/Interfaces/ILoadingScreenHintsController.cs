@@ -2,6 +2,7 @@ namespace DCL.LoadingScreen.V2
 {
     public interface ILoadingScreenHintsController
     {
+        void Initialize();
         void StartHintsCarousel();
         void StopHintsCarousel();
         void CarouselNextHint();

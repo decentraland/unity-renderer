@@ -28,9 +28,11 @@ namespace DCL.LoadingScreen.V2
         private InputAction_Trigger shortcutLeftInputAction;
         private InputAction_Trigger shortcutRightInputAction;
 
+        private bool hintsControllerInitialized = false;
+
         internal HintView hintViewPrefab;
         internal HintViewManager hintViewManager;
-        internal readonly List<HintView> hintViewPool;
+        internal List<HintView> hintViewPool;
         internal Dictionary<int, Tuple<Hint, Texture2D>> hintsDictionary;
         internal CancellationTokenSource cancellationTokenSource;
 
@@ -45,6 +47,22 @@ namespace DCL.LoadingScreen.V2
             this.loadingScreenV2HintsPanelView = loadingScreenView.GetHintsPanelView();
 
             ConfigureShortcuts();
+            // hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
+            // hintViewPool = new List<HintView>();
+
+            // InitializeHintsAsync();
+
+            Initialize();
+        }
+
+        // This is initialized when teleporting to a new scene (also when loading the game for the first time)
+        public void Initialize()
+        {
+            if (hintsControllerInitialized)
+                return;
+
+            hintsControllerInitialized = true;
+            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - Reinitialize");
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
 
@@ -53,6 +71,7 @@ namespace DCL.LoadingScreen.V2
 
         private async void InitializeHintsAsync()
         {
+            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - InitializeHintsAsync");
             cancellationTokenSource = new CancellationTokenSource();
 
             if (addressableProvider == null) {
@@ -156,13 +175,21 @@ namespace DCL.LoadingScreen.V2
 
         public void Dispose()
         {
+            Debug.Log("FD:: Disposing --> LoadingScreenHintsController");
             shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
             shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
             loadingScreenV2HintsPanelView.OnPreviousClicked -= CarouselPreviousHint;
             loadingScreenV2HintsPanelView.OnNextClicked -= CarouselNextHint;
 
+            loadingScreenV2HintsPanelView.CleanUp();
+
             cancellationTokenSource?.Cancel();
             hintViewManager.Dispose();
+            foreach (var hint in hintViewPool)
+            {
+                if (hint != null)
+                    DCL.Helpers.Utils.SafeDestroy(hint.gameObject);
+            }
         }
 
 #region Shortcut management
