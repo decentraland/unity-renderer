@@ -11,18 +11,18 @@ namespace DCL.LoadingScreen.V2
         private readonly List<HintView> hintViewList;
         private CancellationTokenSource cancellationTokenSource;
         private TimeSpan hintShowTime;
-        private HintDotsView hintDotsView;
+        private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
 
         internal bool isIteratingHints = false;
         internal int currentHintIndex = 0;
 
         public event Action OnHintChanged;
 
-        public HintViewManager(List<HintView> hintViewList, TimeSpan hintShowTime, HintDotsView hintDotsView)
+        public HintViewManager(List<HintView> hintViewList, TimeSpan hintShowTime, LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView)
         {
             this.hintViewList = hintViewList;
             this.hintShowTime = hintShowTime;
-            this.hintDotsView = hintDotsView;
+            this.loadingScreenV2HintsPanelView = loadingScreenV2HintsPanelView;
         }
 
         public void StartCarousel()
@@ -97,7 +97,7 @@ namespace DCL.LoadingScreen.V2
             if (!isIteratingHints) return;
 
             hintViewList[currentHintIndex].ToggleHint(true);
-            hintDotsView.ToggleDot(currentHintIndex);
+            loadingScreenV2HintsPanelView.ToggleDot(currentHintIndex);
             OnHintChanged?.Invoke();
         }
 

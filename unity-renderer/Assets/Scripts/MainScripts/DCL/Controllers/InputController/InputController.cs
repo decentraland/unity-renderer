@@ -49,6 +49,8 @@ public enum DCLAction_Trigger
     ChatNextInHistory = 153,
     ChatMentionNextEntry = 154,
     ChatMentionPreviousEntry = 155,
+    LoadingScreenV2HintsLeft = 156,
+    LoadingScreenV2HintsRight = 157,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -285,6 +287,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleAvatarNamesHud:
                     InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.LoadingScreenV2HintsLeft:
+                    InputProcessor.FromKey(action, KeyCode.LeftArrow, modifiers: InputProcessor.Modifier.None);
+                    break;
+                case DCLAction_Trigger.LoadingScreenV2HintsRight:
+                    InputProcessor.FromKey(action, KeyCode.RightArrow, modifiers: InputProcessor.Modifier.None);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

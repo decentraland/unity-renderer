@@ -9,8 +9,10 @@ using UnityEngine.UI;
 
 namespace DCL.LoadingScreen.V2
 {
-    public class HintDotsView : MonoBehaviour
+    public class LoadingScreenV2HintsPanelView : MonoBehaviour
     {
+        [SerializeField] private Button previousHintButton;
+        [SerializeField] private Button nextHintButton;
         [SerializeField] private RectTransform[] dotsList;
         private List<Image> dotsImages;
         private int currentDotIndex = 0;
@@ -21,6 +23,9 @@ namespace DCL.LoadingScreen.V2
         private Vector2 smallSize = new Vector2(8, 8);
         private Color activeColor = new Color(1, 0.1764706f, 0.3333333f);
         private Color inactiveColor = Color.white;
+
+        public event Action OnPreviousClicked;
+        public event Action OnNextClicked;
 
         public void Initialize(int hintsAmount)
         {
@@ -63,6 +68,18 @@ namespace DCL.LoadingScreen.V2
                 dotsList[previousDotIndex].sizeDelta = smallSize;
                 dotsImages[previousDotIndex].color = inactiveColor;
             }
+        }
+
+        public void OnLeftClicked()
+        {
+            Debug.Log("FD:: HintsPanelView - OnLeftClicked");
+            OnPreviousClicked?.Invoke();
+        }
+
+        public void OnRightClicked()
+        {
+            Debug.Log("FD:: HintsPanelView - OnRightClicked");
+            OnNextClicked?.Invoke();
         }
     }
 }

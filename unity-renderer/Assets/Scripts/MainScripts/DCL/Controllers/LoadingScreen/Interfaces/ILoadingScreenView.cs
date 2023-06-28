@@ -20,7 +20,7 @@ namespace DCL.LoadingScreen
 
         RectTransform GetHintContainer();
 
-        HintDotsView GetHintDotsView();
+        LoadingScreenV2HintsPanelView GetHintsPanelView();
 
         void ToggleTeleportLoadingAnimation(bool active);
     }

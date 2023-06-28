@@ -17,13 +17,16 @@ namespace DCL.LoadingScreen.V2
     public class LoadingScreenHintsController: ILoadingScreenHintsController
     {
         private const int MAX_HINTS = 15;
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(2f);
+        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(10f);
         private readonly float FADE_DURATION = 0.5f;
         private const string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private readonly HintRequestService hintRequestService;
         private readonly IAddressableResourceProvider addressableProvider;
         private readonly ILoadingScreenView loadingScreenView;
-        private readonly HintDotsView hintDotsView;
+        private readonly LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
+
+        private InputAction_Trigger shortcutLeftInputAction;
+        private InputAction_Trigger shortcutRightInputAction;
 
         internal HintView hintViewPrefab;
         internal HintViewManager hintViewManager;
@@ -39,8 +42,9 @@ namespace DCL.LoadingScreen.V2
             this.addressableProvider = addressableProvider;
             this.hintRequestService = hintRequestService;
             this.loadingScreenView = loadingScreenView;
-            this.hintDotsView = loadingScreenView.GetHintDotsView();
+            this.loadingScreenV2HintsPanelView = loadingScreenView.GetHintsPanelView();
 
+            ConfigureShortcuts();
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
 
@@ -111,9 +115,15 @@ namespace DCL.LoadingScreen.V2
                 index++;
             }
 
-            if (hintDotsView != null)
-                hintDotsView.Initialize(intializedHints.Count);
-            hintViewManager = new HintViewManager(intializedHints, SHOWING_TIME_HINTS, hintDotsView);
+            if (loadingScreenV2HintsPanelView != null)
+            {
+                Debug.Log("FD:: LoadingScreenHintsController - RequestHints - loadingScreenV2HintsPanelView != null");
+                loadingScreenV2HintsPanelView.Initialize(intializedHints.Count);
+                loadingScreenV2HintsPanelView.OnPreviousClicked += CarouselPreviousHint;
+                loadingScreenV2HintsPanelView.OnNextClicked += CarouselNextHint;
+            }
+
+            hintViewManager = new HintViewManager(intializedHints, SHOWING_TIME_HINTS, loadingScreenV2HintsPanelView);
 
             StartHintsCarousel();
             OnRequestHintsCompleted?.Invoke();
@@ -131,11 +141,13 @@ namespace DCL.LoadingScreen.V2
 
         public void CarouselNextHint()
         {
+            Debug.Log("FD:: LoadingScreenHintsController - CarouselNextHint");
             hintViewManager.CarouselNextHint();
         }
 
         public void CarouselPreviousHint()
         {
+            Debug.Log("FD:: LoadingScreenHintsController - CarouselPreviousHint");
             hintViewManager.CarouselPreviousHint();
         }
 
@@ -146,8 +158,47 @@ namespace DCL.LoadingScreen.V2
 
         public void Dispose()
         {
+            shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
+            shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
+            loadingScreenV2HintsPanelView.OnPreviousClicked -= CarouselPreviousHint;
+            loadingScreenV2HintsPanelView.OnNextClicked -= CarouselNextHint;
+
             cancellationTokenSource?.Cancel();
             hintViewManager.Dispose();
         }
+
+#region Shortcut management
+        private void ConfigureShortcuts()
+        {
+            // closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
+            // closeWindow.OnTriggered += OnCloseWindowPressed;
+            //
+            // openEmotesCustomizationInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
+            // openEmotesCustomizationInputAction.OnFinished += OnOpenEmotesCustomizationInputActionTriggered;
+
+            shortcutLeftInputAction = Resources.Load<InputAction_Trigger>("LoadingScreenV2HintsLeft");
+            shortcutLeftInputAction.OnTriggered += OnShortcutInputActionTriggered;
+
+            shortcutRightInputAction = Resources.Load<InputAction_Trigger>("LoadingScreenV2HintsRight");
+            shortcutRightInputAction.OnTriggered += OnShortcutInputActionTriggered;
+        }
+
+        private void OnShortcutInputActionTriggered(DCLAction_Trigger action)
+        {
+            Debug.Log("FD:: LoadingScreenHintsController - OnShortcutInputActionTriggered");
+            // if (!shortcutsCanBeUsed)
+            //     return;
+
+            switch (action)
+            {
+                case DCLAction_Trigger.LoadingScreenV2HintsLeft:
+                    CarouselPreviousHint();
+                    break;
+                case DCLAction_Trigger.LoadingScreenV2HintsRight:
+                    CarouselNextHint();
+                    break;
+            }
+        }
+#endregion
     }
 }

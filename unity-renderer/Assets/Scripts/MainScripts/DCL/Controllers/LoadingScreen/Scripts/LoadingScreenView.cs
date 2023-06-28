@@ -1,6 +1,7 @@
 using DCL.LoadingScreen.V2;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
@@ -16,7 +17,7 @@ namespace DCL.LoadingScreen
         [SerializeField] private RawImage rawImage;
         [SerializeField] private RectTransform hintContainer;
         [SerializeField] private GameObject teleportLoadingAnimation;
-        [SerializeField] private HintDotsView hintDotsView;
+        [SerializeField] private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
@@ -49,8 +50,8 @@ namespace DCL.LoadingScreen
         public ILoadingScreenTimeoutView GetTimeoutView() =>
             timeoutView;
 
-        public HintDotsView GetHintDotsView() =>
-            hintDotsView;
+        public LoadingScreenV2HintsPanelView GetHintsPanelView() =>
+            loadingScreenV2HintsPanelView;
 
         public void FadeIn(bool instant, bool blitTexture)
         {
