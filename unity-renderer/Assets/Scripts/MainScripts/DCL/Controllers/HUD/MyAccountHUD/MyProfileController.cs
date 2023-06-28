@@ -693,7 +693,7 @@ namespace DCL.MyAccount
                 values["Profession"] = ("Profession", userProfile.Profession);
 
             if (userProfile.BirthDate != null)
-                values["Birth Date"] = ("Birth Date", userProfile.BirthDate?.ToShortDateString());
+                values["Birth Date"] = ("Birth Date", userProfile.BirthDate?.ToString("dd/MM/yyyy"));
 
             if (!string.IsNullOrEmpty(userProfile.RealName))
                 values["Real Name"] = ("Real Name", userProfile.RealName);
