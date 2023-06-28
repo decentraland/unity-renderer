@@ -107,7 +107,6 @@ namespace DCL.Components
 
         public override string componentName => "text";
 
-
         private bool CameraFound
         {
             get
@@ -123,27 +122,27 @@ namespace DCL.Components
             }
         }
 
-
         private void Awake()
         {
             model = new Model();
 
             cachedFontMaterial = new Material(text.fontSharedMaterial);
+
             text.fontSharedMaterial = cachedFontMaterial;
             text.text = string.Empty;
 
-            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, OnUpdate);
+            Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, LookToCamera);
         }
 
-        private void OnUpdate()
+        private void LookToCamera()
         {
             // Cameras are not detected while loading, so we can not load the camera on Awake or Start
-            if (cachedModel.billboard && CameraFound)
+            if (cachedModel is { billboard: true } && CameraFound)
                 transform.forward = mainCamera.transform.forward;
         }
 
-
-        new public Model GetModel() { return cachedModel; }
+        public new Model GetModel() =>
+            cachedModel;
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -165,12 +164,15 @@ namespace DCL.Components
             ApplyModelChanges(text, model);
 
             if (entity.meshRootGameObject == null)
+            {
                 entity.meshesInfo.meshRootGameObject = gameObject;
+                entity.meshesInfo.RootIsPoolableObject = true;
+            }
 
             entity.OnShapeUpdated?.Invoke(entity);
         }
 
-        public static void ApplyModelChanges(TMP_Text text, Model model)
+        private static void ApplyModelChanges(TMP_Text text, Model model)
         {
             text.text = model.value;
 
@@ -231,41 +233,27 @@ namespace DCL.Components
             vTextAlign = vTextAlign.ToLower();
             hTextAlign = hTextAlign.ToLower();
 
-            switch (vTextAlign)
-            {
-                case "top":
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.TopLeft;
-                        case "right":
-                            return TextAlignmentOptions.TopRight;
-                        default:
-                            return TextAlignmentOptions.Top;
-                    }
-
-                case "bottom":
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.BottomLeft;
-                        case "right":
-                            return TextAlignmentOptions.BottomRight;
-                        default:
-                            return TextAlignmentOptions.Bottom;
-                    }
-
-                default: // center
-                    switch (hTextAlign)
-                    {
-                        case "left":
-                            return TextAlignmentOptions.Left;
-                        case "right":
-                            return TextAlignmentOptions.Right;
-                        default:
-                            return TextAlignmentOptions.Center;
-                    }
-            }
+            return vTextAlign switch
+                   {
+                       "top" => hTextAlign switch
+                                {
+                                    "left" => TextAlignmentOptions.TopLeft,
+                                    "right" => TextAlignmentOptions.TopRight,
+                                    _ => TextAlignmentOptions.Top
+                                },
+                       "bottom" => hTextAlign switch
+                                   {
+                                       "left" => TextAlignmentOptions.BottomLeft,
+                                       "right" => TextAlignmentOptions.BottomRight,
+                                       _ => TextAlignmentOptions.Bottom
+                                   },
+                       _ => hTextAlign switch
+                            {
+                                "left" => TextAlignmentOptions.Left,
+                                "right" => TextAlignmentOptions.Right,
+                                _ => TextAlignmentOptions.Center
+                            }
+                   };
         }
 
         private void PrepareRectTransform()
@@ -289,7 +277,8 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId() { return (int)CLASS_ID_COMPONENT.TEXT_SHAPE; }
+        public override int GetClassId() =>
+            (int)CLASS_ID_COMPONENT.TEXT_SHAPE;
 
         public override void Cleanup()
         {
@@ -299,7 +288,7 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
-            Environment.i.platform.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, OnUpdate);
+            Environment.i.platform.updateEventHandler?.RemoveListener(IUpdateEventHandler.EventType.Update, LookToCamera);
 
             base.Cleanup();
             Destroy(cachedFontMaterial);
