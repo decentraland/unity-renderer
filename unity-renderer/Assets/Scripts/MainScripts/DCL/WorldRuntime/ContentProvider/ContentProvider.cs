@@ -12,6 +12,7 @@ namespace DCL
         public static bool VERBOSE = false;
 
         public string baseUrl;
+        public string baseUrlBundles;
         public string assetBundlesBaseUrl;
         public string assetBundlesVersion;
         public string sceneCid;

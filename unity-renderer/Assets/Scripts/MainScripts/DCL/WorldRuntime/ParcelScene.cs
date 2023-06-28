@@ -94,20 +94,10 @@ namespace DCL.Controllers
                 baseUrl = data.baseUrl,
                 contents = data.contents,
                 sceneCid = data.id,
+                baseUrlBundles = data.baseUrlBundles,
             };
 
             contentProvider.BakeHashes();
-
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
-            {
-                var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
-                if (sceneAb.IsSceneConverted())
-                {
-                    contentProvider.assetBundles = sceneAb.GetConvertedFiles();
-                    contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
-                    contentProvider.assetBundlesVersion = sceneAb.GetVersion();
-                }
-            }
 
             SetupPositionAndParcels();
 
@@ -117,14 +107,6 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
-        }
-
-        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
-        {
-            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
-            AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
-            await promiseSceneAb.ToUniTask();
-            return promiseSceneAb.asset;
         }
 
         void SetupPositionAndParcels()

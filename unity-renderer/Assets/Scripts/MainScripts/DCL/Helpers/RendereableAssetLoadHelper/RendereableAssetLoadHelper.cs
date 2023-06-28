@@ -1,9 +1,9 @@
-using JetBrains.Annotations;
+using Cysharp.Threading.Tasks;
+using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using Sentry;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -107,14 +107,14 @@ namespace DCL.Components
             switch (finalLoadingType)
             {
                 case LoadingType.ASSET_BUNDLE_ONLY:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent, false);
+                    LoadAssetBundleAsync(targetUrl, OnSuccessEvent, OnFailEvent, false).Forget();
                     break;
                 case LoadingType.GLTF_ONLY:
                     LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false), true);
+                    LoadAssetBundleAsync(targetUrl, OnSuccessEvent, exception => LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false), true).Forget();
                     break;
             }
         }
@@ -135,7 +135,7 @@ namespace DCL.Components
             if (gltfastPromise != null) { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
         }
 
-        void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
+        private async UniTask LoadAssetBundleAsync(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = AB_GO_NAME_PREFIX;
 
@@ -167,17 +167,19 @@ namespace DCL.Components
                     bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
                 else
                 {
-                    // we track the failing asset for it to be fixed in the asset bundle converter
-                    SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
+                    var sceneAb = await FetchSceneAssetBundles(contentProvider.sceneCid, contentProvider.baseUrlBundles);
+                    if (sceneAb.IsSceneConverted())
                     {
-                        scope.SetExtra("hash", hash);
-                        scope.SetExtra("baseUrl", contentProvider.assetBundlesBaseUrl);
-                        scope.SetExtra("sceneCid", contentProvider.sceneCid);
-                    });
-
-                    // exception is null since we are expected to fallback
-                    OnFailWrapper(OnFail, null, hasFallback);
-                    return;
+                        contentProvider.assetBundles = sceneAb.GetConvertedFiles();
+                        contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
+                        contentProvider.assetBundlesVersion = sceneAb.GetVersion();
+                        bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
+                    }
+                    else
+                    {
+                        OnFailWrapper(OnFail, new Exception("Asset not converted to asset bundles"), hasFallback);
+                        return;
+                    }
                 }
             }
 
@@ -212,6 +214,14 @@ namespace DCL.Components
             abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception, hasFallback);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
+        }
+
+        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
+        {
+            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
+            AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
+            await promiseSceneAb.ToUniTask();
+            return promiseSceneAb.asset;
         }
 
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
