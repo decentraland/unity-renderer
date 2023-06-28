@@ -553,7 +553,7 @@ namespace DCL.MyAccount
                 {
                     SaveAdditionalInfo(userProfile.Country, userProfile.Gender, userProfile.Pronouns, userProfile.RelationshipStatus,
                         userProfile.SexualOrientation, userProfile.Language, userProfile.Profession,
-                        DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                        DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal),
                         userProfile.RealName, userProfile.Hobbies, userProfile.EmploymentStatus);
 
                     myAccountAnalyticsService.SendProfileInfoAdditionalInfoAddAnalytic("Birth Date", birthDate);
