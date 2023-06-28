@@ -12,6 +12,7 @@ namespace DCL.Social.Friends
     public class RPCSocialApiBridge : ISocialApiBridge
     {
         private const int REQUEST_TIMEOUT = 30;
+        private const int MAX_RECONNECT_RETRIES = 3;
 
         private readonly IMatrixInitializationBridge matrixInitializationBridge;
         private readonly IUserProfileBridge userProfileWebInterfaceBridge;
@@ -21,6 +22,7 @@ namespace DCL.Social.Friends
         private IClientFriendshipsService socialClient;
         private UniTaskCompletionSource<AllFriendsInitializationMessage> initializationInformationTask;
         private CancellationTokenSource initializationCancellationToken = new ();
+        private CancellationTokenSource incomingEventsSubscriptionCancellationTokenToken = new ();
 
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
@@ -29,6 +31,8 @@ namespace DCL.Social.Friends
         public event Action<string> OnFriendRequestCanceled;
         public event Action<string> OnDeletedByFriend;
 
+        private int transportFailures = 0;
+
         public RPCSocialApiBridge(IMatrixInitializationBridge matrixInitializationBridge,
             IUserProfileBridge userProfileWebInterfaceBridge,
             ISocialClientProvider socialClientProvider)
@@ -36,12 +40,14 @@ namespace DCL.Social.Friends
             this.matrixInitializationBridge = matrixInitializationBridge;
             this.userProfileWebInterfaceBridge = userProfileWebInterfaceBridge;
             this.socialClientProvider = socialClientProvider;
+            this.socialClientProvider.OnTransportError += OnTransportError;
         }
 
         public void Dispose()
         {
             initializationInformationTask?.TrySetCanceled();
             initializationCancellationToken.SafeCancelAndDispose();
+            incomingEventsSubscriptionCancellationTokenToken.SafeCancelAndDispose();
         }
 
         public void Initialize()
@@ -54,12 +60,33 @@ namespace DCL.Social.Friends
                 await InitializeClient(cancellationToken);
                 await WaitForAccessTokenAsync(cancellationToken);
 
+                incomingEventsSubscriptionCancellationTokenToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
                 // this is an endless task that's why is forgotten
-                SubscribeToIncomingFriendshipEvents(cancellationToken).Forget();
+                SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationTokenToken.Token).Forget();
             }
 
             initializationCancellationToken = initializationCancellationToken.SafeRestart();
             InitializeAsync(initializationCancellationToken.Token).Forget();
+        }
+
+        private async UniTask OnTransportError()
+        {
+            socialClient = null;
+            incomingEventsSubscriptionCancellationTokenToken = incomingEventsSubscriptionCancellationTokenToken.SafeRestartLinked();
+
+            if (transportFailures >= MAX_RECONNECT_RETRIES) { throw new Exception("Max reconnect retries reached"); }
+
+            transportFailures++;
+
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(
+                TimeSpan.FromSeconds(Math.Pow(5, transportFailures) + REQUEST_TIMEOUT)
+            );
+
+            await InitializeClient(cancellationTokenSource.Token);
+
+            // this is an endless task that's why is forgotten
+            SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationTokenToken.Token).Forget();
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
@@ -75,7 +102,7 @@ namespace DCL.Social.Friends
 
             initializationInformationTask = new UniTaskCompletionSource<AllFriendsInitializationMessage>();
 
-            await UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken);
+            await WaitForSocialClient(cancellationToken);
             await WaitForAccessTokenAsync(cancellationToken);
 
             // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
@@ -101,6 +128,8 @@ namespace DCL.Social.Friends
             List<FriendRequest> outgoing = new ();
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            await WaitForSocialClient(cancellationToken);
 
             var requestEvents = await socialClient.GetRequestEvents(new Payload
                 { SynapseToken = accessToken });
@@ -137,6 +166,8 @@ namespace DCL.Social.Friends
         private async UniTask<List<string>> GetAllFriends(CancellationToken cancellationToken)
         {
             List<string> result = new ();
+
+            await WaitForSocialClient(cancellationToken);
 
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
@@ -396,6 +427,8 @@ namespace DCL.Social.Friends
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                await WaitForSocialClient(cancellationToken);
+
                 // TODO: pass cancellation token to rpc client when is supported
                 var response = await socialClient
                                     .UpdateFriendshipEvent(updateFriendshipPayload)
@@ -436,6 +469,11 @@ namespace DCL.Social.Friends
                 default:
                     return $"Unsupported friendship error {error.ResponseCase}";
             }
+        }
+
+        private UniTask WaitForSocialClient(CancellationToken cancellationToken)
+        {
+            return UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken);
         }
     }
 }
