@@ -651,6 +651,8 @@ namespace DCL.MyAccount
             {
                 await userProfileBridge.SaveAdditionalInfo(country, gender, pronouns, relationshipStatus,
                     sexualOrientation, language, profession, birthDate, realName, hobbies, employmentStatus, cancellationToken);
+
+                myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
             }
 
             additionalInfoCancellationToken = additionalInfoCancellationToken.SafeRestart();
