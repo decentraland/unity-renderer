@@ -189,7 +189,7 @@ namespace DCL.MyAccount
         }
 
         [Test]
-        public void ShowAboutDescription()
+        public void ShowAboutDescriptionWhenOpens()
         {
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
@@ -311,7 +311,7 @@ namespace DCL.MyAccount
         {
             view.OnClaimNameClicked += Raise.Event<Action>();
 
-            browserBridge.Received(1).OpenUrl("https://builder.decentraland.org/claim-name");
+            browserBridge.Received(1).OpenUrl("https://builder.decentraland.org/claim-name?utm_source=dcl_explorer");
             myAccountAnalyticsService.Received(1).SendPlayerOpenClaimNameAnalytic();
         }
 
@@ -368,11 +368,10 @@ namespace DCL.MyAccount
 
             view.Received(1).ClearLinkInput();
 
-            view.Received(1)
-                .SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == expectedLinks.Count
-                                                                        && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
-
-            view.Received(1).EnableOrDisableAddLinksOption(expectedLinks.Count < 5);
+            userProfileBridge.Received(1)
+                             .SaveLinks(Arg.Is<List<UserProfileModel.Link>>(l => l.Count == expectedLinks.Count
+                                                                                 && l.All(link => expectedLinks.Exists(expectedLink => expectedLink.title == link.title && expectedLink.url == link.url))),
+                                  Arg.Any<CancellationToken>());
 
             myAccountAnalyticsService.Received(1).SendProfileLinkAddAnalytic(title, url);
         }
@@ -403,8 +402,7 @@ namespace DCL.MyAccount
             view.OnLinkAdded += Raise.Event<Action<(string title, string url)>>(("l5", "l5"));
 
             view.Received(0).ClearLinkInput();
-            view.DidNotReceiveWithAnyArgs().SetLinks(default);
-            view.Received(0).EnableOrDisableAddLinksOption(true);
+            userProfileBridge.DidNotReceiveWithAnyArgs().SaveLinks(default, default);
         }
 
         [Test]

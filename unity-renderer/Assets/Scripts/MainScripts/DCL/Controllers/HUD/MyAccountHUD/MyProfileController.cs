@@ -88,11 +88,6 @@ namespace DCL.MyAccount
 
             ownUserProfile.OnUpdate += OnOwnUserProfileUpdated;
 
-            bool isOwnUserInitialized = !string.IsNullOrEmpty(ownUserProfile.userId);
-
-            if (isOwnUserInitialized)
-                OnOwnUserProfileUpdated(ownUserProfile);
-
             kernelConfig.EnsureConfigInitialized()
                         .Then(config => OnKernelConfigChanged(config, null));
 

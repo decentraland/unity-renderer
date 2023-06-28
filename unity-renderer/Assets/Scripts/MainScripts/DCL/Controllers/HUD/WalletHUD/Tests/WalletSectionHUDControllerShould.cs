@@ -151,7 +151,7 @@ namespace DCL.Wallet
             walletSectionHUDComponentView.OnBuyManaClicked += Raise.Event<Action<bool>>(isPolygonNetwork);
 
             // Assert
-            browserBridge.Received(1).OpenUrl("https://account.decentraland.org");
+            browserBridge.Received(1).OpenUrl("https://account.decentraland.org?utm_source=dcl_explorer");
             myAccountAnalyticsService.Received(1).SendPlayerWalletBuyManaAnalytic(isPolygonNetwork);
         }
 
@@ -162,7 +162,7 @@ namespace DCL.Wallet
             walletSectionHUDComponentView.OnLearnMoreClicked += Raise.Event<Action>();
 
             // Assert
-            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/examples/get-a-wallet");
+            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/examples/get-a-wallet?utm_source=dcl_explorer");
         }
     }
 }
