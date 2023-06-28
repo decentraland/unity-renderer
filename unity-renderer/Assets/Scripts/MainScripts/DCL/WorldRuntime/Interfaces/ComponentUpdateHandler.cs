@@ -82,7 +82,7 @@ namespace DCL
             routine = null;
         }
 
-        public virtual IEnumerator ApplyChangesWrapper(BaseModel model)
+        protected virtual IEnumerator ApplyChangesWrapper(BaseModel model)
         {
 #if UNITY_EDITOR
             Assert.IsFalse(applyChangesRunning, "ApplyChanges routine was interrupted when it shouldn't!");
@@ -97,9 +97,11 @@ namespace DCL
                     yield return enumerator;
                 }
             }
+
 #if UNITY_EDITOR
             applyChangesRunning = false;
 #endif
+
             owner.RaiseOnAppliedChanges();
         }
     }

@@ -68,7 +68,7 @@ public class CoreComponentsPlugin : IPlugin
         CoroutineStarter.Start(PrewarmPoolablePools());
     }
 
-    IEnumerator PrewarmPoolablePools()
+    private IEnumerator PrewarmPoolablePools()
     {
         yield return null;
         poolableComponentFactory.PrewarmPools();
@@ -88,16 +88,11 @@ public class CoreComponentsPlugin : IPlugin
         }
     }
 
-    protected T BuildComponent<T>()
-        where T : IComponent, new()
-    {
-        return new T();
-    }
+    private static T BuildComponent<T>() where T: IComponent, new() =>
+        new ();
 
-    private IComponent BuildPoolableComponent(int classId)
-    {
-        return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId);
-    }
+    private IComponent BuildPoolableComponent(int classId) =>
+        poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT)classId);
 
     public void Dispose()
     {

@@ -11,12 +11,14 @@ namespace DCL.Backpack
         event Action OnColorPickerToggle;
         event Action OnContinueSignup;
         event Action OnAvatarUpdated;
+        event Action OnOutfitsOpened;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
 
         bool isVisible { get; }
 
         void Dispose();
+        void SetOutfitsEnabled(bool isEnabled);
         void Show(bool instant = false);
         void Hide(bool instant = false);
         void SetAsFullScreenMenuMode(Transform parentTransform);

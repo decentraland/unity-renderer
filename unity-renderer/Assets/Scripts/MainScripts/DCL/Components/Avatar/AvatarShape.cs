@@ -218,7 +218,11 @@ namespace DCL
                     forceRender = forceRender,
                 };
 
-                yield return avatar.Load(wearableItems, emotes.ToList(), avatarSettings, loadingCts.Token).ToCoroutine(Debug.LogException);
+                yield return avatar.Load(wearableItems, emotes.ToList(), avatarSettings, loadingCts.Token).ToCoroutine(e =>
+                {
+                    if (e is not OperationCanceledException)
+                        throw e;
+                });
             }
 
             avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
