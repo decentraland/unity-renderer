@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,9 @@ namespace UIComponents.CollapsableSortedList
         [SerializeField] private RectTransform containerRectTransform;
         [SerializeField] private CollapsableListToggleButtonModel model;
         [SerializeField] private Color disabledColor;
-        
+
+        public event Action<bool> OnToggled;
+
         private Color originalColor;
 
         public override void Awake()
@@ -40,6 +43,7 @@ namespace UIComponents.CollapsableSortedList
             toggleButtonIcon.localScale = new Vector3(toggleButtonIcon.localScale.x, scale, 1f);
             Utils.ForceRebuildLayoutImmediate(containerRectTransform);
             model.isToggled = toggled;
+            OnToggled?.Invoke(toggled);
         }
 
         public void SetInteractability(bool interactable)

@@ -1,6 +1,8 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UIComponents.CollapsableSortedList;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +16,9 @@ namespace DCL.MyAccount
         [Header("General")]
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
+
+        [Header("Header")]
+        [SerializeField] internal CollapsableListToggleButton disclaimerButton;
 
         [Header("Names")]
         [SerializeField] internal GameObject nameTypeSelectorContainer;
@@ -62,6 +67,8 @@ namespace DCL.MyAccount
 
             UpdateNameCharLimit(0, nonClaimedNameInputField.characterLimit);
             UpdateAboutCharLimit(0, aboutInputText.characterLimit);
+
+            disclaimerButton.OnToggled += _ => Utils.ForceRebuildLayoutImmediate((RectTransform)mainContainer.transform);
 
             nonClaimedNameInputField.onValueChanged.AddListener(newName =>
             {
