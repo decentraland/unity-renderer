@@ -18,6 +18,7 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject loadingContainer;
 
         [Header("Header")]
+        [SerializeField] internal RectTransform headerContainerTransform;
         [SerializeField] internal CollapsableListToggleButton disclaimerButton;
 
         [Header("Names")]
@@ -47,10 +48,12 @@ namespace DCL.MyAccount
         [SerializeField] internal CanvasGroup aboutCanvasGroup;
 
         [Header("Links")]
+        [SerializeField] internal RectTransform linksContainerTransform;
         [SerializeField] internal MyProfileLinkListComponentView linkListView;
         [SerializeField] internal CanvasGroup linksCanvasGroup;
 
         [Header("Additional Info")]
+        [SerializeField] internal RectTransform additionalInfoContainerTransform;
         [SerializeField] internal MyProfileAdditionalInfoListComponentView additionalInfoList;
 
         public event Action<string> OnCurrentNameEdited;
@@ -67,8 +70,6 @@ namespace DCL.MyAccount
 
             UpdateNameCharLimit(0, nonClaimedNameInputField.characterLimit);
             UpdateAboutCharLimit(0, aboutInputText.characterLimit);
-
-            disclaimerButton.OnToggled += _ => Utils.ForceRebuildLayoutImmediate((RectTransform)mainContainer.transform);
 
             nonClaimedNameInputField.onValueChanged.AddListener(newName =>
             {
@@ -98,8 +99,20 @@ namespace DCL.MyAccount
             aboutInputText.onDeselect.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
             aboutInputText.onSubmit.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
 
-            linkListView.OnAddedNew += tuple => OnLinkAdded?.Invoke((tuple.title, tuple.url));
-            linkListView.OnRemoved += tuple => OnLinkRemoved?.Invoke((tuple.title, tuple.url));
+            linkListView.OnAddedNew += tuple =>
+            {
+                OnLinkAdded?.Invoke((tuple.title, tuple.url));
+                Utils.ForceRebuildLayoutImmediate(linksContainerTransform);
+            };
+            linkListView.OnRemoved += tuple =>
+            {
+                OnLinkRemoved?.Invoke((tuple.title, tuple.url));
+                Utils.ForceRebuildLayoutImmediate(linksContainerTransform);
+            };
+
+            disclaimerButton.OnToggled += _ => Utils.ForceRebuildLayoutImmediate(headerContainerTransform);
+            additionalInfoList.OnAdditionalFieldAdded += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
+            additionalInfoList.OnAdditionalFieldRemoved += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
         }
 
         public override void Dispose()
@@ -253,8 +266,8 @@ namespace DCL.MyAccount
         public void ClearLinkInput() =>
             linkListView.ClearInput();
 
-        public void EnableOrDisableAddLinksOption(bool enabled) =>
-            linkListView.EnableOrDisableAddNewLinkOption(enabled);
+        public void EnableOrDisableAddLinksOption(bool isEnabled) =>
+            linkListView.EnableOrDisableAddNewLinkOption(isEnabled);
 
         public void SetLinksEnabled(bool isEnabled)
         {
@@ -263,9 +276,9 @@ namespace DCL.MyAccount
             linksCanvasGroup.blocksRaycasts = isEnabled;
         }
 
-        public void SetAdditionalInfoOptions(AdditionalInfoOptionsModel model)
+        public void SetAdditionalInfoOptions(AdditionalInfoOptionsModel additionalInfoOptionsModel)
         {
-            additionalInfoList.SetOptions(model);
+            additionalInfoList.SetOptions(additionalInfoOptionsModel);
         }
 
         public void SetAdditionalInfoValues(Dictionary<string, (string title, string value)> values)

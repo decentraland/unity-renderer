@@ -18,6 +18,9 @@ namespace DCL.MyAccount
         [SerializeField] private MyProfileAdditionalInfoEntryComponentView entryPrefab;
         [SerializeField] private RectTransform entryContainer;
 
+        public Action OnAdditionalFieldAdded;
+        public Action OnAdditionalFieldRemoved;
+
         private readonly Dictionary<string, MyProfileAdditionalInfoEntryComponentView> entries = new ();
 
         private string currentOptionId;
@@ -46,6 +49,7 @@ namespace DCL.MyAccount
             {
                 if (string.IsNullOrEmpty(currentOptionId)) return;
                 optionsModel.Options[currentOptionId].OnValueSubmitted.Invoke(GetCurrentValue());
+                OnAdditionalFieldAdded?.Invoke();
             });
         }
 
@@ -129,8 +133,11 @@ namespace DCL.MyAccount
             addButton.interactable = false;
         }
 
-        private void OnInfoRemoved(string optionId) =>
+        private void OnInfoRemoved(string optionId)
+        {
             optionsModel.Options[optionId].OnRemoved.Invoke();
+            OnAdditionalFieldRemoved?.Invoke();
+        }
 
         private string GetCurrentValue()
         {
