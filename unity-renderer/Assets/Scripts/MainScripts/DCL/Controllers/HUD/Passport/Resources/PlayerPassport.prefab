@@ -14290,7 +14290,7 @@ PrefabInstance:
     - target: {fileID: 3044814446444044455, guid: 276b5564e4c284ecb9422505666362ed,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3459585244807482771, guid: 276b5564e4c284ecb9422505666362ed,
         type: 3}
@@ -14321,12 +14321,12 @@ PrefabInstance:
         type: 3}
       propertyPath: canvasGroup
       value: 
-      objectReference: {fileID: 5616512552899318821}
+      objectReference: {fileID: 0}
     - target: {fileID: 6011258316326938520, guid: 276b5564e4c284ecb9422505666362ed,
         type: 3}
       propertyPath: openUrlAnimator
       value: 
-      objectReference: {fileID: 6737199928710618198}
+      objectReference: {fileID: 0}
     - target: {fileID: 6221223731362520582, guid: 276b5564e4c284ecb9422505666362ed,
         type: 3}
       propertyPath: m_fontColor.b
@@ -14395,24 +14395,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 60ecfeaa9419d4e7dab341316138567a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!225 &5616512552899318821 stripped
-CanvasGroup:
-  m_CorrespondingSourceObject: {fileID: 6441841202728283277, guid: 276b5564e4c284ecb9422505666362ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 1483892205269432488}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6737199928710618198 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5325664590935844094, guid: 276b5564e4c284ecb9422505666362ed,
-    type: 3}
-  m_PrefabInstance: {fileID: 1483892205269432488}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1648230347616893644
@@ -19212,7 +19194,7 @@ PrefabInstance:
     - target: {fileID: 1616525665509150121, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1659266317040970982, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
@@ -19322,7 +19304,7 @@ PrefabInstance:
     - target: {fileID: 3255177139748142192, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3355408138738260923, guid: 59dab406fb0f74972a9f59906589040d,
         type: 3}
