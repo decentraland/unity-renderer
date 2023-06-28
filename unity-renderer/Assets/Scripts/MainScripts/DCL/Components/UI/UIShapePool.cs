@@ -34,6 +34,16 @@ namespace DCL.Components
         public UIReferencesContainer TakeUIShape() =>
             pool.Get();
 
+        public UIReferencesContainer TakeUIShapeInsideParent(Transform parent)
+        {
+            var uiShape = pool.Get();
+
+            uiShape.transform.SetParent(parent, false);
+            uiShape.gameObject.SetActive(true);
+
+            return uiShape;
+        }
+
         public void ReleaseUIShape(UIReferencesContainer uiShape) =>
             pool.Release(uiShape);
 
@@ -43,7 +53,6 @@ namespace DCL.Components
 
         private static void OnTakeShapeFromPool(UIReferencesContainer uiShape)
         {
-            uiShape.gameObject.SetActive(true);
         }
 
         private void OnReturnShapeToPool(UIReferencesContainer uiShape)

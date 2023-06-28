@@ -156,14 +156,14 @@ namespace DCL.Components
             childComponent.OnAppliedChanges += RefreshContainerForShape;
         }
 
-        public override void RefreshDCLLayoutRecursively(bool refreshSize = true,
+        protected override void RefreshDCLLayoutRecursively(bool refreshSize = true,
             bool refreshAlignmentAndPosition = true)
         {
             base.RefreshDCLLayoutRecursively(refreshSize, refreshAlignmentAndPosition);
             referencesContainer.sizeFitter.RefreshRecursively();
         }
 
-        public override void OnChildDetached(UIShape parentComponent, UIShape childComponent)
+        protected override void OnChildDetached(UIShape parentComponent, UIShape childComponent)
         {
             if (parentComponent != this)
             {
