@@ -141,9 +141,9 @@ namespace DCL.Backpack
             SaveAnimation(outfitComponentViews[outfitIndex].transform);
         }
 
-        public void SetIsGuest(bool isGuest)
+        public void SetIsGuest(bool guest)
         {
-            this.isGuest = isGuest;
+            this.isGuest = guest;
         }
 
         private void SaveAnimation(Transform transformToAnimate) =>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 namespace DCL.Backpack
 {
@@ -52,7 +53,6 @@ namespace DCL.Backpack
             };
 
             dataStore.HUDs.avatarEditorVisible.OnChange += ChangedVisibility;
-            view.SetIsGuest(userProfileBridge.GetOwn().isGuest);
         }
 
         private void SaveOutfitLocally(int outfitIndex)
@@ -112,6 +112,7 @@ namespace DCL.Backpack
 
         private async UniTask RequestOwnedOutfitsAsync(CancellationToken ct)
         {
+            view.SetIsGuest(userProfileBridge.GetOwn().isGuest);
             (IReadOnlyList<OutfitItem> outfits, int totalAmount) requestOwnedOutfits = await lambdaOutfitsService.RequestOwnedOutfits(userProfileBridge.GetOwn().userId, cancellationToken: ct);
             OutfitItem[] outfitItems = requestOwnedOutfits.outfits.ToArray();
             AudioScriptableObjects.listItemAppear.ResetPitch();

@@ -14,6 +14,6 @@ namespace DCL.Backpack
 
         public void SetSlotsAsLoading(OutfitItem[] outfitsToShow);
         UniTask<bool> ShowOutfit(OutfitItem outfit, AvatarModel newModel, CancellationToken ct);
-        void SetIsGuest(bool isGuest);
+        void SetIsGuest(bool guest);
     }
 }
