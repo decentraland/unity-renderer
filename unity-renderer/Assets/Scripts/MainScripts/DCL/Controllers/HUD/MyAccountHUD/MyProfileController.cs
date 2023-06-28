@@ -41,8 +41,8 @@ namespace DCL.MyAccount
         private Regex nameRegex;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
-        private string ownUserMainName => SplitUserName(ownUserProfile.userName).mainName;
-        private string ownUserNonClaimedHashtag => SplitUserName(ownUserProfile.userName).nonClaimedHashtag;
+        private string ownUserMainName => SplitUserName(ownUserProfile).mainName;
+        private string ownUserNonClaimedHashtag => SplitUserName(ownUserProfile).nonClaimedHashtag;
 
         public MyProfileController(
             IMyProfileComponentView view,
@@ -277,11 +277,13 @@ namespace DCL.MyAccount
             myAccountAnalyticsService.SendPlayerOpenClaimNameAnalytic();
         }
 
-        private (string mainName, string nonClaimedHashtag) SplitUserName(string userName)
+        private (string mainName, string nonClaimedHashtag) SplitUserName(UserProfile userProfile)
         {
-            (string mainName, string nonClaimedHashtag) result = (string.Empty, string.Empty);
+            (string mainName, string nonClaimedHashtag) result = (
+                string.Empty,
+                userProfile.ethAddress.Length >= 4 ? userProfile.ethAddress.Substring(userProfile.ethAddress.Length - 4) : string.Empty);
 
-            string[] splitName = userName.Split('#');
+            string[] splitName = userProfile.userName.Split('#');
 
             if (splitName.Length > 0)
                 result.mainName = splitName[0];

@@ -22,9 +22,12 @@ namespace DCL.MyAccount
         [SerializeField] internal CollapsableListToggleButton disclaimerButton;
 
         [Header("Names")]
+        [SerializeField] internal RectTransform namesContainerTransform;
         [SerializeField] internal GameObject nameTypeSelectorContainer;
         [SerializeField] internal GameObject nonClaimedNameModeContainer;
         [SerializeField] internal TMP_InputField nonClaimedNameInputField;
+        [SerializeField] internal GameObject nonClaimedNameEditionLogo;
+        [SerializeField] internal TMP_Text nonClaimedNameAddressHashtag;
         [SerializeField] internal GameObject claimNameBanner;
         [SerializeField] internal Button claimNameButton;
         [SerializeField] internal GameObject claimedNameModeContainer;
@@ -34,6 +37,8 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject claimedNameGoToNonClaimedNameSelectionMark;
         [SerializeField] internal GameObject claimedNameInputContainer;
         [SerializeField] internal TMP_InputField claimedNameInputField;
+        [SerializeField] internal GameObject claimedNameEditionLogo;
+        [SerializeField] internal TMP_Text claimedNameAddressHashtag;
         [SerializeField] internal Button claimedNameBackToClaimedNamesListButton;
         [SerializeField] internal TMP_Text claimedNameBackToClaimedNamesListButtonText;
         [SerializeField] internal GameObject claimedNameBackToClaimedNamesListSelectionMark;
@@ -44,6 +49,7 @@ namespace DCL.MyAccount
 
         [Header("About")]
         [SerializeField] internal TMP_InputField aboutInputText;
+        [SerializeField] internal GameObject aboutEditionLogo;
         [SerializeField] internal TMP_Text aboutCharCounter;
         [SerializeField] internal CanvasGroup aboutCanvasGroup;
 
@@ -76,14 +82,34 @@ namespace DCL.MyAccount
                 UpdateNameCharLimit(newName.Length, nonClaimedNameInputField.characterLimit);
                 OnCurrentNameEdited?.Invoke(newName);
             });
-            nonClaimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
+            nonClaimedNameInputField.onSelect.AddListener(_ =>
+            {
+                nonClaimedNameEditionLogo.SetActive(false);
+                nonClaimedNameAddressHashtag.gameObject.SetActive(true);
+            });
+            nonClaimedNameInputField.onDeselect.AddListener(newName =>
+            {
+                nonClaimedNameEditionLogo.SetActive(true);
+                nonClaimedNameAddressHashtag.gameObject.SetActive(false);
+                OnCurrentNameSubmitted?.Invoke(newName, false);
+            });
             nonClaimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             claimedNameInputField.onValueChanged.AddListener(newName =>
             {
                 UpdateNameCharLimit(newName.Length, claimedNameInputField.characterLimit);
                 OnCurrentNameEdited?.Invoke(newName);
             });
-            claimedNameInputField.onDeselect.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
+            claimedNameInputField.onSelect.AddListener(_ =>
+            {
+                claimedNameEditionLogo.SetActive(false);
+                claimedNameAddressHashtag.gameObject.SetActive(true);
+            });
+            claimedNameInputField.onDeselect.AddListener(newName =>
+            {
+                claimedNameEditionLogo.SetActive(true);
+                claimedNameAddressHashtag.gameObject.SetActive(false);
+                OnCurrentNameSubmitted?.Invoke(newName, false);
+            });
             claimedNameInputField.onSubmit.AddListener(newName => OnCurrentNameSubmitted?.Invoke(newName, false));
             claimedNameDropdown.OnOptionSelectionChanged += (isOn, optionId, _) =>
             {
@@ -91,12 +117,25 @@ namespace DCL.MyAccount
                 OnCurrentNameSubmitted?.Invoke(optionId, true);
             };
             claimNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
-            claimedNameGoToNonClaimedNameButton.onClick.AddListener(() => OnGoFromClaimedToNonClaimNameClicked?.Invoke());
-            claimedNameBackToClaimedNamesListButton.onClick.AddListener(() => SetClaimedNameModeAsInput(false));
+            claimedNameGoToNonClaimedNameButton.onClick.AddListener(() =>
+            {
+                Utils.ForceRebuildLayoutImmediate(namesContainerTransform);
+                OnGoFromClaimedToNonClaimNameClicked?.Invoke();
+            });
+            claimedNameBackToClaimedNamesListButton.onClick.AddListener(() =>
+            {
+                Utils.ForceRebuildLayoutImmediate(namesContainerTransform);
+                SetClaimedNameModeAsInput(false);
+            });
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
 
             aboutInputText.onValueChanged.AddListener(newDesc => UpdateAboutCharLimit(newDesc.Length, aboutInputText.characterLimit));
-            aboutInputText.onDeselect.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
+            aboutInputText.onSelect.AddListener(_ => aboutEditionLogo.SetActive(false));
+            aboutInputText.onDeselect.AddListener(newDesc =>
+            {
+                aboutEditionLogo.SetActive(true);
+                OnAboutDescriptionSubmitted?.Invoke(newDesc);
+            });
             aboutInputText.onSubmit.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
 
             linkListView.OnAddedNew += tuple =>
@@ -118,8 +157,10 @@ namespace DCL.MyAccount
         public override void Dispose()
         {
             nonClaimedNameInputField.onValueChanged.RemoveAllListeners();
+            nonClaimedNameInputField.onSelect.RemoveAllListeners();
             nonClaimedNameInputField.onDeselect.RemoveAllListeners();
             nonClaimedNameInputField.onSubmit.RemoveAllListeners();
+            claimedNameInputField.onSelect.RemoveAllListeners();
             claimedNameInputField.onDeselect.RemoveAllListeners();
             claimedNameInputField.onSubmit.RemoveAllListeners();
             claimNameButton.onClick.RemoveAllListeners();
@@ -161,7 +202,9 @@ namespace DCL.MyAccount
             }
 
             claimedNameInputField.text = newName;
+            claimedNameAddressHashtag.text = $"#{nonClaimedHashtag}";
             nonClaimedNameInputField.text = newName;
+            nonClaimedNameAddressHashtag.text = $"#{nonClaimedHashtag}";
         }
 
         public void SetClaimNameBannerActive(bool isActive)
@@ -188,7 +231,9 @@ namespace DCL.MyAccount
 
             if (isInput)
             {
-                claimedNameInputField.Select();
+                if (cleanInputField)
+                    claimedNameInputField.Select();
+
                 return;
             }
 
