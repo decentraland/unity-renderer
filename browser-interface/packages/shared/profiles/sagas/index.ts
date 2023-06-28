@@ -6,6 +6,7 @@ import { generateRandomUserProfile as buildRandomProfile } from 'lib/decentralan
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import type { ProfileSuccessAction } from '../actions'
 import {
+  DEPLOY_OUTFITS_REQUEST,
   DEPLOY_PROFILE_REQUEST,
   PROFILE_REQUEST,
   PROFILE_SUCCESS,
@@ -19,6 +20,7 @@ import { takeLatestById } from './takeLatestById'
 import { fetchProfile } from './fetchProfile'
 import { handleCommsProfile, handleCommsVersionUpdates } from './handleCommsProfile'
 import { handleDeployProfile } from './handleDeployProfile'
+import { handleDeployOutfits } from './handleDeployOutfits'
 import { handleSaveLocalAvatar } from './handleSaveLocalAvatar'
 import { initialRemoteProfileLoad } from './initialRemoteProfileLoad'
 import { cachedRequest } from './content/cachedRequest'
@@ -55,6 +57,12 @@ export function* profileSaga(): any {
    * We debounce this because sometimes `DEPLOY_PROFILE_REQUEST` gets called too frequently by renderer
    */
   yield debounce(200, DEPLOY_PROFILE_REQUEST, handleDeployProfile)
+
+  /**
+   * Manage a request by the client to deploy outfits
+   */
+  yield takeEvery(DEPLOY_OUTFITS_REQUEST, handleDeployOutfits)
+
   /**
    * Manage a request by the user to save the current user profile
    */
