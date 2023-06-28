@@ -112,67 +112,67 @@ namespace DCL.Social.Passports
 
                     if (isMyAccountEnabled)
                     {
-                        if (!string.IsNullOrEmpty(ownUserProfile.Gender))
+                        if (!string.IsNullOrEmpty(userProfile.Gender))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.GENDER),
                                 IPassportNavigationComponentView.AdditionalInfoField.GENDER.ToString(),
-                                ownUserProfile.Gender));
+                                userProfile.Gender));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.Country))
+                        if (!string.IsNullOrEmpty(userProfile.Country))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.COUNTRY),
                                 IPassportNavigationComponentView.AdditionalInfoField.COUNTRY.ToString(),
-                                ownUserProfile.Country));
+                                userProfile.Country));
 
-                        if (ownUserProfile.BirthDate != null && ownUserProfile.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                        if (userProfile.BirthDate != null && userProfile.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE),
                                 IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE.ToString().Replace("_", " "),
-                                ownUserProfile.BirthDate.Value.ToShortDateString()));
+                                userProfile.BirthDate.Value.ToShortDateString()));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.Pronouns))
+                        if (!string.IsNullOrEmpty(userProfile.Pronouns))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.PRONOUNS),
                                 IPassportNavigationComponentView.AdditionalInfoField.PRONOUNS.ToString(),
-                                ownUserProfile.Pronouns));
+                                userProfile.Pronouns));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.RelationshipStatus))
+                        if (!string.IsNullOrEmpty(userProfile.RelationshipStatus))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.RELATIONSHIP_STATUS),
                                 IPassportNavigationComponentView.AdditionalInfoField.RELATIONSHIP_STATUS.ToString().Replace("_", " "),
-                                ownUserProfile.RelationshipStatus));
+                                userProfile.RelationshipStatus));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.SexualOrientation))
+                        if (!string.IsNullOrEmpty(userProfile.SexualOrientation))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.SEXUAL_ORIENTATION),
                                 IPassportNavigationComponentView.AdditionalInfoField.SEXUAL_ORIENTATION.ToString().Replace("_", " "),
-                                ownUserProfile.SexualOrientation));
+                                userProfile.SexualOrientation));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.Language))
+                        if (!string.IsNullOrEmpty(userProfile.Language))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.LANGUAGE),
                                 IPassportNavigationComponentView.AdditionalInfoField.LANGUAGE.ToString(),
-                                ownUserProfile.Language));
+                                userProfile.Language));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.Profession))
+                        if (!string.IsNullOrEmpty(userProfile.Profession))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.PROFESSION),
                                 IPassportNavigationComponentView.AdditionalInfoField.PROFESSION.ToString(),
-                                ownUserProfile.Profession));
+                                userProfile.Profession));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.Hobbies))
+                        if (!string.IsNullOrEmpty(userProfile.Hobbies))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.HOBBIES),
                                 IPassportNavigationComponentView.AdditionalInfoField.HOBBIES.ToString(),
-                                ownUserProfile.Hobbies));
+                                userProfile.Hobbies));
 
-                        if (!string.IsNullOrEmpty(ownUserProfile.RealName))
+                        if (!string.IsNullOrEmpty(userProfile.RealName))
                             additionalFields.Add((
                                 view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.REAL_NAME),
                                 IPassportNavigationComponentView.AdditionalInfoField.REAL_NAME.ToString().Replace("_", " "),
-                                ownUserProfile.RealName));
+                                userProfile.RealName));
 
-                        links = ownUserProfile.Links?.Select(link => (link.title, link.url)).ToList()
+                        links = userProfile.Links?.Select(link => (link.title, link.url)).ToList()
                                 ?? new List<(string title, string url)>();
                     }
                     else
