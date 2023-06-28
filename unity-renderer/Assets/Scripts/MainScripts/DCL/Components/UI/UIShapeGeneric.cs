@@ -1,5 +1,4 @@
-﻿using Unity.Profiling;
-
+﻿
 namespace DCL.Components
 {
      public class UIShape<ReferencesContainerType, ModelType> : UIShape
@@ -31,14 +30,11 @@ namespace DCL.Components
 
         bool firstApplyChangesCall;
 
-        ProfilerMarker m_UIShapePreApplyChanges = new ("VV.UIShape.PreApplyChanges");
-
         /// <summary>
         /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
         /// </summary>
         public void PreApplyChanges(BaseModel newModel)
         {
-            m_UIShapePreApplyChanges.Begin();
             model = (ModelType) newModel;
 
             raiseOnAttached = false;
@@ -55,7 +51,6 @@ namespace DCL.Components
             {
                 raiseOnAttached = true;
             }
-            m_UIShapePreApplyChanges.End();
         }
 
         public override void RaiseOnAppliedChanges()

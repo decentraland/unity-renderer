@@ -31,8 +31,13 @@ namespace DCL.Components
             }
         }
 
-        public UIReferencesContainer TakeUIShape() =>
-            pool.Get();
+        public UIReferencesContainer TakeUIShape()
+        {
+            var uiShape = pool.Get();
+            uiShape.gameObject.SetActive(true);
+
+            return uiShape;
+        }
 
         public UIReferencesContainer TakeUIShapeInsideParent(Transform parent)
         {

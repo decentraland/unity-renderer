@@ -164,14 +164,6 @@ namespace DCL.Components
             referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
         }
 
-        // public override void Dispose()
-        // {
-        //     if (referencesContainer != null)
-        //         Utils.SafeDestroy(referencesContainer.gameObject);
-        //
-        //     base.Dispose();
-        // }
-
         private static void ApplyModelChanges(TMP_Text text, Model model)
         {
             text.text = model.value;
