@@ -23,6 +23,7 @@ namespace DCL.MyAccount
 
         private readonly Dictionary<string, MyProfileAdditionalInfoEntryComponentView> entries = new ();
         private readonly List<ToggleComponentModel> optionToggles = new ();
+        private readonly List<ToggleComponentModel> valueToggles = new ();
 
         private string currentOptionId;
         private AdditionalInfoOptionsModel optionsModel;
@@ -174,16 +175,21 @@ namespace DCL.MyAccount
 
         private void FillStrictValueOptions(string[] options)
         {
-            strictValueListDropdown.SetOptions(options
-                                              .Select(option => new ToggleComponentModel
-                                               {
-                                                   text = option,
-                                                   id = option,
-                                                   isOn = false,
-                                                   isTextActive = true,
-                                                   changeTextColorOnSelect = true,
-                                               })
-                                              .ToList());
+            valueToggles.Clear();
+
+            foreach (string option in options)
+            {
+                valueToggles.Add(new ToggleComponentModel
+                {
+                    text = option,
+                    id = option,
+                    isOn = false,
+                    isTextActive = true,
+                    changeTextColorOnSelect = true,
+                });
+            }
+
+            strictValueListDropdown.SetOptions(valueToggles);
         }
     }
 }
