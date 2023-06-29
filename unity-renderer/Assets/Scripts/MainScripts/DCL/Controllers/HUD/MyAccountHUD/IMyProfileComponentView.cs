@@ -22,7 +22,7 @@ namespace DCL.MyAccount
         void SetNonValidNameWarningActive(bool isActive);
         void SetAboutDescription(string newDesc);
         void SetAboutEnabled(bool isEnabled);
-        void SetLinks(List<(string title, string url)> links);
+        void SetLinks(List<UserProfileModel.Link> links);
         void ClearLinkInput();
         void EnableOrDisableAddLinksOption(bool enabled);
         void SetLinksEnabled(bool isEnabled);

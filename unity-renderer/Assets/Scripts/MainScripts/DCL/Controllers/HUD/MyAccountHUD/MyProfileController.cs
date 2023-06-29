@@ -274,9 +274,7 @@ namespace DCL.MyAccount
 
         private void ShowLinks(UserProfile userProfile)
         {
-            view.SetLinks(userProfile.Links?.Select(link => (link.title, link.url)).ToList()
-                          ?? new List<(string title, string url)>());
-
+            view.SetLinks(userProfile.Links ?? new List<UserProfileModel.Link>(0));
             view.EnableOrDisableAddLinksOption(userProfile.Links == null || userProfile.Links?.Count < 5);
             view.SetLinksEnabled(!userProfile.isGuest);
         }

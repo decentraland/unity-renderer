@@ -205,7 +205,7 @@ namespace DCL.MyAccount
         {
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
-            view.Received(1).SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == 0));
+            view.Received(1).SetLinks(Arg.Is<List<UserProfileModel.Link>>(l => l.Count == 0));
             view.Received(1).EnableOrDisableAddLinksOption(true);
         }
 
@@ -234,10 +234,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             view.Received(1)
-                .SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == 3
-                                                                        && l[0].title == "l1" && l[0].url == "url1"
-                                                                        && l[1].title == "l2" && l[1].url == "url2"
-                                                                        && l[2].title == "l3" && l[2].url == "url3"));
+                .SetLinks(Arg.Is<List<UserProfileModel.Link>>(l => l.Count == 3
+                                                                   && l[0].title == "l1" && l[0].url == "url1"
+                                                                   && l[1].title == "l2" && l[1].url == "url2"
+                                                                   && l[2].title == "l3" && l[2].url == "url3"));
 
             view.Received(1).EnableOrDisableAddLinksOption(true);
         }
@@ -268,7 +268,7 @@ namespace DCL.MyAccount
 
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
-            view.Received(1).SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == 5));
+            view.Received(1).SetLinks(Arg.Is<List<UserProfileModel.Link>>(l => l.Count == 5));
             view.Received(1).EnableOrDisableAddLinksOption(false);
         }
 
@@ -457,8 +457,8 @@ namespace DCL.MyAccount
             view.OnLinkRemoved += Raise.Event<Action<(string title, string url)>>(("l1", "l1"));
 
             view.Received(1)
-                .SetLinks(Arg.Is<List<(string title, string url)>>(l => l.Count == expectedLinks.Count
-                                                                        && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
+                .SetLinks(Arg.Is<List<UserProfileModel.Link>>(l => l.Count == expectedLinks.Count
+                                                                   && l.All(viewLinks => expectedLinks.Exists(expectedLink => expectedLink.title == viewLinks.title && expectedLink.url == viewLinks.url))));
 
             myAccountAnalyticsService.Received(1).SendProfileLinkRemoveAnalytic("l1", "l1");
         }

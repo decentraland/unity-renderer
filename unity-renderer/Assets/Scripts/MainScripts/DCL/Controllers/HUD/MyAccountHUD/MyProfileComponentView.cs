@@ -318,11 +318,11 @@ namespace DCL.MyAccount
         public void SetNonValidNameWarningActive(bool isActive) =>
             nonValidNameWarning.SetActive(isActive);
 
-        public void SetLinks(List<(string title, string url)> links)
+        public void SetLinks(List<UserProfileModel.Link> links)
         {
             linkListView.Clear();
 
-            foreach ((string title, string url) link in links)
+            foreach (UserProfileModel.Link link in links)
                 linkListView.Add(link.title, link.url);
         }
 
