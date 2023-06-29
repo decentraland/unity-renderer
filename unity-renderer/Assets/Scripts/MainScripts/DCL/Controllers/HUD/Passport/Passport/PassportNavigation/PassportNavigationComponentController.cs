@@ -28,6 +28,8 @@ namespace DCL.Social.Passports
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
         private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
+        private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
+        private readonly List<(string title, string url)> links = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -101,12 +103,12 @@ namespace DCL.Social.Passports
                 view.SetName(filteredName);
                 view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
+                links.Clear();
+                additionalFields.Clear();
+
                 if (!userProfile.isGuest)
                 {
                     string filteredDescription = await FilterProfanityContentAsync(userProfile.description, cancellationToken);
-
-                    List<(Sprite logo, string title, string value)> additionalFields = new ();
-                    List<(string title, string url)> links;
 
                     if (isMyAccountEnabled)
                     {
@@ -170,11 +172,12 @@ namespace DCL.Social.Passports
                                 IPassportNavigationComponentView.AdditionalInfoField.REAL_NAME.ToString().Replace("_", " "),
                                 userProfile.RealName));
 
-                        links = userProfile.Links?.Select(link => (link.title, link.url)).ToList()
-                                ?? new List<(string title, string url)>();
+                        if (userProfile.Links != null)
+                            foreach (var link in userProfile.Links)
+                                links.Add((link.title, link.url));
                     }
                     else
-                        filteredDescription = ExtractLinks(filteredDescription, out links);
+                        filteredDescription = ExtractLinks(filteredDescription, links);
 
                     view.SetDescription(filteredDescription);
                     view.SetAdditionalInfo(additionalFields);
@@ -358,16 +361,15 @@ namespace DCL.Social.Passports
             dataStore.HUDs.currentPlayerId.Set((null, null));
         }
 
-        private string ExtractLinks(string description, out List<(string title, string url)> links)
+        private string ExtractLinks(string description, List<(string title, string url)> linkBuffer)
         {
-            links = new List<(string title, string url)>();
             MatchCollection matches = linksRegex.Matches(description);
 
             if (matches.Count == 0) return description;
 
             foreach (Match match in matches)
             {
-                links.Add((title: match.Groups[1].Value, url: match.Groups[2].Value));
+                linkBuffer.Add((title: match.Groups[1].Value, url: match.Groups[2].Value));
                 description = description.Replace(match.Value, "");
             }
 
