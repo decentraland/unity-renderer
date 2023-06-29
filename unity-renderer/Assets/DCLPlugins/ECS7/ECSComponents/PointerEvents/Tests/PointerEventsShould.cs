@@ -41,12 +41,13 @@ namespace Tests
                                                if (componentData == null)
                                                    return null;
 
-                                               return new ECSComponentData<InternalPointerEvents>()
-                                               {
-                                                   entity = entity,
-                                                   scene = scene,
-                                                   model = componentData.Value
-                                               };
+                                               return new ECSComponentData<InternalPointerEvents>
+                                               (
+                                                   entity: entity,
+                                                   scene: scene,
+                                                   model: componentData.Value,
+                                                   handler: null
+                                               );
                                            });
 
             internalPointerEventsComponent.When(substituteCall =>
@@ -94,7 +95,7 @@ namespace Tests
             };
 
             handler.OnComponentModelUpdated(scene, entity, pointerEvents);
-            var model = internalPointerEventsComponent.GetFor(scene, entity).model;
+            var model = internalPointerEventsComponent.GetFor(scene, entity).Value.model;
 
             Assert.AreEqual(pointerEvents.PointerEvents.Count, model.PointerEvents.Count);
             Assert.AreEqual(pointerEvents.PointerEvents[0].EventType, model.PointerEvents[0].EventType);

@@ -104,9 +104,9 @@ namespace ECSSystems.UIInputSenderSystem
 
             return new (scene, entity.entityId,
                 new ECSComponentData<InternalUIInputResults>
-                {
-                    entity = entity, scene = scene, model = model
-                });
+                (
+                    entity: entity, scene: scene, model: model, handler: null
+                ));
         }
     }
 }

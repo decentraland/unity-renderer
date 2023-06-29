@@ -75,7 +75,7 @@ namespace Tests
 
             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
             var engineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            uint sceneFrame = (uint)(Time.frameCount - engineInfo.model.SceneInitialRunTime);
+            uint sceneFrame = (uint)(Time.frameCount - engineInfo.Value.model.SceneInitialRunTime);
             system.Update();
 
             outgoingMessages.Put_Called<PBEngineInfo>(

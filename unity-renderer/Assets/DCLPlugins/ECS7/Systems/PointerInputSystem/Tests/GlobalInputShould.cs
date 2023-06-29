@@ -119,7 +119,7 @@ namespace Tests
 
             // second scene receive the pointer down event without hit info
             var result = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
             Assert.IsTrue(evt.button == InputAction.IaPrimary);
@@ -139,9 +139,9 @@ namespace Tests
 
             // both scene receive input as global since entity without pointer events was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0];
+            var evt1 = result.Value.model.events[0];
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[0];
+            var evt2 = result2.Value.model.events[0];
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -176,9 +176,9 @@ namespace Tests
 
             // both scene receive input as global since entity with pointer events but outside of `distance` range was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0];
+            var evt1 = result.Value.model.events[0];
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[0];
+            var evt2 = result2.Value.model.events[0];
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -227,7 +227,7 @@ namespace Tests
 
             // second scene receive the pointer down event without hit info
             var result = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
             Assert.IsTrue(evt.button == InputAction.IaPrimary);
@@ -257,9 +257,9 @@ namespace Tests
 
             // both scene receive input as global since entity without pointer events was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[1]; // result.model.events[0] == pointer down
+            var evt1 = result.Value.model.events[1]; // result.model.events[0] == pointer down
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetUp);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -307,9 +307,9 @@ namespace Tests
 
             // both scene receive input as global since entity with pointer events but outside of `distance` range was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0]; // result.model.events[0] since input down was a valid entity input
+            var evt1 = result.Value.model.events[0]; // result.model.events[0] since input down was a valid entity input
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetUp);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -350,9 +350,9 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0]; // result.model.events[0] since input up was a valid entity input
+            var evt1 = result.Value.model.events[0]; // result.model.events[0] since input up was a valid entity input
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -360,8 +360,8 @@ namespace Tests
             Assert.IsTrue(evt2.type == PointerEventType.PetUp);
             Assert.IsTrue(evt2.button == InputAction.IaPrimary);
             Assert.IsNull(evt2.hit);
-            Assert.AreEqual(1, result.model.events.Count);
-            Assert.AreEqual(2, result2.model.events.Count);
+            Assert.AreEqual(1, result.Value.model.events.Count);
+            Assert.AreEqual(2, result2.Value.model.events.Count);
         }
     }
 }

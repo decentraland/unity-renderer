@@ -83,7 +83,7 @@ namespace ECSSystems.PlayerSystem
 
                 if (scene.entities.TryGetValue(SpecialEntityId.PLAYER_ENTITY, out var entity))
                 {
-                    ECSTransform stored = transformComponent.Get(scene, entity).model ?? new ECSTransform();
+                    ECSTransform stored = transformComponent.Get(scene, entity.entityId)?.model ?? new ECSTransform();
                     stored.position = transform.position;
                     stored.rotation = transform.rotation;
                     stored.scale = transform.scale;

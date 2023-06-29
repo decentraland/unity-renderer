@@ -107,14 +107,17 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
         crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
     }
 
-    public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)
+    public ECSComponentData<T>? GetFor(IParcelScene scene, IDCLEntity entity)
     {
-        return component.Get(scene, entity);
+        return GetFor(scene, entity.entityId);
     }
 
-    public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, long entityId)
+    public ECSComponentData<T>? GetFor(IParcelScene scene, long entityId)
     {
-        return component.Get(scene, entityId);
+        if (component.TryGet(scene, entityId, out var data))
+            return data;
+
+        return null;
     }
 
     public IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<T>>> GetForAll()

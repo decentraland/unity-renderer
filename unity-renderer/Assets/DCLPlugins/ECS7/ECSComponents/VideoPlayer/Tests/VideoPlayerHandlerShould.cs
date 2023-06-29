@@ -152,7 +152,7 @@ namespace Tests
             // The internal component is removed with a default model flagged as removed to
             // be able to remove video events in ECSVideoPlayerSystem
             videoPlayerHandler.OnComponentRemoved(scene, entity);
-            Assert.IsTrue(internalVideoPlayerComponent.GetFor(scene, entity).model.removed);
+            Assert.IsTrue(internalVideoPlayerComponent.GetFor(scene, entity).Value.model.removed);
         }
 
         [Test]

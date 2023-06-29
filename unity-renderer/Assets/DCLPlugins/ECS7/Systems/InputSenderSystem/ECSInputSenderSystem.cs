@@ -65,7 +65,7 @@ namespace ECSSystems.InputSenderSystem
                     componentModel.Hit = inputEvent.hit;
                     componentModel.State = inputEvent.type;
                     componentModel.Timestamp = state.lastTimestamp++;
-                    componentModel.TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+                    componentModel.TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
 
                     writer.Append(entity.entityId, ComponentID.POINTER_EVENTS_RESULT, componentPooled);
                 }

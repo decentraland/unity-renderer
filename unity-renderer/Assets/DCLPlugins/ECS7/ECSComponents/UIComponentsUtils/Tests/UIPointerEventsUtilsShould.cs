@@ -61,9 +61,12 @@ namespace DCL.ECSComponents.Tests
         public IEnumerator AddInternalInputResult()
         {
             ECSComponentData<InternalUIInputResults> internalCompData = new ECSComponentData<InternalUIInputResults>
-            {
-                model = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>())
-            };
+            (
+                scene: scene,
+                entity: entity,
+                model: new InternalUIInputResults(new Queue<InternalUIInputResults.Result>()),
+                handler: null
+            );
 
             var inputResultsComp = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
             IPooledWrappedComponent result = Substitute.For<IPooledWrappedComponent>();

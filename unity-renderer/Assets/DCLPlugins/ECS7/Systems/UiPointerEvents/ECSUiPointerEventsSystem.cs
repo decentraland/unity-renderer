@@ -118,7 +118,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
 
                 if (registeredEventsData != null)
                 {
-                    UnregisterUiPointerEvents(visualElement, registeredEventsData.model);
+                    UnregisterUiPointerEvents(visualElement, registeredEventsData.Value.model);
                 }
 
                 InternalPointerEvents events = groupElement.componentData2.model;

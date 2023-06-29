@@ -123,10 +123,10 @@ namespace Tests
             Assert.IsTrue(renderer01.shadowCastingMode == ShadowCastingMode.Off);
 
             // components should not be dirty anymore
-            Assert.IsFalse(materialComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(materialComponent.GetFor(scene0, entity01).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity01).model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene0, entity01).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity01).Value.model.dirty);
 
             // entity from scene1 should not have changed
             Assert.IsNull(renderer10.sharedMaterial);
@@ -149,8 +149,8 @@ namespace Tests
             Assert.IsTrue(renderer10.shadowCastingMode == ShadowCastingMode.On);
 
             // components should not be dirty anymore
-            Assert.IsFalse(materialComponent.GetFor(scene1, entity10).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene1, entity10).model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene1, entity10).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene1, entity10).Value.model.dirty);
 
             // change material for scene1 entity
             scene1Material = new Material(materialResource);
@@ -229,7 +229,7 @@ namespace Tests
 
             // Set first material to component
             materialComponent.SetModel(scene0, entity, CreateModel(Color.black));
-            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity.entityId).Value.handler).promiseMaterial;
             systemsUpdate();
 
             Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
@@ -245,7 +245,7 @@ namespace Tests
             Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
 
             // Wait until material is loaded
-            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity.entityId).Value.handler).promiseMaterial;
 
             systemsUpdate();
 

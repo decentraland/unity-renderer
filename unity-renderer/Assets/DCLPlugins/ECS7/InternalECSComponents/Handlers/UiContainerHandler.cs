@@ -20,7 +20,7 @@ public class UiContainerHandler : IECSComponentHandler<InternalUiContainer>
         var containerData = thisComponent.GetFor(scene, entity);
         if (containerData != null)
         {
-            containerData.model.parentElement?.Remove(containerData.model.rootElement);
+            containerData.Value.model.parentElement?.Remove(containerData.Value.model.rootElement);
         }
     }
 

@@ -153,7 +153,7 @@ namespace Tests
         public void PutGltfContainerLoadingStateAsLoading()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
-            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(LoadingState.Loading, model.LoadingState);
             Assert.IsFalse(model.GltfContainerRemoved);
         }
@@ -164,7 +164,7 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
             yield return handler.gltfLoader.Promise;
 
-            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(LoadingState.Finished, model.LoadingState);
             Assert.IsFalse(model.GltfContainerRemoved);
         }
@@ -178,7 +178,7 @@ namespace Tests
             yield return handler.gltfLoader.Promise;
 
             LogAssert.ignoreFailingMessages = ignoreFailingMessages;
-            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(LoadingState.FinishedWithError, model.LoadingState);
             Assert.IsFalse(model.GltfContainerRemoved);
         }
@@ -187,7 +187,7 @@ namespace Tests
         public void RemoveGltfContainerLoadingStateWhenGltfContainerRemoved()
         {
             handler.OnComponentRemoved(scene, entity);
-            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).model;
+            var model = gltfContainerLoadingStateComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(LoadingState.Unknown, model.LoadingState);
             Assert.IsTrue(model.GltfContainerRemoved);
         }

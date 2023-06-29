@@ -83,7 +83,7 @@ namespace ECSSystems.ECSRaycastSystem
                 result.Direction = ProtoConvertUtils.UnityVectorToPBVector(ray.direction);
                 result.GlobalOrigin = ProtoConvertUtils.UnityVectorToPBVector(ray.origin);
                 result.Timestamp = model.Timestamp;
-                result.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+                result.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
 
                 // Hit everything by default except 'OnPointer' layer
                 int raycastUnityLayerMask = CreateRaycastLayerMask(model);

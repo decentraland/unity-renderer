@@ -62,10 +62,10 @@ namespace Tests
             Assert.AreEqual(0, newSceneTick);
             var sceneEngineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
             Assert.IsNotNull(sceneEngineInfo);
-            Assert.AreEqual(0, sceneEngineInfo.model.SceneTick);
+            Assert.AreEqual(0, sceneEngineInfo.Value.model.SceneTick);
 
             // Copy struct as it cannot be manipulated
-            InternalEngineInfo finalModel = sceneEngineInfo.model;
+            InternalEngineInfo finalModel = sceneEngineInfo.Value.model;
             finalModel.SceneTick++;
             internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, finalModel);
 

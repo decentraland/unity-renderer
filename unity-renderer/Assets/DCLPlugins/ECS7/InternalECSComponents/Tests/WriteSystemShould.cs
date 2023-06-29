@@ -56,10 +56,10 @@ namespace Tests
 
             updateMarkComponentsAsDirty();
 
-            Assert.IsTrue(visibilityComponent.GetFor(scene, entity).model.dirty);
+            Assert.IsTrue(visibilityComponent.GetFor(scene, entity)?.model.dirty);
 
             updateRemoveComponentsAsDirty();
-            Assert.IsFalse(visibilityComponent.GetFor(scene, entity).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene, entity)?.model.dirty);
             Assert.AreEqual(0, markAsDirtyComponent.Count);
         }
 

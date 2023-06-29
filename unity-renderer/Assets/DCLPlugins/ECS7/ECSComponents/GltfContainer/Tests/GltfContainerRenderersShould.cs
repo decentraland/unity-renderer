@@ -72,7 +72,7 @@ namespace Tests
             yield return handler.gltfLoader.Promise;
 
             IList<Renderer> renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            IECSReadOnlyComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity);
+            ECSComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity).Value;
 
             for (int i = 0; i < renderers.Count; i++)
             {
@@ -83,7 +83,7 @@ namespace Tests
             yield return handler.gltfLoader.Promise;
 
             renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            internalRenderers = renderersComponent.GetFor(scene, entity);
+            internalRenderers = renderersComponent.GetFor(scene, entity).Value;
 
             for (int i = 0; i < renderers.Count; i++)
             {
@@ -94,7 +94,7 @@ namespace Tests
             yield return handler.gltfLoader.Promise;
 
             renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            internalRenderers = renderersComponent.GetFor(scene, entity);
+            internalRenderers = renderersComponent.GetFor(scene, entity).Value;
 
             for (int i = 0; i < renderers.Count; i++)
             {

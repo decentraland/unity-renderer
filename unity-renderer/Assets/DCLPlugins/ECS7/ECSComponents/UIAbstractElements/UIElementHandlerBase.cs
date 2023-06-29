@@ -47,7 +47,7 @@ namespace DCL.ECSComponents.UIAbstractElements
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
-                var containerModel = containerData.model;
+                var containerModel = containerData.Value.model;
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
                 return containerModel;

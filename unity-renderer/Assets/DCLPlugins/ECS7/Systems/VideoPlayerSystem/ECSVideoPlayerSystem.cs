@@ -110,7 +110,7 @@ namespace ECSSystems.VideoPlayerSystem
                 model.CurrentOffset = videoPlayerModel.videoPlayer.GetTime();
                 model.VideoLength = videoPlayerModel.videoPlayer.GetDuration();
                 model.Timestamp = videoEvent.timeStamp;
-                model.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+                model.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
 
                 writer.Append(videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT, pooledModel);
             }
@@ -125,7 +125,7 @@ namespace ECSSystems.VideoPlayerSystem
 
                 if (playerComponent != null)
                 {
-                    var playerModel = playerComponent.model;
+                    var playerModel = playerComponent.Value.model;
                     var videoTexture = playerModel.videoPlayer.texture;
 
                     if (!IsMaterialAssigned(playerModel, model, textureData.textureType) && videoTexture != null)

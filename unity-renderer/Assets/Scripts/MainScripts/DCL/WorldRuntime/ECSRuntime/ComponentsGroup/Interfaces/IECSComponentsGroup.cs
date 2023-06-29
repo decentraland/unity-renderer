@@ -12,5 +12,6 @@ namespace DCL.ECSRuntime
         bool ShouldAddOnComponentRemove(IECSComponent component);
         void Add(IParcelScene scene, IDCLEntity entity);
         bool Remove(IDCLEntity entity);
+        void Update(IParcelScene scene, IDCLEntity entity, IECSComponent component);
     }
 }

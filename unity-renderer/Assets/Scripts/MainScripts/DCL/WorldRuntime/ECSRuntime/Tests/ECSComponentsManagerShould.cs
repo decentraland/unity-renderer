@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.ECSRuntime.Tests;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -118,8 +118,9 @@ namespace Tests
             Assert.AreEqual(1, componentsManager.loadedComponents.Count);
 
             ECSComponent<TestingComponent> typedComponent = ((ECSComponent<TestingComponent>)componentsManager.loadedComponents[(int)ComponentsID.Component0]);
-            Assert.AreEqual(newComponentModel.someString, typedComponent.Get(scene, entity).model.someString);
-            Assert.AreEqual(newComponentModel.someVector, typedComponent.Get(scene, entity).model.someVector);
+            Assert.IsTrue(typedComponent.TryGet(scene, entity.entityId, out var componentData));
+            Assert.AreEqual(newComponentModel.someString, componentData.model.someString);
+            Assert.AreEqual(newComponentModel.someVector, componentData.model.someVector);
             Assert.IsTrue(typedComponent.HasComponent(scene, entity));
         }
 

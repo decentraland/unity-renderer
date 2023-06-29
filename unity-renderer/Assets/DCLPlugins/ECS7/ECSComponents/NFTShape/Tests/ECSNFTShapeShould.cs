@@ -114,7 +114,7 @@ namespace Tests
         public void AddAndRemoveRenderer()
         {
             handler.OnComponentModelUpdated(scene, entity, new PBNftShape());
-            Assert.IsTrue(renderersComponent.GetFor(scene, entity).model.renderers.Contains(handler.shapeFrame.frameRenderer));
+            Assert.IsTrue(renderersComponent.GetFor(scene, entity).Value.model.renderers.Contains(handler.shapeFrame.frameRenderer));
 
             handler.OnComponentRemoved(scene, entity);
             Assert.IsNull(renderersComponent.GetFor(scene, entity));

@@ -119,7 +119,7 @@ namespace Tests
             }
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var model = compData.model;
+            var model = compData.Value.model;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
 

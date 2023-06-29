@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECSRuntime;
 using DCL.ECSRuntime.Tests;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -30,7 +30,7 @@ namespace Tests
         {
             IDCLEntity entity0 = Substitute.For<IDCLEntity>();
             entity0.entityId.Returns(1);
-            
+
             IDCLEntity entity1 = Substitute.For<IDCLEntity>();
             entity1.entityId.Returns(1);
 
@@ -49,7 +49,7 @@ namespace Tests
         {
             IDCLEntity entity0 = Substitute.For<IDCLEntity>();
             entity0.entityId.Returns(1);
-            
+
             IDCLEntity entity1 = Substitute.For<IDCLEntity>();
             entity1.entityId.Returns(1);
 
@@ -61,7 +61,7 @@ namespace Tests
             componentHandler.Received(1).OnComponentRemoved(scene0, entity0);
             Assert.AreEqual(1, component.componentData.Count);
             Assert.IsFalse(component.HasComponent(scene0, entity0));
-            
+
             component.Remove(scene1, entity1);
             componentHandler.Received(1).OnComponentRemoved(scene1, entity1);
             Assert.AreEqual(0, component.componentData.Count);
@@ -79,13 +79,14 @@ namespace Tests
                 someString = "temptation",
                 someVector = new Vector3(70, 0, -135)
             };
+
             var serializedModel = TestingComponentSerialization.Serialize(newComponentModel);
 
             component.Create(scene0, entity);
             component.Deserialize(scene0, entity, serializedModel);
 
             componentHandler.Received(1).OnComponentModelUpdated(scene0, entity, Arg.Any<TestingComponent>());
-            var componentData = component.Get(scene0, entity);
+            Assert.IsTrue(component.TryGet(scene0, entity.entityId, out var componentData));
             Assert.AreEqual(newComponentModel.someString, componentData.model.someString);
             Assert.AreEqual(newComponentModel.someVector, componentData.model.someVector);
         }
@@ -107,6 +108,7 @@ namespace Tests
                     someString = $"temptation{i}",
                     someVector = new Vector3(70 + i, i, 0)
                 };
+
                 trackedEntities.Add(entity);
                 trackedModels.Add(entity, entityModel);
 
@@ -130,12 +132,14 @@ namespace Tests
             using (var iterator = component.componentData.GetEnumerator())
             {
                 IDCLEntity currentEntity = null;
+
                 while (iterator.MoveNext())
                 {
                     if (currentEntity != null)
                     {
                         Assert.AreNotEqual(currentEntity, iterator.Current.value.entity);
                     }
+
                     Assert.IsNotNull(iterator.Current.value.entity);
 
                     currentEntity = iterator.Current.value.entity;

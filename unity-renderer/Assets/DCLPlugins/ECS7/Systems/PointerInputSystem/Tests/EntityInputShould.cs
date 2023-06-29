@@ -112,7 +112,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
@@ -189,7 +189,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetUp);
@@ -286,7 +286,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetUp);
@@ -313,7 +313,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetHoverEnter);
@@ -386,7 +386,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(entity1.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetHoverLeave);
@@ -489,7 +489,7 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(newTestScene, testEntity.entityId);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.AreEqual(testEntity.entityId, evt.hit.EntityId);
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
@@ -539,12 +539,12 @@ namespace Tests
 
             var result = inputEventResultsComponent.GetFor(scene, entity1.entityId);
 
-            var evt1 = result.model.events[0];
+            var evt1 = result.Value.model.events[0];
             Assert.AreEqual(InputAction.IaPrimary, evt1.button);
             Assert.AreEqual(entity1.entityId, evt1.hit.EntityId);
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
 
-            var evt2 = result.model.events[1];
+            var evt2 = result.Value.model.events[1];
             Assert.AreEqual(InputAction.IaAction3, evt2.button);
             Assert.AreEqual(entity1.entityId, evt2.hit.EntityId);
             Assert.IsTrue(evt2.type == PointerEventType.PetDown);
