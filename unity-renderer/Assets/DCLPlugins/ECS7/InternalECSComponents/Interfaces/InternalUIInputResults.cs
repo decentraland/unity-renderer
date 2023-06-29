@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+﻿using DCL.ECS7.ComponentWrapper;
 using System.Collections.Generic;
 
 namespace DCL.ECS7.InternalComponents
@@ -7,10 +7,10 @@ namespace DCL.ECS7.InternalComponents
     {
         public readonly struct Result
         {
-            public readonly IMessage Message;
+            public readonly IPooledWrappedComponent Message;
             public readonly int ComponentId;
 
-            public Result(IMessage message, int componentId)
+            public Result(IPooledWrappedComponent message, int componentId)
             {
                 this.Message = message;
                 this.ComponentId = componentId;

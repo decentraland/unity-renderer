@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7;
 using DCL.ECSRuntime;
 using DCL.Models;
 using UnityEngine;
@@ -81,6 +82,14 @@ namespace DCL.CRDT
             {
                 RemoveComponent(ownerScene, entityId, componentId);
             }
+        }
+
+        public void GenerateInitialEntities()
+        {
+            var cameraEntity = GetOrCreateEntity(ownerScene, SpecialEntityId.CAMERA_ENTITY);
+            var playerEntity = GetOrCreateEntity(ownerScene, SpecialEntityId.PLAYER_ENTITY);
+            ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, cameraEntity);
+            ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, playerEntity);
         }
 
         private void PutComponent(IParcelScene scene, long entityId, int componentId, object data)

@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.InternalComponents;
 using DCL.Models;
 using Google.Protobuf;
@@ -9,14 +10,13 @@ namespace DCL.ECSComponents
 {
     public static class UIPointerEventsUtils
     {
-        public static EventCallback<TEvent> RegisterFeedback<TEvent, TResultMessage>(
+        public static EventCallback<TEvent> RegisterFeedback<TEvent>(
             IInternalECSComponent<InternalUIInputResults> inputResults,
-            Func<TEvent, TResultMessage> createResult,
+            Func<TEvent, IPooledWrappedComponent> createResult,
             IParcelScene scene,
             IDCLEntity entity,
             VisualElement uiElement,
             int resultComponentId)
-            where TResultMessage: class, IMessage
             where TEvent: EventBase<TEvent>, new()
         {
             EventCallback<TEvent> callback = evt =>

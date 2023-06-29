@@ -1,4 +1,6 @@
-﻿using DCL.ECS7.InternalComponents;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using Decentraland.Common;
 using NUnit.Framework;
@@ -13,11 +15,21 @@ namespace DCL.ECSComponents.UIInput.Tests
         private const int RESULT_COMPONENT_ID = 1001;
 
         private UIInputHandler handler;
+        private WrappedComponentPool<IWrappedComponent<PBUiInputResult>> pool;
 
         [SetUp]
         public void CreateHandler()
         {
-            handler = new UIInputHandler(internalUiContainer, RESULT_COMPONENT_ID, uiInputResultsComponent, AssetPromiseKeeper_Font.i, COMPONENT_ID);
+            pool = new WrappedComponentPool<IWrappedComponent<PBUiInputResult>>(0, () => new ProtobufWrappedComponent<PBUiInputResult>(new PBUiInputResult()));
+
+            handler = new UIInputHandler(
+                internalUiContainer,
+                RESULT_COMPONENT_ID,
+                uiInputResultsComponent,
+                AssetPromiseKeeper_Font.i,
+                COMPONENT_ID,
+                pool
+            );
         }
 
         [Test][Category("ToFix")]
@@ -44,9 +56,11 @@ namespace DCL.ECSComponents.UIInput.Tests
             const string TEST_VALUE = "TEST_TEXT";
 
             handler.uiElement.value = TEST_VALUE;
+            var result = pool.Get();
+            result.WrappedComponent.Model.Value = TEST_VALUE;
 
             Assert.Contains(
-                new InternalUIInputResults.Result(new PBUiInputResult {Value = TEST_VALUE}, RESULT_COMPONENT_ID),
+                new InternalUIInputResults.Result(result, RESULT_COMPONENT_ID),
                 uiInputResults.Results);
         }
 
@@ -71,3 +85,4 @@ namespace DCL.ECSComponents.UIInput.Tests
         }
     }
 }
+
