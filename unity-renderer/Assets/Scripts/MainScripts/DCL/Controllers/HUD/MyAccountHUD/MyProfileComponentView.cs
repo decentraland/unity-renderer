@@ -132,9 +132,14 @@ namespace DCL.MyAccount
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
 
             aboutInputText.onValueChanged.AddListener(newDesc => UpdateAboutCharLimit(newDesc.Length, aboutInputText.characterLimit));
-            aboutInputText.onSelect.AddListener(_ => aboutEditionLogo.SetActive(false));
+            aboutInputText.onSelect.AddListener(_ =>
+            {
+                aboutInputText.lineType = TMP_InputField.LineType.MultiLineNewline;
+                aboutEditionLogo.SetActive(false);
+            });
             aboutInputText.onDeselect.AddListener(newDesc =>
             {
+                aboutInputText.lineType = TMP_InputField.LineType.SingleLine;
                 aboutEditionLogo.SetActive(true);
                 OnAboutDescriptionSubmitted?.Invoke(newDesc);
             });
