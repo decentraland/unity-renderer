@@ -179,8 +179,6 @@ namespace DCL.LoadingScreen.V2
             Debug.Log("FD:: Disposing --> LoadingScreenHintsController");
             hintsControllerInitialized = false;
             loadingScreenV2HintsPanelView.CleanUp();
-            hintsDictionary = null;
-            hintViewPool = null;
 
             shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
             shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
@@ -194,6 +192,8 @@ namespace DCL.LoadingScreen.V2
                 if (hint != null)
                     DCL.Helpers.Utils.SafeDestroy(hint.gameObject);
             }
+            hintsDictionary = null;
+            hintViewPool = null;
         }
 
 #region Shortcut management

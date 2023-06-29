@@ -34,14 +34,26 @@ namespace DCL.LoadingScreen.V2
             ScheduleNextUpdate(CancellationToken.None).Forget();
         }
 
-        public void StopCarousel()
+        public async void StopCarousel()
         {
             if (!isIteratingHints)
                 return;
 
             isIteratingHints = false;
-            scheduledUpdateCtxSource?.Cancel();
+
+            if (scheduledUpdateCtxSource != null)
+            {
+                scheduledUpdateCtxSource.Cancel();
+
+                // Wait for the token to fully cancel before disposing
+                while (!scheduledUpdateCtxSource.IsCancellationRequested)
+                    await UniTask.Yield();
+
+                scheduledUpdateCtxSource.Dispose();
+                scheduledUpdateCtxSource = null;
+            }
         }
+
 
         public void CarouselNextHint()
         {
@@ -105,11 +117,14 @@ namespace DCL.LoadingScreen.V2
             OnHintChanged?.Invoke();
         }
 
-        public void Dispose()
+        public async void Dispose()
         {
             Debug.Log("FD:: Disposing --> HntsViewManager");
             StopCarousel();
-            scheduledUpdateCtxSource?.Dispose();
+
+            // Wait for any cancellation to finish
+            while (scheduledUpdateCtxSource != null)
+                await UniTask.Yield();
 
             foreach (var hintView in hintViewList)
             {
@@ -119,5 +134,6 @@ namespace DCL.LoadingScreen.V2
 
             hintViewList.Clear();
         }
+
     }
 }
