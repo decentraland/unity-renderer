@@ -50,6 +50,7 @@ namespace DCL.LoadingScreen.V2
                 var newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 hintImage.sprite = newSprite;
                 hintBackgroundImage.sprite = newSprite;
+                // hintBackgroundImage.material.set
             }
 
 

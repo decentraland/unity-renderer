@@ -12,6 +12,55 @@ Shader "DCL/UI-SimpleGaussianBlur-Alpha" {
         _Alpha ("Alpha", Range(0.0, 1.0)) = 0.3
     }
     
+    HLSLINCLUDE
+        #include "UnityCG.cginc"
+        struct v2f
+        {
+            float2 uv : TEXCOORD0;
+            float4 pos : SV_POSITION;
+        };
+            
+        v2f FullscreenVert (appdata_base v)
+        {
+            v2f o;
+            o.pos = UnityObjectToClipPos(v.vertex);
+            o.uv = v.texcoord;
+            return o;
+        }
+
+        sampler2D _MainTex;
+
+        fixed4 FragBlurH (v2f i) : SV_Target
+        {
+            fixed3 offset = fixed3(0.0, 1.3846153846 / _ScreenParams.x, 3.2307692308 / _ScreenParams.x);
+            fixed3 weight = fixed3(0.2270270270, 0.3162162162, 0.0702702703);
+            fixed4 FragmentColor = tex2D(_MainTex, i.uv) * weight[0];
+
+            for (int x=1; x<3; x++)
+            {
+                FragmentColor += tex2D(_MainTex, (i.uv + float2(offset[x], 0.0))) * weight[x];
+                FragmentColor += tex2D(_MainTex, (i.uv - float2(offset[x], 0.0))) * weight[x];
+            }
+
+            return fixed4(FragmentColor.rgb, FragmentColor.a * 0.5f);
+        }
+
+        fixed4 FragBlurV (v2f i) : SV_Target
+        {
+            fixed3 offset = fixed3(0.0, 1.3846153846 / _ScreenParams.y, 3.2307692308 / _ScreenParams.y);
+            fixed3 weight = fixed3(0.2270270270, 0.3162162162, 0.0702702703);
+            fixed4 FragmentColor = tex2D(_MainTex, i.uv) * weight[0];
+
+            for (int y=1; y<3; y++)
+            {
+                FragmentColor += tex2D(_MainTex, (i.uv + float2(0.0, offset[y]))) * weight[y];
+                FragmentColor += tex2D(_MainTex, (i.uv - float2(0.0, offset[y]))) * weight[y];
+            }
+
+            return fixed4(FragmentColor.rgb, FragmentColor.a * 0.5f);
+        }
+    ENDHLSL
+
     SubShader {
         
         Tags
@@ -38,50 +87,23 @@ Shader "DCL/UI-SimpleGaussianBlur-Alpha" {
         ZTest [unity_GUIZTestMode]
         Blend SrcAlpha OneMinusSrcAlpha
         ColorMask [_ColorMask]
-        
-        Pass {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-            
-            sampler2D _MainTex;
-            float _BlurSize;
-            float _Alpha;
-            
-            struct v2f {
-                float2 uv : TEXCOORD0;
-                float4 pos : SV_POSITION;
-            };
-            
-            v2f vert (appdata_base v) {
-                v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.texcoord;
-                return o;
-            }
-            
-            fixed4 frag (v2f i) : SV_Target {
-                fixed4 color = tex2D(_MainTex, i.uv);
-                
-                // Gaussian Blur
-                fixed2 texelSize = 1.0 / _ScreenParams.xy;
-                fixed3 blur = fixed3(0, 0, 0);
-                fixed3 weights = fixed3(0.227027, 0.316216, 0.070270);
-                
-                for (int x = -2; x <= 2; x++) {
-                    for (int y = -2; y <= 2; y++) {
-                        fixed2 offset = fixed2(x, y) * _BlurSize * texelSize;
-                        blur += tex2D(_MainTex, i.uv + offset).rgb * weights[abs(x) + abs(y)];
-                    }
-                }
 
-                fixed4 blurredColor = fixed4(blur / 2.0, color.a);
+        Pass
+        {
+            Name "Gaussian Blur Horizontal"
+            HLSLPROGRAM
+                #pragma vertex FullscreenVert
+                #pragma fragment FragBlurH  
+            ENDHLSL
+        }
 
-                return blurredColor * _Alpha;
-            }
-            
-            ENDCG
+        Pass
+        {
+            Name "Gaussian Blur Vertical"
+            HLSLPROGRAM
+                #pragma vertex FullscreenVert
+                #pragma fragment FragBlurV
+            ENDHLSL
         }
     }
 }

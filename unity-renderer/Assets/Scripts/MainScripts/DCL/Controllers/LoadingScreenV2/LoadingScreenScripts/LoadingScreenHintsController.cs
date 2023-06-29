@@ -58,6 +58,7 @@ namespace DCL.LoadingScreen.V2
         // This is initialized when teleporting to a new scene (also when loading the game for the first time)
         public void Initialize()
         {
+            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - 00:  " + hintsControllerInitialized);
             if (hintsControllerInitialized)
                 return;
 
@@ -114,7 +115,7 @@ namespace DCL.LoadingScreen.V2
         /// <param name="ctx"></param>
         private async UniTask RequestHints(CancellationToken ctx)
         {
-            hintsDictionary.Clear();
+            hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
 
             Dictionary<Hint, Texture2D> hintsResult = await hintRequestService.RequestHintsFromSources(ctx, MAX_HINTS);
 
@@ -176,12 +177,15 @@ namespace DCL.LoadingScreen.V2
         public void Dispose()
         {
             Debug.Log("FD:: Disposing --> LoadingScreenHintsController");
+            hintsControllerInitialized = false;
+            loadingScreenV2HintsPanelView.CleanUp();
+            hintsDictionary = null;
+            hintViewPool = null;
+
             shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
             shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
             loadingScreenV2HintsPanelView.OnPreviousClicked -= CarouselPreviousHint;
             loadingScreenV2HintsPanelView.OnNextClicked -= CarouselNextHint;
-
-            loadingScreenV2HintsPanelView.CleanUp();
 
             cancellationTokenSource?.Cancel();
             hintViewManager.Dispose();
@@ -195,12 +199,6 @@ namespace DCL.LoadingScreen.V2
 #region Shortcut management
         private void ConfigureShortcuts()
         {
-            // closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
-            // closeWindow.OnTriggered += OnCloseWindowPressed;
-            //
-            // openEmotesCustomizationInputAction = Resources.Load<InputAction_Hold>("DefaultConfirmAction");
-            // openEmotesCustomizationInputAction.OnFinished += OnOpenEmotesCustomizationInputActionTriggered;
-
             shortcutLeftInputAction = Resources.Load<InputAction_Trigger>("LoadingScreenV2HintsLeft");
             shortcutLeftInputAction.OnTriggered += OnShortcutInputActionTriggered;
 
