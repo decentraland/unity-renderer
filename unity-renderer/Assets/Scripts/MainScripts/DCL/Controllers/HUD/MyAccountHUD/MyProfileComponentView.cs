@@ -5,13 +5,15 @@ using TMPro;
 using UIComponents.CollapsableSortedList;
 using UIComponents.Scripts.Components;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount
 {
-    public class MyProfileComponentView : BaseComponentView<MyProfileModel>, IMyProfileComponentView
+    public class MyProfileComponentView : BaseComponentView<MyProfileModel>, IMyProfileComponentView, IPointerClickHandler
     {
         private const float DISABLED_SECTION_ALPHA = 0.7f;
+        private const string ABOUT_READ_ONLY_CONTAINER_NAME = "AboutReadOnlyContainer";
 
         [Header("General")]
         [SerializeField] internal GameObject mainContainer;
@@ -50,9 +52,11 @@ namespace DCL.MyAccount
 
         [Header("About")]
         [SerializeField] internal TMP_InputField aboutInputText;
-        [SerializeField] internal GameObject aboutEditionLogo;
         [SerializeField] internal TMP_Text aboutCharCounter;
         [SerializeField] internal CanvasGroup aboutCanvasGroup;
+        [SerializeField] internal GameObject editableAboutContainer;
+        [SerializeField] internal GameObject readOnlyAboutContainer;
+        [SerializeField] internal TMP_Text readOnlyAboutInputText;
 
         [Header("Links")]
         [SerializeField] internal RectTransform linksContainerTransform;
@@ -132,15 +136,11 @@ namespace DCL.MyAccount
             claimedNameUniqueNameButton.onClick.AddListener(() => OnClaimNameClicked?.Invoke());
 
             aboutInputText.onValueChanged.AddListener(newDesc => UpdateAboutCharLimit(newDesc.Length, aboutInputText.characterLimit));
-            aboutInputText.onSelect.AddListener(_ =>
-            {
-                aboutInputText.lineType = TMP_InputField.LineType.MultiLineNewline;
-                aboutEditionLogo.SetActive(false);
-            });
             aboutInputText.onDeselect.AddListener(newDesc =>
             {
-                aboutInputText.lineType = TMP_InputField.LineType.SingleLine;
-                aboutEditionLogo.SetActive(true);
+                readOnlyAboutInputText.text = newDesc;
+                readOnlyAboutContainer.SetActive(true);
+                editableAboutContainer.SetActive(false);
                 OnAboutDescriptionSubmitted?.Invoke(newDesc);
             });
             aboutInputText.onSubmit.AddListener(newDesc => OnAboutDescriptionSubmitted?.Invoke(newDesc));
@@ -159,6 +159,16 @@ namespace DCL.MyAccount
             disclaimerButton.OnToggled += _ => Utils.ForceRebuildLayoutImmediate(headerContainerTransform);
             additionalInfoList.OnAdditionalFieldAdded += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
             additionalInfoList.OnAdditionalFieldRemoved += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.pointerCurrentRaycast.gameObject.name != ABOUT_READ_ONLY_CONTAINER_NAME)
+                return;
+
+            readOnlyAboutContainer.SetActive(false);
+            editableAboutContainer.SetActive(true);
+            aboutInputText.Select();
         }
 
         public override void Dispose()
@@ -289,6 +299,7 @@ namespace DCL.MyAccount
         {
             model.AboutDescription = newDesc;
             aboutInputText.text = newDesc;
+            readOnlyAboutInputText.text = newDesc;
         }
 
         public void SetAboutEnabled(bool isEnabled)
