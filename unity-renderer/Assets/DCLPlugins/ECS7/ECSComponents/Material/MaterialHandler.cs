@@ -30,7 +30,7 @@ namespace DCL.ECSComponents
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             videoMaterialInternalComponent.RemoveFor(scene, entity);
-            materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
+            materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial(null, true));
 
             while (activePromises.Count > 0)
             {
@@ -113,19 +113,8 @@ namespace DCL.ECSComponents
             promiseMaterial.OnSuccessEvent += materialAsset =>
             {
                 if (videoTextureDatas.Count > 0)
-                {
-                    videoMaterialInternalComponent.PutFor(scene, entity, new InternalVideoMaterial()
-                    {
-                        material = materialAsset.material,
-                        videoTextureDatas = videoTextureDatas,
-                    });
-                }
-
-                materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
-                {
-                    material = materialAsset.material,
-                    castShadows = promiseModel.castShadows
-                });
+                    videoMaterialInternalComponent.PutFor(scene, entity, new InternalVideoMaterial(materialAsset.material, videoTextureDatas));
+                materialInternalComponent.PutFor(scene, entity, new InternalMaterial(materialAsset.material, promiseModel.castShadows));
 
                 // Run task to forget previous material after update to avoid forgetting a
                 // material that has not be changed from the renderers yet, since material change

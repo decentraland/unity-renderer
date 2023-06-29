@@ -64,6 +64,7 @@ namespace Tests
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
+            Environment.Dispose();
         }
 
         [Test]

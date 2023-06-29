@@ -79,10 +79,9 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } } });
-
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } }));
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } } });
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } }));
         }
 
         [TearDown]
@@ -100,9 +99,8 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -114,8 +112,7 @@ namespace Tests
                             true
                         )
                     )
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 
@@ -138,9 +135,8 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.distance = 1.1f;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -151,8 +147,7 @@ namespace Tests
                             1,
                             true
                         ))
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 
@@ -167,9 +162,8 @@ namespace Tests
         [Test]
         public void ShowPointerUpHoverTooltip()
         {
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
@@ -181,8 +175,7 @@ namespace Tests
                             true
                         )
                     )
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 
@@ -211,9 +204,8 @@ namespace Tests
         [Test]
         public void NotShowPointerUpHoverTooltipWhenMoreThanMaxDistance()
         {
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
@@ -225,8 +217,7 @@ namespace Tests
                             true
                         )
                     )
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 
@@ -256,9 +247,8 @@ namespace Tests
         [Test]
         public void NotShowPointerUpHoverTooltipWhenButtonMismatch()
         {
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
@@ -270,8 +260,7 @@ namespace Tests
                             true
                         )
                     )
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 
@@ -305,9 +294,8 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            InternalPointerEvents pointerEvents = new InternalPointerEvents()
-            {
-                PointerEvents =
+            InternalPointerEvents pointerEvents = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -339,8 +327,7 @@ namespace Tests
                             true
                         )
                     )
-                }
-            };
+                });
 
             pointerEventsComponent.PutFor(scene, entity1, pointerEvents);
 

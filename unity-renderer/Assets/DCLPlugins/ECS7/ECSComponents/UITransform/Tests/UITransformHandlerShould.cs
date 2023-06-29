@@ -157,11 +157,9 @@ namespace Tests
         public void RemoveParenting()
         {
             VisualElement parent = new VisualElement();
-            var containerModel = new InternalUiContainer(entity.entityId)
-            {
-                parentId = 2,
-                parentElement = parent
-            };
+            var containerModel = new InternalUiContainer(entity.entityId);
+            containerModel.parentId = 2;
+            containerModel.parentElement = parent;
             containerModel.components.Add(COMPONENT_ID);
             parent.Add(containerModel.rootElement);
             internalUiContainer.PutFor(scene, entity, containerModel);

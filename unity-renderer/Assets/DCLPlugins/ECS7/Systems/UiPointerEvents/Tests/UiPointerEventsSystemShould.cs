@@ -55,9 +55,8 @@ namespace Tests
                 components = { 1 }
             });
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -65,8 +64,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             // should register ui callbacks
             ECSUiPointerEventsSystem.HandleUiWithoutRegisteredPointerEvents(
@@ -133,9 +132,8 @@ namespace Tests
                 components = { 1 }
             });
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -143,8 +141,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
 
@@ -168,7 +166,7 @@ namespace Tests
         public void HandleUiContainerRemoval()
         {
             // add required components entity
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents());
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(new List<InternalPointerEvents.Entry>()));
 
             internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
 
@@ -202,9 +200,8 @@ namespace Tests
         [Test]
         public void CreateUiPointerEventsCorrectly()
         {
-            var events = new InternalPointerEvents()
-            {
-                PointerEvents =
+            var events = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -213,7 +210,7 @@ namespace Tests
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
                 }
-            };
+            );
 
             var result = ECSUiPointerEventsSystem.CreateUiPointerEvents(
                 scene,
@@ -227,9 +224,8 @@ namespace Tests
             Assert.IsNull(result.OnPointerUpCallback);
 
             // unsupported input action
-            events = new InternalPointerEvents()
-            {
-                PointerEvents =
+            events = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -238,7 +234,7 @@ namespace Tests
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaJump, "temptation", 0, false))
                 }
-            };
+            );
 
             result = ECSUiPointerEventsSystem.CreateUiPointerEvents(
                 scene,
@@ -279,9 +275,8 @@ namespace Tests
 
             internalComponents.uiContainerComponent.PutFor(scene, entity, internalUiComponent);
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -295,8 +290,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             UpdateSystem();
 

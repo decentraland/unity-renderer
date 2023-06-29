@@ -4,6 +4,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.Models;
 using Google.Protobuf;
 using System;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
@@ -21,7 +22,7 @@ namespace DCL.ECSComponents
         {
             EventCallback<TEvent> callback = evt =>
             {
-                var model = inputResults.GetFor(scene, entity)?.model ?? new InternalUIInputResults();
+                var model = inputResults.GetFor(scene, entity)?.model ?? new InternalUIInputResults(new Queue<InternalUIInputResults.Result>());
                 model.Results.Enqueue(new InternalUIInputResults.Result(createResult(evt), resultComponentId));
                 inputResults.PutFor(scene, entity, model);
             };

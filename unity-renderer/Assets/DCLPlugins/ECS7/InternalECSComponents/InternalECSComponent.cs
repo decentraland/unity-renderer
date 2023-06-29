@@ -6,54 +6,52 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 
-public readonly struct ComponentIdentifier
+public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct, IInternalComponent
 {
-    public readonly int SceneNumber;
-    public readonly long EntityId;
-    public readonly int ComponentId;
-
-    public ComponentIdentifier(int sceneNumber, long entityId, int componentId)
+    internal readonly struct DirtyData
     {
-        this.SceneNumber = sceneNumber;
-        this.EntityId = entityId;
-        this.ComponentId = componentId;
+        public readonly T Data;
+        public readonly bool IsDelayedRemoval;
+
+        public DirtyData(T data, bool isDelayedRemoval)
+        {
+            Data = data;
+            IsDelayedRemoval = isDelayedRemoval;
+        }
     }
-}
 
-public readonly struct ComponentWriteData
-{
-    public readonly InternalComponent Data;
-    public readonly bool IsDelayedRemoval;
-
-    public ComponentWriteData(InternalComponent data, bool isDelayedRemoval)
-    {
-        this.Data = data;
-        this.IsDelayedRemoval = isDelayedRemoval;
-    }
-}
-
-public class InternalECSComponent<T> : IInternalECSComponent<T> where T: InternalComponent
-{
     private readonly ECSComponentsFactory componentsFactory;
     private readonly int componentId;
     private readonly ECSComponent<T> component;
-    private readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents;
     private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
+    private readonly IComponentDirtySystem dirtySystem;
+    internal readonly DualKeyValueSet<int, long, DirtyData> markAsDirtyComponents = new DualKeyValueSet<int, long, DirtyData>(100);
+    internal readonly DualKeyValueSet<int, long, DirtyData> removeAsDirtyComponents = new DualKeyValueSet<int, long, DirtyData>(100);
 
     public InternalECSComponent(InternalECSComponentsId id,
         ECSComponentsManager componentsManager,
         ECSComponentsFactory componentsFactory,
         Func<IECSComponentHandler<T>> handlerBuilder,
-        KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents,
-        IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
+        IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors,
+        IComponentDirtySystem dirtySystem)
     {
         this.componentId = (int)id;
         this.componentsFactory = componentsFactory;
-        this.markAsDirtyComponents = markAsDirtyComponents;
         this.crdtExecutors = crdtExecutors;
+        this.dirtySystem = dirtySystem;
 
         componentsFactory.AddOrReplaceComponent<T>(componentId, x => (T)x, handlerBuilder);
         component = (ECSComponent<T>)componentsManager.GetOrCreateComponent(componentId);
+
+        dirtySystem.MarkComponentsAsDirty += MarkDirtyComponentData;
+        dirtySystem.RemoveComponentsAsDirty += ResetDirtyComponentData;
+    }
+
+    public void Dispose()
+    {
+        componentsFactory.RemoveComponent(componentId);
+        dirtySystem.MarkComponentsAsDirty -= MarkDirtyComponentData;
+        dirtySystem.RemoveComponentsAsDirty -= ResetDirtyComponentData;
     }
 
     public int ComponentId => componentId;
@@ -72,42 +70,41 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: Interna
     {
         if (crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
         {
-            markAsDirtyComponents[new ComponentIdentifier(sceneNumber, entityId, componentId)] =
-                new ComponentWriteData(model, false);
+            markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(model, false);
 
             crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, model);
         }
     }
 
-    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel = null)
-    {
+    public void RemoveFor(IParcelScene scene, IDCLEntity entity, T defaultModel) =>
         RemoveFor(scene, entity.entityId, defaultModel);
-    }
 
-    public void RemoveFor(IParcelScene scene, long entityId, T defaultModel = null)
-    {
+    public void RemoveFor(IParcelScene scene, long entityId, T defaultModel) =>
         RemoveFor(scene.sceneData.sceneNumber, entityId, defaultModel);
-    }
 
-    public void RemoveFor(int sceneNumber, long entityId, T defaultModel = null)
+    public void RemoveFor(int sceneNumber, long entityId, T defaultModel)
     {
         if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
-        {
             return;
-        }
 
-        if (defaultModel != null)
-        {
-            markAsDirtyComponents[new ComponentIdentifier(sceneNumber, entityId, componentId)] =
-                new ComponentWriteData(defaultModel, true);
+        markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(defaultModel, true);
 
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
-        }
-        else
-        {
-            markAsDirtyComponents.Remove(new ComponentIdentifier(sceneNumber, entityId, componentId));
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
-        }
+        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
+    }
+
+    public void RemoveFor(IParcelScene scene, IDCLEntity entity) =>
+        RemoveFor(scene, entity.entityId);
+
+    public void RemoveFor(IParcelScene scene, long entityId) =>
+        RemoveFor(scene.sceneData.sceneNumber, entityId);
+
+    public void RemoveFor(int sceneNumber, long entityId)
+    {
+        if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
+            return;
+
+        markAsDirtyComponents.Remove(sceneNumber, entityId);
+        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
     }
 
     public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)
@@ -125,8 +122,57 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: Interna
         return component.Get();
     }
 
-    public void Dispose()
+    private void MarkDirtyComponentData()
     {
-        componentsFactory.RemoveComponent(componentId);
+        var markAsDirty = markAsDirtyComponents.Pairs;
+
+        for (int i = 0; i < markAsDirty.Count; i++)
+        {
+            int sceneNumber = markAsDirty[i].key1;
+            long entityId = markAsDirty[i].key2;
+            T data = markAsDirty[i].value.Data;
+            bool isRemoval = markAsDirty[i].value.IsDelayedRemoval;
+
+            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
+            {
+                continue;
+            }
+
+            data.dirty = true;
+            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+            removeAsDirtyComponents[sceneNumber, entityId] = new DirtyData(data, isRemoval);
+        }
+
+        markAsDirtyComponents.Clear();
+    }
+
+    private void ResetDirtyComponentData()
+    {
+        var resetDirtyComponents = removeAsDirtyComponents.Pairs;
+
+        for (int i = 0; i < resetDirtyComponents.Count; i++)
+        {
+            int sceneNumber = resetDirtyComponents[i].key1;
+            long entityId = resetDirtyComponents[i].key2;
+            T data = resetDirtyComponents[i].value.Data;
+            bool isRemoval = resetDirtyComponents[i].value.IsDelayedRemoval;
+
+            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
+            {
+                continue;
+            }
+
+            if (isRemoval)
+            {
+                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+            }
+            else
+            {
+                data.dirty = false;
+                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+            }
+        }
+
+        removeAsDirtyComponents.Clear();
     }
 }

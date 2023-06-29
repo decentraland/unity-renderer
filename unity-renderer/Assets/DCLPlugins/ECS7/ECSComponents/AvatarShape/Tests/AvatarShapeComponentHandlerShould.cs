@@ -1,11 +1,14 @@
 ﻿using DCL.Controllers;
+using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using Decentraland.Common;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.ECSComponents.Tests
@@ -31,7 +34,13 @@ namespace DCL.ECSComponents.Tests
 
             GameObject poolGameObject = new GameObject();
             ConfigurePool(poolGameObject);
-            componentHandler = new AvatarShapeComponentHandler(pool, Substitute.For<IInternalECSComponent<InternalRenderers>>());
+
+            var componentsFactory = new ECSComponentsFactory();
+            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+
+            componentHandler = new AvatarShapeComponentHandler(pool, internalComponents.renderersComponent);
             avatarShape = Substitute.For<IAvatarShape>();
             avatarShape.Configure().transform.Returns(gameObject.transform);
             componentHandler.avatar = avatarShape;

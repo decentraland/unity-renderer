@@ -42,7 +42,7 @@ namespace DCL.ECSComponents.UIAbstractElements
             RemoveComponentFromEntity(scene, entity)?.rootElement?.Remove(uiElement);
         }
 
-        protected internal InternalUiContainer RemoveComponentFromEntity(IParcelScene scene, IDCLEntity entity)
+        protected internal InternalUiContainer? RemoveComponentFromEntity(IParcelScene scene, IDCLEntity entity)
         {
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
