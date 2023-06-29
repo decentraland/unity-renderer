@@ -111,8 +111,9 @@ namespace DCLServices.PlacesAPIService
         public async UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct)
         {
             const string URL = BASE_URL + "/{0}/favorites";
-            string payload = "{\"favorites\":" + isFavorite.ToString().ToLower() + "}";
-            var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), payload, isSigned: true, cancellationToken: ct);
+            const string FAVORITE_PAYLOAD = "{\"favorites\": true}";
+            const string NOT_FAVORITE_PAYLOAD = "{\"favorites\": false}";
+            var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), isFavorite ? FAVORITE_PAYLOAD : NOT_FAVORITE_PAYLOAD, isSigned: true, cancellationToken: ct);
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
         }

@@ -101,6 +101,35 @@ public static class PlacesAndEventsCardsFactory
         return modelsList;
     }
 
+    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(
+        IList<PlaceInfo> placeInfo,
+        Predicate<(int index, PlaceInfo place)> filter)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+
+        for (var index = 0; index < placeInfo.Count; index++)
+        {
+            PlaceInfo place = placeInfo[index];
+            if(!filter((index, place)))
+                continue;
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = Utils.ConvertStringToVector(place.base_position),
+                    parcels = place.Positions,
+                    isFavorite = place.user_favorite,
+                    placeInfo = place
+                });
+        }
+
+        return modelsList;
+    }
+
     public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(IEnumerable<PlaceInfo> placeInfo)
     {
         List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();

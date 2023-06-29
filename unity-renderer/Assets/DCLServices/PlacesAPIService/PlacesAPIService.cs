@@ -40,10 +40,10 @@ namespace DCLServices.PlacesAPIService
         internal bool composedFavoritesDirty = true;
         internal readonly List<IHotScenesController.PlaceInfo> composedFavorites = new ();
         internal UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>> serverFavoritesCompletionSource = null;
-        internal DateTime serverFavoritesLastRetrieval = DateTime.MinValue;
+        private DateTime serverFavoritesLastRetrieval = DateTime.MinValue;
         internal readonly Dictionary<string, bool> localFavorites = new ();
 
-        internal readonly CancellationTokenSource disposeCts = new ();
+        private readonly CancellationTokenSource disposeCts = new ();
 
         public PlacesAPIService(IPlacesAPIClient client)
         {

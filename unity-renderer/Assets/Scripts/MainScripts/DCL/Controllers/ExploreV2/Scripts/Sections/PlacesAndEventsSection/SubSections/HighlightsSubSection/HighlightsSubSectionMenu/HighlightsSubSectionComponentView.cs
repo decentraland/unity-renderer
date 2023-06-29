@@ -21,9 +21,9 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     private const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     private const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
-    private Func<CancellationToken, UniTask> setPlacesTask = null;
-    private Func<CancellationToken, UniTask> setLiveEventsTask = null;
-    private Func<CancellationToken, UniTask> setTrendingTask = null;
+    private Func<CancellationToken, UniTask> setPlacesTask;
+    private Func<CancellationToken, UniTask> setLiveEventsTask;
+    private Func<CancellationToken, UniTask> setTrendingTask;
     private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setPlacesCts;
@@ -354,7 +354,7 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
             while (poolsPrewarmAsyncsBuffer.Count > 0)
                 await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
 
-            await UniTask.DelayFrame(1, cancellationToken: ct);
+            await UniTask.Yield();
         }
     }
 }

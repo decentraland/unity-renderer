@@ -117,16 +117,20 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         GetAllFavoritesAsync(cts.Token).Forget();
     }
 
-    private async UniTask GetAllFavoritesAsync(CancellationToken ct)
+    private async UniTaskVoid GetAllFavoritesAsync(CancellationToken ct)
     {
-        var favorites = await placesAPIService.GetFavorites(cts.Token);
-        friendsTrackerController.RemoveAllHandlers();
+        try
+        {
+            var favorites = await placesAPIService.GetFavorites(cts.Token);
+            friendsTrackerController.RemoveAllHandlers();
 
-        favoritesFromAPI.Clear();
-        favoritesFromAPI.AddRange(favorites);
+            favoritesFromAPI.Clear();
+            favoritesFromAPI.AddRange(favorites);
 
-        view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(favoritesFromAPI, availableUISlots));
-        view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
+            view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(favoritesFromAPI, availableUISlots));
+            view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
+        }
+        catch (OperationCanceledException) { }
     }
 
     internal void ShowMoreFavorites()

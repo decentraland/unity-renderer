@@ -362,6 +362,48 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             Assert.AreEqual(place1, service.placesByCoords[place1.Positions[1]]);
         }
 
+        [Test]
+        public async Task ComposeFavoritesProperly()
+        {
+            // Arrange
+            service.serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
+            service.serverFavoritesCompletionSource.TrySetResult(new List<IHotScenesController.PlaceInfo>{ new() {title = "fromServer", description = "checkMe"}});
+            service.CachePlace(new IHotScenesController.PlaceInfo(){title = "fromLocal", description = "checkMe"});
+            service.localFavorites.Clear();
+            service.localFavorites.Add("fromLocal", true);
+            service.composedFavorites.Clear();
+            service.composedFavorites.Add(new IHotScenesController.PlaceInfo{title = "oldCompose", description = "shouldntBeInResult"});
+            service.composedFavoritesDirty = true;
+
+            // Act
+            var places = await service.GetFavorites(default);
+
+            // Assert
+            Assert.AreEqual(2, places.Count);
+            Assert.IsTrue(places.All(x => x.description == "checkMe"));
+            Assert.IsTrue(places.Any(x => x.title == "fromLocal"));
+            Assert.IsTrue(places.Any(x => x.title == "fromServer"));
+        }
+
+        [Test]
+        public async Task UseComposedFavoritesIfNotDirty()
+        {
+            // Arrange
+            service.serverFavoritesCompletionSource = new UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>>();
+            service.serverFavoritesCompletionSource.TrySetResult(new List<IHotScenesController.PlaceInfo>{ new() {title = "thisShouldntBeInResult"}});
+            service.composedFavoritesDirty = false;
+            service.composedFavorites.Clear();
+            service.composedFavorites.Add(new IHotScenesController.PlaceInfo{title = "checkMe"});
+
+            // Act
+            var places = await service.GetFavorites(default);
+
+            // Assert
+            Assert.AreEqual(1, places.Count);
+            Assert.AreEqual("checkMe", places[0].title);
+        }
+
+
         private void PreparePlacesCatalog()
         {
 #region helper functions

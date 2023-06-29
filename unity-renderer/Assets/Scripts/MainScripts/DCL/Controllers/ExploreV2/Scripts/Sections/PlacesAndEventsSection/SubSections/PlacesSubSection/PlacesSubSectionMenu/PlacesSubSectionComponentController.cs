@@ -121,21 +121,25 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
     }
 
-    private async UniTask RequestAllFromAPIAsync(CancellationToken ct)
+    private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
-        friendsTrackerController.RemoveAllHandlers();
-        placesFromAPI.Clear();
-        placesFromAPI.AddRange(firstPage.places);
-        if (firstPage.total > PAGE_SIZE)
+        try
         {
-            (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
-            placesFromAPI.AddRange(secondPage.places);
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            friendsTrackerController.RemoveAllHandlers();
+            placesFromAPI.Clear();
+            placesFromAPI.AddRange(firstPage.places);
+            if (firstPage.total > PAGE_SIZE)
+            {
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+                placesFromAPI.AddRange(secondPage.places);
+            }
+
+            view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
+
+            view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
         }
-
-        view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
-
-        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
+        catch (OperationCanceledException) { }
     }
 
     internal void ShowMorePlaces()
