@@ -13,7 +13,7 @@ namespace DCL.Social.Friends
     {
         private readonly string url;
 
-        public event Func<UniTask> OnTransportError;
+        public event Action OnTransportError;
 
         public RPCSocialClientProvider(string url)
         {

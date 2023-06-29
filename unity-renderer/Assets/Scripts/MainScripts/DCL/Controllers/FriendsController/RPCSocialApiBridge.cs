@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using Decentraland.Social.Friendships;
 using MainScripts.DCL.Controllers.FriendsController;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace DCL.Social.Friends
         private IClientFriendshipsService socialClient;
         private UniTaskCompletionSource<AllFriendsInitializationMessage> initializationInformationTask;
         private CancellationTokenSource initializationCancellationToken = new ();
-        private CancellationTokenSource incomingEventsSubscriptionCancellationTokenToken = new ();
+        private CancellationTokenSource incomingEventsSubscriptionCancellationToken = new ();
 
         public event Action<FriendRequest> OnIncomingFriendRequestAdded;
         public event Action<FriendRequest> OnOutgoingFriendRequestAdded;
@@ -48,7 +49,7 @@ namespace DCL.Social.Friends
         {
             initializationInformationTask?.TrySetCanceled();
             initializationCancellationToken.SafeCancelAndDispose();
-            incomingEventsSubscriptionCancellationTokenToken.SafeCancelAndDispose();
+            incomingEventsSubscriptionCancellationToken.SafeCancelAndDispose();
         }
 
         public void Initialize()
@@ -61,41 +62,54 @@ namespace DCL.Social.Friends
                 await InitializeClient(cancellationToken);
                 await WaitForAccessTokenAsync(cancellationToken);
 
-                incomingEventsSubscriptionCancellationTokenToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                incomingEventsSubscriptionCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
                 // this is an endless task that's why is forgotten
-                SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationTokenToken.Token).Forget();
+                SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationToken.Token).Forget();
             }
 
             initializationCancellationToken = initializationCancellationToken.SafeRestart();
             InitializeAsync(initializationCancellationToken.Token).Forget();
         }
 
-        private async UniTask OnTransportError()
+        private async void OnTransportError()
         {
             socialClient = null;
 
-            try { incomingEventsSubscriptionCancellationTokenToken = incomingEventsSubscriptionCancellationTokenToken.SafeRestartLinked(initializationCancellationToken.Token); }
-            catch (Exception e) { Debug.LogException(e); }
+            incomingEventsSubscriptionCancellationToken = incomingEventsSubscriptionCancellationToken.SafeRestartLinked(initializationCancellationToken.Token);
 
-            if (transportFailures >= MAX_RECONNECT_RETRIES) { throw new Exception("Max reconnect retries reached"); }
+            if (transportFailures >= MAX_RECONNECT_RETRIES)
+            {
+                Debug.LogError("Max reconnect retries reached");
+                return;
+            }
 
-            transportFailures++;
+            while (transportFailures < MAX_RECONNECT_RETRIES)
+            {
+                Debug.Log("Reconnecting to Social service");
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(
-                TimeSpan.FromSeconds(Math.Pow(5, transportFailures) + REQUEST_TIMEOUT)
-            );
+                transportFailures++;
 
-            await InitializeClient(cancellationTokenSource.Token);
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(
+                    TimeSpan.FromSeconds(Math.Pow(5, transportFailures) + REQUEST_TIMEOUT)
+                );
 
-            // this is an endless task that's why is forgotten
-            SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationTokenToken.Token).Forget();
+                await InitializeClient(cancellationTokenSource.Token);
+
+                if (socialClient != null)
+                {
+                    // this is an endless task that's why is forgotten
+                    SubscribeToIncomingFriendshipEvents(incomingEventsSubscriptionCancellationToken.Token).Forget();
+                    transportFailures = 0;
+
+                    return;
+                }
+            }
         }
 
         private async UniTask InitializeClient(CancellationToken cancellationToken = default)
         {
             try { socialClient = await socialClientProvider.Provide(cancellationToken); }
-            catch (OperationCanceledException) { throw; }
             catch (Exception e) { Debug.LogException(e); }
         }
 
@@ -477,8 +491,10 @@ namespace DCL.Social.Friends
 
         private UniTask WaitForSocialClient(CancellationToken cancellationToken)
         {
-            return UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken)
-                          .Timeout(TimeSpan.FromMinutes(MAX_MINUTES_WAIT_TIME));
+            CancellationTokenSource timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCancellationTokenSource.CancelAfterSlim(TimeSpan.FromMinutes(MAX_MINUTES_WAIT_TIME));
+
+            return UniTask.WaitUntil(() => socialClient != null, cancellationToken: timeoutCancellationTokenSource.Token);
         }
     }
 }

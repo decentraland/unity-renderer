@@ -7,7 +7,7 @@ namespace DCL.Social.Friends
 {
     public interface ISocialClientProvider
     {
-        public event Func<UniTask> OnTransportError;
+        public event Action OnTransportError;
 
         UniTask<IClientFriendshipsService> Provide(CancellationToken cancellationToken);
     }
