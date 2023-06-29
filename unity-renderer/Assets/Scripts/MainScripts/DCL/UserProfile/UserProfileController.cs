@@ -19,7 +19,8 @@ public class UserProfileController : MonoBehaviour
     private static UserProfileDictionary userProfilesCatalogValue;
 
     private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
-    private Dictionary<string, UniTaskCompletionSource<UserProfile>> saveProfileTask = new ();
+    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> saveProfileTask = new ();
+    private readonly List<WebInterface.SaveLinksPayload.Link> linkList = new ();
     private bool baseWearablesAlreadyRequested;
 
     public static UserProfileDictionary userProfilesCatalog
@@ -156,14 +157,20 @@ public class UserProfileController : MonoBehaviour
     {
         return SaveUserProfile(() =>
             {
+                linkList.Clear();
+
+                foreach (UserProfileModel.Link link in links)
+                {
+                    linkList.Add(new WebInterface.SaveLinksPayload.Link
+                    {
+                        title = link.title,
+                        url = link.url,
+                    });
+                }
+
                 WebInterface.SaveProfileLinks(new WebInterface.SaveLinksPayload
                 {
-                    links = links.Select(link => new WebInterface.SaveLinksPayload.Link
-                                  {
-                                      title = link.title,
-                                      url = link.url,
-                                  })
-                                 .ToList(),
+                    links = linkList,
                 });
             },
             "links", cancellationToken);
