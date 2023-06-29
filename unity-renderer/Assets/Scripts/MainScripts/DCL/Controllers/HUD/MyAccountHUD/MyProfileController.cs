@@ -37,6 +37,7 @@ namespace DCL.MyAccount
         private CancellationTokenSource saveNameCancellationToken = new ();
         private CancellationTokenSource saveDescriptionCancellationToken = new ();
         private CancellationTokenSource additionalInfoCancellationToken = new ();
+        private CancellationTokenSource refreshContentCancellationToken = new ();
         private CancellationTokenSource lifeTimeCancellationToken;
         private Regex nameRegex;
 
@@ -111,6 +112,7 @@ namespace DCL.MyAccount
             saveNameCancellationToken.SafeCancelAndDispose();
             saveDescriptionCancellationToken.SafeCancelAndDispose();
             additionalInfoCancellationToken.SafeCancelAndDispose();
+            refreshContentCancellationToken.SafeCancelAndDispose();
         }
 
         private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel _) =>
@@ -138,9 +140,16 @@ namespace DCL.MyAccount
                .ContinueWith(() =>
                 {
                     view.SetLoadingActive(false);
-                    view.RefreshContentLayout();
+                    refreshContentCancellationToken = refreshContentCancellationToken.SafeRestart();
+                    RefreshContentLayout(refreshContentCancellationToken.Token).Forget();
                 })
                .Forget();
+        }
+
+        private async UniTask RefreshContentLayout(CancellationToken ct)
+        {
+            await UniTask.DelayFrame(1, cancellationToken: ct);
+            view.RefreshContentLayout();
         }
 
         private void CloseSection() =>
