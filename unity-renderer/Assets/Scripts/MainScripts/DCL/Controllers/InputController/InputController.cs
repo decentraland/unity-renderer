@@ -111,6 +111,7 @@ public class InputController : MonoBehaviour
     public InputAction_Trigger[] triggerTimeActions;
     public InputAction_Hold[] holdActions;
     public InputAction_Measurable[] measurableActions;
+    public InputAction_Trigger[] loadingScreenTriggerTimeActions;
 
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
     bool allUIHidden => CommonScriptableObjects.allUIHidden.Get();
@@ -119,6 +120,8 @@ public class InputController : MonoBehaviour
     {
         if (!renderingEnabled)
         {
+            // We check specific actions for the LoadingScreen before stopping the rest
+            Update_LoadingScreen_Trigger(loadingScreenTriggerTimeActions);
             Stop_Measurable(measurableActions);
             return;
         }
@@ -288,6 +291,25 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleAvatarNamesHud:
                     InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    /// <summary>
+    /// This is specific for the loading screen.
+    /// Map the trigger actions to inputs + modifiers and check if their events must be triggered
+    /// </summary>
+    private void Update_LoadingScreen_Trigger(InputAction_Trigger[] triggerTimeActions)
+    {
+        foreach (var action in triggerTimeActions)
+        {
+            if (action.isTriggerBlocked != null && action.isTriggerBlocked.Get())
+                continue;
+
+            switch (action.DCLAction)
+            {
                 case DCLAction_Trigger.LoadingScreenV2HintsLeft:
                     InputProcessor.FromKey(action, KeyCode.LeftArrow, modifiers: InputProcessor.Modifier.None);
                     break;
