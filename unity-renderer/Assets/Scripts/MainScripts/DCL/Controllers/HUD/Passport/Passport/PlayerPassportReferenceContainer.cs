@@ -13,7 +13,7 @@ namespace DCL.Social.Passports
         public IPlayerPassportHUDView PassportView => passportView;
         public IPassportPlayerInfoComponentView PlayerInfoView => playerInfoView;
         public IPassportPlayerPreviewComponentView PlayerPreviewView => playerPreviewView;
-        public IPassportNavigationComponentView PassportNavigationView => passportNavigationView;
+        public PassportNavigationComponentView PassportNavigationView => passportNavigationView;
         public IViewAllComponentView ViewAllView => viewAllView;
     }
 }

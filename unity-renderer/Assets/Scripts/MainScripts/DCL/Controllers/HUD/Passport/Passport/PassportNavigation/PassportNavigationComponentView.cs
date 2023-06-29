@@ -14,11 +14,11 @@ namespace DCL.Social.Passports
     [Serializable]
     internal class AdditionalInfoIconMapping
     {
-        public IPassportNavigationComponentView.AdditionalInfoField name;
+        public AdditionalInfoField name;
         public Sprite icon;
     }
 
-    public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
+    public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView, IAdditionalInfoFieldIconProvider
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
@@ -228,7 +228,7 @@ namespace DCL.Social.Passports
             }
         }
 
-        public Sprite GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField field)
+        public Sprite Get(AdditionalInfoField field)
         {
             foreach (AdditionalInfoIconMapping iconMapping in additionalInfoIconsMapping)
                 if (iconMapping.name == field)

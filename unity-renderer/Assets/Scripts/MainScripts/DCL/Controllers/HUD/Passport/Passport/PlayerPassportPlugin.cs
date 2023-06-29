@@ -56,7 +56,8 @@ public class PlayerPassportPlugin : IPlugin
                                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                                 Environment.i.serviceLocator.Get<ILandsService>(),
                                 Environment.i.serviceLocator.Get<INamesService>(),
-                                NotificationsController.i)),
+                                NotificationsController.i),
+                            referenceContainer.PassportNavigationView),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(

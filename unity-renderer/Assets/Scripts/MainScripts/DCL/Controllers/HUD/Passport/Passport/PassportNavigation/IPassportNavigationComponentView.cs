@@ -8,21 +8,6 @@ namespace DCL.Social.Passports
 {
     public interface IPassportNavigationComponentView
     {
-        [Serializable]
-        enum AdditionalInfoField
-        {
-            GENDER,
-            COUNTRY,
-            BIRTH_DATE,
-            PRONOUNS,
-            RELATIONSHIP_STATUS,
-            SEXUAL_ORIENTATION,
-            LANGUAGE,
-            PROFESSION,
-            HOBBIES,
-            REAL_NAME,
-        }
-
         event Action<string, string> OnClickBuyNft;
         event Action OnClickCollectibles;
         event Action<PassportSection> OnClickedViewAll;
@@ -32,7 +17,6 @@ namespace DCL.Social.Passports
         void SetName(string username);
         void SetOwnUserTexts(bool isOwnUser);
         void SetDescription(string description);
-        Sprite GetAdditionalInfoIcon(AdditionalInfoField field);
         void SetAdditionalInfo(List<(Sprite logo, string title, string value)> additionalFields);
         void SetLinks(List<(string title, string url)> links);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);

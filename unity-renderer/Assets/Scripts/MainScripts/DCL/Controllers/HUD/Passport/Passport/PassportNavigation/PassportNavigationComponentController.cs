@@ -27,6 +27,7 @@ namespace DCL.Social.Passports
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
+        private readonly IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider;
         private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
         private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
         private readonly List<(string title, string url)> links = new ();
@@ -55,7 +56,8 @@ namespace DCL.Social.Passports
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
             DataStore dataStore,
-            ViewAllComponentController viewAllController)
+            ViewAllComponentController viewAllController,
+            IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider)
         {
             const string NAME_TYPE = "name";
             const string PARCEL_TYPE = "parcel";
@@ -71,6 +73,7 @@ namespace DCL.Social.Passports
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
             this.viewAllController = viewAllController;
+            this.additionalInfoFieldIconProvider = additionalInfoFieldIconProvider;
 
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
@@ -114,62 +117,62 @@ namespace DCL.Social.Passports
                     {
                         if (!string.IsNullOrEmpty(userProfile.Gender))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.GENDER),
-                                IPassportNavigationComponentView.AdditionalInfoField.GENDER.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.GENDER),
+                                AdditionalInfoField.GENDER.ToName(),
                                 userProfile.Gender));
 
                         if (!string.IsNullOrEmpty(userProfile.Country))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.COUNTRY),
-                                IPassportNavigationComponentView.AdditionalInfoField.COUNTRY.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.COUNTRY),
+                                AdditionalInfoField.COUNTRY.ToName(),
                                 userProfile.Country));
 
                         if (userProfile.BirthDate != null && userProfile.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE),
-                                IPassportNavigationComponentView.AdditionalInfoField.BIRTH_DATE.ToString().Replace("_", " "),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.BIRTH_DATE),
+                                AdditionalInfoField.BIRTH_DATE.ToName(),
                                 userProfile.BirthDate.Value.ToString("dd/MM/yyyy")));
 
                         if (!string.IsNullOrEmpty(userProfile.Pronouns))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.PRONOUNS),
-                                IPassportNavigationComponentView.AdditionalInfoField.PRONOUNS.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.PRONOUNS),
+                                AdditionalInfoField.PRONOUNS.ToName(),
                                 userProfile.Pronouns));
 
                         if (!string.IsNullOrEmpty(userProfile.RelationshipStatus))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.RELATIONSHIP_STATUS),
-                                IPassportNavigationComponentView.AdditionalInfoField.RELATIONSHIP_STATUS.ToString().Replace("_", " "),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.RELATIONSHIP_STATUS),
+                                AdditionalInfoField.RELATIONSHIP_STATUS.ToName(),
                                 userProfile.RelationshipStatus));
 
                         if (!string.IsNullOrEmpty(userProfile.SexualOrientation))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.SEXUAL_ORIENTATION),
-                                IPassportNavigationComponentView.AdditionalInfoField.SEXUAL_ORIENTATION.ToString().Replace("_", " "),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.SEXUAL_ORIENTATION),
+                                AdditionalInfoField.SEXUAL_ORIENTATION.ToName(),
                                 userProfile.SexualOrientation));
 
                         if (!string.IsNullOrEmpty(userProfile.Language))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.LANGUAGE),
-                                IPassportNavigationComponentView.AdditionalInfoField.LANGUAGE.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.LANGUAGE),
+                                AdditionalInfoField.LANGUAGE.ToName(),
                                 userProfile.Language));
 
                         if (!string.IsNullOrEmpty(userProfile.Profession))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.PROFESSION),
-                                IPassportNavigationComponentView.AdditionalInfoField.PROFESSION.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.PROFESSION),
+                                AdditionalInfoField.PROFESSION.ToName(),
                                 userProfile.Profession));
 
                         if (!string.IsNullOrEmpty(userProfile.Hobbies))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.HOBBIES),
-                                IPassportNavigationComponentView.AdditionalInfoField.HOBBIES.ToString(),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.HOBBIES),
+                                AdditionalInfoField.HOBBIES.ToName(),
                                 userProfile.Hobbies));
 
                         if (!string.IsNullOrEmpty(userProfile.RealName))
                             additionalFields.Add((
-                                view.GetAdditionalInfoIcon(IPassportNavigationComponentView.AdditionalInfoField.REAL_NAME),
-                                IPassportNavigationComponentView.AdditionalInfoField.REAL_NAME.ToString().Replace("_", " "),
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.REAL_NAME),
+                                AdditionalInfoField.REAL_NAME.ToName(),
                                 userProfile.RealName));
 
                         if (userProfile.Links != null)
