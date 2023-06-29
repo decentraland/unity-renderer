@@ -67,8 +67,6 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
         {
-            if (entity.entityId == SpecialEntityId.PLAYER_ENTITY) return;
-
             Transform transform = entity.gameObject.transform;
             bool positionChange = transform.localPosition != model.position;
             bool scaleChange = transform.localScale != model.scale;
@@ -81,10 +79,10 @@ namespace DCL.ECSComponents
             if (entity.parentId != model.parentId)
                 ProcessNewParent(scene, entity, model.parentId);
 
-            if(positionChange)
+            if (positionChange)
                 sbcInternalComponent.SetPosition(scene, entity, transform.position);
 
-            if(scaleChange || rotationChange)
+            if (scaleChange || rotationChange)
                 sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
         }
 

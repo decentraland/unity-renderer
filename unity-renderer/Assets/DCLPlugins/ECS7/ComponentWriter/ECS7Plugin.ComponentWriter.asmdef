@@ -1,0 +1,8 @@
+{
+  "name": "ECS7Plugin.ComponentWriter",
+  "references": [
+    "GUID:acb0f5633d7c47aba96ee6b61c872d94",
+    "GUID:ac62e852826a4b36aeb22931dad73edb",
+    "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+  ]
+}

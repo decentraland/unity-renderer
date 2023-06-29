@@ -11,6 +11,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default);
         void SetFocus(PreviewCameraFocus focus, bool useTransition = true);
         void SetEnabled(bool enabled);
+        UniTask<Texture2D> TakeBodySnapshotAsync();
         void TakeSnapshots(CharacterPreviewController.OnSnapshotsReady onSuccess, Action onFailed);
         void Rotate(float rotationVelocity);
         void ResetRotation();

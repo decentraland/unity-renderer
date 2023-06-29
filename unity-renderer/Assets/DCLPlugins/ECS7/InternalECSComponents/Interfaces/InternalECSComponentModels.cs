@@ -1,6 +1,6 @@
 using DCL.Components.Video.Plugin;
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECSComponents;
-using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -277,10 +277,10 @@ namespace DCL.ECS7.InternalComponents
     {
         public readonly struct Result
         {
-            public readonly IMessage Message;
+            public readonly IPooledWrappedComponent Message;
             public readonly int ComponentId;
 
-            public Result(IMessage message, int componentId)
+            public Result(IPooledWrappedComponent message, int componentId)
             {
                 this.Message = message;
                 this.ComponentId = componentId;

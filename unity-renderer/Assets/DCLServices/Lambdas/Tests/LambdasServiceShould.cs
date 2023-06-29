@@ -51,14 +51,14 @@ namespace DCLServices.Lambdas.Tests
         [Test][Category("ToFix")]
         public void ConstructUrlWithParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
-            var url = lambdasService.GetUrl(testEndpoint, new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });
+            var url = lambdasService.GetUrl(testEndpoint, "", new[] { ("param1", "34"), ("param2", "value"), ("param3", "foo") });
             Assert.AreEqual($"{lambdasService.GetLambdasUrl()}/{testEndpoint.Trim('/').TrimEnd('?')}?param1=34&param2=value&param3=foo", url);
         }
 
         [Test]
         public void ConstructUrlWithoutParams([Values(END_POINT, END_POINT + "/", "/" + END_POINT, END_POINT + "?")] string testEndpoint)
         {
-            var url = lambdasService.GetUrl(testEndpoint, Array.Empty<(string paramName, string paramValue)>());
+            var url = lambdasService.GetUrl(testEndpoint, "", Array.Empty<(string paramName, string paramValue)>());
             Assert.AreEqual($"{lambdasService.GetLambdasUrl()}/{testEndpoint.Trim('/').TrimEnd('?')}", url);
         }
 

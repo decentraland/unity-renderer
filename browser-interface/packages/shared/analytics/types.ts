@@ -89,6 +89,7 @@ export type TrackEvents = PositionTrackEvents & {
 
   // Seamless login A/B
   ['seamless_login show tos']: Record<string, never> // {}
+  ['seamless_login tos shown']: Record<string, never> // {}
   ['seamless_login tos accepted']: Record<string, never> // {}
   ['seamless_login tos rejected']: Record<string, never> // {}
   ['seamless_login go to tos']: Record<string, never> // {}

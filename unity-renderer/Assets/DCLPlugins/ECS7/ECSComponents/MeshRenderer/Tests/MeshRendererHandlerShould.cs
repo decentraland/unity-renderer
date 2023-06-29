@@ -14,7 +14,7 @@ namespace Tests
 {
     public class MeshRendererHandlerShould
     {
-        private class KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
+        private struct KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
 
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
@@ -39,8 +39,8 @@ namespace Tests
             handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
                 internalComponent.renderersComponent);
 
-            var keepEntityAliveComponent = new InternalECSComponent<IInternalComponent>(
-                0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
+            var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
+                0, manager, factory, null, executors, Substitute.For<IComponentDirtySystem>());
             keepEntityAliveComponent.PutFor(scene, entity, new KeepEntityAliveModel());
         }
 

@@ -6,6 +6,7 @@ using DCL.CRDT;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,7 +15,7 @@ namespace Tests
 {
     public class MeshColliderHandlerShould
     {
-        private class KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
+        private struct KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
 
         private MeshColliderHandler handler;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -40,10 +41,9 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1101);
 
-            var keepEntityAliveComponent = new InternalECSComponent<IInternalComponent>(
+            var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
                 0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-                executors);
+                executors, Substitute.For<IComponentDirtySystem>());
             keepEntityAliveComponent.PutFor(scene, entity, new KeepEntityAliveModel());
         }
 

@@ -8,6 +8,8 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Decentraland.Sdk.Ecs6;
+using System;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -31,12 +33,12 @@ namespace DCL.Components
             {
                 if (pbModel.PayloadCase != ComponentBodyPayload.PayloadOneofCase.BasicMaterial)
                     return Utils.SafeUnimplemented<BasicMaterial, Model>(expected: ComponentBodyPayload.PayloadOneofCase.BasicMaterial, actual: pbModel.PayloadCase);
-                
+
                 var pb = new Model();
                 if (pbModel.BasicMaterial.HasTexture) pb.texture = pbModel.BasicMaterial.Texture;
                 if (pbModel.BasicMaterial.HasAlphaTest) pb.alphaTest = pbModel.BasicMaterial.AlphaTest;
                 if (pbModel.BasicMaterial.HasCastShadows) pb.castShadows = pbModel.BasicMaterial.CastShadows;
-                
+
                 return pb;
             }
         }
@@ -114,7 +116,11 @@ namespace DCL.Components
                             dclTexture = texture;
                             dclTexture.AttachTo(this);
                             return true;
-                        }).ToCoroutine();
+                        }).ToCoroutine(e =>
+                    {
+                        if (e is not OperationCanceledException)
+                            throw e;
+                    });
                     // using `ToCoroutine()` since using Task directly arise some component lifecycle issues
                 }
             }

@@ -86,9 +86,9 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         exploreSectionsById = new Dictionary<ExploreSection, FeatureEncapsulatorComponentView>
         {
             { ExploreSection.Explore, null },
+            { ExploreSection.Quest, questSection },
             { ExploreSection.Backpack, backpackSection },
             { ExploreSection.Map, mapSection },
-            { ExploreSection.Quest, questSection },
             { ExploreSection.Settings, settingsSection },
             { ExploreSection.Wallet, walletSection },
         };
