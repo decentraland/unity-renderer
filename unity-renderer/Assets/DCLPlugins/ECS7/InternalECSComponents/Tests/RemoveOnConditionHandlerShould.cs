@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tests
@@ -27,7 +28,7 @@ namespace Tests
         [Test]
         public void RemoveComponentWhenNoRenderers()
         {
-            InternalTexturizable model = new InternalTexturizable();
+            InternalTexturizable model = new InternalTexturizable(new List<Renderer>());
             model.renderers.Clear();
             handler.OnComponentModelUpdated(scene, entity, model);
             component.Received(1).RemoveFor(scene, entity);
@@ -39,7 +40,7 @@ namespace Tests
             GameObject go = new GameObject();
             Renderer renderer = go.AddComponent<MeshRenderer>();
 
-            InternalTexturizable model = new InternalTexturizable();
+            InternalTexturizable model = new InternalTexturizable(new List<Renderer>());
             model.renderers.Add(renderer);
             handler.OnComponentModelUpdated(scene, entity, model);
             component.DidNotReceive().RemoveFor(Arg.Any<IParcelScene>(), Arg.Any<IDCLEntity>());

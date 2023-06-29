@@ -25,6 +25,8 @@ namespace Tests
 {
     public class ECSRaycastSystemShould
     {
+        private struct KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
+
         private ECSRaycastSystem system;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -45,11 +47,6 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier, ComponentWriteData>(),
-                executors);
 
             outgoingMessages = new DualKeyValueSet<long, int, WriteData>();
 
@@ -72,7 +69,11 @@ namespace Tests
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
-            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
+
+            var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
+                0, componentsManager, componentsFactory, null,
+                executors, Substitute.For<IComponentDirtySystem>());
+            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new KeepEntityAliveModel());
 
             sceneStateHandler = new SceneStateHandler(
                 Substitute.For<CRDTServiceContext>(),
@@ -926,7 +927,7 @@ namespace Tests
                 }
 
                 internalCollidersComponent.PutFor(scene, entityCollider,
-                    new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { collider, mergedLayers } } });
+                    new InternalColliders(new KeyValueSet<Collider, uint>() { { collider, mergedLayers } }));
             }
 
             return entityCollider;
