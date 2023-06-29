@@ -38,8 +38,11 @@ public class PublicChatWindowControllerShould
         GivenUser(TEST_USER_ID, TEST_USER_NAME);
 
         chatController = Substitute.For<IChatController>();
-        chatController.GetAllocatedChannel(CHANNEL_ID).Returns(new Channel(CHANNEL_ID, CHANNEL_ID,
-            0, 1, true, false, ""));
+
+        chatController.GetAllocatedChannel(CHANNEL_ID)
+                      .Returns(new Channel(CHANNEL_ID, CHANNEL_ID,
+                           0, 1, true, false, ""));
+
         mouseCatcher = Substitute.For<IMouseCatcher>();
         dataStore = new DataStore();
         dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["chat_mentions_enabled"] = true } });
@@ -58,6 +61,7 @@ public class PublicChatWindowControllerShould
         internalChatView = Substitute.For<IChatHUDComponentView>();
         view.ChatHUD.Returns(internalChatView);
         controller.Initialize(view, false);
+        controller.Setup(CHANNEL_ID);
     }
 
     [TearDown]
@@ -76,12 +80,13 @@ public class PublicChatWindowControllerShould
             sender = TEST_USER_ID
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { msg });
 
-        internalChatView.Received(1).SetEntry(Arg.Is<ChatEntryModel>(model =>
-            model.messageType == msg.messageType
-            && model.bodyText == $"<noparse>{msg.body}</noparse>"
-            && model.senderId == msg.sender));
+        internalChatView.Received(1)
+                        .SetEntry(Arg.Is<ChatEntryModel>(model =>
+                             model.messageType == msg.messageType
+                             && model.bodyText == $"<noparse>{msg.body}</noparse>"
+                             && model.senderId == msg.sender));
     }
 
     [Test]
@@ -95,7 +100,7 @@ public class PublicChatWindowControllerShould
             timestamp = 100
         };
 
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { msg });
 
         internalChatView.DidNotReceiveWithAnyArgs().SetEntry(default);
     }
@@ -104,10 +109,13 @@ public class PublicChatWindowControllerShould
     public void SendPublicMessage()
     {
         internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {body = "test message", messageType = ChatMessage.Type.PUBLIC});
-        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == "test message"
-                                                                 && c.sender == OWN_USER_ID
-                                                                 && c.messageType == ChatMessage.Type.PUBLIC));
+            { body = "test message", messageType = ChatMessage.Type.PUBLIC });
+
+        chatController.Received(1)
+                      .Send(Arg.Is<ChatMessage>(c => c.body == "test message"
+                                                     && c.sender == OWN_USER_ID
+                                                     && c.messageType == ChatMessage.Type.PUBLIC));
+
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
     }
@@ -116,11 +124,14 @@ public class PublicChatWindowControllerShould
     public void SendPrivateMessage()
     {
         internalChatView.OnSendMessage += Raise.Event<Action<ChatMessage>>(new ChatMessage
-            {body = "test message", messageType = ChatMessage.Type.PRIVATE, recipient = TEST_USER_ID});
-        chatController.Received(1).Send(Arg.Is<ChatMessage>(c => c.body == $"/w {TEST_USER_ID} test message"
-                                                                 && c.sender == OWN_USER_ID
-                                                                 && c.messageType == ChatMessage.Type.PRIVATE
-                                                                 && c.recipient == TEST_USER_ID));
+            { body = "test message", messageType = ChatMessage.Type.PRIVATE, recipient = TEST_USER_ID });
+
+        chatController.Received(1)
+                      .Send(Arg.Is<ChatMessage>(c => c.body == $"/w {TEST_USER_ID} test message"
+                                                     && c.sender == OWN_USER_ID
+                                                     && c.messageType == ChatMessage.Type.PRIVATE
+                                                     && c.recipient == TEST_USER_ID));
+
         internalChatView.Received(1).ResetInputField();
         internalChatView.Received(1).FocusInputField();
     }
@@ -162,7 +173,6 @@ public class PublicChatWindowControllerShould
     [Test]
     public void MarkChannelMessagesAsReadCorrectly()
     {
-        controller.Setup(CHANNEL_ID);
         view.IsActive.Returns(true);
 
         var msg = new ChatMessage
@@ -172,7 +182,8 @@ public class PublicChatWindowControllerShould
             sender = TEST_USER_ID,
             timestamp = 100
         };
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg});
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { msg });
 
         chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
     }
@@ -180,7 +191,6 @@ public class PublicChatWindowControllerShould
     [Test]
     public void MarkAsSeenOnlyOnceWhenReceiveManyMessages()
     {
-        controller.Setup(CHANNEL_ID);
         view.IsActive.Returns(true);
 
         var msg1 = new ChatMessage
@@ -190,6 +200,7 @@ public class PublicChatWindowControllerShould
             sender = TEST_USER_ID,
             timestamp = 100
         };
+
         var msg2 = new ChatMessage
         {
             messageType = ChatMessage.Type.PUBLIC,
@@ -197,7 +208,8 @@ public class PublicChatWindowControllerShould
             sender = TEST_USER_ID,
             timestamp = 101
         };
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {msg1, msg2});
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { msg1, msg2 });
 
         chatController.Received(1).MarkChannelMessagesAsSeen(CHANNEL_ID);
     }
@@ -205,7 +217,6 @@ public class PublicChatWindowControllerShould
     [Test]
     public void MuteChannel()
     {
-        controller.Setup(CHANNEL_ID);
         view.OnMuteChanged += Raise.Event<Action<bool>>(true);
 
         chatController.Received(1).MuteChannel(CHANNEL_ID);
@@ -214,7 +225,6 @@ public class PublicChatWindowControllerShould
     [Test]
     public void UnmuteChannel()
     {
-        controller.Setup(CHANNEL_ID);
         view.OnMuteChanged += Raise.Event<Action<bool>>(false);
 
         chatController.Received(1).UnmuteChannel(CHANNEL_ID);
@@ -223,16 +233,16 @@ public class PublicChatWindowControllerShould
     [Test]
     public void RefreshChannelInformationWhenChannelUpdates()
     {
-        controller.Setup(CHANNEL_ID);
         view.ClearReceivedCalls();
 
         chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(new Channel(CHANNEL_ID, CHANNEL_ID,
             0, 1, true, true, ""));
 
-        view.Received(1).Configure(Arg.Is<PublicChatModel>(p => p.channelId == CHANNEL_ID
-                                                                && p.name == CHANNEL_ID
-                                                                && p.joined == true
-                                                                && p.muted == true));
+        view.Received(1)
+            .Configure(Arg.Is<PublicChatModel>(p => p.channelId == CHANNEL_ID
+                                                    && p.name == CHANNEL_ID
+                                                    && p.joined == true
+                                                    && p.muted == true));
     }
 
     [Test]
@@ -241,10 +251,11 @@ public class PublicChatWindowControllerShould
     public void CheckOwnPlayerMentionInNearByCorrectly(bool ownPlayerIsMentioned)
     {
         dataStore.mentions.ownPlayerMentionedInChannel.Set(null, false);
+
         string testMessage = ownPlayerIsMentioned
             ? $"Hi <link=mention://{userProfileBridge.GetOwn().userName}><color=#4886E3><u>@{userProfileBridge.GetOwn().userName}</u></color></link>"
             : "test message";
-        controller.Setup(CHANNEL_ID);
+
         view.IsActive.Returns(false);
 
         var testMentionMessage = new ChatMessage
@@ -255,7 +266,8 @@ public class PublicChatWindowControllerShould
             timestamp = 100,
             recipient = null,
         };
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] {testMentionMessage});
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[] { testMentionMessage });
 
         Assert.AreEqual(ownPlayerIsMentioned ? ChatUtils.NEARBY_CHANNEL_ID : null, dataStore.mentions.ownPlayerMentionedInChannel.Get());
     }
@@ -292,11 +304,13 @@ public class PublicChatWindowControllerShould
     private void GivenUser(string userId, string name)
     {
         var testUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+
         testUserProfile.UpdateData(new UserProfileModel
         {
             userId = userId,
             name = name
         });
+
         userProfileBridge.Get(userId).Returns(testUserProfile);
     }
 }
