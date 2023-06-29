@@ -34,26 +34,18 @@ namespace DCL.LoadingScreen.V2
             ScheduleNextUpdate(CancellationToken.None).Forget();
         }
 
-        public async void StopCarousel()
+        public void StopCarousel()
         {
             if (!isIteratingHints)
                 return;
 
             isIteratingHints = false;
 
-            if (scheduledUpdateCtxSource != null)
-            {
-                scheduledUpdateCtxSource.Cancel();
+            var previousTokenSource = Interlocked.Exchange(ref scheduledUpdateCtxSource, null);
 
-                // Wait for the token to fully cancel before disposing
-                while (!scheduledUpdateCtxSource.IsCancellationRequested)
-                    await UniTask.Yield();
-
-                scheduledUpdateCtxSource.Dispose();
-                scheduledUpdateCtxSource = null;
-            }
+            previousTokenSource?.Cancel();
+            previousTokenSource?.Dispose();
         }
-
 
         public void CarouselNextHint()
         {
@@ -88,23 +80,20 @@ namespace DCL.LoadingScreen.V2
 
         private async UniTask ScheduleNextUpdate(CancellationToken token)
         {
-            scheduledUpdateCtxSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            CancellationTokenSource newTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            // Interlocked exchange to ensure only one CTS at a time
+            var previousTokenSource = Interlocked.Exchange(ref scheduledUpdateCtxSource, newTokenSource);
+
+            previousTokenSource?.Dispose();
 
             try
             {
-                await UniTask.Delay(hintShowTime, cancellationToken: scheduledUpdateCtxSource.Token);
+                await UniTask.Delay(hintShowTime, cancellationToken: newTokenSource.Token);
                 // Continue with the next hint without stopping the carousel.
                 if (hintViewList.Count > 0)
                     SetHint((currentHintIndex + 1) % hintViewList.Count);
             }
-            catch (OperationCanceledException)
-            {
-                // Operation was cancelled
-            }
-            finally
-            {
-                scheduledUpdateCtxSource.Dispose();
-            }
+            catch (OperationCanceledException) { }
         }
 
         private void UpdateHintView()
@@ -114,13 +103,9 @@ namespace DCL.LoadingScreen.V2
             OnHintChanged?.Invoke();
         }
 
-        public async void Dispose()
+        public void Dispose()
         {
             StopCarousel();
-
-            // Wait for any cancellation to finish
-            while (scheduledUpdateCtxSource != null)
-                await UniTask.Yield();
 
             foreach (var hintView in hintViewList)
             {
@@ -129,6 +114,5 @@ namespace DCL.LoadingScreen.V2
 
             hintViewList.Clear();
         }
-
     }
 }

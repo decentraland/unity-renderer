@@ -76,7 +76,6 @@ namespace DCL
             pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
-            // pluginSystem.RegisterWithFlag<LoadingScreenV2Plugin>(() => new LoadingScreenV2Plugin(Environment.i.serviceLocator.Get<IAddressableResourceProvider>()), "loading_screen_v2"); // TODO:: FD:: remove this
             pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant");
 
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),

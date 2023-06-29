@@ -10,7 +10,6 @@ using Object = UnityEngine.Object;
 namespace DCL.LoadingScreen.V2
 {
     /// <summary>
-    /// TODO:: FD:: Delete this plugin if not needed anymore
     /// Controller responsible of managing the hints views and requesting hints from the HintRequestService
     /// And also responsible of showing the hints in the LoadingScreen using the HintViewManager carousel
     /// </summary>
@@ -147,23 +146,41 @@ namespace DCL.LoadingScreen.V2
         public void Dispose()
         {
             hintsControllerInitialized = false;
-            loadingScreenV2HintsPanelView.CleanUp();
 
-            shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
-            shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
-            loadingScreenV2HintsPanelView.OnPreviousClicked -= CarouselPreviousHint;
-            loadingScreenV2HintsPanelView.OnNextClicked -= CarouselNextHint;
+            loadingScreenV2HintsPanelView?.CleanUp();
+
+            if (shortcutLeftInputAction != null)
+            {
+                shortcutLeftInputAction.OnTriggered -= OnShortcutInputActionTriggered;
+            }
+
+            if (shortcutRightInputAction != null)
+            {
+                shortcutRightInputAction.OnTriggered -= OnShortcutInputActionTriggered;
+            }
+
+            if (loadingScreenV2HintsPanelView != null)
+            {
+                loadingScreenV2HintsPanelView.OnPreviousClicked -= CarouselPreviousHint;
+                loadingScreenV2HintsPanelView.OnNextClicked -= CarouselNextHint;
+            }
 
             cancellationTokenSource?.Cancel();
-            hintViewManager.Dispose();
-            foreach (var hint in hintViewPool)
+            hintViewManager?.Dispose();
+
+            if (hintViewPool != null)
             {
-                if (hint != null)
-                    DCL.Helpers.Utils.SafeDestroy(hint.gameObject);
+                foreach (var hint in hintViewPool)
+                {
+                    if (hint != null)
+                        DCL.Helpers.Utils.SafeDestroy(hint.gameObject);
+                }
             }
+
             hintsDictionary = null;
             hintViewPool = null;
         }
+
 
 #region Shortcut management
         private void ConfigureShortcuts()

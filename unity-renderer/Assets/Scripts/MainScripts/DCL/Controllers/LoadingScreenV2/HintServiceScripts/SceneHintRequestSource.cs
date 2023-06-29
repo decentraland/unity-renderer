@@ -21,7 +21,6 @@ namespace DCL.LoadingScreen.V2
         private LoadParcelScenesMessage.UnityParcelScene currentSceneBeingLoaded;
         private UniTaskCompletionSource<bool> sceneLoadedCompletionSource;
 
-        // TODO:: FD:: update commented parameters here in the constructor
         public SceneHintRequestSource(SourceTag sourceTag, ISceneController sceneController)
         {
             this.SourceTag = sourceTag;

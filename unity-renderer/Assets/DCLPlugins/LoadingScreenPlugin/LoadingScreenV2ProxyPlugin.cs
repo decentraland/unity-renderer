@@ -18,9 +18,8 @@ namespace DCLPlugins.LoadingScreenPlugin
 
         private LoadingScreenController loadingScreenController;
 
-        // private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
         private readonly string LOCAL_HINT_RESOURCE_ADDRESSABLE = "LoadingScreenV2LocalHintsJsonSource";
-        // TODO: FD:: the following REMOTE_HINT_URL is a placeholder URL
+        // TODO: the following REMOTE_HINT_URL is a placeholder URL
         private readonly string REMOTE_HINT_URL = "http://dcl-catalyst-content-api.decentraland.org/v1/contents/5f6a5b3b-9b0a-4b7a-8a5a-1a8c0e1f1f0e/hints";
 
         private  IAddressableResourceProvider addressableProvider;

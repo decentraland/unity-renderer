@@ -35,7 +35,7 @@ namespace DCL.LoadingScreen
         private bool isFadingOut;
         private readonly IShaderPrewarm shaderPrewarm;
         private readonly CancellationTokenSource cancellationTokenSource;
-        private readonly ILoadingScreenHintsController loadingScreenHintsController; // FD:: <<---
+        private readonly ILoadingScreenHintsController loadingScreenHintsController;
 
         public LoadingScreenController(ILoadingScreenView view, ILoadingScreenHintsController loadingScreenHintsController, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore, IShaderPrewarm shaderPrewarm)
@@ -44,7 +44,7 @@ namespace DCL.LoadingScreen
 
             this.shaderPrewarm = shaderPrewarm;
             this.view = view;
-            this.loadingScreenHintsController = loadingScreenHintsController; // FD:: <<---
+            this.loadingScreenHintsController = loadingScreenHintsController;
             this.sceneController = sceneController;
             this.playerDataStore = playerDataStore;
             this.commonDataStore = commonDataStore;
