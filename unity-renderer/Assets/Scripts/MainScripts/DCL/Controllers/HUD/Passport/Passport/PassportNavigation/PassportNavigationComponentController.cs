@@ -115,65 +115,65 @@ namespace DCL.Social.Passports
 
                     if (isMyAccountEnabled)
                     {
-                        if (!string.IsNullOrEmpty(userProfile.Gender))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Gender))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.GENDER),
                                 AdditionalInfoField.GENDER.ToName(),
-                                userProfile.Gender));
+                                userProfile.AdditionalInfo.Gender));
 
-                        if (!string.IsNullOrEmpty(userProfile.Country))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Country))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.COUNTRY),
                                 AdditionalInfoField.COUNTRY.ToName(),
-                                userProfile.Country));
+                                userProfile.AdditionalInfo.Country));
 
-                        if (userProfile.BirthDate != null && userProfile.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                        if (userProfile.AdditionalInfo.BirthDate != null && userProfile.AdditionalInfo.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.BIRTH_DATE),
                                 AdditionalInfoField.BIRTH_DATE.ToName(),
-                                userProfile.BirthDate.Value.ToString("dd/MM/yyyy")));
+                                userProfile.AdditionalInfo.BirthDate.Value.ToString("dd/MM/yyyy")));
 
-                        if (!string.IsNullOrEmpty(userProfile.Pronouns))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Pronouns))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.PRONOUNS),
                                 AdditionalInfoField.PRONOUNS.ToName(),
-                                userProfile.Pronouns));
+                                userProfile.AdditionalInfo.Pronouns));
 
-                        if (!string.IsNullOrEmpty(userProfile.RelationshipStatus))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RelationshipStatus))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.RELATIONSHIP_STATUS),
                                 AdditionalInfoField.RELATIONSHIP_STATUS.ToName(),
-                                userProfile.RelationshipStatus));
+                                userProfile.AdditionalInfo.RelationshipStatus));
 
-                        if (!string.IsNullOrEmpty(userProfile.SexualOrientation))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.SexualOrientation))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.SEXUAL_ORIENTATION),
                                 AdditionalInfoField.SEXUAL_ORIENTATION.ToName(),
-                                userProfile.SexualOrientation));
+                                userProfile.AdditionalInfo.SexualOrientation));
 
-                        if (!string.IsNullOrEmpty(userProfile.Language))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Language))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.LANGUAGE),
                                 AdditionalInfoField.LANGUAGE.ToName(),
-                                userProfile.Language));
+                                userProfile.AdditionalInfo.Language));
 
-                        if (!string.IsNullOrEmpty(userProfile.Profession))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Profession))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.PROFESSION),
                                 AdditionalInfoField.PROFESSION.ToName(),
-                                userProfile.Profession));
+                                userProfile.AdditionalInfo.Profession));
 
-                        if (!string.IsNullOrEmpty(userProfile.Hobbies))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Hobbies))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.HOBBIES),
                                 AdditionalInfoField.HOBBIES.ToName(),
-                                userProfile.Hobbies));
+                                userProfile.AdditionalInfo.Hobbies));
 
-                        if (!string.IsNullOrEmpty(userProfile.RealName))
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RealName))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.REAL_NAME),
                                 AdditionalInfoField.REAL_NAME.ToName(),
-                                userProfile.RealName));
+                                userProfile.AdditionalInfo.RealName));
 
                         if (userProfile.Links != null)
                             links.AddRange(userProfile.Links);

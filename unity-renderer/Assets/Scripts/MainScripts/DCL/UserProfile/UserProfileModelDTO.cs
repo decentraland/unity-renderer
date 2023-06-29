@@ -1,3 +1,4 @@
+using DCL.UserProfiles;
 using System;
 using System.Collections.Generic;
 
@@ -61,17 +62,20 @@ public class UserProfileModelDTO
                 tutorialStep = this.tutorialStep,
                 hasClaimedName = this.hasClaimedName,
                 links = this.links,
-                country = this.country,
-                employmentStatus = this.employmentStatus,
-                gender = this.gender,
-                pronouns = this.pronouns,
-                relationshipStatus = this.relationshipStatus,
-                sexualOrientation = this.sexualOrientation,
-                language = this.language,
-                profession = this.profession,
-                birthdate = birthdate == 0 ? null : DateTimeOffset.FromUnixTimeSeconds(this.birthdate).DateTime,
-                realName = this.realName,
-                hobbies = this.hobbies,
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Country = this.country,
+                    EmploymentStatus = this.employmentStatus,
+                    Gender = this.gender,
+                    Pronouns = this.pronouns,
+                    RelationshipStatus = this.relationshipStatus,
+                    SexualOrientation = this.sexualOrientation,
+                    Language = this.language,
+                    Profession = this.profession,
+                    BirthDate = birthdate == 0 ? null : DateTimeOffset.FromUnixTimeSeconds(this.birthdate).DateTime,
+                    RealName = this.realName,
+                    Hobbies = this.hobbies,
+                },
             };
 
         return userProfileModel;

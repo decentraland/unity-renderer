@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.UserProfiles;
 using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
@@ -194,23 +195,21 @@ public class UserProfileController : MonoBehaviour
             "description", cancellationToken);
     }
 
-    public UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus,
-        string sexualOrientation, string language, string profession, DateTime? birthDate, string realName, string hobbies,
-        string employmentStatus, CancellationToken cancellationToken)
+    public UniTask<UserProfile> SaveAdditionalInfo(AdditionalInfo additionalInfo, CancellationToken cancellationToken)
     {
         return SaveUserProfile(() => WebInterface.SaveAdditionalInfo(new WebInterface.SaveAdditionalInfoPayload
             {
-                country = country,
-                gender = gender,
-                pronouns = pronouns,
-                relationshipStatus = relationshipStatus,
-                sexualOrientation = sexualOrientation,
-                language = language,
-                profession = profession,
-                birthdate = birthDate != null ? new DateTimeOffset(birthDate.Value).ToUnixTimeSeconds() : 0,
-                realName = realName,
-                hobbies = hobbies,
-                employmentStatus = employmentStatus,
+                country = additionalInfo.Country,
+                gender = additionalInfo.Gender,
+                pronouns = additionalInfo.Pronouns,
+                relationshipStatus = additionalInfo.RelationshipStatus,
+                sexualOrientation = additionalInfo.SexualOrientation,
+                language = additionalInfo.Language,
+                profession = additionalInfo.Profession,
+                birthdate = additionalInfo.BirthDate != null ? new DateTimeOffset(additionalInfo.BirthDate.Value).ToUnixTimeSeconds() : 0,
+                realName = additionalInfo.RealName,
+                hobbies = additionalInfo.Hobbies,
+                employmentStatus = additionalInfo.EmploymentStatus,
             }),
             "additional_info", cancellationToken);
     }

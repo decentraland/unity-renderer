@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
+using DCL.UserProfiles;
 using DCLServices.Lambdas.NamesService;
 using KernelConfigurationTypes;
 using NSubstitute;
@@ -472,17 +473,20 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                birthdate = new DateTime(1990, 12, 25),
-                country = "country",
-                language = "english",
-                gender = "male",
-                pronouns = "he/him",
-                profession = "software dev",
-                employmentStatus = "working",
-                realName = "conito pepote",
-                sexualOrientation = "heterosexual",
-                relationshipStatus = "single",
-                hobbies = "sports, games & art",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    BirthDate = new DateTime(1990, 12, 25),
+                    Country = "country",
+                    Language = "english",
+                    Gender = "male",
+                    Pronouns = "he/him",
+                    Profession = "software dev",
+                    EmploymentStatus = "working",
+                    RealName = "conito pepote",
+                    SexualOrientation = "heterosexual",
+                    RelationshipStatus = "single",
+                    Hobbies = "sports, games & art",
+                },
             });
 
             view.Received(1)
@@ -555,9 +559,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo("country", null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  Country = "country",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -572,13 +577,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                country = "country",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Country = "country",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -590,9 +596,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, "ES",
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                                  {
+                                      Language = "ES",
+                                  }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -607,13 +614,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                language = "EN",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Language = "EN",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -625,9 +633,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, "female", null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                                  {
+                                      Gender = "female",
+                                  }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -642,13 +651,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                gender = "female",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Gender = "female",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -660,9 +670,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, "she/her", null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                                  {
+                                      Pronouns = "she/her",
+                                  }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -677,13 +688,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                pronouns = "she/her",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Pronouns = "she/her",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -695,9 +707,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  "qa", null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  Profession = "qa",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -712,13 +725,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                profession = "qa",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Profession = "qa",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -730,9 +744,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, "lazy",
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  EmploymentStatus = "lazy",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -747,13 +762,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                employmentStatus = "lazy",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    EmploymentStatus = "lazy",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -765,9 +781,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, "peperote", null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  RealName = "peperote",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -782,13 +799,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                realName = "peperote",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    RealName = "peperote",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -800,9 +818,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, "alot", null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  SexualOrientation = "alot",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -817,13 +836,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                sexualOrientation = "alot",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    SexualOrientation = "alot",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -835,9 +855,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, "free", null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  RelationshipStatus = "free",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -852,13 +873,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                relationshipStatus = "free",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    RelationshipStatus = "free",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -870,9 +892,10 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, "eat", null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo
+                              {
+                                  Hobbies = "eat",
+                              }, Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -887,13 +910,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                hobbies = "eat",
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Hobbies = "eat",
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -905,10 +929,9 @@ namespace DCL.MyAccount
             dataStore.myAccount.isMyAccountSectionVisible.Set(true, true);
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, Arg.Is<DateTime>(d => d.Day == 15 && d.Month == 12 && d.Year == 1985),
-                                  null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(Arg.Is<AdditionalInfo>(a => a.BirthDate.Value.Day == 15
+                              && a.BirthDate.Value.Month == 12
+                              && a.BirthDate.Value.Year == 1985), Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -923,13 +946,14 @@ namespace DCL.MyAccount
                 name = NOT_OWNED_FULL_NAME,
                 hasClaimedName = false,
                 description = MY_DESCRIPTION,
-                birthdate = new DateTime(1985, 12, 15),
+                AdditionalInfo = new AdditionalInfo
+                {
+                    BirthDate = new DateTime(1985, 12, 15),
+                },
             });
 
             userProfileBridge.Received(1)
-                             .SaveAdditionalInfo(null, null, null, null, null, null,
-                                  null, null, null, null, null,
-                                  Arg.Any<CancellationToken>());
+                             .SaveAdditionalInfo(new AdditionalInfo(), Arg.Any<CancellationToken>());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.UserProfiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,9 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
     public UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken) =>
         UserProfileController.i.SaveDescription(description, cancellationToken);
 
-    public UniTask<UserProfile> SaveAdditionalInfo(string country, string gender, string pronouns, string relationshipStatus, string sexualOrientation,
-        string language, string profession, DateTime? birthDate, string realName, string hobbies,
-        string employmentStatus,
+    public UniTask<UserProfile> SaveAdditionalInfo(AdditionalInfo additionalInfo,
         CancellationToken cancellationToken) =>
-        UserProfileController.i.SaveAdditionalInfo(country, gender, pronouns, relationshipStatus, sexualOrientation,
-            language, profession, birthDate, realName, hobbies, employmentStatus, cancellationToken);
+        UserProfileController.i.SaveAdditionalInfo(additionalInfo, cancellationToken);
 
     public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
 

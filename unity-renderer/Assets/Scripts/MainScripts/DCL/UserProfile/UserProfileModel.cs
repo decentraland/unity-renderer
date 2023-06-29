@@ -1,3 +1,4 @@
+using DCL.UserProfiles;
 using System;
 using System.Collections.Generic;
 
@@ -91,17 +92,7 @@ public class UserProfileModel
     public int tutorialStep;
     public bool hasClaimedName;
     public List<Link> links;
-    public string country;
-    public string employmentStatus;
-    public string gender;
-    public string pronouns;
-    public string relationshipStatus;
-    public string sexualOrientation;
-    public string language;
-    public string profession;
-    public DateTime? birthdate;
-    public string realName;
-    public string hobbies;
+    public AdditionalInfo AdditionalInfo { get; set; } = new ();
 
     public static UserProfileModel FallbackModel(string name, int id)
     {
@@ -178,6 +169,9 @@ public class UserProfileModel
                 return false;
         }
         else if (model.links != null || links != null)
+            return false;
+
+        if (!AdditionalInfo.Equals(model.AdditionalInfo))
             return false;
 
         return true;

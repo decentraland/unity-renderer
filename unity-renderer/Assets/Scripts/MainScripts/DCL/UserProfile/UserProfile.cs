@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using DCL.UserProfiles;
 using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
@@ -41,17 +42,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
     public List<UserProfileModel.Link> Links => model.links;
-    public string Country => model.country;
-    public string EmploymentStatus => model.employmentStatus;
-    public string Gender => model.gender;
-    public string Pronouns => model.pronouns;
-    public string RelationshipStatus => model.relationshipStatus;
-    public string SexualOrientation => model.sexualOrientation;
-    public string Language => model.language;
-    public string Profession => model.profession;
-    public DateTime? BirthDate => model.birthdate;
-    public string RealName => model.realName;
-    public string Hobbies => model.hobbies;
+    public AdditionalInfo AdditionalInfo => model.AdditionalInfo;
 
     internal Dictionary<string, int> inventory = new ();
 
@@ -112,17 +103,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.muted = newModel.muted;
         model.version = newModel.version;
         model.links = newModel.links;
-        model.country = newModel.country;
-        model.employmentStatus = newModel.employmentStatus;
-        model.gender = newModel.gender;
-        model.pronouns = newModel.pronouns;
-        model.relationshipStatus = newModel.relationshipStatus;
-        model.sexualOrientation = newModel.sexualOrientation;
-        model.language = newModel.language;
-        model.profession = newModel.profession;
-        model.birthdate = newModel.birthdate;
-        model.realName = newModel.realName;
-        model.hobbies = newModel.hobbies;
+        model.AdditionalInfo.CopyFrom(newModel.AdditionalInfo);
 
         if (faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
