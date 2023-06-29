@@ -1,5 +1,4 @@
 using DCL;
-using DCL.ECSComponents;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSEngineInfoSystem;
@@ -29,7 +28,6 @@ public class ECSSystemsController : IDisposable
     private readonly IList<ECS7System> updateSystems;
     private readonly IList<ECS7System> lateUpdateSystems;
     private readonly IUpdateEventHandler updateEventHandler;
-    private readonly ECS7System componentWriteSystem;
     private readonly ECS7System internalComponentMarkDirtySystem;
     private readonly ECS7System internalComponentRemoveDirtySystem;
     private readonly ECSScenesUiSystem uiSystem;
@@ -40,10 +38,9 @@ public class ECSSystemsController : IDisposable
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
 
-    public ECSSystemsController(ECS7System componentWriteSystem, SystemsContext context)
+    public ECSSystemsController(SystemsContext context)
     {
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
-        this.componentWriteSystem = componentWriteSystem;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
 
@@ -65,22 +62,26 @@ public class ECSSystemsController : IDisposable
             CommonScriptableObjects.allUIHidden,
             DataStore.i.HUDs.isSceneUIEnabled);
 
-
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
             context.internalEcsComponents.videoPlayerComponent,
             context.internalEcsComponents.videoMaterialComponent,
             context.internalEcsComponents.EngineInfo,
-            context.componentWriter);
+            context.ComponentWriters,
+            context.VideoEventPool);
 
-        cameraEntitySystem = new ECSCameraEntitySystem(context.componentWriter, new PBCameraMode(), new PBPointerLock(),
+        cameraEntitySystem = new ECSCameraEntitySystem(context.ComponentWriters,
+            context.CameraModePool, context.PointerLockPool, context.TransformPool, context.TransformComponent,
             DataStore.i.ecs7.scenes, DataStore.i.camera.transform, CommonScriptableObjects.worldOffset, CommonScriptableObjects.cameraMode);
 
-        playerTransformSystem = new ECSPlayerTransformSystem(context.componentWriter, DataStore.i.ecs7.scenes,
+        playerTransformSystem = new ECSPlayerTransformSystem(context.ComponentWriters, context.TransformPool,
+            context.TransformComponent, DataStore.i.ecs7.scenes,
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
-        ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(context.internalEcsComponents.uiInputResultsComponent, context.componentWriter);
+        ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(
+            context.internalEcsComponents.uiInputResultsComponent,
+            context.ComponentWriters);
 
         ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
             context.internalEcsComponents.raycastComponent,
@@ -88,7 +89,8 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.customLayerColliderComponent,
             context.internalEcsComponents.EngineInfo,
-            context.componentWriter);
+            context.ComponentWriters,
+            context.RaycastResultPool);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
@@ -107,7 +109,6 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.componentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
-
         ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
             context.internalEcsComponents.onPointerColliderComponent,
             context.internalEcsComponents.inputEventResultsComponent,
@@ -118,15 +119,18 @@ public class ECSSystemsController : IDisposable
             DataStore.i.rpc.context.restrictedActions);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.GltfContainerLoadingStatePool,
             context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.EngineInfoPool,
             context.internalEcsComponents.EngineInfo);
 
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
-            context.componentWriter,
+            context.ComponentWriters,
+            context.UiCanvasInformationPool,
             DataStore.i.ecs7.scenes
         );
 
@@ -155,7 +159,8 @@ public class ECSSystemsController : IDisposable
             ECSInputSenderSystem.CreateSystem(
                 context.internalEcsComponents.inputEventResultsComponent,
                 context.internalEcsComponents.EngineInfo,
-                context.componentWriter),
+                context.ComponentWriters,
+                context.PointerEventsResultPool),
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,
@@ -181,7 +186,6 @@ public class ECSSystemsController : IDisposable
     {
         try
         {
-            componentWriteSystem.Invoke();
             internalComponentMarkDirtySystem.Invoke();
         }
         catch (Exception e)

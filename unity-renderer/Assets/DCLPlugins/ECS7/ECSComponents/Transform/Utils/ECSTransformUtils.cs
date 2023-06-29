@@ -1,6 +1,6 @@
-using System.Linq;
 using DCL.Controllers;
 using DCL.Models;
+using System.Linq;
 using UnityEngine;
 
 public static class ECSTransformUtils
@@ -34,10 +34,6 @@ public static class ECSTransformUtils
             parent = null;
             return true;
         }
-        if (parentId == SpecialEntityId.PLAYER_ENTITY)
-        {
-            parentId = SpecialEntityId.INTERNAL_PLAYER_ENTITY_REPRESENTATION;
-        }
 
         if (scene.entities.TryGetValue(parentId, out parent))
         {
@@ -69,8 +65,10 @@ public static class ECSTransformUtils
             {
                 return true;
             }
+
             parentId = parent.parentId;
-        } while (parentId != SpecialEntityId.SCENE_ROOT_ENTITY);
+        }
+        while (parentId != SpecialEntityId.SCENE_ROOT_ENTITY);
 
         return false;
     }
@@ -86,6 +84,7 @@ public static class ECSTransformUtils
         {
             return true;
         }
+
         return scene.sceneData.parcels.Contains(position);
     }
 }

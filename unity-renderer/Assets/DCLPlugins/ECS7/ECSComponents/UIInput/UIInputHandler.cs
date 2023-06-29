@@ -1,4 +1,6 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements;
 using DCL.ECSComponents.Utils;
@@ -18,6 +20,7 @@ namespace DCL.ECSComponents.UIInput
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+        private readonly WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool;
 
         private EventCallback<ChangeEvent<string>> onValueChanged;
 
@@ -28,11 +31,13 @@ namespace DCL.ECSComponents.UIInput
         public UIInputHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer,
             int resultComponentId,
             IInternalECSComponent<InternalUIInputResults> inputResults,
-            AssetPromiseKeeper_Font fontPromiseKeeper, int componentId) : base(internalUiContainer, componentId)
+            AssetPromiseKeeper_Font fontPromiseKeeper, int componentId,
+            WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool) : base(internalUiContainer, componentId)
         {
             this.resultComponentId = resultComponentId;
             this.inputResults = inputResults;
             this.fontPromiseKeeper = fontPromiseKeeper;
+            this.componentPool = componentPool;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -48,7 +53,7 @@ namespace DCL.ECSComponents.UIInput
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils
-               .RegisterFeedback<ChangeEvent<string>, PBUiInputResult>
+               .RegisterFeedback<ChangeEvent<string>>
                 (inputResults,
                     CreateInputResult,
                     scene,
@@ -57,8 +62,13 @@ namespace DCL.ECSComponents.UIInput
                     resultComponentId);
         }
 
-        private static PBUiInputResult CreateInputResult(ChangeEvent<string> onValueChange) =>
-            new () { Value = onValueChange.newValue };
+        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
+        {
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.Value = onValueChange.newValue;
+            return componentPooled;
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {

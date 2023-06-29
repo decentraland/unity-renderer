@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements;
 using DCL.ECSRuntime;
@@ -20,7 +22,10 @@ namespace DCL.ECSComponents.UIDropdown
                         feedbackResultComponentId,
                         uiInputResults,
                         AssetPromiseKeeper_Font.i,
-                        componentId
+                        componentId,
+                        new WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>>(
+                            100,
+                            () => new ProtobufWrappedComponent<PBUiDropdownResult>(new PBUiDropdownResult()))
                     )) { }
     }
 }

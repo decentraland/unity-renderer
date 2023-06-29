@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.ECSRuntime
@@ -48,6 +48,8 @@ namespace DCL.ECSRuntime
             this.writeComponent = writeComponent;
         }
 
+        public ECSComponentWriter() { }
+
         public void AddOrReplaceComponentSerializer<T>(int componentId, Func<T, byte[]> serializer)
         {
             serializers[componentId] = new Serializer<T>(serializer);
@@ -68,12 +70,14 @@ namespace DCL.ECSRuntime
             PutComponent(sceneNumber, entityId, componentId, model, -1, writeType);
         }
 
-        public void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, int minTimeStamp, ECSComponentWriteType writeType)
+        public void PutComponent<T>(int sceneNumber, long entityId, int componentId, T model, int minTimeStamp,
+            ECSComponentWriteType writeType)
         {
             PutComponent(typeof(T), sceneNumber, entityId, componentId, model, minTimeStamp, writeType);
         }
 
-        public void PutComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model, ECSComponentWriteType writeType)
+        public void PutComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model,
+            ECSComponentWriteType writeType)
         {
             PutComponent(componentType, sceneNumber, entityId, componentId, model, -1, writeType);
         }
@@ -107,7 +111,8 @@ namespace DCL.ECSRuntime
             writeComponent(sceneNumber, entityId, componentId, null, minTimeStamp, writeType, CrdtMessageType.DELETE_COMPONENT);
         }
 
-        public void AppendComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model, ECSComponentWriteType writeType)
+        public void AppendComponent(Type componentType, int sceneNumber, long entityId, int componentId, object model,
+            ECSComponentWriteType writeType)
         {
             if (!serializers.TryGetValue(componentId, out Serializer serializer))
             {
@@ -129,8 +134,6 @@ namespace DCL.ECSRuntime
         {
             AppendComponent(typeof(T), sceneNumber, entityId, componentId, model, writeType);
         }
-
-
 
         public void Dispose()
         {
