@@ -149,6 +149,12 @@ namespace DCL.Social.Friends
 
             if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
 
+            if (socialClient == null)
+            {
+                Debug.LogError("Getting all friend requests failed due to lack of client");
+                return (new List<FriendRequest>(), new List<FriendRequest>());
+            }
+
             var requestEvents = await socialClient.GetRequestEvents(new Payload
                 { SynapseToken = accessToken });
 
@@ -186,6 +192,12 @@ namespace DCL.Social.Friends
             List<string> result = new ();
 
             if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
+
+            if (socialClient == null)
+            {
+                Debug.LogError("Getting all friends failed due to lack of client");
+                return new List<string>();
+            }
 
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
@@ -446,6 +458,11 @@ namespace DCL.Social.Friends
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
+                if (socialClient == null)
+                {
+                    Debug.LogError("Getting all friends failed due to lack of client");
+                    return new FriendshipEventResponse();
+                }
 
                 // TODO: pass cancellation token to rpc client when is supported
                 var response = await socialClient
