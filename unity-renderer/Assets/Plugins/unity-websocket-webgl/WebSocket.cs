@@ -17,6 +17,7 @@ using System.Text;
 
 namespace HybridWebSocket
 {
+
     /// <summary>
     /// Handler for WebSocket Open event.
     /// </summary>
@@ -125,6 +126,7 @@ namespace HybridWebSocket
     /// </summary>
     public static class WebSocketHelpers
     {
+
         /// <summary>
         /// Safely parse close code enum from int value.
         /// </summary>
@@ -132,8 +134,16 @@ namespace HybridWebSocket
         /// <param name="closeCode">Close code as int.</param>
         public static WebSocketCloseCode ParseCloseCodeEnum(int closeCode)
         {
-            if (WebSocketCloseCode.IsDefined(typeof(WebSocketCloseCode), closeCode)) { return (WebSocketCloseCode)closeCode; }
-            else { return WebSocketCloseCode.Undefined; }
+
+            if (WebSocketCloseCode.IsDefined(typeof(WebSocketCloseCode), closeCode))
+            {
+                return (WebSocketCloseCode)closeCode;
+            }
+            else
+            {
+                return WebSocketCloseCode.Undefined;
+            }
+
         }
 
         /*
@@ -151,8 +161,10 @@ namespace HybridWebSocket
         /// <param name="inner">Inner exception</param>
         public static WebSocketException GetErrorMessageFromCode(int errorCode, Exception inner)
         {
-            switch (errorCode)
+
+            switch(errorCode)
             {
+
                 case -1: return new WebSocketUnexpectedException("WebSocket instance not found.", inner);
                 case -2: return new WebSocketInvalidStateException("WebSocket is already connected or in connecting state.", inner);
                 case -3: return new WebSocketInvalidStateException("WebSocket is not connected.", inner);
@@ -161,8 +173,11 @@ namespace HybridWebSocket
                 case -6: return new WebSocketInvalidStateException("WebSocket is not in open state.", inner);
                 case -7: return new WebSocketInvalidArgumentException("Cannot close WebSocket. An invalid code was specified or reason is too long.", inner);
                 default: return new WebSocketUnexpectedException("Unknown error.", inner);
+
             }
+
         }
+
     }
 
     /// <summary>
@@ -170,13 +185,21 @@ namespace HybridWebSocket
     /// </summary>
     public class WebSocketException : Exception
     {
-        public WebSocketException() { }
+
+        public WebSocketException()
+        {
+        }
 
         public WebSocketException(string message)
-            : base(message) { }
+            : base(message)
+        {
+        }
 
         public WebSocketException(string message, Exception inner)
-            : base(message, inner) { }
+            : base(message, inner)
+        {
+        }
+
     }
 
     /// <summary>
@@ -184,11 +207,9 @@ namespace HybridWebSocket
     /// </summary>
     public class WebSocketUnexpectedException : WebSocketException
     {
-        public WebSocketUnexpectedException() { }
-
-        public WebSocketUnexpectedException(string message) : base(message) { }
-
-        public WebSocketUnexpectedException(string message, Exception inner) : base(message, inner) { }
+        public WebSocketUnexpectedException(){}
+        public WebSocketUnexpectedException(string message) : base(message){}
+        public WebSocketUnexpectedException(string message, Exception inner) : base(message, inner) {}
     }
 
     /// <summary>
@@ -197,9 +218,7 @@ namespace HybridWebSocket
     public class WebSocketInvalidArgumentException : WebSocketException
     {
         public WebSocketInvalidArgumentException() { }
-
         public WebSocketInvalidArgumentException(string message) : base(message) { }
-
         public WebSocketInvalidArgumentException(string message, Exception inner) : base(message, inner) { }
     }
 
@@ -209,9 +228,7 @@ namespace HybridWebSocket
     public class WebSocketInvalidStateException : WebSocketException
     {
         public WebSocketInvalidStateException() { }
-
         public WebSocketInvalidStateException(string message) : base(message) { }
-
         public WebSocketInvalidStateException(string message, Exception inner) : base(message, inner) { }
     }
 
@@ -433,6 +450,7 @@ namespace HybridWebSocket
 #else
     public class WebSocket : IWebSocket
     {
+
         /// <summary>
         /// Occurs when the connection is opened.
         /// </summary>
@@ -464,16 +482,19 @@ namespace HybridWebSocket
         /// <param name="url">Valid WebSocket URL.</param>
         public WebSocket(string url)
         {
+
             try
             {
+
                 // Create WebSocket instance
                 this.ws = new WebSocketSharp.WebSocket(url);
-
-                // this.ws.SslConfiguration.CheckCertificateRevocation = false;
-                // this.ws.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Default;
+                this.ws.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
 
                 // Bind OnOpen event
-                this.ws.OnOpen += (sender, ev) => { this.OnOpen?.Invoke(); };
+                this.ws.OnOpen += (sender, ev) =>
+                {
+                    this.OnOpen?.Invoke();
+                };
 
                 // Bind OnMessage event
                 this.ws.OnMessage += (sender, ev) =>
@@ -492,11 +513,18 @@ namespace HybridWebSocket
                 this.ws.OnClose += (sender, ev) =>
                 {
                     this.OnClose?.Invoke(
-                        WebSocketHelpers.ParseCloseCodeEnum((int)ev.Code)
+                        WebSocketHelpers.ParseCloseCodeEnum( (int)ev.Code )
                     );
                 };
+
             }
-            catch (Exception e) { throw new WebSocketUnexpectedException("Failed to create WebSocket Client.", e); }
+            catch (Exception e)
+            {
+
+                throw new WebSocketUnexpectedException("Failed to create WebSocket Client.", e);
+
+            }
+
         }
 
         /// <summary>
@@ -504,12 +532,20 @@ namespace HybridWebSocket
         /// </summary>
         public void Connect()
         {
+
             // Check state
             if (this.ws.ReadyState == WebSocketSharp.WebSocketState.Open || this.ws.ReadyState == WebSocketSharp.WebSocketState.Closing)
                 throw new WebSocketInvalidStateException("WebSocket is already connected or is closing.");
 
-            try { this.ws.ConnectAsync(); }
-            catch (Exception e) { throw new WebSocketUnexpectedException("Failed to connect.", e); }
+            try
+            {
+                this.ws.ConnectAsync();
+            }
+            catch (Exception e)
+            {
+                throw new WebSocketUnexpectedException("Failed to connect.", e);
+            }
+
         }
 
         /// <summary>
@@ -519,6 +555,7 @@ namespace HybridWebSocket
         /// <param name="reason">Reason string.</param>
         public void Close(WebSocketCloseCode code = WebSocketCloseCode.Normal, string reason = null)
         {
+
             // Check state
             if (this.ws.ReadyState == WebSocketSharp.WebSocketState.Closing)
                 throw new WebSocketInvalidStateException("WebSocket is already closing.");
@@ -526,8 +563,15 @@ namespace HybridWebSocket
             if (this.ws.ReadyState == WebSocketSharp.WebSocketState.Closed)
                 throw new WebSocketInvalidStateException("WebSocket is already closed.");
 
-            try { this.ws.CloseAsync((ushort)code, reason); }
-            catch (Exception e) { throw new WebSocketUnexpectedException("Failed to close the connection.", e); }
+            try
+            {
+                this.ws.CloseAsync((ushort)code, reason);
+            }
+            catch (Exception e)
+            {
+                throw new WebSocketUnexpectedException("Failed to close the connection.", e);
+            }
+
         }
 
         /// <summary>
@@ -536,12 +580,20 @@ namespace HybridWebSocket
         /// <param name="data">Payload data.</param>
         public void Send(byte[] data)
         {
+
             // Check state
             if (this.ws.ReadyState != WebSocketSharp.WebSocketState.Open)
                 throw new WebSocketInvalidStateException("WebSocket is not in open state.");
 
-            try { this.ws.Send(data); }
-            catch (Exception e) { throw new WebSocketUnexpectedException("Failed to send message.", e); }
+            try
+            {
+                this.ws.Send(data);
+            }
+            catch (Exception e)
+            {
+                throw new WebSocketUnexpectedException("Failed to send message.", e);
+            }
+
         }
 
         /// <summary>
@@ -550,12 +602,20 @@ namespace HybridWebSocket
         /// <param name="data">Payload data.</param>
         public void Send(string data)
         {
+
             // Check state
             if (this.ws.ReadyState != WebSocketSharp.WebSocketState.Open)
                 throw new WebSocketInvalidStateException("WebSocket is not in open state.");
 
-            try { this.ws.Send(data); }
-            catch (Exception e) { throw new WebSocketUnexpectedException("Failed to send message.", e); }
+            try
+            {
+                this.ws.Send(data);
+            }
+            catch (Exception e)
+            {
+                throw new WebSocketUnexpectedException("Failed to send message.", e);
+            }
+
         }
 
         /// <summary>
@@ -564,6 +624,7 @@ namespace HybridWebSocket
         /// <returns>The state.</returns>
         public WebSocketState GetState()
         {
+
             switch (this.ws.ReadyState)
             {
                 case WebSocketSharp.WebSocketState.Connecting:
@@ -581,7 +642,9 @@ namespace HybridWebSocket
                 default:
                     return WebSocketState.Closed;
             }
+
         }
+
     }
 #endif
 
@@ -590,6 +653,7 @@ namespace HybridWebSocket
     /// </summary>
     public static class WebSocketFactory
     {
+
 #if UNITY_WEBGL && !UNITY_EDITOR
         /* Map of websocket instances */
         private static Dictionary<Int32, WebSocket> instances = new Dictionary<Int32, WebSocket>();
@@ -729,5 +793,7 @@ namespace HybridWebSocket
             return new WebSocket(url);
 #endif
         }
+
     }
+
 }
