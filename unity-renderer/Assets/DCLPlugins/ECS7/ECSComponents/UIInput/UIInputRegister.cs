@@ -1,4 +1,6 @@
-﻿using DCL.ECS7.InternalComponents;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements;
 using DCL.ECSRuntime;
 
@@ -19,6 +21,14 @@ namespace DCL.ECSComponents.UIInput
                 componentWriter,
                 internalUiContainer,
                 (container, id) =>
-                    new UIInputHandler(container, feedbackResultComponentId, inputResults, AssetPromiseKeeper_Font.i, id)) { }
+                    new UIInputHandler(
+                        container,
+                        feedbackResultComponentId,
+                        inputResults,
+                        AssetPromiseKeeper_Font.i,
+                        id,
+                        new WrappedComponentPool<IWrappedComponent<PBUiInputResult>>(
+                            5,
+                            () => new ProtobufWrappedComponent<PBUiInputResult>(new PBUiInputResult())))) { }
     }
 }
