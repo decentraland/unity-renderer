@@ -202,6 +202,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 686758069f8a14776994a397af7581cd, type: 3}
   - {fileID: 21300000, guid: fb175f167b0cc447c8f2fd84c9671a68, type: 3}
   - {fileID: 21300000, guid: d1530a26cd1484393bd6f29419fe7ad3, type: 3}
+  - {fileID: 21300000, guid: 67e52e26d59bf4408aa3e2e55038d1a2, type: 3}
   - {fileID: 21300000, guid: d857d876066d545688aeec28176a1751, type: 3}
   - {fileID: 21300000, guid: 17536e862909d4b64b9f50455a6e17b7, type: 3}
   - {fileID: 21300000, guid: 8512d2a614988894b967cb17ea417d0b, type: 3}
@@ -270,6 +271,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c4b955690452948efa830562d3ca8ed4, type: 3}
   - {fileID: 21300000, guid: 7ff198699317441fb8a438d0b4643ab4, type: 3}
   - {fileID: 21300000, guid: ad6a5c692d0a34fbe8f1e4dd9bee0c2b, type: 3}
+  - {fileID: 21300000, guid: 604878795914c4c5882894367aff9211, type: 3}
   - {fileID: 21300000, guid: 46524689a799e4be9941af9ef6f45a89, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
@@ -553,6 +555,7 @@ SpriteAtlas:
   - NameBackground
   - FAQsIcon
   - PlayersIcon
+  - OutfitEmptyBackground
   - MapOff
   - QuestOff
   - InputGray
@@ -621,6 +624,7 @@ SpriteAtlas:
   - SearchChannelIcon
   - PinIcon
   - FriendsOff
+  - EmptyOutfitContainer
   - FloorLight
   - MessageIcon
   - FriendsIcon
