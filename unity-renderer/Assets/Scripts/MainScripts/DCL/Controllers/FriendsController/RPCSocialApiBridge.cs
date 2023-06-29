@@ -12,6 +12,7 @@ namespace DCL.Social.Friends
     public class RPCSocialApiBridge : ISocialApiBridge
     {
         private const int REQUEST_TIMEOUT = 30;
+        private const int MAX_MINUTES_WAIT_TIME = 3;
         private const int MAX_RECONNECT_RETRIES = 3;
 
         private readonly IMatrixInitializationBridge matrixInitializationBridge;
@@ -73,7 +74,9 @@ namespace DCL.Social.Friends
         private async UniTask OnTransportError()
         {
             socialClient = null;
-            incomingEventsSubscriptionCancellationTokenToken = incomingEventsSubscriptionCancellationTokenToken.SafeRestartLinked();
+
+            try { incomingEventsSubscriptionCancellationTokenToken = incomingEventsSubscriptionCancellationTokenToken.SafeRestartLinked(initializationCancellationToken.Token); }
+            catch (Exception e) { Debug.LogException(e); }
 
             if (transportFailures >= MAX_RECONNECT_RETRIES) { throw new Exception("Max reconnect retries reached"); }
 
@@ -102,7 +105,8 @@ namespace DCL.Social.Friends
 
             initializationInformationTask = new UniTaskCompletionSource<AllFriendsInitializationMessage>();
 
-            await WaitForSocialClient(cancellationToken);
+            if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
+
             await WaitForAccessTokenAsync(cancellationToken);
 
             // TODO: the bridge should not fetch all friends at start, its a responsibility/design issue.
@@ -129,7 +133,7 @@ namespace DCL.Social.Friends
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await WaitForSocialClient(cancellationToken);
+            if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
 
             var requestEvents = await socialClient.GetRequestEvents(new Payload
                 { SynapseToken = accessToken });
@@ -167,7 +171,7 @@ namespace DCL.Social.Friends
         {
             List<string> result = new ();
 
-            await WaitForSocialClient(cancellationToken);
+            if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
 
             var friendsStream = socialClient.GetFriends(new Payload
                 { SynapseToken = accessToken });
@@ -427,7 +431,7 @@ namespace DCL.Social.Friends
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await WaitForSocialClient(cancellationToken);
+                if (socialClient == null) { await WaitForSocialClient(cancellationToken); }
 
                 // TODO: pass cancellation token to rpc client when is supported
                 var response = await socialClient
@@ -473,7 +477,8 @@ namespace DCL.Social.Friends
 
         private UniTask WaitForSocialClient(CancellationToken cancellationToken)
         {
-            return UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken);
+            return UniTask.WaitUntil(() => socialClient != null, cancellationToken: cancellationToken)
+                          .Timeout(TimeSpan.FromMinutes(MAX_MINUTES_WAIT_TIME));
         }
     }
 }
