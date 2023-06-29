@@ -96,19 +96,28 @@ namespace DCL.Social.Friends
             {
                 if (!useSocialApiBridge) return;
 
-                AllFriendsInitializationMessage info = await socialApiBridge.GetInitializationInformationAsync(cancellationToken);
-                InitializeFriendships(info);
+                try
+                {
 
-                foreach (string friendId in info.Friends)
-                    AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
+                    AllFriendsInitializationMessage info = await socialApiBridge.GetInitializationInformationAsync(cancellationToken);
+                    InitializeFriendships(info);
 
-                foreach (FriendRequest friendRequest in info.IncomingFriendRequests)
-                    AddIncomingFriendRequest(friendRequest, false);
+                    foreach (string friendId in info.Friends)
+                        AddFriendToCacheAndTriggerFriendshipUpdate(friendId);
 
-                foreach (FriendRequest friendRequest in info.OutgoingFriendRequests)
-                    AddOutgoingFriendRequest(friendRequest, false);
+                    foreach (FriendRequest friendRequest in info.IncomingFriendRequests)
+                        AddIncomingFriendRequest(friendRequest, false);
 
-                OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+                    foreach (FriendRequest friendRequest in info.OutgoingFriendRequests)
+                        AddOutgoingFriendRequest(friendRequest, false);
+
+                    OnTotalFriendRequestUpdated?.Invoke(TotalReceivedFriendRequestCount, TotalSentFriendRequestCount);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("Couldn't initialize friendship information");
+                    Debug.LogException(ex);
+                }
             }
 
             void SubscribeToCorrespondingBridgeEvents()
