@@ -1,6 +1,7 @@
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -71,7 +72,11 @@ namespace DCL.Quests
                 emptyActiveState.SetActive(false);
                 emptyCompletedState.SetActive(true);
             }
-            else { emptyState.SetActive(false); }
+            else
+            {
+                emptyState.SetActive(false);
+                HandleCompletedQuestSelection(completedQuests.First().Key);
+            }
         }
 
         private void InProgressSectionOnSelect(bool isSelected)
@@ -88,7 +93,11 @@ namespace DCL.Quests
                 emptyActiveState.SetActive(true);
                 emptyCompletedState.SetActive(false);
             }
-            else { emptyState.SetActive(false); }
+            else
+            {
+                emptyState.SetActive(false);
+                HandleActiveQuestSelection(activeQuests.First().Key);
+            }
         }
 
         private void ShowActiveOrCompletedQuests(bool active)
@@ -96,6 +105,7 @@ namespace DCL.Quests
             foreach (var activeQuest in activeQuests.Values)
             {
                 activeQuest.gameObject.SetActive(active);
+
             }
             foreach (var completedQuest in completedQuests.Values)
             {
@@ -166,6 +176,16 @@ namespace DCL.Quests
 
             questsPool.Release(activeQuests[questId]);
             activeQuests.Remove(questId);
+            if (activeQuests.Count == 0)
+            {
+                emptyState.SetActive(true);
+                emptyActiveState.SetActive(true);
+                emptyCompletedState.SetActive(false);
+            }
+            else
+            {
+                HandleActiveQuestSelection(activeQuests.First().Key);
+            }
         }
 
         public void SetAsFullScreenMenuMode(Transform parentTransform)
