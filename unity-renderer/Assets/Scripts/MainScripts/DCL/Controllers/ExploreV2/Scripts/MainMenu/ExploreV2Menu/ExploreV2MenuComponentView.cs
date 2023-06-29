@@ -146,9 +146,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private void OpenCurrentWalletSection()
     {
-        foreach (var section in exploreSectionsById)
-            if (section.Value != null && section.Value.isVisible)
-                section.Value.Hide();
+        HideAllSections();
 
         foreach (ISectionToggle section in sectionSelector.GetAllSections())
             section?.SetUnselectedVisuals();
@@ -161,9 +159,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         if (!current)
             return;
 
-        foreach (var section in exploreSectionsById)
-            if (section.Value != null && section.Value.isVisible)
-                section.Value.Hide();
+        HideAllSections();
 
         foreach (ISectionToggle section in sectionSelector.GetAllSections())
             section?.SetUnselectedVisuals();
@@ -359,5 +355,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         currentWalletCard.SetWalletCardActive(isActive);
         currentWalletCard.SetWalletCardAsGuest(isGuest);
+    }
+
+    private void HideAllSections()
+    {
+        foreach (var section in exploreSectionsById)
+            if (section.Value != null && section.Value.isVisible)
+                section.Value.Hide();
     }
 }
