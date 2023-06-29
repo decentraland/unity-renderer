@@ -72,7 +72,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
         {
             markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(model, false);
 
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, model);
+            crdtExecutor.PutComponent(entityId, componentId, model);
         }
     }
 
@@ -89,7 +89,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
         markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(defaultModel, true);
 
-        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
+        crdtExecutor.PutComponent(entityId, componentId, defaultModel);
     }
 
     public void RemoveFor(IParcelScene scene, IDCLEntity entity) =>
@@ -104,7 +104,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             return;
 
         markAsDirtyComponents.Remove(sceneNumber, entityId);
-        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+        crdtExecutor.RemoveComponent(entityId, componentId);
     }
 
     public ECSComponentData<T>? GetFor(IParcelScene scene, IDCLEntity entity)
@@ -142,7 +142,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             }
 
             data.dirty = true;
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+            crdtExecutor.PutComponent(entityId, componentId, data);
             removeAsDirtyComponents[sceneNumber, entityId] = new DirtyData(data, isRemoval);
         }
 
@@ -167,12 +167,12 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
             if (isRemoval)
             {
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+                crdtExecutor.RemoveComponent(entityId, componentId);
             }
             else
             {
                 data.dirty = false;
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+                crdtExecutor.PutComponent(entityId, componentId, data);
             }
         }
 

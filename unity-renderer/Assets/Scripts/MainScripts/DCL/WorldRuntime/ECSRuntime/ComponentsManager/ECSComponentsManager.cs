@@ -1,6 +1,8 @@
 using DCL.Controllers;
 using DCL.Models;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.ECSRuntime
 {
@@ -81,6 +83,34 @@ namespace DCL.ECSRuntime
             {
                 component.Deserialize(scene, entity, message);
                 UpdateComponentGroups(component, scene, entity, entitiesGroups);
+            }
+        }
+
+        /// <summary>
+        /// set component's model
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <param name="scene"></param>
+        /// <param name="entity"></param>
+        /// <param name="componentData"></param>
+        /// <typeparam name="T"></typeparam>
+        public void SetComponent<T>(int componentId, IParcelScene scene, IDCLEntity entity, T componentData)
+        {
+            try
+            {
+                var component = GetOrCreateComponent(componentId, scene, entity);
+
+                if (component != null)
+                {
+                    ((ECSComponent<T>) component).SetModel(scene, entity, componentData);
+                    UpdateComponentGroups(component, scene, entity, entitiesGroups);
+                }
+            }
+            catch (Exception e)
+            {
+#if UNITY_EDITOR
+                Debug.LogException(e);
+#endif
             }
         }
 
@@ -313,7 +343,6 @@ namespace DCL.ECSRuntime
         private static void UpdateComponentGroups(IECSComponent component, IParcelScene scene, IDCLEntity entity,
             IDictionary<IDCLEntity, List<IECSComponentsGroup>> entitiesGroups)
         {
-
             if (entitiesGroups.TryGetValue(entity, out var entityInGroups))
             {
                 for (int i = 0; i < entityInGroups.Count; i++)
