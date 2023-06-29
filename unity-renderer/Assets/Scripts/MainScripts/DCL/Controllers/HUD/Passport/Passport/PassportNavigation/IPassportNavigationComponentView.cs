@@ -18,7 +18,7 @@ namespace DCL.Social.Passports
         void SetOwnUserTexts(bool isOwnUser);
         void SetDescription(string description);
         void SetAdditionalInfo(List<(Sprite logo, string title, string value)> additionalFields);
-        void SetLinks(List<(string title, string url)> links);
+        void SetLinks(List<UserProfileModel.Link> links);
         void SetEquippedWearables(WearableItem[] wearables, string bodyShapeId);
         void SetCollectibleWearables(WearableItem[] wearables);
         void SetCollectibleWearablesLoadingActive(bool isActive);

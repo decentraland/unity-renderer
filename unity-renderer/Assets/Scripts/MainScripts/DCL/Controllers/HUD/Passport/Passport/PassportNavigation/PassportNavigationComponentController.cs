@@ -30,7 +30,7 @@ namespace DCL.Social.Passports
         private readonly IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider;
         private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
         private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
-        private readonly List<(string title, string url)> links = new ();
+        private readonly List<UserProfileModel.Link> links = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -176,8 +176,7 @@ namespace DCL.Social.Passports
                                 userProfile.RealName));
 
                         if (userProfile.Links != null)
-                            foreach (var link in userProfile.Links)
-                                links.Add((link.title, link.url));
+                            links.AddRange(userProfile.Links);
                     }
                     else
                         filteredDescription = ExtractLinks(filteredDescription, links);
@@ -364,7 +363,7 @@ namespace DCL.Social.Passports
             dataStore.HUDs.currentPlayerId.Set((null, null));
         }
 
-        private string ExtractLinks(string description, List<(string title, string url)> linkBuffer)
+        private string ExtractLinks(string description, ICollection<UserProfileModel.Link> linkBuffer)
         {
             MatchCollection matches = linksRegex.Matches(description);
 
@@ -372,7 +371,7 @@ namespace DCL.Social.Passports
 
             foreach (Match match in matches)
             {
-                linkBuffer.Add((title: match.Groups[1].Value, url: match.Groups[2].Value));
+                linkBuffer.Add(new UserProfileModel.Link(match.Groups[1].Value, match.Groups[2].Value));
                 description = description.Replace(match.Value, "");
             }
 

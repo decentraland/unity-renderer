@@ -261,7 +261,7 @@ namespace DCL.Social.Passports
             }
         }
 
-        public void SetLinks(List<(string title, string url)> links)
+        public void SetLinks(List<UserProfileModel.Link> links)
         {
             linksTitle.SetActive(links.Count > 0);
             linksContainer.SetActive(links.Count > 0);
