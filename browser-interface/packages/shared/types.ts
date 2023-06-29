@@ -452,8 +452,8 @@ export type ChatMessage = {
   recipient?: string | undefined
   timestamp: number
   body: string
-  receiverId: string | undefined | null
-  channelName: string | undefined | null
+  receiverId?: string | undefined
+  channelName?: string | undefined
 }
 
 export type AddChatMessagesPayload = {

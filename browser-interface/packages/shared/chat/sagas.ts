@@ -69,9 +69,7 @@ function* showWelcomeMessage() {
       messageId: uuid(),
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: 'Type /help for info about controls',
-      channelName: '',
-      receiverId: ''
+      body: 'Type /help for info about controls'
     })
   )
 }
@@ -133,9 +131,7 @@ function* handleSendMessage(action: SendMessage) {
         messageId: uuid(),
         sender: 'Decentraland',
         body: `That command doesn’t exist. Type /help for a full list of commands.`,
-        timestamp: Date.now(),
-        channelName: '',
-        receiverId: ''
+        timestamp: Date.now()
       }
     }
 
@@ -161,9 +157,7 @@ function* handleSendMessage(action: SendMessage) {
         sender: currentUserId,
         recipient,
         body: message,
-        timestamp: Date.now(),
-        channelName: '',
-        receiverId: ''
+        timestamp: Date.now()
       }
       yield put(sendChannelMessage(recipient, entry))
     } else {
@@ -172,9 +166,7 @@ function* handleSendMessage(action: SendMessage) {
         messageId: uuid(),
         timestamp: Date.now(),
         sender: currentUserId,
-        body: message,
-        channelName: '',
-        receiverId: ''
+        body: message
       }
       sendPublicChatMessage(message)
 
@@ -262,9 +254,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: response,
-      channelName: '',
-      receiverId: ''
+      body: response
     }
   })
 
@@ -282,9 +272,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: response,
-      channelName: '',
-      receiverId: ''
+      body: response
     }
   })
 
@@ -302,9 +290,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: response,
-      channelName: '',
-      receiverId: ''
+      body: response
     }
   })
 
@@ -328,9 +314,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: strings ? `Players around you:\n${strings}` : 'No other players are near to your location',
-      channelName: '',
-      receiverId: ''
+      body: strings ? `Players around you:\n${strings}` : 'No other players are near to your location'
     }
   })
 
@@ -356,9 +340,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: `Your Display Name is ${currentUserProfile.name}.`,
-      channelName: '',
-      receiverId: ''
+      body: `Your Display Name is ${currentUserProfile.name}.`
     }
   })
 
@@ -372,9 +354,7 @@ function initChatCommands() {
           messageType: ChatMessageType.SYSTEM,
           sender: 'Decentraland',
           timestamp: Date.now(),
-          body: `Expression ${expression} is not one of ${validExpressions.map((_) => `"${_}"`).join(', ')}`,
-          channelName: '',
-          receiverId: ''
+          body: `Expression ${expression} is not one of ${validExpressions.map((_) => `"${_}"`).join(', ')}`
         }
       }
 
@@ -392,9 +372,7 @@ function initChatCommands() {
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: '',
-        channelName: '',
-        receiverId: ''
+        body: ''
       }
     }
   )
@@ -413,9 +391,7 @@ function initChatCommands() {
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: `Cannot find user ${userName}`,
-        channelName: '',
-        receiverId: ''
+        body: `Cannot find user ${userName}`
       }
     }
 
@@ -425,9 +401,7 @@ function initChatCommands() {
       sender: currentUserId,
       recipient: user.userId,
       timestamp: Date.now(),
-      body: message,
-      channelName: '',
-      receiverId: ''
+      body: message
     }
 
     store.dispatch(sendPrivateMessage(user.userId, chatMessage))
@@ -457,9 +431,7 @@ function initChatCommands() {
           messageType: ChatMessageType.SYSTEM,
           sender: 'Decentraland',
           timestamp: Date.now(),
-          body: `You cannot ${actionName} yourself.`,
-          channelName: '',
-          receiverId: ''
+          body: `You cannot ${actionName} yourself.`
         }
       }
 
@@ -470,9 +442,7 @@ function initChatCommands() {
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: `You ${pastTense} user ${username}.`,
-        channelName: '',
-        receiverId: ''
+        body: `You ${pastTense} user ${username}.`
       }
     } else {
       return {
@@ -480,9 +450,7 @@ function initChatCommands() {
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: `User not found ${JSON.stringify(username)}.`,
-        channelName: '',
-        receiverId: ''
+        body: `User not found ${JSON.stringify(username)}.`
       }
     }
   }
@@ -520,9 +488,7 @@ function initChatCommands() {
           .filter((name) => !excludeListChannels.includes(name))
           .map((name) => `\t/${name}: ${chatCommands[name].description}`)
           .concat('\t/help: Show this list of commands')
-          .join('\n')}`,
-      channelName: '',
-      receiverId: ''
+          .join('\n')}`
     }
   })
 
@@ -533,9 +499,7 @@ function initChatCommands() {
       sender: 'Decentraland',
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: `\nExplorer: ${explorerVersion}\n`,
-      channelName: '',
-      receiverId: ''
+      body: `\nExplorer: ${explorerVersion}\n`
     }
   })
 
@@ -564,9 +528,7 @@ function initChatCommands() {
       messageType: ChatMessageType.SYSTEM,
       sender: 'Decentraland',
       timestamp: Date.now(),
-      body: 'Looking for other players...',
-      channelName: '',
-      receiverId: ''
+      body: 'Looking for other players...'
     }
   })
 
@@ -577,9 +539,7 @@ function initChatCommands() {
         messageId: uuid(),
         sender: 'Decentraland',
         body: `That command doesn’t exist. Type /help for a full list of commands.`,
-        timestamp: Date.now(),
-        channelName: '',
-        receiverId: ''
+        timestamp: Date.now()
       }
     }
     const client: SocialAPI | null = getSocialClient(store.getState())
@@ -589,9 +549,7 @@ function initChatCommands() {
         sender: 'Decentraland',
         messageType: ChatMessageType.SYSTEM,
         timestamp: Date.now(),
-        body: 'Error joining/creating channel.',
-        channelName: '',
-        receiverId: ''
+        body: 'Error joining/creating channel.'
       }
     }
 
@@ -603,9 +561,7 @@ function initChatCommands() {
       sender: 'Decentraland',
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: `Joining channel ${channelId}`,
-      channelName: '',
-      receiverId: ''
+      body: `Joining channel ${channelId}`
     }
   })
 
@@ -616,9 +572,7 @@ function initChatCommands() {
         messageId: uuid(),
         sender: 'Decentraland',
         body: `That command doesn’t exist. Type /help for a full list of commands.`,
-        timestamp: Date.now(),
-        channelName: '',
-        receiverId: ''
+        timestamp: Date.now()
       }
     }
     store.dispatch(leaveChannel(channelId))
@@ -628,9 +582,7 @@ function initChatCommands() {
       sender: 'Decentraland',
       messageType: ChatMessageType.SYSTEM,
       timestamp: Date.now(),
-      body: `Leaving channel`,
-      channelName: '',
-      receiverId: ''
+      body: `Leaving channel`
     }
   })
 }
@@ -644,9 +596,7 @@ function getDebugPanelMessage() {
     sender: 'Decentraland',
     messageType: ChatMessageType.SYSTEM,
     timestamp: Date.now(),
-    body: 'Toggling FPS counter',
-    channelName: '',
-    receiverId: ''
+    body: 'Toggling FPS counter'
   }
 }
 
@@ -679,9 +629,7 @@ function parseAndSendDetectABMessage(message: string) {
     sender: 'Decentraland',
     messageType: ChatMessageType.SYSTEM,
     timestamp: Date.now(),
-    body: 'Sending detect ABs message',
-    channelName: '',
-    receiverId: ''
+    body: 'Sending detect ABs message'
   }
 }
 
