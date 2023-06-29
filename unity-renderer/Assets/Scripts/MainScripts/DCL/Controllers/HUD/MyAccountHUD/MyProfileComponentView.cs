@@ -62,6 +62,7 @@ namespace DCL.MyAccount
         [Header("Additional Info")]
         [SerializeField] internal RectTransform additionalInfoContainerTransform;
         [SerializeField] internal MyProfileAdditionalInfoListComponentView additionalInfoList;
+        [SerializeField] internal CanvasGroup additionalInfoCanvasGroup;
 
         public event Action<string> OnCurrentNameEdited;
         public event Action<string, bool> OnCurrentNameSubmitted;
@@ -330,6 +331,13 @@ namespace DCL.MyAccount
         public void SetAdditionalInfoValues(Dictionary<string, (string title, string value)> values)
         {
             additionalInfoList.SetValues(values);
+        }
+
+        public void SetAdditionalInfoEnabled(bool isEnabled)
+        {
+            additionalInfoCanvasGroup.alpha = isEnabled ? 1f : DISABLED_SECTION_ALPHA;
+            additionalInfoCanvasGroup.interactable = isEnabled;
+            additionalInfoCanvasGroup.blocksRaycasts = isEnabled;
         }
 
         public void RefreshContentLayout() =>

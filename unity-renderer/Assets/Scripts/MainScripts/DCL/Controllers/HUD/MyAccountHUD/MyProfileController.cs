@@ -621,6 +621,8 @@ namespace DCL.MyAccount
             {
                 Options = options,
             });
+
+            view.SetAdditionalInfoEnabled(!userProfile.isGuest);
         }
 
         private string[] GetEmploymentStatusList() =>
