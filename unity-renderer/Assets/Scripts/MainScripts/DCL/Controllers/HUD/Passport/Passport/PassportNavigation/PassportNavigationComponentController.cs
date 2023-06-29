@@ -93,19 +93,17 @@ namespace DCL.Social.Passports
 
         public void UpdateWithUserProfile(UserProfile userProfile)
         {
-            async UniTaskVoid UpdateWithUserProfileAsync()
+            async UniTaskVoid UpdateWithUserProfileAsync(CancellationToken cancellationToken)
             {
-                var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                string filteredName = await FilterProfanityContentAsync(userProfile.userName).AttachExternalCancellation(ct);
+                string filteredName = await FilterProfanityContentAsync(userProfile.userName, cancellationToken);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
                 view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
                 if (!userProfile.isGuest)
                 {
-                    string filteredDescription = await FilterProfanityContentAsync(userProfile.description)
-                       .AttachExternalCancellation(ct);
+                    string filteredDescription = await FilterProfanityContentAsync(userProfile.description, cancellationToken);
 
                     List<(Sprite logo, string title, string value)> additionalFields = new ();
                     List<(string title, string url)> links;
@@ -182,16 +180,16 @@ namespace DCL.Social.Passports
                     view.SetAdditionalInfo(additionalFields);
                     view.SetLinks(links);
                     view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                    LoadAndShowOwnedNamesAsync(userProfile, ct).Forget();
-                    LoadAndShowOwnedLandsAsync(userProfile, ct).Forget();
-                    LoadAndDisplayEquippedWearablesAsync(userProfile, ct).Forget();
+                    LoadAndShowOwnedNamesAsync(userProfile, cancellationToken).Forget();
+                    LoadAndShowOwnedLandsAsync(userProfile, cancellationToken).Forget();
+                    LoadAndDisplayEquippedWearablesAsync(userProfile, cancellationToken).Forget();
                 }
             }
 
             cts?.Cancel();
             cts?.Dispose();
             cts = new CancellationTokenSource();
-            UpdateWithUserProfileAsync().Forget();
+            UpdateWithUserProfileAsync(cts.Token).Forget();
         }
 
         public void CloseAllNFTItemInfos() =>
@@ -335,9 +333,9 @@ namespace DCL.Social.Passports
             }
         }
 
-        private async UniTask<string> FilterProfanityContentAsync(string filterContent) =>
+        private async UniTask<string> FilterProfanityContentAsync(string filterContent, CancellationToken cancellationToken) =>
             IsProfanityFilteringEnabled()
-                ? await profanityFilter.Filter(filterContent)
+                ? await profanityFilter.Filter(filterContent, cancellationToken)
                 : filterContent;
 
         private bool IsProfanityFilteringEnabled() =>
