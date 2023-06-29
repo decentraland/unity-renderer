@@ -36,7 +36,8 @@ namespace DCL.MyAccount
             view.OnPrivacyPolicyClicked += OnPrivacyPolicyClicked;
 
             userProfileBridge.GetOwn().OnUpdate += OnOwnUserProfileUpdate;
-            if (!string.IsNullOrEmpty(userProfileBridge.GetOwn().userId))
+            bool isProfileInitialized = !string.IsNullOrEmpty(userProfileBridge.GetOwn().userId);
+            if (isProfileInitialized)
                 OnOwnUserProfileUpdate(userProfileBridge.GetOwn());
         }
 
