@@ -22,6 +22,7 @@ namespace DCL.MyAccount
         public Action OnAdditionalFieldRemoved;
 
         private readonly Dictionary<string, MyProfileAdditionalInfoEntryComponentView> entries = new ();
+        private readonly List<ToggleComponentModel> optionToggles = new ();
 
         private string currentOptionId;
         private AdditionalInfoOptionsModel optionsModel;
@@ -57,23 +58,27 @@ namespace DCL.MyAccount
         {
             optionsModel = model;
 
-            var options = model.Options
-                                             .Where(pair => pair.Value.IsAvailable)
-                                             .Select(pair => new ToggleComponentModel
-                                              {
-                                                  text = pair.Value.Name,
-                                                  id = pair.Key,
-                                                  isOn = false,
-                                                  isTextActive = true,
-                                                  changeTextColorOnSelect = true,
-                                              })
-                                             .ToList();
+            optionToggles.Clear();
 
-            optionsDropdown.SetOptions(options);
-
-            if (options.Count > 0)
+            foreach ((string optionId, AdditionalInfoOptionsModel.Option option) in model.Options)
             {
-                ToggleComponentModel option = options[0];
+                if (!option.IsAvailable) continue;
+
+                optionToggles.Add(new ToggleComponentModel
+                {
+                    text = option.Name,
+                    id = optionId,
+                    isOn = false,
+                    isTextActive = true,
+                    changeTextColorOnSelect = true,
+                });
+            }
+
+            optionsDropdown.SetOptions(optionToggles);
+
+            if (optionToggles.Count > 0)
+            {
+                ToggleComponentModel option = optionToggles[0];
                 ChangeCurrentOption(option.id, option.text);
             }
         }
