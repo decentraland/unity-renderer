@@ -1,4 +1,6 @@
 using DCL;
+using DCL.Browser;
+using DCL.MyAccount;
 using NUnit.Framework;
 using System.Collections;
 using NSubstitute;
@@ -26,7 +28,12 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         allUIHiddenOriginalValue = CommonScriptableObjects.allUIHidden.Get();
         CommonScriptableObjects.allUIHidden.Set(false);
-        controller = new ProfileHUDController(userProfileBridge, socialAnalytics, Substitute.For<DataStore>());
+        var dataStore = new DataStore();
+
+        controller = new ProfileHUDController(Substitute.For<IProfileHUDView>(),
+            userProfileBridge, socialAnalytics, dataStore,
+            new MyAccountCardController(Substitute.For<IMyAccountCardComponentView>(),
+                dataStore, userProfileBridge, null, Substitute.For<IBrowserBridge>()));
         baseView = controller.view.GameObject.GetComponent<BaseComponentView>();
     }
 

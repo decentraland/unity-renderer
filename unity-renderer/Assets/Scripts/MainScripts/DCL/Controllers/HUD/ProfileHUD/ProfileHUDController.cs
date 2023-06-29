@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Browser;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.MyAccount;
@@ -27,7 +26,6 @@ public class ProfileHUDController : IHUD
     private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
     private const string URL_TERMS_OF_USE = "https://decentraland.org/terms";
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
-    private const string VIEW_NAME = "_ProfileHUD";
     private const string LINKS_REGEX = @"\[(.*?)\)";
     private const float FETCH_MANA_INTERVAL = 60;
 
@@ -53,17 +51,17 @@ public class ProfileHUDController : IHUD
     public RectTransform TutorialTooltipReference => view.TutorialReference;
 
     public ProfileHUDController(
+        IProfileHUDView view,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        MyAccountCardController myAccountCardController)
     {
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
-
-        GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
-        viewGo.name = VIEW_NAME;
-        view = viewGo.GetComponent<IProfileHUDView>();
+        this.view = view;
+        this.myAccountCardController = myAccountCardController;
 
         dataStore.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
         dataStore.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
@@ -96,13 +94,6 @@ public class ProfileHUDController : IHUD
             view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
         }
 
-        myAccountCardController = new MyAccountCardController(
-            view.MyAccountCardView,
-            dataStore,
-            userProfileBridge,
-            DCL.SettingsCommon.Settings.i,
-            new WebInterfaceBrowserBridge());
-
         ownUserProfile.OnUpdate += OnProfileUpdated;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)
@@ -133,9 +124,6 @@ public class ProfileHUDController : IHUD
         view.ShowExpanded(isOpenCurrent, dataStore.myAccount.isInitialized.Get());
     }
 
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) =>
-        view.GameObject.SetActive(current);
-
     public void SetManaBalance(string balance) =>
         view?.SetManaBalance(balance);
 
@@ -161,7 +149,7 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         view.LogedOutPressed -= OnLoggedOut;
         view.SignedUpPressed -= OnSignedUp;
@@ -186,11 +174,6 @@ public class ProfileHUDController : IHUD
         myAccountCardController.Dispose();
         saveNameCancellationToken.SafeCancelAndDispose();
         saveDescriptionCancellationToken.SafeCancelAndDispose();
-    }
-
-    protected virtual GameObject GetViewPrefab()
-    {
-        return Resources.Load<GameObject>("ProfileHUD_V2");
     }
 
     private void OnProfileUpdated(UserProfile profile) =>
