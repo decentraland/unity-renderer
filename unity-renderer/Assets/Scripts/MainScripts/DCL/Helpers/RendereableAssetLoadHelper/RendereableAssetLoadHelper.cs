@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
-using Sentry;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,6 +40,7 @@ namespace DCL.Components
         private readonly ContentProvider contentProvider;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
+        private AssetPromise_SceneAB sceneABPromise;
         private string currentLoadingSystem;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
         private string targetUrl;
@@ -107,14 +107,14 @@ namespace DCL.Components
             switch (finalLoadingType)
             {
                 case LoadingType.ASSET_BUNDLE_ONLY:
-                    LoadAssetBundleAsync(targetUrl, OnSuccessEvent, OnFailEvent, false).Forget();
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.GLTF_ONLY:
                     LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false);
                     break;
                 case LoadingType.DEFAULT:
                 case LoadingType.ASSET_BUNDLE_WITH_GLTF_FALLBACK:
-                    LoadAssetBundleAsync(targetUrl, OnSuccessEvent, exception => LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false), true).Forget();
+                    LoadAssetBundle(targetUrl, OnSuccessEvent, exception => LoadGLTFast(targetUrl, OnSuccessEvent, OnFailEvent, false), true);
                     break;
             }
         }
@@ -128,6 +128,8 @@ namespace DCL.Components
         void UnloadAB()
         {
             if (abPromise != null) { AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise); }
+
+            if (sceneABPromise != null) { AssetPromiseKeeper_SceneAB.i.Forget(sceneABPromise); }
         }
 
         void UnloadGLTFast()
@@ -135,7 +137,7 @@ namespace DCL.Components
             if (gltfastPromise != null) { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
         }
 
-        private async UniTask LoadAssetBundleAsync(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
+        private void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = AB_GO_NAME_PREFIX;
 
@@ -147,42 +149,55 @@ namespace DCL.Components
                     Debug.Log("Forgetting not null promise..." + targetUrl);
             }
 
-            string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
-
-            if (string.IsNullOrEmpty(bundlesBaseUrl))
-            {
-                OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"), hasFallback);
-                return;
-            }
-
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
                 OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"), hasFallback);
                 return;
             }
 
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF)) { FetchAssetBundlesManifest(OnSuccess, OnFail, hasFallback, hash); }
+            else
             {
-                if (contentProvider.assetBundles.Contains(hash))
-                    bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
-                else
-                {
-                    var sceneAb = await FetchSceneAssetBundles(contentProvider.sceneCid, contentProvider.baseUrlBundles);
-                    if (sceneAb.IsSceneConverted())
-                    {
-                        contentProvider.assetBundles = sceneAb.GetConvertedFiles();
-                        contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
-                        contentProvider.assetBundlesVersion = sceneAb.GetVersion();
-                        bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
-                    }
-                    else
-                    {
-                        OnFailWrapper(OnFail, new Exception("Asset not converted to asset bundles"), hasFallback);
-                        return;
-                    }
-                }
-            }
+                string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
 
+                if (string.IsNullOrEmpty(bundlesBaseUrl))
+                {
+                    OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"), hasFallback);
+                    return;
+                }
+
+                LoadAssetBundles(OnSuccess, OnFail, hasFallback, bundlesBaseUrl, hash);
+            }
+        }
+
+        private void FetchAssetBundlesManifest(Action<Rendereable> onSuccess, Action<Exception> onFail, bool hasFallback, string hash)
+        {
+            if (contentProvider.assetBundles.Contains(hash))
+                LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
+            else
+            {
+                sceneABPromise = new AssetPromise_SceneAB(contentProvider.baseUrlBundles, contentProvider.sceneCid);
+
+                sceneABPromise.OnSuccessEvent += ab =>
+                {
+                    if (ab.IsSceneConverted())
+                    {
+                        contentProvider.assetBundles = ab.GetConvertedFiles();
+                        contentProvider.assetBundlesBaseUrl = ab.GetBaseUrl();
+                        contentProvider.assetBundlesVersion = ab.GetVersion();
+                        LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
+                    }
+                    else { OnFailWrapper(onFail, new Exception("Asset not converted to asset bundles"), hasFallback); }
+                };
+
+                sceneABPromise.OnFailEvent += (_, exception) => { OnFailWrapper(onFail, exception, hasFallback); };
+
+                AssetPromiseKeeper_SceneAB.i.Keep(sceneABPromise);
+            }
+        }
+
+        private void LoadAssetBundles(Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback, string bundlesBaseUrl, string hash)
+        {
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
@@ -214,14 +229,6 @@ namespace DCL.Components
             abPromise.OnFailEvent += (x, exception) => OnFailWrapper(OnFail, exception, hasFallback);
 
             AssetPromiseKeeper_AB_GameObject.i.Keep(abPromise);
-        }
-
-        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
-        {
-            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
-            AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
-            await promiseSceneAb.ToUniTask();
-            return promiseSceneAb.asset;
         }
 
         private void LoadGLTFast(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
@@ -258,10 +265,7 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) =>
-            {
-                OnFailWrapper(OnFail, exception, hasFallback);
-            };
+            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }
