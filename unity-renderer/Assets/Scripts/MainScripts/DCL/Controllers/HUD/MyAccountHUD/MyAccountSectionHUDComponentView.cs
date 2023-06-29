@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.MyAccount
@@ -13,13 +16,20 @@ namespace DCL.MyAccount
         public IMyProfileComponentView CurrentMyProfileView => myProfileComponentView;
 
         private Transform thisTransform;
-        private Coroutine accountSettingsUpdatedToastRoutine;
+        private CancellationTokenSource showAccountSettingsCancellationToken = new ();
 
         public override void Awake()
         {
             base.Awake();
 
             thisTransform = transform;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            showAccountSettingsCancellationToken.SafeCancelAndDispose();
         }
 
         public override void RefreshControl() { }
@@ -44,20 +54,20 @@ namespace DCL.MyAccount
 
         public void ShowAccountSettingsUpdatedToast()
         {
-            if (accountSettingsUpdatedToastRoutine != null)
-                StopCoroutine(accountSettingsUpdatedToastRoutine);
+            async UniTaskVoid ShowAccountSettingsUpdatedToastAsync(CancellationToken cancellationToken)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            accountSettingsUpdatedToastRoutine = StartCoroutine(ShowAccountSettingsUpdatedToastCoroutine());
-        }
+                if (!accountSettingsUpdatedToast.gameObject.activeSelf)
+                    accountSettingsUpdatedToast.gameObject.SetActive(true);
 
-        private IEnumerator ShowAccountSettingsUpdatedToastCoroutine()
-        {
-            if (!accountSettingsUpdatedToast.gameObject.activeSelf)
-                accountSettingsUpdatedToast.gameObject.SetActive(true);
+                accountSettingsUpdatedToast.Show();
+                await UniTask.Delay(TimeSpan.FromSeconds(COPY_TOAST_VISIBLE_TIME), cancellationToken: cancellationToken);
+                accountSettingsUpdatedToast.Hide();
+            }
 
-            accountSettingsUpdatedToast.Show();
-            yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
-            accountSettingsUpdatedToast.Hide();
+            showAccountSettingsCancellationToken = showAccountSettingsCancellationToken.SafeRestart();
+            ShowAccountSettingsUpdatedToastAsync(showAccountSettingsCancellationToken.Token).Forget();
         }
     }
 }
