@@ -331,30 +331,43 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     private async UniTask UpdateCardsVisualProcess(CancellationToken ct)
     {
-        while (true)
+        try
         {
-            if (setPlacesTask != null)
+            while (true)
             {
-                await setPlacesTask.Invoke(ct);
-                setPlacesTask = null;
+                ct.ThrowIfCancellationRequested();
+                if (setPlacesTask != null)
+                {
+                    await setPlacesTask.Invoke(ct);
+                    setPlacesTask = null;
+                }
+
+                ct.ThrowIfCancellationRequested();
+                if (setLiveEventsTask != null)
+                {
+                    await setLiveEventsTask.Invoke(ct);
+                    setLiveEventsTask = null;
+                }
+
+                ct.ThrowIfCancellationRequested();
+                if(setTrendingTask != null)
+                {
+                    await setTrendingTask.Invoke(ct);
+                    setTrendingTask = null;
+                }
+
+                ct.ThrowIfCancellationRequested();
+
+                while (poolsPrewarmAsyncsBuffer.Count > 0)
+                {
+
+                    ct.ThrowIfCancellationRequested();
+                    await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
+                }
+
+                await UniTask.Yield();
             }
-
-            if (setLiveEventsTask != null)
-            {
-                await setLiveEventsTask.Invoke(ct);
-                setLiveEventsTask = null;
-            }
-
-            if(setTrendingTask != null)
-            {
-                await setTrendingTask.Invoke(ct);
-                setTrendingTask = null;
-            }
-
-            while (poolsPrewarmAsyncsBuffer.Count > 0)
-                await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
-
-            await UniTask.Yield();
         }
+        catch (OperationCanceledException) { }
     }
 }
