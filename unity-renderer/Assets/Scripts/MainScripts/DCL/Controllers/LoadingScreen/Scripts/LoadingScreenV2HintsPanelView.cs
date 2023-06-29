@@ -72,13 +72,11 @@ namespace DCL.LoadingScreen.V2
 
         public void OnLeftClicked()
         {
-            Debug.Log("FD:: HintsPanelView - OnLeftClicked");
             OnPreviousClicked?.Invoke();
         }
 
         public void OnRightClicked()
         {
-            Debug.Log("FD:: HintsPanelView - OnRightClicked");
             OnNextClicked?.Invoke();
         }
 

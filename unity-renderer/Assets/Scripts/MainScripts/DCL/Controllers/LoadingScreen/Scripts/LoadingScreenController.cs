@@ -68,8 +68,6 @@ namespace DCL.LoadingScreen
 
         public void Dispose()
         {
-            Debug.Log("FD:: Disposing --> LoadingScreenController");
-
             view.Dispose();
             percentageController.Dispose();
             timeoutController.Dispose();
@@ -119,28 +117,21 @@ namespace DCL.LoadingScreen
 
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
-            Debug.Log("FD:: TeleportRequested 1");
             if (onSignUpFlow) return;
-            Debug.Log("FD:: TeleportRequested 2");
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
             if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
-                Debug.Log("FD:: TeleportRequested 3");
                 currentDestination = currentDestinationCandidate;
 
-                //On a teleport, to copy previos behaviour, we show the teleporting screen
-                if (loadingScreenHintsController == null)
-                    Debug.Log("FD:: loadingScreenHintsController is null");
+                //On a teleport, to copy previos behaviour, we show the hints screen
                 loadingScreenHintsController.Initialize();
-
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
             }
             else if (IsSceneLoaded(currentDestinationCandidate))
             {
-                Debug.Log("FD:: TeleportRequested 4");
                 HandlePlayerLoading();
             }
         }

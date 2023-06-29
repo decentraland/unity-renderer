@@ -40,17 +40,12 @@ namespace DCL.LoadingScreen.V2
 
         public LoadingScreenHintsController(HintRequestService hintRequestService, ILoadingScreenView loadingScreenView, IAddressableResourceProvider addressableProvider)
         {
-            // addressableProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
             this.addressableProvider = addressableProvider;
             this.hintRequestService = hintRequestService;
             this.loadingScreenView = loadingScreenView;
             this.loadingScreenV2HintsPanelView = loadingScreenView.GetHintsPanelView();
 
             ConfigureShortcuts();
-            // hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
-            // hintViewPool = new List<HintView>();
-
-            // InitializeHintsAsync();
 
             Initialize();
         }
@@ -58,12 +53,10 @@ namespace DCL.LoadingScreen.V2
         // This is initialized when teleporting to a new scene (also when loading the game for the first time)
         public void Initialize()
         {
-            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - 00:  " + hintsControllerInitialized);
             if (hintsControllerInitialized)
                 return;
 
             hintsControllerInitialized = true;
-            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - Reinitialize");
             hintsDictionary = new Dictionary<int, Tuple<Hint, Texture2D>>();
             hintViewPool = new List<HintView>();
 
@@ -72,31 +65,10 @@ namespace DCL.LoadingScreen.V2
 
         private async void InitializeHintsAsync()
         {
-            Debug.Log("FD:: Initializing --> LoadingScreenHintsController - InitializeHintsAsync");
             cancellationTokenSource = new CancellationTokenSource();
-
-            if (addressableProvider == null) {
-                Debug.Log("FD:: addressableProvider is null");
-            }
             hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationTokenSource.Token);
-
-            if (hintViewPrefab == null) {
-                Debug.Log("FD:: hintViewPrefab is null");
-            }
-
-            if (loadingScreenView == null) {
-                Debug.Log("FD:: loadingScreenView is null");
-            }
             var hintsContainer = loadingScreenView.GetHintContainer();
 
-            if (hintsContainer == null) {
-                Debug.Log("FD:: hintsContainer is null");
-            }
-
-            // FD:: original without debugs
-            // cancellationTokenSource = new CancellationTokenSource();
-            // hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cancellationTokenSource.Token);
-            // var hintsContainer = loadingScreenView.GetHintContainer();
             // Initializing empty hints views
             for (var i = 0; i < MAX_HINTS; i++)
             {
@@ -159,13 +131,11 @@ namespace DCL.LoadingScreen.V2
 
         public void CarouselNextHint()
         {
-            Debug.Log("FD:: LoadingScreenHintsController - CarouselNextHint");
             hintViewManager.CarouselNextHint();
         }
 
         public void CarouselPreviousHint()
         {
-            Debug.Log("FD:: LoadingScreenHintsController - CarouselPreviousHint");
             hintViewManager.CarouselPreviousHint();
         }
 
@@ -176,7 +146,6 @@ namespace DCL.LoadingScreen.V2
 
         public void Dispose()
         {
-            Debug.Log("FD:: Disposing --> LoadingScreenHintsController");
             hintsControllerInitialized = false;
             loadingScreenV2HintsPanelView.CleanUp();
 
@@ -208,10 +177,6 @@ namespace DCL.LoadingScreen.V2
 
         private void OnShortcutInputActionTriggered(DCLAction_Trigger action)
         {
-            Debug.Log("FD:: LoadingScreenHintsController - OnShortcutInputActionTriggered");
-            // if (!shortcutsCanBeUsed)
-            //     return;
-
             switch (action)
             {
                 case DCLAction_Trigger.LoadingScreenV2HintsLeft:
