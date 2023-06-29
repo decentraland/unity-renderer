@@ -129,14 +129,18 @@ namespace DCL.MyAccount
             lifeTimeCancellationToken = lifeTimeCancellationToken.SafeRestart();
             view.SetLoadingActive(true);
 
-            LoadAndShowOwnedNamesAsync(lifeTimeCancellationToken.Token)
-               .ContinueWith(() => view.SetLoadingActive(false))
-               .Forget();
-
             ShowAboutDescription(ownUserProfile);
             ShowLinks(ownUserProfile);
             ShowAdditionalInfoOptions(ownUserProfile);
             ShowAdditionalInfoValues(ownUserProfile);
+
+            LoadAndShowOwnedNamesAsync(lifeTimeCancellationToken.Token)
+               .ContinueWith(() =>
+                {
+                    view.SetLoadingActive(false);
+                    view.RefreshContentLayout();
+                })
+               .Forget();
         }
 
         private void CloseSection() =>

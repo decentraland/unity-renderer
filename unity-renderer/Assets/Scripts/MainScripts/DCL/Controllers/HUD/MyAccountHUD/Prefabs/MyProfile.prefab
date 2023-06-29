@@ -967,6 +967,7 @@ MonoBehaviour:
     AboutDescription: 
   mainContainer: {fileID: 1009725982733008140}
   loadingContainer: {fileID: 9045699770010660240}
+  contentTransform: {fileID: 8303104940016665670}
   headerContainerTransform: {fileID: 7368521058794980880}
   disclaimerButton: {fileID: 5537855394725938374}
   namesContainerTransform: {fileID: 6301706684044671907}

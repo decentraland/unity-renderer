@@ -16,6 +16,7 @@ namespace DCL.MyAccount
         [Header("General")]
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
+        [SerializeField] internal RectTransform contentTransform;
 
         [Header("Header")]
         [SerializeField] internal RectTransform headerContainerTransform;
@@ -330,6 +331,9 @@ namespace DCL.MyAccount
         {
             additionalInfoList.SetValues(values);
         }
+
+        public void RefreshContentLayout() =>
+            Utils.ForceRebuildLayoutImmediate(contentTransform);
 
         private void UpdateNameCharLimit(int currentLenght, int maxLength) =>
             nameCharCounter.text = $"{currentLenght}/{maxLength}";

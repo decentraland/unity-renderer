@@ -1510,7 +1510,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   signedInWalletContainer: {fileID: 5811330195062425537}
   guestContainer: {fileID: 5490972722128187245}
-  connectWalletView: {fileID: 0}
+  connectWalletView: {fileID: 1475315907500178686}
   walletAddressText: {fileID: 7257523532725326773}
   copyWalletAddressButton: {fileID: 2604592929085150901}
   copyWalletAddressToast: {fileID: 6047998929117868902}
@@ -4319,6 +4319,53 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6837308825107588461}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4399514196074739528 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7200471837702935077, guid: a85688c1f1a68884f88fdfda26f08ea9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6837308825107588461}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5154922023645420472 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1831547100791799509, guid: a85688c1f1a68884f88fdfda26f08ea9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6837308825107588461}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &9172703197902437782 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2425466382528157947, guid: a85688c1f1a68884f88fdfda26f08ea9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6837308825107588461}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1475315907500178686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9172703197902437782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f837bbcb3e465ae4389ceb142984b98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  backgroundButton: {fileID: 0}
+  closeButton: {fileID: 0}
+  connectButton: {fileID: 4399514196074739528}
+  helpButton: {fileID: 5154922023645420472}
 --- !u!1001 &7322008352104685129
 PrefabInstance:
   m_ObjectHideFlags: 0
