@@ -577,7 +577,7 @@ namespace DCL.MyAccount
                 DateFormat = "dd/MM/yyyy",
                 OnValueSubmitted = birthDate =>
                 {
-                    var dateTime = DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+                    var dateTime = DateTime.ParseExact(birthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
 
                     SaveAdditionalInfo(new AdditionalInfo(additionalInfo)
                     {
