@@ -50,6 +50,7 @@ namespace DCL.Quests
                 activeQuest.questRewards = questRewards;
             }
 
+            Debug.Log(activeQuest.questName + " " + activeQuest.questRewards.Count);
             questLogComponentView.AddActiveQuest(activeQuest, creatorName);
         }
 
