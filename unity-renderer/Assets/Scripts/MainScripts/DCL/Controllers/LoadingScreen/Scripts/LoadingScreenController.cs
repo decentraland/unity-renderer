@@ -99,7 +99,8 @@ namespace DCL.LoadingScreen
             if (loaded)
             {
                 FadeOutView();
-                loadingScreenHintsController.Dispose();
+
+                loadingScreenHintsController?.Dispose();
             }
 
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
@@ -124,8 +125,8 @@ namespace DCL.LoadingScreen
             {
                 currentDestination = currentDestinationCandidate;
 
-                //On a teleport, to copy previos behaviour, we show the hints screen
-                loadingScreenHintsController.Initialize();
+                loadingScreenHintsController?.Initialize();
+
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);

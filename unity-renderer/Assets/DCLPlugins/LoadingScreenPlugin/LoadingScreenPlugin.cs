@@ -37,13 +37,13 @@ namespace DCLPlugins.LoadingScreenPlugin
         {
             var loadingScreenView = CreateLoadingScreenView();
 
-            // FD:: remove the comment if LoadingScreenV2 is finalized
-            // if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
-            // {
+            // FD:: keeping this until LoadingScreenV2 is finalized
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
+            {
                 loadingScreenView.ToggleTeleportLoadingAnimation(false);
                 var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
                 loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
-            // }
+            }
 
             loadingScreenController = new LoadingScreenController(
                 loadingScreenView, loadingScreenHintsController,
@@ -61,9 +61,7 @@ namespace DCLPlugins.LoadingScreenPlugin
 
             loadingScreenController.Dispose();
 
-            // FD:: remove the comment if LoadingScreenV2 is finalized
-            // if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
-                loadingScreenHintsController.Dispose();
+            loadingScreenHintsController?.Dispose();
         }
     }
 }
