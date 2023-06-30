@@ -133,7 +133,7 @@ namespace DCL.Social.Friends
                 {
                     FriendRequest request = await friendsController.RejectFriendshipAsync(friendRequestId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage);
+                    socialAnalytics.SendFriendRequestRejected(request.From, request.To, "modal", request.HasBodyMessage, request.FriendRequestId);
 
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.RejectSuccess);
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);
@@ -163,7 +163,7 @@ namespace DCL.Social.Friends
                 {
                     FriendRequest request = await friendsController.AcceptFriendshipAsync(friendRequestId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage);
+                    socialAnalytics.SendFriendRequestApproved(request.From, request.To, "modal", request.HasBodyMessage, request.FriendRequestId);
 
                     view.SetState(ReceivedFriendRequestHUDModel.LayoutState.ConfirmSuccess);
                     await friendRequestHUDController.HideWithDelay(cancellationToken: cancellationToken);

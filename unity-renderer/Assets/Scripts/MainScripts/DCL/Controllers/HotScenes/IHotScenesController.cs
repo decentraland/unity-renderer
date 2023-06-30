@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -40,7 +41,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         [Serializable]
-        public class PlaceInfo
+        public class PlaceInfo : ISerializationCallbackReceiver
         {
             [Serializable]
             public class Realm
@@ -58,7 +59,10 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public string image;
             public string owner;
             public string[] tags;
-            public Vector2Int[] positions;
+            [SerializeField] private string[] positions;
+
+            public Vector2Int[] Positions;
+
             public string base_position;
             public string contact_name;
             public string contact_email;
@@ -82,14 +86,46 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int user_count;
             public int user_visits;
             public Realm[] realms_detail;
+
+            public void OnBeforeSerialize()
+            {
+                if (Positions == null)
+                {
+                    positions = null;
+                    return;
+                }
+
+                positions = new string[Positions.Length];
+                for (int i = 0; i < Positions.Length; i++)
+                    positions[i] = $"{Positions[i].x},{Positions[i].y}";
+            }
+
+            public void OnAfterDeserialize()
+            {
+                if (positions == null)
+                    return;
+                Positions = new Vector2Int[positions.Length];
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    string[] split = positions[i].Split(',');
+                    Positions[i] = new Vector2Int(int.Parse(split[0]), int.Parse(split[1]));
+                }
+            }
         }
 
         [Serializable]
-        public class PlacesAPIResponse
+        public class PlacesAPIResponse : PaginatedResponse
         {
             public bool ok;
             public int total;
             public List<PlaceInfo> data;
+        }
+
+        [Serializable]
+        public class PlacesAPIGetParcelResponse
+        {
+            public bool ok;
+            public PlaceInfo data;
         }
     }
 }

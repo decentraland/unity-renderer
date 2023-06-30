@@ -80,10 +80,9 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } } });
-
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } }));
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } } });
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } }));
         }
 
         [TearDown]
@@ -103,15 +102,14 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             systemUpdate();
 
@@ -165,15 +163,14 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.distance = DISTANCE;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, DISTANCE - 1, false))
-                }
-            });
+                })
+            );
 
             systemUpdate();
 
@@ -194,9 +191,8 @@ namespace Tests
         [Test]
         public void DetectPointerUp_WithPointerEvents()
         {
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -204,8 +200,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
@@ -278,9 +274,8 @@ namespace Tests
         {
             const float DISTANCE = 10;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -288,8 +283,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, DISTANCE - 1, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
@@ -327,15 +322,14 @@ namespace Tests
         [Test]
         public void DetectPointerUp_WithPointerEvents_OnOtherEntityThanPointerDown()
         {
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;

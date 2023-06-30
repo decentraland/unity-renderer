@@ -93,8 +93,8 @@ namespace ECSSystems.UIInputSenderSystem
         {
             var componentPool = new WrappedComponentPool<IWrappedComponent<PBUiInputResult>>(0, () => new ProtobufWrappedComponent<PBUiInputResult>(new PBUiInputResult()));
 
-            var model = new InternalUIInputResults();
-            model._dirty = dirty;
+            var model = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>());
+            model.dirty = dirty;
 
             foreach (var result in results)
             {

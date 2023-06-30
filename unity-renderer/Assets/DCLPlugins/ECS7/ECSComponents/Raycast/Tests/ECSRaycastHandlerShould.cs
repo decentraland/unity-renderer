@@ -50,7 +50,7 @@ namespace Tests
             entityRaycaster = scene.CreateEntity(512);
 
             // This is normally initialized by SceneStateHandler when a scene is loaded
-            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo(0, 0));
         }
 
         [TearDown]

@@ -23,7 +23,9 @@ namespace DCL.ECS7.ComponentWrapper.Generic
             }
 
             int index = list.Count - 1;
-            PooledWrappedComponent<T> result = new PooledWrappedComponent<T>(list[index], this);
+            T wrappedComponent = list[index];
+            wrappedComponent.ClearFields();
+            PooledWrappedComponent<T> result = new PooledWrappedComponent<T>(wrappedComponent, this);
             list.RemoveAt(index);
             return result;
         }

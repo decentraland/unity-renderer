@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.14901961}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -432,7 +432,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: By
+  m_text: BY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,
@@ -538,7 +538,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 22.5, y: 0}
+  m_AnchoredPosition: {x: 24.7, y: 0}
   m_SizeDelta: {x: 200, y: 19.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6925989283153063064
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TestCreator
+  m_text: TESTCREATOR
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,
@@ -579,8 +579,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292136399
-  m_fontColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
+    rgba: 4286344049
+  m_fontColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -875,11 +875,11 @@ MonoBehaviour:
   backgroundImage: {fileID: 5671349472727418851}
   deselectedNameColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
   selectedNameColor: {r: 0, g: 0, b: 0, a: 1}
-  deselectedCreatorColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
+  deselectedCreatorColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
   selectedCreatorColor: {r: 0.44313726, g: 0.41960785, b: 0.4862745, a: 1}
   selectedBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   deselectedBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
-  deselectedBackgroundColorTransparent: {r: 0, g: 0, b: 0, a: 0.14901961}
+  deselectedBackgroundColorTransparent: {r: 0, g: 0, b: 0, a: 0.5019608}
 --- !u!1001 &735823675655482092
 PrefabInstance:
   m_ObjectHideFlags: 0

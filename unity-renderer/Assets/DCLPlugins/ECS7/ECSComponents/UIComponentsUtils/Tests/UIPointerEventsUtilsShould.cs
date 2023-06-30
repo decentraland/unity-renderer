@@ -5,6 +5,7 @@ using DCL.ECSRuntime;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
@@ -61,7 +62,7 @@ namespace DCL.ECSComponents.Tests
         {
             ECSComponentData<InternalUIInputResults> internalCompData = new ECSComponentData<InternalUIInputResults>
             {
-                model = new InternalUIInputResults()
+                model = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>())
             };
 
             var inputResultsComp = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();

@@ -10,8 +10,11 @@ using ECSSystems.ECSEngineInfoSystem;
 using NSubstitute;
 using NUnit.Framework;
 using RPC.Context;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.TestTools;
 using TestUtils;
+using UnityEngine;
 
 namespace Tests
 {
@@ -61,14 +64,18 @@ namespace Tests
             sceneStateHandler.Dispose();
         }
 
-        [Test]
-        public void UpdateEngineInfoComponentCorrectly()
+        [UnityTest]
+        public IEnumerator UpdateEngineInfoComponentCorrectly()
         {
+            Assert.IsNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
+
             sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
 
             Assert.IsNotNull(internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            var engineInfo = internalComponents.EngineInfo.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+            uint sceneFrame = (uint)(Time.frameCount - engineInfo.model.SceneInitialRunTime);
             system.Update();
 
             outgoingMessages.Put_Called<PBEngineInfo>(
@@ -76,10 +83,13 @@ namespace Tests
                 ComponentID.ENGINE_INFO,
                 (componentModel) =>
                     componentModel.TickNumber == 1
-                    && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0
+                    && componentModel.TotalRuntime >= 0
+                    && componentModel.FrameNumber == sceneFrame
                 );
             outgoingMessages.Clear_Calls();
+
+            // Wait for the next frame
+            yield return null;
 
             sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
             system.Update();
@@ -90,7 +100,7 @@ namespace Tests
                 (componentModel) =>
                     componentModel.TickNumber == 2
                     && componentModel.TotalRuntime > 0
-                    && componentModel.FrameNumber > 0
+                    && componentModel.FrameNumber == sceneFrame + 1
             );
         }
     }

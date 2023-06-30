@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -14,7 +16,7 @@ public class PlacesSubSectionComponentControllerTests
 {
     private PlacesSubSectionComponentController placesSubSectionComponentController;
     private IPlacesSubSectionComponentView placesSubSectionComponentView;
-    private IPlacesAPIController placesAPIController;
+    private IPlacesAPIService placesAPIService;
     private IFriendsController friendsController;
     private IExploreV2Analytics exploreV2Analytics;
 
@@ -22,10 +24,11 @@ public class PlacesSubSectionComponentControllerTests
     public void SetUp()
     {
         placesSubSectionComponentView = Substitute.For<IPlacesSubSectionComponentView>();
-        placesAPIController = Substitute.For<IPlacesAPIController>();
+        placesAPIService = Substitute.For<IPlacesAPIService>();
+        placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)>((new List<IHotScenesController.PlaceInfo>(), 0)));
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIController, friendsController, exploreV2Analytics, DataStore.i);
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIService, friendsController, exploreV2Analytics, DataStore.i);
     }
 
     [TearDown]
@@ -36,7 +39,7 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Assert
         Assert.AreEqual(placesSubSectionComponentView, placesSubSectionComponentController.view);
-        Assert.AreEqual(placesAPIController, placesSubSectionComponentController.placesAPIApiController);
+        Assert.AreEqual(placesAPIService, placesSubSectionComponentController.placesAPIService);
         Assert.IsNotNull(placesSubSectionComponentController.friendsTrackerController);
     }
 
@@ -87,7 +90,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -98,7 +101,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -106,11 +109,11 @@ public class PlacesSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfPlaces = 2;
-        placesSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
+        placesSubSectionComponentController.placesFromAPI.Clear();
+        placesSubSectionComponentController.placesFromAPI.AddRange(ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces));
 
         // Act
-        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(
-            placesSubSectionComponentController.TakeAllForAvailableSlots(placesSubSectionComponentController.placesFromAPI)));
+        placesSubSectionComponentController.view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesSubSectionComponentController.placesFromAPI, placesSubSectionComponentController.availableUISlots));
 
         // Assert
         placesSubSectionComponentView.Received().SetPlaces(Arg.Any<List<PlaceCardComponentModel>>());
@@ -124,7 +127,7 @@ public class PlacesSubSectionComponentControllerTests
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<IHotScenesController.PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
