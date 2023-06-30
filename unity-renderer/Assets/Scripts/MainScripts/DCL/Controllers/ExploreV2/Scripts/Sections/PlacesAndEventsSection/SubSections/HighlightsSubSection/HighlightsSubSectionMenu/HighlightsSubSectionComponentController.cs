@@ -184,7 +184,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         return indexedPlaceInfo =>
         {
             if (placesFromAPI.Count > DEFAULT_NUMBER_OF_TRENDING_PLACES)
-                return indexedPlaceInfo.index >= DEFAULT_NUMBER_OF_TRENDING_PLACES && indexedPlaceInfo.index < numberOfPlaces;
+                return indexedPlaceInfo.index >= DEFAULT_NUMBER_OF_TRENDING_PLACES && indexedPlaceInfo.index < (DEFAULT_NUMBER_OF_TRENDING_PLACES + numberOfPlaces);
 
             if (placesFromAPI.Count > 0)
                 return indexedPlaceInfo.index < DEFAULT_NUMBER_OF_FEATURED_PLACES;
