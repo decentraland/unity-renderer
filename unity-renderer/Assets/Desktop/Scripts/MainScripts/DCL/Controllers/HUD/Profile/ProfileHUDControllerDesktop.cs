@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 using DCL.Helpers;
 using DCL.MyAccount;
 using SocialFeaturesAnalytics;
@@ -11,8 +12,8 @@ namespace MainScripts.DCL.Controllers.HUD.Profile
 
         public ProfileHUDControllerDesktop(ProfileHUDViewDesktop_V2 view, IUserProfileBridge userProfileBridge,
             ISocialAnalytics socialAnalytics, DataStore dataStore,
-            MyAccountCardController myAccountCardController)
-            : base(view, userProfileBridge, socialAnalytics, dataStore, myAccountCardController)
+            MyAccountCardController myAccountCardController, IBrowserBridge browserBridge)
+            : base(view, userProfileBridge, socialAnalytics, dataStore, myAccountCardController, browserBridge)
         {
             viewDesktop = view;
             viewDesktop.getButtonSignUp.onClick.RemoveAllListeners();

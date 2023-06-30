@@ -63,6 +63,7 @@ public class HUDFactory : IHUDFactory
                 ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
 
                 var userProfileBridge = new UserProfileWebInterfaceBridge();
+                var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
 
                 return new ProfileHUDController(
                     view,
@@ -76,7 +77,8 @@ public class HUDFactory : IHUDFactory
                         DataStore.i,
                         userProfileBridge,
                         Settings.i,
-                        new WebInterfaceBrowserBridge()));
+                        webInterfaceBrowserBridge),
+                    webInterfaceBrowserBridge);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:

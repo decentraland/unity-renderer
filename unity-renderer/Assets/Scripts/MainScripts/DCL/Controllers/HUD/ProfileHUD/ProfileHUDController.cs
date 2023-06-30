@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.MyAccount;
@@ -34,6 +35,7 @@ public class ProfileHUDController : IHUD
     private readonly ISocialAnalytics socialAnalytics;
     private readonly DataStore dataStore;
     private readonly MyAccountCardController myAccountCardController;
+    private readonly IBrowserBridge browserBridge;
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -55,13 +57,15 @@ public class ProfileHUDController : IHUD
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
         DataStore dataStore,
-        MyAccountCardController myAccountCardController)
+        MyAccountCardController myAccountCardController,
+        IBrowserBridge browserBridge)
     {
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
         this.view = view;
         this.myAccountCardController = myAccountCardController;
+        this.browserBridge = browserBridge;
 
         dataStore.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
         dataStore.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
@@ -73,11 +77,11 @@ public class ProfileHUDController : IHUD
         view.LogedOutPressed += OnLoggedOut;
         view.SignedUpPressed += OnSignedUp;
 
-        view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
+        view.ClaimNamePressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_CLAIM_NAME);
 
         view.Opened += (object sender, EventArgs args) =>
         {
-            WebInterface.RequestOwnProfileUpdate();
+            userProfileBridge.RequestOwnProfileUpdate();
             OnOpen?.Invoke();
         };
 
@@ -85,13 +89,13 @@ public class ProfileHUDController : IHUD
         view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
         view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
 
-        view.TermsAndServicesPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        view.PrivacyPolicyPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_PRIVACY_POLICY);
+        view.TermsAndServicesPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_TERMS_OF_USE);
+        view.PrivacyPolicyPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_PRIVACY_POLICY);
 
         if (view.HasManaCounterView() || view.HasPolygonManaCounterView())
         {
-            view.ManaInfoPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_INFO);
-            view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
+            view.ManaInfoPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_MANA_INFO);
+            view.ManaPurchasePressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_MANA_PURCHASE);
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
@@ -109,13 +113,13 @@ public class ProfileHUDController : IHUD
     private void OnSignedUp(object sender, EventArgs e)
     {
         DCL.SettingsCommon.Settings.i.SaveSettings();
-        WebInterface.RedirectToSignUp();
+        userProfileBridge.SignUp();
     }
 
     private void OnLoggedOut(object sender, EventArgs e)
     {
         DCL.SettingsCommon.Settings.i.SaveSettings();
-        WebInterface.LogOut();
+        userProfileBridge.LogOut();
     }
 
     private void SetProfileCardExtended(bool isOpenCurrent, bool previous)

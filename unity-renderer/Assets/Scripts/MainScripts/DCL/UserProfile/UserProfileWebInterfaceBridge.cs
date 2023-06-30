@@ -24,6 +24,9 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void RequestFullUserProfile(string userId) => WebInterface.SendRequestUserProfile(userId);
 
+    public void RequestOwnProfileUpdate() =>
+        WebInterface.RequestOwnProfileUpdate();
+
     public UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken) =>
         UserProfileController.i.RequestFullUserProfileAsync(userId, cancellationToken);
 

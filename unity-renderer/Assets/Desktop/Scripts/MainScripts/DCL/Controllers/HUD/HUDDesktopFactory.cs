@@ -30,6 +30,7 @@ public class HUDDesktopFactory : HUDFactory
                 view.name = VIEW_NAME;
 
                 var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+                var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
 
                 hudElement = new ProfileHUDControllerDesktop(
                     view,
@@ -43,7 +44,8 @@ public class HUDDesktopFactory : HUDFactory
                         DataStore.i,
                         userProfileWebInterfaceBridge,
                         Settings.i,
-                        new WebInterfaceBrowserBridge()));
+                        webInterfaceBrowserBridge),
+                    webInterfaceBrowserBridge);
                 break;
             case HUDElementID.MINIMAP:
                 hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);

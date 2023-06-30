@@ -11,6 +11,7 @@ public interface IUserProfileBridge
     UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken);
     UniTask<UserProfile> SaveAdditionalInfo(AdditionalInfo additionalInfo, CancellationToken cancellationToken);
     void RequestFullUserProfile(string userId);
+    void RequestOwnProfileUpdate();
     UniTask<UserProfile> RequestFullUserProfileAsync(string userId, CancellationToken cancellationToken = default);
     UserProfile GetOwn();
     UserProfile Get(string userId);
