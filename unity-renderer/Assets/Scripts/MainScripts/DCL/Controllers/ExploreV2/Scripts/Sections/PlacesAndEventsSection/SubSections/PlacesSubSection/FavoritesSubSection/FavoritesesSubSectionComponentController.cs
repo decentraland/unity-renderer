@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -19,21 +21,21 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     private const int SHOW_MORE_ROWS_INCREMENT = 3;
 
     internal readonly IFavoritesSubSectionComponentView view;
-    internal readonly IPlacesAPIController placesAPIApiController;
+    internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<PlaceInfo> favoritesFromAPI = new ();
+    internal readonly List<PlaceInfo> favoritesFromAPI = new ();
     internal int availableUISlots;
 
     private CancellationTokenSource cts = new ();
 
     public FavoritesesSubSectionComponentController(
         IFavoritesSubSectionComponentView view,
-        IPlacesAPIController placesAPI,
+        IPlacesAPIService placesAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
@@ -42,7 +44,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.view = view;
         this.exploreV2Analytics = exploreV2Analytics;
-        placesAPIApiController = placesAPI;
+        placesAPIService = placesAPI;
 
         this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
@@ -70,7 +72,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         cts?.Cancel();
         cts?.Dispose();
         cts = new CancellationTokenSource();
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
+        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
     }
 
     public void Dispose()
@@ -112,21 +114,24 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         cts?.Cancel();
         cts?.Dispose();
         cts = new CancellationTokenSource();
-        placesAPIApiController.GetAllFavorites(OnCompleted: OnRequestedEventsUpdated, cts.Token);
+        GetAllFavoritesAsync(cts.Token).Forget();
     }
 
-    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList)
+    private async UniTaskVoid GetAllFavoritesAsync(CancellationToken ct)
     {
-        friendsTrackerController.RemoveAllHandlers();
+        try
+        {
+            var favorites = await placesAPIService.GetFavorites(cts.Token);
+            friendsTrackerController.RemoveAllHandlers();
 
-        favoritesFromAPI = placeList;
+            favoritesFromAPI.Clear();
+            favoritesFromAPI.AddRange(favorites);
 
-        view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
-        view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
+            view.SetFavorites(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(favoritesFromAPI, availableUISlots));
+            view.SetShowMoreFavoritesButtonActive(availableUISlots < favoritesFromAPI.Count);
+        }
+        catch (OperationCanceledException) { }
     }
-
-    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI)
-        => modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMoreFavorites()
     {

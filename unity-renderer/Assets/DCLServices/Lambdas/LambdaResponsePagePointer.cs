@@ -14,28 +14,39 @@ namespace DCLServices.Lambdas
     public class LambdaResponsePagePointer<T> : IDisposable where T : PaginatedResponse
     {
         private readonly int pageSize;
-        private readonly Dictionary<int, T> cachedPages;
+        internal readonly Dictionary<int, (T page, DateTime retrievalTime)> cachedPages;
         private readonly ILambdaServiceConsumer<T> serviceConsumer;
+        private readonly TimeSpan cacheExpiration;
         private readonly CancellationToken cancellationToken;
         private readonly string constEndPoint;
 
         internal bool isDisposed { get; private set; }
 
-        internal IReadOnlyDictionary<int, T> CachedPages => cachedPages;
+        internal IReadOnlyDictionary<int, (T page, DateTime retrievalTime)> CachedPages => cachedPages;
 
         /// <param name="constEndpoint"></param>
         /// <param name="pageSize"></param>
         /// <param name="cancellationToken">Pass Cancellation Token so the pointer will be automatically disposed on cancellation</param>
         /// <param name="consumer"></param>
         public LambdaResponsePagePointer(string constEndpoint, int pageSize, CancellationToken cancellationToken,
-            ILambdaServiceConsumer<T> consumer)
+            ILambdaServiceConsumer<T> consumer) : this(constEndpoint, pageSize, cancellationToken, consumer, TimeSpan.FromDays(2))
+        {
+        }
+
+        /// <param name="constEndpoint"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="cancellationToken">Pass Cancellation Token so the pointer will be automatically disposed on cancellation</param>
+        /// <param name="consumer"></param>
+        public LambdaResponsePagePointer(string constEndpoint, int pageSize, CancellationToken cancellationToken,
+            ILambdaServiceConsumer<T> consumer, TimeSpan cacheExpiration )
         {
             this.pageSize = pageSize;
             this.cancellationToken = cancellationToken;
             this.constEndPoint = constEndpoint;
 
-            cachedPages = DictionaryPool<int, T>.Get();
+            cachedPages = DictionaryPool<int, (T page, DateTime retrievalTime)>.Get();
             serviceConsumer = consumer;
+            this.cacheExpiration = cacheExpiration;
 
             cancellationToken.Register(Dispose, false);
         }
@@ -50,8 +61,15 @@ namespace DCLServices.Lambdas
             if (isDisposed)
                 throw new ObjectDisposedException(nameof(LambdaResponsePagePointer<T>));
 
-            if (cachedPages.TryGetValue(pageNum, out var page))
-                return (page, true);
+
+            if (cachedPages.TryGetValue(pageNum, out var cachedPage))
+            {
+                if (DateTime.Now < cachedPage.retrievalTime + cacheExpiration)
+                    return (cachedPage.page, true);
+
+                // cache expired
+                cachedPages.Remove(pageNum);
+            }
 
             var ct = this.cancellationToken;
 
@@ -61,7 +79,9 @@ namespace DCLServices.Lambdas
             var res = await serviceConsumer.CreateRequest(constEndPoint, pageSize, pageNum, ct);
 
             if (res.success)
-                cachedPages[pageNum] = res.response;
+            {
+                cachedPages[pageNum] = (res.response, DateTime.Now);
+            }
 
             return res;
         }
@@ -71,7 +91,7 @@ namespace DCLServices.Lambdas
             if (isDisposed)
                 return;
 
-            DictionaryPool<int, T>.Release(cachedPages);
+            DictionaryPool<int, (T, DateTime)>.Release(cachedPages);
             isDisposed = true;
         }
     }
