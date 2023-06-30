@@ -17,7 +17,7 @@ namespace DCL.LoadingScreen.V2
         [SerializeField] private TMP_Text hintTitleText;
         [SerializeField] private TMP_Text hintBodyText;
         [SerializeField] private Image hintImage;
-        [FormerlySerializedAs("hintBagroundImage")] [SerializeField] private Image hintBackgroundImage;
+        [SerializeField] private Image hintBackgroundImage;
         [SerializeField] private CanvasGroup canvasGroup;
 
         private const float FADE_DURATION = 0.5f;
@@ -50,9 +50,7 @@ namespace DCL.LoadingScreen.V2
                 var newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 hintImage.sprite = newSprite;
                 hintBackgroundImage.sprite = newSprite;
-                // hintBackgroundImage.material.set
             }
-
 
             ToggleHint(startAsActive);
         }
@@ -79,24 +77,23 @@ namespace DCL.LoadingScreen.V2
 
         public void CancelAnyHintToggle()
         {
-            if (fadeCts != null)
-            {
-                fadeCts.Cancel();
-                fadeCts.Dispose();
-                fadeCts = null;
-            }
+            if (fadeCts == null) return;
+
+            fadeCts.Cancel();
+            fadeCts.Dispose();
+            fadeCts = null;
         }
 
         private async UniTask Fade(bool fadeIn, CancellationToken cancellationToken = default)
         {
+            float startAlpha = fadeIn ? 0 : 1;
+            float endAlpha = fadeIn ? 1 : 0;
+            float elapsedTime = 0;
+
             if (fadeIn)
             {
                 gameObject.SetActive(true);
             }
-
-            float startAlpha = fadeIn ? 0 : 1;
-            float endAlpha = fadeIn ? 1 : 0;
-            float elapsedTime = 0;
 
             while (elapsedTime < FADE_DURATION)
             {

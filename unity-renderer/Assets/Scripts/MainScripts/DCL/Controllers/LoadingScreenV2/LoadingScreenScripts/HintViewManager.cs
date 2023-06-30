@@ -9,8 +9,8 @@ namespace DCL.LoadingScreen.V2
     public class HintViewManager : IHintViewManager
     {
         private readonly List<HintView> hintViewList;
-        private TimeSpan hintShowTime;
-        private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
+        private readonly TimeSpan hintShowTime;
+        private readonly LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
         private CancellationTokenSource scheduledUpdateCtxSource;
 
         internal bool isIteratingHints = false;
@@ -27,6 +27,7 @@ namespace DCL.LoadingScreen.V2
 
         public void StartCarousel()
         {
+            loadingScreenV2HintsPanelView.TogglePanelAsync(true);
             if (isIteratingHints || hintViewList.Count == 0)
                 return;
 

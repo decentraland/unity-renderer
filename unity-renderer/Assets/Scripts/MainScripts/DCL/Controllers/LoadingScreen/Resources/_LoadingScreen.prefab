@@ -822,13 +822,14 @@ GameObject:
   m_Component:
   - component: {fileID: 3619553443864347814}
   - component: {fileID: 4796758836820637797}
+  - component: {fileID: 2763507608203383672}
   m_Layer: 5
   m_Name: HintsViewPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3619553443864347814
 RectTransform:
   m_ObjectHideFlags: 0
@@ -866,6 +867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cafb1ec4e2bbf49b06b6e749bc0432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hintsViewPanelCanvasGroup: {fileID: 2763507608203383672}
   previousHintButton: {fileID: 2692236113104759632}
   nextHintButton: {fileID: 2934135982865601251}
   dotsList:
@@ -884,6 +886,18 @@ MonoBehaviour:
   - {fileID: 2621785037239581921}
   - {fileID: 379295737528689487}
   - {fileID: 2042875606594935126}
+--- !u!225 &2763507608203383672
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1625063734313607917}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2439888988687769669
 GameObject:
   m_ObjectHideFlags: 0
