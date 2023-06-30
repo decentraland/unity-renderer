@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MyAccount
+  m_EditorClassIdentifier: 
+  m_GroupName: MyAccount
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b7a13c958f4e84104b1f2630e127fd04
+  m_SerializeEntries:
+  - m_GUID: 3860e36573c5eab4a85879f010cec8c3
+    m_Address: MyAccountSectionHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 99407e78aaf4f4651bbc1994d3727d5a
+    m_Address: ProfileCountries
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b9abce1a9234047fab509631245558ea
+    m_Address: ProfileEmploymentStatus
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 853a257eba7a74f4db47236ae49f29b4
+    m_Address: ProfileGenders
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6282385abcabb43899e02dc2c3640283
+    m_Address: ProfileLanguages
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a3bcd7e62b195469a9b3e1dcc1ee39b8
+    m_Address: ProfilePronouns
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2352ca3d532b4418ea29122f66f04d51
+    m_Address: ProfileRelationshipStatus
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 158b9f8b14ee641fab8eccc25b314376
+    m_Address: ProfileSexualOrientations
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d84127d37a70a473e9b70b21840ff52e, type: 2}
+    - {fileID: 11400000, guid: f3dbb4477feeb4e72a342821cbccef82, type: 2}

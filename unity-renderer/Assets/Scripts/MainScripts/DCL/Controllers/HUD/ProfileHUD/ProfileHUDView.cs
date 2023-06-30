@@ -1,4 +1,5 @@
 using DCL;
+using DCL.MyAccount;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
@@ -86,6 +87,9 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
 
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform MyAccountCardLayout => null;
+    public RectTransform MyAccountCardMenu => null;
+    public MyAccountCardComponentView MyAccountCardView => null;
     public RectTransform TutorialReference => tutorialTooltipReference;
 
 
@@ -112,7 +116,7 @@ public class ProfileHUDView : BaseComponentView, IProfileHUDView
         profilePicObject.SetActive(show);
     }
 
-    public void ShowExpanded(bool show)
+    public void ShowExpanded(bool show, bool showMyAccountVersion = false)
     {
         expandedObject.SetActive(show);
         if (show && profile)

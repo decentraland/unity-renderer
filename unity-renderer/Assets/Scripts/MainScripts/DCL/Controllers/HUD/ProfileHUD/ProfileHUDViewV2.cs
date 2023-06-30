@@ -1,8 +1,8 @@
 using DCL;
+using DCL.MyAccount;
 using ExploreV2Analytics;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +15,8 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private const int NAME_POSTFIX_LENGTH = 4;
     private const string OPEN_PASSPORT_SOURCE = "ProfileHUD";
 
+    [SerializeField] private MyAccountCardComponentView myAccountCardView;
+    [SerializeField] private RectTransform myAccountCardLayout;
     [SerializeField] private RectTransform mainRootLayout;
     [SerializeField] internal GameObject loadingSpinner;
     [SerializeField] internal ShowHideAnimator copyToast;
@@ -105,6 +107,9 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     public GameObject GameObject => gameObject;
     public RectTransform ExpandedMenu => mainRootLayout;
+    public RectTransform MyAccountCardLayout => myAccountCardLayout;
+    public RectTransform MyAccountCardMenu => (RectTransform)myAccountCardView.transform;
+    public MyAccountCardComponentView MyAccountCardView => myAccountCardView;
     public RectTransform TutorialReference => tutorialTooltipReference;
 
     public override void Awake()
@@ -199,10 +204,22 @@ public class ProfileHUDViewV2 : BaseComponentView, IProfileHUDView
         profilePicObject.SetActive(show);
     }
 
-    public void ShowExpanded(bool show)
+    public void ShowExpanded(bool show, bool showMyAccountVersion = false)
     {
-        expandedObject.SetActive(show);
-        if (show && profile)
+        if (!show)
+        {
+            expandedObject.SetActive(false);
+            myAccountCardView.Hide();
+        }
+        else
+        {
+            if (!showMyAccountVersion)
+                expandedObject.SetActive(true);
+            else
+                myAccountCardView.Show();
+        }
+
+        if (show && profile && !showMyAccountVersion)
             UpdateLayoutByProfile(profile);
     }
 

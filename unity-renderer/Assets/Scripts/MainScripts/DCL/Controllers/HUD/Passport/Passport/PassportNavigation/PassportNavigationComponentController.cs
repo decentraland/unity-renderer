@@ -8,6 +8,7 @@ using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 
@@ -26,6 +27,10 @@ namespace DCL.Social.Passports
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
+        private readonly IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider;
+        private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
+        private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
+        private readonly List<UserProfileModel.Link> links = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private readonly IPassportNavigationComponentView view;
@@ -34,6 +39,8 @@ namespace DCL.Social.Passports
         private CancellationTokenSource cts = new ();
         private Promise<WearableItem[]> wearablesPromise;
         private Promise<WearableItem[]> emotesPromise;
+
+        private bool isMyAccountEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("my_account");
 
         public event Action<string, string> OnClickBuyNft;
         public event Action OnClickedLink;
@@ -49,7 +56,8 @@ namespace DCL.Social.Passports
             ILandsService landsService,
             IUserProfileBridge userProfileBridge,
             DataStore dataStore,
-            ViewAllComponentController viewAllController)
+            ViewAllComponentController viewAllController,
+            IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider)
         {
             const string NAME_TYPE = "name";
             const string PARCEL_TYPE = "parcel";
@@ -65,6 +73,7 @@ namespace DCL.Social.Passports
             this.userProfileBridge = userProfileBridge;
             this.dataStore = dataStore;
             this.viewAllController = viewAllController;
+            this.additionalInfoFieldIconProvider = additionalInfoFieldIconProvider;
 
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
@@ -89,30 +98,109 @@ namespace DCL.Social.Passports
 
         public void UpdateWithUserProfile(UserProfile userProfile)
         {
-            async UniTaskVoid UpdateWithUserProfileAsync()
+            async UniTaskVoid UpdateWithUserProfileAsync(CancellationToken cancellationToken)
             {
-                var ct = cts.Token;
                 currentUserId = userProfile.userId;
-                string filteredName = await FilterContentAsync(userProfile.userName).AttachExternalCancellation(ct);
+                string filteredName = await FilterProfanityContentAsync(userProfile.userName, cancellationToken);
                 view.SetGuestUser(userProfile.isGuest);
                 view.SetName(filteredName);
                 view.SetOwnUserTexts(userProfile.userId == ownUserProfile.userId);
 
+                links.Clear();
+                additionalFields.Clear();
+
                 if (!userProfile.isGuest)
                 {
-                    string filteredDescription = await FilterContentAsync(userProfile.description).AttachExternalCancellation(ct);
+                    string filteredDescription = await FilterProfanityContentAsync(userProfile.description, cancellationToken);
+
+                    if (isMyAccountEnabled)
+                    {
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Gender))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.GENDER),
+                                AdditionalInfoField.GENDER.ToName(),
+                                userProfile.AdditionalInfo.Gender));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Country))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.COUNTRY),
+                                AdditionalInfoField.COUNTRY.ToName(),
+                                userProfile.AdditionalInfo.Country));
+
+                        if (userProfile.AdditionalInfo.BirthDate != null && userProfile.AdditionalInfo.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.BIRTH_DATE),
+                                AdditionalInfoField.BIRTH_DATE.ToName(),
+                                userProfile.AdditionalInfo.BirthDate.Value.ToString("dd/MM/yyyy")));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Pronouns))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.PRONOUNS),
+                                AdditionalInfoField.PRONOUNS.ToName(),
+                                userProfile.AdditionalInfo.Pronouns));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RelationshipStatus))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.RELATIONSHIP_STATUS),
+                                AdditionalInfoField.RELATIONSHIP_STATUS.ToName(),
+                                userProfile.AdditionalInfo.RelationshipStatus));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.SexualOrientation))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.SEXUAL_ORIENTATION),
+                                AdditionalInfoField.SEXUAL_ORIENTATION.ToName(),
+                                userProfile.AdditionalInfo.SexualOrientation));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Language))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.LANGUAGE),
+                                AdditionalInfoField.LANGUAGE.ToName(),
+                                userProfile.AdditionalInfo.Language));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Profession))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.PROFESSION),
+                                AdditionalInfoField.PROFESSION.ToName(),
+                                userProfile.AdditionalInfo.Profession));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.EmploymentStatus))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.EMPLOYMENT_STATUS),
+                                AdditionalInfoField.EMPLOYMENT_STATUS.ToName(),
+                                userProfile.AdditionalInfo.EmploymentStatus));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Hobbies))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.HOBBIES),
+                                AdditionalInfoField.HOBBIES.ToName(),
+                                userProfile.AdditionalInfo.Hobbies));
+
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RealName))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.REAL_NAME),
+                                AdditionalInfoField.REAL_NAME.ToName(),
+                                userProfile.AdditionalInfo.RealName));
+
+                        if (userProfile.Links != null)
+                            links.AddRange(userProfile.Links);
+                    }
+                    else
+                        filteredDescription = ExtractLinks(filteredDescription, links);
+
                     view.SetDescription(filteredDescription);
+                    view.SetAdditionalInfo(additionalFields);
+                    view.SetLinks(links);
                     view.SetHasBlockedOwnUser(userProfile.IsBlocked(ownUserProfile.userId));
-                    LoadAndShowOwnedNamesAsync(userProfile, ct).Forget();
-                    LoadAndShowOwnedLandsAsync(userProfile, ct).Forget();
-                    LoadAndDisplayEquippedWearablesAsync(userProfile, ct).Forget();
+                    LoadAndShowOwnedNamesAsync(userProfile, cancellationToken).Forget();
+                    LoadAndShowOwnedLandsAsync(userProfile, cancellationToken).Forget();
+                    LoadAndDisplayEquippedWearablesAsync(userProfile, cancellationToken).Forget();
                 }
             }
 
             cts?.Cancel();
             cts?.Dispose();
             cts = new CancellationTokenSource();
-            UpdateWithUserProfileAsync().Forget();
+            UpdateWithUserProfileAsync(cts.Token).Forget();
         }
 
         public void CloseAllNFTItemInfos() =>
@@ -256,9 +344,9 @@ namespace DCL.Social.Passports
             }
         }
 
-        private async UniTask<string> FilterContentAsync(string filterContent) =>
+        private async UniTask<string> FilterProfanityContentAsync(string filterContent, CancellationToken cancellationToken) =>
             IsProfanityFilteringEnabled()
-                ? await profanityFilter.Filter(filterContent)
+                ? await profanityFilter.Filter(filterContent, cancellationToken)
                 : filterContent;
 
         private bool IsProfanityFilteringEnabled() =>
@@ -279,6 +367,21 @@ namespace DCL.Social.Passports
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.exploreV2.isOpen.Set(false, true);
             dataStore.HUDs.currentPlayerId.Set((null, null));
+        }
+
+        private string ExtractLinks(string description, ICollection<UserProfileModel.Link> linkBuffer)
+        {
+            MatchCollection matches = linksRegex.Matches(description);
+
+            if (matches.Count == 0) return description;
+
+            foreach (Match match in matches)
+            {
+                linkBuffer.Add(new UserProfileModel.Link(match.Groups[1].Value, match.Groups[2].Value));
+                description = description.Replace(match.Value, "");
+            }
+
+            return description;
         }
     }
 }
