@@ -88,6 +88,12 @@ namespace DCL.Components
                 animationShape.OnLoaded -= OnShapeLoaded;
         }
 
+        public override void Cleanup()
+        {
+            base.Cleanup();
+            animComponent = null;
+        }
+
         public override IEnumerator ApplyChanges(BaseModel model)
         {
             entity.OnShapeLoaded -= OnEntityShapeLoaded;
