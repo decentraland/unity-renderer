@@ -38,7 +38,7 @@ namespace DCLPlugins.LoadingScreenPlugin
             var loadingScreenView = CreateLoadingScreenView();
 
             // FD:: keeping this until LoadingScreenV2 is finalized
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("loading_screen_v2"))
+            if (dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Get())
             {
                 loadingScreenView.ToggleTeleportLoadingAnimation(false);
                 var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();

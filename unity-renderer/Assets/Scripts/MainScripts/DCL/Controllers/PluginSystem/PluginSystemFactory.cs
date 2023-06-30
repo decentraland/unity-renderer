@@ -78,6 +78,8 @@ namespace DCL
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
             pluginSystem.RegisterWithFlag<ToSPopupHUDPlugin>(() => new ToSPopupHUDPlugin(), "seamless_login_variant");
 
+            pluginSystem.RegisterWithFlag<LoadingScreenV2Plugin>(() => new LoadingScreenV2Plugin(), "loading_screen_v2");
+
             pluginSystem.Register<FriendsNotificationPlugin>(() => new FriendsNotificationPlugin(new DefaultPlayerPrefs(),
                 Environment.i.serviceLocator.Get<IFriendsController>(),
                 NotificationScriptableObjects.pendingFriendRequests,
