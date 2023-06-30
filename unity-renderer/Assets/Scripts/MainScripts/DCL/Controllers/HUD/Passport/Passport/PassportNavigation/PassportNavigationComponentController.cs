@@ -163,6 +163,12 @@ namespace DCL.Social.Passports
                                 AdditionalInfoField.PROFESSION.ToName(),
                                 userProfile.AdditionalInfo.Profession));
 
+                        if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.EmploymentStatus))
+                            additionalFields.Add((
+                                additionalInfoFieldIconProvider.Get(AdditionalInfoField.EMPLOYMENT_STATUS),
+                                AdditionalInfoField.EMPLOYMENT_STATUS.ToName(),
+                                userProfile.AdditionalInfo.EmploymentStatus));
+
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Hobbies))
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.HOBBIES),

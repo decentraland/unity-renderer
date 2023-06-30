@@ -18,6 +18,7 @@ namespace DCL.Social.Passports
         PROFESSION,
         HOBBIES,
         REAL_NAME,
+        EMPLOYMENT_STATUS
     }
 
     public static class AdditionalInfoFieldToStringExtensions
@@ -34,6 +35,8 @@ namespace DCL.Social.Passports
                     return "SEXUAL ORIENTATION";
                 case AdditionalInfoField.REAL_NAME:
                     return "REAL NAME";
+                case AdditionalInfoField.EMPLOYMENT_STATUS:
+                    return "EMPLOYMENT STATUS";
                 default:
                     return field.ToString();
             }
