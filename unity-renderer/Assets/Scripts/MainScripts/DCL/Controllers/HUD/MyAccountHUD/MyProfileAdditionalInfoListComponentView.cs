@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +9,9 @@ namespace DCL.MyAccount
 {
     public class MyProfileAdditionalInfoListComponentView : MonoBehaviour
     {
+        private const string DEFAULT_SELECT_OPTION_VALUE = "- Select an option -";
+        private const string OTHER_VALUE = "Other";
+
         [SerializeField] private Button addButton;
         [SerializeField] private DropdownComponentView optionsDropdown;
         [SerializeField] private TMP_InputField freeFormInputField;
@@ -17,6 +19,10 @@ namespace DCL.MyAccount
         [SerializeField] private DropdownComponentView strictValueListDropdown;
         [SerializeField] private MyProfileAdditionalInfoEntryComponentView entryPrefab;
         [SerializeField] private RectTransform entryContainer;
+        [SerializeField] private GameObject commonInputContainer;
+        [SerializeField] private GameObject otherInputContainer;
+        [SerializeField] private Button cancelOtherInputButton;
+        [SerializeField] private TMP_InputField otherInputField;
 
         public Action OnAdditionalFieldAdded;
         public Action OnAdditionalFieldRemoved;
@@ -27,6 +33,7 @@ namespace DCL.MyAccount
 
         private string currentOptionId;
         private AdditionalInfoOptionsModel optionsModel;
+        private bool isOtherInputActivated;
 
         private void Awake()
         {
@@ -37,15 +44,23 @@ namespace DCL.MyAccount
                 ChangeCurrentOption(optionId, optionName);
             };
 
-            dateInputField.onValueChanged.AddListener(UpdateAddButtonInteractabilityByDateFormat);
-            freeFormInputField.onValueChanged.AddListener(UpdateAddButtonInteractabilityByFreeFormText);
+            dateInputField.onValueChanged.AddListener(UpdateAddButtonInteractibilityByDateFormat);
+            freeFormInputField.onValueChanged.AddListener(UpdateAddButtonInteractibilityByFreeFormText);
+            otherInputField.onValueChanged.AddListener(UpdateAddButtonInteractibilityByFreeFormText);
 
             strictValueListDropdown.OnOptionSelectionChanged += (isOn, optionId, optionName) =>
             {
                 if (!isOn) return;
-                strictValueListDropdown.SetTitle(optionName);
-                UpdateAddButtonInteractabilityByFreeFormText(optionName);
+
+                if (optionId != OTHER_VALUE)
+                    strictValueListDropdown.SetTitle(optionName);
+                else
+                    SetOtherInputActive(true);
+
+                UpdateAddButtonInteractibilityByFreeFormText(isOtherInputActivated ? otherInputField.text : optionName);
             };
+
+            cancelOtherInputButton.onClick.AddListener(() => SetOtherInputActive(false));
 
             addButton.onClick.AddListener(() =>
             {
@@ -111,6 +126,7 @@ namespace DCL.MyAccount
         private void ChangeCurrentOption(string optionId, string optionName)
         {
             currentOptionId = optionId;
+            SetOtherInputActive(false);
 
             switch (optionsModel.Options[optionId].InputType)
             {
@@ -129,7 +145,7 @@ namespace DCL.MyAccount
                     freeFormInputField.gameObject.SetActive(false);
                     strictValueListDropdown.gameObject.SetActive(true);
                     FillStrictValueOptions(optionsModel.Options[optionId].Values);
-                    strictValueListDropdown.SetTitle("");
+                    strictValueListDropdown.SetTitle(DEFAULT_SELECT_OPTION_VALUE);
                     break;
             }
 
@@ -154,21 +170,21 @@ namespace DCL.MyAccount
                 case AdditionalInfoOptionsModel.InputType.FreeFormText:
                     return freeFormInputField.text;
                 case AdditionalInfoOptionsModel.InputType.StrictValueList:
-                    return strictValueListDropdown.Title;
+                    return isOtherInputActivated ? otherInputField.text : strictValueListDropdown.Title;
             }
 
             throw new ArgumentException($"Cannot solve value, invalid input type: {optionsModel.Options[currentOptionId].InputType}");
         }
 
-        private void UpdateAddButtonInteractabilityByDateFormat(string str)
+        private void UpdateAddButtonInteractibilityByDateFormat(string str)
         {
             addButton.interactable = DateTime.TryParseExact(str,
                 optionsModel.Options[currentOptionId].DateFormat,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AdjustToUniversal, out DateTime result);
+                DateTimeStyles.AdjustToUniversal, out DateTime _);
         }
 
-        private void UpdateAddButtonInteractabilityByFreeFormText(string str)
+        private void UpdateAddButtonInteractibilityByFreeFormText(string str)
         {
             addButton.interactable = !string.IsNullOrEmpty(str);
         }
@@ -190,6 +206,18 @@ namespace DCL.MyAccount
             }
 
             strictValueListDropdown.SetOptions(valueToggles);
+        }
+
+        private void SetOtherInputActive(bool isActive)
+        {
+            isOtherInputActivated = isActive;
+            commonInputContainer.SetActive(!isActive);
+            otherInputContainer.SetActive(isActive);
+            otherInputField.text = string.Empty;
+
+            if (isActive) return;
+            strictValueListDropdown.SelectOption(null, false);
+            strictValueListDropdown.SetTitle(DEFAULT_SELECT_OPTION_VALUE);
         }
     }
 }
