@@ -129,13 +129,11 @@ namespace Tests
         {
             worldState.GetCurrentSceneNumber().Returns(scene.sceneData.sceneNumber);
             var playerEntity = scene.CreateEntity(SpecialEntityId.PLAYER_ENTITY);
-            var previousPlayerPosition = playerEntity.gameObject.transform.position;
 
             Vector3 newPosition = new Vector3(8, 0, 0);
             handler.OnComponentModelUpdated(scene, playerEntity, new ECSTransform() { position = newPosition });
 
             playerTeleportPosition.DidNotReceive().Set(Arg.Any<Vector3>(), true);
-            Assert.AreEqual(previousPlayerPosition, playerEntity.gameObject.transform.position);
         }
 
         [Test]

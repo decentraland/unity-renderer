@@ -29,6 +29,7 @@ namespace DCL.Components
         bool raiseOnAttached;
         bool firstApplyChangesCall;
 
+
         /// <summary>
         /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
         /// </summary>
@@ -206,6 +207,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
 
+
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             Model model = (Model) this.model;
@@ -234,7 +236,7 @@ namespace DCL.Components
             uiGameObject =
                 Object.Instantiate(
                     Resources.Load(prefabPath),
-                    parentUIComponent != null ? parentUIComponent.childHookRectTransform : null) as GameObject;
+                    parentUIComponent?.childHookRectTransform) as GameObject;
 
             referencesContainer = uiGameObject.GetComponent<T>();
 

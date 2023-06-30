@@ -39,10 +39,12 @@ namespace DCL.Models
 
         GameObject meshRootGameObjectValue;
 
+        public bool RootIsPoolableObject { get; set; }
+
         public IShape currentShape;
         public Renderer[] renderers { get; private set; }
         public MeshFilter[] meshFilters;
-        public HashSet<Collider> colliders = new HashSet<Collider>();
+        public HashSet<Collider> colliders = new ();
         public Animation animation { get; private set; }
 
         Vector3 lastBoundsCalculationPosition;

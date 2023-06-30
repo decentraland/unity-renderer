@@ -159,7 +159,7 @@ namespace Tests
 
             // add ui element to scene
             const int entityId = 111;
-            var model = new InternalUiContainer(0);
+            var model = new InternalUiContainer(entityId);
             model.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, model);
 
@@ -201,7 +201,8 @@ namespace Tests
             const int childEntityId = 111;
             const int parentEntityId = 112;
 
-            var childModel = new InternalUiContainer(childEntityId) { parentId = parentEntityId };
+            var childModel = new InternalUiContainer(childEntityId);
+            childModel.parentId = parentEntityId;
             childModel.components.Add(1);
 
             uiContainerComponent.PutFor(scene, childEntityId, childModel);
@@ -487,10 +488,10 @@ namespace Tests
             modelEntity2.parentElement = sceneModel.rootElement;
             modelEntity3.parentElement = sceneModel.rootElement;
 
-            modelEntity0.rigthOf = entity2.entityId;
-            modelEntity1.rigthOf = entity0.entityId;
-            modelEntity2.rigthOf = entity3.entityId;
-            modelEntity3.rigthOf = 0;
+            modelEntity0.rightOf = entity2.entityId;
+            modelEntity1.rightOf = entity0.entityId;
+            modelEntity2.rightOf = entity3.entityId;
+            modelEntity3.rightOf = 0;
 
             modelEntity0.shouldSort = true;
             modelEntity1.shouldSort = true;
@@ -521,8 +522,8 @@ namespace Tests
             Assert.IsFalse(uiContainerComponent.GetFor(scene, entity0.entityId).model.shouldSort);
 
             // Change order
-            modelEntity0.rigthOf = 0;
-            modelEntity3.rigthOf = entity1.entityId;
+            modelEntity0.rightOf = 0;
+            modelEntity3.rightOf = entity1.entityId;
             modelEntity0.shouldSort = true;
             modelEntity3.shouldSort = true;
             uiContainerComponent.PutFor(scene, entity0.entityId, modelEntity0);
@@ -606,7 +607,8 @@ namespace Tests
 
             const int entityId = 111;
 
-            var entityModel = new InternalUiContainer(entityId) { shouldSort = false };
+            var entityModel = new InternalUiContainer(entityId);
+            entityModel.shouldSort = false;
             entityModel.components.Add(1);
             uiContainerComponent.PutFor(scene, entityId, entityModel);
 

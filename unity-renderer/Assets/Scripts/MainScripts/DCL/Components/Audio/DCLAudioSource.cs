@@ -169,9 +169,11 @@ namespace DCL.Components
                     audioSettingsData.masterVolume);
             }
 
-            bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
-
-            audioSource.volume = isCurrentScene ? newVolume : 0f;
+            if (scene != null)
+            {
+                bool isCurrentScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
+                audioSource.volume = isCurrentScene ? newVolume : 0f;
+            }
         }
 
         private void OnCurrentSceneChanged(int currentSceneNumber, int previousSceneNumber)
@@ -202,7 +204,9 @@ namespace DCL.Components
                 Settings.i.audioSettings.OnChanged -= OnAudioSettingsChanged;
 
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
-            DataStore.i.sceneBoundariesChecker.Remove(entity,this);
+
+            if (entity != null)
+                DataStore.i.sceneBoundariesChecker.Remove(entity, this);
 
             lastDCLAudioClip = null;
             audioSource = null;
