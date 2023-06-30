@@ -1162,8 +1162,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -2, y: -6}
-  m_SizeDelta: {x: 8, y: -22}
+  m_AnchoredPosition: {x: -4, y: -6}
+  m_SizeDelta: {x: 10, y: -16}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &2256215425126006821
 CanvasRenderer:
@@ -2990,7 +2990,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &7892401269955542541
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3007,7 +3007,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!225 &3668677689755687950
 CanvasGroup:
   m_ObjectHideFlags: 0
