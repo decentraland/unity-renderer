@@ -86,32 +86,14 @@ namespace DCL.ECSRuntime
             }
         }
 
-        /// <summary>
-        /// set component's model
-        /// </summary>
-        /// <param name="componentId"></param>
-        /// <param name="scene"></param>
-        /// <param name="entity"></param>
-        /// <param name="componentData"></param>
-        /// <typeparam name="T"></typeparam>
-        public void SetComponent<T>(int componentId, IParcelScene scene, IDCLEntity entity, T componentData)
+        public void SignalComponentCreated(IParcelScene scene, IDCLEntity entity, IECSComponent component)
         {
-            try
-            {
-                var component = GetOrCreateComponent(componentId, scene, entity);
+            SetGroupsOnComponentCreated(component, scene, entity, componentsGroups, entitiesGroups);
+        }
 
-                if (component != null)
-                {
-                    ((ECSComponent<T>) component).SetModel(scene, entity, componentData);
-                    UpdateComponentGroups(component, scene, entity, entitiesGroups);
-                }
-            }
-            catch (Exception e)
-            {
-#if UNITY_EDITOR
-                Debug.LogException(e);
-#endif
-            }
+        public void SignalComponentUpdated(IParcelScene scene, IDCLEntity entity, IECSComponent component)
+        {
+            UpdateComponentGroups(component, scene, entity, entitiesGroups);
         }
 
         /// <summary>

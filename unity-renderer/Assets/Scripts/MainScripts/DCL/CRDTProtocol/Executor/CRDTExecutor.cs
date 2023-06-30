@@ -92,7 +92,7 @@ namespace DCL.CRDT
             ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, playerEntity);
         }
 
-        public void PutComponent<T>(long entityId, int componentId, T model)
+        public void PutComponent<T>(long entityId, ECSComponent<T> component, T model)
         {
 #if UNITY_EDITOR
             if (disposed)
@@ -103,7 +103,15 @@ namespace DCL.CRDT
                 return;
 
             IDCLEntity entity = GetOrCreateEntity(ownerScene, entityId);
-            ecsManager.SetComponent(componentId, ownerScene, entity, model);
+
+            if (!component.HasComponent(ownerScene, entity))
+            {
+                component.Create(ownerScene, entity);
+                ecsManager.SignalComponentCreated(ownerScene, entity, component);
+            }
+
+            component.SetModel(ownerScene, entity, model);
+            ecsManager.SignalComponentUpdated(ownerScene, entity, component);
         }
 
         public void RemoveComponent(long entityId, int componentId)

@@ -72,7 +72,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
         {
             markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(model, false);
 
-            crdtExecutor.PutComponent(entityId, componentId, model);
+            crdtExecutor.PutComponent(entityId, component, model);
         }
     }
 
@@ -89,7 +89,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
         markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(defaultModel, true);
 
-        crdtExecutor.PutComponent(entityId, componentId, defaultModel);
+        crdtExecutor.PutComponent(entityId, component, defaultModel);
     }
 
     public void RemoveFor(IParcelScene scene, IDCLEntity entity) =>
@@ -142,7 +142,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             }
 
             data.dirty = true;
-            crdtExecutor.PutComponent(entityId, componentId, data);
+            crdtExecutor.PutComponent(entityId, component, data);
             removeAsDirtyComponents[sceneNumber, entityId] = new DirtyData(data, isRemoval);
         }
 
@@ -172,7 +172,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             else
             {
                 data.dirty = false;
-                crdtExecutor.PutComponent(entityId, componentId, data);
+                crdtExecutor.PutComponent(entityId, component, data);
             }
         }
 
