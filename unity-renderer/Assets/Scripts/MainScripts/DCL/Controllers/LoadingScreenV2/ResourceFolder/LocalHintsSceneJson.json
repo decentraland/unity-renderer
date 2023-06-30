@@ -13,23 +13,47 @@
     "requiredPermissions": [],
     "allowedMediaHostnames": [],
     "loadingScreenHints": [
-        {
-            "textureUrl": "https://api.decentraland.org/v1/minimap.png",
-            "title": "local hint title 01",
-            "body": "local hint body 1 where you can put a lot of text just to be sure that the hints are working as expected",
-            "sourceTag": 2
-        },
-        {
-          "textureUrl": "https://api.decentraland.org/v1/estatemap.png",
-          "title": "local hint title 02",
-          "body": "local hint body 2222222 where you can put a lot of text just to be sure that the hints are working as expected",
-          "sourceTag": 2
-        },
-        {
-          "textureUrl": "https://api.decentraland.org/v1/broken-map.png",
-          "title": "03 hint 404 error test",
-          "body": "local hint body. This is a test for a 404 error when trying to load the image.",
-          "sourceTag": 2
-        }
+      {
+        "textureUrl": "https://api.decentraland.org/v1/LoadingEmbedded.png",
+        "title": "Genesis Plaza, heart of city",
+        "body": "Genesis Plaza is built and maintained by the Decentraland Foundation but is still in many ways a community project. Around here you'll find several teleports that can take you directly to special scenes marked as points of interest.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/MANAImg.png",
+        "title": "MANA",
+        "body": "MANA is Decentraland’s virtual currency. Use it to buy LAND, Unique NAMEs, Wearables, Emotes and vote on Decentraland’s key policies and pay platform fees.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/BuilderImg.png",
+        "title": "Builder",
+        "body": "Create scenes, artworks, challenges and more, using the simple Builder: an easy drag and drop tool.\nFor more experienced creators, the SDK provides the tools to fill the world with social games and applications.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/EditorImg.png",
+        "title": "Decentraland Editor",
+        "body": "It’s intended for users of any knowledge level, combining a graphical interface with code editing capabilities. Both technical and non-technical creators will benefit from using it.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/LANDImg.png",
+        "title": "LAND",
+        "body": "Decentraland is made up of over 90,000 LANDs: virtual spaces backed by cryptographic tokens. Only LANDowners can determine the content that sits on their LAND.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/WearablesImg.png",
+        "title": "Wearables & Emotes",
+        "body": "Each Wearable or Emote model has a limited supply. \nThe rarest ones can get to be super valuable. You can buy and sell them in the Marketplace.",
+        "sourceTag": 2
+      },
+      {
+        "textureUrl": "https://api.decentraland.org/v1/DAOImg.png",
+        "title": "Decentraland DAO",
+        "body": "Decentraland is the first fully decentralized virtual world. By voting through the DAO  ('Decentralized Autonomous Organization'), you are in control of the policies created to determine how the world behaves.",
+        "sourceTag": 2
+      }
     ]
 }
