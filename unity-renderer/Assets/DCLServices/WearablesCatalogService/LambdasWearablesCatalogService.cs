@@ -144,7 +144,7 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string collectionId in thirdPartyCollectionIds)
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
-            string lambdasUrl = await catalyst.WaitForLambdasUrl(cancellationToken);
+            string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
             string explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
 
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(

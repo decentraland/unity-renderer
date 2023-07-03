@@ -115,17 +115,27 @@ namespace DCL.Social.Passports
 
                     if (isMyAccountEnabled)
                     {
+                        string filteredAdditionalValue;
+
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Gender))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Gender, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.GENDER),
                                 AdditionalInfoField.GENDER.ToName(),
-                                userProfile.AdditionalInfo.Gender));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Country))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Country, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.COUNTRY),
                                 AdditionalInfoField.COUNTRY.ToName(),
-                                userProfile.AdditionalInfo.Country));
+                                filteredAdditionalValue));
+                        }
 
                         if (userProfile.AdditionalInfo.BirthDate != null && userProfile.AdditionalInfo.BirthDate != new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                             additionalFields.Add((
@@ -134,52 +144,84 @@ namespace DCL.Social.Passports
                                 userProfile.AdditionalInfo.BirthDate.Value.ToString("dd/MM/yyyy")));
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Pronouns))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Pronouns, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.PRONOUNS),
                                 AdditionalInfoField.PRONOUNS.ToName(),
-                                userProfile.AdditionalInfo.Pronouns));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RelationshipStatus))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.RelationshipStatus, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.RELATIONSHIP_STATUS),
                                 AdditionalInfoField.RELATIONSHIP_STATUS.ToName(),
-                                userProfile.AdditionalInfo.RelationshipStatus));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.SexualOrientation))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.SexualOrientation, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.SEXUAL_ORIENTATION),
                                 AdditionalInfoField.SEXUAL_ORIENTATION.ToName(),
-                                userProfile.AdditionalInfo.SexualOrientation));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Language))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Language, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.LANGUAGE),
                                 AdditionalInfoField.LANGUAGE.ToName(),
-                                userProfile.AdditionalInfo.Language));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Profession))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Profession, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.PROFESSION),
                                 AdditionalInfoField.PROFESSION.ToName(),
-                                userProfile.AdditionalInfo.Profession));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.EmploymentStatus))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.EmploymentStatus, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.EMPLOYMENT_STATUS),
                                 AdditionalInfoField.EMPLOYMENT_STATUS.ToName(),
-                                userProfile.AdditionalInfo.EmploymentStatus));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.Hobbies))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.Hobbies, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.HOBBIES),
                                 AdditionalInfoField.HOBBIES.ToName(),
-                                userProfile.AdditionalInfo.Hobbies));
+                                filteredAdditionalValue));
+                        }
 
                         if (!string.IsNullOrEmpty(userProfile.AdditionalInfo.RealName))
+                        {
+                            filteredAdditionalValue = await FilterProfanityContentAsync(userProfile.AdditionalInfo.RealName, cancellationToken);
+
                             additionalFields.Add((
                                 additionalInfoFieldIconProvider.Get(AdditionalInfoField.REAL_NAME),
                                 AdditionalInfoField.REAL_NAME.ToName(),
-                                userProfile.AdditionalInfo.RealName));
+                                filteredAdditionalValue));
+                        }
 
                         if (userProfile.Links != null)
                             links.AddRange(userProfile.Links);

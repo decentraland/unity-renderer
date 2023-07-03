@@ -26,8 +26,7 @@ public interface ICatalyst : IDisposable
     /// <returns></returns>
     UniTask<string> GetContent(string hash);
 
-
-    UniTask<string> WaitForLambdasUrl(CancellationToken ct);
+    UniTask<string> GetLambdaUrl(CancellationToken ct);
 
     /// <summary>
     /// get scenes deployed in parcels
