@@ -1,11 +1,13 @@
 ﻿using DCL.CRDT;
+using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCLPlugins.ECSComponents.Raycast;
 using ECSSystems.ECSRaycastSystem;
-using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +17,6 @@ namespace Tests
     public class ECSRaycastHandlerShould
     {
         private ECSRaycastSystem system;
-        private IECSComponentWriter componentWriter;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entityRaycaster;
@@ -34,14 +35,14 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            componentWriter = Substitute.For<IECSComponentWriter>();
             system = new ECSRaycastSystem(
                 internalComponents.raycastComponent,
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
                 internalComponents.EngineInfo,
-                componentWriter);
+                new Dictionary<int,ComponentWriter>(),
+                new WrappedComponentPool<IWrappedComponent<PBRaycastResult>>(0, ()=> new ProtobufWrappedComponent<PBRaycastResult>(new PBRaycastResult())));
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
@@ -49,7 +50,7 @@ namespace Tests
             entityRaycaster = scene.CreateEntity(512);
 
             // This is normally initialized by SceneStateHandler when a scene is loaded
-            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo(0, 0));
         }
 
         [TearDown]
@@ -166,3 +167,4 @@ namespace Tests
         }
     }
 }
+

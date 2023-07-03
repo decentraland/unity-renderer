@@ -65,7 +65,7 @@
     "@dcl/protocol": "1.0.0-5112230174.commit-a71a7e0",
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "7.0.6-20230530193645.commit-a6612b4",
-    "@dcl/schemas": "^7.2.0",
+    "@dcl/schemas": "^7.4.1",
     "@dcl/urn-resolver": "^2.0.3",
     "@types/mocha": "^10.0.1",
     "@types/redux-logger": "^3.0.9",

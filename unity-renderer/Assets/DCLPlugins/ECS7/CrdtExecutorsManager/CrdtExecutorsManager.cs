@@ -66,7 +66,8 @@ public class CrdtExecutorsManager : IDisposable
         if (!scene.sceneData.sdk7)
             return;
 
-        ICRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
+        CRDTExecutor executor = new CRDTExecutor(scene, componentsManager);
+        executor.GenerateInitialEntities();
         crdtExecutors[scene.sceneData.sceneNumber] = executor;
     }
 

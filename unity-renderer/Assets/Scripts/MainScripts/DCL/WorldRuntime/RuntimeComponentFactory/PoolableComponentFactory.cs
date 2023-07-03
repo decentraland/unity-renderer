@@ -18,20 +18,20 @@ namespace DCL
 
     public class PoolableComponentFactory : ScriptableObject, IPoolableComponentFactory
     {
-        [System.Serializable]
+        [Serializable]
         public class Item
         {
             public CLASS_ID_COMPONENT classId;
             public Component prefab;
 
-            [Header("Pool Options")] public bool usePool;
-
+            [Header("Pool Options")]
+            public bool usePool;
             public int prewarmCount;
         }
 
         public Item[] factoryList;
 
-        Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
+        private Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
         public void EnsureFactoryDictionary()
         {
@@ -75,7 +75,9 @@ namespace DCL
                 if (item.usePool)
                 {
                     EnsurePoolForItem(item);
-                    GetPoolForItem(item).ForcePrewarm(forceActive: false);
+
+                    bool forceActivate = item.classId == CLASS_ID_COMPONENT.TEXT_SHAPE;
+                    GetPoolForItem(item).ForcePrewarm(forceActivate);
                 }
             }
         }
@@ -88,11 +90,12 @@ namespace DCL
         private object GetIdForPool(Item item)
         {
 #if UNITY_EDITOR
-            return item.classId.ToString() + "_POOL";
+            return item.classId + "_POOL";
 #else
             return item.classId;
 #endif
         }
+
 
         private void EnsurePoolForItem(Item item)
         {
@@ -102,8 +105,7 @@ namespace DCL
                 return;
 
             GameObject original = Instantiate(item.prefab.gameObject);
-            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount,
-                isPersistent: true);
+            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
             pool.useLifecycleHandlers = true;
         }
 
@@ -142,8 +144,13 @@ namespace DCL
                 instancedGo = Instantiate(factoryItem.prefab.gameObject);
             }
 
-            ItemType item = instancedGo.GetComponent<ItemType>();
-            item.poolableObject = poolableObject;
+            ItemType item = default;
+
+            if (instancedGo != null)
+            {
+                item = instancedGo.GetComponent<ItemType>();
+                item.poolableObject = poolableObject;
+            }
 
             return item;
         }

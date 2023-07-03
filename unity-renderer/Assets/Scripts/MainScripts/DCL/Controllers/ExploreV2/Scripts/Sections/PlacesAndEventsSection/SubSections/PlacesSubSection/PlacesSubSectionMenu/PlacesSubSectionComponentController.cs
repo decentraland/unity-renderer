@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using DCL.Tasks;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -16,21 +19,23 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     public event Action OnCloseExploreV2;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 5;
-    private const int SHOW_MORE_ROWS_INCREMENT = 3;
+    private const int PAGE_SIZE = 12;
 
     internal readonly IPlacesSubSectionComponentView view;
-    internal readonly IPlacesAPIController placesAPIApiController;
+    internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<PlaceInfo> placesFromAPI = new ();
+    internal readonly List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
-    private CancellationTokenSource cts;
+    private CancellationTokenSource getPlacesCts = new ();
+    private CancellationTokenSource showMoreCts = new ();
+    private CancellationTokenSource disposeCts = new ();
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIController placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIService placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -49,7 +54,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
-        placesAPIApiController = placesAPI;
+        placesAPIService = placesAPI;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
@@ -60,6 +65,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void Dispose()
     {
+        disposeCts?.SafeCancelAndDispose();
+        showMoreCts?.SafeCancelAndDispose();
+        getPlacesCts?.SafeCancelAndDispose();
+
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
@@ -84,10 +93,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             exploreV2Analytics.RemoveFavorite(placeUUID);
         }
 
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
+        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
     }
 
     private void FirstLoading()
@@ -109,36 +115,44 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnRequestedEventsUpdated, 0, 20, cts.Token);
+        getPlacesCts?.SafeCancelAndDispose();
+        getPlacesCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+
+        RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
     }
 
-    private void OnRequestedEventsUpdated(List<PlaceInfo> placeList, int total)
+    private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
     {
-        friendsTrackerController.RemoveAllHandlers();
+        try
+        {
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            friendsTrackerController.RemoveAllHandlers();
+            placesFromAPI.Clear();
+            placesFromAPI.AddRange(firstPage.places);
+            if (firstPage.total > PAGE_SIZE)
+            {
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+                placesFromAPI.AddRange(secondPage.places);
+            }
 
-        placesFromAPI = placeList;
+            view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
 
-        view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(TakeAllForAvailableSlots(placeList)));
-
-        view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);
+            view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
+        }
+        catch (OperationCanceledException) { }
     }
-
-    internal List<PlaceInfo> TakeAllForAvailableSlots(List<PlaceInfo> modelsFromAPI) =>
-        modelsFromAPI.Take(availableUISlots).ToList();
 
     internal void ShowMorePlaces()
     {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(OnadditionalPageUpdated, placesFromAPI.Count, 8, cts.Token);
+        showMoreCts?.SafeCancelAndDispose();
+        showMoreCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        ShowMorePlacesAsync(showMoreCts.Token).Forget();
     }
 
-    private void OnadditionalPageUpdated(List<PlaceInfo> places, int total)
+    private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, showMoreCts.Token);
+
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
         view.SetShowMorePlacesButtonActive(placesFromAPI.Count < total);

@@ -238,6 +238,8 @@ function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
+  profile.userId = message.address
+  profile.ethAddress = message.address
 
   if (!validateAvatar(profile)) {
     console.trace('Invalid avatar received', validateAvatar.errors)

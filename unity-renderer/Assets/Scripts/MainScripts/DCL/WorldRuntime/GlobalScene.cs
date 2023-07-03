@@ -36,6 +36,7 @@ namespace DCL.Controllers
                 baseUrl = data.baseUrl,
                 contents = data.contents,
                 sceneCid = data.id,
+                baseUrlBundles = data.baseUrlBundles,
             };
 
             contentProvider.BakeHashes();

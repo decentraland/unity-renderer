@@ -15,7 +15,7 @@ namespace DCL.ECS7.InternalComponents
             if (colliderInternalComponent.HasCollider(scene, entity, collider))
                 return;
 
-            var model = colliderInternalComponent.GetFor(scene, entity)?.model ?? new InternalColliders();
+            var model = colliderInternalComponent.GetFor(scene, entity)?.model ?? new InternalColliders(new KeyValueSet<Collider, uint>());
             model.colliders.Add(collider, colliderLayer);
             colliderInternalComponent.PutFor(scene, entity, model);
         }
@@ -50,7 +50,7 @@ namespace DCL.ECS7.InternalComponents
 
             if (ret && compData.model.colliders.Count == 0)
             {
-                colliderInternalComponent.RemoveFor(scene, entity, new InternalColliders());
+                colliderInternalComponent.RemoveFor(scene, entity, new InternalColliders(new KeyValueSet<Collider, uint>()));
             }
 
             return ret;

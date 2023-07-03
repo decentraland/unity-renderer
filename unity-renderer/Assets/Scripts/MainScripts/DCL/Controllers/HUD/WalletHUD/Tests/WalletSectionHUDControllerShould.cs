@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCL.Helpers;
+using DCL.MyAccount;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
@@ -24,6 +25,7 @@ namespace DCL.Wallet
         private UserProfile ownUserProfile;
         private IClipboard clipboard;
         private IBrowserBridge browserBridge;
+        private IMyAccountAnalyticsService myAccountAnalyticsService;
         private Promise<double> requestEthereumManaPromise;
         private Promise<double> requestPolygonManaPromise;
 
@@ -36,6 +38,7 @@ namespace DCL.Wallet
             clipboard = Substitute.For<IClipboard>();
             browserBridge = Substitute.For<IBrowserBridge>();
             dataStore = new DataStore();
+            myAccountAnalyticsService = Substitute.For<IMyAccountAnalyticsService>();
 
             ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
             ownUserProfile.UpdateData(new UserProfileModel { userId = "ownId" });
@@ -54,7 +57,8 @@ namespace DCL.Wallet
                 userProfileBridge,
                 clipboard,
                 browserBridge,
-                theGraph);
+                theGraph,
+                myAccountAnalyticsService);
         }
 
         [TearDown]
@@ -139,13 +143,16 @@ namespace DCL.Wallet
         }
 
         [Test]
-        public void GoToManaPurchaseUrlCorrectly()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GoToManaPurchaseUrlCorrectly(bool isPolygonNetwork)
         {
             // Act
-            walletSectionHUDComponentView.OnBuyManaClicked += Raise.Event<Action>();
+            walletSectionHUDComponentView.OnBuyManaClicked += Raise.Event<Action<bool>>(isPolygonNetwork);
 
             // Assert
-            browserBridge.Received(1).OpenUrl("https://account.decentraland.org");
+            browserBridge.Received(1).OpenUrl("https://account.decentraland.org?utm_source=dcl_explorer");
+            myAccountAnalyticsService.Received(1).SendPlayerWalletBuyManaAnalytic(isPolygonNetwork);
         }
 
         [Test]
@@ -155,7 +162,7 @@ namespace DCL.Wallet
             walletSectionHUDComponentView.OnLearnMoreClicked += Raise.Event<Action>();
 
             // Assert
-            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/examples/get-a-wallet");
+            browserBridge.Received(1).OpenUrl("https://docs.decentraland.org/examples/get-a-wallet?utm_source=dcl_explorer");
         }
     }
 }

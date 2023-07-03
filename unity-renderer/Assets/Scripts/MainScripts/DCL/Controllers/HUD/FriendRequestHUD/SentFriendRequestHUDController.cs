@@ -104,7 +104,7 @@ namespace DCL.Social.Friends
                 {
                     FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
+                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal", request.FriendRequestId);
 
                     view.Close();
                 }

@@ -190,6 +190,7 @@ public class PrivateChatWindowController : IHUD
 
         message.messageType = ChatMessage.Type.PRIVATE;
         message.recipient = conversationProfile.userName;
+        message.receiverId = conversationProfile.userId;
 
         bool isValidMessage = !string.IsNullOrEmpty(message.body)
                               && !string.IsNullOrWhiteSpace(message.body)

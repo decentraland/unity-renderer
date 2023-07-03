@@ -1,5 +1,6 @@
-﻿using DCL.ECS7.InternalComponents;
-using DCL.ECSRuntime;
+﻿using DCL.ECS7;
+using DCL.ECS7.InternalComponents;
+using System.Collections.Generic;
 
 namespace ECSSystems.UIInputSenderSystem
 {
@@ -9,12 +10,12 @@ namespace ECSSystems.UIInputSenderSystem
     public class ECSUIInputSenderSystem
     {
         internal IInternalECSComponent<InternalUIInputResults> inputResultComponent { get; }
-        internal IECSComponentWriter componentWriter { get; }
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
 
-        public ECSUIInputSenderSystem(IInternalECSComponent<InternalUIInputResults> inputResultComponent, IECSComponentWriter componentWriter)
+        public ECSUIInputSenderSystem(IInternalECSComponent<InternalUIInputResults> inputResultComponent, IReadOnlyDictionary<int, ComponentWriter> componentsWriter)
         {
             this.inputResultComponent = inputResultComponent;
-            this.componentWriter = componentWriter;
+            this.componentsWriter = componentsWriter;
         }
 
         public void Update()
@@ -24,24 +25,21 @@ namespace ECSSystems.UIInputSenderSystem
             for (var i = 0; i < inputResults.Count; i++)
             {
                 var model = inputResults[i].value.model;
+
                 if (!model.dirty)
                     continue;
 
                 var scene = inputResults[i].value.scene;
                 var entity = inputResults[i].value.entity;
 
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                    continue;
+
                 // Results are already prepared in its final form by the UI Components themselves
 
                 while (model.Results.TryDequeue(out var result))
                 {
-                    componentWriter.PutComponent(
-                        result.Message.GetType(),
-                        scene.sceneData.sceneNumber,
-                        entity.entityId,
-                        result.ComponentId,
-                        result.Message,
-                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
-                        );
+                    writer.Put(entity.entityId, result.ComponentId, result.Message);
                 }
             }
         }

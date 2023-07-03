@@ -31,8 +31,8 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var postDataJson = JsonUtility.ToJson(postData);
-            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
-            var url = GetUrl(endPoint, urlEncodedParams);
+            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
+            var url = GetUrl(endPoint, lambdaUrl, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
@@ -47,8 +47,8 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
-            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
-            var url = GetUrl(endPoint, urlEncodedParams);
+            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
+            var url = GetUrl(endPoint, lambdaUrl, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
 
@@ -79,7 +79,6 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default)
         {
             var postDataJson = JsonUtility.ToJson(postData);
-            await UniTask.WaitUntil(() => catalyst.lambdasUrl != null, cancellationToken: cancellationToken);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false, headers: jsonHeaders);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
 
@@ -108,11 +107,11 @@ namespace DCLServices.Lambdas
             return res;
         }
 
-        internal string GetUrl(string endPoint, params (string paramName, string paramValue)[] urlEncodedParams)
+        internal string GetUrl(string endPoint, string lambdaUrl, params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
-            urlBuilder.Append(GetLambdasUrl());
+            urlBuilder.Append(lambdaUrl);
             if (!urlBuilder.ToString().EndsWith('/'))
                 urlBuilder.Append('/');
 

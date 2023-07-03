@@ -1,4 +1,5 @@
 using DCL.Browser;
+using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
@@ -13,6 +14,8 @@ namespace DCL.Backpack
             IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
+            DataStore dataStore = DataStore.i;
+
             var view = BackpackEditorHUDV2ComponentView.Create();
             view.Initialize(
             Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
@@ -20,17 +23,26 @@ namespace DCL.Backpack
             new PreviewCameraPanningController(),
             new PreviewCameraZoomController());
 
-            DataStore dataStore = DataStore.i;
+            var backpackAnalyticsService = new BackpackAnalyticsService(
+                Environment.i.platform.serviceProviders.analytics,
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
+
+            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+
+            var outfitsController = new OutfitsController(
+                view.OutfitsSectionComponentView,
+                new LambdaOutfitsService(
+                    Environment.i.serviceLocator.Get<ILambdasService>(),
+                    Environment.i.serviceLocator.Get<IServiceProviders>()),
+                userProfileBridge,
+                dataStore,
+                backpackAnalyticsService);
 
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
-
-            var backpackAnalyticsService = new BackpackAnalyticsService(
-                Environment.i.platform.serviceProviders.analytics,
-                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
@@ -50,11 +62,12 @@ namespace DCL.Backpack
                 dataStore,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                wearablesCatalogService,
                 backpackEmotesSectionController,
                 backpackAnalyticsService,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                outfitsController);
         }
 
         public void Dispose()
