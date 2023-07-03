@@ -62,7 +62,7 @@ namespace DCL.Backpack
 
             slotsView = Substitute.For<IAvatarSlotsView>();
 
-            BaseVariable<FeatureFlag> ffBaseVariable = Substitute.For<BaseVariable<FeatureFlag>>();
+            IBaseVariable<FeatureFlag> ffBaseVariable = Substitute.For<IBaseVariable<FeatureFlag>>();
             var featureFlag = new FeatureFlag();
             ffBaseVariable.Get().Returns(featureFlag);
             avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService, ffBaseVariable);
