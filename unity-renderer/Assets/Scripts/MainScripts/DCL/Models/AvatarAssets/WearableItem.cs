@@ -55,6 +55,20 @@ public class WearableItem
         { Categories.HANDS, "Hands" },
     };
 
+    public static readonly string[] SKIN_IMPLICIT_CATEGORIES =
+    {
+        Categories.EYES,
+        Categories.MOUTH,
+        Categories.EYEBROWS,
+        Categories.HAIR,
+        Categories.UPPER_BODY,
+        Categories.LOWER_BODY,
+        Categories.FEET,
+        Categories.HANDS,
+        Misc.HEAD,
+        Categories.FACIAL_HAIR
+    };
+
     [Serializable]
     public class MappingPair
     {
@@ -127,20 +141,6 @@ public class WearableItem
 
     private readonly Dictionary<string, string> cachedI18n = new ();
     private readonly Dictionary<string, ContentProvider> cachedContentProviers = new ();
-
-    private readonly string[] skinImplicitCategories =
-    {
-        Categories.EYES,
-        Categories.MOUTH,
-        Categories.EYEBROWS,
-        Categories.HAIR,
-        Categories.UPPER_BODY,
-        Categories.LOWER_BODY,
-        Categories.FEET,
-        Categories.HANDS,
-        Misc.HEAD,
-        Categories.FACIAL_HAIR
-    };
 
     public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
     {
@@ -227,8 +227,8 @@ public class WearableItem
         if (IsSkin())
         {
             hides = hides == null
-                ? skinImplicitCategories
-                : hides.Concat(skinImplicitCategories).Distinct().ToArray();
+                ? SKIN_IMPLICIT_CATEGORIES
+                : hides.Concat(SKIN_IMPLICIT_CATEGORIES).Distinct().ToArray();
         }
 
         var replaces = GetReplacesList(bodyShapeType);
