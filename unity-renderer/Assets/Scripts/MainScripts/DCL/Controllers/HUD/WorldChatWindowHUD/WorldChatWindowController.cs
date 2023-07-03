@@ -371,25 +371,40 @@ public class WorldChatWindowController : IHUD
 
     private void HandleMessageAdded(ChatMessage[] messages)
     {
-        foreach (var message in messages)
+        async UniTaskVoid AddMessages(ChatMessage[] messages, CancellationToken cancellationToken)
         {
-            if (message.messageType != ChatMessage.Type.PRIVATE) continue;
-
-            var userId = ExtractRecipientId(message);
-
-            if (lastPrivateMessages.ContainsKey(userId))
+            foreach (var message in messages)
             {
-                if (message.timestamp > lastPrivateMessages[userId].timestamp)
+                if (message.messageType != ChatMessage.Type.PRIVATE) continue;
+
+                var userId = ExtractRecipientId(message);
+
+                if (lastPrivateMessages.ContainsKey(userId))
+                {
+                    if (message.timestamp > lastPrivateMessages[userId].timestamp)
+                        lastPrivateMessages[userId] = message;
+                }
+                else
                     lastPrivateMessages[userId] = message;
+
+                try
+                {
+                    // incoming friend request's message is added as a DM. This check filters it
+                    if (await friendsController.GetFriendshipStatus(userId, cancellationToken) != FriendshipStatus.FRIEND) return;
+
+                    var profile = userProfileBridge.Get(userId)
+                                  ?? await userProfileBridge.RequestFullUserProfileAsync(userId, cancellationToken);
+
+                    view.SetPrivateChat(CreatePrivateChatModel(message, profile));
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    Debug.LogException(e);
+                }
             }
-            else
-                lastPrivateMessages[userId] = message;
-
-            var profile = userProfileBridge.Get(userId);
-            if (profile == null) return;
-
-            view.SetPrivateChat(CreatePrivateChatModel(message, profile));
         }
+
+        AddMessages(messages, showDMsCancellationToken.Token).Forget();
     }
 
     private void HandleFriendsWithDirectMessagesAdded(List<FriendWithDirectMessages> usersWithDM)

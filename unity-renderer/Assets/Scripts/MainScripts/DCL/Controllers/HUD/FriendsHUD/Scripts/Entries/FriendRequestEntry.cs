@@ -1,4 +1,3 @@
-using DCL.Helpers;
 using System;
 using System.Globalization;
 using TMPro;
@@ -66,12 +65,13 @@ public class FriendRequestEntry : FriendEntryBase
         bodyMessage.gameObject.SetActive(!string.IsNullOrEmpty(value));
     }
 
-    private void SetRequestDate(long value)
+    private void SetRequestDate(DateTime value)
     {
         if (requestDate == null)
             return;
 
-        requestDate.text = Utils.UnixToDateTimeWithTime((ulong)value).ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
+        DateTime localTime = value.ToLocalTime();
+        requestDate.text = localTime.ToString("MMM dd", new CultureInfo("en-US")).ToUpper();
     }
 
     private void SetReceived(bool value)

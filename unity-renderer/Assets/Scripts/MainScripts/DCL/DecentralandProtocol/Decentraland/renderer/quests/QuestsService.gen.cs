@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Google.Protobuf;
 using rpc_csharp.protocol;
 using rpc_csharp;
+using Google.Protobuf.WellKnownTypes;
 namespace Decentraland.Quests {
 public interface IQuestsService<Context>
 {
@@ -18,9 +19,9 @@ public interface IQuestsService<Context>
 
   UniTask<EventResponse> SendEvent(EventRequest request, Context context, CancellationToken ct);
 
-  IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request, Context context);
+  IUniTaskAsyncEnumerable<UserUpdate> Subscribe(Empty request, Context context);
 
-  UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request, Context context, CancellationToken ct);
+  UniTask<GetAllQuestsResponse> GetAllQuests(Empty request, Context context, CancellationToken ct);
 
   UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request, Context context, CancellationToken ct);
 
@@ -37,8 +38,8 @@ public static class QuestsServiceCodeGen
     result.definition.Add("StartQuest", async (payload, context, ct) => { var res = await service.StartQuest(StartQuestRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("AbortQuest", async (payload, context, ct) => { var res = await service.AbortQuest(AbortQuestRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("SendEvent", async (payload, context, ct) => { var res = await service.SendEvent(EventRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.serverStreamDefinition.Add("Subscribe", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<UserUpdate>(service.Subscribe(UserAddress.Parser.ParseFrom(payload), context)); });
-    result.definition.Add("GetAllQuests", async (payload, context, ct) => { var res = await service.GetAllQuests(UserAddress.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.serverStreamDefinition.Add("Subscribe", (payload, context) => { return ProtocolHelpers.SerializeMessageEnumerator<UserUpdate>(service.Subscribe(Empty.Parser.ParseFrom(payload), context)); });
+    result.definition.Add("GetAllQuests", async (payload, context, ct) => { var res = await service.GetAllQuests(Empty.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("GetQuestDefinition", async (payload, context, ct) => { var res = await service.GetQuestDefinition(GetQuestDefinitionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));

@@ -11,7 +11,9 @@
         "UniTask",
         "IService",
         "ServiceProvidersInterfaces",
-        "CatalystInterfaces"
+        "CatalystInterfaces",
+        "FeatureFlagData",
+        "Utils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

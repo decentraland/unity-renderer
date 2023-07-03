@@ -1,7 +1,7 @@
 import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math'
 
 import { Authenticator } from '@dcl/crypto'
-import { Avatar, generateLazyValidator, JSONSchema, WearableCategory } from '@dcl/schemas'
+import { Avatar, generateLazyValidator, JSONSchema, Outfits, WearableCategory } from '@dcl/schemas'
 import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
@@ -50,13 +50,13 @@ import { AVATAR_LOADING_ERROR } from 'shared/loading/types'
 import { renderingActivated, renderingDectivated } from 'shared/loadingScreen/types'
 import { globalObservable } from 'shared/observables'
 import { denyPortableExperiences, removeScenePortableExperience } from 'shared/portableExperiences/actions'
-import { saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
+import { deployOutfits, saveProfileDelta, sendProfileToRenderer } from 'shared/profiles/actions'
 import { retrieveProfile } from 'shared/profiles/retrieveProfile'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
 import { getFetchContentUrlPrefixFromRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { setWorldLoadingRadius } from 'shared/scene-loader/actions'
-import {logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted} from 'shared/session/actions'
+import { logout, redirectToSignUp, signUp, signUpCancel, tosPopupAccepted } from 'shared/session/actions'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, getCurrentUserId, hasWallet } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
@@ -161,6 +161,39 @@ export type RendererSaveProfile = {
   isSignUpFlow?: boolean
 }
 
+export type RendererSaveOutfits = {
+  outfits: {
+    slot: number
+    outfit: {
+      bodyShape: string
+      eyes: {
+        color: {
+          b: number
+          g: number
+          r: number
+        }
+      }
+      hair: {
+        color: {
+          b: number
+          g: number
+          r: number
+        }
+      }
+      skin: {
+        color: {
+          b: number
+          g: number
+          r: number
+        }
+      }
+      wearables: string[]
+      forceRender?: string[]
+    }
+  }[]
+  namesForExtraSlots: string[]
+}
+
 const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> = {
   type: 'object',
   required: ['r', 'g', 'b', 'a'],
@@ -169,6 +202,16 @@ const color3Schema: JSONSchema<{ r: number; g: number; b: number; a: number }> =
     g: { type: 'number', nullable: false },
     b: { type: 'number', nullable: false },
     a: { type: 'number', nullable: false }
+  }
+} as any
+
+const color3SchemaV2: JSONSchema<{ r: number; g: number; b: number }> = {
+  type: 'object',
+  required: ['r', 'g', 'b'],
+  properties: {
+    r: { type: 'number', nullable: false },
+    g: { type: 'number', nullable: false },
+    b: { type: 'number', nullable: false }
   }
 } as any
 
@@ -229,11 +272,61 @@ export const rendererSaveProfileSchemaV1: JSONSchema<RendererSaveProfile> = {
   }
 } as any
 
+export const rendererSaveOutfitsSchema: JSONSchema<RendererSaveOutfits> = {
+  type: 'object',
+  required: ['outfits', 'namesForExtraSlots'],
+  properties: {
+    outfits: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['slot', 'outfit'],
+        properties: {
+          slot: { type: 'number' },
+          outfit: {
+            type: 'object',
+            required: ['bodyShape', 'eyes', 'hair', 'skin', 'wearables'],
+            properties: {
+              bodyShape: { type: 'string' },
+              eyes: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
+              hair: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
+              skin: {
+                type: 'object',
+                required: ['color'],
+                properties: {
+                  color: color3SchemaV2
+                }
+              },
+              wearables: { type: 'array', items: { type: 'string' } },
+              forceRender: { type: 'array', items: { type: 'string' }, nullable: true }
+            }
+          }
+        }
+      }
+    },
+    namesForExtraSlots: { type: 'array', items: { type: 'string' }, uniqueItems: true }
+  }
+} as any
+
 // This old schema should keep working until ADR74 is merged and renderer is released
 const validateRendererSaveProfileV0 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV0)
 
 // This is the new one
 const validateRendererSaveProfileV1 = generateLazyValidator<RendererSaveProfile>(rendererSaveProfileSchemaV1)
+
+const validateRendererSaveOutfits = generateLazyValidator<RendererSaveOutfits>(rendererSaveOutfitsSchema)
 
 // the BrowserInterface is a visitor for messages received from Unity
 export class BrowserInterface {
@@ -477,6 +570,40 @@ export class BrowserInterface {
     }
   }
 
+  public SaveUserOutfits(changes: RendererSaveOutfits) {
+    if (validateRendererSaveOutfits(changes as RendererSaveOutfits)) {
+      const outfits = changes.outfits.map(({ slot, outfit }) => ({
+        slot,
+        outfit: {
+          bodyShape: outfit.bodyShape,
+          eyes: { color: outfit.eyes.color },
+          hair: { color: outfit.hair.color },
+          skin: { color: outfit.skin.color },
+          wearables: outfit.wearables,
+          forceRender: (outfit.forceRender ?? []).map((category) => category as WearableCategory)
+        }
+      }))
+
+      const update: Outfits = {
+        outfits,
+        namesForExtraSlots: changes.namesForExtraSlots ?? []
+      }
+
+      store.dispatch(deployOutfits(update))
+    } else {
+      const error = validateRendererSaveOutfits.errors
+      defaultLogger.error('Error validating outfits schema', error)
+      trackEvent('invalid_schema', {
+        schema: 'SaveUserOutfits',
+        payload: changes,
+        errors: ''
+      })
+      defaultLogger.error(
+        'Unity sent invalid outfits schema' + JSON.stringify(changes) + ' Errors: ' + JSON.stringify(error)
+      )
+    }
+  }
+
   public SendPassport(passport: { name: string; email: string }) {
     store.dispatch(signUp(passport.email, passport.name))
   }
@@ -488,12 +615,26 @@ export class BrowserInterface {
     }
   }
 
+  public SaveUserVerifiedName(changes: { newVerifiedName: string }) {
+    store.dispatch(saveProfileDelta({ name: changes.newVerifiedName, hasClaimedName: true }))
+  }
+
   public SaveUserUnverifiedName(changes: { newUnverifiedName: string }) {
     store.dispatch(saveProfileDelta({ name: changes.newUnverifiedName, hasClaimedName: false }))
   }
 
   public SaveUserDescription(changes: { description: string }) {
     store.dispatch(saveProfileDelta({ description: changes.description }))
+  }
+
+  public SaveProfileLinks(changes: { links: { title: string, url: string }[] }) {
+    store.dispatch(saveProfileDelta({ links: changes.links }))
+  }
+
+  public SaveProfileAdditionalInfo(changes: { country: string, employmentStatus: string, gender: string,
+    pronouns: string, relationshipStatus: string, sexualOrientation: string, language: string,
+    profession: string, birthdate: number, realName: string, hobbies: string}) {
+    store.dispatch(saveProfileDelta(changes))
   }
 
   public GetFriends(getFriendsRequest: GetFriendsPayload) {
@@ -1140,17 +1281,17 @@ export class BrowserInterface {
 
   //Seamless login, after A/B testing remove this methods and implement a browser-interface<>renderer service
   public ToSPopupAccepted() {
-    trackEvent('seamless_login tos accepted', { })
+    trackEvent('seamless_login tos accepted', {})
     store.dispatch(tosPopupAccepted())
   }
 
   public ToSPopupRejected() {
-    trackEvent('seamless_login tos rejected', { })
+    trackEvent('seamless_login tos rejected', {})
     window.location.href = 'https://decentraland.org'
   }
 
   public ToSPopupGoToToS() {
-    trackEvent('seamless_login go to tos', { })
+    trackEvent('seamless_login go to tos', {})
     globalObservable.emit('openUrl', { url: 'https://decentraland.org/terms' })
   }
 }

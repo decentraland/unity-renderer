@@ -18,6 +18,9 @@ using System.Threading;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 using Analytics;
+using DCL.MyAccount;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class HUDFactory : IHUDFactory
 {
@@ -57,11 +60,25 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.MINIMAP:
                 return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
             case HUDElementID.PROFILE_HUD:
-                return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
+                ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
+
+                var userProfileBridge = new UserProfileWebInterfaceBridge();
+                var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
+
+                return new ProfileHUDController(
+                    view,
+                    userProfileBridge,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
-                    DataStore.i);
+                        userProfileBridge),
+                    DataStore.i,
+                    new MyAccountCardController(
+                        view.MyAccountCardView,
+                        DataStore.i,
+                        userProfileBridge,
+                        Settings.i,
+                        webInterfaceBrowserBridge),
+                    webInterfaceBrowserBridge);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:

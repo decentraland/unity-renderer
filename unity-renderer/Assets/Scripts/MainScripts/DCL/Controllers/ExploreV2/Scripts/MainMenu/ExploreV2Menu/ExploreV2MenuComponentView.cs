@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Wallet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView sectionSelector;
+    [SerializeField] internal WalletCardHUDComponentView walletCard;
     [SerializeField] internal ProfileCardComponentView profileCard;
     [SerializeField] internal RealmViewerComponentView realmViewer;
     [SerializeField] internal ButtonComponentView closeMenuButton;
@@ -25,6 +27,8 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal FeatureEncapsulatorComponentView mapSection;
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView walletSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView myAccountSection;
 
     [Header("Tutorial References")]
     [SerializeField] internal RectTransform profileCardTooltipReference;
@@ -40,7 +44,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     public IRealmViewerComponentView currentRealmViewer => realmViewer;
     public IRealmSelectorComponentView currentRealmSelectorModal => realmSelectorModal;
-
+    public IWalletCardHUDComponentView currentWalletCard => walletCard;
     public IProfileCardComponentView currentProfileCard => profileCard;
     public IPlacesAndEventsSectionComponentView currentPlacesAndEventsSection => placesAndEventsSection;
 
@@ -62,9 +66,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         RemoveSectionSelectorMappings();
         closeMenuButton.onClick.RemoveAllListeners();
+        currentWalletCard.OnWalletCardClicked -= OpenCurrentWalletSection;
         closeAction.OnTriggered -= OnCloseActionTriggered;
         DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+        DataStore.i.myAccount.myAccountSectionOpenFromProfileHUD.OnChange -= OpenMyAccountSection;
 
         if (realmSelectorModal != null)
             realmSelectorModal.Dispose();
@@ -82,19 +88,24 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         exploreSectionsById = new Dictionary<ExploreSection, FeatureEncapsulatorComponentView>
         {
             { ExploreSection.Explore, null },
+            { ExploreSection.Quest, questSection },
             { ExploreSection.Backpack, backpackSection },
             { ExploreSection.Map, mapSection },
-            { ExploreSection.Quest, questSection },
             { ExploreSection.Settings, settingsSection },
+            { ExploreSection.Wallet, walletSection },
+            { ExploreSection.MyAccount, myAccountSection },
         };
     }
 
     public void Start()
     {
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
+        DataStore.i.myAccount.myAccountSectionOpenFromProfileHUD.OnChange += OpenMyAccountSection;
         IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
 
         ConfigureCloseButton();
+
+        currentWalletCard.OnWalletCardClicked += OpenCurrentWalletSection;
     }
 
     public void Update() =>
@@ -133,30 +144,62 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
                           ?.onSelect.AddListener(OnSectionSelected(sectionId));
     }
 
+    private void OpenCurrentWalletSection()
+    {
+        HideAllSections();
+
+        foreach (ISectionToggle section in sectionSelector.GetAllSections())
+            section?.SetUnselectedVisuals();
+
+        SelectSection(ExploreSection.Wallet, true);
+    }
+
+    private void OpenMyAccountSection(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        HideAllSections();
+
+        foreach (ISectionToggle section in sectionSelector.GetAllSections())
+            section?.SetUnselectedVisuals();
+
+        SelectSection(ExploreSection.MyAccount, true);
+    }
+
     private UnityAction<bool> OnSectionSelected(ExploreSection sectionId) =>
         isOn =>
         {
-            FeatureEncapsulatorComponentView sectionView = exploreSectionsById[sectionId];
+            if (exploreSectionsById[ExploreSection.Wallet].isVisible)
+                exploreSectionsById[ExploreSection.Wallet].Hide();
 
-            if (isOn)
-            {
-                if (isOpeningSectionThisFrame)
-                    return;
+            if (exploreSectionsById[ExploreSection.MyAccount].isVisible)
+                exploreSectionsById[ExploreSection.MyAccount].Hide();
 
-                isOpeningSectionThisFrame = true;
-                StartCoroutine(ResetSectionOpenLock());
-
-                // If not an explorer Section, because we do not Show/Hide it
-                if (sectionView != null)
-                    sectionView.Show();
-
-                OnSectionOpen?.Invoke(sectionId);
-            }
-            else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
-            {
-                sectionView.Hide();
-            }
+            SelectSection(sectionId, isOn);
         };
+
+    private void SelectSection(ExploreSection sectionId, bool isOn)
+    {
+        FeatureEncapsulatorComponentView sectionView = exploreSectionsById[sectionId];
+
+        if (isOn)
+        {
+            if (isOpeningSectionThisFrame)
+                return;
+
+            isOpeningSectionThisFrame = true;
+            StartCoroutine(ResetSectionOpenLock());
+
+            // If not an explorer Section, because we do not Show/Hide it
+            if (sectionView != null)
+                sectionView.Show();
+
+            OnSectionOpen?.Invoke(sectionId);
+        }
+        else if (sectionView != null) // If not an explorer Section, because we do not Show/Hide it
+            sectionView.Hide();
+    }
 
     private IEnumerator ResetSectionOpenLock()
     {
@@ -204,13 +247,16 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     }
 
     public void SetSectionActive(ExploreSection section, bool isActive) =>
-        sectionSelector.GetSection((int)section).SetActive(isActive);
+        sectionSelector.GetSection((int)section)?.SetActive(isActive);
 
     public void SetSectionAsNew(ExploreSection section, bool isNew) =>
-        sectionSelector.GetSection((int)section).SetAsNew(isNew);
+        sectionSelector.GetSection((int)section)?.SetAsNew(isNew);
 
-    public bool IsSectionActive(ExploreSection section) =>
-        sectionSelector.GetSection((int)section).IsActive();
+    public bool IsSectionActive(ExploreSection section)
+    {
+        var sectionToCheck = sectionSelector.GetSection((int)section);
+        return sectionToCheck != null && sectionToCheck.IsActive();
+    }
 
     private void OnAfterShowAnimationCompleted(ShowHideAnimator _)
     {
@@ -255,7 +301,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (Input.GetMouseButton(0) &&
             !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTransform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.ExpandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
+            !RectTransformUtility.RectangleContainsScreenPoint(DataStore.i.myAccount.isInitialized.Get() ?
+                HUDController.i.profileHud.view.MyAccountCardLayout :
+                HUDController.i.profileHud.view.ExpandedMenu,
+                Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.MyAccountCardMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
     }
 
@@ -299,5 +349,18 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         placesAndEventsSection.Show();
         mapSection.Hide();
+    }
+
+    public void SetWalletActive(bool isActive, bool isGuest)
+    {
+        currentWalletCard.SetWalletCardActive(isActive);
+        currentWalletCard.SetWalletCardAsGuest(isGuest);
+    }
+
+    private void HideAllSections()
+    {
+        foreach (var section in exploreSectionsById)
+            if (section.Value != null && section.Value.isVisible)
+                section.Value.Hide();
     }
 }

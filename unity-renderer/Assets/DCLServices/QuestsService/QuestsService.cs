@@ -2,8 +2,13 @@
 using DCL.Helpers;
 using DCL.Tasks;
 using Decentraland.Quests;
+using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Threading;
+using DCL;
+using UnityEngine;
+using UnityEngine.Networking;
+using DCLServices.QuestsService;
 
 namespace DCLServices.QuestsService
 {
@@ -15,58 +20,95 @@ namespace DCLServices.QuestsService
      */
     public class QuestsService : IQuestsService
     {
-        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestStarted => questStarted;
-        public IAsyncEnumerableWithEvent<QuestStateWithData> QuestUpdated => questUpdated;
+        private const bool VERBOSE = false;
 
-        private readonly AsyncEnumerableWithEvent<QuestStateWithData> questStarted = new ();
-        private readonly AsyncEnumerableWithEvent<QuestStateWithData> questUpdated = new ();
+        public IAsyncEnumerableWithEvent<QuestInstance> QuestStarted => questStarted;
+        public IAsyncEnumerableWithEvent<QuestInstance> QuestUpdated => questUpdated;
 
-        public IReadOnlyDictionary<string, QuestStateWithData> CurrentState => stateCache;
-        internal readonly Dictionary<string, QuestStateWithData> stateCache = new ();
+        private readonly AsyncEnumerableWithEvent<QuestInstance> questStarted = new ();
+        private readonly AsyncEnumerableWithEvent<QuestInstance> questUpdated = new ();
+
+        public IReadOnlyDictionary<string, QuestInstance> QuestInstances => questInstances;
+        public IReadOnlyDictionary<string, object> QuestRewards { get; }
+
+        internal readonly Dictionary<string, QuestInstance> questInstances = new ();
 
         internal readonly IClientQuestsService clientQuestsService;
-        internal string userId = null;
+        internal readonly IQuestRewardsResolver questRewardsResolver;
+        private Service<IWebRequestController> webRequestController;
         internal readonly Dictionary<string, UniTaskCompletionSource<Quest>> definitionCache = new ();
-        internal CancellationTokenSource userSubscribeCt = null;
+        internal readonly Dictionary<string, UniTaskCompletionSource<IReadOnlyList<QuestReward>>> rewardsCache = new ();
 
-        public QuestsService(IClientQuestsService clientQuestsService)
+        internal readonly CancellationTokenSource disposeCts = new ();
+        internal readonly UniTaskCompletionSource gettingInitialState = new ();
+
+        public QuestsService(IClientQuestsService clientQuestsService, IQuestRewardsResolver questRewardsResolver)
         {
             this.clientQuestsService = clientQuestsService;
+            this.questRewardsResolver = questRewardsResolver;
+            Subscribe().Forget();
         }
 
-        public void SetUserId(string userId)
+        private async UniTaskVoid Subscribe()
         {
-            if (userId == this.userId)
-                return;
+            //Obtain initial state
+            var allquests = await clientQuestsService.GetAllQuests(new Empty());
 
-            this.userId = userId;
+            if(VERBOSE)
+                Debug.Log("[QuestsService] Getting all quests");
 
-            // Definitions are not user specific, so we only need to clear the state cache
-            stateCache.Clear();
-            userSubscribeCt.SafeCancelAndDispose();
-            userSubscribeCt = null;
-
-            if (!string.IsNullOrEmpty(userId))
+            foreach (QuestInstance questInstance in allquests.Quests.Instances)
             {
-                userSubscribeCt = new CancellationTokenSource();
-                Subscribe(userSubscribeCt.Token).Forget();
+                if(VERBOSE)
+                    Debug.Log($"[QuestsService]\n{questInstance}");
+                questInstances[questInstance.Id] = questInstance;
+                string questId = questInstance.Quest.Id;
+
+                if (!definitionCache.TryGetValue(questId, out var completionSource))
+                    definitionCache[questId] = completionSource = new UniTaskCompletionSource<Quest>();
+
+                completionSource.TrySetResult(questInstance.Quest);
+
+                questUpdated.Write(questInstance);
             }
-        }
 
-        private async UniTaskVoid Subscribe(CancellationToken ct)
-        {
-            var enumerable = clientQuestsService.Subscribe(new UserAddress { UserAddress_ = userId });
-            await foreach (var userUpdate in enumerable.WithCancellation(ct))
+            //Listen to updates
+            var enumerable = clientQuestsService.Subscribe(new Empty());
+
+            if(VERBOSE)
+                Debug.Log($"[QuestsService] Subscribing");
+
+            await foreach (UserUpdate userUpdate in enumerable.WithCancellation(disposeCts.Token))
             {
+                if(VERBOSE)
+                    Debug.Log($"[QuestsService] Update:\n{userUpdate}");
                 switch (userUpdate.MessageCase)
                 {
-                    case UserUpdate.MessageOneofCase.QuestStateUpdate:
-                        stateCache[userUpdate.QuestStateUpdate.QuestData.QuestInstanceId] = userUpdate.QuestStateUpdate.QuestData;
-                        questUpdated.Write(userUpdate.QuestStateUpdate.QuestData);
+                    case UserUpdate.MessageOneofCase.Subscribed:
+                        gettingInitialState.TrySetResult();
                         break;
+                    case UserUpdate.MessageOneofCase.QuestStateUpdate:
+                        if (!questInstances.TryGetValue(userUpdate.QuestStateUpdate.InstanceId, out var questUpdatedInstance))
+                        {
+                            if(VERBOSE)
+                                Debug.Log($"Received quest update which instance was not received before: {userUpdate.ToString()}");
+
+                            continue;
+                        }
+                        questUpdatedInstance.State = userUpdate.QuestStateUpdate.QuestState;
+                        questUpdated.Write(questUpdatedInstance);
+                        break;
+
                     case UserUpdate.MessageOneofCase.NewQuestStarted:
-                        stateCache[userUpdate.NewQuestStarted.QuestInstanceId] = userUpdate.NewQuestStarted;
-                        questStarted.Write(userUpdate.NewQuestStarted);
+                        var questInstance = userUpdate.NewQuestStarted;
+                        questInstances[questInstance.Id] = questInstance;
+
+                        string questId = questInstance.Quest.Id;
+                        if (!definitionCache.TryGetValue(questId, out var completionSource))
+                            definitionCache[questId] = completionSource = new UniTaskCompletionSource<Quest>();
+
+                        questStarted.Write(questInstance);
+                        completionSource.TrySetResult(questInstance.Quest);
                         break;
                 }
             }
@@ -74,18 +116,18 @@ namespace DCLServices.QuestsService
 
         public async UniTask<StartQuestResponse> StartQuest(string questId)
         {
-            if (string.IsNullOrEmpty(userId))
-                throw new UserIdNotSetException();
-
-            return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId, UserAddress = userId });
+            await gettingInitialState.Task;
+            return await clientQuestsService.StartQuest(new StartQuestRequest { QuestId = questId });
         }
 
         public async UniTask<AbortQuestResponse> AbortQuest(string questInstanceId)
         {
-            if (string.IsNullOrEmpty(userId))
-                throw new UserIdNotSetException();
+            await gettingInitialState.Task;
+            AbortQuestResponse abortQuestResponse = await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId });
 
-            return await clientQuestsService.AbortQuest(new AbortQuestRequest { QuestInstanceId = questInstanceId, UserAddress = userId });
+            if (abortQuestResponse.ResponseCase == AbortQuestResponse.ResponseOneofCase.Accepted)
+                questInstances.Remove(questInstanceId);
+            return abortQuestResponse;
         }
 
         public UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default)
@@ -95,7 +137,10 @@ namespace DCLServices.QuestsService
             async UniTask<Quest> RetrieveTask()
             {
                 GetQuestDefinitionResponse definition = await clientQuestsService.GetQuestDefinition(new GetQuestDefinitionRequest { QuestId = questId });
-                definitionCompletionSource.TrySetResult(definition.Quest);
+
+                if (definitionCache.TryGetValue(definition.Quest.Id, out definitionCompletionSource))
+                    definitionCache[definition.Quest.Id].TrySetResult(definition.Quest);
+
                 return definition.Quest;
             }
 
@@ -109,10 +154,33 @@ namespace DCLServices.QuestsService
             return definitionCompletionSource.Task.AttachExternalCancellation(cancellationToken);
         }
 
+        public UniTask<IReadOnlyList<QuestReward>> GetQuestRewards(string questId, CancellationToken cancellationToken = default)
+        {
+            UniTaskCompletionSource<IReadOnlyList<QuestReward>> rewardsCompletionSource;
+
+            async UniTask<IReadOnlyList<QuestReward>> RetrieveTask()
+            {
+                IReadOnlyList<QuestReward> response = await questRewardsResolver.ResolveRewards(questId, cancellationToken);
+
+                if (rewardsCache.TryGetValue(questId, out rewardsCompletionSource))
+                    rewardsCache[questId].TrySetResult(response);
+
+                return response;
+            }
+
+            if (!rewardsCache.TryGetValue(questId, out rewardsCompletionSource))
+            {
+                rewardsCompletionSource = new UniTaskCompletionSource<IReadOnlyList<QuestReward>>();
+                rewardsCache[questId] = rewardsCompletionSource;
+                RetrieveTask().Forget();
+            }
+
+            return rewardsCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+        }
+
         public void Dispose()
         {
-            userSubscribeCt.SafeCancelAndDispose();
-            userSubscribeCt = null;
+            disposeCts.SafeCancelAndDispose();
             questStarted.Dispose();
             questUpdated.Dispose();
         }

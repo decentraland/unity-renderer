@@ -1,4 +1,5 @@
 ﻿public enum FriendRequestError
 {
-    AlreadyFriends
+    AlreadyFriends,
+    UserNotFound,
 }

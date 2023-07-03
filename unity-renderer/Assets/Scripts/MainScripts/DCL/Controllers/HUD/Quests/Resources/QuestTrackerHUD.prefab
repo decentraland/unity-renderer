@@ -36,11 +36,11 @@ RectTransform:
   m_Father: {fileID: 6238993295414465396}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -656.5, y: 104}
-  m_SizeDelta: {x: 271, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 143.1, y: -238.3}
+  m_SizeDelta: {x: 260.62, y: 0}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2684987763480165613
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 0.29803923}
+  m_Color: {r: 0.08627451, g: 0.08235294, b: 0.09411765, a: 0.6509804}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -181,7 +181,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &8540544952857596789
 MonoBehaviour:
@@ -260,6 +260,7 @@ MonoBehaviour:
     questTitle: 
     coordinates: {x: 0, y: 0}
     questSteps: []
+    supportsJumpIn: 0
   questTitleText: {fileID: 7010195451191973469}
   stepsContainer: {fileID: 6954257778057539821}
   stepPrefab: {fileID: 7491123963639734646, guid: 190afcea4c25a4839abf1d0a44649ef6,
@@ -366,11 +367,11 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: -1.66
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -493,7 +494,7 @@ PrefabInstance:
     - target: {fileID: 3049354563375749264, guid: 1013f041deb6d4feda92e8bf0f930fa6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 135
+      value: 125.8
       objectReference: {fileID: 0}
     - target: {fileID: 3049354563375749264, guid: 1013f041deb6d4feda92e8bf0f930fa6,
         type: 3}

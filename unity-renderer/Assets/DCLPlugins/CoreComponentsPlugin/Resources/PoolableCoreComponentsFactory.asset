@@ -21,18 +21,18 @@ MonoBehaviour:
   - classId: 33
     prefab: {fileID: 1438135810206001881, guid: d3a11958c03a6e2468f8173c6f80b0c1,
       type: 3}
-    usePool: 0
-    prewarmCount: 0
+    usePool: 1
+    prewarmCount: 170
   - classId: 201
     prefab: {fileID: 5455216942449862864, guid: 8cf47145b31d0fe4db23561457579fab,
       type: 3}
-    usePool: 0
-    prewarmCount: 0
+    usePool: 1
+    prewarmCount: 220
   - classId: 21
     prefab: {fileID: 6259529893562660078, guid: a374a32b18d38b94081521e49705cf74,
       type: 3}
-    usePool: 0
-    prewarmCount: 0
+    usePool: 1
+    prewarmCount: 130
   - classId: 56
     prefab: {fileID: 5523974814614327640, guid: 2f03e6cf1b102864995f93ecfe4f09e1,
       type: 3}
@@ -42,7 +42,7 @@ MonoBehaviour:
     prefab: {fileID: 1278255678381638623, guid: 83114061e5fa29145b56c7589a282c24,
       type: 3}
     usePool: 0
-    prewarmCount: 0
+    prewarmCount: 10
   - classId: 203
     prefab: {fileID: -6869634713508994917, guid: 63d0c825b5512470c976adc525f4bf29,
       type: 3}
@@ -60,11 +60,6 @@ MonoBehaviour:
     prewarmCount: 0
   - classId: 205
     prefab: {fileID: 4524852361449031375, guid: 5d3c6cfd02c1d4ead9d1dc8e9b6f7237,
-      type: 3}
-    usePool: 0
-    prewarmCount: 0
-  - classId: 1417815519
-    prefab: {fileID: 3670775501202994215, guid: f589e48f50bdb62448125e6b626e703f,
       type: 3}
     usePool: 0
     prewarmCount: 0

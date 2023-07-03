@@ -40,7 +40,7 @@ namespace DCLServices.QuestsService.TestScene.Editor
                 container.Add(amountField);
                 container.Add(initButton);
 
-                messagesLeftLabel = new Label("Hola");
+                messagesLeftLabel = new Label();
                 container.Add(messagesLeftLabel);
 
                 root.Add(container);
@@ -55,7 +55,7 @@ namespace DCLServices.QuestsService.TestScene.Editor
             if (Application.isPlaying)
             {
                 if (messagesLeftLabel != null)
-                    messagesLeftLabel.text = $"Messages left: {clientQuestService.QuestStateUpdatesCount}";
+                    messagesLeftLabel.text = $"Messages left: {clientQuestService.UserUpdatesCount}";
             }
 
             base.OnInspectorGUI();

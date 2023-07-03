@@ -1,4 +1,5 @@
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
@@ -9,21 +10,26 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.PlacesAPIService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
-using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.FriendsController;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using rpc_csharp.transport;
 using RPC.Transports;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -50,7 +56,7 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
 
-            result.Register<IWebRequestController>(() => new WebRequestController(
+            var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
@@ -60,7 +66,8 @@ namespace DCL
                 new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
-            ));
+            );
+            result.Register<IWebRequestController>(() => webRequestController);
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
@@ -85,12 +92,9 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                ITransport TransportProvider() =>
-                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    TransportProvider);
+                    new RPCSocialClientProvider("wss://rpc-social-service.decentraland.org"));
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
@@ -104,12 +108,19 @@ namespace DCL
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
                         DataStore.i), result.Get<ISocialApiBridge>(),
-                    DataStore.i);
+                    DataStore.i, userProfileWebInterfaceBridge);
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
-            result.Register<IEmotesCatalogService>(() => new EmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider));
+            result.Register<IEmotesCatalogService>(() =>
+            {
+                var emotesRequest = new EmotesRequestWeb(
+                    result.Get<ILambdasService>(),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags);
+                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+            });
 
             result.Register<ITeleportController>(() => new TeleportController());
 
@@ -120,7 +131,8 @@ namespace DCL
             result.Register<IWearablesCatalogService>(() => new WearablesCatalogServiceProxy(
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
-                    result.Get<IServiceProviders>()),
+                    result.Get<IServiceProviders>(),
+                    DataStore.i.featureFlags.flags),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
@@ -179,6 +191,8 @@ namespace DCL
                 new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
+
+            result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
 
             // Analytics
 

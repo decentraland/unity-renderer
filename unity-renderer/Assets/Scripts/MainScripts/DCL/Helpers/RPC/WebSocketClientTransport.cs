@@ -1,49 +1,38 @@
+using HybridWebSocket;
 using System;
-using WebSocketSharp;
-using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
 using ITransport = rpc_csharp.transport.ITransport;
-using MessageEventArgs = WebSocketSharp.MessageEventArgs;
-using WebSocket = WebSocketSharp.WebSocket;
 
 namespace RPC.Transports
 {
-    public class WebSocketClientTransport : WebSocket, ITransport
+    public class WebSocketClientTransport : ITransport
     {
-        public WebSocketClientTransport(string url, params string[] protocols) : base(url, protocols)
+        private readonly WebSocket webSocket;
+
+        public event Action OnCloseEvent;
+        public event Action<string> OnErrorEvent;
+        public event Action<byte[]> OnMessageEvent;
+        public event Action OnConnectEvent;
+
+        public WebSocketClientTransport(string url)
         {
-            this.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-
-            base.OnMessage += this.HandleMessage;
-            base.OnError += this.HandleError;
-            base.OnClose += this.HandleClose;
-            base.OnOpen += this.HandleOpen;
-
-            base.Connect();
+            webSocket = WebSocketFactory.CreateInstance(url);
+            webSocket.OnMessage += this.HandleMessage;
+            webSocket.OnError += this.HandleError;
+            webSocket.OnClose += this.HandleClose;
+            webSocket.OnOpen += this.HandleOpen;
         }
 
-        private void HandleMessage(object sender, MessageEventArgs e)
-        {
-            OnMessageEvent?.Invoke(e.RawData);
-        }
-
-        private void HandleError(object sender, ErrorEventArgs e)
-        {
-            OnErrorEvent?.Invoke(e.Message);
-        }
-
-        private void HandleClose(object sender, CloseEventArgs e)
-        {
-            OnCloseEvent?.Invoke();
-        }
-
-        private void HandleOpen(object sender, EventArgs e)
-        {
-            OnConnectEvent?.Invoke();
-        }
+        public void Connect() =>
+            webSocket.Connect();
 
         public void SendMessage(byte[] data)
         {
-            Send(data);
+            webSocket.Send(data);
+        }
+
+        public void Close()
+        {
+            webSocket.Close();
         }
 
         public void Dispose()
@@ -53,15 +42,30 @@ namespace RPC.Transports
             OnMessageEvent = null;
             OnConnectEvent = null;
 
-            base.OnMessage -= this.HandleMessage;
-            base.OnError -= this.HandleError;
-            base.OnClose -= this.HandleClose;
-            base.OnOpen -= this.HandleOpen;
+            webSocket.OnMessage -= this.HandleMessage;
+            webSocket.OnError -= this.HandleError;
+            webSocket.OnClose -= this.HandleClose;
+            webSocket.OnOpen -= this.HandleOpen;
         }
 
-        public event Action OnCloseEvent;
-        public event Action<string> OnErrorEvent;
-        public event Action<byte[]> OnMessageEvent;
-        public event Action OnConnectEvent;
+        private void HandleMessage(byte[] data)
+        {
+            OnMessageEvent?.Invoke(data);
+        }
+
+        private void HandleError(string errorMsg)
+        {
+            OnErrorEvent?.Invoke(errorMsg);
+        }
+
+        private void HandleClose(WebSocketCloseCode closeCode)
+        {
+            OnCloseEvent?.Invoke();
+        }
+
+        private void HandleOpen()
+        {
+            OnConnectEvent?.Invoke();
+        }
     }
 }

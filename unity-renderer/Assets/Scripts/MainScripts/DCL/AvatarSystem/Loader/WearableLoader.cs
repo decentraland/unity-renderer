@@ -113,15 +113,7 @@ namespace AvatarSystem
         private async UniTask LoadWearable(GameObject container, WearableItem wearableToLoad, string bodyshapeId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-
-            WearableItem.Representation representation = wearableToLoad.GetRepresentation(bodyshapeId);
-            if (representation == null)
-            {
-                Debug.Log($"No representation for {bodyshapeId} of {wearableToLoad.id}");
-                return;
-            }
-
-            await retriever.Retrieve(container, wearableToLoad.GetContentProvider(bodyshapeId), wearableToLoad.baseUrlBundles, representation.mainFile, ct);
+            await retriever.Retrieve(container, wearableToLoad, bodyshapeId, ct);
         }
 
         public void Dispose() { retriever?.Dispose(); }

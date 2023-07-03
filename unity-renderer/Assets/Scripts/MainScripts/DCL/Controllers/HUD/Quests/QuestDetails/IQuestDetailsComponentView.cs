@@ -19,5 +19,6 @@ namespace DCL.Quests
         public void SetQuestSteps(List<QuestStepComponentModel> questSteps);
         public void SetQuestRewards(List<QuestRewardComponentModel> questRewards);
         public void SetIsGuest(bool isGuest);
+        public void SetPanel(string panelName);
     }
 }

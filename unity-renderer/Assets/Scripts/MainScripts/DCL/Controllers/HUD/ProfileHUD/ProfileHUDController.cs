@@ -1,10 +1,15 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.MyAccount;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 using WaitUntil = UnityEngine.WaitUntil;
@@ -22,7 +27,6 @@ public class ProfileHUDController : IHUD
     private const string URL_MANA_PURCHASE = "https://account.decentraland.org";
     private const string URL_TERMS_OF_USE = "https://decentraland.org/terms";
     private const string URL_PRIVACY_POLICY = "https://decentraland.org/privacy";
-    private const string VIEW_NAME = "_ProfileHUD";
     private const string LINKS_REGEX = @"\[(.*?)\)";
     private const float FETCH_MANA_INTERVAL = 60;
 
@@ -30,6 +34,8 @@ public class ProfileHUDController : IHUD
     private readonly IUserProfileBridge userProfileBridge;
     private readonly ISocialAnalytics socialAnalytics;
     private readonly DataStore dataStore;
+    private readonly MyAccountCardController myAccountCardController;
+    private readonly IBrowserBridge browserBridge;
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -39,23 +45,27 @@ public class ProfileHUDController : IHUD
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private Coroutine fetchManaIntervalRoutine = null;
     private Coroutine fetchPolygonManaIntervalRoutine = null;
+    private CancellationTokenSource saveNameCancellationToken;
+    private CancellationTokenSource saveDescriptionCancellationToken;
 
     private Regex nameRegex = null;
 
     public RectTransform TutorialTooltipReference => view.TutorialReference;
 
     public ProfileHUDController(
+        IProfileHUDView view,
         IUserProfileBridge userProfileBridge,
         ISocialAnalytics socialAnalytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        MyAccountCardController myAccountCardController,
+        IBrowserBridge browserBridge)
     {
         this.userProfileBridge = userProfileBridge;
         this.socialAnalytics = socialAnalytics;
         this.dataStore = dataStore;
-
-        GameObject viewGo = UnityEngine.Object.Instantiate(GetViewPrefab());
-        viewGo.name = VIEW_NAME;
-        view = viewGo.GetComponent<IProfileHUDView>();
+        this.view = view;
+        this.myAccountCardController = myAccountCardController;
+        this.browserBridge = browserBridge;
 
         dataStore.exploreV2.isOpen.OnChange += SetAsFullScreenMenuMode;
         dataStore.exploreV2.profileCardIsOpen.OnChange += SetProfileCardExtended;
@@ -67,11 +77,11 @@ public class ProfileHUDController : IHUD
         view.LogedOutPressed += OnLoggedOut;
         view.SignedUpPressed += OnSignedUp;
 
-        view.ClaimNamePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_CLAIM_NAME);
+        view.ClaimNamePressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_CLAIM_NAME);
 
         view.Opened += (object sender, EventArgs args) =>
         {
-            WebInterface.RequestOwnProfileUpdate();
+            userProfileBridge.RequestOwnProfileUpdate();
             OnOpen?.Invoke();
         };
 
@@ -79,13 +89,13 @@ public class ProfileHUDController : IHUD
         view.NameSubmitted += (object sender, string name) => UpdateProfileName(name);
         view.DescriptionSubmitted += (object sender, string description) => UpdateProfileDescription(description);
 
-        view.TermsAndServicesPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        view.PrivacyPolicyPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_PRIVACY_POLICY);
+        view.TermsAndServicesPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_TERMS_OF_USE);
+        view.PrivacyPolicyPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_PRIVACY_POLICY);
 
         if (view.HasManaCounterView() || view.HasPolygonManaCounterView())
         {
-            view.ManaInfoPressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_INFO);
-            view.ManaPurchasePressed += (object sender, EventArgs args) => WebInterface.OpenURL(URL_MANA_PURCHASE);
+            view.ManaInfoPressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_MANA_INFO);
+            view.ManaPurchasePressed += (object sender, EventArgs args) => browserBridge.OpenUrl(URL_MANA_PURCHASE);
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
@@ -103,23 +113,20 @@ public class ProfileHUDController : IHUD
     private void OnSignedUp(object sender, EventArgs e)
     {
         DCL.SettingsCommon.Settings.i.SaveSettings();
-        WebInterface.RedirectToSignUp();
+        userProfileBridge.SignUp();
     }
 
     private void OnLoggedOut(object sender, EventArgs e)
     {
         DCL.SettingsCommon.Settings.i.SaveSettings();
-        WebInterface.LogOut();
+        userProfileBridge.LogOut();
     }
 
     private void SetProfileCardExtended(bool isOpenCurrent, bool previous)
     {
         OnOpen?.Invoke();
-        view.ShowExpanded(isOpenCurrent);
+        view.ShowExpanded(isOpenCurrent, dataStore.myAccount.isInitialized.Get());
     }
-
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) =>
-        view.GameObject.SetActive(current);
 
     public void SetManaBalance(string balance) =>
         view?.SetManaBalance(balance);
@@ -146,7 +153,7 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         view.LogedOutPressed -= OnLoggedOut;
         view.SignedUpPressed -= OnSignedUp;
@@ -167,11 +174,10 @@ public class ProfileHUDController : IHUD
 
         dataStore.exploreV2.profileCardIsOpen.OnChange -= SetAsFullScreenMenuMode;
         dataStore.exploreV2.isInitialized.OnChange -= ExploreV2Changed;
-    }
 
-    protected virtual GameObject GetViewPrefab()
-    {
-        return Resources.Load<GameObject>("ProfileHUD_V2");
+        myAccountCardController.Dispose();
+        saveNameCancellationToken.SafeCancelAndDispose();
+        saveDescriptionCancellationToken.SafeCancelAndDispose();
     }
 
     private void OnProfileUpdated(UserProfile profile) =>
@@ -188,7 +194,8 @@ public class ProfileHUDController : IHUD
         if (nameRegex != null && !nameRegex.IsMatch(newName))
             return;
 
-        userProfileBridge.SaveUnverifiedName(newName);
+        saveNameCancellationToken = saveNameCancellationToken.SafeRestart();
+        userProfileBridge.SaveUnverifiedName(newName, saveNameCancellationToken.Token).Forget();
     }
 
     private void UpdateProfileDescription(string description)
@@ -196,7 +203,8 @@ public class ProfileHUDController : IHUD
         if (!ownUserProfile.hasConnectedWeb3 || view.IsDesciptionIsLongerThanMaxCharacters())
             return;
 
-        userProfileBridge.SaveDescription(description);
+        saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
+        userProfileBridge.SaveDescription(description, saveDescriptionCancellationToken.Token).Forget();
         socialAnalytics.SendProfileEdit(description.Length, ContainsLinks(description), PlayerActionSource.ProfileEditHUD);
     }
 
@@ -223,7 +231,7 @@ public class ProfileHUDController : IHUD
         {
             yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
 
-            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
+            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId, TheGraphNetwork.Polygon);
 
             // This can be null if theGraph is mocked
             if (promise != null)

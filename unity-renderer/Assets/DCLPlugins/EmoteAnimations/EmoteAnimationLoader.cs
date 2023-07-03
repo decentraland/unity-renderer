@@ -29,11 +29,7 @@ namespace DCL.Emotes
 
             ct.ThrowIfCancellationRequested();
 
-            WearableItem.Representation representation = emote.GetRepresentation(bodyShapeId);
-
-            if (representation == null) { throw new Exception($"No representation for {bodyShapeId} of emote: {emote.id}"); }
-
-            Rendereable rendereable = await retriever.Retrieve(container, emote.GetContentProvider(bodyShapeId), emote.baseUrlBundles, representation.mainFile, ct);
+            Rendereable rendereable = await retriever.Retrieve(container, emote, bodyShapeId, ct);
 
             var animation = rendereable.container.GetComponentInChildren<Animation>();
 

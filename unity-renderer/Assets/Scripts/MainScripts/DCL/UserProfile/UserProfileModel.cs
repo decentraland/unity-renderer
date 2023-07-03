@@ -1,10 +1,37 @@
+using DCL.UserProfiles;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
-[System.Serializable]
+[Serializable]
 public class UserProfileModel
 {
-    [System.Serializable]
+    [Serializable]
+    public class Link
+    {
+        public string title;
+        public string url;
+
+        public Link()
+        {
+        }
+
+        public Link(string title, string url)
+        {
+            this.title = title;
+            this.url = url;
+        }
+
+        public override bool Equals(object obj) =>
+            obj is Link link && Equals(link);
+
+        private bool Equals(Link other) =>
+            title == other.title && url == other.url;
+
+        public override int GetHashCode() =>
+            HashCode.Combine(title, url);
+    }
+
+    [Serializable]
     public class Snapshots
     {
         public string face256;
@@ -19,14 +46,14 @@ public class UserProfileModel
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ParcelsWithAccess
     {
         public int x;
         public int y;
         public LandRole landRole;
 
-        [System.Serializable]
+        [Serializable]
         public enum LandRole
         {
             OWNER = 0,
@@ -54,16 +81,38 @@ public class UserProfileModel
     public ulong updated_at;
     public int version;
     public AvatarModel avatar;
-    public Snapshots snapshots = new Snapshots();
+    public Snapshots snapshots = new ();
     public UserProfileModel Clone() => (UserProfileModel)MemberwiseClone();
 
     public bool hasConnectedWeb3 = true;
 
     public int tutorialFlagsMask;
-    public List<string> blocked;
-    public List<string> muted;
+    public List<string> blocked = new ();
+    public List<string> muted = new ();
     public int tutorialStep;
-    public bool hasClaimedName = false;
+    public bool hasClaimedName;
+    public List<Link> links;
+    public AdditionalInfo AdditionalInfo { get; set; } = new ();
+
+    public static UserProfileModel FallbackModel(string name, int id)
+    {
+        var fallbackId = $"{name}_{id}";
+
+        return new UserProfileModel
+        {
+            // Required fields (otherwise exceptions will be thrown by UserProfile.OnUpdate subscribers)
+            userId = fallbackId,
+            name = name,
+            description = "There was a problem with loading this profile. This is a fallback profile",
+
+            avatar = AvatarModel.FallbackModel(name, id),
+
+            // Optional (exceptions-free) fields
+            ethAddress = fallbackId,
+            email = fallbackId,
+            baseUrl = fallbackId,
+        };
+    }
 
     public bool Equals(UserProfileModel model)
     {
@@ -114,6 +163,17 @@ public class UserProfileModel
         if (model.tutorialStep != tutorialStep) return false;
         if (model.hasClaimedName != hasClaimedName) return false;
 
+        if (model.links != null && links != null)
+        {
+            if (model.links.Count != links.Count)
+                return false;
+        }
+        else if (model.links != null || links != null)
+            return false;
+
+        if (!AdditionalInfo.Equals(model.AdditionalInfo))
+            return false;
+
         return true;
     }
 
@@ -127,6 +187,4 @@ public class UserProfileModel
 
         return baseUrl + url;
     }
-
-
 }

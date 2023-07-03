@@ -122,16 +122,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
-        if (!container.transform.TryFindChildRecursively("Armature", out Transform armature))
-        {
-            Debug.LogError($"Couldn't find Armature for AnimatorLegacy in path: {transform.GetHierarchyPath()}");
-
-            return false;
-        }
-
-        Transform armatureParent = armature.parent;
-        animation = armatureParent.gameObject.GetOrCreateComponent<Animation>();
-        armatureParent.gameObject.GetOrCreateComponent<StickerAnimationListener>();
+        animation = container.gameObject.GetOrCreateComponent<Animation>();
+        container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
         PrepareLocomotionAnims(bodyshapeId);
         SetIdleFrame();

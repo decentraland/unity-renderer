@@ -161,7 +161,7 @@ namespace DCL.Social.Passports
             else
             {
                 friendsController.RequestFriendship(userId);
-                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, PlayerActionSource.Passport);
+                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, PlayerActionSource.Passport, "");
             }
         }
 
@@ -194,8 +194,11 @@ namespace DCL.Social.Passports
             {
                 try
                 {
-                    await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
+                    var friendRequest = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
                     dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
+
+                    socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
+                        PlayerActionSource.Passport.ToString(), friendRequest.FriendRequestId);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
@@ -206,10 +209,12 @@ namespace DCL.Social.Passports
                 }
             }
             else
+            {
                 friendsController.CancelRequestByUserId(userId);
 
-            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
-                PlayerActionSource.Passport.ToString());
+                socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
+                    PlayerActionSource.Passport.ToString(), "");
+            }
         }
 
         private void AcceptFriendRequest()
@@ -233,7 +238,7 @@ namespace DCL.Social.Passports
                     dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
                     socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                        request.HasBodyMessage);
+                        request.HasBodyMessage, request.FriendRequestId);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
@@ -248,7 +253,7 @@ namespace DCL.Social.Passports
                 friendsController.AcceptFriendship(userId);
 
                 socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                    false);
+                    false, "");
             }
         }
 

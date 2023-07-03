@@ -56,10 +56,7 @@ namespace DCL
         public Pool(string name, int maxPrewarmCount)
         {
             if (PoolManager.USE_POOL_CONTAINERS)
-            {
-                container = new GameObject("Pool - " + name);
-                container.transform.position = EnvironmentSettings.MORDOR;
-            }
+                container = new GameObject("Pool - " + name) { transform = { position = EnvironmentSettings.MORDOR } };
 
             this.maxPrewarmCount = maxPrewarmCount;
         }

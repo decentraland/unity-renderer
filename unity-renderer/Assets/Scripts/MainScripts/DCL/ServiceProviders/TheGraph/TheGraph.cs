@@ -13,7 +13,8 @@ public class TheGraph : ITheGraph
     private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
     private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-goerli";
-    private const string LAND_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
+    private const string MANA_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/mana-ethereum-mainnet";
+    private const string MANA_SUBGRAPH_URL_POLYGON = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
     private const string NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/collections-ethereum-mainnet";
     private const string NFT_COLLECTIONS_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/collections-matic-mainnet";
 
@@ -90,13 +91,16 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
-    public Promise<double> QueryPolygonMana(string address)
+    public Promise<double> QueryMana(string address, TheGraphNetwork network)
     {
         Promise<double> promise = new Promise<double>();
 
         string lowerCaseAddress = address.ToLower();
-        Query(LAND_SUBGRAPH_URL_MATIC, TheGraphQueries.getPolygonManaQuery, new AddressVariable() { address = lowerCaseAddress })
-            .Then(resultJson =>
+        Query(
+                network == TheGraphNetwork.Ethereum ? MANA_SUBGRAPH_URL_ETHEREUM : MANA_SUBGRAPH_URL_POLYGON,
+                network == TheGraphNetwork.Ethereum ? TheGraphQueries.getEthereumManaQuery : TheGraphQueries.getPolygonManaQuery,
+                new AddressVariable() { address = lowerCaseAddress })
+           .Then(resultJson =>
             {
                 try
                 {
@@ -112,7 +116,7 @@ public class TheGraph : ITheGraph
                     promise.Reject(e.ToString());
                 }
             })
-            .Catch(error => promise.Reject(error));
+           .Catch(error => promise.Reject(error));
         return promise;
     }
 

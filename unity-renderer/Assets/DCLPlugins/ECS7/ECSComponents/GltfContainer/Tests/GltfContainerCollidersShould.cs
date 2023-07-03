@@ -279,7 +279,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator DontCreateCollidersOnSkinnedMeshRenderers()
+        public IEnumerator CreateCollidersOnSkinnedMeshRenderers()
         {
             const uint visibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
             const uint invisibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
@@ -295,7 +295,22 @@ namespace Tests
 
             var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true).ToArray();
 
-            Assert.AreEqual(0, colliders.Length, "Ammount of colliders");
+            Assert.IsTrue(colliders.Length > 0, "Ammount of colliders");
+        }
+
+        [UnityTest]
+        public IEnumerator NotCreateVisibleCollidersAsDefault()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer
+            {
+                Src = "sharknado", // this specific model is 100% skinned mesh renderer
+            });
+
+            yield return handler.gltfLoader.Promise;
+
+            var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true).ToArray();
+
+            Assert.IsTrue(colliders.Length == 0, "should not have create any collider");
         }
 
         private static bool HasColliderName(Collider collider)

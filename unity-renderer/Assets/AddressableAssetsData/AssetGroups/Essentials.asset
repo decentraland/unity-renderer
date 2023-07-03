@@ -52,6 +52,22 @@ MonoBehaviour:
     m_Address: ToSPopupHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: a67f56023d497422b838e441d896e8e0
+    m_Address: QuestStartedPopupHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a1bfb905da9234077a62aac3c9796243
+    m_Address: QuestCompletedHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 64b1eee227d634ff883737e85ae4c85f
+    m_Address: QuestLogHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6975ac42cd724416c96b57d7a9c83184
+    m_Address: MockQuestService
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

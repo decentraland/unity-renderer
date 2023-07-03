@@ -134,6 +134,9 @@ public class RealmRowComponentView : BaseComponentView, IRealmRowComponentView, 
 
     public void SetName(string name)
     {
+        if (string.IsNullOrEmpty(name))
+            name = string.Empty;
+
         model.name = name;
 
         if (nameText == null)

@@ -1,0 +1,22 @@
+﻿{
+  "name": "PlacesAPIService",
+  "rootNamespace": "",
+  "references": [
+    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+    "GUID:f51ebe6a0ceec4240a699833d6309b23",
+    "GUID:b8662e798190944f4b638fbeb48e84f0",
+    "GUID:68069f49d86442cd9618861b4d74b1aa",
+    "GUID:4d3366a36e77f41cfb7436340334e236",
+    "GUID:ee6523961ef177343ad763fcd55c7c46",
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

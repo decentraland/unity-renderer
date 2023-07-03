@@ -11,9 +11,7 @@ import type { EventChannel } from 'redux-saga'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { notifyStatusThroughChat } from 'shared/chat'
-import { setCatalystCandidates } from 'shared/dao/actions'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
-import { getCatalystCandidates } from 'shared/dao/selectors'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
@@ -23,14 +21,13 @@ import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
-import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
 import type { HandleRoomDisconnection, SetRoomConnectionAction } from './actions'
 import {
@@ -213,16 +210,6 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
       stack: error.stack
     })
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
-
-    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-    const candidates = yield select(getCatalystCandidates)
-    for (const candidate of candidates) {
-      if (candidate.domain === realmAdapter?.baseUrl) {
-        candidate.lastConnectionAttempt = Date.now()
-        break
-      }
-    }
-    store.dispatch(setCatalystCandidates(candidates))
 
     yield put(setRealmAdapter(undefined))
     yield put(setRoomConnection(undefined))
