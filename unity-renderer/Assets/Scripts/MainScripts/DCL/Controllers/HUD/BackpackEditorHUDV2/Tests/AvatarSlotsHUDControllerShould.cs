@@ -14,15 +14,17 @@ namespace DCL.Backpack
         private AvatarSlotsDefinitionSO avatarSlotsDefinition;
         private IAvatarSlotsView avatarSlotsView;
         private IBackpackAnalyticsService backpackAnalyticsService;
-        private IBaseVariable<FeatureFlag> featureFlag;
+        private IBaseVariable<FeatureFlag> ffBaseVariable;
 
         [SetUp]
         public void SetUp()
         {
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
             backpackAnalyticsService = Substitute.For<IBackpackAnalyticsService>();
-            featureFlag = Substitute.For<IBaseVariable<FeatureFlag>>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, featureFlag);
+            ffBaseVariable = Substitute.For<IBaseVariable<FeatureFlag>>();
+            var featureFlags = new FeatureFlag();
+            ffBaseVariable.Get().Returns(featureFlags);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
             avatarSlotsDefinition = ScriptableObject.CreateInstance<AvatarSlotsDefinitionSO>();
 
             avatarSlotsDefinition.slotsDefinition = new SerializableKeyValuePair<string, List<string>>[2];
@@ -69,9 +71,9 @@ namespace DCL.Backpack
             // setup feature flag and additional hands category
             var featureFlags = new FeatureFlag();
             featureFlags.flags.Add(AvatarSlotsHUDController.HANDS_FEATURE, enabled);
-            featureFlag.Get().Returns(featureFlags);
+            ffBaseVariable.Get().Returns(featureFlags);
             avatarSlotsDefinition.slotsDefinition[0].value.Add("hands");
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, featureFlag);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
             avatarSlotsHUDController.avatarSlotsDefinition = avatarSlotsDefinition;
 
             // when
