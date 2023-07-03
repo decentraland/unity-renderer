@@ -17,7 +17,7 @@ public class Catalyst : ICatalyst
     public string contentUrl => realmContentServerUrl;
     public string lambdasUrl { get; private set; }
 
-    private readonly UniTaskCompletionSource<string> lambdasUrlCs = new UniTaskCompletionSource<string>();
+    private UniTaskCompletionSource<string> lambdasUrlCs = new UniTaskCompletionSource<string>();
     private string realmDomain = "https://peer.decentraland.org";
     private string realmContentServerUrl = "https://peer.decentraland.org/content/";
 
@@ -59,8 +59,13 @@ public class Catalyst : ICatalyst
         aboutLambdas.OnChange += PlayerRealmAboutLambdasOnChange;
     }
 
-    public UniTask<string> WaitForLambdasUrl(CancellationToken ct) =>
-        lambdasUrlCs.Task.AttachExternalCancellation(ct);
+    public UniTask<string> GetLambdaUrl(CancellationToken ct)
+    {
+        if (!string.IsNullOrEmpty(lambdasUrl))
+            return new UniTask<string>(lambdasUrl);
+
+        return lambdasUrlCs.Task.AttachExternalCancellation(ct);
+    }
 
     private void NormalizeUrls()
     {
@@ -71,8 +76,9 @@ public class Catalyst : ICatalyst
 
     private void TrySetCompletionSource(string url)
     {
-        if(!string.IsNullOrEmpty(url))
-            lambdasUrlCs.TrySetResult(url);
+        if (string.IsNullOrEmpty(url)) return;
+
+        lambdasUrlCs.TrySetResult(url);
     }
 
     private string GetNormalizedUrl(string url)

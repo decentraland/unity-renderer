@@ -31,7 +31,7 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             var postDataJson = JsonUtility.ToJson(postData);
-            string lambdaUrl = await catalyst.WaitForLambdasUrl(cancellationToken);
+            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
             var url = GetUrl(endPoint, lambdaUrl, urlEncodedParams);
             var wr = webRequestController.Ref.Post(url, postDataJson, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, data: postDataJson, finishTransactionOnWebRequestFinish: false);
@@ -47,7 +47,7 @@ namespace DCLServices.Lambdas
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
-            string lambdaUrl = await catalyst.WaitForLambdasUrl(cancellationToken);
+            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
             var url = GetUrl(endPoint, lambdaUrl, urlEncodedParams);
             var wr = webRequestController.Ref.Get(url, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
             var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
