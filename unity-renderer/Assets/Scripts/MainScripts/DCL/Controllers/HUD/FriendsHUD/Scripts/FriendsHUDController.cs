@@ -267,7 +267,7 @@ namespace DCL.Social.Friends
                                 ShowFriendRequest(request);
 
                                 socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
-                                    PlayerActionSource.FriendsHUD);
+                                    PlayerActionSource.FriendsHUD, request.FriendRequestId);
                             }
                             else
                                 View.ShowRequestSendError(FriendRequestError.UserNotFound);
@@ -285,7 +285,7 @@ namespace DCL.Social.Friends
                         friendsController.RequestFriendship(userNameOrId);
 
                         socialAnalytics.SendFriendRequestSent(ownUserProfile?.userId, userNameOrId, 0,
-                            PlayerActionSource.FriendsHUD);
+                            PlayerActionSource.FriendsHUD, "");
                     }
 
                     View.ShowRequestSendSuccess();
@@ -534,7 +534,7 @@ namespace DCL.Social.Friends
                     FriendRequest request = await friendsController.RejectFriendshipAsync(userId, cancellationToken);
 
                     socialAnalytics.SendFriendRequestRejected(request.From, request.To,
-                        PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage);
+                        PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage, request.FriendRequestId);
 
                     RemoveFriendship(userId);
                 }
@@ -551,7 +551,7 @@ namespace DCL.Social.Friends
                 friendsController.RejectFriendship(userId);
 
                 socialAnalytics.SendFriendRequestRejected(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString(), false);
+                    PlayerActionSource.FriendsHUD.ToString(), false, "");
             }
 
             UpdateNotificationsCounter();
@@ -566,7 +566,7 @@ namespace DCL.Social.Friends
                     FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
                     socialAnalytics.SendFriendRequestCancelled(request.From, request.To,
-                        PlayerActionSource.FriendsHUD.ToString());
+                        PlayerActionSource.FriendsHUD.ToString(), request.FriendRequestId);
 
                     RemoveFriendship(userId);
                 }
@@ -583,7 +583,7 @@ namespace DCL.Social.Friends
                 friendsController.CancelRequestByUserId(userId);
 
                 socialAnalytics.SendFriendRequestCancelled(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString());
+                    PlayerActionSource.FriendsHUD.ToString(), "");
             }
         }
 
@@ -608,7 +608,8 @@ namespace DCL.Social.Friends
 
                     socialAnalytics.SendFriendRequestApproved(request.From, request.To,
                         PlayerActionSource.FriendsHUD.ToString(),
-                        request.HasBodyMessage);
+                        request.HasBodyMessage,
+                        request.FriendRequestId);
                 }
                 catch (Exception e) when (e is not OperationCanceledException)
                 {
@@ -623,7 +624,7 @@ namespace DCL.Social.Friends
                 friendsController.AcceptFriendship(userId);
 
                 socialAnalytics.SendFriendRequestApproved(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString(), false);
+                    PlayerActionSource.FriendsHUD.ToString(), false, "");
             }
         }
 

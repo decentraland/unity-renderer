@@ -16,6 +16,7 @@ using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.PlacesAPIService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -55,7 +56,7 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
 
-            result.Register<IWebRequestController>(() => new WebRequestController(
+            var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
@@ -65,7 +66,8 @@ namespace DCL
                 new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
-            ));
+            );
+            result.Register<IWebRequestController>(() => webRequestController);
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
@@ -189,6 +191,8 @@ namespace DCL
                 new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
+
+            result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
 
             // Analytics
 

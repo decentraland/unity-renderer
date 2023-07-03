@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,7 +17,7 @@ public class HighlightsSubSectionComponentControllerTests
 {
     private HighlightsSubSectionComponentController highlightsSubSectionComponentController;
     private IHighlightsSubSectionComponentView highlightsSubSectionComponentView;
-    private IPlacesAPIController placesAPIController;
+    private IPlacesAPIService placesAPIService;
     private IEventsAPIController eventsAPIController;
     private IFriendsController friendsController;
     private IExploreV2Analytics exploreV2Analytics;
@@ -24,13 +26,14 @@ public class HighlightsSubSectionComponentControllerTests
     public void SetUp()
     {
         highlightsSubSectionComponentView = Substitute.For<IHighlightsSubSectionComponentView>();
-        placesAPIController = Substitute.For<IPlacesAPIController>();
+        placesAPIService = Substitute.For<IPlacesAPIService>();
+        placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<PlaceInfo> places, int total)>((new List<PlaceInfo>(), 0)));
         eventsAPIController = Substitute.For<IEventsAPIController>();
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         highlightsSubSectionComponentController = new HighlightsSubSectionComponentController(
             highlightsSubSectionComponentView,
-            placesAPIController,
+            placesAPIService,
             eventsAPIController,
             friendsController,
             exploreV2Analytics,
@@ -45,7 +48,7 @@ public class HighlightsSubSectionComponentControllerTests
     {
         // Assert
         Assert.AreEqual(highlightsSubSectionComponentView, highlightsSubSectionComponentController.view);
-        Assert.AreEqual(placesAPIController, highlightsSubSectionComponentController.placesAPIApiController);
+        Assert.AreEqual(placesAPIService, highlightsSubSectionComponentController.placesAPIService);
         Assert.AreEqual(eventsAPIController, highlightsSubSectionComponentController.eventsAPIApiController);
         Assert.IsNotNull(highlightsSubSectionComponentController.friendsTrackerController);
     }
@@ -96,7 +99,7 @@ public class HighlightsSubSectionComponentControllerTests
         // Assert
         highlightsSubSectionComponentView.Received().RestartScrollViewPosition();
         highlightsSubSectionComponentView.Received().SetAllAsLoading();
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
         Assert.IsFalse(highlightsSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -107,14 +110,15 @@ public class HighlightsSubSectionComponentControllerTests
         highlightsSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIController.Received().GetAllPlacesFromPlacesAPI(Arg.Any<Action<List<PlaceInfo>, int>>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
     public void RaiseOnRequestedPlacesAndEventsUpdatedCorrectly()
     {
         // Arrange
-        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2);
+        highlightsSubSectionComponentController.placesFromAPI.Clear();
+        highlightsSubSectionComponentController.placesFromAPI.AddRange(ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2));
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
@@ -130,11 +134,12 @@ public class HighlightsSubSectionComponentControllerTests
     public void LoadPromotedPlacesCorrectly()
     {
         // Arrange
-        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2);
+        highlightsSubSectionComponentController.placesFromAPI.Clear();
+        highlightsSubSectionComponentController.placesFromAPI.AddRange(ExplorePlacesTestHelpers.CreateTestPlacesFromApi(2));
         highlightsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(2);
 
         // Act
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(highlightsSubSectionComponentController.FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(highlightsSubSectionComponentController.placesFromAPI, HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES);
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(highlightsSubSectionComponentController.FilterTrendingEvents(trendingPlaces.Count));
         highlightsSubSectionComponentController.view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
 
@@ -147,10 +152,15 @@ public class HighlightsSubSectionComponentControllerTests
     {
         // Arrange
         int numberOfPlaces = 2;
-        highlightsSubSectionComponentController.placesFromAPI = ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces);
+        highlightsSubSectionComponentController.placesFromAPI.Clear();
+        highlightsSubSectionComponentController.placesFromAPI.AddRange(ExplorePlacesTestHelpers.CreateTestPlacesFromApi(numberOfPlaces));
 
         // Act
-        highlightsSubSectionComponentController.view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(highlightsSubSectionComponentController.FilterFeaturedPlaces()));
+        highlightsSubSectionComponentController.view.SetFeaturedPlaces(
+            PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(
+                highlightsSubSectionComponentController.placesFromAPI,
+                highlightsSubSectionComponentController.CreateFeaturedPlacesPredicate())
+            );
 
         // Assert
         highlightsSubSectionComponentView.Received().SetFeaturedPlaces(Arg.Any<List<PlaceCardComponentModel>>());

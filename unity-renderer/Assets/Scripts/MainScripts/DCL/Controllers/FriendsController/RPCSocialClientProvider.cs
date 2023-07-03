@@ -13,6 +13,8 @@ namespace DCL.Social.Friends
     {
         private readonly string url;
 
+        public event Action OnTransportError;
+
         public RPCSocialClientProvider(string url)
         {
             this.url = url;
@@ -62,6 +64,8 @@ namespace DCL.Social.Friends
                 }
 
                 task.TrySetException(new Exception(error));
+
+                OnTransportError?.Invoke();
             }
 
             void FailTaskByDisconnectionAndUnsubscribe()

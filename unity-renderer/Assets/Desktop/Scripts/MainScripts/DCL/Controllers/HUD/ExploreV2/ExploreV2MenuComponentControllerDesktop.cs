@@ -1,12 +1,4 @@
-using DCL;
-using DCL.Helpers;
-using ExploreV2Analytics;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Variables.RealmsInfo;
+using DCLServices.PlacesAPIService;
 
 /// <summary>
 /// Main controller for the feature "Explore V2".
@@ -15,4 +7,6 @@ public class ExploreV2MenuComponentControllerDesktop : ExploreV2MenuComponentCon
 {
     protected override IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentViewDesktop.Create();
+
+    public ExploreV2MenuComponentControllerDesktop(IPlacesAPIService placesAPIService) : base(placesAPIService) {}
 }

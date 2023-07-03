@@ -89,7 +89,9 @@ function* trackEvents(action: PayloadAction<MessageEvent, ChatMessage>) {
         to: payload.messageType === ChatMessageType.PRIVATE ? ChatMessagePlayerType.WALLET : undefined,
         length: payload.body.length,
         messageType: payload.messageType,
-        source: isChannel ? 'channel' : undefined
+        source: isChannel ? 'channel' : undefined,
+        receiverId: payload.receiverId,
+        channelName: payload.channelName
       })
       break
     }

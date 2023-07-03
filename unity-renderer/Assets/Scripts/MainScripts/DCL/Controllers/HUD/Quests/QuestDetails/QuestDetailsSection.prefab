@@ -168,12 +168,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 625283535875262909}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -102}
-  m_SizeDelta: {x: 737, y: 1}
+  m_AnchoredPosition: {x: 0, y: 18}
+  m_SizeDelta: {x: 737, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4161306013349778477
 CanvasRenderer:
@@ -1136,7 +1136,9 @@ MonoBehaviour:
     questCreator: 
     questDescription: 
     questId: 
+    questDefinitionId: 
     isPinned: 0
+    questImageUri: 
     coordinates: {x: 0, y: 0}
     questSteps: []
     questRewards: []
@@ -2393,8 +2395,8 @@ RectTransform:
   - {fileID: 342479409130168933}
   - {fileID: 63037728160804133}
   - {fileID: 5190828361767331818}
-  - {fileID: 4969721536069907527}
   - {fileID: 8494160872116742532}
+  - {fileID: 4969721536069907527}
   m_Father: {fileID: 1372722719431325109}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2637,7 +2639,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 41.1, y: 0.000024795532}
+  m_AnchoredPosition: {x: 36.7, y: 0.000024795532}
   m_SizeDelta: {x: 349.8, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4471064134238118288
@@ -2997,11 +2999,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 625283535875262909}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -27}
+  m_AnchoredPosition: {x: 0, y: -49}
   m_SizeDelta: {x: 737, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6445233750715127710

@@ -298,17 +298,17 @@ namespace DCL.ECSComponents
                 IInternalECSComponent<InternalColliders> collidersComponent,
                 IList<Collider> currentColliders)
             {
-                InternalColliders collidersModel = collidersComponent.GetFor(scene, entity)?.model;
+                var collidersModel = collidersComponent.GetFor(scene, entity)?.model;
 
                 if (collidersModel != null)
                 {
                     for (int i = 0; i < currentColliders.Count; i++)
                     {
                         currentColliders[i].enabled = false;
-                        collidersModel.colliders.Remove(currentColliders[i]);
+                        collidersModel.Value.colliders.Remove(currentColliders[i]);
                     }
 
-                    collidersComponent.PutFor(scene, entity, collidersModel);
+                    collidersComponent.PutFor(scene, entity, collidersModel.Value);
                 }
 
                 currentColliders.Clear();
@@ -345,9 +345,9 @@ namespace DCL.ECSComponents
             int? unityGameObjectLayer = LayerMaskUtils.SdkLayerMaskToUnityLayer(colliderLayer);
             bool hasCustomLayer = LayerMaskUtils.LayerMaskHasAnySDKCustomLayer(colliderLayer);
 
-            InternalColliders pointerColliders = pointerColliderComponent.GetFor(scene, entity)?.model;
-            InternalColliders physicColliders = physicColliderComponent.GetFor(scene, entity)?.model;
-            InternalColliders customColliders = customLayerColliderComponent.GetFor(scene, entity)?.model;
+            var pointerColliders = pointerColliderComponent.GetFor(scene, entity)?.model;
+            var physicColliders = physicColliderComponent.GetFor(scene, entity)?.model;
+            var customColliders = customLayerColliderComponent.GetFor(scene, entity)?.model;
 
             bool hasPointerColliders = false;
             bool hasPhysicColliders = false;
@@ -366,24 +366,24 @@ namespace DCL.ECSComponents
 
                 if ((colliderLayer & LAYER_PHYSICS) != 0)
                 {
-                    physicColliders ??= new InternalColliders();
-                    physicColliders.colliders.Add(collider, colliderLayer);
+                    physicColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
+                    physicColliders.Value.colliders.Add(collider, colliderLayer);
                     currentPhysicColliders.Add(collider);
                     hasPhysicColliders = true;
                 }
 
                 if ((colliderLayer & LAYER_POINTER) != 0)
                 {
-                    pointerColliders ??= new InternalColliders();
-                    pointerColliders.colliders.Add(collider, colliderLayer);
+                    pointerColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
+                    pointerColliders.Value.colliders.Add(collider, colliderLayer);
                     currentPointerColliders.Add(collider);
                     hasPointerColliders = true;
                 }
 
                 if (hasCustomLayer)
                 {
-                    customColliders ??= new InternalColliders();
-                    customColliders.colliders.Add(collider, colliderLayer);
+                    customColliders ??= new InternalColliders(new KeyValueSet<Collider, uint>());
+                    customColliders.Value.colliders.Add(collider, colliderLayer);
                     currentCustomLayerColliders.Add(collider);
                     hasCustomColliders = true;
                 }
@@ -391,17 +391,17 @@ namespace DCL.ECSComponents
 
             if (hasPhysicColliders)
             {
-                physicColliderComponent.PutFor(scene, entity, physicColliders);
+                physicColliderComponent.PutFor(scene, entity, physicColliders.Value);
             }
 
             if (hasPointerColliders)
             {
-                pointerColliderComponent.PutFor(scene, entity, pointerColliders);
+                pointerColliderComponent.PutFor(scene, entity, pointerColliders.Value);
             }
 
             if (hasCustomColliders)
             {
-                customLayerColliderComponent.PutFor(scene, entity, customColliders);
+                customLayerColliderComponent.PutFor(scene, entity, customColliders.Value);
             }
         }
 
@@ -414,7 +414,7 @@ namespace DCL.ECSComponents
             if (rendererHashSet == null || rendererHashSet.Count == 0)
                 return;
 
-            var model = renderersComponent.GetFor(scene, entity)?.model ?? new InternalRenderers();
+            var model = renderersComponent.GetFor(scene, entity)?.model ?? new InternalRenderers(new List<Renderer>());
 
             foreach (Renderer renderer in rendererHashSet)
             {

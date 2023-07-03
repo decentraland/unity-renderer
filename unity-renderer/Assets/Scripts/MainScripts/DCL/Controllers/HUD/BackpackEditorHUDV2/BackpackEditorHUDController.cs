@@ -20,10 +20,12 @@ namespace DCL.Backpack
         private readonly RendererState rendererState;
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
+        private readonly OutfitsController outfitsController;
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
+        private CancellationTokenSource outfitLoadCancellationToken = new ();
         private string categoryPendingToPlayEmote;
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
@@ -33,6 +35,7 @@ namespace DCL.Backpack
         private readonly BackpackEditorHUDModel model = new ();
 
         private int currentAnimationIndexShown;
+        private bool shouldRequestOutfits = true;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -43,7 +46,8 @@ namespace DCL.Backpack
             IBackpackEmotesSectionController backpackEmotesSectionController,
             IBackpackAnalyticsService backpackAnalyticsService,
             WearableGridController wearableGridController,
-            AvatarSlotsHUDController avatarSlotsHUDController)
+            AvatarSlotsHUDController avatarSlotsHUDController,
+            OutfitsController outfitsController)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -54,6 +58,7 @@ namespace DCL.Backpack
             this.backpackAnalyticsService = backpackAnalyticsService;
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
+            this.outfitsController = outfitsController;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
@@ -82,8 +87,55 @@ namespace DCL.Backpack
             view.OnColorChanged += OnWearableColorChanged;
             view.OnColorPickerToggle += OnColorPickerToggled;
             view.OnAvatarUpdated += OnAvatarUpdated;
+            view.OnOutfitsOpened += OnOutfitsOpened;
+            outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
+            view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+        }
+
+        private void OnOutfitEquipped(OutfitItem outfit)
+        {
+            Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
+            foreach (KeyValuePair<string, WearableItem> keyValuePair in keyValuePairs)
+                UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false, false);
+
+            foreach (string forcedCategory in model.forceRender)
+                UpdateOverrideHides(forcedCategory, false, false);
+
+            outfitLoadCancellationToken = new CancellationTokenSource();
+            LoadAndEquipOutfitWearables(outfit, outfitLoadCancellationToken.Token).Forget();
+        }
+
+        private async UniTaskVoid LoadAndEquipOutfitWearables(OutfitItem outfit, CancellationToken cancellationToken)
+        {
+            if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfit.outfit.bodyShape))
+                await wearablesCatalogService.RequestWearableAsync(outfit.outfit.bodyShape, cancellationToken);
+            foreach (string outfitWearable in outfit.outfit.wearables)
+            {
+                if (wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable)) continue;
+
+                try { await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken); }
+                catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
+            }
+
+            EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
+
+            foreach (string outfitWearable in outfit.outfit.wearables)
+                EquipWearable(outfitWearable, setAsDirty: true, updateAvatarPreview: true);
+
+            SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
+
+            foreach (string forcedCategory in outfit.outfit.forceRender)
+                UpdateOverrideHides(forcedCategory, true, true);
+        }
+
+        private void OnOutfitsOpened()
+        {
+            if (!shouldRequestOutfits) return;
+
+            outfitsController.RequestOwnedOutfits();
+            shouldRequestOutfits = false;
         }
 
         public void Dispose()
@@ -256,7 +308,7 @@ namespace DCL.Backpack
                     }
 
                     avatarSlotsHUDController.Recalculate(model.forceRender);
-                    view.UpdateAvatarPreview(model.ToAvatarModel());
+                    UpdateAvatarModel(model.ToAvatarModel());
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogException(e); }
@@ -274,7 +326,7 @@ namespace DCL.Backpack
             foreach (string emoteId in dataStore.emotesCustomization.currentLoadedEmotes.Get())
                 modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
 
-            view.UpdateAvatarPreview(modelToUpdate);
+            UpdateAvatarModel(modelToUpdate);
         }
 
         private void OnNewEmoteAdded(string emoteId) =>
@@ -459,7 +511,7 @@ namespace DCL.Backpack
 
             if (updateAvatarPreview)
             {
-                view.UpdateAvatarPreview(model.ToAvatarModel());
+                UpdateAvatarModel(model.ToAvatarModel());
                 categoryPendingToPlayEmote = wearable.data.category;
             }
         }
@@ -477,7 +529,7 @@ namespace DCL.Backpack
             UnEquipWearable(wearable, UnequipWearableSource.None, setAsDirty);
         }
 
-        private void UnEquipWearable(string wearableId, UnequipWearableSource source, bool setAsDirty = true)
+        private void UnEquipWearable(string wearableId, UnequipWearableSource source, bool setAsDirty = true, bool updateAvatarPreview = true)
         {
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -485,12 +537,13 @@ namespace DCL.Backpack
                 return;
             }
 
-            UnEquipWearable(wearable, source, setAsDirty);
+            UnEquipWearable(wearable, source, setAsDirty, updateAvatarPreview);
         }
 
         private void UnEquipWearable(WearableItem wearable,
             UnequipWearableSource source = UnequipWearableSource.None,
-            bool setAsDirty = true)
+            bool setAsDirty = true,
+            bool updateAvatarPreview = true)
         {
             string wearableId = wearable.id;
 
@@ -507,7 +560,8 @@ namespace DCL.Backpack
             if (setAsDirty)
                 avatarIsDirty = true;
 
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            if(updateAvatarPreview)
+                UpdateAvatarModel(model.ToAvatarModel());
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
@@ -566,7 +620,23 @@ namespace DCL.Backpack
                 return;
 
             avatarIsDirty = true;
-            view.UpdateAvatarPreview(model.ToAvatarModel());
+            UpdateAvatarModel(model.ToAvatarModel());
+        }
+
+        private void SetAllColors(Color eyesColor, Color hairColor, Color bodyColor)
+        {
+            model.eyesColor = eyesColor;
+            model.hairColor = hairColor;
+            model.skinColor = bodyColor;
+
+            avatarIsDirty = true;
+            UpdateAvatarModel(model.ToAvatarModel());
+        }
+
+        private void UpdateAvatarModel(AvatarModel avatarModel)
+        {
+            view.UpdateAvatarPreview(avatarModel);
+            outfitsController.UpdateAvatarPreview(model.ToAvatarModel());
         }
 
         private void OnColorPickerToggled() =>

@@ -1,17 +1,20 @@
 using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using Decentraland.Common;
 using System;
+using System.Collections.Generic;
 using Screen = UnityEngine.Device.Screen;
 
 namespace ECSSystems.UiCanvasInformationSystem
 {
     public class ECSUiCanvasInformationSystem : IDisposable
     {
-        private readonly IECSComponentWriter componentWriter;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+        private readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> componentPool;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BorderRect interactableArea;
 
@@ -19,10 +22,14 @@ namespace ECSSystems.UiCanvasInformationSystem
         private int lastViewportResolutionWidth = -1;
         private int lastScreenRealResolutionWidth = -1;
 
-        public ECSUiCanvasInformationSystem(IECSComponentWriter componentWriter, BaseList<IParcelScene> loadedScenes)
+        public ECSUiCanvasInformationSystem(
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> componentPool,
+            BaseList<IParcelScene> loadedScenes)
         {
             this.loadedScenes = loadedScenes;
-            this.componentWriter = componentWriter;
+            this.componentsWriter = componentsWriter;
+            this.componentPool = componentPool;
 
             loadedScenes.OnAdded += OnSceneAdded;
 
@@ -70,17 +77,17 @@ namespace ECSSystems.UiCanvasInformationSystem
 
         private void UpdateUiCanvasInformationComponent(int sceneNumber)
         {
-            componentWriter.PutComponent(
-                sceneNumber,
-                SpecialEntityId.SCENE_ROOT_ENTITY,
-                ComponentID.UI_CANVAS_INFORMATION,
-                new PBUiCanvasInformation()
-                {
-                    InteractableArea = interactableArea,
-                    Width = Screen.width,
-                    Height = Screen.height,
-                    DevicePixelRatio = lastDevicePixelRatio
-                });
+            if (!componentsWriter.TryGetValue(sceneNumber, out var writer))
+                return;
+
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.InteractableArea = interactableArea;
+            componentModel.Width = Screen.width;
+            componentModel.Height = Screen.height;
+            componentModel.DevicePixelRatio = lastDevicePixelRatio;
+
+            writer.Put(SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.UI_CANVAS_INFORMATION, componentPooled);
         }
 
         private void OnSceneAdded(IParcelScene scene)

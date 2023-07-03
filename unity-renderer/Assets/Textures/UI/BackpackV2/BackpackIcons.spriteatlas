@@ -67,6 +67,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e8bb1d3461346463a8a09e69e9d0b21e, type: 3}
   - {fileID: 21300000, guid: e0a031647fa194e6690c0749c758613e, type: 3}
   - {fileID: 21300000, guid: dfec25e4cf70a4f408093194340bfcb4, type: 3}
+  - {fileID: 21300000, guid: 1b8e5d35e0b2d46379b97bb7e7ab2c97, type: 3}
   - {fileID: 21300000, guid: b54d69b54857f44d7acfdc7e428ca94e, type: 3}
   - {fileID: 21300000, guid: ec6e82c586d96441e9a01726eae9c6f8, type: 3}
   - {fileID: 21300000, guid: b3fcd616f8250405f8bb1aadd61cc220, type: 3}
@@ -80,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 98a2ad67412f444ee883c03d3a07dd1e, type: 3}
   - {fileID: 21300000, guid: 1f9a3897187df4915860cca7bae48552, type: 3}
   - {fileID: 21300000, guid: 1f8423c7e44934bc88742ef8c05aa4ee, type: 3}
+  - {fileID: 21300000, guid: 23241d08164d3406e8fb5463625d3c37, type: 3}
   - {fileID: 21300000, guid: f57d8e78f64d542e098dbaf497a8b139, type: 3}
   - {fileID: 21300000, guid: 48d5dd980b244494b9f9d9fc540e0b01, type: 3}
   - {fileID: 21300000, guid: 9b13173961ced41b287b3ec0d724c585, type: 3}
@@ -92,9 +94,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e568dcbc864c24ab1a9b731a66e362cb, type: 3}
   - {fileID: 21300000, guid: 503ad90df363e4587b962551b1fbbae9, type: 3}
   - {fileID: 21300000, guid: adff267d131ae403ab9b47206a665a79, type: 3}
+  - {fileID: 21300000, guid: 4d7db0ddbeffb45699b8fdea65aa4fb4, type: 3}
   - {fileID: 21300000, guid: 2b0a6fdd96915402592ab53957ebf5ac, type: 3}
   - {fileID: 21300000, guid: bf9cd8edf950343a9ba38284a615c606, type: 3}
   - {fileID: 21300000, guid: 43c5d03f6ddc94dd59cebf176b48c9d8, type: 3}
+  - {fileID: 21300000, guid: 01b8d34fbe27846d09b2fe04925a10b3, type: 3}
   - {fileID: 21300000, guid: 48e6184f4d144486b8a4e6f6e965142e, type: 3}
   - {fileID: 21300000, guid: 189ee65ff87144af8a086869788a4935, type: 3}
   - {fileID: 21300000, guid: 94d7328f5583d47d6b961ae666f6db88, type: 3}
@@ -117,6 +121,7 @@ SpriteAtlas:
   - UncommonThumbnail
   - UniqueThumbnail
   - AvatarStyleIcon
+  - HandIcn
   - InfoCardEpic
   - HatIcon
   - Silhouette003
@@ -130,6 +135,7 @@ SpriteAtlas:
   - EarringsIcon
   - CameraIcon
   - EyewareIcon
+  - PlusIcn
   - Silhouette001
   - TopIcon
   - HairIcon
@@ -142,9 +148,11 @@ SpriteAtlas:
   - AllIcon
   - EpicThumbnail
   - RareThumbnail
+  - Silhouette005
   - VisibleIcon
   - BottomIcon
   - InfoCardBase
+  - VrmIcn
   - InfoCardRare
   - WearablesGradientBackground
   - InfoCardMythic

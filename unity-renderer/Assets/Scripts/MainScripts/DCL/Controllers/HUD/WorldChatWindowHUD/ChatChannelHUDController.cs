@@ -190,6 +190,7 @@ namespace DCL.Chat.HUD
         {
             message.messageType = ChatMessage.Type.PUBLIC;
             message.recipient = channelId;
+            message.channelName = channel.Name;
 
             var isValidMessage = !string.IsNullOrEmpty(message.body)
                                  && !string.IsNullOrWhiteSpace(message.body)

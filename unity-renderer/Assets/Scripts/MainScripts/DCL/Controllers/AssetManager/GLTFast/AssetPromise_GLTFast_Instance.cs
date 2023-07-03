@@ -114,7 +114,11 @@ namespace DCL
                     yield break;
                 }
 
-                yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine(e => throw e);
+                yield return subPromise.asset.InstantiateAsync(asset.container.transform).ToCoroutine(e =>
+                {
+                    if (e is not OperationCanceledException)
+                        throw e;
+                });
                 yield return RemoveCollidersFromRenderers(asset.container.transform);
             }
 

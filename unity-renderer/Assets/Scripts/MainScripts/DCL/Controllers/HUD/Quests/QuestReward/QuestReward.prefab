@@ -93,7 +93,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7394553568880475759
 RectTransform:
   m_ObjectHideFlags: 0
@@ -190,8 +190,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 53.5, y: -129.3}
-  m_SizeDelta: {x: 201.4, y: 96}
+  m_AnchoredPosition: {x: 55.072, y: -148.5}
+  m_SizeDelta: {x: 195.81, y: 10.06}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6432401932155764155
 CanvasRenderer:
@@ -419,8 +419,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -46.2}
-  m_SizeDelta: {x: 99.23, y: 13}
+  m_AnchoredPosition: {x: 0, y: -52.9}
+  m_SizeDelta: {x: 99.23, y: 22.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5397769479647798043
 CanvasRenderer:
@@ -485,7 +485,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -692,7 +692,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1717041977977723932
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1107,6 +1107,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TypeIcon
+      objectReference: {fileID: 0}
+    - target: {fileID: 6719010960977733696, guid: 4849d2ed3b5a18948bf3cd46256869a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4849d2ed3b5a18948bf3cd46256869a4, type: 3}

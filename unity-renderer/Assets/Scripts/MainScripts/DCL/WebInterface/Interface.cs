@@ -1,3 +1,4 @@
+using DCL.Backpack;
 using System;
 using System.Collections.Generic;
 using DCL.CameraTool;
@@ -855,6 +856,35 @@ namespace DCL.Interface
             public string error;
         }
 
+        [Serializable]
+        public class SaveLinksPayload
+        {
+            [Serializable]
+            public class Link
+            {
+                public string title;
+                public string url;
+            }
+
+            public List<Link> links;
+        }
+
+        [Serializable]
+        public class SaveAdditionalInfoPayload
+        {
+            public string country;
+            public string employmentStatus;
+            public string gender;
+            public string pronouns;
+            public string relationshipStatus;
+            public string sexualOrientation;
+            public string language;
+            public string profession;
+            public long birthdate;
+            public string realName;
+            public string hobbies;
+        }
+
         public static event Action<string, byte[]> OnBinaryMessageFromEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -1313,6 +1343,13 @@ namespace DCL.Interface
             public AvatarModelDTO avatar;
         }
 
+        [System.Serializable]
+        public class SaveUserOutfitsPayload
+        {
+            public OutfitItem[] outfits;
+            public string[] namesForExtraSlots;
+        }
+
         public static class RendererAuthenticationType
         {
             public static string Guest => "guest";
@@ -1330,6 +1367,12 @@ namespace DCL.Interface
         {
             public string name;
             public string email;
+        }
+
+        [System.Serializable]
+        public class SendSaveUserVerifiedNamePayload
+        {
+            public string newVerifiedName;
         }
 
         [System.Serializable]
@@ -1367,10 +1410,9 @@ namespace DCL.Interface
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
-
-            var payload = new SaveAvatarPayload()
+            var payload = new SaveAvatarPayload
             {
-                avatar = avatar.ToAvatarModelDto(),
+                avatar = AvatarModelDTO.FromAvatarModel(avatar),
                 face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG()),
                 isSignUpFlow = isSignUpFlow
@@ -1378,9 +1420,30 @@ namespace DCL.Interface
             SendMessage("SaveUserAvatar", payload);
         }
 
+        public static void SaveUserOutfits(OutfitItem[] outfits)
+        {
+            var payload = new SaveUserOutfitsPayload()
+            {
+                outfits = outfits,
+                namesForExtraSlots = new string[]{}
+            };
+
+            SendMessage("SaveUserOutfits", payload);
+        }
+
         public static void SendAuthentication(string rendererAuthenticationType) { SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType }); }
 
         public static void SendPassport(string name, string email) { SendMessage("SendPassport", new SendPassportPayload { name = name, email = email }); }
+
+        public static void SendSaveUserVerifiedName(string newName)
+        {
+            var payload = new SendSaveUserVerifiedNamePayload()
+            {
+                newVerifiedName = newName
+            };
+
+            SendMessage("SaveUserVerifiedName", payload);
+        }
 
         public static void SendSaveUserUnverifiedName(string newName)
         {
@@ -1941,6 +2004,16 @@ namespace DCL.Interface
         public static void SendGoToTos()
         {
             SendMessage("ToSPopupGoToToS");
+        }
+
+        public static void SaveProfileLinks(SaveLinksPayload payload)
+        {
+            SendMessage("SaveProfileLinks", payload);
+        }
+
+        public static void SaveAdditionalInfo(SaveAdditionalInfoPayload payload)
+        {
+            SendMessage("SaveProfileAdditionalInfo", payload);
         }
     }
 }
