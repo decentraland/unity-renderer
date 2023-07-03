@@ -32,7 +32,7 @@ namespace AvatarSystem
         internal readonly IFacialFeatureRetriever eyebrowsRetriever;
         internal readonly IFacialFeatureRetriever mouthRetriever;
 
-        private readonly Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)> originalBones = new Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)>();
+        private readonly Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)> originalBones = new ();
 
         public BodyShapeLoader(IRetrieverFactory retrieverFactory, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
         {

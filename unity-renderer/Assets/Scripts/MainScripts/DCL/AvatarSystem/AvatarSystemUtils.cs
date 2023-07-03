@@ -80,38 +80,6 @@ namespace AvatarSystem
             }
         }
 
-        public static (WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables) SplitWearables(IEnumerable<WearableItem> wearables)
-        {
-            WearableItem bodyshape = null;
-            WearableItem eyes = null;
-            WearableItem eyebrows = null;
-            WearableItem mouth = null;
-            List<WearableItem> resultWearables = new List<WearableItem>();
-            foreach (WearableItem wearable in wearables)
-            {
-                switch (wearable.data.category)
-                {
-                    case WearableLiterals.Categories.BODY_SHAPE:
-                        bodyshape = wearable;
-                        break;
-                    case WearableLiterals.Categories.EYES:
-                        eyes = wearable;
-                        break;
-                    case WearableLiterals.Categories.EYEBROWS:
-                        eyebrows = wearable;
-                        break;
-                    case WearableLiterals.Categories.MOUTH:
-                        mouth = wearable;
-                        break;
-                    default:
-                        resultWearables.Add(wearable);
-                        break;
-                }
-            }
-
-            return (bodyshape, eyes, eyebrows, mouth, resultWearables);
-        }
-
         /// <summary>
         /// Extract bodyparts of a Rendereable.
         ///
@@ -119,6 +87,9 @@ namespace AvatarSystem
         /// </summary>
         /// <param name="rendereable"></param>
         /// <returns></returns>
+
+        // TODO: The list of body shapes that need to be extracted should come from an external source,
+        // in order to make this scalable we should return a Dictionary<string, SkinnedMeshRenderer> with the results
         public static (
             SkinnedMeshRenderer head,
             SkinnedMeshRenderer upperBody,
