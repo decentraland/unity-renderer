@@ -24,6 +24,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
+    internal ISearchSubSectionComponentController searchSubSectionComponentController;
     private DataStore dataStore;
 
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
@@ -74,6 +75,10 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             exploreV2Analytics,
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+        searchSubSectionComponentController = new SearchSubSectionComponentController(
+            view.SearchSubSectionView,
+            view.SearchBar,
+            eventsAPI);
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);

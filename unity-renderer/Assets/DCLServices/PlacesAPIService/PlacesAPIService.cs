@@ -12,6 +12,8 @@ namespace DCLServices.PlacesAPIService
 {
     public interface IPlacesAPIService: IService
     {
+        UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> SearchPlaces(string searchText, int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
+
         UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct, bool renewCache = false);
@@ -33,6 +35,7 @@ namespace DCLServices.PlacesAPIService
         private readonly IPlacesAPIClient client;
 
         internal readonly Dictionary<int, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> activePlacesPagePointers = new ();
+        internal readonly Dictionary<int, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> searchedPlacesPagePointers = new ();
         internal readonly Dictionary<string, IHotScenesController.PlaceInfo> placesById = new ();
         internal readonly Dictionary<Vector2Int, IHotScenesController.PlaceInfo> placesByCoords = new ();
 
@@ -50,6 +53,12 @@ namespace DCLServices.PlacesAPIService
             this.client = client;
         }
         public void Initialize() { }
+
+        public async UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> SearchPlaces(string searchText, int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
+        {
+            IHotScenesController.PlacesAPIResponse placesAPIResponse = await client.SearchPlaces(searchText, pageNumber, pageSize, ct);
+            return (placesAPIResponse.data, placesAPIResponse.total);
+        }
 
         public async UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
         {

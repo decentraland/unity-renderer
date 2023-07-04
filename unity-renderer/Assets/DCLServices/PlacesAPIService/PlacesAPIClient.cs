@@ -13,6 +13,7 @@ namespace DCLServices.PlacesAPIService
 {
     public interface IPlacesAPIClient
     {
+        UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct);
         UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct);
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct);
 
@@ -31,6 +32,25 @@ namespace DCLServices.PlacesAPIService
         public PlacesAPIClient(IWebRequestController webRequestController)
         {
             this.webRequestController = webRequestController;
+        }
+
+        public async UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct)
+        {
+            const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&search={0}&offset={1}&limit={2}";
+            var result = await webRequestController.GetAsync(string.Format(URL, searchString, pageNumber * pageSize, pageSize), cancellationToken: ct);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching most active places info:\n{result.error}");
+
+            var response = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing place info:\n{result.downloadHandler.text}");
+
+            if (response.data == null)
+                throw new Exception($"No place info retrieved:\n{result.downloadHandler.text}");
+
+            return response;
         }
 
         public async UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct)
