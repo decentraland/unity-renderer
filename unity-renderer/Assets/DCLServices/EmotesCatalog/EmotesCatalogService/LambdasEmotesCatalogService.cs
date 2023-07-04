@@ -31,8 +31,6 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
     {
         this.emoteSource = emoteSource;
         this.addressableResourceProvider = addressableResourceProvider;
-
-        InitializeAsyncEmbeddedEmotes().Forget();
     }
 
     private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
@@ -63,6 +61,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
     public void Initialize()
     {
+        InitializeAsyncEmbeddedEmotes().Forget();
         emoteSource.OnEmotesReceived += OnEmotesReceived;
         emoteSource.OnEmoteRejected += OnEmoteRejected;
         emoteSource.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
