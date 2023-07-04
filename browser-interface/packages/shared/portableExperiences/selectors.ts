@@ -37,8 +37,12 @@ export const getDesiredPortableExperiences = (
   // remove queryParams from the URN
   return allFilteredPortableExperiences.map(($) => ({
     ...$,
-    id: $.id.replace(/(\?.*)/, '')
+    id: removeQueryParamsFromUrn($.id)
   }))
+}
+
+export function removeQueryParamsFromUrn(urn: string) {
+  return urn.replace(/(\?.*)/, '')
 }
 
 function dedup<T>(array: T[], filter: (param: T) => any): T[] {
