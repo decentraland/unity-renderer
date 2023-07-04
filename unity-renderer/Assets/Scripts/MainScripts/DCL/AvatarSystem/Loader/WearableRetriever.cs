@@ -56,6 +56,8 @@ namespace AvatarSystem
                             Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {wearable.entityId} use this ID to reconvert</color>");
                         }
 #endif
+
+                        contentProvider.assetBundlesFetched = true;
                     }
                 }
 
