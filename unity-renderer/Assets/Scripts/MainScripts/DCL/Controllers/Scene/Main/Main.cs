@@ -8,6 +8,7 @@ using DCL.Providers;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.EmotesCatalog.EmotesCatalogService;
 using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -175,6 +176,10 @@ namespace DCL
             MainSceneFactory.CreateHudController();
             MainSceneFactory.CreateNavMap();
             MainSceneFactory.CreateEventSystem();
+
+            //TODO (Juani): I need the bridge to be added before adding the service. This is going to be deprecated soon,
+            // and its only here so creators can test their collections using the web interface and the WITH_COLLECTION param.
+            gameObject.AddComponent<WebInterfaceEmotesCatalogService>();
         }
 
         protected virtual void CreateEnvironment() =>
