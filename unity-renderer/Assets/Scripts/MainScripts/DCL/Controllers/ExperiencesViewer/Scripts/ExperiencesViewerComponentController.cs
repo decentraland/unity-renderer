@@ -89,10 +89,15 @@ namespace DCL.ExperiencesViewer
         internal void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
         {
             activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
+
             if (scene != null)
             {
                 UIScreenSpace sceneUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
-                sceneUIComponent.canvas.enabled = isVisible;
+
+                if (sceneUIComponent != null)
+                    sceneUIComponent.canvas.enabled = isVisible;
+                else
+                    Debug.LogError($"Cannot find UIScreenSpace component to change the PX visibility: {pexId}");
             }
 
             if (!isVisible)

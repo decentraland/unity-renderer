@@ -47,14 +47,12 @@ namespace DCL
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
 
             // TODO(Brian): Move this later to Main.cs
-            if ( !EnvironmentSettings.RUNNING_TESTS )
-            {
-                PrewarmSceneMessagesPool();
-            }
+            if (!EnvironmentSettings.RUNNING_TESTS) { PrewarmSceneMessagesPool(); }
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
         }
+
         private void SetupDeferredRunners()
         {
 #if UNITY_WEBGL
@@ -69,16 +67,10 @@ namespace DCL
         {
             if (prewarmSceneMessagesPool)
             {
-                for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++)
-                {
-                    sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene());
-                }
+                for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++) { sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene()); }
             }
 
-            if (prewarmEntitiesPool)
-            {
-                PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool);
-            }
+            if (prewarmEntitiesPool) { PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool); }
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -86,14 +78,8 @@ namespace DCL
             if (current == previous)
                 return;
 
-            if (current)
-            {
-                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox());
-            }
-            else
-            {
-                Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
-            }
+            if (current) { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedBox()); }
+            else { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple()); }
         }
 
         public void Dispose()
@@ -141,8 +127,7 @@ namespace DCL
 
         //======================================================================
 
-        #region MESSAGES_HANDLING
-
+#region MESSAGES_HANDLING
         //======================================================================
 
 #if UNITY_EDITOR
@@ -173,15 +158,9 @@ namespace DCL
             if (worldState.TryGetScene(sceneNumber, out scene))
             {
 #if UNITY_EDITOR
-                if (debugConfig.soloScene && scene is GlobalScene && debugConfig.ignoreGlobalScenes)
-                {
-                    return false;
-                }
+                if (debugConfig.soloScene && scene is GlobalScene && debugConfig.ignoreGlobalScenes) { return false; }
 #endif
-                if (!scene.GetSceneTransform().gameObject.activeInHierarchy)
-                {
-                    return true;
-                }
+                if (!scene.GetSceneTransform().gameObject.activeInHierarchy) { return true; }
 
 #if UNITY_EDITOR
                 OnMessageProcessInfoStart?.Invoke(sceneNumber, method);
@@ -199,10 +178,7 @@ namespace DCL
                 res = true;
             }
 
-            else
-            {
-                res = false;
-            }
+            else { res = false; }
 
             sceneMessagesPool.Enqueue(msgObject);
 
@@ -219,91 +195,104 @@ namespace DCL
                 switch (method)
                 {
                     case MessagingTypes.ENTITY_CREATE:
-                        {
-                            if (msgPayload is Protocol.CreateEntity payload)
-                                scene.CreateEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.CreateEntity payload)
+                            scene.CreateEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
+
+                        break;
+                    }
                     case MessagingTypes.ENTITY_REPARENT:
-                        {
-                            if (msgPayload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(entityIdHelper.EntityFromLegacyEntityString(payload.entityId),entityIdHelper.EntityFromLegacyEntityString(payload.parentId));
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.SetEntityParent payload)
+                            scene.SetEntityParent(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), entityIdHelper.EntityFromLegacyEntityString(payload.parentId));
+
+                        break;
+                    }
                     case MessagingTypes.PB_SHARED_COMPONENT_UPDATE:
                     {
-                        if (msgPayload is Decentraland.Sdk.Ecs6.ComponentUpdatedBody payload){
-                            if (payload.ComponentData != null) {
-                                delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.Id, payload.ComponentData) as IDelayedComponent;
-                            }
+                        if (msgPayload is Decentraland.Sdk.Ecs6.ComponentUpdatedBody payload)
+                        {
+                            if (payload.ComponentData != null) { delayedComponent = scene.componentsManagerLegacy.SceneSharedComponentUpdate(payload.Id, payload.ComponentData) as IDelayedComponent; }
                         }
+
                         break;
                     }
                     case MessagingTypes.PB_ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                    {
+                        if (msgPayload is Decentraland.Sdk.Ecs6.UpdateEntityComponentBody payload)
                         {
-                            if (msgPayload is Decentraland.Sdk.Ecs6.UpdateEntityComponentBody payload) {
-
-                                if (payload.ComponentData != null) {
-                                    delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityIdHelper.EntityFromLegacyEntityString(payload.EntityId),
-                                    (CLASS_ID_COMPONENT) payload.ClassId, payload.ComponentData) as IDelayedComponent;
-                                }
+                            if (payload.ComponentData != null)
+                            {
+                                delayedComponent = scene.componentsManagerLegacy.EntityComponentCreateOrUpdate(entityIdHelper.EntityFromLegacyEntityString(payload.EntityId),
+                                    (CLASS_ID_COMPONENT)payload.ClassId, payload.ComponentData) as IDelayedComponent;
                             }
-                            break;
                         }
+
+                        break;
+                    }
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
-                        {
-                            if (msgPayload is Protocol.EntityComponentDestroy payload)
-                                scene.componentsManagerLegacy.EntityComponentRemove(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.EntityComponentDestroy payload)
+                            scene.componentsManagerLegacy.EntityComponentRemove(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.name);
+
+                        break;
+                    }
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
-                        {
-                            if (msgPayload is Protocol.SharedComponentAttach payload)
-                                scene.componentsManagerLegacy.SceneSharedComponentAttach(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.id);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.SharedComponentAttach payload)
+                            scene.componentsManagerLegacy.SceneSharedComponentAttach(entityIdHelper.EntityFromLegacyEntityString(payload.entityId), payload.id);
+
+                        break;
+                    }
                     case MessagingTypes.SHARED_COMPONENT_CREATE:
-                        {
-                            if (msgPayload is Protocol.SharedComponentCreate payload)
-                                scene.componentsManagerLegacy.SceneSharedComponentCreate(payload.id, payload.classId);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.SharedComponentCreate payload)
+                            scene.componentsManagerLegacy.SceneSharedComponentCreate(payload.id, payload.classId);
+
+                        break;
+                    }
                     case MessagingTypes.SHARED_COMPONENT_DISPOSE:
-                        {
-                            if (msgPayload is Protocol.SharedComponentDispose payload)
-                                scene.componentsManagerLegacy.SceneSharedComponentDispose(payload.id);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.SharedComponentDispose payload)
+                            scene.componentsManagerLegacy.SceneSharedComponentDispose(payload.id);
+
+                        break;
+                    }
                     case MessagingTypes.ENTITY_DESTROY:
-                        {
-                            if (msgPayload is Protocol.RemoveEntity payload)
-                                scene.RemoveEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.RemoveEntity payload)
+                            scene.RemoveEntity(entityIdHelper.EntityFromLegacyEntityString(payload.entityId));
+
+                        break;
+                    }
                     case MessagingTypes.INIT_DONE:
-                        {
-                            if (!scene.IsInitMessageDone())
-                                scene.sceneLifecycleHandler.SetInitMessagesDone();
-                            break;
-                        }
+                    {
+                        if (!scene.IsInitMessageDone())
+                            scene.sceneLifecycleHandler.SetInitMessagesDone();
+
+                        break;
+                    }
                     case MessagingTypes.QUERY:
-                        {
-                            if (msgPayload is QueryMessage queryMessage)
-                                ParseQuery(queryMessage.payload, scene.sceneData.sceneNumber);
-                            break;
-                        }
+                    {
+                        if (msgPayload is QueryMessage queryMessage)
+                            ParseQuery(queryMessage.payload, scene.sceneData.sceneNumber);
+
+                        break;
+                    }
                     case MessagingTypes.OPEN_EXTERNAL_URL:
-                        {
-                            if (msgPayload is Protocol.OpenExternalUrl payload)
-                                OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.OpenExternalUrl payload)
+                            OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
+
+                        break;
+                    }
                     case MessagingTypes.OPEN_NFT_DIALOG:
-                        {
-                            if (msgPayload is Protocol.OpenNftDialog payload)
-                                DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId, payload.comment), true);
-                            break;
-                        }
+                    {
+                        if (msgPayload is Protocol.OpenNftDialog payload)
+                            DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId, payload.comment), true);
+
+                        break;
+                    }
 
                     default:
                         Debug.LogError($"Unknown method {method}");
@@ -318,10 +307,7 @@ namespace DCL
 
             if (delayedComponent != null)
             {
-                if (delayedComponent.isRoutineRunning)
-                {
-                    yieldInstruction = delayedComponent.yieldInstruction;
-                }
+                if (delayedComponent.isRoutineRunning) { yieldInstruction = delayedComponent.yieldInstruction; }
             }
         }
 
@@ -343,14 +329,8 @@ namespace DCL
         {
             var renderer = CommonScriptableObjects.rendererState.Get();
 
-            if (!renderer)
-            {
-                EnqueueChunk(chunk);
-            }
-            else
-            {
-                chunksToDecode.Enqueue(chunk);
-            }
+            if (!renderer) { EnqueueChunk(chunk); }
+            else { chunksToDecode.Enqueue(chunk); }
         }
 
         private QueuedSceneMessage_Scene Decode(string payload, QueuedSceneMessage_Scene queuedMessage)
@@ -361,10 +341,7 @@ namespace DCL
                     out int sceneNumber,
                     out string message,
                     out string messageTag,
-                    out PB_SendSceneMessage sendSceneMessage))
-            {
-                return null;
-            }
+                    out PB_SendSceneMessage sendSceneMessage)) { return null; }
 
             MessageDecoder.DecodeSceneMessage(sceneNumber, message, messageTag, sendSceneMessage, ref queuedMessage);
 
@@ -395,40 +372,30 @@ namespace DCL
                 start = Time.unscaledTime;
             }
         }
+
         private void EnqueueChunk(string chunk)
         {
-            string[] payloads = chunk.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] payloads = chunk.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var count = payloads.Length;
 
             for (int i = 0; i < count; i++)
             {
                 bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
 
-                if (availableMessage)
-                {
-                    EnqueueSceneMessage(Decode(payloads[i], freeMessage));
-                }
-                else
-                {
-                    EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
-                }
+                if (availableMessage) { EnqueueSceneMessage(Decode(payloads[i], freeMessage)); }
+                else { EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene())); }
             }
         }
+
         private async UniTask WatchForNewChunksToDecode(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    if (chunksToDecode.Count > 0)
-                    {
-                        ThreadedDecodeAndEnqueue(cancellationToken);
-                    }
+                    if (chunksToDecode.Count > 0) { ThreadedDecodeAndEnqueue(cancellationToken); }
                 }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                catch (Exception e) { Debug.LogException(e); }
 
                 await UniTask.Yield();
             }
@@ -440,7 +407,7 @@ namespace DCL
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                string[] payloads = chunk.Split(new [] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] payloads = chunk.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 var count = payloads.Length;
 
                 for (int i = 0; i < count; i++)
@@ -448,14 +415,8 @@ namespace DCL
                     var payload = payloads[i];
                     bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
 
-                    if (availableMessage)
-                    {
-                        EnqueueSceneMessage(Decode(payload, freeMessage));
-                    }
-                    else
-                    {
-                        EnqueueSceneMessage(Decode(payload, new QueuedSceneMessage_Scene()));
-                    }
+                    if (availableMessage) { EnqueueSceneMessage(Decode(payload, freeMessage)); }
+                    else { EnqueueSceneMessage(Decode(payload, new QueuedSceneMessage_Scene())); }
                 }
             }
         }
@@ -468,15 +429,13 @@ namespace DCL
         }
 
         //======================================================================
-
-        #endregion
-
-        //======================================================================
+#endregion
 
         //======================================================================
 
-        #region SCENES_MANAGEMENT
+        //======================================================================
 
+#region SCENES_MANAGEMENT
         //======================================================================
         public event Action<int> OnReadyScene;
 
@@ -504,10 +463,7 @@ namespace DCL
                 // Since the first position for the character is not sent from Kernel until just-before calling
                 // the rendering activation from Kernel, we need to sort the scenes to get the current scene id
                 // to lock the rendering accordingly...
-                if (!CommonScriptableObjects.rendererState.Get())
-                {
-                    SortScenesByDistance();
-                }
+                if (!CommonScriptableObjects.rendererState.Get()) { SortScenesByDistance(); }
             }
         }
 
@@ -587,10 +543,7 @@ namespace DCL
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 await newScene.SetData(sceneToLoad);
 
-                if (debugConfig.isDebugMode.Get())
-                {
-                    newScene.InitializeDebugPlane();
-                }
+                if (debugConfig.isDebugMode.Get()) { newScene.InitializeDebugPlane(); }
 
                 worldState.AddScene(newScene);
 
@@ -622,10 +575,7 @@ namespace DCL
                 ParcelScene scene = sceneInterface as ParcelScene;
                 scene.SetUpdateData(sceneData);
             }
-            else
-            {
-                LoadParcelScenesExecute(scenePayload);
-            }
+            else { LoadParcelScenesExecute(scenePayload); }
         }
 
         public void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene)
@@ -675,10 +625,7 @@ namespace DCL
 
             scene.Cleanup(!CommonScriptableObjects.rendererState.Get());
 
-            if (VERBOSE)
-            {
-                Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}");
-            }
+            if (VERBOSE) { Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}"); }
 
             Environment.i.world.blockersController.SetupWorldBlockers();
 
@@ -739,69 +686,88 @@ namespace DCL
 
         public void CreateGlobalScene(CreateGlobalSceneMessage globalScene)
         {
+            void CreateGlobalSceneA(CreateGlobalSceneMessage globalScene)
+            {
 #if UNITY_EDITOR
-            DebugConfig debugConfig = DataStore.i.debugConfig;
+                DebugConfig debugConfig = DataStore.i.debugConfig;
 
-            if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
-                return;
+                if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
+                    return;
 #endif
 
-            // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
-            //              It should never have references to UI systems or higher level systems.
-            if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
-            {
-                Debug.LogError(
-                    "Portable experiences are trying to be added before the system is initialized!. scene number: " +
-                    globalScene.sceneNumber);
-                return;
+                // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
+                //              It should never have references to UI systems or higher level systems.
+                if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
+                {
+                    Debug.LogError(
+                        "Portable experiences are trying to be added before the system is initialized!. scene number: " +
+                        globalScene.sceneNumber);
+
+                    return;
+                }
+
+                int newGlobalSceneNumber = globalScene.sceneNumber;
+                IWorldState worldState = Environment.i.world.state;
+
+                if (worldState.ContainsScene(newGlobalSceneNumber))
+                    return;
+
+                var newGameObject = new GameObject("Global Scene - " + newGlobalSceneNumber);
+
+                var newScene = newGameObject.AddComponent<GlobalScene>();
+                newScene.unloadWithDistance = false;
+                newScene.isPersistent = true;
+                newScene.sceneName = globalScene.name;
+                newScene.isPortableExperience = globalScene.isPortableExperience;
+
+                LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
+                {
+                    id = globalScene.id,
+                    sceneNumber = newGlobalSceneNumber,
+                    basePosition = new Vector2Int(0, 0),
+                    baseUrl = globalScene.baseUrl,
+                    contents = globalScene.contents,
+                    sdk7 = globalScene.sdk7,
+                    requiredPermissions = globalScene.requiredPermissions,
+                    allowedMediaHostnames = globalScene.allowedMediaHostnames
+                };
+
+                newScene.SetData(sceneData);
+
+                if (!string.IsNullOrEmpty(globalScene.icon)) { newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon); }
+
+                worldState.AddScene(newScene);
+
+                OnNewSceneAdded?.Invoke(newScene);
+
+                if (newScene.isPortableExperience) { DataStore.i.world.portableExperienceIds.Add(sceneData.id); }
+
+                messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
+
+                if (VERBOSE)
+                    Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
             }
 
-            int newGlobalSceneNumber = globalScene.sceneNumber;
-            IWorldState worldState = Environment.i.world.state;
-
-            if (worldState.ContainsScene(newGlobalSceneNumber))
-                return;
-
-            var newGameObject = new GameObject("Global Scene - " + newGlobalSceneNumber);
-
-            var newScene = newGameObject.AddComponent<GlobalScene>();
-            newScene.unloadWithDistance = false;
-            newScene.isPersistent = true;
-            newScene.sceneName = globalScene.name;
-            newScene.isPortableExperience = globalScene.isPortableExperience;
-
-            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
+            if (globalScene.isPortableExperience)
             {
-                id = globalScene.id,
-                sceneNumber = newGlobalSceneNumber,
-                basePosition = new Vector2Int(0, 0),
-                baseUrl = globalScene.baseUrl,
-                contents = globalScene.contents,
-                sdk7 = globalScene.sdk7,
-                requiredPermissions = globalScene.requiredPermissions,
-                allowedMediaHostnames = globalScene.allowedMediaHostnames
-            };
-
-            newScene.SetData(sceneData);
-
-            if (!string.IsNullOrEmpty(globalScene.icon))
-            {
-                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
+                if (!Environment.i.world.state.ContainsScene(globalScene.sceneNumber))
+                    DataStore.i.ExperiencesConfirmation.Confirm.Set(new ExperiencesConfirmationData
+                    {
+                        Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                        {
+                            Permissions = globalScene.requiredPermissions,
+                            ExperienceId = globalScene.id,
+                            ExperienceName = globalScene.name,
+                            IconUrl = globalScene.icon,
+                        },
+                        OnAcceptCallback = () => CreateGlobalSceneA(globalScene),
+                        OnRejectCallback = () => { },
+                    });
+                else
+                    WebInterface.KillPortableExperience(globalScene.id);
             }
-
-            worldState.AddScene(newScene);
-
-            OnNewSceneAdded?.Invoke(newScene);
-
-            if (newScene.isPortableExperience)
-            {
-                DataStore.i.world.portableExperienceIds.Add(sceneData.id);
-            }
-
-            messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
-
-            if (VERBOSE)
-                Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
+            else
+                CreateGlobalSceneA(globalScene);
         }
 
         public void IsolateScene(IParcelScene sceneToActive)
@@ -815,15 +781,11 @@ namespace DCL
 
         public void ReIntegrateIsolatedScene()
         {
-            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance())
-            {
-                scene.GetSceneTransform().gameObject.SetActive(true);
-            }
+            foreach (IParcelScene scene in Environment.i.world.state.GetScenesSortedByDistance()) { scene.GetSceneTransform().gameObject.SetActive(true); }
         }
 
         //======================================================================
-
-        #endregion
+#endregion
 
         //======================================================================
 

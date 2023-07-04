@@ -12,6 +12,7 @@ using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
 using DCL.MyAccount;
+using DCL.PortableExperiences.Confirmation;
 using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
@@ -44,6 +45,7 @@ namespace DCL
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
             pluginSystem.Register<SkyboxController>(() => new SkyboxController(DataStore.i));
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
+            pluginSystem.Register<ExperiencesConfirmationPlugin>(() => new ExperiencesConfirmationPlugin());
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
