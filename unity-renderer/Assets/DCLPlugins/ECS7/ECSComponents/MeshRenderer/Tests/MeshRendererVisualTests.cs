@@ -12,6 +12,16 @@ namespace Tests
     {
         private const string SNAPSHOT_BASE_FILENAME = "SDK7_MeshRendererVisualTests_";
 
+        private MeshRendererHandler CreateMeshRenderer(ECS7TestEntity entity, PBMeshRenderer model)
+        {
+            var meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
+                internalEcsComponents.texturizableComponent,
+                internalEcsComponents.renderersComponent);
+            meshRendererHandler.OnComponentCreated(scene, entity);
+            meshRendererHandler.OnComponentModelUpdated(scene, entity, model);
+            return meshRendererHandler;
+        }
+
         // Manually run to generate baseline image for later comparisons
         [UnityTest, VisualTest, Explicit]
         public IEnumerator VisualTest1_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(VisualTest1()); }
@@ -25,49 +35,34 @@ namespace Tests
             // Sphere
             var sphereEntity = scene.CreateEntity(666);
             sphereEntity.gameObject.transform.position = new Vector3(-3, 10, 0);
-            var meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
-                internalEcsComponents.texturizableComponent,
-                internalEcsComponents.renderersComponent);
-            PBMeshRenderer meshModel = new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() };
-            meshRendererHandler.OnComponentCreated(scene, sphereEntity);
-            meshRendererHandler.OnComponentModelUpdated(scene, sphereEntity, meshModel);
+            var sphereRendererHandler = CreateMeshRenderer(sphereEntity, new PBMeshRenderer() { Sphere = new PBMeshRenderer.Types.SphereMesh() });
             yield return null;
 
             // Cube
             var cubeEntity = scene.CreateEntity(667);
             cubeEntity.gameObject.transform.position = new Vector3(-1, 10, 0);
-            meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
-                internalEcsComponents.texturizableComponent,
-                internalEcsComponents.renderersComponent);
-            meshModel = new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh()};
-            meshRendererHandler.OnComponentCreated(scene, cubeEntity);
-            meshRendererHandler.OnComponentModelUpdated(scene, cubeEntity, meshModel);
+            var cubeRendererHandler = CreateMeshRenderer(cubeEntity, new PBMeshRenderer() { Box = new PBMeshRenderer.Types.BoxMesh() });
             yield return null;
 
             // Plane
             var planeEntity = scene.CreateEntity(668);
             planeEntity.gameObject.transform.position = new Vector3(1, 10, 0);
             planeEntity.gameObject.transform.Rotate(Vector3.up, 75);
-            meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
-                internalEcsComponents.texturizableComponent,
-                internalEcsComponents.renderersComponent);
-            meshModel = new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh()};
-            meshRendererHandler.OnComponentCreated(scene, planeEntity);
-            meshRendererHandler.OnComponentModelUpdated(scene, planeEntity, meshModel);
+            var planeRendererHandler = CreateMeshRenderer(planeEntity, new PBMeshRenderer() { Plane = new PBMeshRenderer.Types.PlaneMesh() });
             yield return null;
 
             // Cylinder
             var cylinderEntity = scene.CreateEntity(669);
             cylinderEntity.gameObject.transform.position = new Vector3(3, 10, 0);
-            meshRendererHandler = new MeshRendererHandler(new DataStore_ECS7(),
-                internalEcsComponents.texturizableComponent,
-                internalEcsComponents.renderersComponent);
-            meshModel = new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh()};
-            meshRendererHandler.OnComponentCreated(scene, cylinderEntity);
-            meshRendererHandler.OnComponentModelUpdated(scene, cylinderEntity, meshModel);
+            var cylinderRendererHandler = CreateMeshRenderer(cylinderEntity, new PBMeshRenderer() { Cylinder = new PBMeshRenderer.Types.CylinderMesh() });
             yield return null;
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
+
+            sphereRendererHandler.OnComponentRemoved(scene, sphereEntity);
+            cubeRendererHandler.OnComponentRemoved(scene, cubeEntity);
+            planeRendererHandler.OnComponentRemoved(scene, planeEntity);
+            cylinderRendererHandler.OnComponentRemoved(scene, cylinderEntity);
         }
     }
 }

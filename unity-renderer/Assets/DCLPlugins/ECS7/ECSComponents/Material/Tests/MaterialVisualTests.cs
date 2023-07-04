@@ -7,6 +7,7 @@ using ECSSystems.MaterialSystem;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.TestTools;
 using Vector3 = UnityEngine.Vector3;
 using Texture = Decentraland.Common.Texture;
@@ -17,6 +18,8 @@ namespace Tests
     {
         private const string SNAPSHOT_BASE_FILENAME = "SDK7_MaterialVisualTests_";
         private Action systemsUpdate;
+        private Dictionary<ECS7TestEntity, MeshRendererHandler> meshRendererHandlers = new Dictionary<ECS7TestEntity, MeshRendererHandler>();
+        private Dictionary<ECS7TestEntity, MaterialHandler> materialHandlers = new Dictionary<ECS7TestEntity, MaterialHandler>();
 
         [SetUp]
         public override void SetUp()
@@ -41,6 +44,14 @@ namespace Tests
         {
             AssetPromiseKeeper_Material.i.Cleanup();
             AssetPromiseKeeper_Texture.i.Cleanup();
+            foreach ((ECS7TestEntity entity, MeshRendererHandler handler) in meshRendererHandlers)
+            {
+                handler.OnComponentRemoved(scene, entity);
+            }
+            foreach ((ECS7TestEntity entity, MaterialHandler handler) in materialHandlers)
+            {
+                handler.OnComponentRemoved(scene, entity);
+            }
             base.TearDown();
         }
 
@@ -57,6 +68,7 @@ namespace Tests
 
             meshRendererHandler.OnComponentCreated(scene, entity);
             meshRendererHandler.OnComponentModelUpdated(scene, entity, meshModel);
+            meshRendererHandlers[entity] = meshRendererHandler;
             yield return null;
 
             // Create material
@@ -64,6 +76,7 @@ namespace Tests
                 internalEcsComponents.videoMaterialComponent);
             materialHandler.OnComponentCreated(scene, entity);
             materialHandler.OnComponentModelUpdated(scene, entity, materialModel);
+            materialHandlers[entity] = materialHandler;
             yield return materialHandler.promiseMaterial;
 
             systemsUpdate.Invoke();

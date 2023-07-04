@@ -52,6 +52,7 @@ namespace Tests
         public override void TearDown()
         {
             AssetPromiseKeeper_GLTFast_Instance.i.Cleanup();
+            handler.OnComponentRemoved(scene, entity);
 
             base.TearDown();
         }

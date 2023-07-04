@@ -13,6 +13,17 @@ namespace Tests
     {
         private const string SNAPSHOT_BASE_FILENAME = "SDK7_TextShapeVisualTests_";
 
+        private ECSTextShapeComponentHandler CreateTextShape(ECS7TestEntity entity, PBTextShape model)
+        {
+            var componentHandler = new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i,
+                internalEcsComponents.renderersComponent,
+                internalEcsComponents.sceneBoundsCheckComponent);
+            componentHandler.OnComponentCreated(scene, entity);
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            return componentHandler;
+        }
+
         // Manually run to generate baseline image for later comparisons
         [UnityTest, VisualTest, Explicit]
         public IEnumerator VisualTest1_Generate() { yield return VisualTestUtils.GenerateBaselineForTest(VisualTest1()); }
@@ -63,17 +74,6 @@ namespace Tests
             componentHandler1.OnComponentRemoved(scene, textEntity1);
             componentHandler2.OnComponentRemoved(scene, textEntity2);
             componentHandler3.OnComponentRemoved(scene, textEntity3);
-        }
-
-        private ECSTextShapeComponentHandler CreateTextShape(ECS7TestEntity entity, PBTextShape model)
-        {
-            var componentHandler = new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i,
-                internalEcsComponents.renderersComponent,
-                internalEcsComponents.sceneBoundsCheckComponent);
-            componentHandler.OnComponentCreated(scene, entity);
-            componentHandler.OnComponentModelUpdated(scene, entity, model);
-
-            return componentHandler;
         }
     }
 }
