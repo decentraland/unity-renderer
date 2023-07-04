@@ -155,7 +155,10 @@ namespace DCL.Components
                 return;
             }
 
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF)) { FetchAssetBundlesManifest(OnSuccess, OnFail, hasFallback, hash); }
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            {
+                FetchAssetBundlesManifest(OnSuccess, OnFail, hasFallback, hash);
+            }
             else
             {
                 string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
@@ -176,8 +179,13 @@ namespace DCL.Components
                 LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
             else
             {
-                sceneABPromise = new AssetPromise_SceneAB(contentProvider.baseUrlBundles, contentProvider.sceneCid);
+                if (contentProvider.assetBundlesFetched)
+                {
+                    OnFailWrapper(onFail, new Exception("Asset not converted to asset bundles"), hasFallback);
+                    return;
+                }
 
+                sceneABPromise = new AssetPromise_SceneAB(contentProvider.baseUrlBundles, contentProvider.sceneCid);
                 sceneABPromise.OnSuccessEvent += ab =>
                 {
                     if (ab.IsSceneConverted())
@@ -188,6 +196,8 @@ namespace DCL.Components
                         LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
                     }
                     else { OnFailWrapper(onFail, new Exception("Asset not converted to asset bundles"), hasFallback); }
+
+                    contentProvider.assetBundlesFetched = true;
                 };
 
                 sceneABPromise.OnFailEvent += (_, exception) => { OnFailWrapper(onFail, exception, hasFallback); };
