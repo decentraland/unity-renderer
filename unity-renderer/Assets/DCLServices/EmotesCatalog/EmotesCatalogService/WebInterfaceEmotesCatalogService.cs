@@ -212,7 +212,6 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             CancellationTokenSource timeoutCTS = new CancellationTokenSource();
             var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
             ct.ThrowIfCancellationRequested();
-            Debug.Log("STARTED AWAITING EMOTE  " + id);
             Promise<WearableItem> promise = RequestEmote(id);
             try
             {
@@ -239,7 +238,6 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             {
                 timeout?.Dispose();
                 timeoutCTS?.Dispose();
-                Debug.Log("FINISHED AWAITING EMOTE  " + id);
             }
 
             return promise.value;

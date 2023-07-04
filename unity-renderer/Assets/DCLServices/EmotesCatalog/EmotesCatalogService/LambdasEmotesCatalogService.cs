@@ -215,7 +215,6 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         CancellationTokenSource timeoutCTS = new CancellationTokenSource();
         var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         ct.ThrowIfCancellationRequested();
-        Debug.Log("STARTED AWAITING EMOTE  " + id);
         Promise<WearableItem> promise = RequestEmote(id);
         try
         {
@@ -242,7 +241,6 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         {
             timeout?.Dispose();
             timeoutCTS?.Dispose();
-            Debug.Log("FINISHED AWAITING EMOTE  " + id);
         }
 
         return promise.value;
