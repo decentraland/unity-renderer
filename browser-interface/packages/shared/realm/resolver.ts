@@ -64,11 +64,11 @@ export function prettyRealmName(realm: string, candidates: Candidate[]) {
   return realm
 }
 
-function isDclEns(str: string | undefined): str is `${string}.dcl.eth` {
+export function isDclEns(str: string | undefined): str is `${string}.dcl.eth` {
   return !!str?.match(/^[a-zA-Z0-9]+\.dcl\.eth$/)?.length
 }
 
-function dclWorldUrl(dclName: string) {
+export function dclWorldUrl(dclName: string) {
   return `https://worlds-content-server.decentraland.org/world/${encodeURIComponent(dclName.toLowerCase())}`
 }
 
