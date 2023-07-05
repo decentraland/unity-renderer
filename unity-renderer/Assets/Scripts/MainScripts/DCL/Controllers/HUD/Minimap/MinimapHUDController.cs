@@ -243,7 +243,6 @@ public class MinimapHUDController : IHUD
     {
         try
         {
-            view.SetIsAPlace(false);
             var place = await placesAPIService.GetPlace(currentParcel, ct);
             bool isFavorite = await placesAPIService.IsFavoritePlace(place, ct);
             view.SetIsAPlace(true);

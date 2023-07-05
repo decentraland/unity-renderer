@@ -28,6 +28,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal Button reportSceneButton;
     [SerializeField] internal ToggleComponentView setHomeScene;
     [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
+    [SerializeField] internal Image disableFavorite;
 
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
@@ -138,6 +139,7 @@ public class MinimapHUDView : MonoBehaviour
     public void SetIsAPlace(bool isAPlace)
     {
         favoriteToggle.gameObject.SetActive(isAPlace);
+        disableFavorite.gameObject.SetActive(!isAPlace);
     }
 
     private void OnDestroy()
