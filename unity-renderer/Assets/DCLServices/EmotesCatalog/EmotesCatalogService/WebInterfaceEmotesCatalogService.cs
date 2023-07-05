@@ -25,9 +25,6 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
         private CancellationTokenSource addressableCTS;
         private int retryCount = 3;
 
-        public static WebInterfaceEmotesCatalogService Instance { get; private set; }
-
-
         public WebInterfaceEmotesCatalogService(EmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider)
         {
             this.bridge = bridge;
