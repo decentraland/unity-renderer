@@ -367,6 +367,7 @@ export class SceneWorker {
             this.logger.error('Error sending binary actions from Worker to Renderer', err)
           })
         } else {
+          this.logger.log(`[SANTI DEBUG] sdk6BinaryMessage => sceneNumber: ${this.rpcContext.sceneData.sceneNumber} | length: ${event.data.bytes.length} bytes`)
           nativeMsgBridge.sdk6BinaryMessage(
             this.rpcContext.sceneData.sceneNumber,
             event.data.bytes,
