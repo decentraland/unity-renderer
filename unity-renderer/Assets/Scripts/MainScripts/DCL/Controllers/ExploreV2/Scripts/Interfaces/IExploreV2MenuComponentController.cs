@@ -8,6 +8,7 @@ public enum ExploreSection
     Map = 3,
     Settings = 4,
     Wallet = 5,
+    MyAccount = 6,
 }
 
 public interface IExploreV2MenuComponentController : IDisposable

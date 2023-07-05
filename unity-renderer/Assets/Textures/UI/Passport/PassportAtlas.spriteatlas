@@ -44,7 +44,7 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 0dabbcb147b654ac0a985acf1805a850, type: 3}
+    - {fileID: 102900000, guid: b7b1927aace0d46ce8b6fdb6c3c18601, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -53,30 +53,46 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 17bc93623e63c4254bb5799cd55f4b96, type: 3}
   - {fileID: 21300000, guid: b86aa5b2e1b3a4e2bb9e3afe59315b46, type: 3}
   - {fileID: 21300000, guid: 0492c753b33b04474ac2b7e7d18a2c70, type: 3}
+  - {fileID: 21300000, guid: 392db073fc28e45fcb6cd495341a8005, type: 3}
   - {fileID: 21300000, guid: f5c69b65210ee4d918cee88989f0b22e, type: 3}
-  - {fileID: 21300000, guid: 3635c175b99b640e6a001fa497597e4e, type: 3}
   - {fileID: 21300000, guid: 7f02a0d56dde24665b43d5483b653d47, type: 3}
   - {fileID: 21300000, guid: b3148da633cc64974a01bd0083bd1e59, type: 3}
   - {fileID: 21300000, guid: 419076073bb23470898b3a2689515b64, type: 3}
   - {fileID: 21300000, guid: f8ce386703bdd44f2b6d80232b03f124, type: 3}
-  - {fileID: 21300000, guid: 8152dcc881fb74a57b73473687603bcc, type: 3}
+  - {fileID: 21300000, guid: 1e29b7d86ba6b4f2296dd5c8024ae520, type: 3}
+  - {fileID: 21300000, guid: 18008459efe194e218281bf2964c7771, type: 3}
+  - {fileID: 21300000, guid: 199cb6898ee8141a88c5f702ecaa943c, type: 3}
+  - {fileID: 21300000, guid: e845c7c9576f6431595d42da36703a07, type: 3}
+  - {fileID: 21300000, guid: 1ed91f5adb06840648251cc206f8981f, type: 3}
+  - {fileID: 21300000, guid: bac28cca306dd4b91a74c98182dafdd6, type: 3}
+  - {fileID: 21300000, guid: cf7f4a0baae9142968ca27a5ed8993d9, type: 3}
+  - {fileID: 21300000, guid: a6c2677ba0c2a49de93b1237c458b0b0, type: 3}
   - {fileID: 21300000, guid: d680666c4c5134b9f8615ffaaf5da043, type: 3}
   - {fileID: 21300000, guid: 9fb5589c5caac46e5882f2be6709b03d, type: 3}
+  - {fileID: 21300000, guid: be9fdcad4c4cb403eab27ebae8e9c3e1, type: 3}
   - {fileID: 21300000, guid: ae432d6ee3307da4aac59db911ad410f, type: 3}
   - {fileID: 21300000, guid: eafeb5ee04f824648b1a9f8b4412d485, type: 3}
   m_PackedSpriteNamesToIndex:
   - NameIcn
   - IntroIcon
   - LandIcn
+  - RealNameIcn
   - PassportBackground
-  - DecorativeShape001
   - BlockedImg
   - CornerFlap
   - FlapShadow
   - LinkIcon
-  - BackgroundGuest
+  - HobbiesIcn
+  - PronounsIcn
+  - RelationshipIcn
+  - LanguageIcn
+  - CountryIcn
+  - ProfessionIcn
+  - BirthdayIcn
+  - GenderIcn
   - WearablesIcn
   - RadialGradient
+  - SexOrientationIcn
   - 360Icon
   - EmotesIcn
   m_RenderDataMap: {}

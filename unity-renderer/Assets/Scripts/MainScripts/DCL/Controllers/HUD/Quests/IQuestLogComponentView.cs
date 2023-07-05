@@ -11,8 +11,8 @@ namespace DCL.Quests
         event Action<Vector2Int> OnJumpIn;
         event Action<string> OnQuestAbandon;
 
-        void AddActiveQuest(QuestDetailsComponentModel activeQuest);
-        void AddCompletedQuest(QuestDetailsComponentModel completedQuest);
+        void AddActiveQuest(QuestDetailsComponentModel activeQuest, string creatorName);
+        void AddCompletedQuest(QuestDetailsComponentModel completedQuest, string creatorName);
         void RemoveQuestIfExists(string questId);
         void SetAsFullScreenMenuMode(Transform parentTransform);
         void SetIsGuest(bool isGuest);

@@ -5,9 +5,11 @@ using DCLServices.QuestsService;
 using Decentraland.Quests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Action = Decentraland.Quests.Action;
+using Task = Decentraland.Quests.Task;
 
 namespace DCL.Quests
 {
@@ -19,11 +21,13 @@ namespace DCL.Quests
         private readonly IQuestTrackerComponentView questTrackerComponentView;
         private readonly IQuestCompletedComponentView questCompletedComponentView;
         private readonly IQuestStartedPopupComponentView questStartedPopupComponentView;
-        private readonly IQuestLogComponentView questLogComponentView;
+        private readonly QuestLogController questLogController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IPlayerPrefs playerPrefs;
         private readonly DataStore dataStore;
         private readonly ITeleportController teleportController;
+        private readonly IQuestAnalyticsService questAnalyticsService;
+        private Service<IWebRequestController> webRequestController;
 
         private CancellationTokenSource disposeCts = null;
         private CancellationTokenSource profileCts = null;
@@ -36,21 +40,23 @@ namespace DCL.Quests
             IQuestTrackerComponentView questTrackerComponentView,
             IQuestCompletedComponentView questCompletedComponentView,
             IQuestStartedPopupComponentView questStartedPopupComponentView,
-            IQuestLogComponentView questLogComponentView,
             IUserProfileBridge userProfileBridge,
             IPlayerPrefs playerPrefs,
             DataStore dataStore,
-            ITeleportController teleportController)
+            ITeleportController teleportController,
+            QuestLogController questLogController,
+            IQuestAnalyticsService questAnalyticsService)
         {
             this.questsService = questsService;
             this.questTrackerComponentView = questTrackerComponentView;
             this.questCompletedComponentView = questCompletedComponentView;
             this.questStartedPopupComponentView = questStartedPopupComponentView;
-            this.questLogComponentView = questLogComponentView;
             this.userProfileBridge = userProfileBridge;
             this.playerPrefs = playerPrefs;
             this.dataStore = dataStore;
             this.teleportController = teleportController;
+            this.questLogController = questLogController;
+            this.questAnalyticsService = questAnalyticsService;
 
             disposeCts = new CancellationTokenSource();
             quests = new ();
@@ -58,20 +64,20 @@ namespace DCL.Quests
             StartTrackingQuests(disposeCts.Token).Forget();
             StartTrackingStartedQuests(disposeCts.Token).Forget();
 
-            questLogComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+            questLogController.SetIsGuest(userProfileBridge.GetOwn().isGuest);
 
             questStartedPopupComponentView.OnOpenQuestLog += () => { dataStore.HUDs.questsPanelVisible.Set(true); };
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange += ConfigureQuestLogInFullscreenMenuChanged;
             ConfigureQuestLogInFullscreenMenuChanged(dataStore.exploreV2.configureQuestInFullscreenMenu.Get(), null);
-            questLogComponentView.OnPinChange += ChangePinnedQuest;
-            questLogComponentView.OnQuestAbandon += AbandonQuest;
+            questLogController.OnPinChange += ChangePinnedQuest;
+            questLogController.OnQuestAbandon += AbandonQuest;
             questTrackerComponentView.OnJumpIn += JumpIn;
-            questLogComponentView.OnJumpIn += JumpIn;
+            questLogController.OnJumpIn += JumpIn;
 
             foreach (var questsServiceQuestInstance in questsService.QuestInstances)
                 AddOrUpdateQuestToLog(questsServiceQuestInstance.Value);
 
-            ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true);
+            ChangePinnedQuest(playerPrefs.GetString(PINNED_QUEST_KEY, ""), true, false);
         }
 
         private void AbandonQuest(string questId)
@@ -79,14 +85,21 @@ namespace DCL.Quests
             if(pinnedQuestId.Get().Equals(questId))
                 ChangePinnedQuest(questId, false);
             questsService.AbortQuest(questId).Forget();
-            questLogComponentView.RemoveQuestIfExists(questId);
+            questLogController.RemoveQuestIfExists(questId);
+            questAnalyticsService.SendQuestCancelled(questId);
         }
 
         private void JumpIn(Vector2Int obj) =>
             teleportController.Teleport(obj.x, obj.y);
 
-        private void ChangePinnedQuest(string questId, bool isPinned)
+        private void ChangePinnedQuest(string questId, bool isPinned) =>
+            ChangePinnedQuest(questId, isPinned, true);
+
+        private void ChangePinnedQuest(string questId, bool isPinned, bool sendAnalytics)
         {
+            if(sendAnalytics)
+                questAnalyticsService.SendPinnedQuest(questId, isPinned);
+
             string previousPinnedQuestId = pinnedQuestId.Get();
 
             pinnedQuestId.Set(isPinned ? questId : "");
@@ -110,8 +123,10 @@ namespace DCL.Quests
             AddOrUpdateQuestToLog(quests[pinnedQuestId.Get()]);
         }
 
-        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous) =>
-            questLogComponentView.SetAsFullScreenMenuMode(current);
+        private void ConfigureQuestLogInFullscreenMenuChanged(Transform current, Transform previous)
+        {
+            questLogController.SetAsFullScreenMenuMode(current);
+        }
 
         private async UniTaskVoid StartTrackingQuests(CancellationToken ct)
         {
@@ -135,9 +150,10 @@ namespace DCL.Quests
                 AddOrUpdateQuestToLog(questStateUpdate);
                 questStartedPopupComponentView.SetQuestName(questStateUpdate.Quest.Name);
                 questStartedPopupComponentView.SetVisible(true);
+                questAnalyticsService.SendQuestStarted(questStateUpdate.Quest.Id);
 
                 if(string.IsNullOrEmpty(pinnedQuestId.Get()) || quests.ContainsKey(pinnedQuestId.Get()))
-                    ChangePinnedQuest(questStateUpdate.Id, true);
+                    ChangePinnedQuest(questStateUpdate.Id, true, false);
             }
         }
 
@@ -174,44 +190,64 @@ namespace DCL.Quests
             return questSteps;
         }
 
-        private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false)
+        private void AddOrUpdateQuestToLog(QuestInstance questInstance, bool showCompletedQuestHUD = false, bool isQuestUpdate = false)
         {
             quests.TryAdd(questInstance.Id, questInstance);
 
             QuestDetailsComponentModel quest = new QuestDetailsComponentModel()
             {
                 questName = questInstance.Quest.Name,
-                questCreator = "userName",
+                questCreator = questInstance.Quest.CreatorAddress,
                 questDescription = questInstance.Quest.Description,
                 questId = questInstance.Id,
+                questDefinitionId = questInstance.Quest.Id,
                 isPinned = questInstance.Id == pinnedQuestId.Get(),
+                questImageUri = questInstance.Quest.ImageUrl,
                 questSteps = GetQuestSteps(questInstance, true),
                 questRewards = new List<QuestRewardComponentModel>()
             };
 
-            if(questInstance.State.CurrentSteps.Count > 0)
-                questLogComponentView.AddActiveQuest(quest);
+            if (questInstance.State.CurrentSteps.Count > 0)
+            {
+                questLogController.AddActiveQuest(quest).Forget();
+                questAnalyticsService.SendQuestProgressed(questInstance.Quest.Id, questInstance.State.CurrentSteps.Keys.ToList(), questInstance.State.CurrentSteps.Keys.ToList());
+            }
             else
             {
-                ChangePinnedQuest(questInstance.Id, false);
+                ChangePinnedQuest(questInstance.Id, false, false);
 
                 if (showCompletedQuestHUD)
                 {
-                    questCompletedComponentView.SetTitle(quest.questName);
-                    questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
-                    questCompletedComponentView.SetRewards(new List<QuestRewardComponentModel>());
-                    questCompletedComponentView.SetVisible(true);
+                    ShowQuestCompleted(questInstance, disposeCts.Token).Forget();
                 }
 
-                questLogComponentView.AddCompletedQuest(quest);
+                questLogController.AddCompletedQuest(quest).Forget();
             }
+        }
+
+        private async UniTaskVoid ShowQuestCompleted(QuestInstance questInstance, CancellationToken ct)
+        {
+            List<QuestRewardComponentModel> questRewards = new List<QuestRewardComponentModel>();
+            foreach (QuestReward questReward in await questsService.GetQuestRewards(questInstance.Quest.Id, ct))
+            {
+                questRewards.Add(new QuestRewardComponentModel()
+                {
+                    imageUri = questReward.image_link,
+                    name = questReward.name
+                });
+            }
+            questAnalyticsService.SendQuestCompleted(questInstance.Quest.Id);
+            questCompletedComponentView.SetTitle(questInstance.Quest.Name);
+            questCompletedComponentView.SetRewards(questRewards);
+            questCompletedComponentView.SetIsGuest(userProfileBridge.GetOwn().isGuest);
+            questCompletedComponentView.SetVisible(true);
         }
 
         public void Dispose()
         {
-            questLogComponentView.OnPinChange -= ChangePinnedQuest;
+            questLogController.OnPinChange -= ChangePinnedQuest;
             questTrackerComponentView.OnJumpIn -= JumpIn;
-            questLogComponentView.OnJumpIn -= JumpIn;
+            questLogController.OnJumpIn -= JumpIn;
             dataStore.exploreV2.configureQuestInFullscreenMenu.OnChange -= ConfigureQuestLogInFullscreenMenuChanged;
             disposeCts?.SafeCancelAndDispose();
         }

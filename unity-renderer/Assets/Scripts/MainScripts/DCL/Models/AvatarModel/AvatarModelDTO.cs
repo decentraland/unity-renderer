@@ -1,10 +1,7 @@
 using System;
-using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Decentraland.Sdk.Ecs6;
-using MainScripts.DCL.Components;
 
 [Serializable]
 public class AvatarModelDTO
@@ -43,5 +40,26 @@ public class AvatarModelDTO
         };
 
         return avatarModel;
+    }
+
+    public static AvatarModelDTO FromAvatarModel(AvatarModel model)
+    {
+        AvatarModelDTO avatarModelDto = new AvatarModelDTO
+        {
+            id = model.id,
+            name = model.name,
+            bodyShape = model.bodyShape,
+            skinColor = model.skinColor,
+            hairColor = model.hairColor,
+            eyeColor = model.eyeColor,
+            wearables = model.wearables,
+            forceRender = model.forceRender.ToList(),
+            emotes = model.emotes,
+            expressionTriggerId = model.expressionTriggerId,
+            expressionTriggerTimestamp = model.expressionTriggerTimestamp,
+            talking = model.talking,
+        };
+
+        return avatarModelDto;
     }
 }

@@ -1,8 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
     private const int PLACE_CARDS_POOL_PREWARM = 20;
 
-    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource disposeCts = new ();
+    private CancellationTokenSource setPlacesCts = new ();
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
@@ -77,7 +79,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public override void Dispose()
     {
         base.Dispose();
-        cancellationTokenSource.Cancel();
+        disposeCts?.SafeCancelAndDispose();
+        setPlacesCts?.SafeCancelAndDispose();
 
         showMorePlacesButton.onClick.RemoveAllListeners();
 
@@ -106,7 +109,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         this.places.ExtractItems();
         this.places.RemoveItems();
 
-        SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
+        setPlacesCts?.SafeCancelAndDispose();
+        setPlacesCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        AddPlacesAsync(places, setPlacesCts.Token).Forget();
     }
 
     public void SetPlacesAsLoading(bool isVisible)
@@ -120,9 +125,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     }
 
     public void AddPlaces(List<PlaceCardComponentModel> places) =>
-        SetPlacesAsync(places, cancellationTokenSource.Token).Forget();
+        AddPlacesAsync(places, disposeCts.Token).Forget();
 
-    private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
+    private async UniTask AddPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
     {
         foreach (PlaceCardComponentModel place in places)
         {
@@ -140,6 +145,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetActive(bool isActive)
     {
+        if (canvas.enabled == isActive)
+            return;
         canvas.enabled = isActive;
 
         if (isActive)

@@ -1,9 +1,8 @@
-using JetBrains.Annotations;
-using Sentry;
+using Cysharp.Threading.Tasks;
+using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -41,6 +40,7 @@ namespace DCL.Components
         private readonly ContentProvider contentProvider;
         private AssetPromise_GLTFast_Instance gltfastPromise;
         private AssetPromise_AB_GameObject abPromise;
+        private AssetPromise_SceneAB sceneABPromise;
         private string currentLoadingSystem;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
         private string targetUrl;
@@ -128,6 +128,8 @@ namespace DCL.Components
         void UnloadAB()
         {
             if (abPromise != null) { AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise); }
+
+            if (sceneABPromise != null) { AssetPromiseKeeper_SceneAB.i.Forget(sceneABPromise); }
         }
 
         void UnloadGLTFast()
@@ -135,7 +137,7 @@ namespace DCL.Components
             if (gltfastPromise != null) { AssetPromiseKeeper_GLTFast_Instance.i.Forget(gltfastPromise); }
         }
 
-        void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
+        private void LoadAssetBundle(string targetUrl, Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback)
         {
             currentLoadingSystem = AB_GO_NAME_PREFIX;
 
@@ -147,14 +149,6 @@ namespace DCL.Components
                     Debug.Log("Forgetting not null promise..." + targetUrl);
             }
 
-            string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
-
-            if (string.IsNullOrEmpty(bundlesBaseUrl))
-            {
-                OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"), hasFallback);
-                return;
-            }
-
             if (!contentProvider.TryGetContentsUrl_Raw(targetUrl, out string hash))
             {
                 OnFailWrapper(OnFail, new Exception($"Content url does not contains {targetUrl}"), hasFallback);
@@ -163,24 +157,57 @@ namespace DCL.Components
 
             if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
             {
-                if (contentProvider.assetBundles.Contains(hash))
-                    bundlesBaseUrl = contentProvider.assetBundlesBaseUrl;
-                else
-                {
-                    // we track the failing asset for it to be fixed in the asset bundle converter
-                    SentrySdk.CaptureMessage("Scene Asset not converted to AssetBundles", scope =>
-                    {
-                        scope.SetExtra("hash", hash);
-                        scope.SetExtra("baseUrl", contentProvider.assetBundlesBaseUrl);
-                        scope.SetExtra("sceneCid", contentProvider.sceneCid);
-                    });
+                FetchAssetBundlesManifest(OnSuccess, OnFail, hasFallback, hash);
+            }
+            else
+            {
+                string bundlesBaseUrl = useCustomContentServerUrl ? customContentServerUrl : bundlesContentUrl;
 
-                    // exception is null since we are expected to fallback
-                    OnFailWrapper(OnFail, null, hasFallback);
+                if (string.IsNullOrEmpty(bundlesBaseUrl))
+                {
+                    OnFailWrapper(OnFail, new Exception("bundlesBaseUrl is null"), hasFallback);
                     return;
                 }
-            }
 
+                LoadAssetBundles(OnSuccess, OnFail, hasFallback, bundlesBaseUrl, hash);
+            }
+        }
+
+        private void FetchAssetBundlesManifest(Action<Rendereable> onSuccess, Action<Exception> onFail, bool hasFallback, string hash)
+        {
+            if (contentProvider.assetBundles.Contains(hash))
+                LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
+            else
+            {
+                if (contentProvider.assetBundlesFetched)
+                {
+                    OnFailWrapper(onFail, new Exception("Asset not converted to asset bundles"), hasFallback);
+                    return;
+                }
+
+                sceneABPromise = new AssetPromise_SceneAB(contentProvider.baseUrlBundles, contentProvider.sceneCid);
+                sceneABPromise.OnSuccessEvent += ab =>
+                {
+                    if (ab.IsSceneConverted())
+                    {
+                        contentProvider.assetBundles = ab.GetConvertedFiles();
+                        contentProvider.assetBundlesBaseUrl = ab.GetBaseUrl();
+                        contentProvider.assetBundlesVersion = ab.GetVersion();
+                        LoadAssetBundles(onSuccess, onFail, hasFallback, contentProvider.assetBundlesBaseUrl, hash);
+                    }
+                    else { OnFailWrapper(onFail, new Exception("Asset not converted to asset bundles"), hasFallback); }
+
+                    contentProvider.assetBundlesFetched = true;
+                };
+
+                sceneABPromise.OnFailEvent += (_, exception) => { OnFailWrapper(onFail, exception, hasFallback); };
+
+                AssetPromiseKeeper_SceneAB.i.Keep(sceneABPromise);
+            }
+        }
+
+        private void LoadAssetBundles(Action<Rendereable> OnSuccess, Action<Exception> OnFail, bool hasFallback, string bundlesBaseUrl, string hash)
+        {
             abPromise = new AssetPromise_AB_GameObject(bundlesBaseUrl, hash);
             abPromise.settings = this.settings;
 
@@ -248,10 +275,7 @@ namespace DCL.Components
                 OnSuccessWrapper(r, OnSuccess);
             };
 
-            gltfastPromise.OnFailEvent += (asset, exception) =>
-            {
-                OnFailWrapper(OnFail, exception, hasFallback);
-            };
+            gltfastPromise.OnFailEvent += (asset, exception) => { OnFailWrapper(OnFail, exception, hasFallback); };
 
             AssetPromiseKeeper_GLTFast_Instance.i.Keep(gltfastPromise);
         }

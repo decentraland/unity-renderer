@@ -74,28 +74,83 @@ public static class PlacesAndEventsCardsFactory
         return modal;
     }
 
-    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(List<PlaceInfo> placeInfo)
+    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(IEnumerable<PlaceInfo> placeInfo, int amountToTake)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+        int count = 0;
+        foreach (var place in placeInfo)
+        {
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = Utils.ConvertStringToVector(place.base_position),
+                    parcels = place.Positions,
+                    isFavorite = place.user_favorite,
+                    placeInfo = place
+                });
+            count++;
+            if(count >= amountToTake)
+                break;
+        }
+
+        return modelsList;
+    }
+
+    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(
+        IList<PlaceInfo> placeInfo,
+        Predicate<(int index, PlaceInfo place)> filter)
     {
         List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
 
-                foreach (var place in placeInfo)
+        for (var index = 0; index < placeInfo.Count; index++)
+        {
+            PlaceInfo place = placeInfo[index];
+            if(!filter((index, place)))
+                continue;
+            modelsList.Add(
+                new PlaceCardComponentModel()
                 {
-                    modelsList.Add(
-                        new PlaceCardComponentModel()
-                        {
-                            placePictureUri = place.image,
-                            placeName = place.title,
-                            placeDescription = place.description,
-                            placeAuthor = place.contact_name,
-                            numberOfUsers = place.user_count,
-                            coords = Utils.ConvertStringToVector(place.base_position),
-                            parcels = place.positions,
-                            isFavorite = place.user_favorite,
-                            placeInfo = place
-                        });
-                }
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = Utils.ConvertStringToVector(place.base_position),
+                    parcels = place.Positions,
+                    isFavorite = place.user_favorite,
+                    placeInfo = place
+                });
+        }
 
-                return modelsList;
+        return modelsList;
+    }
+
+    public static List<PlaceCardComponentModel> ConvertPlaceResponseToModel(IEnumerable<PlaceInfo> placeInfo)
+    {
+        List<PlaceCardComponentModel> modelsList = new List<PlaceCardComponentModel>();
+        foreach (var place in placeInfo)
+        {
+            modelsList.Add(
+                new PlaceCardComponentModel()
+                {
+                    placePictureUri = place.image,
+                    placeName = place.title,
+                    placeDescription = place.description,
+                    placeAuthor = place.contact_name,
+                    numberOfUsers = place.user_count,
+                    coords = Utils.ConvertStringToVector(place.base_position),
+                    parcels = place.Positions,
+                    isFavorite = place.user_favorite,
+                    placeInfo = place
+                });
+        }
+
+        return modelsList;
     }
 
     /// <summary>

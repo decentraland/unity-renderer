@@ -16,6 +16,8 @@ export type TrackEvents = PositionTrackEvents & {
     length: number
     messageType: ChatMessageType
     source?: string
+    receiverId: string | undefined
+    channelName: string | undefined
   }
   ['Comms Status v2']: Record<string, any>
   ['bff_auth_already_connected']: { address: string }

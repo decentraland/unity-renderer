@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using DCL.UserProfiles;
 using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         EmotesWheel,
         Shortcut,
         Command,
-        Backpack
+        Backpack,
     }
 
     private const string FALLBACK_NAME = "fallback";
@@ -40,6 +41,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
+    public List<UserProfileModel.Link> Links => model.links;
+    public AdditionalInfo AdditionalInfo => model.AdditionalInfo;
 
     internal Dictionary<string, int> inventory = new ();
 
@@ -99,6 +102,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
         model.version = newModel.version;
+        model.links = newModel.links;
+        model.AdditionalInfo.CopyFrom(newModel.AdditionalInfo);
 
         if (faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
@@ -164,19 +169,19 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string[] GetInventoryItemsIds() =>
         inventory.Keys.ToArray();
 
+    // TODO: Remove this call. The own user profile should be accessed via IUserProfileBridge.GetOwn()
     public static UserProfile GetOwnUserProfile()
     {
         if (ownUserProfile == null)
-        {
             ownUserProfile = Resources.Load<UserProfile>("ScriptableObjects/OwnUserProfile");
-        }
 
         return ownUserProfile;
     }
 
     public UserProfileModel CloneModel() => model.Clone();
 
-    public bool IsBlocked(string userId) { return blocked != null && blocked.Contains(userId); }
+    public bool IsBlocked(string userId) =>
+        blocked != null && blocked.Contains(userId);
 
     public void Block(string userId)
     {
