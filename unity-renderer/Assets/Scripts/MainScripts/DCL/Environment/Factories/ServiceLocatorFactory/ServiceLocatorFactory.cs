@@ -121,7 +121,7 @@ namespace DCL
                     result.Get<IServiceProviders>(),
                     DataStore.i.featureFlags.flags);
                 var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
-                var webInterfaceEmotesCatalogService = WebInterfaceEmotesCatalogService.Instance;
+                var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
                 return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
             });
 

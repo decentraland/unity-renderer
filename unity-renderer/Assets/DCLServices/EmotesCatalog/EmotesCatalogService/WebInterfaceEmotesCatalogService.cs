@@ -11,7 +11,7 @@ using Environment = DCL.Environment;
 
 namespace DCLServices.EmotesCatalog.EmotesCatalogService
 {
-    public class WebInterfaceEmotesCatalogService : MonoBehaviour, IEmotesCatalogService
+    public class WebInterfaceEmotesCatalogService : IEmotesCatalogService
     {
         private EmotesCatalogBridge bridge;
 
@@ -28,11 +28,10 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
         public static WebInterfaceEmotesCatalogService Instance { get; private set; }
 
 
-        private void Awake()
+        public WebInterfaceEmotesCatalogService(EmotesCatalogBridge bridge, IAddressableResourceProvider addressableResourceProvider)
         {
-            Instance = this;
-            bridge = SceneReferences.i.bridgeGameObject.GetComponent<EmotesCatalogBridge>();
-            addressableResourceProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
+            this.bridge = bridge;
+            this.addressableResourceProvider = addressableResourceProvider;
         }
 
         private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
