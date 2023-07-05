@@ -107,7 +107,8 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        await UniTask.WaitUntil(() => isInitialized);
+        if(!isInitialized)
+            await UniTask.WaitUntil(() => isInitialized);
         return await emotesCatalogServiceInUse.GetEmbeddedEmotes();
     }
 
