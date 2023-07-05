@@ -341,6 +341,7 @@ public class EmotesCatalogServiceShould
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
         catalog = new LambdasEmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider);
+        catalog.Initialize();
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);
