@@ -76,7 +76,8 @@ namespace Tests
             uiSystem.Update();
             yield return null;
 
-            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
+            // useCamera = false is passed as UiToolkit/UiElements don't render on the camera
+            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera, useCamera: false);
 
             uiBackgroundHandler.OnComponentRemoved(scene, entity);
             uiTransformHandler.OnComponentRemoved(scene, entity);

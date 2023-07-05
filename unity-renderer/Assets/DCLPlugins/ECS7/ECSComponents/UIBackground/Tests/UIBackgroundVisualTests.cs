@@ -4,6 +4,7 @@ using DCL.Helpers;
 using Decentraland.Common;
 using NUnit.Framework;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.TestTools;
 using Vector3 = UnityEngine.Vector3;
 
@@ -56,7 +57,8 @@ namespace Tests
             uiSystem.Update();
             yield return null;
 
-            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
+            // useCamera = false is passed as UiToolkit/UiElements don't render on the camera
+            yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera, useCamera: false);
 
             AssetPromiseKeeper_Texture.i.Cleanup();
             uiBackgroundHandler.OnComponentRemoved(scene, entity);
