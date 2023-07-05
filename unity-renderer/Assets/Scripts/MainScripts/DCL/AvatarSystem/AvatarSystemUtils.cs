@@ -14,7 +14,10 @@ namespace AvatarSystem
         public const float AVATAR_Y_OFFSET = 0.75f;
         private const string AB_FEATURE_FLAG_NAME = "wearable_asset_bundles";
 
-        public static bool IsCategoryRequired(string category) { return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category); }
+        public static bool IsCategoryRequired(string category)
+        {
+            return WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(category);
+        }
 
         public static bool UseAssetBundles()
         {
@@ -29,8 +32,10 @@ namespace AvatarSystem
 
             var representation = facialFeature.GetRepresentation(bodyshapeId);
             string mainTextureHash = representation?.contents?.FirstOrDefault(x => x.key == representation?.mainFile)?.hash;
+
             if (string.IsNullOrEmpty(mainTextureHash))
                 mainTextureHash = representation?.contents?.FirstOrDefault(x => !x.key.ToLower().Contains("_mask.png"))?.hash;
+
             if (string.IsNullOrEmpty(mainTextureHash))
                 return (null, null);
 
@@ -47,10 +52,7 @@ namespace AvatarSystem
             if (rootBone == null || bones == null)
                 return;
 
-            foreach (SkinnedMeshRenderer skinnedMeshRenderer in targets)
-            {
-                CopyBones(rootBone, bones, skinnedMeshRenderer);
-            }
+            foreach (SkinnedMeshRenderer skinnedMeshRenderer in targets) { CopyBones(rootBone, bones, skinnedMeshRenderer); }
         }
 
         public static void CopyBones(Transform rootBone, Transform[] bones, SkinnedMeshRenderer skinnedMeshRenderer)
@@ -97,8 +99,9 @@ namespace AvatarSystem
             SkinnedMeshRenderer feet,
             SkinnedMeshRenderer eyes,
             SkinnedMeshRenderer eyebrows,
-            SkinnedMeshRenderer mouth
-            ) ExtractBodyshapeParts(Rendereable rendereable)
+            SkinnedMeshRenderer mouth,
+            SkinnedMeshRenderer hands
+            ) ExtractBodyShapeParts(Rendereable rendereable)
         {
             SkinnedMeshRenderer head = null;
             SkinnedMeshRenderer upperBody = null;
@@ -107,6 +110,7 @@ namespace AvatarSystem
             SkinnedMeshRenderer eyes = null;
             SkinnedMeshRenderer eyebrows = null;
             SkinnedMeshRenderer mouth = null;
+            SkinnedMeshRenderer hands = null;
 
             foreach (Renderer r in rendereable.renderers)
             {
@@ -125,6 +129,8 @@ namespace AvatarSystem
                     upperBody = renderer;
                 else if (name.Contains("lbody"))
                     lowerBody = renderer;
+                else if (name.Contains("hands"))
+                    hands = renderer;
                 else if (name.Contains("feet"))
                     feet = renderer;
                 else if (name.Contains("eyes"))
@@ -137,76 +143,46 @@ namespace AvatarSystem
                     Debug.LogWarning($"{name} is not a body part?", r);
             }
 
-            return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth);
+            return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth, hands);
         }
 
-        /// <summary>
-        /// Filters hidden wearables.
-        /// Conflicts will be resolved by order in the array
-        /// </summary>
-        /// <param name="bodyshapeId"></param>
-        /// <param name="wearables"></param>
-        /// <returns></returns>
-        public static List<WearableItem> FilterHiddenWearables(string bodyshapeId, IEnumerable<WearableItem> wearables)
+        public static List<SkinnedMeshRenderer> GetActiveBodyPartsRenderers(IBodyshapeLoader bodyshapeLoader, string bodyShapeId, IEnumerable<WearableItem> wearables)
         {
-            HashSet<string> hiddenCategories = new HashSet<string>();
-            List<WearableItem> filteredWearables = new List<WearableItem>();
-            foreach (WearableItem wearable in wearables)
-            {
-                if (hiddenCategories.Contains(wearable.data.category))
-                {
-                    continue;
-                }
-
-                filteredWearables.Add(wearable);
-                hiddenCategories.UnionWith(wearable.GetHidesList(bodyshapeId));
-            }
-
-            return filteredWearables;
-        }
-
-        public static (bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible) GetActiveBodyParts(string bodyshapeId, IEnumerable<WearableItem> wearables)
-        {
-            bool headVisible = true;
-            bool upperBodyVisible = true;
-            bool lowerBodyVisible = true;
-            bool feetVisible = true;
-
             HashSet<string> hiddenList = new HashSet<string>();
             HashSet<string> usedCategories = new HashSet<string>();
 
             foreach (WearableItem wearable in wearables)
             {
                 usedCategories.Add(wearable.data.category);
-                string[] hiddenByThisWearable = wearable.GetHidesList(bodyshapeId);
+                string[] hiddenByThisWearable = wearable.GetHidesList(bodyShapeId);
+
                 if (hiddenByThisWearable != null)
                     hiddenList.UnionWith(hiddenByThisWearable);
             }
 
-            headVisible = !hiddenList.Contains(WearableLiterals.Misc.HEAD) && !usedCategories.Contains(WearableLiterals.Misc.HEAD);
-            upperBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.UPPER_BODY);
-            lowerBodyVisible = !hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.LOWER_BODY);
-            feetVisible = !hiddenList.Contains(WearableLiterals.Categories.FEET) && !usedCategories.Contains(WearableLiterals.Categories.FEET);
-            return (headVisible, upperBodyVisible, lowerBodyVisible, feetVisible);
-        }
-
-        public static List<SkinnedMeshRenderer> GetActiveBodyPartsRenderers(IBodyshapeLoader bodyshapeLoader, bool headVisible, bool upperBodyVisible, bool lowerBodyVisible, bool feetVisible)
-        {
             List<SkinnedMeshRenderer> result = new List<SkinnedMeshRenderer>();
-            if (headVisible)
+
+            if (!hiddenList.Contains(WearableLiterals.Categories.HEAD) && !usedCategories.Contains(WearableLiterals.Categories.HEAD))
                 result.Add(bodyshapeLoader.headRenderer);
-            if (upperBodyVisible)
+
+            if (!hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.UPPER_BODY))
                 result.Add(bodyshapeLoader.upperBodyRenderer);
-            if (lowerBodyVisible)
+
+            if (!hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY) && !usedCategories.Contains(WearableLiterals.Categories.LOWER_BODY))
                 result.Add(bodyshapeLoader.lowerBodyRenderer);
-            if (feetVisible)
+
+            if (!hiddenList.Contains(WearableLiterals.Categories.FEET) && !usedCategories.Contains(WearableLiterals.Categories.FEET))
                 result.Add(bodyshapeLoader.feetRenderer);
+
+            if (!hiddenList.Contains(WearableLiterals.Categories.HANDS) && !usedCategories.Contains(WearableLiterals.Categories.HANDS))
+                result.Add(bodyshapeLoader.handsRenderer);
+
             return result;
         }
 
         public static void SpawnAvatarLoadedParticles(Transform avatarContainer, GameObject particlePrefab)
         {
-            if (!particlePrefab.TryGetComponent(out DestroyParticlesOnFinish selfDestroyScript))
+            if (!particlePrefab.TryGetComponent(out DestroyParticlesOnFinish _))
                 throw new Exception("A self destructive particles prefab is expected");
 
             GameObject particles = Object.Instantiate(particlePrefab);

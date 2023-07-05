@@ -79,28 +79,30 @@ namespace Test.AvatarSystem
             visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
             curator.Received().Curate(settings, wearableIds, emoteIds, Arg.Any<CancellationToken>());
             loader.DidNotReceiveWithAnyArgs()
-                  .Load(default, default, default, default, default, default, default);
+                  .Load(default, default, default);
         });
 
         [UnityTest]
         public IEnumerator ThrowIfLoaderFails() => UniTask.ToCoroutine(async () =>
         {
             var settings = new AvatarSettings();
-            WearableItem bodyshape = new WearableItem();
-            WearableItem eyes = new WearableItem();
-            WearableItem eyebrows = new WearableItem();
-            WearableItem mouth = new WearableItem();
+
+            var bodyWearables = new BodyWearables()
+            {
+                bodyshape = new WearableItem(),
+                eyes = new WearableItem(),
+                eyebrows = new WearableItem(),
+                mouth = new WearableItem(),
+            };
+
             List<WearableItem> wearables = new List<WearableItem>();
             List<WearableItem> emotes = new List<WearableItem>();
 
             curator.Configure()
                    .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-                   .Returns(x => new UniTask<(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, List<WearableItem> emotes)>((bodyshape, eyes, eyebrows, mouth, wearables, emotes)));
+                   .Returns(_ => new UniTask<(BodyWearables bodyWearables, List<WearableItem> wearables, List<WearableItem> emotes)>((bodyWearables, wearables, emotes)));
             loader.Configure()
-                  .Load(Arg.Any<WearableItem>(),
-                      Arg.Any<WearableItem>(),
-                      Arg.Any<WearableItem>(),
-                      Arg.Any<WearableItem>(),
+                  .Load(Arg.Any<BodyWearables>(),
                       Arg.Any<List<WearableItem>>(),
                       Arg.Any<AvatarSettings>(),
                       Arg.Any<SkinnedMeshRenderer>(),
@@ -110,7 +112,7 @@ namespace Test.AvatarSystem
             await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings));
 
             loader.Received()
-                .Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, cancellationToken:Arg.Any<CancellationToken>());
+                .Load(bodyWearables, wearables, settings, cancellationToken:Arg.Any<CancellationToken>());
         });
 
         [UnityTest]
@@ -143,7 +145,7 @@ namespace Test.AvatarSystem
         {
             GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
             if (primitive.TryGetComponent(out Collider collider))
-                Object.Destroy(collider);
+                Utils.SafeDestroy(collider);
             primitive.transform.parent = parent;
 
             return primitive;
@@ -155,12 +157,12 @@ namespace Test.AvatarSystem
             Renderer renderer = primitive.GetComponent<Renderer>();
             SkinnedMeshRenderer skr = primitive.AddComponent<SkinnedMeshRenderer>();
             skr.sharedMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
-            Object.Destroy(renderer);
+            Utils.SafeDestroy(renderer);
 
             return primitive;
         }
 
         [TearDown]
-        public void TearDown() { Object.Destroy(container); }
+        public void TearDown() { Utils.SafeDestroy(container); }
     }
 }

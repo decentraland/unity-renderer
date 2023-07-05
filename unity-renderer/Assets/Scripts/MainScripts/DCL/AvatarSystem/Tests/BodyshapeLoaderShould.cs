@@ -41,6 +41,7 @@ namespace Test.AvatarSystem
             public Renderer eyes;
             public Renderer eyebrows;
             public Renderer mouth;
+            public Renderer hands;
         }
 
         [SetUp]
@@ -53,15 +54,20 @@ namespace Test.AvatarSystem
             retrieverFactory.Configure().GetWearableRetriever().Returns(Substitute.For<IWearableRetriever>());
             retrieverFactory.Configure().GetFacialFeatureRetriever().Returns(Substitute.For<IFacialFeatureRetriever>());
 
+            var bodyWearables = new BodyWearables()
+            {
+                bodyshape = wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                eyes = wearablesCatalogService.WearablesCatalog[EYES_ID],
+                eyebrows = wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                mouth = wearablesCatalogService.WearablesCatalog[MOUTH_ID]
+            };
+
             bodyshapeLoader = new BodyShapeLoader(
                 retrieverFactory,
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID]);
+                bodyWearables);
         }
 
-        [UnityTest]
+        [UnityTest, RequiresPlayMode]
         public IEnumerator LoadBodyshape() =>
             UniTask.ToCoroutine(async () =>
             {
@@ -71,9 +77,9 @@ namespace Test.AvatarSystem
                 SetMaterial(bodyParts.ubody, WEARABLE_SHADER_PATH, "hair"); //ubody will be tinted as hair
 
                 Rendereable rendereable = PrepareRendereable(bodyParts);
-                bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(rendereable);
+                bodyshapeLoader.bodyShapeRetriever.rendereable.Returns(rendereable);
 
-                bodyshapeLoader.bodyshapeRetriever.Configure()
+                bodyshapeLoader.bodyShapeRetriever.Configure()
                                .Retrieve(
                                     Arg.Any<GameObject>(),
                                     Arg.Any<WearableItem>(),
@@ -137,7 +143,7 @@ namespace Test.AvatarSystem
             UniTask.ToCoroutine(async () =>
             {
                 //Arrange
-                bodyshapeLoader.bodyshapeRetriever.Configure()
+                bodyshapeLoader.bodyShapeRetriever.Configure()
                                .Retrieve(
                                     Arg.Any<GameObject>(),
                                     Arg.Any<WearableItem>(),
@@ -147,7 +153,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -158,9 +164,9 @@ namespace Test.AvatarSystem
             UniTask.ToCoroutine(async () =>
             {
                 //Arrange
-                bodyshapeLoader.bodyshapeRetriever.rendereable.Returns(x => null);
+                bodyshapeLoader.bodyShapeRetriever.rendereable.Returns(x => null);
 
-                bodyshapeLoader.bodyshapeRetriever.Configure()
+                bodyshapeLoader.bodyShapeRetriever.Configure()
                                .Retrieve(
                                     Arg.Any<GameObject>(),
                                     Arg.Any<WearableItem>(),
@@ -170,7 +176,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -187,7 +193,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -204,7 +210,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -221,7 +227,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -238,7 +244,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -255,7 +261,7 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
@@ -272,13 +278,13 @@ namespace Test.AvatarSystem
 
                 //Assert
                 await TestUtils.ThrowsAsync<Exception>(bodyshapeLoader.Load(container, new AvatarSettings()));
-                bodyshapeLoader.bodyshapeRetriever.Received().Dispose();
+                bodyshapeLoader.bodyShapeRetriever.Received().Dispose();
                 bodyshapeLoader.eyesRetriever.Received().Dispose();
                 bodyshapeLoader.eyebrowsRetriever.Received().Dispose();
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
             });
 
-        [Test]
+        [Test, RequiresPlayMode]
         public void DisablesFacialRenderersOnHideFace()
         {
             bodyshapeLoader.eyesRenderer = (SkinnedMeshRenderer)GetPrimitiveMockingBodypart(container.transform, "eyes");
@@ -315,13 +321,15 @@ namespace Test.AvatarSystem
                 feet = GetPrimitiveMockingBodypart(parent, "feet"),
                 eyes = GetPrimitiveMockingBodypart(parent, "eyes"),
                 eyebrows = GetPrimitiveMockingBodypart(parent, "eyebrows"),
-                mouth = GetPrimitiveMockingBodypart(parent, "mouth")
+                mouth = GetPrimitiveMockingBodypart(parent, "mouth"),
+                hands = GetPrimitiveMockingBodypart(parent, "hands"),
             };
 
             SetMaterial(bodyParts.head, WEARABLE_SHADER_PATH, "NormalMaterial");
             SetMaterial(bodyParts.ubody, WEARABLE_SHADER_PATH, "NormalMaterial");
             SetMaterial(bodyParts.lbody, WEARABLE_SHADER_PATH, "NormalMaterial");
             SetMaterial(bodyParts.feet, WEARABLE_SHADER_PATH, "NormalMaterial");
+            SetMaterial(bodyParts.hands, WEARABLE_SHADER_PATH, "NormalMaterial");
 
             //Facial features materials are set by the loader itself, no need to mock it here
 
@@ -336,7 +344,7 @@ namespace Test.AvatarSystem
             primitive.name = holderName;
 
             if (primitive.TryGetComponent(out Collider collider))
-                Object.Destroy(collider);
+                Utils.SafeDestroy(collider);
 
             primitive.transform.parent = holder.transform;
 
@@ -344,7 +352,7 @@ namespace Test.AvatarSystem
             SkinnedMeshRenderer skr = primitive.AddComponent<SkinnedMeshRenderer>();
             skr.sharedMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
 
-            Object.Destroy(renderer);
+            Utils.SafeDestroy(renderer);
             return skr;
         }
 
@@ -361,7 +369,7 @@ namespace Test.AvatarSystem
             bodyshapeLoader?.Dispose();
 
             if (container != null)
-                Object.Destroy(container);
+                Utils.SafeDestroy(container);
 
             wearablesCatalogService.Dispose();
 
@@ -370,7 +378,7 @@ namespace Test.AvatarSystem
                 Material material = materialsToBeDisposed[i];
 
                 if (material != null)
-                    Object.Destroy(material);
+                    Utils.SafeDestroy(material);
             }
         }
     }

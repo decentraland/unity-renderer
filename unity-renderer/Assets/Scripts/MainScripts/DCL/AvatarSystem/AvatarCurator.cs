@@ -26,14 +26,12 @@ namespace AvatarSystem
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="wearablesId"></param>
+        /// <param name="emoteIds"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         public async UniTask<(
-            WearableItem bodyshape,
-            WearableItem eyes,
-            WearableItem eyebrows,
-            WearableItem mouth,
+            BodyWearables bodyWearables,
             List<WearableItem> wearables,
             List<WearableItem> emotes
             )> Curate(AvatarSettings settings, IEnumerable<string> wearablesId, IEnumerable<string> emoteIds, CancellationToken ct = default)
@@ -125,14 +123,15 @@ namespace AvatarSystem
                                                                   .Select(x => x.Value)
                                                                   .ToList();
 
-                return (
-                    wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYES) ? wearablesByCategory[WearableLiterals.Categories.EYES] : null,
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.EYEBROWS) ? wearablesByCategory[WearableLiterals.Categories.EYEBROWS] : null,
-                    wearablesByCategory.ContainsKey(WearableLiterals.Categories.MOUTH) ? wearablesByCategory[WearableLiterals.Categories.MOUTH] : null,
-                    wearables,
-                    emotes.ToList()
-                );
+                var bodyWearables = new BodyWearables
+                {
+                    bodyshape = wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
+                    eyes = wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYES, out WearableItem eyes) ? eyes : null,
+                    eyebrows = wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYEBROWS, out WearableItem eyebrows) ? eyebrows : null,
+                    mouth = wearablesByCategory.TryGetValue(WearableLiterals.Categories.MOUTH, out WearableItem mouth) ? mouth : null,
+                };
+
+                return (bodyWearables, wearables, emotes.ToList());
             }
             catch (OperationCanceledException)
             {

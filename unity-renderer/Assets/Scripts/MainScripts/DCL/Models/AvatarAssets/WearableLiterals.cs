@@ -4,11 +4,6 @@ using System.Linq;
 
 public static class WearableLiterals
 {
-    public static class Misc
-    {
-        public const string HEAD = "head";
-    }
-
     public static class Tags
     {
         public const string BASE_WEARABLE = "base-wearable";
@@ -42,6 +37,8 @@ public static class WearableLiterals
         public const string HELMET = "helmet";
         public const string MASK = "mask";
         public const string HANDS = "hands";
+        public const string HANDS_WEAR = "hands_wear";
+        public const string HEAD = "head";
     }
 
     public static class BodyShapes

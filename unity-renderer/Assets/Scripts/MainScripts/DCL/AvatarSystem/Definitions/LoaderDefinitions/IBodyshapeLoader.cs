@@ -14,9 +14,10 @@ namespace AvatarSystem
         SkinnedMeshRenderer mouthRenderer { get; }
         SkinnedMeshRenderer headRenderer { get; }
         SkinnedMeshRenderer feetRenderer { get; }
+        SkinnedMeshRenderer handsRenderer { get; }
         SkinnedMeshRenderer upperBodyRenderer { get; }
         SkinnedMeshRenderer lowerBodyRenderer { get; }
-        bool IsValid(WearableItem bodyshape, WearableItem eyebrows, WearableItem eyes, WearableItem mouth);
+        bool IsValid(BodyWearables bodyWearables);
         void DisableFacialRenderers();
     }
 }

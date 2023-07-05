@@ -15,7 +15,7 @@ public class WearableItem
     {
         Categories.SKIN,
         Categories.UPPER_BODY,
-        Categories.HANDS,
+        Categories.HANDS_WEAR,
         Categories.LOWER_BODY,
         Categories.FEET,
         Categories.HELMET,
@@ -52,7 +52,7 @@ public class WearableItem
         { Categories.EYEBROWS, "Eyebrows" },
         { Categories.BODY_SHAPE, "Body shape" },
         { Categories.FACIAL_HAIR, "Facial hair" },
-        { Categories.HANDS, "Hands" },
+        { Categories.HANDS_WEAR, "Hands" },
     };
 
     public static readonly string[] SKIN_IMPLICIT_CATEGORIES =
@@ -64,8 +64,8 @@ public class WearableItem
         Categories.UPPER_BODY,
         Categories.LOWER_BODY,
         Categories.FEET,
-        Categories.HANDS,
-        Misc.HEAD,
+        Categories.HANDS_WEAR,
+        Categories.HEAD,
         Categories.FACIAL_HAIR
     };
 

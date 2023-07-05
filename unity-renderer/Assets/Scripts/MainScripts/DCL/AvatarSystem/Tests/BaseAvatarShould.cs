@@ -1,13 +1,16 @@
 using AvatarSystem;
+using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Test.AvatarSystem
 {
+    [RequiresPlayMode]
     public class BaseAvatarShould
     {
         private BaseAvatar baseAvatar;
@@ -48,10 +51,10 @@ namespace Test.AvatarSystem
         [TearDown]
         public void TearDown()
         {
-            Object.Destroy(smrHolder);
-            Object.Destroy(armatureHolder);
-            Object.Destroy(particlesHolder);
-            Object.Destroy(targetRenderer.gameObject);
+            Utils.SafeDestroy(smrHolder);
+            Utils.SafeDestroy(armatureHolder);
+            Utils.SafeDestroy(particlesHolder);
+            Utils.SafeDestroy(targetRenderer.gameObject);
         }
 
         [Test]
