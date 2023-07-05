@@ -9,9 +9,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Tests
 {
-    public class UIBackgroundVisualTests : ECSUIVisualTestsBase
+    public class UITransformVisualTests : ECSUIVisualTestsBase
     {
-        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UIBackgroundVisualTests_";
+        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UITransformVisualTests_";
 
         // Manually run to generate baseline image for later comparisons
         [UnityTest, VisualTest, Explicit]
@@ -30,26 +30,46 @@ namespace Tests
             uiTransformHandler.OnComponentModelUpdated(scene, entity, new PBUiTransform()
             {
                 Display = YGDisplay.YgdFlex,
+                Overflow = YGOverflow.YgoVisible,
+                FlexDirection = YGFlexDirection.YgfdColumnReverse,
+                FlexBasis = float.NaN,
+                FlexGrow = 23,
+                FlexShrink = 1,
+                FlexWrap = YGWrap.YgwWrapReverse,
                 AlignContent = YGAlign.YgaCenter,
+                AlignItems = YGAlign.YgaStretch,
                 AlignSelf = YGAlign.YgaCenter,
-                Height = 150,
-                Width = 300,
-                PaddingBottomUnit = YGUnit.YguPercent,
+                JustifyContent = YGJustify.YgjSpaceAround,
+                Height = 99,
+                Width = 34,
+                MaxWidth = float.NaN,
+                MaxHeight = 10,
+                MinHeight = 0,
+                MinWidth = 0,
                 PaddingBottom = 10,
-                PaddingLeftUnit = YGUnit.YguPoint,
+                PaddingBottomUnit = YGUnit.YguPercent,
                 PaddingLeft = 0,
-                PaddingRightUnit = YGUnit.YguPercent,
-                PaddingRight = 50,
-                PaddingTopUnit = YGUnit.YguPercent,
+                PaddingLeftUnit = YGUnit.YguPoint,
+                PaddingRight = 111,
+                PaddingRightUnit = YGUnit.YguPoint,
                 PaddingTop = 5,
-                PositionType = YGPositionType.YgptAbsolute,
+                PaddingTopUnit = YGUnit.YguPercent,
+                MarginBottom = 10,
+                MarginBottomUnit = YGUnit.YguPercent,
+                MarginLeft = 0,
+                MarginLeftUnit = YGUnit.YguPoint,
+                MarginRight = 111,
+                MarginRightUnit = YGUnit.YguPoint,
+                MarginTop = 5,
+                MarginTopUnit = YGUnit.YguPercent,
+                PositionType = YGPositionType.YgptAbsolute
             });
 
             var uiBackgroundHandler = new UIBackgroundHandler(internalEcsComponents.uiContainerComponent, componentId: 34, AssetPromiseKeeper_Texture.i);
             uiBackgroundHandler.OnComponentCreated(scene, entity);
             uiBackgroundHandler.OnComponentModelUpdated(scene, entity, new PBUiBackground
             {
-                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.1f, A = 0.95f }
+                Color = new Color4 { R = 1f, G = 0f, B = 0f, A = 0.9f }
             });
 
             yield return null;
@@ -58,7 +78,6 @@ namespace Tests
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
 
-            AssetPromiseKeeper_Texture.i.Cleanup();
             uiBackgroundHandler.OnComponentRemoved(scene, entity);
             uiTransformHandler.OnComponentRemoved(scene, entity);
         }

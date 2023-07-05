@@ -1,7 +1,9 @@
 using DCL;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
+using DCL.ECSComponents.UIDropdown;
 using DCL.Helpers;
-using Decentraland.Common;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -9,9 +11,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Tests
 {
-    public class UIBackgroundVisualTests : ECSUIVisualTestsBase
+    public class UIDropDownVisualTests : ECSUIVisualTestsBase
     {
-        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UIBackgroundVisualTests_";
+        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UIDropDownVisualTests_";
 
         // Manually run to generate baseline image for later comparisons
         [UnityTest, VisualTest, Explicit]
@@ -33,11 +35,11 @@ namespace Tests
                 AlignContent = YGAlign.YgaCenter,
                 AlignSelf = YGAlign.YgaCenter,
                 Height = 150,
-                Width = 300,
+                Width = 50,
                 PaddingBottomUnit = YGUnit.YguPercent,
                 PaddingBottom = 10,
                 PaddingLeftUnit = YGUnit.YguPoint,
-                PaddingLeft = 0,
+                PaddingLeft = 50,
                 PaddingRightUnit = YGUnit.YguPercent,
                 PaddingRight = 50,
                 PaddingTopUnit = YGUnit.YguPercent,
@@ -45,11 +47,23 @@ namespace Tests
                 PositionType = YGPositionType.YgptAbsolute,
             });
 
-            var uiBackgroundHandler = new UIBackgroundHandler(internalEcsComponents.uiContainerComponent, componentId: 34, AssetPromiseKeeper_Texture.i);
-            uiBackgroundHandler.OnComponentCreated(scene, entity);
-            uiBackgroundHandler.OnComponentModelUpdated(scene, entity, new PBUiBackground
+            var pool = new WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>>(1, () => new ProtobufWrappedComponent<PBUiDropdownResult>(new PBUiDropdownResult()));
+            var uiDropdownHandler = new UIDropdownHandler(
+                internalEcsComponents.uiContainerComponent,
+                resultComponentId: 1001,
+                internalEcsComponents.uiInputResultsComponent,
+                AssetPromiseKeeper_Font.i,
+                componentId: 1001,
+                pool);
+            uiDropdownHandler.OnComponentCreated(scene, entity);
+            uiDropdownHandler.OnComponentModelUpdated(scene, entity, new PBUiDropdown()
             {
-                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.1f, A = 0.95f }
+                AcceptEmpty = false,
+                Disabled = false,
+                FontSize = 16,
+                TextAlign = TextAlignMode.TamBottomCenter,
+                EmptyLabel = "R'LYEH",
+                Options = { "OPTION1", "OPTION2", "OPTION3", "OPTION4" },
             });
 
             yield return null;
@@ -58,8 +72,8 @@ namespace Tests
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
 
-            AssetPromiseKeeper_Texture.i.Cleanup();
-            uiBackgroundHandler.OnComponentRemoved(scene, entity);
+            AssetPromiseKeeper_Font.i.Cleanup();
+            uiDropdownHandler.OnComponentRemoved(scene, entity);
             uiTransformHandler.OnComponentRemoved(scene, entity);
         }
     }

@@ -1,5 +1,6 @@
 using DCL;
 using DCL.ECSComponents;
+using DCL.ECSComponents.UIText;
 using DCL.Helpers;
 using Decentraland.Common;
 using NUnit.Framework;
@@ -9,9 +10,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Tests
 {
-    public class UIBackgroundVisualTests : ECSUIVisualTestsBase
+    public class UITextVisualTests : ECSUIVisualTestsBase
     {
-        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UIBackgroundVisualTests_";
+        private const string SNAPSHOT_BASE_FILENAME = "SDK7_UITextVisualTests_";
 
         // Manually run to generate baseline image for later comparisons
         [UnityTest, VisualTest, Explicit]
@@ -33,11 +34,11 @@ namespace Tests
                 AlignContent = YGAlign.YgaCenter,
                 AlignSelf = YGAlign.YgaCenter,
                 Height = 150,
-                Width = 300,
+                Width = 50,
                 PaddingBottomUnit = YGUnit.YguPercent,
                 PaddingBottom = 10,
                 PaddingLeftUnit = YGUnit.YguPoint,
-                PaddingLeft = 0,
+                PaddingLeft = 50,
                 PaddingRightUnit = YGUnit.YguPercent,
                 PaddingRight = 50,
                 PaddingTopUnit = YGUnit.YguPercent,
@@ -45,11 +46,14 @@ namespace Tests
                 PositionType = YGPositionType.YgptAbsolute,
             });
 
-            var uiBackgroundHandler = new UIBackgroundHandler(internalEcsComponents.uiContainerComponent, componentId: 34, AssetPromiseKeeper_Texture.i);
-            uiBackgroundHandler.OnComponentCreated(scene, entity);
-            uiBackgroundHandler.OnComponentModelUpdated(scene, entity, new PBUiBackground
+            var uiTextHandler = new UiTextHandler(internalEcsComponents.uiContainerComponent, AssetPromiseKeeper_Font.i, componentId: 34);
+            uiTextHandler.OnComponentCreated(scene, entity);
+            uiTextHandler.OnComponentModelUpdated(scene, entity, new PBUiText()
             {
-                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.1f, A = 0.95f }
+                Value = "TEMPTATION",
+                FontSize = 34,
+                Color = new Color4() { R = 0.1f, G = 0.2f, B = 0.3f, A = 1 },
+                TextAlign = TextAlignMode.TamMiddleRight
             });
 
             yield return null;
@@ -58,8 +62,8 @@ namespace Tests
 
             yield return VisualTestUtils.TakeSnapshot(SNAPSHOT_BASE_FILENAME + "VisualTest1", camera);
 
-            AssetPromiseKeeper_Texture.i.Cleanup();
-            uiBackgroundHandler.OnComponentRemoved(scene, entity);
+            AssetPromiseKeeper_Font.i.Cleanup();
+            uiTextHandler.OnComponentRemoved(scene, entity);
             uiTransformHandler.OnComponentRemoved(scene, entity);
         }
     }
