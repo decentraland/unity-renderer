@@ -74,7 +74,7 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public void Dispose()
     {
-        emotesCatalogServiceInUse.Dispose();
+        emotesCatalogServiceInUse?.Dispose();
     }
 
     public bool TryGetLoadedEmote(string id, out WearableItem emote)

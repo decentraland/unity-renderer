@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 namespace DCLServices.EmotesCatalog.EmotesCatalogService
 {
@@ -31,6 +32,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
         {
             Instance = this;
             bridge = SceneReferences.i.bridgeGameObject.GetComponent<EmotesCatalogBridge>();
+            addressableResourceProvider = Environment.i.serviceLocator.Get<IAddressableResourceProvider>();
         }
 
         private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
@@ -306,10 +308,6 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
                 addressableCTS = null;
             }
         }
-
-        public void SetAddressableResourceProvider(AddressableResourceProvider addressableResourceProvider) =>
-            this.addressableResourceProvider = addressableResourceProvider;
-
 
     }
 }
