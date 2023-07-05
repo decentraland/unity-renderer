@@ -476,9 +476,24 @@ public class UserContextMenu : MonoBehaviour
     {
         if (this.userId != userId) { return; }
 
-        if (action == FriendshipAction.APPROVED) { SetupFriendship(FriendshipStatus.FRIEND); }
-        else if (action == FriendshipAction.REQUESTED_TO) { SetupFriendship(FriendshipStatus.REQUESTED_TO); }
-        else if (action == FriendshipAction.DELETED || action == FriendshipAction.CANCELLED || action == FriendshipAction.REJECTED) { SetupFriendship(FriendshipStatus.NOT_FRIEND); }
+        switch (action)
+        {
+            case FriendshipAction.APPROVED:
+                SetupFriendship(FriendshipStatus.FRIEND);
+                break;
+            case FriendshipAction.REQUESTED_TO:
+                SetupFriendship(FriendshipStatus.REQUESTED_TO);
+                break;
+            case FriendshipAction.DELETED:
+            case FriendshipAction.CANCELLED:
+            case FriendshipAction.REJECTED:
+            case FriendshipAction.NONE:
+                SetupFriendship(FriendshipStatus.NOT_FRIEND);
+                break;
+            case FriendshipAction.REQUESTED_FROM:
+                SetupFriendship(FriendshipStatus.REQUESTED_FROM);
+                break;
+        }
     }
 
     private ISocialAnalytics GetSocialAnalytics()
