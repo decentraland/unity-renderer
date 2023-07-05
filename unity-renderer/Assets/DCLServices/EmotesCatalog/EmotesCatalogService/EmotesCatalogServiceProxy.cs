@@ -30,7 +30,6 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
         this.webInterfaceEmotesCatalogService = webInterfaceEmotesCatalogService;
         this.featureFlags = featureFlags;
         this.kernelConfig = kernelCofig;
-        Initialize();
     }
 
     public void Initialize()
@@ -60,9 +59,6 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     private void SetCurrentService(bool useKernel)
     {
-        if (isInitialized)
-            return;
-
         if (useKernel)
             emotesCatalogServiceInUse = webInterfaceEmotesCatalogService;
         else
