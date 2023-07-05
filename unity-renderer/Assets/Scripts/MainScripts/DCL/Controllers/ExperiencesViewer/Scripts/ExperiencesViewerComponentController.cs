@@ -25,36 +25,32 @@ namespace DCL.ExperiencesViewer
 
     public class ExperiencesViewerComponentController : IExperiencesViewerComponentController
     {
-        internal BaseVariable<Transform> isInitialized => DataStore.i.experiencesViewer.isInitialized;
-        internal BaseVariable<bool> isOpen => DataStore.i.experiencesViewer.isOpen;
-        internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
-        public BaseDictionary<string, WearableItem> wearableCatalog => DataStore.i.common.wearables;
+        private BaseVariable<Transform> isInitialized => DataStore.i.experiencesViewer.isInitialized;
+        private BaseVariable<bool> isOpen => DataStore.i.experiencesViewer.isOpen;
+        private BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
 
         internal IExperiencesViewerComponentView view;
-        internal ISceneController sceneController;
-        internal UserProfile userProfile;
-        internal Dictionary<string, IParcelScene> activePEXScenes = new Dictionary<string, IParcelScene>();
-        internal List<string> pausedPEXScenesIds = new List<string>();
-        internal List<string> lastDisablePEXSentToKernel;
+        private UserProfile userProfile;
+        private List<string> lastDisablePEXSentToKernel;
 
         public void Initialize(ISceneController sceneController)
         {
             view = CreateView();
             view.onCloseButtonPressed += OnCloseButtonPressed;
             view.onSomeExperienceUIVisibilityChanged += OnSomeExperienceUIVisibilityChanged;
-            view.onSomeExperienceExecutionChanged += OnSomeExperienceExecutionChanged;
+            view.onSomeExperienceExecutionChanged += DisableOrEnablePortableExperience;
 
-            isOpen.OnChange += IsOpenChanged;
-            IsOpenChanged(isOpen.Get(), false);
-
-            this.sceneController = sceneController;
+            isOpen.OnChange += ShowOrHide;
+            ShowOrHide(isOpen.Get(), false);
 
             DataStore.i.world.portableExperienceIds.OnAdded += OnPEXSceneAdded;
             DataStore.i.world.portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
+            DataStore.i.world.disabledPortableExperienceIds.OnAdded += OnPEXDisabled;
 
-            CheckCurrentActivePortableExperiences();
+            // CheckCurrentActivePortableExperiences();
 
             userProfile = UserProfile.GetOwnUserProfile();
+
             if (userProfile != null)
             {
                 userProfile.OnUpdate += OnUserProfileUpdated;
@@ -74,21 +70,25 @@ namespace DCL.ExperiencesViewer
         {
             view.onCloseButtonPressed -= OnCloseButtonPressed;
             view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
-            view.onSomeExperienceExecutionChanged -= OnSomeExperienceExecutionChanged;
-            isOpen.OnChange -= IsOpenChanged;
+            view.onSomeExperienceExecutionChanged -= DisableOrEnablePortableExperience;
+            isOpen.OnChange -= ShowOrHide;
 
             DataStore.i.world.portableExperienceIds.OnAdded -= OnPEXSceneAdded;
             DataStore.i.world.portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
+            DataStore.i.world.disabledPortableExperienceIds.OnAdded -= OnPEXDisabled;
 
             if (userProfile != null)
                 userProfile.OnUpdate -= OnUserProfileUpdated;
         }
 
-        internal void OnCloseButtonPressed() { SetVisibility(false); }
-
-        internal void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
+        internal void OnCloseButtonPressed()
         {
-            activePEXScenes.TryGetValue(pexId, out IParcelScene scene);
+            SetVisibility(false);
+        }
+
+        private void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
+        {
+            IParcelScene scene = GetPortableExperienceScene(pexId);
 
             if (scene != null)
             {
@@ -104,142 +104,156 @@ namespace DCL.ExperiencesViewer
                 view.ShowUIHiddenToast();
         }
 
-        internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
+        private void DisableOrEnablePortableExperience(string pexId, bool isPlaying)
         {
             if (isPlaying)
-                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Where(x => x != pexId).ToArray());
+            {
+                WebInterface.SetDisabledPortableExperiences(
+                    DataStore.i.world.disabledPortableExperienceIds.Get()
+                             .Where(s => s != pexId)
+                             .ToArray());
+            }
             else
             {
-                if (!pausedPEXScenesIds.Contains(pexId))
-                    pausedPEXScenesIds.Add(pexId);
-
-                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
-            }
-        }
-
-        internal void IsOpenChanged(bool current, bool previous) { SetVisibility(current); }
-
-        internal void CheckCurrentActivePortableExperiences()
-        {
-            activePEXScenes.Clear();
-            pausedPEXScenesIds.Clear();
-
-            if (Environment.i.world.state != null)
-            {
-                List<GlobalScene> activePortableExperiences =
-                    PortableExperienceUtils.GetActivePortableExperienceScenes();
-                foreach (GlobalScene pexScene in activePortableExperiences)
+                if (!DataStore.i.world.disabledPortableExperienceIds.Contains(pexId))
                 {
-                    OnPEXSceneAdded(pexScene);
+                    WebInterface.SetDisabledPortableExperiences(DataStore.i.world.disabledPortableExperienceIds.Get()
+                                                                         .Concat(new[] { pexId })
+                                                                         .ToArray());
                 }
             }
-
-            numOfLoadedExperiences.Set(activePEXScenes.Count);
         }
 
-        public void OnPEXSceneAdded(string id)
+        internal void ShowOrHide(bool current, bool previous)
         {
-            OnPEXSceneAdded(Environment.i.world.state.GetPortableExperienceScene(id));
+            SetVisibility(current);
         }
 
-        public void OnPEXSceneAdded(IParcelScene scene)
+        // internal void CheckCurrentActivePortableExperiences()
+        // {
+        //     activePEXScenes.Clear();
+        //     pausedPEXScenesIds.Clear();
+        //
+        //     if (Environment.i.world.state != null)
+        //     {
+        //         List<GlobalScene> activePortableExperiences =
+        //             PortableExperienceUtils.GetActivePortableExperienceScenes();
+        //
+        //         foreach (GlobalScene pexScene in activePortableExperiences)
+        //             OnPEXSceneAdded(pexScene);
+        //     }
+        //
+        //     numOfLoadedExperiences.Set(activePEXScenes.Count);
+        // }
+
+        private void OnPEXDisabled(string pxId)
+        {
+            ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(pxId);
+
+            if (experienceToUpdate != null)
+            {
+                experienceToUpdate.SetAsPlaying(false);
+                return;
+            }
+
+            ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
+            {
+                id = pxId,
+                isPlaying = false,
+                isUIVisible = true,
+                name = "TODO",
+                iconUri = "",
+                allowStartStop = true,
+            };
+
+            view.AddAvailableExperience(experienceToAdd);
+            numOfLoadedExperiences.Set(GetPortableExperienceCount());
+        }
+
+        private void OnPEXSceneAdded(string id)
+        {
+            OnPEXSceneAdded(GetPortableExperienceScene(id));
+        }
+
+        private IParcelScene GetPortableExperienceScene(string id) =>
+            Environment.i.world.state.GetPortableExperienceScene(id);
+
+        private void OnPEXSceneAdded(IParcelScene scene)
         {
             ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
 
-            if (activePEXScenes.ContainsKey(scene.sceneData.id))
-            {
-                activePEXScenes[scene.sceneData.id] = scene;
-                pausedPEXScenesIds.Remove(scene.sceneData.id);
-
-                if (experienceToUpdate != null)
-                    experienceToUpdate.SetUIVisibility(true);
-
-                return;
-            }
+            if (experienceToUpdate != null)
+                view.RemoveAvailableExperience(scene.sceneData.id);
 
             GlobalScene newPortableExperienceScene = scene as GlobalScene;
             DataStore.i.experiencesViewer.activeExperience.Get().Add(scene.sceneData.id);
 
-            if (pausedPEXScenesIds.Contains(scene.sceneData.id))
+            ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
             {
-                pausedPEXScenesIds.Remove(scene.sceneData.id);
+                id = newPortableExperienceScene.sceneData.id,
+                isPlaying = true,
+                isUIVisible = true,
+                name = newPortableExperienceScene.sceneName,
+                iconUri = newPortableExperienceScene.iconUrl,
+                allowStartStop = true,
+            };
 
-                if (experienceToUpdate != null)
-                    experienceToUpdate.SetAsPlaying(true);
-            }
-            else
-            {
-                ExperienceRowComponentModel experienceToAdd = new ExperienceRowComponentModel
-                {
-                    id = newPortableExperienceScene.sceneData.id,
-                    isPlaying = true,
-                    isUIVisible = true,
-                    name = newPortableExperienceScene.sceneName,
-                    iconUri = newPortableExperienceScene.iconUrl,
-                    allowStartStop = true,
-                };
-
-                view.AddAvailableExperience(experienceToAdd);
-                activePEXScenes.Add(scene.sceneData.id, scene);
-                numOfLoadedExperiences.Set(activePEXScenes.Count);
-            }
+            view.AddAvailableExperience(experienceToAdd);
+            numOfLoadedExperiences.Set(GetPortableExperienceCount());
         }
 
-        public void OnPEXSceneRemoved(string id)
+        private void OnPEXSceneRemoved(string id)
         {
-            if (!activePEXScenes.ContainsKey(id))
-                return;
-
             DataStore.i.experiencesViewer.activeExperience.Get().Remove(id);
-            if (pausedPEXScenesIds.Contains(id))
+
+            ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
+
+            if (experienceToUpdate != null)
             {
-                ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(id);
-                if (experienceToUpdate != null)
-                {
-                    if (!experienceToUpdate.model.isPlaying)
-                        return;
-                }
+                experienceToUpdate.SetAsPlaying(false);
+                return;
             }
 
             view.RemoveAvailableExperience(id);
-            activePEXScenes.Remove(id);
-            pausedPEXScenesIds.Remove(id);
-            numOfLoadedExperiences.Set(activePEXScenes.Count);
+            numOfLoadedExperiences.Set(GetPortableExperienceCount());
         }
 
-        internal void OnUserProfileUpdated(UserProfile userProfile)
+        private void OnUserProfileUpdated(UserProfile userProfile)
         {
-            List<string> experiencesIdsToRemove = new List<string>();
-
-            foreach (var pex in activePEXScenes)
-            {
-                // We remove from the list all those experiences related to wearables that are not equipped
-                if (wearableCatalog.ContainsKey(pex.Key) && !userProfile.avatar.wearables.Contains(pex.Key))
-                    experiencesIdsToRemove.Add(pex.Key);
-            }
-
-            foreach (string pexId in experiencesIdsToRemove)
-            {
-                view.RemoveAvailableExperience(pexId);
-                activePEXScenes.Remove(pexId);
-                pausedPEXScenesIds.Remove(pexId);
-            }
-
-            numOfLoadedExperiences.Set(activePEXScenes.Count);
-
-            if (lastDisablePEXSentToKernel != pausedPEXScenesIds)
-            {
-                lastDisablePEXSentToKernel = pausedPEXScenesIds;
-                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
-            }
-
-            List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
-            for (int i = 0; i < loadedExperiences.Count; i++)
-            {
-                loadedExperiences[i].SetAllowStartStop(userProfile.avatar.wearables.Contains(loadedExperiences[i].model.id));
-            }
+            // List<string> experiencesIdsToRemove = new List<string>();
+            //
+            // foreach (var pex in activePEXScenes)
+            // {
+            //     // We remove from the list all those experiences related to wearables that are not equipped
+            //     if (wearableCatalog.ContainsKey(pex.Key) && !userProfile.avatar.wearables.Contains(pex.Key))
+            //         experiencesIdsToRemove.Add(pex.Key);
+            // }
+            //
+            // foreach (string pexId in experiencesIdsToRemove)
+            // {
+            //     view.RemoveAvailableExperience(pexId);
+            //     activePEXScenes.Remove(pexId);
+            //     pausedPEXScenesIds.Remove(pexId);
+            // }
+            //
+            // numOfLoadedExperiences.Set(activePEXScenes.Count);
+            //
+            // if (lastDisablePEXSentToKernel != pausedPEXScenesIds)
+            // {
+            //     lastDisablePEXSentToKernel = pausedPEXScenesIds;
+            //     WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
+            // }
+            //
+            // List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
+            //
+            // for (int i = 0; i < loadedExperiences.Count; i++) { loadedExperiences[i].SetAllowStartStop(userProfile.avatar.wearables.Contains(loadedExperiences[i].model.id)); }
         }
 
-        internal virtual IExperiencesViewerComponentView CreateView() => ExperiencesViewerComponentView.Create();
+        private int GetPortableExperienceCount() =>
+            DataStore.i.world.disabledPortableExperienceIds.Count()
+            + DataStore.i.world.portableExperienceIds.Count();
+
+        internal virtual IExperiencesViewerComponentView CreateView() =>
+            ExperiencesViewerComponentView.Create();
     }
 }
