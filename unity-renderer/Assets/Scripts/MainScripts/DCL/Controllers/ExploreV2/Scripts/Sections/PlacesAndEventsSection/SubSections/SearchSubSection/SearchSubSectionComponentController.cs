@@ -31,25 +31,28 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         minimalSearchCts.SafeCancelAndDispose();
         minimalSearchCts = new CancellationTokenSource();
+
+        view.SetAllAsLoading();
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
         //SearchPlaces(searchText, cts.Token).Forget();
     }
 
-    private void SearchAllEvents()
+    private void SearchAllEvents(int pageNumber)
     {
+        Debug.Log("Search all events");
         fullSearchCts.SafeCancelAndDispose();
         fullSearchCts = new CancellationTokenSource();
-        SearchEvents(searchBarComponentView.Text, 0, 18, fullSearchCts.Token, true).Forget();
+        SearchEvents(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
     }
 
     private async UniTaskVoid SearchEvents(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await eventsAPI.SearchEvents(searchText, pageNumber,pageSize, cancellationToken);
-        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results);
+        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
 
         if (isFullSearch)
         {
-            view.ShowAllEvents(trendingEvents);
+            view.ShowAllEvents(trendingEvents, (pageNumber + 1) * pageSize < results.total);
         }
         else
         {
@@ -60,7 +63,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private async UniTaskVoid SearchPlaces(string searchText, CancellationToken cancellationToken)
     {
         var results = await eventsAPI.SearchEvents(searchText, 0,5, cancellationToken);
-        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results);
+        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
         view.ShowEvents(trendingEvents);
     }
 

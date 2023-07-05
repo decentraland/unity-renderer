@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
 {
-    event Action OnRequestAllEvents;
+    event Action<int> OnRequestAllEvents;
     void ShowEvents(List<EventCardComponentModel> events);
-    void ShowAllEvents(List<EventCardComponentModel> events);
+    void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton);
 }

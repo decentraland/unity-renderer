@@ -19,7 +19,7 @@ public interface IEventsAPIController
     /// <returns></returns>
     UniTask GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail);
 
-    UniTask<List<EventFromAPIModel>> SearchEvents(string searchString, int pageNumber, int pageSize, CancellationToken ct);
+    UniTask<(List<EventFromAPIModel>, int total)> SearchEvents(string searchString, int pageNumber, int pageSize, CancellationToken ct);
 
     UniTask GetDetailedEvent(Action<EventFromAPIModel> OnSuccess, string eventId);
 
@@ -38,7 +38,7 @@ public class EventsAPIController : IEventsAPIController
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private Service<IWebRequestController> webRequestController;
 
-    public async UniTask<List<EventFromAPIModel>> SearchEvents(string searchString, int pageNumber, int pageSize, CancellationToken ct)
+    public async UniTask<(List<EventFromAPIModel>, int total)> SearchEvents(string searchString, int pageNumber, int pageSize, CancellationToken ct)
     {
         const string URL = URL_GET_ALL_EVENTS + "?order=desc&search={0}&offset={1}&limit={2}";
         var result = await webRequestController.Ref.GetAsync(string.Format(URL, searchString, pageNumber * pageSize, pageSize), cancellationToken: ct);
@@ -54,7 +54,7 @@ public class EventsAPIController : IEventsAPIController
         if (response.data == null)
             throw new Exception($"No search info retrieved:\n{result.downloadHandler.text}");
 
-        return response.data;
+        return (response.data, response.total);
     }
 
     public async UniTask GetAllEvents(Action<List<EventFromAPIModel>> OnSuccess, Action<string> OnFail)
