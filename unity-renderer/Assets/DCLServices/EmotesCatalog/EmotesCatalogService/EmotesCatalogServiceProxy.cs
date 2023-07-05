@@ -12,16 +12,12 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
 
-
-    private readonly IEmotesCatalogService lambdasEmotesCatalogService;
+    private readonly LambdasEmotesCatalogService lambdasEmotesCatalogService;
     private readonly WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService;
     private readonly KernelConfig kernelConfig;
     private readonly BaseVariable<FeatureFlag> featureFlags;
     private IEmotesCatalogService emotesCatalogServiceInUse;
-
     private bool isInitialized;
-
-
 
     public EmotesCatalogServiceProxy(LambdasEmotesCatalogService lambdasEmotesCatalogService, WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService,
         BaseVariable<FeatureFlag> featureFlags, KernelConfig kernelCofig)
