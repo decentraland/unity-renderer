@@ -358,9 +358,9 @@ export class SceneWorker {
     this.ready |= SceneWorkerReadyState.LOADED
 
     worker.addEventListener('message', (event) => {
-      console.log('[SANTI DEBUG] New message...')
       if (event.data?.type === 'actions') {
         if (event.data.bytes?.length > 50e3) {
+          console.log(`[SANTI LOG] Message too long: ${event.data.bytes?.length} bytes`)
           this.logger.log(`Received actions > 50k: ${event.data.bytes?.length} bytes`)
         }
         if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
@@ -368,9 +368,7 @@ export class SceneWorker {
             this.logger.error('Error sending binary actions from Worker to Renderer', err)
           })
         } else {
-          console.log('[SANTI DEBUG] sdk6BinaryMessage => sceneNumber: ' + this.rpcContext.sceneData.sceneNumber)
-          console.log('[SANTI DEBUG] sdk6BinaryMessage => length: ' + event.data.bytes.length)
-          this.logger.log(`[SANTI DEBUG] sdk6BinaryMessage => sceneNumber: ${this.rpcContext.sceneData.sceneNumber} | length: ${event.data.bytes.length} bytes`)
+          console.log(`[SANTI DEBUG] sdk6BinaryMessage => sceneNumber: ${this.rpcContext.sceneData.sceneNumber} | length: ${event.data.bytes.length}`)
           nativeMsgBridge.sdk6BinaryMessage(
             this.rpcContext.sceneData.sceneNumber,
             event.data.bytes,
