@@ -8,7 +8,6 @@ using DCL.Providers;
 using DCL.SettingsCommon;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
-using DCLServices.EmotesCatalog.EmotesCatalogService;
 using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.FriendsController;
