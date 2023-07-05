@@ -6,6 +6,7 @@ namespace DCL
     public class DataStore_World
     {
         public readonly BaseCollection<string> portableExperienceIds = new BaseCollection<string>();
+        public readonly BaseCollection<string> disabledPortableExperienceIds = new ();
         public readonly BaseVariable<GraphicRaycaster> currentRaycaster = new BaseVariable<GraphicRaycaster>();
 
         public BaseVariable<Transform> avatarTransform = new BaseVariable<Transform>(null);

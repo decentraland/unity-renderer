@@ -686,88 +686,66 @@ namespace DCL
 
         public void CreateGlobalScene(CreateGlobalSceneMessage globalScene)
         {
-            void CreateGlobalSceneA(CreateGlobalSceneMessage globalScene)
-            {
 #if UNITY_EDITOR
-                DebugConfig debugConfig = DataStore.i.debugConfig;
+            DebugConfig debugConfig = DataStore.i.debugConfig;
 
-                if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
-                    return;
+            if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
+                return;
 #endif
 
-                // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
-                //              It should never have references to UI systems or higher level systems.
-                if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
-                {
-                    Debug.LogError(
-                        "Portable experiences are trying to be added before the system is initialized!. scene number: " +
-                        globalScene.sceneNumber);
-
-                    return;
-                }
-
-                int newGlobalSceneNumber = globalScene.sceneNumber;
-                IWorldState worldState = Environment.i.world.state;
-
-                if (worldState.ContainsScene(newGlobalSceneNumber))
-                    return;
-
-                var newGameObject = new GameObject("Global Scene - " + newGlobalSceneNumber);
-
-                var newScene = newGameObject.AddComponent<GlobalScene>();
-                newScene.unloadWithDistance = false;
-                newScene.isPersistent = true;
-                newScene.sceneName = globalScene.name;
-                newScene.isPortableExperience = globalScene.isPortableExperience;
-
-                LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
-                {
-                    id = globalScene.id,
-                    sceneNumber = newGlobalSceneNumber,
-                    basePosition = new Vector2Int(0, 0),
-                    baseUrl = globalScene.baseUrl,
-                    contents = globalScene.contents,
-                    sdk7 = globalScene.sdk7,
-                    requiredPermissions = globalScene.requiredPermissions,
-                    allowedMediaHostnames = globalScene.allowedMediaHostnames
-                };
-
-                newScene.SetData(sceneData);
-
-                if (!string.IsNullOrEmpty(globalScene.icon)) { newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon); }
-
-                worldState.AddScene(newScene);
-
-                OnNewSceneAdded?.Invoke(newScene);
-
-                if (newScene.isPortableExperience) { DataStore.i.world.portableExperienceIds.Add(sceneData.id); }
-
-                messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
-
-                if (VERBOSE)
-                    Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
-            }
-
-            if (globalScene.isPortableExperience)
+            // NOTE(Brian): We should remove this line. SceneController is a runtime core class.
+            //              It should never have references to UI systems or higher level systems.
+            if (globalScene.isPortableExperience && !isPexViewerInitialized.Get())
             {
-                if (!Environment.i.world.state.ContainsScene(globalScene.sceneNumber))
-                    DataStore.i.ExperiencesConfirmation.Confirm.Set(new ExperiencesConfirmationData
-                    {
-                        Experience = new ExperiencesConfirmationData.ExperienceMetadata
-                        {
-                            Permissions = globalScene.requiredPermissions,
-                            ExperienceId = globalScene.id,
-                            ExperienceName = globalScene.name,
-                            IconUrl = globalScene.icon,
-                        },
-                        OnAcceptCallback = () => CreateGlobalSceneA(globalScene),
-                        OnRejectCallback = () => { },
-                    });
-                else
-                    WebInterface.KillPortableExperience(globalScene.id);
+                Debug.LogError(
+                    "Portable experiences are trying to be added before the system is initialized!. scene number: " +
+                    globalScene.sceneNumber);
+
+                return;
             }
-            else
-                CreateGlobalSceneA(globalScene);
+
+            int newGlobalSceneNumber = globalScene.sceneNumber;
+            IWorldState worldState = Environment.i.world.state;
+
+            if (worldState.ContainsScene(newGlobalSceneNumber))
+                return;
+
+            var newGameObject = new GameObject("Global Scene - " + newGlobalSceneNumber);
+
+            var newScene = newGameObject.AddComponent<GlobalScene>();
+            newScene.unloadWithDistance = false;
+            newScene.isPersistent = true;
+            newScene.sceneName = globalScene.name;
+            newScene.isPortableExperience = globalScene.isPortableExperience;
+
+            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene
+            {
+                id = globalScene.id,
+                sceneNumber = newGlobalSceneNumber,
+                basePosition = new Vector2Int(0, 0),
+                baseUrl = globalScene.baseUrl,
+                contents = globalScene.contents,
+                sdk7 = globalScene.sdk7,
+                requiredPermissions = globalScene.requiredPermissions,
+                allowedMediaHostnames = globalScene.allowedMediaHostnames
+            };
+
+            newScene.SetData(sceneData).Forget();
+
+            if (!string.IsNullOrEmpty(globalScene.icon))
+                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
+
+            worldState.AddScene(newScene);
+
+            OnNewSceneAdded?.Invoke(newScene);
+
+            messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
+
+            if (newScene.isPortableExperience)
+                DataStore.i.world.portableExperienceIds.Add(sceneData.id);
+
+            if (VERBOSE)
+                Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
         }
 
         public void IsolateScene(IParcelScene sceneToActive)

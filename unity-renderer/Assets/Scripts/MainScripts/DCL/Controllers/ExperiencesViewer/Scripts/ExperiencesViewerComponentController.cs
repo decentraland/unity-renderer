@@ -107,23 +107,13 @@ namespace DCL.ExperiencesViewer
         internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
         {
             if (isPlaying)
-            {
                 WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.Where(x => x != pexId).ToArray());
-            }
             else
             {
-                // We only keep the experience paused in the list if our avatar has the related wearable equipped
-                if (userProfile != null && userProfile.avatar.wearables.Contains(pexId))
-                {
-                    if (!pausedPEXScenesIds.Contains(pexId))
-                        pausedPEXScenesIds.Add(pexId);
+                if (!pausedPEXScenesIds.Contains(pexId))
+                    pausedPEXScenesIds.Add(pexId);
 
-                    WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
-                }
-                else
-                {
-                    WebInterface.KillPortableExperience(pexId);
-                }
+                WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
             }
         }
 
@@ -134,7 +124,7 @@ namespace DCL.ExperiencesViewer
             activePEXScenes.Clear();
             pausedPEXScenesIds.Clear();
 
-            if (DCL.Environment.i.world.state != null)
+            if (Environment.i.world.state != null)
             {
                 List<GlobalScene> activePortableExperiences =
                     PortableExperienceUtils.GetActivePortableExperienceScenes();
@@ -186,7 +176,7 @@ namespace DCL.ExperiencesViewer
                     isUIVisible = true,
                     name = newPortableExperienceScene.sceneName,
                     iconUri = newPortableExperienceScene.iconUrl,
-                    allowStartStop = userProfile != null && userProfile.avatar.wearables.Contains(newPortableExperienceScene.sceneData.id)
+                    allowStartStop = true,
                 };
 
                 view.AddAvailableExperience(experienceToAdd);

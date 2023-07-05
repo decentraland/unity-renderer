@@ -1,5 +1,4 @@
 using AvatarSystem;
-using Cysharp.Threading.Tasks;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
@@ -10,6 +9,7 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCL.WorldRuntime.PortableExperiences;
 using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
@@ -24,12 +24,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
-using rpc_csharp.transport;
-using RPC.Transports;
-using System;
 using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
@@ -82,6 +77,9 @@ namespace DCL
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
             result.Register<IGPUSkinningThrottlerService>(() => GPUSkinningThrottlerService.Create(true));
             result.Register<ISceneController>(() => new SceneController());
+            result.Register<IPortableExperiencesController>(() => new PortableExperiencesController(
+                new WebInterfacePortableExperiencesBridge(),
+                DataStore.i));
             result.Register<IWorldState>(() => new WorldState());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());

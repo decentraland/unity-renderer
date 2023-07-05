@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Providers;
+using DCL.WorldRuntime.PortableExperiences;
 using System.Threading;
 
 namespace DCL.PortableExperiences.Confirmation
@@ -7,7 +8,8 @@ namespace DCL.PortableExperiences.Confirmation
     public class ExperiencesConfirmationPlugin : IPlugin
     {
         private readonly CancellationTokenSource pluginCancellationToken = new ();
-        private ExperiencesConfirmationPopupController controller;
+        private ExperiencesConfirmationPopupController popupController;
+        private TriggerPortableExperienceController triggerController;
 
         public ExperiencesConfirmationPlugin()
         {
@@ -21,13 +23,18 @@ namespace DCL.PortableExperiences.Confirmation
                                         .Instantiate<ExperiencesConfirmationPopupComponentView>("ExperiencesConfirmationPopup",
                                              "ExperiencesConfirmationPopup", cancellationToken: cancellationToken);
 
-            controller = new ExperiencesConfirmationPopupController(view,
+            popupController = new ExperiencesConfirmationPopupController(view,
                 DataStore.i);
+
+            triggerController = new TriggerPortableExperienceController(DataStore.i,
+                Environment.i.serviceLocator.Get<IPortableExperiencesController>(),
+                () => Environment.i.world.state);
         }
 
         public void Dispose()
         {
-            controller.Dispose();
+            popupController.Dispose();
+            triggerController.Dispose();
             pluginCancellationToken.Cancel();
             pluginCancellationToken.Dispose();
         }
