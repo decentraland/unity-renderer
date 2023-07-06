@@ -39,7 +39,6 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private void SearchAllEvents(int pageNumber)
     {
-        Debug.Log("Search all events");
         fullSearchCts.SafeCancelAndDispose();
         fullSearchCts = new CancellationTokenSource();
         SearchEvents(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
@@ -56,7 +55,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         }
         else
         {
-            view.ShowEvents(trendingEvents);
+            view.ShowEvents(trendingEvents, searchText);
         }
     }
 
@@ -64,7 +63,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         var results = await eventsAPI.SearchEvents(searchText, 0,5, cancellationToken);
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
-        view.ShowEvents(trendingEvents);
+        view.ShowEvents(trendingEvents, searchText);
     }
 
     public void Dispose()

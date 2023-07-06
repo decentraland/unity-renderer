@@ -1,6 +1,7 @@
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils = DCL.Helpers.Utils;
@@ -22,10 +23,16 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private EventCardComponentView eventPrefab;
     [SerializeField] private GameObject loadingEvents;
     [SerializeField] private GameObject loadingPlaces;
+    [SerializeField] private GameObject loadingAll;
     [SerializeField] private Button showAllPlaces;
     [SerializeField] private Button showAllEvents;
     [SerializeField] private Button showMore;
     [SerializeField] private Button backFromAllList;
+
+    [SerializeField] private GameObject noEvents;
+    [SerializeField] private GameObject noPlaces;
+    [SerializeField] private TMP_Text noEventsText;
+    [SerializeField] private TMP_Text noPlacesText;
 
     public event Action<int> OnRequestAllEvents;
 
@@ -44,12 +51,13 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         showMore.onClick.AddListener(RequestAdditionalPage);
         backFromAllList.onClick.RemoveAllListeners();
         backFromAllList.onClick.AddListener(CloseFullList);
+        noEvents.SetActive(false);
+        noPlaces.SetActive(true);
     }
 
     private void RequestAdditionalPage()
     {
         currentPage++;
-        Debug.Log($"Invoke {currentPage}");
         OnRequestAllEvents?.Invoke(currentPage);
     }
 
@@ -59,11 +67,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         minimalSearchSection.SetActive(false);
         fullSearchSection.SetActive(true);
         fullSearchEventsSection.SetActive(true);
+        loadingAll.SetActive(true);
         ClearFullEventsPool();
         OnRequestAllEvents?.Invoke(currentPage);
     }
 
-    public void ShowEvents(List<EventCardComponentModel> events)
+    public void ShowEvents(List<EventCardComponentModel> events, string searchText)
     {
         ClearEventsPool();
         foreach (EventCardComponentModel eventCardComponentModel in events)
@@ -75,6 +84,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         }
         eventsParent.gameObject.SetActive(true);
         loadingEvents.gameObject.SetActive(false);
+
+        if (events.Count == 0)
+        {
+            noEvents.SetActive(true);
+            noEventsText.text = $"No events found for '{searchText}'";
+        }
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
@@ -87,6 +102,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             eventCardComponentView.RefreshControl();
             pooledFullEvents.Add(eventCardComponentView);
         }
+        loadingAll.SetActive(false);
         Utils.ForceRebuildLayoutImmediate(fullEventsParent);
     }
 

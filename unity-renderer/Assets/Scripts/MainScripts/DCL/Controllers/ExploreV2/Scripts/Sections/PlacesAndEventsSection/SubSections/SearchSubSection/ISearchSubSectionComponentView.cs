@@ -6,6 +6,6 @@ using UnityEngine;
 public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
 {
     event Action<int> OnRequestAllEvents;
-    void ShowEvents(List<EventCardComponentModel> events);
+    void ShowEvents(List<EventCardComponentModel> events, string searchText);
     void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton);
 }
