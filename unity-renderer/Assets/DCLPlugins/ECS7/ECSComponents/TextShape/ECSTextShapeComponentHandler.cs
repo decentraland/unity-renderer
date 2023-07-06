@@ -69,8 +69,10 @@ public class ECSTextShapeComponentHandler : IECSComponentHandler<PBTextShape>
         var model = sbcInternalComponent.GetFor(scene, entity)?.model;
         if (model == null) return;
 
-        model.meshesDirty = true;
-        sbcInternalComponent.PutFor(scene, entity, model);
+        InternalSceneBoundsCheck finalModel = model.Value;
+        finalModel.meshesDirty = true;
+
+        sbcInternalComponent.PutFor(scene, entity, finalModel);
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTextShape model)

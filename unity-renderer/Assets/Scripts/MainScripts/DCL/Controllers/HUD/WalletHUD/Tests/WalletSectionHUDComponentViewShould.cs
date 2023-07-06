@@ -31,7 +31,7 @@ namespace DCL.Wallet
         {
             // Arrange
             var buyManaClicked = false;
-            walletSectionHUDView.OnBuyManaClicked += () => buyManaClicked = true;
+            walletSectionHUDView.OnBuyManaClicked += _ => buyManaClicked = true;
 
             // Act
             walletSectionHUDView.buyEthereumManaButton.onClick.Invoke();
@@ -45,7 +45,7 @@ namespace DCL.Wallet
         {
             // Arrange
             var buyManaClicked = false;
-            walletSectionHUDView.OnBuyManaClicked += () => buyManaClicked = true;
+            walletSectionHUDView.OnBuyManaClicked += _ => buyManaClicked = true;
 
             // Act
             walletSectionHUDView.buyPolygonManaButton.onClick.Invoke();

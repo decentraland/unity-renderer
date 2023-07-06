@@ -34,6 +34,9 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 
         private string GetEntityIdFromSceneId(string sceneId)
         {
+            if (sceneId == null)
+                return null;
+
             // This case happens when loading worlds
             if (sceneId.StartsWith(URN_PREFIX))
             {
@@ -64,6 +67,12 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
             };
 
             if (string.IsNullOrEmpty(contentUrl))
+            {
+                onSuccess();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(hash))
             {
                 onSuccess();
                 return;

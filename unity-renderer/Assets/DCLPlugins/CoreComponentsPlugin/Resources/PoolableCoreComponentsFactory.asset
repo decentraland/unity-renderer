@@ -21,12 +21,12 @@ MonoBehaviour:
   - classId: 33
     prefab: {fileID: 1438135810206001881, guid: d3a11958c03a6e2468f8173c6f80b0c1,
       type: 3}
-    usePool: 1
+    usePool: 0
     prewarmCount: 170
   - classId: 201
     prefab: {fileID: 5455216942449862864, guid: 8cf47145b31d0fe4db23561457579fab,
       type: 3}
-    usePool: 1
+    usePool: 0
     prewarmCount: 220
   - classId: 21
     prefab: {fileID: 6259529893562660078, guid: a374a32b18d38b94081521e49705cf74,

@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using DCL.Social.Friends;
+using DCL.Tasks;
+using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -20,7 +23,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     private const int DEFAULT_NUMBER_OF_LIVE_EVENTS = 3;
 
     internal readonly IHighlightsSubSectionComponentView view;
-    internal readonly IPlacesAPIController placesAPIApiController;
+    internal readonly IPlacesAPIService placesAPIService;
     internal readonly IEventsAPIController eventsAPIApiController;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
@@ -28,13 +31,15 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
-    internal List<PlaceInfo> placesFromAPI = new ();
+    internal readonly List<PlaceInfo> placesFromAPI = new ();
     internal List<EventFromAPIModel> eventsFromAPI = new ();
-    private CancellationTokenSource cts = new ();
+    private CancellationTokenSource requestAllCts = new ();
+    private CancellationTokenSource setFavoriteCts = new ();
+    private CancellationTokenSource disposeCts = new ();
 
     public HighlightsSubSectionComponentController(
         IHighlightsSubSectionComponentView view,
-        IPlacesAPIController placesAPI,
+        IPlacesAPIService placesAPI,
         IEventsAPIController eventsAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
@@ -63,7 +68,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
 
-        placesAPIApiController = placesAPI;
+        placesAPIService = placesAPI;
         eventsAPIApiController = eventsAPI;
 
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
@@ -95,9 +100,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
         cardsReloader.Dispose();
 
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
+        disposeCts = disposeCts?.SafeRestart();
     }
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
@@ -110,10 +113,9 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         {
             exploreV2Analytics.RemoveFavorite(placeUUID);
         }
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        placesAPIApiController.SetPlaceFavorite(placeUUID, isFavorite, cts.Token);
+        setFavoriteCts?.SafeCancelAndDispose();
+        setFavoriteCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, setFavoriteCts.Token);
     }
 
     private void FirstLoading()
@@ -130,64 +132,69 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
 
     public void RequestAllFromAPI()
     {
-        cts?.Cancel();
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
-        placesAPIApiController.GetAllPlacesFromPlacesAPI(
-            OnCompleted: (placeList, total) =>
-            {
-                placesFromAPI = placeList;
+        requestAllCts?.SafeCancelAndDispose();
+        requestAllCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        RequestAllFromApiAsync(requestAllCts.Token).Forget();
+    }
 
-                eventsAPIApiController.GetAllEvents(
-                    OnSuccess: eventList =>
-                    {
-                        eventsFromAPI = eventList;
-                        OnRequestedPlacesAndEventsUpdated();
-                    },
-                    OnFail: error =>
-                    {
-                        OnRequestedPlacesAndEventsUpdated();
-                        Debug.LogError($"Error receiving events from the API: {error}");
-                    });
-            }, 0, 20, cts.Token);
+    private async UniTaskVoid RequestAllFromApiAsync(CancellationToken ct)
+    {
+        try
+        {
+            const int PAGE_SIZE = 12;
+
+            (IReadOnlyList<PlaceInfo> pageOne, _) = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            (IReadOnlyList<PlaceInfo> pageTwo, _) = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+            placesFromAPI.Clear();
+            placesFromAPI.AddRange(pageOne);
+            placesFromAPI.AddRange(pageTwo);
+
+            eventsAPIApiController.GetAllEvents(
+                OnSuccess: eventList =>
+                {
+                    eventsFromAPI = eventList;
+                    OnRequestedPlacesAndEventsUpdated();
+                },
+                OnFail: error =>
+                {
+                    OnRequestedPlacesAndEventsUpdated();
+                    Debug.LogError($"Error receiving events from the API: {error}");
+                });
+        }
+        catch (OperationCanceledException) { }
     }
 
     internal void OnRequestedPlacesAndEventsUpdated()
     {
         friendsTrackerController.RemoveAllHandlers();
 
-        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterTrendingPlaces());
+        List<PlaceCardComponentModel> trendingPlaces = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, DEFAULT_NUMBER_OF_TRENDING_PLACES);
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents(trendingPlaces.Count));
         view.SetTrendingPlacesAndEvents(trendingPlaces, trendingEvents);
-
-        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(FilterFeaturedPlaces()));
+        view.SetFeaturedPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, CreateFeaturedPlacesPredicate()));
         view.SetLiveEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterLiveEvents()));
     }
 
-    internal List<PlaceInfo> FilterTrendingPlaces() => placesFromAPI.Take(DEFAULT_NUMBER_OF_TRENDING_PLACES).ToList();
+    internal Predicate<(int index, PlaceInfo place)> CreateFeaturedPlacesPredicate()
+    {
+        int numberOfPlaces = placesFromAPI.Count >= (DEFAULT_NUMBER_OF_TRENDING_PLACES + DEFAULT_NUMBER_OF_FEATURED_PLACES)
+            ? DEFAULT_NUMBER_OF_FEATURED_PLACES
+            : placesFromAPI.Count - DEFAULT_NUMBER_OF_TRENDING_PLACES;
+
+        return indexedPlaceInfo =>
+        {
+            if (placesFromAPI.Count > DEFAULT_NUMBER_OF_TRENDING_PLACES)
+                return indexedPlaceInfo.index >= DEFAULT_NUMBER_OF_TRENDING_PLACES && indexedPlaceInfo.index < (DEFAULT_NUMBER_OF_TRENDING_PLACES + numberOfPlaces);
+
+            if (placesFromAPI.Count > 0)
+                return indexedPlaceInfo.index < DEFAULT_NUMBER_OF_FEATURED_PLACES;
+
+            return false;
+        };
+    }
+
     internal List<EventFromAPIModel> FilterLiveEvents() => eventsFromAPI.Where(x => x.live).Take(DEFAULT_NUMBER_OF_LIVE_EVENTS).ToList();
     internal List<EventFromAPIModel> FilterTrendingEvents(int amount) => eventsFromAPI.Where(e => e.highlighted).Take(amount).ToList();
-    internal List<PlaceInfo> FilterFeaturedPlaces()
-    {
-        List<PlaceInfo> featuredPlaces;
-
-        if (placesFromAPI.Count >= DEFAULT_NUMBER_OF_TRENDING_PLACES)
-        {
-            int numberOfPlaces = placesFromAPI.Count >= (DEFAULT_NUMBER_OF_TRENDING_PLACES + DEFAULT_NUMBER_OF_FEATURED_PLACES)
-                ? DEFAULT_NUMBER_OF_FEATURED_PLACES
-                : placesFromAPI.Count - DEFAULT_NUMBER_OF_TRENDING_PLACES;
-
-            featuredPlaces = placesFromAPI
-                            .GetRange(DEFAULT_NUMBER_OF_TRENDING_PLACES, numberOfPlaces)
-                            .ToList();
-        }
-        else if (placesFromAPI.Count > 0)
-            featuredPlaces = placesFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_PLACES).ToList();
-        else
-            featuredPlaces = new List<PlaceInfo>();
-
-        return featuredPlaces;
-    }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
         friendsTrackerController.AddHandler(friendsHandler);

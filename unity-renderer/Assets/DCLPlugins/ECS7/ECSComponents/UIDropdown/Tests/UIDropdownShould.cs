@@ -1,4 +1,5 @@
-﻿using DCL.ECS7.InternalComponents;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using Decentraland.Common;
 using NUnit.Framework;
@@ -14,11 +15,19 @@ namespace DCL.ECSComponents.UIDropdown.Tests
         private const int RESULT_COMPONENT_ID = 1001;
 
         private UIDropdownHandler handler;
+        private WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>> pool;
 
         [SetUp]
         public void CreateHandler()
         {
-            handler = new UIDropdownHandler(internalUiContainer, RESULT_COMPONENT_ID, uiInputResultsComponent, AssetPromiseKeeper_Font.i, COMPONENT_ID);
+            pool = new WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>>(1, () => new ProtobufWrappedComponent<PBUiDropdownResult>(new PBUiDropdownResult()));
+            handler = new UIDropdownHandler(
+                internalUiContainer,
+                RESULT_COMPONENT_ID,
+                uiInputResultsComponent,
+                AssetPromiseKeeper_Font.i,
+                COMPONENT_ID,
+                pool);
         }
 
         [Test]
@@ -78,10 +87,22 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             UpdateComponentModel(true, 1);
 
             handler.uiElement.index = 2;
+            var result = pool.Get();
+            result.WrappedComponent.Model.Value = 2;
 
-            Assert.Contains(
-                new InternalUIInputResults.Result(new PBUiDropdownResult {Value = 2}, RESULT_COMPONENT_ID),
-                uiInputResults.Results);
+            bool found = false;
+            foreach (var inputResult in uiInputResults.Results)
+            {
+                if (inputResult.Message.WrappedComponentBase is IWrappedComponent<PBUiDropdownResult> comp)
+                {
+                    found = comp.Model.Value == 2 && inputResult.ComponentId == RESULT_COMPONENT_ID;
+                    if (found)
+                        break;
+                }
+            }
+
+            Assert.IsTrue(found);
         }
     }
 }
+

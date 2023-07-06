@@ -72,7 +72,11 @@ public class HUDBridge : MonoBehaviour
 
     public void RequestTeleport(string teleportDataJson) { DataStore.i.world.requestTeleportData.Set(teleportDataJson, true); }
 
-    public void UpdateBalanceOfMANA(string balance) { HUDController.i.profileHud?.SetManaBalance(balance); }
+    public void UpdateBalanceOfMANA(string balance)
+    {
+        HUDController.i.profileHud?.SetManaBalance(balance);
+        DataStore.i.wallet.currentEthereumManaBalance.Set(Convert.ToDouble(balance));
+    }
 
     [Obsolete("Old kernel might be using this call")]
     public void ShowAvatarEditorInSignUp()

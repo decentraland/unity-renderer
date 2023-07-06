@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCL.Guests.HUD.ConnectWallet;
+using DCL.MyAccount;
 using DCL.Providers;
 using DCL.Tasks;
 using System.Threading;
@@ -32,7 +33,8 @@ namespace DCL.Wallet
                 userProfileWebInterfaceBridge,
                 Environment.i.platform.clipboard,
                 webInterfaceBrowserBridge,
-                Environment.i.platform.serviceProviders.theGraph);
+                Environment.i.platform.serviceProviders.theGraph,
+                new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics));
 
             connectWalletController = new ConnectWalletComponentController(
                 walletSectionView.connectWalletView,

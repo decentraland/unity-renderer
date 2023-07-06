@@ -512,7 +512,7 @@ MonoBehaviour:
   questStepText: {fileID: 2325653948891376615}
   jumpInButton: {fileID: 7575138193857379636}
   normalTextColor: {r: 0, g: 0, b: 0, a: 1}
-  completedTextColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  completedTextColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
 --- !u!1 &8187800843991100955
 GameObject:
   m_ObjectHideFlags: 0

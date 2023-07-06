@@ -18,5 +18,6 @@ namespace DCLServices.QuestsService
         UniTask<AbortQuestResponse> AbortQuest(string questInstanceId);
 
         UniTask<Quest> GetDefinition(string questId, CancellationToken cancellationToken = default);
+        UniTask<IReadOnlyList<QuestReward>> GetQuestRewards(string questId, CancellationToken cancellationToken = default);
     }
 }

@@ -25,7 +25,7 @@ namespace Tests
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(100);
 
-            InternalPointerEvents componentData = null;
+            InternalPointerEvents? componentData = null;
             internalPointerEventsComponent = Substitute.For<IInternalECSComponent<InternalPointerEvents>>();
 
             internalPointerEventsComponent.When(substituteCall =>
@@ -45,7 +45,7 @@ namespace Tests
                                                {
                                                    entity = entity,
                                                    scene = scene,
-                                                   model = componentData
+                                                   model = componentData.Value
                                                };
                                            });
 

@@ -28,6 +28,8 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
+
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(1111);
@@ -55,6 +57,7 @@ namespace Tests
         {
             sceneTestHelper.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
+            Environment.Dispose();
         }
 
         [Test]
