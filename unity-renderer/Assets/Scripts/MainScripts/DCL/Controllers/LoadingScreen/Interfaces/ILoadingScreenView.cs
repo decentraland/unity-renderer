@@ -20,6 +20,6 @@ namespace DCL.LoadingScreen
 
         LoadingScreenV2HintsPanelView GetHintsPanelView();
 
-        void ToggleTeleportLoadingAnimation(bool active);
+        void ToggleLoadingScreenV2(bool active);
     }
 }

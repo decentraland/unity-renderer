@@ -9,7 +9,7 @@ public class LoadingScreenV2Plugin : IPlugin
 
     public LoadingScreenV2Plugin()
     {
-        dataStoreLoadingScreen.Ref.decoupledLoadingHUD.visible.Set(true);
+        dataStoreLoadingScreen.Ref.decoupledLoadingHUD.loadingScreenV2Enabled.Set(true);
     }
 
     public void Dispose()

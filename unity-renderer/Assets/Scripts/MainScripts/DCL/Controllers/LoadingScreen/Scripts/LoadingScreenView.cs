@@ -14,8 +14,9 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
+        [SerializeField] private GameObject containerViewV1;
+        [SerializeField] private GameObject containerViewV2;
         [SerializeField] private RectTransform hintContainer;
-        [SerializeField] private GameObject teleportLoadingAnimation;
         [SerializeField] private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
@@ -70,9 +71,10 @@ namespace DCL.LoadingScreen
 
         public override void RefreshControl() { }
 
-        public void ToggleTeleportLoadingAnimation(bool active)
+        public void ToggleLoadingScreenV2(bool active)
         {
-            teleportLoadingAnimation.SetActive(active);
+            containerViewV1.SetActive(!active);
+            containerViewV2.SetActive(active);
         }
 
         private void FadeInFinish(ShowHideAnimator obj)
