@@ -360,15 +360,14 @@ export class SceneWorker {
     worker.addEventListener('message', (event) => {
       if (event.data?.type === 'actions') {
         if (event.data.bytes?.length > 50e3) {
-          this.logger.log(`[SANTI LOG] Message too long: ${event.data.bytes?.length} bytes`)
           this.logger.log(`Received actions > 50k: ${event.data.bytes?.length} bytes`)
+          return
         }
         if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
           this.rpcContext.rpcSceneControllerService.sendBatch({ payload: event.data.bytes }).catch((err) => {
             this.logger.error('Error sending binary actions from Worker to Renderer', err)
           })
         } else if (event.data.bytes.length > 0) {
-          this.logger.log(`[SANTI LOG] sdk6BinaryMessage => sceneNumber: ${this.rpcContext.sceneData.sceneNumber} | length: ${event.data.bytes.length}`)
           nativeMsgBridge.sdk6BinaryMessage(
             this.rpcContext.sceneData.sceneNumber,
             event.data.bytes,
