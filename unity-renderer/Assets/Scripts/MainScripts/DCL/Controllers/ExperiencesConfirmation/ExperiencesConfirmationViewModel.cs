@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+
 namespace DCL.PortableExperiences.Confirmation
 {
     public record ExperiencesConfirmationViewModel
     {
         public string Name;
-        public string[] Permissions;
+        public List<string> Permissions;
         public string IconUrl;
+        public string Description;
     }
 }

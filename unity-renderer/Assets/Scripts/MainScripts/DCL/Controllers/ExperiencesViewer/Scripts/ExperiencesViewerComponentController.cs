@@ -85,10 +85,8 @@ namespace DCL.ExperiencesViewer
                 userProfile.OnUpdate -= OnUserProfileUpdated;
         }
 
-        internal void OnCloseButtonPressed()
-        {
+        internal void OnCloseButtonPressed() =>
             SetVisibility(false);
-        }
 
         private void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
         {
@@ -135,6 +133,8 @@ namespace DCL.ExperiencesViewer
 
             if (experienceToUpdate != null)
             {
+                experienceToUpdate.SetName(pex.name);
+                experienceToUpdate.SetIcon(pex.icon);
                 experienceToUpdate.SetAsPlaying(false);
                 return;
             }

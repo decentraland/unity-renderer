@@ -1,4 +1,6 @@
+using DCL.Helpers;
 using System;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +12,20 @@ namespace DCL.PortableExperiences.Confirmation
     {
         [SerializeField] private Button acceptButton;
         [SerializeField] private Button rejectButton;
+        [SerializeField] private GameObject permissionsContainer;
+        [SerializeField] private GameObject descriptionContainer;
+        [SerializeField] private TMP_Text permissionsLabel;
+        [SerializeField] private TMP_Text nameLabel;
+        [SerializeField] private TMP_Text descriptionLabel;
+        [SerializeField] private Toggle dontAskMeAgainToggle;
+        [SerializeField] private ImageComponentView iconImage;
+        [SerializeField] private Sprite defaultIconSprite;
+        [SerializeField] private RectTransform root;
 
         public event Action OnAccepted;
         public event Action OnRejected;
+        public event Action OnDontShowAnymore;
+        public event Action OnKeepShowing;
 
         public override void Awake()
         {
@@ -20,16 +33,54 @@ namespace DCL.PortableExperiences.Confirmation
 
             acceptButton.onClick.AddListener(() => OnAccepted?.Invoke());
             rejectButton.onClick.AddListener(() => OnRejected?.Invoke());
+            dontAskMeAgainToggle.onValueChanged.AddListener(arg0 =>
+            {
+                if (arg0)
+                    OnDontShowAnymore?.Invoke();
+                else
+                    OnKeepShowing?.Invoke();
+            });
         }
 
         public override void RefreshControl()
         {
+            bool isPermissionsEnabled = model.Permissions.Count > 0;
+            bool isDescriptionEnabled = !string.IsNullOrEmpty(model.Description);
+
+            permissionsContainer.SetActive(isPermissionsEnabled);
+            descriptionContainer.SetActive(isDescriptionEnabled);
+
+            permissionsLabel.text = "";
+            foreach (string permission in model.Permissions)
+                permissionsLabel.text += $"- {permission}\n";
+
+            descriptionLabel.text = model.Description;
+            nameLabel.text = model.Name;
+
+            if (string.IsNullOrEmpty(model.IconUrl))
+            {
+                iconImage.ImageComponent.color = new Color(113, 107, 124);
+                iconImage.SetImage(defaultIconSprite);
+            }
+            else
+            {
+                iconImage.ImageComponent.color = Color.white;
+                iconImage.SetImage(model.IconUrl);
+            }
+
+            root.ForceUpdateLayout();
         }
 
         public override void Show(bool instant = false)
         {
             gameObject.SetActive(true);
             base.Show(instant);
+
+            // let the subscribers know that the default option is 'dont show anymore'
+            if (!dontAskMeAgainToggle.isOn)
+                dontAskMeAgainToggle.isOn = true;
+            else
+                OnDontShowAnymore?.Invoke();
         }
 
         public override void Hide(bool instant = false)

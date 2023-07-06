@@ -7,5 +7,7 @@ namespace DCL.PortableExperiences.Confirmation
     {
         event Action OnAccepted;
         event Action OnRejected;
+        event Action OnDontShowAnymore;
+        event Action OnKeepShowing;
     }
 }
