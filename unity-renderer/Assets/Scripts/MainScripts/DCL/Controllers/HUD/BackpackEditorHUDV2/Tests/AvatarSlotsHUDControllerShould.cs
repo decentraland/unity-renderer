@@ -72,7 +72,7 @@ namespace DCL.Backpack
             var featureFlags = new FeatureFlag();
             featureFlags.flags.Add(AvatarSlotsHUDController.HANDS_FEATURE, enabled);
             ffBaseVariable.Get().Returns(featureFlags);
-            avatarSlotsDefinition.slotsDefinition[0].value.Add("hands");
+            avatarSlotsDefinition.slotsDefinition[0].value.Add(WearableLiterals.Categories.HANDS_WEAR);
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
             avatarSlotsHUDController.avatarSlotsDefinition = avatarSlotsDefinition;
 
@@ -82,11 +82,11 @@ namespace DCL.Backpack
             // then
             if (enabled)
             {
-                avatarSlotsView.Received().AddSlotToSection("section1", "hands", true);
+                avatarSlotsView.Received().AddSlotToSection("section1", WearableLiterals.Categories.HANDS_WEAR, true);
             }
             else
             {
-                avatarSlotsView.DidNotReceive().AddSlotToSection("section1", "hands", true);
+                avatarSlotsView.DidNotReceive().AddSlotToSection("section1", WearableLiterals.Categories.HANDS_WEAR, true);
             }
         }
 
