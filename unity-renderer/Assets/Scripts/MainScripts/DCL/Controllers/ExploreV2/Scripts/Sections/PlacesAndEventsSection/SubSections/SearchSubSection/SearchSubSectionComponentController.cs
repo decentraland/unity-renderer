@@ -24,7 +24,8 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         this.eventsAPI = eventsAPI;
 
         view.OnRequestAllEvents += SearchAllEvents;
-        searchBarComponentView.OnSearchText += Search;
+        if(searchBarComponentView != null)
+            searchBarComponentView.OnSearchText += Search;
     }
 
     private void Search(string searchText)

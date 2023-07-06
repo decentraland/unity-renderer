@@ -90,6 +90,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             noEvents.SetActive(true);
             noEventsText.text = $"No events found for '{searchText}'";
         }
+        else
+        {
+            noEvents.SetActive(false);
+        }
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
