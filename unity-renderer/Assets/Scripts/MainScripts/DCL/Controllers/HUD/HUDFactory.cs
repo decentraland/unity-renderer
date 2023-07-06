@@ -19,9 +19,9 @@ using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 using Analytics;
 using DCL.MyAccount;
+using DCLServices.PlacesAPIService;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using DCLServices.PlacesAPIService;
 
 public class HUDFactory : IHUDFactory
 {

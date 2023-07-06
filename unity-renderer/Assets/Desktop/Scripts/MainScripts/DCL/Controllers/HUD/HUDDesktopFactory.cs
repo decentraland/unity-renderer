@@ -2,6 +2,8 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Controllers.HUD;
+using DCL.MyAccount;
+using DCL.SettingsCommon;
 using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
