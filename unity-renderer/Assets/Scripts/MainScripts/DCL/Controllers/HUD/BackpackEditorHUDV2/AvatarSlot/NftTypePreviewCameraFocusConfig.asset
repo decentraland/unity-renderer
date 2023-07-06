@@ -49,5 +49,5 @@ MonoBehaviour:
     cameraFocus: 1
   - nftType: body_shape
     cameraFocus: 0
-  - nftType: hands
+  - nftType: hands_wear
     cameraFocus: 0

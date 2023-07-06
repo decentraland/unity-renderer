@@ -48,7 +48,7 @@ namespace DCL.Backpack
 
                 foreach (string avatarSlotSection in section.value)
                 {
-                    if (avatarSlotSection == "hands")
+                    if (avatarSlotSection == WearableLiterals.Categories.HANDS_WEAR)
                     {
                         if (showHands)
                             avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection, CanAvatarSlotBeUnEquipped(avatarSlotSection));

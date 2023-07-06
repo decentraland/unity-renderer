@@ -148,8 +148,10 @@ namespace DCL.Backpack
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
             model.previewCameraFocus = previewCameraFocus.GetPreviewCameraFocus(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(category, out string readableCategory);
+            bool found = WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(category, out string readableCategory);
             tooltipCategoryText.text = readableCategory;
+            if (!found)
+                Debug.LogError($"CANNOT FIND A READABLE MAPPING FOR CATEGORY {category}");
         }
 
         public void SetUnEquipAllowed(bool allowUnEquip) =>

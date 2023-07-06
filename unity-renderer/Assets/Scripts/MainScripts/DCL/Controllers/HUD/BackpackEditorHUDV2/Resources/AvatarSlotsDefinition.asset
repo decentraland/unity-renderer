@@ -24,7 +24,7 @@ MonoBehaviour:
   - key: wearables
     value:
     - upper_body
-    - hands
+    - hands_wear
     - lower_body
     - feet
   - key: accessories
