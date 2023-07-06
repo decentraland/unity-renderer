@@ -51,6 +51,7 @@ export type FeatureFlagsName =
   | 'ab-new-cdn' // enables the new CDN for asset bundles along with the new loader
   | 'decoupled_loading_screen'
   | 'seamless_login_variant'
+  | 'my_account'
 
 
 export type BannedUsers = Record<string, Ban[]>

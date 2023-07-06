@@ -1,9 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
+using DCL.UserProfiles;
 using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -18,7 +20,9 @@ public class UserProfileController : MonoBehaviour
     private static UserProfileDictionary userProfilesCatalogValue;
 
     private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
-    private bool baseWearablesAlreadyRequested = false;
+    private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> saveProfileTask = new ();
+    private readonly List<WebInterface.SaveLinksPayload.Link> linkList = new ();
+    private bool baseWearablesAlreadyRequested;
 
     public static UserProfileDictionary userProfilesCatalog
     {
@@ -72,10 +76,16 @@ public class UserProfileController : MonoBehaviour
 
         ownUserProfile.UpdateData(model);
         userProfilesCatalog.Add(model.userId, ownUserProfile);
+
+        foreach (var task in saveProfileTask.Values)
+            task.TrySetResult(ownUserProfile);
+        saveProfileTask.Clear();
     }
 
+    [PublicAPI]
     public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModelDTO>(payload).ToUserProfileModel()); }
 
+    [PublicAPI]
     public void AddUserProfilesToCatalog(string payload)
     {
         var usersPayload = JsonUtility.FromJson<AddUserProfilesToCatalogPayload>(payload);
@@ -84,6 +94,16 @@ public class UserProfileController : MonoBehaviour
 
         for (var i = 0; i < count; ++i)
             AddUserProfileToCatalog(users[i]);
+    }
+
+    [PublicAPI]
+    public void RemoveUserProfilesFromCatalog(string payload)
+    {
+        string[] usernames = JsonUtility.FromJson<string[]>(payload);
+        for (int index = 0; index < usernames.Length; index++)
+        {
+            RemoveUserProfileFromCatalog(userProfilesCatalog.Get(usernames[index]));
+        }
     }
 
     public void AddUserProfileToCatalog(UserProfileModel model)
@@ -105,27 +125,7 @@ public class UserProfileController : MonoBehaviour
         }
     }
 
-    public static UserProfile GetProfileByName(string targetUserName)
-    {
-        foreach (var userProfile in userProfilesCatalogValue)
-        {
-            if (userProfile.Value.userName.ToLower() == targetUserName.ToLower())
-                return userProfile.Value;
-        }
-
-        return null;
-    }
-
     public static UserProfile GetProfileByUserId(string targetUserId) { return userProfilesCatalog.Get(targetUserId); }
-
-    public void RemoveUserProfilesFromCatalog(string payload)
-    {
-        string[] usernames = JsonUtility.FromJson<string[]>(payload);
-        for (int index = 0; index < usernames.Length; index++)
-        {
-            RemoveUserProfileFromCatalog(userProfilesCatalog.Get(usernames[index]));
-        }
-    }
 
     public void RemoveUserProfileFromCatalog(UserProfile userProfile)
     {
@@ -152,5 +152,82 @@ public class UserProfileController : MonoBehaviour
         WebInterface.SendRequestUserProfile(userId);
 
         return task.Task.Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT));
+    }
+
+    public UniTask<UserProfile> SaveLinks(List<UserProfileModel.Link> links, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() =>
+            {
+                linkList.Clear();
+
+                foreach (UserProfileModel.Link link in links)
+                {
+                    linkList.Add(new WebInterface.SaveLinksPayload.Link
+                    {
+                        title = link.title,
+                        url = link.url,
+                    });
+                }
+
+                WebInterface.SaveProfileLinks(new WebInterface.SaveLinksPayload
+                {
+                    links = linkList,
+                });
+            },
+            "links", cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveVerifiedName(string name, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() => WebInterface.SendSaveUserVerifiedName(name),
+            "verified_name", cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveUnverifiedName(string name, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() => WebInterface.SendSaveUserUnverifiedName(name),
+            "unverified_name", cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveDescription(string description, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() => WebInterface.SendSaveUserDescription(description),
+            "description", cancellationToken);
+    }
+
+    public UniTask<UserProfile> SaveAdditionalInfo(AdditionalInfo additionalInfo, CancellationToken cancellationToken)
+    {
+        return SaveUserProfile(() => WebInterface.SaveAdditionalInfo(new WebInterface.SaveAdditionalInfoPayload
+            {
+                country = additionalInfo.Country,
+                gender = additionalInfo.Gender,
+                pronouns = additionalInfo.Pronouns,
+                relationshipStatus = additionalInfo.RelationshipStatus,
+                sexualOrientation = additionalInfo.SexualOrientation,
+                language = additionalInfo.Language,
+                profession = additionalInfo.Profession,
+                birthdate = additionalInfo.BirthDate != null ? new DateTimeOffset(additionalInfo.BirthDate.Value).ToUnixTimeSeconds() : 0,
+                realName = additionalInfo.RealName,
+                hobbies = additionalInfo.Hobbies,
+                employmentStatus = additionalInfo.EmploymentStatus,
+            }),
+            "additional_info", cancellationToken);
+    }
+
+    private UniTask<UserProfile> SaveUserProfile(Action webInterfaceCall, string operationType, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (saveProfileTask.ContainsKey(operationType))
+            return saveProfileTask[operationType].Task.AttachExternalCancellation(cancellationToken);
+
+        var task = new UniTaskCompletionSource<UserProfile>();
+        saveProfileTask[operationType] = task;
+
+        webInterfaceCall.Invoke();
+
+        return task.Task
+                   .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
+                   .AttachExternalCancellation(cancellationToken);
     }
 }

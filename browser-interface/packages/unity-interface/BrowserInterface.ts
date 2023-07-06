@@ -615,12 +615,26 @@ export class BrowserInterface {
     }
   }
 
+  public SaveUserVerifiedName(changes: { newVerifiedName: string }) {
+    store.dispatch(saveProfileDelta({ name: changes.newVerifiedName, hasClaimedName: true }))
+  }
+
   public SaveUserUnverifiedName(changes: { newUnverifiedName: string }) {
     store.dispatch(saveProfileDelta({ name: changes.newUnverifiedName, hasClaimedName: false }))
   }
 
   public SaveUserDescription(changes: { description: string }) {
     store.dispatch(saveProfileDelta({ description: changes.description }))
+  }
+
+  public SaveProfileLinks(changes: { links: { title: string, url: string }[] }) {
+    store.dispatch(saveProfileDelta({ links: changes.links }))
+  }
+
+  public SaveProfileAdditionalInfo(changes: { country: string, employmentStatus: string, gender: string,
+    pronouns: string, relationshipStatus: string, sexualOrientation: string, language: string,
+    profession: string, birthdate: number, realName: string, hobbies: string}) {
+    store.dispatch(saveProfileDelta(changes))
   }
 
   public GetFriends(getFriendsRequest: GetFriendsPayload) {
