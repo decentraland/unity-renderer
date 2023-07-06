@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 1693680959}
   - component: {fileID: 1693680957}
   - component: {fileID: 1693680961}
+  - component: {fileID: 1693680962}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -337,9 +338,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.21875
     width: 1
-    height: 1
+    height: 0.5625
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -350,7 +351,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 8400000, guid: 5d74226c69c87ab4885f4be2ad0ba1e8, type: 2}
+  m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -387,3 +388,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764a9b528b1e0394592fc169fdd0a1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1693680962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693680956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bbaef75f8297a546baf4add1186a195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  screenshotFileName: Assets/screenshot2.png
+  screenshotWidth: 1920
+  screenshotHeight: 1080
