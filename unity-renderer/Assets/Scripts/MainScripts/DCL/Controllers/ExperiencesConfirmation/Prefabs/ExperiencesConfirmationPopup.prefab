@@ -1667,7 +1667,7 @@ MonoBehaviour:
   descriptionLabel: {fileID: 1350893656851098573}
   dontAskMeAgainToggle: {fileID: 7259130668853773841}
   iconImage: {fileID: 1633710990457715850}
-  defaultIconSprite: {fileID: 21300000, guid: becc7661af6be4d33b1cc83d8e83bfed, type: 3}
+  defaultIconSprite: {fileID: 2800000, guid: becc7661af6be4d33b1cc83d8e83bfed, type: 3}
   root: {fileID: 748608453488172493}
 --- !u!1 &7993098867969441567
 GameObject:

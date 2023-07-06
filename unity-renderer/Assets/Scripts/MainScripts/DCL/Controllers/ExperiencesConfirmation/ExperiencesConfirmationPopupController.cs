@@ -7,7 +7,7 @@ namespace DCL.PortableExperiences.Confirmation
     {
         private readonly IExperiencesConfirmationPopupView view;
         private readonly DataStore dataStore;
-        private List<string> descriptionBuffer = new ();
+        private readonly List<string> descriptionBuffer = new ();
         private Action acceptCallback;
         private Action rejectCallback;
 

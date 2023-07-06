@@ -19,7 +19,7 @@ namespace DCL.PortableExperiences.Confirmation
         [SerializeField] private TMP_Text descriptionLabel;
         [SerializeField] private Toggle dontAskMeAgainToggle;
         [SerializeField] private ImageComponentView iconImage;
-        [SerializeField] private Sprite defaultIconSprite;
+        [SerializeField] private Texture2D defaultIconSprite;
         [SerializeField] private RectTransform root;
 
         public event Action OnAccepted;
@@ -59,13 +59,13 @@ namespace DCL.PortableExperiences.Confirmation
 
             if (string.IsNullOrEmpty(model.IconUrl))
             {
-                iconImage.ImageComponent.color = new Color(113, 107, 124);
                 iconImage.SetImage(defaultIconSprite);
+                iconImage.ImageComponent.color = new Color(0.44f, 0.41f, 0.48f, 1f);
             }
             else
             {
-                iconImage.ImageComponent.color = Color.white;
                 iconImage.SetImage(model.IconUrl);
+                iconImage.ImageComponent.color = Color.white;
             }
 
             root.ForceUpdateLayout();

@@ -769,9 +769,24 @@ namespace DCL
 
             if (globalScene.isPortableExperience)
             {
+                string iconUrl = null;
+
+                if (!string.IsNullOrEmpty(globalScene.icon))
+                {
+                    ContentProvider contentProvider = new ContentProvider
+                    {
+                        baseUrl = globalScene.baseUrl,
+                        contents = globalScene.contents,
+                        sceneCid = globalScene.id,
+                    };
+                    contentProvider.BakeHashes();
+
+                    iconUrl = contentProvider.GetContentsUrl(globalScene.icon);
+                }
+
                 if (!disabledPortableExperiences.ContainsKey(globalScene.id))
                     disabledPortableExperiences.Add(globalScene.id,
-                        (name: globalScene.name, description: globalScene.description, icon: globalScene.icon));
+                        (name: globalScene.name, description: globalScene.description, icon: iconUrl));
 
                 pendingPortableExperienceToBeConfirmed.Set(new ExperiencesConfirmationData
                 {
@@ -780,7 +795,7 @@ namespace DCL
                         Permissions = globalScene.requiredPermissions,
                         ExperienceId = globalScene.id,
                         ExperienceName = globalScene.name,
-                        IconUrl = globalScene.icon,
+                        IconUrl = iconUrl,
                         Description = globalScene.description,
                     },
                     OnAcceptCallback = () => CreateGlobalSceneInternal(globalScene),
