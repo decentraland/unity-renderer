@@ -28,6 +28,11 @@ namespace DCL
 
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
+        private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences =>
+            DataStore.i.world.disabledPortableExperienceIds;
+        private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
+
+        private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.PendingPortableExperienceToBeConfirmed.Confirm;
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
 
@@ -620,10 +625,10 @@ namespace DCL
 
             if (scene.isPortableExperience)
             {
-                DataStore.i.world.portableExperienceIds.Remove(scene.sceneData.id);
+                portableExperienceIds.Remove(scene.sceneData.id);
 
-                if (!DataStore.i.world.disabledPortableExperienceIds.Contains(scene.sceneData.id))
-                    DataStore.i.world.disabledPortableExperienceIds.Add(scene.sceneData.id);
+                disabledPortableExperiences.AddOrSet(scene.sceneData.id,
+                    (name: scene.sceneName, description: scene.sceneData.description, icon: scene.sceneData.iconUrl));
             }
 
             // Remove messaging controller for unloaded scene
@@ -735,7 +740,9 @@ namespace DCL
                     contents = globalScene.contents,
                     sdk7 = globalScene.sdk7,
                     requiredPermissions = globalScene.requiredPermissions,
-                    allowedMediaHostnames = globalScene.allowedMediaHostnames
+                    allowedMediaHostnames = globalScene.allowedMediaHostnames,
+                    description = globalScene.description,
+                    iconUrl = globalScene.icon,
                 };
 
                 newScene.SetData(sceneData).Forget();
@@ -748,8 +755,10 @@ namespace DCL
 
                 if (globalScene.isPortableExperience)
                 {
-                    DataStore.i.world.disabledPortableExperienceIds.Remove(globalScene.id);
-                    DataStore.i.world.portableExperienceIds.Add(sceneData.id);
+                    disabledPortableExperiences.Remove(sceneData.id);
+
+                    if (!portableExperienceIds.Contains(sceneData.id))
+                        portableExperienceIds.Add(sceneData.id);
                 }
 
                 messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
@@ -760,10 +769,11 @@ namespace DCL
 
             if (globalScene.isPortableExperience)
             {
-                if (!DataStore.i.world.disabledPortableExperienceIds.Contains(globalScene.id))
-                    DataStore.i.world.disabledPortableExperienceIds.Add(globalScene.id);
+                if (!disabledPortableExperiences.ContainsKey(globalScene.id))
+                    disabledPortableExperiences.Add(globalScene.id,
+                        (name: globalScene.name, description: globalScene.description, icon: globalScene.icon));
 
-                DataStore.i.ExperiencesConfirmation.Confirm.Set(new ExperiencesConfirmationData
+                pendingPortableExperienceToBeConfirmed.Set(new ExperiencesConfirmationData
                 {
                     Experience = new ExperiencesConfirmationData.ExperienceMetadata
                     {
@@ -771,14 +781,11 @@ namespace DCL
                         ExperienceId = globalScene.id,
                         ExperienceName = globalScene.name,
                         IconUrl = globalScene.icon,
+                        Description = globalScene.description,
                     },
-                    OnAcceptCallback = () =>
-                    {
-                        CreateGlobalSceneInternal(globalScene);
-                    },
-                    // TODO: solve a proper px disabled array
+                    OnAcceptCallback = () => CreateGlobalSceneInternal(globalScene),
                     OnRejectCallback = () => WebInterface.SetDisabledPortableExperiences(
-                        DataStore.i.world.disabledPortableExperienceIds.Get().ToArray()),
+                        disabledPortableExperiences.GetKeys().ToArray()),
                 });
             }
             else

@@ -8,6 +8,7 @@ namespace DCL
         {
             public string ExperienceId { get; set; }
             public string ExperienceName { get; set; }
+            public string Description { get; set; }
             public string IconUrl { get; set; }
             public string[] Permissions { get; set; }
         }

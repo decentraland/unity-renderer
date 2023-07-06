@@ -28,14 +28,14 @@ namespace DCL.PortableExperiences.Confirmation
                 rejectCallback?.Invoke();
             };
 
-            dataStore.ExperiencesConfirmation.Confirm.OnChange += OnConfirmRequested;
+            dataStore.PendingPortableExperienceToBeConfirmed.Confirm.OnChange += OnConfirmRequested;
         }
 
         public void Dispose()
         {
             view.Dispose();
 
-            dataStore.ExperiencesConfirmation.Confirm.OnChange -= OnConfirmRequested;
+            dataStore.PendingPortableExperienceToBeConfirmed.Confirm.OnChange -= OnConfirmRequested;
         }
 
         private void OnConfirmRequested(ExperiencesConfirmationData current, ExperiencesConfirmationData previous)

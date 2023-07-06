@@ -113,7 +113,8 @@ namespace RPC.Services
                     isPortableExperience = request.IsPortableExperience,
                     requiredPermissions = parsedMetadata.requiredPermissions,
                     allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
-                    icon = string.Empty // TODO: add icon url!
+                    icon = parsedMetadata.display?.navmapThumbnail,
+                    description = parsedMetadata.display?.description,
                 };
 
                 try

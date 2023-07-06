@@ -28,6 +28,9 @@ namespace DCL.ExperiencesViewer
         private BaseVariable<Transform> isInitialized => DataStore.i.experiencesViewer.isInitialized;
         private BaseVariable<bool> isOpen => DataStore.i.experiencesViewer.isOpen;
         private BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
+        private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences =>
+            DataStore.i.world.disabledPortableExperienceIds;
+        private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
 
         internal IExperiencesViewerComponentView view;
         private UserProfile userProfile;
@@ -43,11 +46,9 @@ namespace DCL.ExperiencesViewer
             isOpen.OnChange += ShowOrHide;
             ShowOrHide(isOpen.Get(), false);
 
-            DataStore.i.world.portableExperienceIds.OnAdded += OnPEXSceneAdded;
-            DataStore.i.world.portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
-            DataStore.i.world.disabledPortableExperienceIds.OnAdded += OnPEXDisabled;
-
-            // CheckCurrentActivePortableExperiences();
+            portableExperienceIds.OnAdded += OnPEXSceneAdded;
+            portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
+            disabledPortableExperiences.OnAdded += OnPEXDisabled;
 
             userProfile = UserProfile.GetOwnUserProfile();
 
@@ -56,6 +57,9 @@ namespace DCL.ExperiencesViewer
                 userProfile.OnUpdate += OnUserProfileUpdated;
                 OnUserProfileUpdated(userProfile);
             }
+
+            foreach (var pair in disabledPortableExperiences.Get())
+                OnPEXDisabled(pair.Key, pair.Value);
 
             isInitialized.Set(view.experienceViewerTransform);
         }
@@ -73,9 +77,9 @@ namespace DCL.ExperiencesViewer
             view.onSomeExperienceExecutionChanged -= DisableOrEnablePortableExperience;
             isOpen.OnChange -= ShowOrHide;
 
-            DataStore.i.world.portableExperienceIds.OnAdded -= OnPEXSceneAdded;
-            DataStore.i.world.portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
-            DataStore.i.world.disabledPortableExperienceIds.OnAdded -= OnPEXDisabled;
+            portableExperienceIds.OnAdded -= OnPEXSceneAdded;
+            portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
+            disabledPortableExperiences.OnAdded -= OnPEXDisabled;
 
             if (userProfile != null)
                 userProfile.OnUpdate -= OnUserProfileUpdated;
@@ -109,44 +113,23 @@ namespace DCL.ExperiencesViewer
             if (isPlaying)
             {
                 WebInterface.SetDisabledPortableExperiences(
-                    DataStore.i.world.disabledPortableExperienceIds.Get()
-                             .Where(s => s != pexId)
-                             .ToArray());
+                    disabledPortableExperiences.GetKeys()
+                                               .Where(s => s != pexId)
+                                               .ToArray());
             }
             else
             {
-                if (!DataStore.i.world.disabledPortableExperienceIds.Contains(pexId))
-                {
-                    WebInterface.SetDisabledPortableExperiences(DataStore.i.world.disabledPortableExperienceIds.Get()
-                                                                         .Concat(new[] { pexId })
-                                                                         .ToArray());
-                }
+                WebInterface.SetDisabledPortableExperiences(disabledPortableExperiences.GetKeys()
+                                                                                       .Concat(new[] { pexId })
+                                                                                       .Distinct()
+                                                                                       .ToArray());
             }
         }
 
-        internal void ShowOrHide(bool current, bool previous)
-        {
+        internal void ShowOrHide(bool current, bool previous) =>
             SetVisibility(current);
-        }
 
-        // internal void CheckCurrentActivePortableExperiences()
-        // {
-        //     activePEXScenes.Clear();
-        //     pausedPEXScenesIds.Clear();
-        //
-        //     if (Environment.i.world.state != null)
-        //     {
-        //         List<GlobalScene> activePortableExperiences =
-        //             PortableExperienceUtils.GetActivePortableExperienceScenes();
-        //
-        //         foreach (GlobalScene pexScene in activePortableExperiences)
-        //             OnPEXSceneAdded(pexScene);
-        //     }
-        //
-        //     numOfLoadedExperiences.Set(activePEXScenes.Count);
-        // }
-
-        private void OnPEXDisabled(string pxId)
+        private void OnPEXDisabled(string pxId, (string name, string description, string icon) pex)
         {
             ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(pxId);
 
@@ -161,8 +144,8 @@ namespace DCL.ExperiencesViewer
                 id = pxId,
                 isPlaying = false,
                 isUIVisible = true,
-                name = "TODO",
-                iconUri = "",
+                name = pex.name,
+                iconUri = pex.icon,
                 allowStartStop = true,
             };
 
@@ -170,10 +153,8 @@ namespace DCL.ExperiencesViewer
             numOfLoadedExperiences.Set(GetPortableExperienceCount());
         }
 
-        private void OnPEXSceneAdded(string id)
-        {
+        private void OnPEXSceneAdded(string id) =>
             OnPEXSceneAdded(GetPortableExperienceScene(id));
-        }
 
         private IParcelScene GetPortableExperienceScene(string id) =>
             Environment.i.world.state.GetPortableExperienceScene(id);
@@ -250,8 +231,8 @@ namespace DCL.ExperiencesViewer
         }
 
         private int GetPortableExperienceCount() =>
-            DataStore.i.world.disabledPortableExperienceIds.Count()
-            + DataStore.i.world.portableExperienceIds.Count();
+            disabledPortableExperiences.Count()
+            + portableExperienceIds.Count();
 
         internal virtual IExperiencesViewerComponentView CreateView() =>
             ExperiencesViewerComponentView.Create();
