@@ -961,6 +961,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   aboutPanel: {fileID: 2382736849560994066}
+  aboutContainerTransform: {fileID: 678770521573999315}
   wearablesPanel: {fileID: 7713033100312123324}
   aboutToggle: {fileID: 3873247503335729505}
   collectiblesToggle: {fileID: 1669034797117624556}
