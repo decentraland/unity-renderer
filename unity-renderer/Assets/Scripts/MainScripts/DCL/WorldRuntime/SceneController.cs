@@ -626,8 +626,13 @@ namespace DCL
             {
                 portableExperienceIds.Remove(scene.sceneData.id);
 
+                string iconUrl = null;
+
+                if (!string.IsNullOrEmpty(scene.sceneData.iconUrl))
+                    iconUrl = scene.contentProvider.GetContentsUrl(scene.sceneData.iconUrl);
+
                 disabledPortableExperiences.AddOrSet(scene.sceneData.id,
-                    (name: scene.sceneName, description: scene.sceneData.description, icon: scene.sceneData.iconUrl));
+                    (name: scene.sceneName, description: scene.sceneData.description, icon: iconUrl));
             }
 
             // Remove messaging controller for unloaded scene
