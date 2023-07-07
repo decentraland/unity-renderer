@@ -55,6 +55,7 @@ namespace DCL.LoadingScreen.V2
                 if (containerSceneAddressable == null) { throw new Exception("Failed to load the addressable asset"); }
 
                 LoadingHints = HintSceneParserUtil.ParseJsonToHints(containerSceneAddressable.text);
+
                 return LoadingHints;
             }
             catch (Exception ex)

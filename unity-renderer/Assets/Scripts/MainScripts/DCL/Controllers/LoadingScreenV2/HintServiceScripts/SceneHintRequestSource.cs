@@ -30,7 +30,10 @@ namespace DCL.LoadingScreen.V2
             this.currentDestination = currentDestination;
 
             sceneLoadedCompletionSource = new UniTaskCompletionSource<bool>();
-            sceneController.OnNewSceneAdded += OnNewSceneAddedToSceneController;
+            if (sceneController != null)
+            {
+                sceneController.OnNewSceneAdded += OnNewSceneAddedToSceneController;
+            }
         }
 
         public string Source { get; }

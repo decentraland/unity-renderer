@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Models;
 using DCL.Providers;
+using MainScripts.DCL.Controllers.AssetManager.Addressables.Editor;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
@@ -14,8 +15,6 @@ namespace DCL.LoadingScreen.V2.Tests
 {
     public class HintRequestServiceShould
     {
-         private HintRequestService hintRequestService;
-         private List<IHintRequestSource> hintRequestSources;
          private ISceneController sceneController;
          private IHintTextureRequestHandler hintTextureRequestHandler;
          private CancellationToken cancellationToken;
@@ -26,10 +25,8 @@ namespace DCL.LoadingScreen.V2.Tests
          [SetUp]
          public void Setup()
          {
-             hintRequestSources = new List<IHintRequestSource>();
              sceneController = Substitute.For<ISceneController>();
              hintTextureRequestHandler = Substitute.For<IHintTextureRequestHandler>();
-             hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
              cancellationToken = new CancellationToken();
 
              preMadeTexture = new Texture2D(2, 2);
@@ -39,15 +36,13 @@ namespace DCL.LoadingScreen.V2.Tests
              premadeHint2 = new Hint("https://example.com/image2.png", "title2", "body2", SourceTag.Dcl);
          }
 
-         [TearDown]
-         public void TearDown()
-         {
-             hintRequestService.Dispose();
-         }
-
          [Test]
          public async Task RequestHintsWithZeroSources()
          {
+             // Arrange
+             var hintRequestSources = new List<IHintRequestSource>();
+             var hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
+
              // Act
              var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 5);
 
@@ -59,6 +54,7 @@ namespace DCL.LoadingScreen.V2.Tests
          public async Task RequestHintsFromRemoteSource()
          {
              // Arrange
+             var hintRequestSources = new List<IHintRequestSource>();
              var sourceUrlJson = "http://remote_source_url";
              var mockWebRequestHandler = Substitute.For<ISourceWebRequestHandler>();
              var mockSceneRensponse = new LoadParcelScenesMessage.UnityParcelScene
@@ -71,8 +67,10 @@ namespace DCL.LoadingScreen.V2.Tests
              var remoteHintSource = new RemoteHintRequestSource(sourceUrlJson, SourceTag.Event, mockWebRequestHandler);
              hintRequestSources.Add(remoteHintSource);
 
+             var hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
+
              // Act
-             var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 5);
+             var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 1);
 
              // Assert
              Assert.AreEqual(1, result.Count);
@@ -85,12 +83,14 @@ namespace DCL.LoadingScreen.V2.Tests
          {
              // Arrange
              var sourceSceneAddressable = "LoadingScreenV2LocalHintsJsonSource";
-             IAddressableResourceProvider  addressableProvider = new AddressableResourceProvider();
-             var remoteHintSource = new LocalHintRequestSource(sourceSceneAddressable, SourceTag.Dcl, addressableProvider);
-             hintRequestSources.Add(remoteHintSource);
+             IAddressableResourceProvider  addressableProvider = new EditorAddressableResourceProvider();
+             var hintSource = new LocalHintRequestSource(sourceSceneAddressable, SourceTag.Dcl, addressableProvider);
+             var hintRequestSources = new List<IHintRequestSource>
+                 { hintSource };
+             var hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
 
              // Act
-             var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 5);
+             var result = await hintRequestService.RequestHintsFromSources(cancellationToken, 1);
 
              // Assert
              Assert.Greater(result.Count, 0);
@@ -110,6 +110,8 @@ namespace DCL.LoadingScreen.V2.Tests
 
              hintTextureRequestHandler.DownloadTexture(Arg.Any<string>(), Arg.Any<CancellationToken>())
                                       .Returns(ReturnTx2D);
+             var hintRequestSources = new List<IHintRequestSource>();
+             var hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
 
              // Act
              var result = await hintRequestService.RequestHintsFromSources(cts.Token, 5);

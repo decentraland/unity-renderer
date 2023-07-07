@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCL.Models;
 using DCL.Providers;
+using DCLPlugins.LoadingScreenPlugin;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,7 +14,7 @@ namespace DCL.LoadingScreen.V2.Tests
     public class LoadingScreenControllerShould2
     {
         private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
-        private const string LOADING_SCREEN_ASSET = "_LoadingScreen";
+        private const string LOADING_SCREEN_ASSET = "_LoadingScreenV2";
 
         private HintRequestService hintRequestService;
         private IAddressableResourceProvider addressableProvider;
@@ -23,7 +23,6 @@ namespace DCL.LoadingScreen.V2.Tests
         private Hint premadeHint1;
         private Hint premadeHint2;
         private CancellationTokenSource cts;
-        private HintView hintViewPrefab;
 
         [SetUp]
         public void Setup()
@@ -64,10 +63,11 @@ namespace DCL.LoadingScreen.V2.Tests
         public async Task StartAndStopHintsCarousel()
         {
             // Arrange
-            hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
-            GameObject gameObject = new GameObject();
-            LoadingScreenView loadingScreenView = gameObject.AddComponent<LoadingScreenView>();
+            LoadingScreenView loadingScreenView = GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
             var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
+            loadingScreenView.ToggleLoadingScreenV2(true);
+            var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
+            loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -90,9 +90,11 @@ namespace DCL.LoadingScreen.V2.Tests
         public async Task InitializeHintsProperlyAsync()
         {
             // Arrange
-            GameObject gameObject = new GameObject();
-            LoadingScreenView loadingScreenView = gameObject.AddComponent<LoadingScreenView>();
+            LoadingScreenView loadingScreenView = GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
             var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
+            loadingScreenView.ToggleLoadingScreenV2(true);
+            var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
+            loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -112,9 +114,11 @@ namespace DCL.LoadingScreen.V2.Tests
         {
             // Arrange
             // hintViewPrefab = await addressableProvider.GetAddressable<HintView>(HINT_VIEW_PREFAB_ADDRESSABLE, cts.Token);
-            GameObject gameObject = new GameObject();
-            LoadingScreenView loadingScreenView = gameObject.AddComponent<LoadingScreenView>();
+            LoadingScreenView loadingScreenView = GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
             var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
+            loadingScreenView.ToggleLoadingScreenV2(true);
+            var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
+            loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
