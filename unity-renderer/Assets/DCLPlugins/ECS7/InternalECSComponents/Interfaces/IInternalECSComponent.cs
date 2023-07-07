@@ -16,7 +16,7 @@ public interface IInternalECSComponent<T> : IDisposable
     void RemoveFor(IParcelScene scene, IDCLEntity entity);
     void RemoveFor(IParcelScene scene, long entityId);
     void RemoveFor(int sceneNumber, long entityId);
-    IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity);
-    IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, long entityId);
+    ECSComponentData<T>? GetFor(IParcelScene scene, IDCLEntity entity);
+    ECSComponentData<T>? GetFor(IParcelScene scene, long entityId);
     IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<T>>> GetForAll();
 }

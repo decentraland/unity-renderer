@@ -73,11 +73,11 @@ namespace Tests
                 internalComponents.RegisteredUiPointerEventsComponent,
                 internalComponents.inputEventResultsComponent);
 
-            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity).model;
-            Assert.NotNull(callbackModel.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.OnPointerEnterCallback);
-            Assert.IsNull(callbackModel.OnPointerUpCallback);
+            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
+            Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
+            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
         }
 
         [Test]
@@ -155,11 +155,11 @@ namespace Tests
                 internalComponents.RegisteredUiPointerEventsComponent,
                 internalComponents.inputEventResultsComponent);
 
-            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity).model;
-            Assert.NotNull(callbackModel.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.OnPointerEnterCallback);
-            Assert.IsNull(callbackModel.OnPointerUpCallback);
+            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
+            Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
+            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
         }
 
         [Test]
@@ -307,13 +307,13 @@ namespace Tests
             expectedEventTypes.Enqueue(PointerEventType.PetHoverEnter);
             expectedEventTypes.Enqueue(PointerEventType.PetHoverLeave);
 
-            var inputResult = internalComponents.inputEventResultsComponent.GetFor(scene, entity).model;
+            var inputResult = internalComponents.inputEventResultsComponent.GetFor(scene, entity)?.model;
 
-            Assert.AreEqual(4, inputResult.events.Count);
+            Assert.AreEqual(4, inputResult.Value.events.Count);
 
-            for (int i=0; i< inputResult.events.Count; i++)
+            for (int i=0; i< inputResult.Value.events.Count; i++)
             {
-                InternalInputEventResults.EventData result = inputResult.events[i];
+                InternalInputEventResults.EventData result = inputResult.Value.events[i];
                 Assert.AreEqual(entity.entityId, result.hit.EntityId);
                 Assert.AreEqual(InputAction.IaPointer, result.button);
                 Assert.AreEqual(expectedEventTypes.Dequeue(), result.type);

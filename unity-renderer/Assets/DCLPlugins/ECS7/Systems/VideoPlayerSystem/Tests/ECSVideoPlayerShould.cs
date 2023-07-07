@@ -135,9 +135,9 @@ namespace Tests
             var videoMaterial01 = videoMaterialComponent.GetFor(scene0, entity01);
             var videoMaterial10 = videoMaterialComponent.GetFor(scene1, entity10);
 
-            Assert.True(ReferenceEquals(videoMaterial00.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
-            Assert.True(ReferenceEquals(videoMaterial01.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
-            Assert.False(ReferenceEquals(videoMaterial10.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.model.videoPlayer.texture));
+            Assert.True(ReferenceEquals(videoMaterial00.Value.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.Value.model.videoPlayer.texture));
+            Assert.True(ReferenceEquals(videoMaterial01.Value.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.Value.model.videoPlayer.texture));
+            Assert.False(ReferenceEquals(videoMaterial10.Value.model.material.GetTexture(ShaderUtils.BaseMap), videoPlayerComponent.Value.model.videoPlayer.texture));
         }
 
         [UnityTest]

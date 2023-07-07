@@ -169,8 +169,8 @@ namespace Tests
             // root scene ui component should exist now
             Assert.IsNotNull(uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY));
 
-            var rootSceneModel = uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model;
-            var entityModel = uiContainerComponent.GetFor(scene, entityId).model;
+            var rootSceneModel = uiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model;
+            var entityModel = uiContainerComponent.GetFor(scene, entityId).Value.model;
             Assert.IsTrue(rootSceneModel.rootElement.Contains(entityModel.rootElement));
 
             // check if it was initialized correctly
@@ -211,7 +211,7 @@ namespace Tests
             ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parent doesnt exist yet, so it shouldn't be any parenting
-            Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).model.parentElement);
+            Assert.IsNull(uiContainerComponent.GetFor(scene, childEntityId).Value.model.parentElement);
 
             // create parent container
             var parentModel = new InternalUiContainer(parentEntityId);
@@ -222,8 +222,8 @@ namespace Tests
             ECSScenesUiSystem.ApplyParenting(ref scenesToSort, uiDocument, uiContainerComponent, -1);
 
             // parenting should be applied
-            var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).model;
-            var childEntityModel = uiContainerComponent.GetFor(scene, childEntityId).model;
+            var parentEntityModel = uiContainerComponent.GetFor(scene, parentEntityId).Value.model;
+            var childEntityModel = uiContainerComponent.GetFor(scene, childEntityId).Value.model;
             Assert.AreEqual(parentEntityModel.rootElement, childEntityModel.parentElement);
             Assert.IsTrue(parentEntityModel.rootElement.Contains(childEntityModel.rootElement));
         }
@@ -519,7 +519,7 @@ namespace Tests
             Assert.AreEqual(sceneModel.rootElement[3], modelEntity1.rootElement);
 
             // Check flag reset
-            Assert.IsFalse(uiContainerComponent.GetFor(scene, entity0.entityId).model.shouldSort);
+            Assert.IsFalse(uiContainerComponent.GetFor(scene, entity0.entityId).Value.model.shouldSort);
 
             // Change order
             modelEntity0.rightOf = 0;
@@ -558,7 +558,7 @@ namespace Tests
 
             // Set baseParentEntity as baseParentChildEntity parent
             uiTransformHandler.OnComponentModelUpdated(scene, baseParentChildEntity, new PBUiTransform() { Parent = (int)baseParentEntity.entityId });
-            InternalUiContainer baseParentChildEntityModel = uiContainerComponent.GetFor(scene, baseParentChildEntity).model;
+            InternalUiContainer baseParentChildEntityModel = uiContainerComponent.GetFor(scene, baseParentChildEntity).Value.model;
 
             // Add UiText to baseParentChildEntity
             UiTextHandler uiTextHandler = new UiTextHandler(uiContainerComponent, AssetPromiseKeeper_Font.i, 34);

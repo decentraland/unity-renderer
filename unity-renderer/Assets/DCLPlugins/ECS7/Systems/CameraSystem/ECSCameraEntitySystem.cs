@@ -107,7 +107,7 @@ namespace ECSSystems.CameraSystem
 
                 if (scene.entities.TryGetValue(SpecialEntityId.CAMERA_ENTITY, out var entity))
                 {
-                    ECSTransform stored = transformComponent.Get(scene, entity).model ?? new ECSTransform();
+                    ECSTransform stored = transformComponent.Get(scene, entity.entityId)?.model ?? new ECSTransform();
                     stored.position = t.position;
                     stored.rotation = t.rotation;
                     stored.scale = t.scale;
