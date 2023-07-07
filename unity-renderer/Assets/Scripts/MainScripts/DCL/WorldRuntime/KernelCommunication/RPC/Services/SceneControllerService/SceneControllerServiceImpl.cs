@@ -107,7 +107,7 @@ namespace RPC.Services
                     contents = parsedContent,
                     id = request.Entity.Id,
                     sdk7 = request.Sdk7,
-                    name = parsedMetadata.display?.navmapThumbnail ?? request.SceneName,
+                    name = parsedMetadata.display?.title ?? request.SceneName,
                     baseUrl = request.BaseUrl,
                     sceneNumber = sceneNumber,
                     isPortableExperience = request.IsPortableExperience,

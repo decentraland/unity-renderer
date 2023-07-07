@@ -7,43 +7,75 @@ namespace DCL.PortableExperiences.Confirmation
     {
         private readonly IExperiencesConfirmationPopupView view;
         private readonly DataStore dataStore;
+        private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
         private readonly List<string> descriptionBuffer = new ();
         private Action acceptCallback;
         private Action rejectCallback;
+        private string experienceId;
+        private bool dontShowAnymore;
 
         public ExperiencesConfirmationPopupController(IExperiencesConfirmationPopupView view,
-            DataStore dataStore)
+            DataStore dataStore,
+            IConfirmedExperiencesRepository confirmedExperiencesRepository)
         {
             this.view = view;
             this.dataStore = dataStore;
+            this.confirmedExperiencesRepository = confirmedExperiencesRepository;
 
             view.Hide(true);
 
             view.OnAccepted += () =>
             {
                 view.Hide();
+
+                if (dontShowAnymore)
+                    confirmedExperiencesRepository.Set(experienceId, true);
+
                 acceptCallback?.Invoke();
             };
             view.OnRejected += () =>
             {
                 view.Hide();
+
+                if (dontShowAnymore)
+                    confirmedExperiencesRepository.Set(experienceId, false);
+
                 rejectCallback?.Invoke();
             };
+            view.OnDontShowAnymore += () => dontShowAnymore = true;
+            view.OnKeepShowing += () => dontShowAnymore = false;
 
-            dataStore.PendingPortableExperienceToBeConfirmed.Confirm.OnChange += OnConfirmRequested;
+            dataStore.world.portableExperiencePendingToConfirm.OnChange += OnConfirmRequested;
         }
 
         public void Dispose()
         {
             view.Dispose();
 
-            dataStore.PendingPortableExperienceToBeConfirmed.Confirm.OnChange -= OnConfirmRequested;
+            dataStore.world.portableExperiencePendingToConfirm.OnChange -= OnConfirmRequested;
         }
 
         private void OnConfirmRequested(ExperiencesConfirmationData current, ExperiencesConfirmationData previous)
         {
+            if (dataStore.world.ignorePortableExperienceConfirmation.Equals(current.Experience.ExperienceId))
+            {
+                current.OnAcceptCallback?.Invoke();
+                return;
+            }
+
+            if (confirmedExperiencesRepository.Contains(current.Experience.ExperienceId))
+            {
+                if (confirmedExperiencesRepository.Get(current.Experience.ExperienceId))
+                    current.OnAcceptCallback?.Invoke();
+                else
+                    current.OnRejectCallback?.Invoke();
+
+                return;
+            }
+
             ExperiencesConfirmationData.ExperienceMetadata metadata = current.Experience;
 
+            experienceId = current.Experience.ExperienceId;
             acceptCallback = current.OnAcceptCallback;
             rejectCallback = current.OnRejectCallback;
 

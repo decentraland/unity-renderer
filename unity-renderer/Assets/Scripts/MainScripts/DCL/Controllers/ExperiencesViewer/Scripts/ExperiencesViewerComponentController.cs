@@ -31,6 +31,7 @@ namespace DCL.ExperiencesViewer
         private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences =>
             DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
+        private BaseVariable<string> ignorePortableExperienceConfirmation => DataStore.i.world.ignorePortableExperienceConfirmation;
 
         internal IExperiencesViewerComponentView view;
         private UserProfile userProfile;
@@ -110,6 +111,8 @@ namespace DCL.ExperiencesViewer
         {
             if (isPlaying)
             {
+                ignorePortableExperienceConfirmation.Set(pexId);
+
                 WebInterface.SetDisabledPortableExperiences(
                     disabledPortableExperiences.GetKeys()
                                                .Where(s => s != pexId)
@@ -181,6 +184,9 @@ namespace DCL.ExperiencesViewer
 
             view.AddAvailableExperience(experienceToAdd);
             numOfLoadedExperiences.Set(GetPortableExperienceCount());
+
+            if (ignorePortableExperienceConfirmation.Equals(newPortableExperienceScene.sceneData.id))
+                ignorePortableExperienceConfirmation.Set(null);
         }
 
         private void OnPEXSceneRemoved(string id)

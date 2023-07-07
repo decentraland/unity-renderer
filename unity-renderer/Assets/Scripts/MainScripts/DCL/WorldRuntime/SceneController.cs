@@ -32,7 +32,7 @@ namespace DCL
             DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
 
-        private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.PendingPortableExperienceToBeConfirmed.Confirm;
+        private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
 
@@ -767,7 +767,7 @@ namespace DCL
                     Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
             }
 
-            if (globalScene.isPortableExperience)
+            void ConfirmPortableExperience(CreateGlobalSceneMessage globalScene)
             {
                 string iconUrl = null;
 
@@ -803,6 +803,9 @@ namespace DCL
                         disabledPortableExperiences.GetKeys().ToArray()),
                 });
             }
+
+            if (globalScene.isPortableExperience)
+                ConfirmPortableExperience(globalScene);
             else
                 CreateGlobalSceneInternal(globalScene);
         }

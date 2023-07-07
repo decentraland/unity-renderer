@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Providers;
 using System.Threading;
 
@@ -22,7 +23,8 @@ namespace DCL.PortableExperiences.Confirmation
                                              "ExperiencesConfirmationPopup", cancellationToken: cancellationToken);
 
             popupController = new ExperiencesConfirmationPopupController(view,
-                DataStore.i);
+                DataStore.i,
+                new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs()));
         }
 
         public void Dispose()
