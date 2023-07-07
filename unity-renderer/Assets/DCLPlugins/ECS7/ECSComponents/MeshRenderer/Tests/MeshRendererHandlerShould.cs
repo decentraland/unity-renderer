@@ -87,7 +87,7 @@ namespace Tests
             yield return null;
 
             Renderer renderer = entity.gameObject.GetComponentInChildren<Renderer>();
-            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).model.renderers.Contains(renderer));
+            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).Value.model.renderers.Contains(renderer));
 
             handler.OnComponentRemoved(scene, entity);
             yield return null;

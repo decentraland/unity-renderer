@@ -90,10 +90,10 @@ namespace Tests
             Assert.IsFalse(renderer01.enabled);
 
             // components should not be dirty anymore
-            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity01).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene0, entity01).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity01).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene0, entity01).Value.model.dirty);
 
             // entity from scene1 should not have changed
             Assert.IsTrue(renderer10.enabled);
@@ -108,8 +108,8 @@ namespace Tests
             Assert.IsFalse(renderer10.enabled);
 
             // components should not be dirty anymore
-            Assert.IsFalse(visibilityComponent.GetFor(scene1, entity10).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene1, entity10).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene1, entity10).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene1, entity10).Value.model.dirty);
 
             // change visibility for scene1 entity
             visibilityComponent.PutFor(scene1, entity10, new InternalVisibility(true));
