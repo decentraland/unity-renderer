@@ -20,6 +20,7 @@ namespace DCL
         public List<MappingPair> contents = new ();
         public Dictionary<string, string> fileToHash = new ();
         public HashSet<string> assetBundles = new ();
+        public bool assetBundlesFetched;
 
         public override string ToString()
         {
