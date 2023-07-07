@@ -9,6 +9,7 @@ namespace DCL.PortableExperiences.Confirmation
         private readonly DataStore dataStore;
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
         private readonly List<string> descriptionBuffer = new ();
+
         private Action acceptCallback;
         private Action rejectCallback;
         private string experienceId;

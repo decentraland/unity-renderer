@@ -28,8 +28,7 @@ namespace DCL
 
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
-        private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences =>
-            DataStore.i.world.disabledPortableExperienceIds;
+        private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences => DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
 
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
@@ -779,14 +778,16 @@ namespace DCL
                         contents = globalScene.contents,
                         sceneCid = globalScene.id,
                     };
+
                     contentProvider.BakeHashes();
 
                     iconUrl = contentProvider.GetContentsUrl(globalScene.icon);
                 }
 
-                if (!disabledPortableExperiences.ContainsKey(globalScene.id))
-                    disabledPortableExperiences.Add(globalScene.id,
-                        (name: globalScene.name, description: globalScene.description, icon: iconUrl));
+                (string name, string description, string icon) disabledPx =
+                    (name: globalScene.name, description: globalScene.description, icon: iconUrl);
+
+                disabledPortableExperiences.AddOrSet(globalScene.id, disabledPx);
 
                 pendingPortableExperienceToBeConfirmed.Set(new ExperiencesConfirmationData
                 {
@@ -799,8 +800,13 @@ namespace DCL
                         Description = globalScene.description,
                     },
                     OnAcceptCallback = () => CreateGlobalSceneInternal(globalScene),
-                    OnRejectCallback = () => WebInterface.SetDisabledPortableExperiences(
-                        disabledPortableExperiences.GetKeys().ToArray()),
+                    OnRejectCallback = () =>
+                    {
+                        disabledPortableExperiences.AddOrSet(globalScene.id, disabledPx);
+
+                        WebInterface.SetDisabledPortableExperiences(
+                            disabledPortableExperiences.GetKeys().ToArray());
+                    },
                 });
             }
 
