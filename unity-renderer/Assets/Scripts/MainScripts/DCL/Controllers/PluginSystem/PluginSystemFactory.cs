@@ -45,7 +45,7 @@ namespace DCL
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
             pluginSystem.Register<SkyboxController>(() => new SkyboxController(DataStore.i));
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
-            pluginSystem.Register<ExperiencesConfirmationPlugin>(() => new ExperiencesConfirmationPlugin());
+            pluginSystem.RegisterWithFlag<ExperiencesConfirmationPlugin>(() => new ExperiencesConfirmationPlugin(), "px_confirm_enabled");
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());

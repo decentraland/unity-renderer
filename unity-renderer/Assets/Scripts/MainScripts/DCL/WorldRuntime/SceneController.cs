@@ -804,7 +804,8 @@ namespace DCL
                 });
             }
 
-            if (globalScene.isPortableExperience)
+            if (globalScene.isPortableExperience
+                && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("px_confirm_enabled"))
                 ConfirmPortableExperience(globalScene);
             else
                 CreateGlobalSceneInternal(globalScene);
