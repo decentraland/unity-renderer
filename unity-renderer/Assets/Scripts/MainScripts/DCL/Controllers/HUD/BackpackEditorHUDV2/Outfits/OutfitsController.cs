@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEngine;
 
 namespace DCL.Backpack
 {
@@ -39,7 +38,6 @@ namespace DCL.Backpack
 
             view.OnOutfitEquipped += OutfitEquip;
             view.OnOutfitDiscarded += DiscardOutfit;
-            view.OnOutfitSaved += SaveOutfit;
             view.OnTrySaveAsGuest += ShowGuestModal;
             view.OnOutfitLocalSave += SaveOutfitLocally;
 
@@ -76,13 +74,12 @@ namespace DCL.Backpack
             localOutfits[outfitIndex] = outfitItem;
             view.ShowOutfit(outfitItem, GenerateAvatarModel(outfitItem), ctsShowOutfit.Token).Forget();
             shouldDeploy = true;
+
+            backpackAnalyticsService.SendOutfitSave(outfitIndex);
         }
 
         private void ShowGuestModal() =>
             dataStore.HUDs.connectWalletModalVisible.Set(true);
-
-        private void SaveOutfit(OutfitItem outfit) =>
-            backpackAnalyticsService.SendOutfitSave(outfit.slot);
 
         private void DiscardOutfit(int outfitIndex)
         {
@@ -149,7 +146,6 @@ namespace DCL.Backpack
             ctsShowOutfit = null;
             view.OnOutfitEquipped -= OutfitEquip;
             view.OnOutfitDiscarded -= DiscardOutfit;
-            view.OnOutfitSaved -= SaveOutfit;
             view.OnTrySaveAsGuest -= ShowGuestModal;
 
             dataStore.HUDs.avatarEditorVisible.OnChange -= ChangedVisibility;

@@ -1,10 +1,7 @@
 using Cysharp.Threading.Tasks;
-using DCL;
 using DG.Tweening;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +24,6 @@ namespace DCL.Backpack
         public event Action OnBackButtonPressed;
         public event Action<OutfitItem> OnOutfitEquipped;
         public event Action<int> OnOutfitDiscarded;
-        public event Action<OutfitItem> OnOutfitSaved;
         public event Action<int> OnOutfitLocalSave;
         public event Action OnTrySaveAsGuest;
 
