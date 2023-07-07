@@ -33,8 +33,15 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private GameObject noPlaces;
     [SerializeField] private TMP_Text noEventsText;
     [SerializeField] private TMP_Text noPlacesText;
+    [SerializeField] internal EventCardComponentView eventCardModalPrefab;
 
+    internal EventCardComponentView eventModal;
     public event Action<int> OnRequestAllEvents;
+
+    public event Action<EventCardComponentModel> OnInfoClicked;
+    public event Action<EventFromAPIModel> OnJumpInClicked;
+    public event Action<string> OnSubscribeEventClicked;
+    public event Action<string> OnUnsubscribeEventClicked;
 
     private UnityObjectPool<EventCardComponentView> eventsPool;
     private List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
@@ -53,6 +60,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         backFromAllList.onClick.AddListener(CloseFullList);
         noEvents.SetActive(false);
         noPlaces.SetActive(true);
+        eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
     }
 
     private void RequestAdditionalPage()
@@ -81,6 +89,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             eventCardComponentView.model = eventCardComponentModel;
             eventCardComponentView.RefreshControl();
             pooledEvents.Add(eventCardComponentView);
+            ConfigureEventCardActions(eventCardComponentView, eventCardComponentModel);
         }
         eventsParent.gameObject.SetActive(true);
         loadingEvents.gameObject.SetActive(false);
@@ -96,6 +105,24 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         }
     }
 
+    private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
+    {
+        view.onInfoClick.RemoveAllListeners();
+        view.onSubscribeClick.RemoveAllListeners();
+        view.onUnsubscribeClick.RemoveAllListeners();
+        view.onJumpInClick.RemoveAllListeners();
+        view.onInfoClick.AddListener(() => OnInfoClicked?.Invoke(model));
+        view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
+        view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
+        view.onJumpInClick.AddListener(() => OnJumpInClicked?.Invoke(new EventFromAPIModel(){}));
+    }
+
+    public void ShowEventModal(EventCardComponentModel eventInfo)
+    {
+        eventModal.Show();
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+    }
+
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
     {
         showMore.gameObject.SetActive(showMoreButton);
@@ -105,6 +132,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             eventCardComponentView.model = eventCardComponentModel;
             eventCardComponentView.RefreshControl();
             pooledFullEvents.Add(eventCardComponentView);
+            ConfigureEventCardActions(eventCardComponentView, eventCardComponentModel);
         }
         loadingAll.SetActive(false);
         Utils.ForceRebuildLayoutImmediate(fullEventsParent);

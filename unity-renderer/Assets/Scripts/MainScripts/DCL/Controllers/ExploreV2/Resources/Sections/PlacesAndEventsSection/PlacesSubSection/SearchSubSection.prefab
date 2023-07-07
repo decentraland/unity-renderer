@@ -1982,6 +1982,8 @@ MonoBehaviour:
   noPlaces: {fileID: 7336786057874521687}
   noEventsText: {fileID: 4253135333131467840}
   noPlacesText: {fileID: 3235372174872606366}
+  eventCardModalPrefab: {fileID: 5942660468817174801, guid: 471a351208321e646a1b5be5934eddf3,
+    type: 3}
 --- !u!1 &5083932858579116325
 GameObject:
   m_ObjectHideFlags: 0

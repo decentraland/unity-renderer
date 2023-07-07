@@ -78,7 +78,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         searchSubSectionComponentController = new SearchSubSectionComponentController(
             view.SearchSubSectionView,
             view.SearchBar,
-            eventsAPI);
+            eventsAPI,
+            userProfileBridge,
+            dataStore);
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);

@@ -41,7 +41,7 @@ public class EventsAPIController : IEventsAPIController
     public async UniTask<(List<EventFromAPIModel>, int total)> SearchEvents(string searchString, int pageNumber, int pageSize, CancellationToken ct)
     {
         const string URL = URL_GET_ALL_EVENTS + "?order=desc&search={0}&offset={1}&limit={2}";
-        var result = await webRequestController.Ref.GetAsync(string.Format(URL, searchString, pageNumber * pageSize, pageSize), cancellationToken: ct);
+        var result = await webRequestController.Ref.GetAsync(string.Format(URL, searchString, pageNumber * pageSize, pageSize), cancellationToken: ct, isSigned: true);
 
         if (result.result != UnityWebRequest.Result.Success)
             throw new Exception($"Error fetching searched events:\n{result.error}");
