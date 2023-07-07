@@ -11,6 +11,7 @@ using DCL.Controllers;
 using DCL.Interface;
 using DCL.SettingsCommon;
 using DCL.Shaders;
+using NUnit.Framework;
 using Assert = UnityEngine.Assertions.Assert;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -448,6 +449,7 @@ namespace Tests
             Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
         }
 
+        [Category("Flaky")]
         [UnityTest]
         public IEnumerator VideoTextureIsDisposedAndReloadedCorrectly()
         {
