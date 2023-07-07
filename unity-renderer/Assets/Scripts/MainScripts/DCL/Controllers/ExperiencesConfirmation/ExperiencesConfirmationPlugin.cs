@@ -24,7 +24,8 @@ namespace DCL.PortableExperiences.Confirmation
 
             popupController = new ExperiencesConfirmationPopupController(view,
                 DataStore.i,
-                new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs()));
+                new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs()),
+                new UserProfileWebInterfaceBridge());
         }
 
         public void Dispose()

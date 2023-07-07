@@ -8,5 +8,6 @@ namespace DCL.PortableExperiences.Confirmation
         public List<string> Permissions;
         public string IconUrl;
         public string Description;
+        public bool IsSmartWearable;
     }
 }

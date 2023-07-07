@@ -8,6 +8,7 @@ namespace DCL.PortableExperiences.Confirmation
         private readonly IExperiencesConfirmationPopupView view;
         private readonly DataStore dataStore;
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
+        private readonly IUserProfileBridge userProfileBridge;
         private readonly List<string> descriptionBuffer = new ();
 
         private Action acceptCallback;
@@ -17,11 +18,13 @@ namespace DCL.PortableExperiences.Confirmation
 
         public ExperiencesConfirmationPopupController(IExperiencesConfirmationPopupView view,
             DataStore dataStore,
-            IConfirmedExperiencesRepository confirmedExperiencesRepository)
+            IConfirmedExperiencesRepository confirmedExperiencesRepository,
+            IUserProfileBridge userProfileBridge)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.confirmedExperiencesRepository = confirmedExperiencesRepository;
+            this.userProfileBridge = userProfileBridge;
 
             view.Hide(true);
 
@@ -97,6 +100,7 @@ namespace DCL.PortableExperiences.Confirmation
                 IconUrl = metadata.IconUrl,
                 Permissions = descriptionBuffer,
                 Description = metadata.Description,
+                IsSmartWearable = userProfileBridge.GetOwn().avatar.wearables.Contains(pxId),
             });
         }
 

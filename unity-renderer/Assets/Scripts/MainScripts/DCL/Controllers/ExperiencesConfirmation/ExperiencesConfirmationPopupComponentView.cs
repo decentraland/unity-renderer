@@ -21,6 +21,8 @@ namespace DCL.PortableExperiences.Confirmation
         [SerializeField] private ImageComponentView iconImage;
         [SerializeField] private Texture2D defaultIconSprite;
         [SerializeField] private RectTransform root;
+        [SerializeField] private GameObject smartWearableTitle;
+        [SerializeField] private GameObject scenePxTitle;
 
         public event Action OnAccepted;
         public event Action OnRejected;
@@ -67,6 +69,9 @@ namespace DCL.PortableExperiences.Confirmation
                 iconImage.SetImage(model.IconUrl);
                 iconImage.ImageComponent.color = Color.white;
             }
+
+            smartWearableTitle.SetActive(model.IsSmartWearable);
+            scenePxTitle.SetActive(!model.IsSmartWearable);
 
             root.ForceUpdateLayout();
         }
