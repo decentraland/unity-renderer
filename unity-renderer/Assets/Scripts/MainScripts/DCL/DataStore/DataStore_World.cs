@@ -25,7 +25,7 @@ namespace DCL
         public readonly BaseHashSet<string> portableExperienceIds = new ();
         public readonly BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperienceIds = new ();
         public readonly BaseVariable<ExperiencesConfirmationData> portableExperiencePendingToConfirm = new ();
-        public readonly BaseVariable<string> ignorePortableExperienceConfirmation = new ();
+        public readonly BaseVariable<string> forcePortableExperience = new ();
         public readonly BaseVariable<GraphicRaycaster> currentRaycaster = new BaseVariable<GraphicRaycaster>();
 
         public BaseVariable<Transform> avatarTransform = new BaseVariable<Transform>(null);

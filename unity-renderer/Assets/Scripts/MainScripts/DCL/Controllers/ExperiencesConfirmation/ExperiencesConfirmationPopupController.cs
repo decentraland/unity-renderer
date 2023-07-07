@@ -33,6 +33,7 @@ namespace DCL.PortableExperiences.Confirmation
 
                 acceptCallback?.Invoke();
             };
+
             view.OnRejected += () =>
             {
                 view.Hide();
@@ -42,6 +43,7 @@ namespace DCL.PortableExperiences.Confirmation
 
                 rejectCallback?.Invoke();
             };
+
             view.OnDontShowAnymore += () => dontShowAnymore = true;
             view.OnKeepShowing += () => dontShowAnymore = false;
 
@@ -57,15 +59,17 @@ namespace DCL.PortableExperiences.Confirmation
 
         private void OnConfirmRequested(ExperiencesConfirmationData current, ExperiencesConfirmationData previous)
         {
-            if (dataStore.world.ignorePortableExperienceConfirmation.Equals(current.Experience.ExperienceId))
-            {
-                current.OnAcceptCallback?.Invoke();
-                return;
-            }
+            string pxId = current.Experience.ExperienceId;
 
-            if (confirmedExperiencesRepository.Contains(current.Experience.ExperienceId))
+            if (IsPortableExperienceAlreadyConfirmed(pxId))
             {
-                if (confirmedExperiencesRepository.Get(current.Experience.ExperienceId))
+                if (ShouldForceAcceptPortableExperience(pxId))
+                {
+                    current.OnAcceptCallback?.Invoke();
+                    return;
+                }
+
+                if (IsPortableExperienceConfirmedAndAccepted(pxId))
                     current.OnAcceptCallback?.Invoke();
                 else
                     current.OnRejectCallback?.Invoke();
@@ -75,7 +79,7 @@ namespace DCL.PortableExperiences.Confirmation
 
             ExperiencesConfirmationData.ExperienceMetadata metadata = current.Experience;
 
-            experienceId = current.Experience.ExperienceId;
+            experienceId = pxId;
             acceptCallback = current.OnAcceptCallback;
             rejectCallback = current.OnRejectCallback;
 
@@ -85,6 +89,7 @@ namespace DCL.PortableExperiences.Confirmation
                 descriptionBuffer.Add(ConvertPermissionIdToDescription(permission));
 
             view.Show();
+
             view.SetModel(new ExperiencesConfirmationViewModel
             {
                 Name = metadata.ExperienceName,
@@ -93,6 +98,15 @@ namespace DCL.PortableExperiences.Confirmation
                 Description = metadata.Description,
             });
         }
+
+        private bool ShouldForceAcceptPortableExperience(string pxId) =>
+            dataStore.world.forcePortableExperience.Equals(pxId);
+
+        private bool IsPortableExperienceConfirmedAndAccepted(string pxId) =>
+            confirmedExperiencesRepository.Get(pxId);
+
+        private bool IsPortableExperienceAlreadyConfirmed(string pxId) =>
+            confirmedExperiencesRepository.Contains(pxId);
 
         private string ConvertPermissionIdToDescription(string permissionId)
         {
