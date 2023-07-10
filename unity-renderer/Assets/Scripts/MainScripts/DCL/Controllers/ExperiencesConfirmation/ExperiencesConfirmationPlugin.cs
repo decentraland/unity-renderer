@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Providers;
+using DCL.World.PortableExperiences;
 using System.Threading;
 
 namespace DCL.PortableExperiences.Confirmation

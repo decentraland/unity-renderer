@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
+using DCL.World.PortableExperiences;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -17,23 +18,28 @@ namespace DCL
 {
     public class SceneController : ISceneController
     {
-        public static bool VERBOSE = false;
-        const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
+        private const bool VERBOSE = false;
+        private const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
 
-        public bool enabled { get; set; } = true;
-        internal BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
+        private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
+
+        private BaseVariable<Transform> isPexViewerInitialized => DataStore.i.experiencesViewer.isInitialized;
 
         //TODO(Brian): Move to WorldRuntimePlugin later
         private Coroutine deferredDecodingCoroutine;
-
         private CancellationTokenSource tokenSource;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
         private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences => DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
-
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
+        public bool enabled { get; set; } = true;
+
+        public SceneController(IConfirmedExperiencesRepository confirmedExperiencesRepository)
+        {
+            this.confirmedExperiencesRepository = confirmedExperiencesRepository;
+        }
 
         public void Initialize()
         {
@@ -771,7 +777,7 @@ namespace DCL
                     Debug.Log($"Creating Global scene {newGlobalSceneNumber}");
             }
 
-            void ConfirmPortableExperience(CreateGlobalSceneMessage globalScene)
+            (string name, string description, string icon) CreateDisabledPortableExperience(CreateGlobalSceneMessage globalScene)
             {
                 string iconUrl = null;
 
@@ -789,8 +795,21 @@ namespace DCL
                     iconUrl = contentProvider.GetContentsUrl(globalScene.icon);
                 }
 
-                (string name, string description, string icon) disabledPx =
-                    (name: globalScene.name, description: globalScene.description, icon: iconUrl);
+                return (name: globalScene.name, description: globalScene.description, icon: iconUrl);
+            }
+
+            void DisablePortableExperience(string pxId,
+                (string name, string description, string icon) disabledPx)
+            {
+                disabledPortableExperiences.AddOrSet(pxId, disabledPx);
+
+                WebInterface.SetDisabledPortableExperiences(
+                    disabledPortableExperiences.GetKeys().ToArray());
+            }
+
+            void ConfirmPortableExperience(CreateGlobalSceneMessage globalScene)
+            {
+                (string name, string description, string icon) disabledPx = CreateDisabledPortableExperience(globalScene);
 
                 disabledPortableExperiences.AddOrSet(globalScene.id, disabledPx);
 
@@ -801,23 +820,33 @@ namespace DCL
                         Permissions = globalScene.requiredPermissions,
                         ExperienceId = globalScene.id,
                         ExperienceName = globalScene.name,
-                        IconUrl = iconUrl,
+                        IconUrl = disabledPx.icon,
                         Description = globalScene.description,
                     },
                     OnAcceptCallback = () => CreateGlobalSceneInternal(globalScene),
-                    OnRejectCallback = () =>
-                    {
-                        disabledPortableExperiences.AddOrSet(globalScene.id, disabledPx);
-
-                        WebInterface.SetDisabledPortableExperiences(
-                            disabledPortableExperiences.GetKeys().ToArray());
-                    },
+                    OnRejectCallback = () => DisablePortableExperience(globalScene.id, disabledPx),
                 });
             }
 
-            if (globalScene.isPortableExperience
-                && DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("px_confirm_enabled"))
-                ConfirmPortableExperience(globalScene);
+            if (globalScene.isPortableExperience)
+            {
+                string pxId = globalScene.id;
+
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("px_confirm_enabled"))
+                {
+                    if (IsPortableExperienceAlreadyConfirmed(pxId))
+                    {
+                        if (ShouldForceAcceptPortableExperience(pxId) || IsPortableExperienceConfirmedAndAccepted(pxId))
+                            CreateGlobalSceneInternal(globalScene);
+                        else
+                            DisablePortableExperience(globalScene.id, CreateDisabledPortableExperience(globalScene));
+                    }
+                    else
+                        ConfirmPortableExperience(globalScene);
+                }
+                else
+                    CreateGlobalSceneInternal(globalScene);
+            }
             else
                 CreateGlobalSceneInternal(globalScene);
         }
@@ -856,5 +885,14 @@ namespace DCL
         public event Action<IParcelScene> OnSceneRemoved;
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
+
+        private bool ShouldForceAcceptPortableExperience(string pxId) =>
+            DataStore.i.world.forcePortableExperience.Equals(pxId);
+
+        private bool IsPortableExperienceConfirmedAndAccepted(string pxId) =>
+            confirmedExperiencesRepository.Get(pxId);
+
+        private bool IsPortableExperienceAlreadyConfirmed(string pxId) =>
+            confirmedExperiencesRepository.Contains(pxId);
     }
 }

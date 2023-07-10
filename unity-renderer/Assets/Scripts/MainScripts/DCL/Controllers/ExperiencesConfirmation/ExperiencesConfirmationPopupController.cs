@@ -1,3 +1,4 @@
+using DCL.World.PortableExperiences;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +8,6 @@ namespace DCL.PortableExperiences.Confirmation
     {
         private readonly IExperiencesConfirmationPopupView view;
         private readonly DataStore dataStore;
-        private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly List<string> descriptionBuffer = new ();
 
@@ -23,7 +23,6 @@ namespace DCL.PortableExperiences.Confirmation
         {
             this.view = view;
             this.dataStore = dataStore;
-            this.confirmedExperiencesRepository = confirmedExperiencesRepository;
             this.userProfileBridge = userProfileBridge;
 
             view.Hide(true);
@@ -65,22 +64,6 @@ namespace DCL.PortableExperiences.Confirmation
         {
             string pxId = current.Experience.ExperienceId;
 
-            if (IsPortableExperienceAlreadyConfirmed(pxId))
-            {
-                if (ShouldForceAcceptPortableExperience(pxId))
-                {
-                    current.OnAcceptCallback?.Invoke();
-                    return;
-                }
-
-                if (IsPortableExperienceConfirmedAndAccepted(pxId))
-                    current.OnAcceptCallback?.Invoke();
-                else
-                    current.OnRejectCallback?.Invoke();
-
-                return;
-            }
-
             ExperiencesConfirmationData.ExperienceMetadata metadata = current.Experience;
 
             experienceId = pxId;
@@ -103,15 +86,6 @@ namespace DCL.PortableExperiences.Confirmation
                 IsSmartWearable = userProfileBridge.GetOwn().avatar.wearables.Contains(pxId),
             });
         }
-
-        private bool ShouldForceAcceptPortableExperience(string pxId) =>
-            dataStore.world.forcePortableExperience.Equals(pxId);
-
-        private bool IsPortableExperienceConfirmedAndAccepted(string pxId) =>
-            confirmedExperiencesRepository.Get(pxId);
-
-        private bool IsPortableExperienceAlreadyConfirmed(string pxId) =>
-            confirmedExperiencesRepository.Contains(pxId);
 
         private string ConvertPermissionIdToDescription(string permissionId)
         {

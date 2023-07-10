@@ -1,6 +1,6 @@
 using DCL.Helpers;
 
-namespace DCL.PortableExperiences.Confirmation
+namespace DCL.World.PortableExperiences
 {
     public class PlayerPrefsConfirmedExperiencesRepository : IConfirmedExperiencesRepository
     {

@@ -1,4 +1,4 @@
-namespace DCL.PortableExperiences.Confirmation
+namespace DCL.World.PortableExperiences
 {
     public interface IConfirmedExperiencesRepository
     {
