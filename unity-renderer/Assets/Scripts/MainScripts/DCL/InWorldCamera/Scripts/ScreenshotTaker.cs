@@ -1,110 +1,138 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScreenshotTaker : MonoBehaviour
 {
-    public Camera mainCamera;
     public string screenshotFileName = "Assets/screenshot3.png";
-    public int screenshotWidth = 1920;
-    public int screenshotHeight = 1080;
+    public int desiredWidth = 1920;
+    public int desiredHeight = 1080;
 
-    private Camera screenshotCamera;
+    public Camera screenshotCamera;
+    public Image image;
+    public RectTransform canvas;
 
-    [ContextMenu(nameof(CreateCamera))]
-    private void CreateCamera()
+    [SerializeField]
+    private RectTransform imageRectTransform;
+    [SerializeField] private Sprite sprite;
+
+    private void Awake()
     {
-        // Calculate the viewport size of the secondary camera
-        int originalViewportWidth = mainCamera.pixelWidth;
-        int originalViewportHeight = mainCamera.pixelHeight;
-
-        // We want the central 16:9 part to be 1920x1080
-        int desiredWidth = 1920;
-        int desiredHeight = 1080;
-
-        // Calculate the height of the secondary camera's viewport based on the desired width
-        int secondaryViewportWidth = originalViewportWidth * desiredWidth / (originalViewportWidth * 9 / 16);
-        int secondaryViewportHeight = secondaryViewportWidth * 10 / 10; // Maintain the 10:10 aspect ratio
-
-        // Create a secondary camera and copy properties from the main camera
-         screenshotCamera = new GameObject("Screenshot Camera").AddComponent<Camera>();
-        screenshotCamera.CopyFrom(mainCamera);
+        sprite = image.sprite;
+        imageRectTransform = image.rectTransform;
     }
 
-    private void CreateCamera1()
+    [ContextMenu(nameof(CopyCamera))]
+    private void CopyCamera()
     {
-        // Calculate the dimensions of the 16:9 rectangle in the center of the screen
-        int height = mainCamera.pixelHeight;
-        int width = mainCamera.pixelWidth;
-        float desiredAspect = (float)screenshotWidth / screenshotHeight;
-        float currentAspect = (float)width / height;
-        float scaleHeight = currentAspect / desiredAspect;
-        float scaleWidth = 1f;
+        screenshotCamera.CopyFrom(Camera.main);
+    }
 
-        // Create a secondary camera and copy properties from the main camera
-        screenshotCamera = new GameObject("Screenshot Camera").AddComponent<Camera>();
-        screenshotCamera.CopyFrom(mainCamera);
+    [ContextMenu(nameof(DebugScaling))]
+    private void DebugScaling()
+    {
+        sprite = image.sprite;
+        imageRectTransform = image.rectTransform;
 
-        // Set up the screenshot camera for 16:9 capture, positioned in the center of main camera view
-        screenshotCamera.rect = new Rect((1f - scaleWidth) / 2f, (1f - scaleHeight) / 2f, scaleWidth, scaleHeight);
+        var (spriteWidth, spriteHeight) = CalculateImageWH();
+
+        Debug.Log($"current Canvas = {canvas.rect.width},{canvas.rect.height}");
+        Debug.Log($"Image = {imageRectTransform.rect.width},{imageRectTransform.rect.height}");
+        Debug.Log($"Sprite = {spriteWidth},{spriteHeight}");
+
+        float scaleFactorW = desiredWidth / spriteWidth;
+        float scaleFactorH = desiredHeight / spriteHeight;
+
+        int renderTextureW = Mathf.RoundToInt(canvas.rect.width * scaleFactorW);
+        int renderTextureH = Mathf.RoundToInt(canvas.rect.height * scaleFactorH);
+
+        Debug.Log($"result RenderTexture = {renderTextureW},{renderTextureH}");
+
+        float rtCenterX = renderTextureW / 2f;
+        float rtCenterY = renderTextureH / 2f;
+
+        float cornerX = rtCenterX - (spriteWidth / 2f);
+        float cornerY = rtCenterY - (spriteHeight / 2f);
+
+        float scaledImageWidth = spriteWidth * scaleFactorW;
+        float scaledImageHeight = spriteHeight * scaleFactorH;
+
+        Debug.Log($"result Texture = {scaledImageWidth},{scaledImageHeight}");
+        Debug.Log($"corner = {cornerX},{cornerY}");
+    }
+
+    private (float, float) CalculateImageWH()
+    {
+        Rect imageRect = imageRectTransform.rect;
+
+        float imageWidth = imageRect.width;
+        float imageHeight = imageRect.height;
+
+        float imageAspect = imageWidth / imageHeight;
+        float spriteAspect = sprite.bounds.size.x / sprite.bounds.size.y;
+
+        float actualWidth, actualHeight;
+
+        // Depending on which dimension is the limiting one (width or height),
+        // calculate the actual size of the sprite on screen.
+        if (imageAspect > spriteAspect)
+        {
+            // The height of the RectTransform is the limiting dimension.
+            // Calculate the width using the sprite's aspect ratio.
+            actualHeight = imageHeight;
+            actualWidth = actualHeight * spriteAspect;
+        }
+        else
+        {
+            // The width of the RectTransform is the limiting dimension.
+            // Calculate the height using the sprite's aspect ratio.
+            actualWidth = imageWidth;
+            actualHeight = actualWidth / spriteAspect;
+        }
+
+        return (actualWidth, actualHeight);
     }
 
     [ContextMenu(nameof(CaptureScreenshot))]
     void CaptureScreenshot()
     {
-        int originalViewportWidth = mainCamera.pixelWidth;
-        int originalViewportHeight = mainCamera.pixelHeight;
+        var (spriteWidth, spriteHeight) = CalculateImageWH();
 
-        // We want the central 16:9 part to be 1920x1080
-        int desiredWidth = 1920;
-        int desiredHeight = 1080;
+        float scaleFactorW = desiredWidth / spriteWidth;
+        float scaleFactorH = desiredHeight / spriteHeight;
 
-        // Calculate the height of the secondary camera's viewport based on the desired width
-        int secondaryViewportWidth = originalViewportWidth * desiredWidth / (originalViewportWidth * 9 / 16);
-        int secondaryViewportHeight = secondaryViewportWidth * 10 / 10; // Maintain the 10:10 aspect ratio
+        int renderTextureWidth = Mathf.RoundToInt(canvas.rect.width * scaleFactorW);
+        int renderTextureHeight = Mathf.RoundToInt(canvas.rect.height * scaleFactorH);
 
-        // Set up the secondary camera to render to a temporary render texture
-        screenshotCamera.targetTexture = RenderTexture.GetTemporary(secondaryViewportWidth, secondaryViewportHeight, 24);
+        var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24);
+        Debug.Log($"RenderTexture = {renderTextureWidth},{renderTextureHeight}");
 
-        // Render the screenshot
+        screenshotCamera.targetTexture = renderTexture;
         screenshotCamera.Render();
-
-        // Read the pixels from the render texture to a new Texture2D
         RenderTexture.active = screenshotCamera.targetTexture;
-        Texture2D screenshot = new Texture2D(desiredWidth, desiredHeight, TextureFormat.RGB24, false);
 
-        // Cut out the central part of the render texture
-        screenshot.ReadPixels(new Rect((secondaryViewportWidth - desiredWidth) / 2, (secondaryViewportHeight - desiredHeight) / 2, desiredWidth, desiredHeight), 0, 0);
-        screenshot.Apply();
+        float rtCenterX = renderTextureWidth / 2f;
+        float rtCenterY = renderTextureHeight / 2f;
+
+        float cornerX = rtCenterX - (desiredWidth / 2f);
+        float cornerY = rtCenterY - (desiredHeight / 2f);
+        Debug.Log($"corner = {cornerX},{cornerY}");
+
+
+        Texture2D texture = new Texture2D(Mathf.RoundToInt(desiredWidth), Mathf.RoundToInt(desiredHeight), TextureFormat.RGB24, false);
+        texture.ReadPixels(new Rect(cornerX, cornerY, desiredWidth, desiredHeight), 0, 0);
+        texture.Apply();
 
         // Save the screenshot
-        byte[] bytes = screenshot.EncodeToPNG();
+        byte[] bytes = texture.EncodeToPNG();
         System.IO.File.WriteAllBytes(screenshotFileName, bytes);
 
         // Clean up
+        Destroy(texture);
+
         RenderTexture.active = null; // Added to avoid errors
-        Destroy(screenshot);
-        RenderTexture.ReleaseTemporary(screenshotCamera.targetTexture);
-    }
-    private void CaptureScreenshot1()
-    {
-        screenshotCamera.targetTexture = RenderTexture.GetTemporary(screenshotWidth, screenshotHeight, 24);
+        screenshotCamera.targetTexture = null;
+        RenderTexture.ReleaseTemporary(renderTexture);
 
-        // Render the screenshot
-        screenshotCamera.Render();
-
-        // Read the pixels from the render texture to a new Texture2D
-        RenderTexture.active = screenshotCamera.targetTexture;
-        Texture2D screenshot = new Texture2D(screenshotWidth, screenshotHeight, TextureFormat.RGB24, false);
-        screenshot.ReadPixels(new Rect(0, 0, screenshotWidth, screenshotHeight), 0, 0);
-        screenshot.Apply();
-
-        // Save the screenshot
-        byte[] bytes = screenshot.EncodeToPNG();
-        System.IO.File.WriteAllBytes(screenshotFileName, bytes);
-
-        // Clean up
-        RenderTexture.active = null; // Added to avoid errors
-        Destroy(screenshot);
-        RenderTexture.ReleaseTemporary(screenshotCamera.targetTexture);
         Debug.Log("Screenshot taken");
     }
 }
