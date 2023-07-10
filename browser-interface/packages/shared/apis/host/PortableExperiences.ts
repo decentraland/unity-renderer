@@ -19,8 +19,6 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
   codegen.registerService(port, PortableExperiencesServiceDefinition, async () => ({
     /**
      * Starts a portable experience.
-     * @param  {SpawnPortableExperienceParameters} [pid] - Information to identify the PE
-     *
      * Returns the handle of the portable experience.
      */
     async spawn(req, ctx) {
@@ -28,12 +26,13 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
 
       // Load via URN.
       if (req.pid) {
-        return await spawnScenePortableExperienceSceneFromUrn(req.pid, ctx.sceneData.id)
+        const px = await spawnScenePortableExperienceSceneFromUrn(req.pid, ctx.sceneData.id)
+        return px
       }
       // Load via Worlds ENS url
       if (!isDclEns(req.ens)) throw new Error('Invalid ens name')
-      const { pid, parentCid } = await spawnPortableExperienceFromEns(req.ens, ctx.sceneData.id)
-      return { pid, parentCid, ens: req.ens }
+      const px = await spawnPortableExperienceFromEns(req.ens, ctx.sceneData.id)
+      return { ...px, ens: req.ens }
     },
 
     /**
@@ -70,7 +69,8 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
         loaded: Array.from(loaded).map(($) => ({
           pid: $.loadableScene.id,
           parentCid: $.loadableScene.parentCid || '',
-          ens: ensPxMapping.get($.loadableScene.id) ?? ''
+          ens: ensPxMapping.get($.loadableScene.id) ?? '',
+          name: $.metadata.display?.title ?? ''
         }))
       }
     }

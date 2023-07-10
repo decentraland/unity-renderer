@@ -14,6 +14,7 @@ import defaultLogger from '../lib/logger'
 export type PortableExperienceHandle = {
   pid: string
   parentCid: string
+  name: string
 }
 
 type PxPid = string
@@ -45,6 +46,7 @@ export async function spawnScenePortableExperienceSceneFromUrn(
   parentCid: string
 ): Promise<PortableExperienceHandle> {
   const px = await getPortableExperienceFromUrn(sceneUrn)
+
   const data = {
     ...px,
     id: removeQueryParamsFromUrn(px.id),
@@ -55,7 +57,8 @@ export async function spawnScenePortableExperienceSceneFromUrn(
 
   return {
     parentCid,
-    pid: data.id
+    pid: data.id,
+    name: px.entity.metadata.display?.title ?? ''
   }
 }
 
@@ -141,5 +144,5 @@ async function spawnPortableExperience(spawnData: LoadableScene): Promise<Portab
   defaultPortableExperiencePermissions.forEach(($) => scene.rpcContext.permissionGranted.add($))
 
   currentPortableExperiences.set(sceneId, scene)
-  return { pid: sceneId, parentCid: spawnData.parentCid || '' }
+  return { pid: sceneId, parentCid: spawnData.parentCid || '', name: scene.metadata.display?.title ?? '' }
 }
