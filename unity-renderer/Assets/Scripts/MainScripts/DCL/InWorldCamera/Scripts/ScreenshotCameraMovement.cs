@@ -1,18 +1,23 @@
-﻿using System;
-using System.Data;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace MainScripts.DCL.InWorldCamera.Scripts
 {
     public class ScreenshotCameraMovement : MonoBehaviour
     {
+        [SerializeField] private LayerMask layerMask;
+        [SerializeField] private CharacterController characterController;
+
         public float movementSpeed = 5f;
         public float rotationSpeed = 100f;
 
         float mouseX;
         float mouseY;
         float rollInput = 0f;
+
+        private void Awake()
+        {
+            characterController = GetComponent<CharacterController>();
+        }
 
         private void OnEnable()
         {
@@ -47,7 +52,24 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
                 upDown = -1f;
 
             Vector3 movement = new Vector3(horizontal, upDown, vertical) * movementSpeed * Time.deltaTime;
-            transform.Translate(movement, Space.Self);
+            Vector3 newPosition = transform.position + transform.TransformDirection(movement);
+
+            MoveCamera(newPosition);
+        }
+
+        private void MoveCamera(Vector3 newPosition)
+        {
+            // const float RADIUS = 0.5f; // Adjust this value based on the size of your camera collider
+            // float maxDistance = Vector3.Distance(transform.position, newPosition);
+            //
+            // if (Physics.SphereCast(transform.position, RADIUS, newPosition - transform.position, out RaycastHit hit, maxDistance))
+            //     newPosition = hit.point - ((newPosition - transform.position).normalized * RADIUS);
+            //
+            // // Set the new position
+            // transform.position = newPosition;
+
+            Vector3 movement = newPosition - transform.position;
+            characterController.Move(movement);
         }
 
         private void Rotate()
