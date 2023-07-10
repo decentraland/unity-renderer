@@ -29,6 +29,8 @@ export function portableExperienceReducer(
     return state
   }
 
+  console.log(action)
+
   switch (action.type) {
     case SHUTDOWN_ALL_PORTABLE_EXPERIENCES: {
       return { ...state, globalPortalExperienceShutDown: true }
