@@ -72,8 +72,11 @@ namespace DCL.PortableExperiences.Confirmation
 
             descriptionBuffer.Clear();
 
-            foreach (string permission in metadata.Permissions)
-                descriptionBuffer.Add(ConvertPermissionIdToDescription(permission));
+            if (metadata.Permissions != null)
+            {
+                foreach (string permission in metadata.Permissions)
+                    descriptionBuffer.Add(ConvertPermissionIdToDescription(permission));
+            }
 
             view.Show();
 
