@@ -116,13 +116,13 @@ namespace ECSSystems.ScenesUiSystem
             if (currentScene == null)
                 return;
 
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.rootElement.style.display = new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
@@ -166,7 +166,7 @@ namespace ECSSystems.ScenesUiSystem
                 if (uiContainerData.model.parentElement != null)
                     continue;
 
-                InternalUiContainer parentDataModel = GetParentContainerModel(
+                var parentDataModel = GetParentContainerModel(
                     internalUiContainerComponent,
                     uiContainerData.scene,
                     uiContainerData.model.parentId);
@@ -175,10 +175,10 @@ namespace ECSSystems.ScenesUiSystem
                 if (parentDataModel != null)
                 {
                     var currentContainerModel = uiContainerData.model;
-                    parentDataModel.rootElement.Add(uiContainerData.model.rootElement);
-                    currentContainerModel.parentElement = parentDataModel.rootElement;
+                    parentDataModel.Value.rootElement.Add(uiContainerData.model.rootElement);
+                    currentContainerModel.parentElement = parentDataModel.Value.rootElement;
 
-                    internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.model.parentId, parentDataModel);
+                    internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.model.parentId, parentDataModel.Value);
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
@@ -187,13 +187,13 @@ namespace ECSSystems.ScenesUiSystem
         internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.parentElement = null;
 
             if (uiDocument.rootVisualElement.Contains(model.rootElement))
@@ -226,12 +226,12 @@ namespace ECSSystems.ScenesUiSystem
         internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             UIDocument uiDocument, IParcelScene currentScene, BaseVariable<bool> isSceneUIEnabled)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
+            ECSComponentData<InternalUiContainer>? sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneRootUiContainer != null)
             {
-                var model = sceneRootUiContainer.model;
+                var model = sceneRootUiContainer.Value.model;
                 uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
                 model.rootElement.style.display = new StyleEnum<DisplayStyle>(isSceneUIEnabled.Get() ? DisplayStyle.Flex : DisplayStyle.None);
@@ -242,20 +242,20 @@ namespace ECSSystems.ScenesUiSystem
             return false;
         }
 
-        private static InternalUiContainer GetParentContainerModel(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+        private static InternalUiContainer? GetParentContainerModel(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             IParcelScene scene, long parentId)
         {
-            InternalUiContainer parentDataModel =
+            InternalUiContainer? parentDataModel =
                 internalUiContainerComponent.GetFor(scene, parentId)?.model;
 
             // create root entity ui container if needed
             if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 parentDataModel = new InternalUiContainer(parentId);
-                var style = parentDataModel.rootElement.style;
+                var style = parentDataModel.Value.rootElement.style;
 
                 // Initialize with default values
-                parentDataModel.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
+                parentDataModel.Value.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
                 style.width = new Length(100f, LengthUnit.Percent);
                 style.height = new Length(100f, LengthUnit.Percent);
                 style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
@@ -304,7 +304,7 @@ namespace ECSSystems.ScenesUiSystem
                     sortSceneTree[model.parentElement] = sceneTreeDictionary;
                 }
 
-                sceneTreeDictionary[model.rigthOf] = new RightOfData(model.rootElement,
+                sceneTreeDictionary[model.rightOf] = new RightOfData(model.rootElement,
                     uiContainerData.entity.entityId);
 
                 model.shouldSort = false;

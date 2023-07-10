@@ -2,6 +2,8 @@
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -23,7 +25,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBPointerEvents model)
         {
-            InternalPointerEvents internalPointerEventsModel = new InternalPointerEvents();
+            var internalPointerEventsModel = new InternalPointerEvents(new List<InternalPointerEvents.Entry>());
 
             for (int i = 0; i < model.PointerEvents.Count; i++)
             {

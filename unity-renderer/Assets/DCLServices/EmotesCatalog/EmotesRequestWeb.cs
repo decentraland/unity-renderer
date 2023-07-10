@@ -117,10 +117,10 @@ namespace DCLServices.EmotesCatalog
         private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids)
         {
             // the copy of the list is intentional
-            var request = new EmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
+            var request = new LambdasEmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
             var url = $"{catalyst.contentUrl}entities/active";
 
-            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], EmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
+            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], LambdasEmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
 
             if (!response.success) throw new Exception($"Fetching wearables failed! {url}\n{string.Join("\n", request.pointers)}");
 

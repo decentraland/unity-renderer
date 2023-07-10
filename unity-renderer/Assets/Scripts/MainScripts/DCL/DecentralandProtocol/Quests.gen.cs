@@ -73,43 +73,44 @@ namespace Decentraland.Quests {
             "Q3VycmVudFN0ZXBzRW50cnkSEgoKc3RlcHNfbGVmdBgDIAEoBxIXCg9zdGVw",
             "c19jb21wbGV0ZWQYBCADKAkSFgoOcmVxdWlyZWRfc3RlcHMYBSADKAkaVQoR",
             "Q3VycmVudFN0ZXBzRW50cnkSCwoDa2V5GAEgASgJEi8KBXZhbHVlGAIgASgL",
-            "MiAuZGVjZW50cmFsYW5kLnF1ZXN0cy5TdGVwQ29udGVudDoCOAEiiQEKBVF1",
+            "MiAuZGVjZW50cmFsYW5kLnF1ZXN0cy5TdGVwQ29udGVudDoCOAEinAEKBVF1",
             "ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24Y",
             "AyABKAkSOAoKZGVmaW5pdGlvbhgEIAEoCzIkLmRlY2VudHJhbGFuZC5xdWVz",
-            "dHMuUXVlc3REZWZpbml0aW9uEhcKD2NyZWF0b3JfYWRkcmVzcxgFIAEoCSJ2",
-            "Cg1RdWVzdEluc3RhbmNlEgoKAmlkGAEgASgJEikKBXF1ZXN0GAIgASgLMhou",
-            "ZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdBIuCgVzdGF0ZRgDIAEoCzIfLmRl",
-            "Y2VudHJhbGFuZC5xdWVzdHMuUXVlc3RTdGF0ZSJvChBRdWVzdFN0YXRlVXBk",
-            "YXRlEhMKC2luc3RhbmNlX2lkGAEgASgJEjQKC3F1ZXN0X3N0YXRlGAIgASgL",
-            "Mh8uZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdFN0YXRlEhAKCGV2ZW50X2lk",
-            "GAMgASgJIuIBCgpVc2VyVXBkYXRlEhQKCnN1YnNjcmliZWQYASABKAhIABJD",
-            "ChJxdWVzdF9zdGF0ZV91cGRhdGUYAiABKAsyJS5kZWNlbnRyYWxhbmQucXVl",
-            "c3RzLlF1ZXN0U3RhdGVVcGRhdGVIABI/ChFuZXdfcXVlc3Rfc3RhcnRlZBgD",
-            "IAEoCzIiLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RJbnN0YW5jZUgAEhcK",
-            "DWV2ZW50X2lnbm9yZWQYBCABKAlIABIUCgx1c2VyX2FkZHJlc3MYBSABKAlC",
-            "CQoHbWVzc2FnZSI/CgZRdWVzdHMSNQoJaW5zdGFuY2VzGAEgAygLMiIuZGVj",
-            "ZW50cmFsYW5kLnF1ZXN0cy5RdWVzdEluc3RhbmNlIpwBChRHZXRBbGxRdWVz",
-            "dHNSZXNwb25zZRItCgZxdWVzdHMYASABKAsyGy5kZWNlbnRyYWxhbmQucXVl",
-            "c3RzLlF1ZXN0c0gAEkkKFWludGVybmFsX3NlcnZlcl9lcnJvchgCIAEoCzIo",
-            "LmRlY2VudHJhbGFuZC5xdWVzdHMuSW50ZXJuYWxTZXJ2ZXJFcnJvckgAQgoK",
-            "CHJlc3BvbnNlIi0KGUdldFF1ZXN0RGVmaW5pdGlvblJlcXVlc3QSEAoIcXVl",
-            "c3RfaWQYASABKAkioAEKGkdldFF1ZXN0RGVmaW5pdGlvblJlc3BvbnNlEisK",
-            "BXF1ZXN0GAEgASgLMhouZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdEgAEkkK",
-            "FWludGVybmFsX3NlcnZlcl9lcnJvchgCIAEoCzIoLmRlY2VudHJhbGFuZC5x",
-            "dWVzdHMuSW50ZXJuYWxTZXJ2ZXJFcnJvckgAQgoKCHJlc3BvbnNlMr8ECg1R",
-            "dWVzdHNTZXJ2aWNlEl8KClN0YXJ0UXVlc3QSJi5kZWNlbnRyYWxhbmQucXVl",
-            "c3RzLlN0YXJ0UXVlc3RSZXF1ZXN0GicuZGVjZW50cmFsYW5kLnF1ZXN0cy5T",
-            "dGFydFF1ZXN0UmVzcG9uc2UiABJfCgpBYm9ydFF1ZXN0EiYuZGVjZW50cmFs",
-            "YW5kLnF1ZXN0cy5BYm9ydFF1ZXN0UmVxdWVzdBonLmRlY2VudHJhbGFuZC5x",
-            "dWVzdHMuQWJvcnRRdWVzdFJlc3BvbnNlIgASVAoJU2VuZEV2ZW50EiEuZGVj",
-            "ZW50cmFsYW5kLnF1ZXN0cy5FdmVudFJlcXVlc3QaIi5kZWNlbnRyYWxhbmQu",
-            "cXVlc3RzLkV2ZW50UmVzcG9uc2UiABJICglTdWJzY3JpYmUSFi5nb29nbGUu",
-            "cHJvdG9idWYuRW1wdHkaHy5kZWNlbnRyYWxhbmQucXVlc3RzLlVzZXJVcGRh",
-            "dGUiADABElMKDEdldEFsbFF1ZXN0cxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0",
-            "eRopLmRlY2VudHJhbGFuZC5xdWVzdHMuR2V0QWxsUXVlc3RzUmVzcG9uc2Ui",
-            "ABJ3ChJHZXRRdWVzdERlZmluaXRpb24SLi5kZWNlbnRyYWxhbmQucXVlc3Rz",
-            "LkdldFF1ZXN0RGVmaW5pdGlvblJlcXVlc3QaLy5kZWNlbnRyYWxhbmQucXVl",
-            "c3RzLkdldFF1ZXN0RGVmaW5pdGlvblJlc3BvbnNlIgBiBnByb3RvMw=="));
+            "dHMuUXVlc3REZWZpbml0aW9uEhcKD2NyZWF0b3JfYWRkcmVzcxgFIAEoCRIR",
+            "CglpbWFnZV91cmwYBiABKAkidgoNUXVlc3RJbnN0YW5jZRIKCgJpZBgBIAEo",
+            "CRIpCgVxdWVzdBgCIAEoCzIaLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3QS",
+            "LgoFc3RhdGUYAyABKAsyHy5kZWNlbnRyYWxhbmQucXVlc3RzLlF1ZXN0U3Rh",
+            "dGUibwoQUXVlc3RTdGF0ZVVwZGF0ZRITCgtpbnN0YW5jZV9pZBgBIAEoCRI0",
+            "CgtxdWVzdF9zdGF0ZRgCIAEoCzIfLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVl",
+            "c3RTdGF0ZRIQCghldmVudF9pZBgDIAEoCSLiAQoKVXNlclVwZGF0ZRIUCgpz",
+            "dWJzY3JpYmVkGAEgASgISAASQwoScXVlc3Rfc3RhdGVfdXBkYXRlGAIgASgL",
+            "MiUuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdFN0YXRlVXBkYXRlSAASPwoR",
+            "bmV3X3F1ZXN0X3N0YXJ0ZWQYAyABKAsyIi5kZWNlbnRyYWxhbmQucXVlc3Rz",
+            "LlF1ZXN0SW5zdGFuY2VIABIXCg1ldmVudF9pZ25vcmVkGAQgASgJSAASFAoM",
+            "dXNlcl9hZGRyZXNzGAUgASgJQgkKB21lc3NhZ2UiPwoGUXVlc3RzEjUKCWlu",
+            "c3RhbmNlcxgBIAMoCzIiLmRlY2VudHJhbGFuZC5xdWVzdHMuUXVlc3RJbnN0",
+            "YW5jZSKcAQoUR2V0QWxsUXVlc3RzUmVzcG9uc2USLQoGcXVlc3RzGAEgASgL",
+            "MhsuZGVjZW50cmFsYW5kLnF1ZXN0cy5RdWVzdHNIABJJChVpbnRlcm5hbF9z",
+            "ZXJ2ZXJfZXJyb3IYAiABKAsyKC5kZWNlbnRyYWxhbmQucXVlc3RzLkludGVy",
+            "bmFsU2VydmVyRXJyb3JIAEIKCghyZXNwb25zZSItChlHZXRRdWVzdERlZmlu",
+            "aXRpb25SZXF1ZXN0EhAKCHF1ZXN0X2lkGAEgASgJIqABChpHZXRRdWVzdERl",
+            "ZmluaXRpb25SZXNwb25zZRIrCgVxdWVzdBgBIAEoCzIaLmRlY2VudHJhbGFu",
+            "ZC5xdWVzdHMuUXVlc3RIABJJChVpbnRlcm5hbF9zZXJ2ZXJfZXJyb3IYAiAB",
+            "KAsyKC5kZWNlbnRyYWxhbmQucXVlc3RzLkludGVybmFsU2VydmVyRXJyb3JI",
+            "AEIKCghyZXNwb25zZTK/BAoNUXVlc3RzU2VydmljZRJfCgpTdGFydFF1ZXN0",
+            "EiYuZGVjZW50cmFsYW5kLnF1ZXN0cy5TdGFydFF1ZXN0UmVxdWVzdBonLmRl",
+            "Y2VudHJhbGFuZC5xdWVzdHMuU3RhcnRRdWVzdFJlc3BvbnNlIgASXwoKQWJv",
+            "cnRRdWVzdBImLmRlY2VudHJhbGFuZC5xdWVzdHMuQWJvcnRRdWVzdFJlcXVl",
+            "c3QaJy5kZWNlbnRyYWxhbmQucXVlc3RzLkFib3J0UXVlc3RSZXNwb25zZSIA",
+            "ElQKCVNlbmRFdmVudBIhLmRlY2VudHJhbGFuZC5xdWVzdHMuRXZlbnRSZXF1",
+            "ZXN0GiIuZGVjZW50cmFsYW5kLnF1ZXN0cy5FdmVudFJlc3BvbnNlIgASSAoJ",
+            "U3Vic2NyaWJlEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Gh8uZGVjZW50cmFs",
+            "YW5kLnF1ZXN0cy5Vc2VyVXBkYXRlIgAwARJTCgxHZXRBbGxRdWVzdHMSFi5n",
+            "b29nbGUucHJvdG9idWYuRW1wdHkaKS5kZWNlbnRyYWxhbmQucXVlc3RzLkdl",
+            "dEFsbFF1ZXN0c1Jlc3BvbnNlIgASdwoSR2V0UXVlc3REZWZpbml0aW9uEi4u",
+            "ZGVjZW50cmFsYW5kLnF1ZXN0cy5HZXRRdWVzdERlZmluaXRpb25SZXF1ZXN0",
+            "Gi8uZGVjZW50cmFsYW5kLnF1ZXN0cy5HZXRRdWVzdERlZmluaXRpb25SZXNw",
+            "b25zZSIAYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -134,7 +135,7 @@ namespace Decentraland.Quests {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Task), global::Decentraland.Quests.Task.Parser, new[]{ "Id", "Description", "ActionItems" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.StepContent), global::Decentraland.Quests.StepContent.Parser, new[]{ "ToDos", "TasksCompleted" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestState), global::Decentraland.Quests.QuestState.Parser, new[]{ "CurrentSteps", "StepsLeft", "StepsCompleted", "RequiredSteps" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quest), global::Decentraland.Quests.Quest.Parser, new[]{ "Id", "Name", "Description", "Definition", "CreatorAddress" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.Quest), global::Decentraland.Quests.Quest.Parser, new[]{ "Id", "Name", "Description", "Definition", "CreatorAddress", "ImageUrl" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestInstance), global::Decentraland.Quests.QuestInstance.Parser, new[]{ "Id", "Quest", "State" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.QuestStateUpdate), global::Decentraland.Quests.QuestStateUpdate.Parser, new[]{ "InstanceId", "QuestState", "EventId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Quests.UserUpdate), global::Decentraland.Quests.UserUpdate.Parser, new[]{ "Subscribed", "QuestStateUpdate", "NewQuestStarted", "EventIgnored", "UserAddress" }, new[]{ "Message" }, null, null, null),
@@ -5269,6 +5270,7 @@ namespace Decentraland.Quests {
       description_ = other.description_;
       definition_ = other.definition_ != null ? other.definition_.Clone() : null;
       creatorAddress_ = other.creatorAddress_;
+      imageUrl_ = other.imageUrl_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -5338,6 +5340,18 @@ namespace Decentraland.Quests {
       }
     }
 
+    /// <summary>Field number for the "image_url" field.</summary>
+    public const int ImageUrlFieldNumber = 6;
+    private string imageUrl_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string ImageUrl {
+      get { return imageUrl_; }
+      set {
+        imageUrl_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -5358,6 +5372,7 @@ namespace Decentraland.Quests {
       if (Description != other.Description) return false;
       if (!object.Equals(Definition, other.Definition)) return false;
       if (CreatorAddress != other.CreatorAddress) return false;
+      if (ImageUrl != other.ImageUrl) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5370,6 +5385,7 @@ namespace Decentraland.Quests {
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (definition_ != null) hash ^= Definition.GetHashCode();
       if (CreatorAddress.Length != 0) hash ^= CreatorAddress.GetHashCode();
+      if (ImageUrl.Length != 0) hash ^= ImageUrl.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5408,6 +5424,10 @@ namespace Decentraland.Quests {
         output.WriteRawTag(42);
         output.WriteString(CreatorAddress);
       }
+      if (ImageUrl.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(ImageUrl);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -5438,6 +5458,10 @@ namespace Decentraland.Quests {
         output.WriteRawTag(42);
         output.WriteString(CreatorAddress);
       }
+      if (ImageUrl.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(ImageUrl);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -5462,6 +5486,9 @@ namespace Decentraland.Quests {
       }
       if (CreatorAddress.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(CreatorAddress);
+      }
+      if (ImageUrl.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ImageUrl);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -5492,6 +5519,9 @@ namespace Decentraland.Quests {
       }
       if (other.CreatorAddress.Length != 0) {
         CreatorAddress = other.CreatorAddress;
+      }
+      if (other.ImageUrl.Length != 0) {
+        ImageUrl = other.ImageUrl;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -5531,6 +5561,10 @@ namespace Decentraland.Quests {
             CreatorAddress = input.ReadString();
             break;
           }
+          case 50: {
+            ImageUrl = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -5567,6 +5601,10 @@ namespace Decentraland.Quests {
           }
           case 42: {
             CreatorAddress = input.ReadString();
+            break;
+          }
+          case 50: {
+            ImageUrl = input.ReadString();
             break;
           }
         }

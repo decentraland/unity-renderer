@@ -11,11 +11,13 @@ using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCLServices.EmotesCatalog;
+using DCLServices.EmotesCatalog.EmotesCatalogService;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.PlacesAPIService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -55,7 +57,7 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
 
-            result.Register<IWebRequestController>(() => new WebRequestController(
+            var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
@@ -65,7 +67,8 @@ namespace DCL
                 new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
-            ));
+            );
+            result.Register<IWebRequestController>(() => webRequestController);
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
@@ -117,7 +120,9 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     DataStore.i.featureFlags.flags);
-                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
+                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
             });
 
             result.Register<ITeleportController>(() => new TeleportController());
@@ -189,6 +194,8 @@ namespace DCL
                 new ChannelsFeatureFlagService(DataStore.i, userProfileWebInterfaceBridge));
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
+
+            result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
 
             // Analytics
 

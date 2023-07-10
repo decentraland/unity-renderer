@@ -160,6 +160,7 @@ export function receiveUserPosition(address: string, position: rfc4.Position) {
 
     sendPeerUserData(address)
   }
+  return peer
 }
 
 function avatarUiProfileForUserId(address: string, contentServerBaseUrl: string) {

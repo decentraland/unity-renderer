@@ -13,6 +13,7 @@ namespace DCL.Quests
         private const int MAX_REWARDS_COUNT = 3;
 
         [SerializeField] internal GameObject rewardsSection;
+        [SerializeField] internal GameObject rewardsNotification;
         [SerializeField] internal TMP_Text questTitle;
         [SerializeField] internal Transform rewardsContainer;
         [SerializeField] private Button confirmButton;
@@ -54,6 +55,7 @@ namespace DCL.Quests
         public void SetIsGuest(bool isGuest)
         {
             guestSection.SetActive(isGuest);
+            rewardsNotification.SetActive(false);
         }
 
         public void SetRewards(List<QuestRewardComponentModel> rewardsList)
@@ -66,10 +68,13 @@ namespace DCL.Quests
             if (rewardsList == null || rewardsList.Count == 0)
             {
                 rewardsSection.SetActive(false);
+                guestSection.SetActive(false);
+                rewardsNotification.SetActive(false);
                 return;
             }
 
             rewardsSection.SetActive(true);
+            rewardsNotification.SetActive(true);
 
             foreach (var pooledReward in usedRewards)
                 rewardsPool.Release(pooledReward);

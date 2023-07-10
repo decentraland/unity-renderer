@@ -1,11 +1,11 @@
 using DCL.CameraTool;
 using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
-using ECSSystems.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,19 +14,25 @@ namespace ECSSystems.CameraSystem
 {
     public class ECSCameraEntitySystem : IDisposable
     {
-        private readonly PBCameraMode reusableCameraMode;
-        private readonly PBPointerLock reusablePointerLock;
+        private readonly WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool;
+        private readonly WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool;
+        private readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool;
         private readonly BaseVariable<Transform> cameraTransform;
         private readonly Vector3Variable worldOffset;
         private readonly BaseList<IParcelScene> loadedScenes;
-        private readonly IECSComponentWriter componentsWriter;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
         private readonly BaseVariableAsset<CameraMode.ModeId> cameraMode;
+        private readonly ECSComponent<ECSTransform> transformComponent;
 
         private Vector3 lastCameraPosition = Vector3.zero;
         private Quaternion lastCameraRotation = Quaternion.identity;
         private bool newSceneAdded = false;
 
-        public ECSCameraEntitySystem(IECSComponentWriter componentsWriter, PBCameraMode reusableCameraMode, PBPointerLock reusablePointerLock,
+        public ECSCameraEntitySystem(IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool,
+            WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
+            WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
+            ECSComponent<ECSTransform> transformComponent,
             BaseList<IParcelScene> loadedScenes, BaseVariable<Transform> cameraTransform, Vector3Variable worldOffset,
             BaseVariableAsset<CameraMode.ModeId> cameraMode)
         {
@@ -35,8 +41,10 @@ namespace ECSSystems.CameraSystem
             this.loadedScenes = loadedScenes;
             this.componentsWriter = componentsWriter;
             this.cameraMode = cameraMode;
-            this.reusableCameraMode = reusableCameraMode;
-            this.reusablePointerLock = reusablePointerLock;
+            this.cameraModePool = cameraModePool;
+            this.pointerLockPool = pointerLockPool;
+            this.transformPool = transformPool;
+            this.transformComponent = transformComponent;
 
             loadedScenes.OnAdded += LoadedScenesOnOnAdded;
         }
@@ -63,8 +71,9 @@ namespace ECSSystems.CameraSystem
             lastCameraRotation = cameraRotation;
 
             var currentCameraMode = cameraMode.Get();
-            reusableCameraMode.Mode = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
-            reusablePointerLock.IsPointerLocked = Utils.IsCursorLocked;
+
+            var cameraModeId = ProtoConvertUtils.UnityEnumToPBCameraEnum(currentCameraMode);
+            var isCursorLocked = Utils.IsCursorLocked;
 
             Vector3 currentWorldOffset = worldOffset.Get();
             IReadOnlyList<IParcelScene> loadedScenes = this.loadedScenes;
@@ -75,19 +84,36 @@ namespace ECSSystems.CameraSystem
             {
                 scene = loadedScenes[i];
 
-                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE,
-                    reusableCameraMode, ECSComponentWriteType.SEND_TO_SCENE);
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out ComponentWriter writer))
+                    continue;
 
-                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK,
-                    reusablePointerLock, ECSComponentWriteType.SEND_TO_SCENE);
+                var cameraModeWrappedComponent = cameraModePool.Get();
+                var pooledWrappedComponent = pointerLockPool.Get();
+                cameraModeWrappedComponent.WrappedComponent.Model.Mode = cameraModeId;
+                pooledWrappedComponent.WrappedComponent.Model.IsPointerLocked = isCursorLocked;
+
+                writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.CAMERA_MODE, cameraModeWrappedComponent);
+                writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.POINTER_LOCK, pooledWrappedComponent);
 
                 if (!updateTransform)
                     continue;
 
-                var transform = TransformHelper.SetTransform(scene, ref cameraPosition, ref cameraRotation, ref currentWorldOffset);
+                var pooledTransformComponent = transformPool.Get();
+                var t = pooledTransformComponent.WrappedComponent.Model;
+                t.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref cameraPosition, ref currentWorldOffset);
+                t.rotation = cameraRotation;
 
-                componentsWriter.PutComponent(scene.sceneData.sceneNumber, SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM,
-                    transform);
+                writer.Put(SpecialEntityId.CAMERA_ENTITY, ComponentID.TRANSFORM, pooledTransformComponent);
+
+                if (scene.entities.TryGetValue(SpecialEntityId.CAMERA_ENTITY, out var entity))
+                {
+                    ECSTransform stored = transformComponent.Get(scene, entity.entityId)?.model ?? new ECSTransform();
+                    stored.position = t.position;
+                    stored.rotation = t.rotation;
+                    stored.scale = t.scale;
+                    stored.parentId = t.parentId;
+                    transformComponent.SetModel(scene, entity, stored);
+                }
             }
         }
 

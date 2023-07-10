@@ -1,9 +1,9 @@
+using DCL.Helpers;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TMPro;
 using UIComponents.Scripts.Utils;
 using UnityEngine;
@@ -12,13 +12,17 @@ using UnityEngine.UI;
 
 namespace DCL.Social.Passports
 {
-    public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView
+    [Serializable]
+    internal class AdditionalInfoIconMapping
+    {
+        public AdditionalInfoField name;
+        public Sprite icon;
+    }
+
+    public class PassportNavigationComponentView : BaseComponentView, IPassportNavigationComponentView, IAdditionalInfoFieldIconProvider
     {
         private const string GUEST_TEXT = "is a guest";
         private const string BLOCKED_TEXT = "blocked you!";
-        private const string LINKS_REGEX = @"\[(.*?)\)";
-        private const string LINK_TITLE_REGEX = @"(?<=\[).+?(?=\])";
-        private const string LINK_REGEX = @"(?<=\().+?(?=\))";
         private const string OWN_PLAYER = "\n         You don't ";
         private const string OTHER_PLAYERS = "\n         This person doesn't ";
         private const string NO_WEARABLES_TEXT = "own any Wearables yet.";
@@ -27,11 +31,11 @@ namespace DCL.Social.Passports
         private const string NO_LANDS_TEXT = "own any LANDs yet.";
         private const string NAME_TYPE = "name";
         private const string EMOTE_TYPE = "emote";
-        private const string LEGENDARY_RARITY = "legendary";
         private const string LAND_RARITY = "land";
         private const int PAGE_SIZE = 4;
 
         [SerializeField] private GameObject aboutPanel;
+        [SerializeField] private RectTransform aboutContainerTransform;
         [SerializeField] private GameObject wearablesPanel;
         [SerializeField] private Toggle aboutToggle;
         [SerializeField] private Toggle collectiblesToggle;
@@ -61,6 +65,9 @@ namespace DCL.Social.Passports
         [SerializeField] private Transform nftLandsCarouselContent;
         [SerializeField] private GameObject wearableUIReferenceObject;
         [SerializeField] private GameObject nftPageUIReferenceObject;
+        [SerializeField] private GameObject additionalInfoContainer;
+        [SerializeField] private GameObject additionalInfoPrefabReference;
+        [SerializeField] internal List<AdditionalInfoIconMapping> additionalInfoIconsMapping;
         [SerializeField] private GameObject linksContainer;
         [SerializeField] private GameObject linksTitle;
         [SerializeField] private GameObject linkPrefabReference;
@@ -101,15 +108,19 @@ namespace DCL.Social.Passports
         private List<PoolableObject> nftEmotesPagesPoolableQueue = new ();
         private List<PoolableObject> nftNamesPagesPoolableQueue = new ();
         private List<PoolableObject> nftLandsPagesPoolableQueue = new ();
+        private List<PoolableObject> linksPoolObjects = new ();
+        private List<PoolableObject> additionalInfoFieldsPoolObjects = new ();
 
         private Pool nftIconsEntryPool;
         private Pool nftWearablesPagesEntryPool;
         private Pool nftEmotesPagesEntryPool;
         private Pool nftNamesPagesEntryPool;
         private Pool nftLandsPagesEntryPool;
-        private readonly List<NFTIconComponentView> equippedNftWearableViews = new List<NFTIconComponentView>();
-        private readonly List<NftPageView> ownedNftWearablePageViews = new List<NftPageView>();
-        private readonly List<NftPageView> ownedNftEmotePageViews = new List<NftPageView>();
+        private Pool linksEntryPool;
+        private Pool additionalInfoFieldsEntryPool;
+        private readonly List<NFTIconComponentView> equippedNftWearableViews = new ();
+        private readonly List<NftPageView> ownedNftWearablePageViews = new ();
+        private readonly List<NftPageView> ownedNftEmotePageViews = new ();
 
         public void Start()
         {
@@ -134,6 +145,8 @@ namespace DCL.Social.Passports
             nftNamesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Names");
             nftLandsPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Lands");
             nftIconsEntryPool = GetNftIconEntryPool();
+            linksEntryPool = GetLinkEntryPool();
+            additionalInfoFieldsEntryPool = GetAdditionalInfoFieldEntryPool();
         }
 
         private void OpenViewAllSection(PassportSection section)
@@ -208,18 +221,6 @@ namespace DCL.Social.Passports
 
         public void SetDescription(string description)
         {
-            MatchCollection matchCollection = Regex.Matches(description, LINKS_REGEX, RegexOptions.IgnoreCase);
-            List<string> links = new List<string>();
-
-            foreach (Match link in matchCollection)
-            {
-                description = description.Replace(link.Value, "");
-                links.Add(link.Value);
-            }
-
-            linksTitle.SetActive(links.Count > 0);
-            linksContainer.SetActive(links.Count > 0);
-
             if (string.IsNullOrEmpty(description))
             {
                 emptyDescriptionGO.SetActive(true);
@@ -232,8 +233,57 @@ namespace DCL.Social.Passports
                 description = AddCoordinateLinks(description);
                 descriptionText.text = description;
             }
+        }
 
-            SetLinks(links);
+        public Sprite Get(AdditionalInfoField field)
+        {
+            foreach (AdditionalInfoIconMapping iconMapping in additionalInfoIconsMapping)
+                if (iconMapping.name == field)
+                    return iconMapping.icon;
+
+            return null;
+        }
+
+        public void SetAdditionalInfo(List<(Sprite logo, string title, string value)> additionalFields)
+        {
+            additionalInfoContainer.SetActive(additionalFields.Count > 0);
+
+            foreach (PoolableObject poolObj in additionalInfoFieldsPoolObjects)
+                poolObj.Release();
+
+            additionalInfoFieldsPoolObjects.Clear();
+
+            foreach (var additionalField in additionalFields)
+            {
+                PoolableObject poolObj = additionalInfoFieldsEntryPool.Get();
+                additionalInfoFieldsPoolObjects.Add(poolObj);
+                AdditionalInfoEntryView newAdditionalField = poolObj.gameObject.GetComponent<AdditionalInfoEntryView>();
+                newAdditionalField.transform.SetParent(additionalInfoContainer.transform, false);
+                newAdditionalField.SetInfo(additionalField.logo, additionalField.title, additionalField.value);
+            }
+        }
+
+        public void SetLinks(List<UserProfileModel.Link> links)
+        {
+            linksTitle.SetActive(links.Count > 0);
+            linksContainer.SetActive(links.Count > 0);
+
+            foreach (PoolableObject poolObj in linksPoolObjects)
+                poolObj.Release();
+
+            linksPoolObjects.Clear();
+
+            foreach (var link in links)
+            {
+                PoolableObject poolObj = linksEntryPool.Get();
+                linksPoolObjects.Add(poolObj);
+                PassportLinkView newLink = poolObj.gameObject.GetComponent<PassportLinkView>();
+                newLink.transform.SetParent(linksContainer.transform, false);
+                newLink.OnClickLink -= ClickedLink;
+                newLink.SetLinkTitle(link.title);
+                newLink.SetLink(link.url);
+                newLink.OnClickLink += ClickedLink;
+            }
         }
 
         private string AddCoordinateLinks(string description)
@@ -255,20 +305,6 @@ namespace DCL.Social.Passports
             string coordText = link[COORD_LINK_ID.Length..];
             ParcelCoordinates coordinates = CoordinateUtils.ParseCoordinatesString(coordText);
             OnClickDescriptionCoordinates?.Invoke(coordinates);
-        }
-
-        private void SetLinks(List<string> links)
-        {
-            foreach (Transform child in linksContainer.transform) { Destroy(child.gameObject); }
-
-            foreach (string link in links)
-            {
-                PassportLinkView newLink = Instantiate(linkPrefabReference, linksContainer.transform).GetComponent<PassportLinkView>();
-                newLink.OnClickLink -= ClickedLink;
-                newLink.SetLinkTitle(Regex.Matches(link, LINK_TITLE_REGEX, RegexOptions.IgnoreCase)[0].Value);
-                newLink.SetLink(Regex.Matches(link, LINK_REGEX, RegexOptions.IgnoreCase)[0].Value);
-                newLink.OnClickLink += ClickedLink;
-            }
         }
 
         private void ClickedLink(string obj)
@@ -316,6 +352,8 @@ namespace DCL.Social.Passports
                     equippedNftWearableViews.Add(nftIconComponentView);
                 }
             }
+
+            Utils.ForceRebuildLayoutImmediate(aboutContainerTransform);
         }
 
         public void SetCollectibleWearables(WearableItem[] wearables)
@@ -477,6 +515,36 @@ namespace DCL.Social.Passports
 
         private Pool GetNftIconEntryPool() =>
             GetNftEntryPool(NFT_ICON_POOL_NAME_PREFIX + name + GetInstanceID(), wearableUIReferenceObject, MAX_NFT_ICON_ENTRIES);
+
+        private Pool GetLinkEntryPool()
+        {
+            object poolId = $"LinkEntries_Passport_{name}{GetInstanceID()}";
+            var pool = PoolManager.i.GetPool(poolId);
+            if (pool != null) return pool;
+
+            pool = PoolManager.i.AddPool(
+                poolId,
+                Instantiate(linkPrefabReference),
+                maxPrewarmCount: 5,
+                isPersistent: true);
+
+            return pool;
+        }
+
+        private Pool GetAdditionalInfoFieldEntryPool()
+        {
+            object poolId = $"AdditionalInfoEntries_Passport_{name}{GetInstanceID()}";
+            var pool = PoolManager.i.GetPool(poolId);
+            if (pool != null) return pool;
+
+            pool = PoolManager.i.AddPool(
+                poolId,
+                Instantiate(additionalInfoPrefabReference),
+                maxPrewarmCount: 5,
+                isPersistent: true);
+
+            return pool;
+        }
 
         private Pool GetNftPagesEntryPool(string poolId) =>
             GetNftEntryPool(poolId, nftPageUIReferenceObject, MAX_NFT_PAGES_ENTRIES);

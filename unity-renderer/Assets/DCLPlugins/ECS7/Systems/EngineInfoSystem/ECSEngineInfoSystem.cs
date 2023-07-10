@@ -1,8 +1,9 @@
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Models;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ECSSystems.ECSEngineInfoSystem
@@ -12,15 +13,18 @@ namespace ECSSystems.ECSEngineInfoSystem
     /// </summary>
     public class ECSEngineInfoSystem
     {
-        private readonly IECSComponentWriter componentWriter;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
         private readonly IInternalECSComponent<InternalEngineInfo> internalEngineInfo;
+        private readonly WrappedComponentPool<IWrappedComponent<PBEngineInfo>> componentPool;
 
         public ECSEngineInfoSystem(
-            IECSComponentWriter componentWriter,
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBEngineInfo>> componentPool,
             IInternalECSComponent<InternalEngineInfo> internalEngineInfo)
         {
-            this.componentWriter = componentWriter;
+            this.componentsWriter = componentsWriter;
             this.internalEngineInfo = internalEngineInfo;
+            this.componentPool = componentPool;
         }
 
         public void Update()
@@ -32,21 +36,22 @@ namespace ECSSystems.ECSEngineInfoSystem
             var componentGroup = internalEngineInfo.GetForAll();
 
             int entitiesCount = componentGroup.Count;
+
             for (int i = 0; i < entitiesCount; i++)
             {
                 var scene = componentGroup[i].value.scene;
                 var model = componentGroup[i].value.model;
 
-                componentWriter.PutComponent(
-                    scene.sceneData.sceneNumber,
-                    SpecialEntityId.SCENE_ROOT_ENTITY,
-                    ComponentID.ENGINE_INFO,
-                    new PBEngineInfo()
-                    {
-                        TickNumber = model.SceneTick,
-                        FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialRunTime),
-                        TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime
-                    });
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                    continue;
+
+                var componentPooled = componentPool.Get();
+                var componentModel = componentPooled.WrappedComponent.Model;
+                componentModel.TickNumber = model.SceneTick;
+                componentModel.FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialRunTime);
+                componentModel.TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime;
+
+                writer.Put(SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.ENGINE_INFO, componentPooled);
             }
         }
     }

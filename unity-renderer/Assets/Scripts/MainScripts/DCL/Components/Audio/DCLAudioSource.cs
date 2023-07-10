@@ -212,6 +212,12 @@ namespace DCL.Components
             audioSource = null;
         }
 
+        public override void Cleanup()
+        {
+            base.Cleanup();
+            audioSource = null;
+        }
+
         public void UpdateOutOfBoundariesState(bool isInsideBoundaries)
         {
             if (scene.isPersistent)

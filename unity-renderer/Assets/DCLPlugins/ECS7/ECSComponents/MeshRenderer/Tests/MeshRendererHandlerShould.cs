@@ -14,6 +14,8 @@ namespace Tests
 {
     public class MeshRendererHandlerShould
     {
+        private struct KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
+
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -35,11 +37,11 @@ namespace Tests
             texturizableComponent = internalComponent.texturizableComponent;
 
             handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
-                Substitute.For<IInternalECSComponent<InternalRenderers>>());
+                internalComponent.renderersComponent);
 
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, manager, factory, null, new KeyValueSet<ComponentIdentifier,ComponentWriteData>(), executors);
-            keepEntityAliveComponent.PutFor(scene, entity, new InternalComponent());
+            var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
+                0, manager, factory, null, executors, Substitute.For<IComponentDirtySystem>());
+            keepEntityAliveComponent.PutFor(scene, entity, new KeepEntityAliveModel());
         }
 
         [TearDown]
@@ -85,7 +87,7 @@ namespace Tests
             yield return null;
 
             Renderer renderer = entity.gameObject.GetComponentInChildren<Renderer>();
-            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).model.renderers.Contains(renderer));
+            Assert.IsTrue(texturizableComponent.GetFor(scene, entity).Value.model.renderers.Contains(renderer));
 
             handler.OnComponentRemoved(scene, entity);
             yield return null;

@@ -29,19 +29,20 @@ namespace Tests
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(1111);
 
-            ECSComponentData<InternalUiContainer> internalCompData = null;
+            ECSComponentData<InternalUiContainer>? internalCompData = null;
             internalUiContainer = Substitute.For<IInternalECSComponent<InternalUiContainer>>();
             internalUiContainer.GetFor(scene, entity).Returns((info) => internalCompData);
             internalUiContainer.WhenForAnyArgs(
                                    x => x.PutFor(scene, entity, Arg.Any<InternalUiContainer>()))
                                .Do(info =>
                                {
-                                   internalCompData ??= new ECSComponentData<InternalUiContainer>
-                                   {
-                                       scene = info.ArgAt<IParcelScene>(0),
-                                       entity = info.ArgAt<IDCLEntity>(1)
-                                   };
-                                   internalCompData.model = info.ArgAt<InternalUiContainer>(2);
+                                   internalCompData = new ECSComponentData<InternalUiContainer>
+                                   (
+                                       scene: info.ArgAt<IParcelScene>(0),
+                                       entity: info.ArgAt<IDCLEntity>(1),
+                                       model : info.ArgAt<InternalUiContainer>(2),
+                                       handler: null
+                                   );
                                });
 
             handler = new UITransformHandler(internalUiContainer, COMPONENT_ID);
@@ -157,11 +158,9 @@ namespace Tests
         public void RemoveParenting()
         {
             VisualElement parent = new VisualElement();
-            var containerModel = new InternalUiContainer(entity.entityId)
-            {
-                parentId = 2,
-                parentElement = parent
-            };
+            var containerModel = new InternalUiContainer(entity.entityId);
+            containerModel.parentId = 2;
+            containerModel.parentElement = parent;
             containerModel.components.Add(COMPONENT_ID);
             parent.Add(containerModel.rootElement);
             internalUiContainer.PutFor(scene, entity, containerModel);
@@ -182,7 +181,7 @@ namespace Tests
         {
             // Flag sort on RightOf change
             handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { RightOf = 1 });
-            var containerModel = internalUiContainer.GetFor(scene, entity).model;
+            var containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
             Assert.IsTrue(containerModel.shouldSort);
 
             // Reset data
@@ -191,7 +190,7 @@ namespace Tests
 
             // Do not sort when RightOf is same as before
             handler.OnComponentModelUpdated(scene, entity, new PBUiTransform() { RightOf = 1 });
-            containerModel = internalUiContainer.GetFor(scene, entity).model;
+            containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
             Assert.IsFalse(containerModel.shouldSort);
         }
     }
