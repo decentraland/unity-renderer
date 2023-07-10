@@ -17,6 +17,8 @@ namespace AvatarSystem
         SkinnedMeshRenderer handsRenderer { get; }
         SkinnedMeshRenderer upperBodyRenderer { get; }
         SkinnedMeshRenderer lowerBodyRenderer { get; }
+        IList<SkinnedMeshRenderer> extraRenderers { get; }
+
         bool IsValid(BodyWearables bodyWearables);
         void DisableFacialRenderers();
     }

@@ -305,7 +305,7 @@ namespace Test.AvatarSystem
         {
             return new Rendereable()
             {
-                renderers = new HashSet<Renderer>() { bodyparts.head, bodyparts.ubody, bodyparts.lbody, bodyparts.feet, bodyparts.eyes, bodyparts.eyebrows, bodyparts.mouth },
+                renderers = new HashSet<Renderer>() { bodyparts.head, bodyparts.ubody, bodyparts.lbody, bodyparts.feet, bodyparts.eyes, bodyparts.eyebrows, bodyparts.mouth, bodyparts.hands },
                 container = container
             };
         }

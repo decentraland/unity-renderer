@@ -11,6 +11,7 @@ using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -242,14 +243,13 @@ namespace Test.AvatarSystem
                 {
                     loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
                     loader.bodyshapeLoader.handsRenderer,
+                    loader.bodyshapeLoader.extraRenderers[0]
                 };
 
                 allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
 
                 //Assert the mesh combiner received the proper data
-                Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
-
-                for (var i = 0; i < allRenderers.Count; i++) { Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i])); }
+                CollectionAssert.AreEqual(allRenderers, renderersReceivedByCombiner);
             });
 
         [UnityTest]
@@ -500,6 +500,7 @@ namespace Test.AvatarSystem
             var eyebrowsPrimitive = CreatePrimitive(bodyshapeHolder.transform, "eyebrows");
             var mouthPrimitive = CreatePrimitive(bodyshapeHolder.transform, "mouth");
             var handsPrimitive = CreatePrimitive(bodyshapeHolder.transform, "hands");
+            var mistery = CreatePrimitive(bodyshapeHolder.transform, "misteryPartX");
 
             IBodyshapeLoader loader = Substitute.For<IBodyshapeLoader>();
             loader.bodyShape.Returns(wearables.BodyShape);
@@ -515,6 +516,7 @@ namespace Test.AvatarSystem
             loader.eyebrowsRenderer.Returns(eyebrowsPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.mouthRenderer.Returns(mouthPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.handsRenderer.Returns(handsPrimitive.GetComponent<SkinnedMeshRenderer>());
+            loader.extraRenderers.Returns(new List<SkinnedMeshRenderer>() { mistery.GetComponent<SkinnedMeshRenderer>() });
 
             loader.rendereable.Returns(Rendereable.CreateFromGameObject(bodyshapeHolder));
             loader.status.Returns(status);

@@ -100,8 +100,8 @@ namespace AvatarSystem
             SkinnedMeshRenderer eyes,
             SkinnedMeshRenderer eyebrows,
             SkinnedMeshRenderer mouth,
-            SkinnedMeshRenderer hands
-            ) ExtractBodyShapeParts(Rendereable rendereable)
+            SkinnedMeshRenderer hands,
+            List<SkinnedMeshRenderer> extraParts ) ExtractBodyShapeParts(Rendereable rendereable)
         {
             SkinnedMeshRenderer head = null;
             SkinnedMeshRenderer upperBody = null;
@@ -111,6 +111,7 @@ namespace AvatarSystem
             SkinnedMeshRenderer eyebrows = null;
             SkinnedMeshRenderer mouth = null;
             SkinnedMeshRenderer hands = null;
+            var extraParts = new List<SkinnedMeshRenderer>();
 
             foreach (Renderer r in rendereable.renderers)
             {
@@ -140,10 +141,14 @@ namespace AvatarSystem
                 else if (name.Contains("mouth"))
                     mouth = renderer;
                 else
-                    Debug.LogWarning($"{name} is not a body part?", r);
+                {
+                    Debug.LogWarning($"{name} has not been set-up as a valid body part", r);
+                    extraParts.Add(renderer);
+                }
+
             }
 
-            return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth, hands);
+            return (head, upperBody, lowerBody, feet, eyes, eyebrows, mouth, hands, extraParts);
         }
 
         public static List<SkinnedMeshRenderer> GetActiveBodyPartsRenderers(IBodyshapeLoader bodyshapeLoader, string bodyShapeId, IEnumerable<WearableItem> wearables)
@@ -176,6 +181,9 @@ namespace AvatarSystem
 
             if (!hiddenList.Contains(WearableLiterals.Categories.HANDS) && !usedCategories.Contains(WearableLiterals.Categories.HANDS))
                 result.Add(bodyshapeLoader.handsRenderer);
+
+            // We dont want to hide new body parts that are not configured yet
+            result.AddRange(bodyshapeLoader.extraRenderers);
 
             return result;
         }

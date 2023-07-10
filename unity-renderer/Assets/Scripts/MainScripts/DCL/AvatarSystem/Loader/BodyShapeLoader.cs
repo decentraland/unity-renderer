@@ -28,6 +28,10 @@ namespace AvatarSystem
         public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
         public SkinnedMeshRenderer lowerBodyRenderer { get; private set; }
 
+        // This list contains uncategorized body parts that also have their own renderers
+        // this enables us to modify the body shape with new parts without ignoring them during the mesh combine process
+        public IList<SkinnedMeshRenderer> extraRenderers { get; set; }
+
         internal readonly IWearableRetriever bodyShapeRetriever;
         internal readonly IFacialFeatureRetriever eyesRetriever;
         internal readonly IFacialFeatureRetriever eyebrowsRetriever;
@@ -68,7 +72,7 @@ namespace AvatarSystem
 
                 foreach (SkinnedMeshRenderer skm in bodyShapeRetriever.rendereable.renderers.OfType<SkinnedMeshRenderer>()) { originalBones[skm] = (skm.rootBone, skm.bones); }
 
-                (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer, handsRenderer) = AvatarSystemUtils.ExtractBodyShapeParts(bodyShapeRetriever.rendereable);
+                (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer, handsRenderer, extraRenderers) = AvatarSystemUtils.ExtractBodyShapeParts(bodyShapeRetriever.rendereable);
 
                 await (LoadEyes(ct), LoadEyebrows(ct), LoadMouth(ct));
 
