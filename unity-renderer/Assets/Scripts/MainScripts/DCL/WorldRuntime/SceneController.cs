@@ -831,19 +831,22 @@ namespace DCL
             if (globalScene.isPortableExperience)
             {
                 string pxId = globalScene.id;
+                bool confirmPx = false;
+                bool disablePx = false;
 
                 if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("px_confirm_enabled"))
                 {
-                    if (IsPortableExperienceAlreadyConfirmed(pxId))
-                    {
-                        if (ShouldForceAcceptPortableExperience(pxId) || IsPortableExperienceConfirmedAndAccepted(pxId))
-                            CreateGlobalSceneInternal(globalScene);
-                        else
-                            DisablePortableExperience(globalScene.id, CreateDisabledPortableExperience(globalScene));
-                    }
-                    else
-                        ConfirmPortableExperience(globalScene);
+                    confirmPx = !IsPortableExperienceAlreadyConfirmed(pxId);
+
+                    disablePx = IsPortableExperienceAlreadyConfirmed(pxId)
+                                && !ShouldForceAcceptPortableExperience(pxId)
+                                && !IsPortableExperienceConfirmedAndAccepted(pxId);
                 }
+
+                if (confirmPx)
+                    ConfirmPortableExperience(globalScene);
+                else if (disablePx)
+                    DisablePortableExperience(globalScene.id, CreateDisabledPortableExperience(globalScene));
                 else
                     CreateGlobalSceneInternal(globalScene);
             }
