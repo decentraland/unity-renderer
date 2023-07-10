@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class ScreenshotTaker : MonoBehaviour
 {
-    public string screenshotFileName = "screenshot4.png";
-    public int desiredWidth = 1920;
-    public int desiredHeight = 1080;
+    private string screenshotFileName = "screenshot4.png";
+    private int desiredWidth = 1920;
+    private int desiredHeight = 1080;
 
     [Space(10)]
     public Camera screenshotCamera;
@@ -133,6 +133,12 @@ public class ScreenshotTaker : MonoBehaviour
         }
     }
 
+    [ContextMenu(nameof(LogFolder))]
+    private void LogFolder()
+    {
+        Debug.Log(Application.persistentDataPath);
+    }
+
     private void SaveScreenshot(Texture2D texture)
     {
         // Save the screenshot
@@ -151,15 +157,14 @@ public class ScreenshotTaker : MonoBehaviour
         }
         else // Standalone platforms
         {
-            // Save the file bytes to a temporary path
-            string tempFilePath = Path.Combine(Application.temporaryCachePath, screenshotFileName);
-            File.WriteAllBytes(tempFilePath, fileBytes);
+            // Save the file bytes to the persistent data path
+            string filePath = Path.Combine(Application.temporaryCachePath, screenshotFileName);
+            // string filePath = Path.Combine(Application.persistentDataPath, screenshotFileName);
 
-            // Generate a download link for the user
-            string downloadLink = GetDownloadLink();
+            File.WriteAllBytes(filePath, fileBytes);
 
-            // Open the link in a new browser window
-            Application.OpenURL(downloadLink);
+            // Open the file in the default application
+            Application.OpenURL(filePath);
         }
     }
 
