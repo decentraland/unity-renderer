@@ -28,7 +28,7 @@ export function portableExperienceReducer(
   if (!action) {
     return state
   }
-
+  console.log(action)
   switch (action.type) {
     case SHUTDOWN_ALL_PORTABLE_EXPERIENCES: {
       return { ...state, globalPortalExperienceShutDown: true }
@@ -38,6 +38,7 @@ export function portableExperienceReducer(
     }
     case DENY_PORTABLE_EXPERIENCES: {
       const { payload } = action
+      console.log('Add denied list', payload.urnList)
       return { ...state, deniedPortableExperiencesFromRenderer: payload.urnList }
     }
     case ADD_KERNEL_PX: {
@@ -62,6 +63,7 @@ export function portableExperienceReducer(
     }
     case RELOAD_SCENE_PX: {
       const { payload } = action
+      console.log('Reload PX', payload.data)
       return {
         ...state,
         portableExperiencesCreatedByScenesList: {
@@ -71,6 +73,7 @@ export function portableExperienceReducer(
       }
     }
     case REMOVE_SCENE_PX: {
+      console.log('Remove PX', action.payload.urn)
       const { payload } = action
       const newState: PortableExperiencesState = {
         ...state,

@@ -133,6 +133,10 @@ export class SceneWorker {
 
     this.metadata = loadableScene.entity.metadata
 
+    if (loadableScene.isPortableExperience) {
+      defaultLogger.log('Creating scene', this.metadata.display?.title)
+    }
+
     const loggerName = getSceneNameFromJsonData(this.metadata) || loadableScene.id
     const loggerPrefix = `scene: [${loggerName}]`
     this.logger = DEBUG_SCENE_LOG
@@ -312,7 +316,9 @@ export class SceneWorker {
   protected async attachTransport() {
     const isGlobalScene = this.loadableScene.isGlobalScene || this.loadableScene.isPortableExperience || false
     const showAsPortableExperience = (isGlobalScene && this.loadableScene.isPortableExperience) || false
-
+    if (this.loadableScene.isPortableExperience) {
+      defaultLogger.log('Load px scene: ', this.metadata.display?.title)
+    }
     // first initialize the scene in the renderer
     await this.rpcContext.rpcSceneControllerService.loadScene({
       baseUrl: this.loadableScene.baseUrl,

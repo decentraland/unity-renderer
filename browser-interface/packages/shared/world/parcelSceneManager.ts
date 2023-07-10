@@ -114,6 +114,9 @@ function setNewParcelScene(worker: SceneWorker) {
       forceStopScene(id)
     }
   }
+  if (worker.loadableScene.isPortableExperience) {
+    console.log('Set loaded scene worker', worker.metadata.display?.title)
+  }
 
   loadedSceneWorkers.set(sceneId, worker)
 }

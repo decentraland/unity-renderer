@@ -70,7 +70,8 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
         loaded: Array.from(loaded).map(($) => ({
           pid: $.loadableScene.id,
           parentCid: $.loadableScene.parentCid || '',
-          ens: ensPxMapping.get($.loadableScene.id) ?? ''
+          ens: ensPxMapping.get($.loadableScene.id) ?? '',
+          name: $.metadata.display?.title ?? ''
         }))
       }
     }
