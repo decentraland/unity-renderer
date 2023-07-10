@@ -425,6 +425,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1657683343, guid: c7404d7f70328de4490e62c42213d7a4, type: 3}
+      propertyPath: image
+      value: 
+      objectReference: {fileID: 740502564}
+    - target: {fileID: 1657683343, guid: c7404d7f70328de4490e62c42213d7a4, type: 3}
+      propertyPath: canvas
+      value: 
+      objectReference: {fileID: 1836101123}
+    - target: {fileID: 1657683343, guid: c7404d7f70328de4490e62c42213d7a4, type: 3}
+      propertyPath: imageRectTransform
+      value: 
+      objectReference: {fileID: 740502563}
+    - target: {fileID: 1657683343, guid: c7404d7f70328de4490e62c42213d7a4, type: 3}
+      propertyPath: canvasRectTransform
+      value: 
+      objectReference: {fileID: 1836101124}
     - target: {fileID: 1192833813443749521, guid: c7404d7f70328de4490e62c42213d7a4,
         type: 3}
       propertyPath: m_Name
@@ -485,61 +501,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7813136116666180052, guid: c7404d7f70328de4490e62c42213d7a4,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c7404d7f70328de4490e62c42213d7a4, type: 3}
---- !u!1 &1657683342 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1192833813443749521, guid: c7404d7f70328de4490e62c42213d7a4,
-    type: 3}
-  m_PrefabInstance: {fileID: 1657683341}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1657683343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1657683342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bbaef75f8297a546baf4add1186a195, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  screenshotFileName: Assets/screenshot3.png
-  desiredWidth: 1920
-  desiredHeight: 1080
-  screenshotCamera: {fileID: 1657683344}
-  image: {fileID: 740502564}
-  canvas: {fileID: 1836101123}
-  canvasRectTransform: {fileID: 1836101124}
-  imageRectTransform: {fileID: 740502563}
-  sprite: {fileID: 21300000, guid: d7faa169762ee254ea1e1ecfea474cdf, type: 3}
-  cameraMovement: {fileID: 1657683347}
---- !u!20 &1657683344 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 7813136116666180052, guid: c7404d7f70328de4490e62c42213d7a4,
-    type: 3}
-  m_PrefabInstance: {fileID: 1657683341}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1657683347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1657683342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f3e97b27535419b878bfe424a9cd63b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSpeed: 5
-  rotationSpeed: 100
 --- !u!1 &1836101120
 GameObject:
   m_ObjectHideFlags: 0

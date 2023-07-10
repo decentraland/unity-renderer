@@ -1,4 +1,5 @@
 using MainScripts.DCL.InWorldCamera.Scripts;
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +22,12 @@ public class ScreenshotTaker : MonoBehaviour
     [SerializeField] private ScreenshotCameraMovement cameraMovement;
 
     private bool cameraEnabled;
+    private int originalLayer;
 
+    private void Awake()
+    {
+        originalLayer = gameObject.layer;
+    }
 
     private void Update()
     {
@@ -54,6 +60,7 @@ public class ScreenshotTaker : MonoBehaviour
     {
         // screenshotCamera.transform.SetPositionAndRotation(Camera.main.transform.position, Camera.main.transform.rotation);
         screenshotCamera.CopyFrom(Camera.main);
+        gameObject.layer = originalLayer;
     }
 
     [ContextMenu(nameof(CaptureScreenshot))]
