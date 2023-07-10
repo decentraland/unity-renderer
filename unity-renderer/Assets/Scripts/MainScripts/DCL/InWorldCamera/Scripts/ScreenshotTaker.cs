@@ -29,6 +29,13 @@ public class ScreenshotTaker : MonoBehaviour
         originalLayer = gameObject.layer;
     }
 
+    private void Start()
+    {
+        screenshotCamera.enabled = false;
+        cameraMovement.enabled = false;
+        canvas.enabled = false;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
@@ -140,12 +147,6 @@ public class ScreenshotTaker : MonoBehaviour
         }
     }
 
-    [ContextMenu(nameof(LogFolder))]
-    private void LogFolder()
-    {
-        Debug.Log(Application.persistentDataPath);
-    }
-
     private void SaveScreenshot(Texture2D texture)
     {
         // Save the screenshot
@@ -154,13 +155,22 @@ public class ScreenshotTaker : MonoBehaviour
 
         if (Application.platform == RuntimePlatform.WebGLPlayer)
         {
-            string base64String = System.Convert.ToBase64String(fileBytes);
+            //     string base64String = System.Convert.ToBase64String(fileBytes);
+            //
+            //     // Construct the data URI for the file
+            //     var dataUri = $"data:application/octet-stream;base64,{base64String}";
+            //
+            //     // Open the data URI in a new browser window
+            //     Application.OpenURL(dataUri);
+            //
+            // Save the file bytes to the persistent data path
+            string filePath = Path.Combine(Application.temporaryCachePath, screenshotFileName);
+            // string filePath = Path.Combine(Application.persistentDataPath, screenshotFileName);
 
-            // Construct the data URI for the file
-            var dataUri = $"data:application/octet-stream;base64,{base64String}";
+            File.WriteAllBytes(filePath, fileBytes);
 
-            // Open the data URI in a new browser window
-            Application.OpenURL(dataUri);
+            // Open the file in the default application
+            Application.OpenURL(GetDownloadLink());
         }
         else // Standalone platforms
         {
