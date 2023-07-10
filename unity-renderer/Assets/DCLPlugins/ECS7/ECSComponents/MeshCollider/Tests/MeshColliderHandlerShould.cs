@@ -231,7 +231,7 @@ namespace Tests
 
             Assert.NotNull(physicColliders.GetFor(scene, entity));
             Assert.IsNull(pointerColliders.GetFor(scene, entity));
-            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).model.colliders.Pairs[0].key);
+            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).Value.model.colliders.Pairs[0].key);
 
             // pointer collider
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
@@ -244,7 +244,7 @@ namespace Tests
 
             Assert.IsNull(physicColliders.GetFor(scene, entity));
             Assert.NotNull(pointerColliders.GetFor(scene, entity));
-            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).model.colliders.Pairs[0].key);
+            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).Value.model.colliders.Pairs[0].key);
 
             // physic and pointer collider
             handler.OnComponentModelUpdated(scene, entity, new PBMeshCollider()
@@ -257,8 +257,8 @@ namespace Tests
 
             Assert.NotNull(physicColliders.GetFor(scene, entity));
             Assert.NotNull(pointerColliders.GetFor(scene, entity));
-            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).model.colliders.Pairs[0].key);
-            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).model.colliders.Pairs[0].key);
+            Assert.AreEqual(boxCollider, physicColliders.GetFor(scene, entity).Value.model.colliders.Pairs[0].key);
+            Assert.AreEqual(boxCollider, pointerColliders.GetFor(scene, entity).Value.model.colliders.Pairs[0].key);
 
             // remove component, internal colliders should be removed too
             handler.OnComponentRemoved(scene, entity);

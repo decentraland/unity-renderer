@@ -67,7 +67,7 @@ namespace DCL.CRDT
         {
 #if UNITY_EDITOR
             if (disposed)
-                Debug.LogWarning("CRDTExecutor::ExecuteWithoutStoringState Called while disposed");
+                Debug.LogWarning($"CRDTExecutor::ExecuteWithoutStoringState Called while disposed scene {ownerScene.sceneData.sceneNumber.ToString()}");
 #endif
 
             if (disposed)
@@ -76,11 +76,11 @@ namespace DCL.CRDT
             // null data means to remove component, not null data means to update or create
             if (data != null)
             {
-                PutComponent(ownerScene, entityId, componentId, data);
+                DeserializeComponent(ownerScene, entityId, componentId, data);
             }
             else
             {
-                RemoveComponent(ownerScene, entityId, componentId);
+                RemoveComponent(entityId, componentId);
             }
         }
 
@@ -92,27 +92,57 @@ namespace DCL.CRDT
             ecsManager.GetOrCreateComponent(ComponentID.TRANSFORM, ownerScene, playerEntity);
         }
 
-        private void PutComponent(IParcelScene scene, long entityId, int componentId, object data)
+        public void PutComponent<T>(long entityId, ECSComponent<T> component, T model)
         {
-            IDCLEntity entity = GetOrCreateEntity(scene, entityId);
-            ecsManager.DeserializeComponent(componentId, scene, entity, data);
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning($"CRDTExecutor::PutComponent Called while disposed scene {ownerScene.sceneData.sceneNumber.ToString()}");
+#endif
+
+            if (disposed)
+                return;
+
+            IDCLEntity entity = GetOrCreateEntity(ownerScene, entityId);
+
+            if (!component.HasComponent(ownerScene, entity))
+            {
+                component.Create(ownerScene, entity);
+                ecsManager.SignalComponentCreated(ownerScene, entity, component);
+            }
+
+            component.SetModel(ownerScene, entity, model);
+            ecsManager.SignalComponentUpdated(ownerScene, entity, component);
         }
 
-        private void RemoveComponent(IParcelScene scene, long entityId, int componentId)
+        public void RemoveComponent(long entityId, int componentId)
         {
-            if (!scene.entities.TryGetValue(entityId, out IDCLEntity entity))
+#if UNITY_EDITOR
+            if (disposed)
+                Debug.LogWarning($"CRDTExecutor::RemoveComponent Called while disposed scene {ownerScene.sceneData.sceneNumber.ToString()}");
+#endif
+
+            if (disposed)
+                return;
+
+            if (!ownerScene.entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return;
             }
 
-            ecsManager.RemoveComponent(componentId, scene, entity);
+            ecsManager.RemoveComponent(componentId, ownerScene, entity);
 
             // there is no component for this entity so we remove it
             // from scene
-            if (!ecsManager.HasAnyComponent(scene, entity))
+            if (!ecsManager.HasAnyComponent(ownerScene, entity))
             {
-                RemoveEntity(scene, entityId);
+                RemoveEntity(ownerScene, entityId);
             }
+        }
+
+        private void DeserializeComponent(IParcelScene scene, long entityId, int componentId, object data)
+        {
+            IDCLEntity entity = GetOrCreateEntity(scene, entityId);
+            ecsManager.DeserializeComponent(componentId, scene, entity, data);
         }
 
         private IDCLEntity GetOrCreateEntity(IParcelScene scene, long entityId)

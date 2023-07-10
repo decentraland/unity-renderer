@@ -116,13 +116,13 @@ namespace ECSSystems.ScenesUiSystem
             if (currentScene == null)
                 return;
 
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.rootElement.style.display = new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
@@ -187,13 +187,13 @@ namespace ECSSystems.ScenesUiSystem
         internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.parentElement = null;
 
             if (uiDocument.rootVisualElement.Contains(model.rootElement))
@@ -226,12 +226,12 @@ namespace ECSSystems.ScenesUiSystem
         internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             UIDocument uiDocument, IParcelScene currentScene, BaseVariable<bool> isSceneUIEnabled)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
+            ECSComponentData<InternalUiContainer>? sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneRootUiContainer != null)
             {
-                var model = sceneRootUiContainer.model;
+                var model = sceneRootUiContainer.Value.model;
                 uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
                 model.rootElement.style.display = new StyleEnum<DisplayStyle>(isSceneUIEnabled.Get() ? DisplayStyle.Flex : DisplayStyle.None);
