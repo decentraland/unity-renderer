@@ -16,6 +16,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private GameObject minimalSearchSection;
     [SerializeField] private GameObject fullSearchSection;
     [SerializeField] private GameObject fullSearchEventsSection;
+    [SerializeField] private GameObject normalHeader;
+    [SerializeField] private GameObject searchHeader;
+    [SerializeField] private Button backButton;
+    [SerializeField] private TMP_Text searchTerm;
 
     [SerializeField] private Canvas canvas;
     [SerializeField] private Transform eventsParent;
@@ -37,7 +41,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
 
     internal EventCardComponentView eventModal;
     public event Action<int> OnRequestAllEvents;
-
+    public event Action OnBackFromSearch;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
     public event Action<string> OnSubscribeEventClicked;
@@ -58,6 +62,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         showMore.onClick.AddListener(RequestAdditionalPage);
         backFromAllList.onClick.RemoveAllListeners();
         backFromAllList.onClick.AddListener(CloseFullList);
+        backButton.onClick.RemoveAllListeners();
+        backButton.onClick.AddListener(()=>OnBackFromSearch?.Invoke());
         noEvents.SetActive(false);
         noPlaces.SetActive(true);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
@@ -164,6 +170,13 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         loadingPlaces.SetActive(true);
     }
 
+    public void SetHeaderEnabled(bool isEnabled, string searchText)
+    {
+        normalHeader.SetActive(!isEnabled);
+        searchHeader.SetActive(isEnabled);
+        searchTerm.text = $"\"{searchText}\"";
+    }
+
     public void SetActive(bool isActive)
     {
         if (canvas.enabled == isActive)
@@ -173,7 +186,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         if (isActive)
             OnEnable();
         else
+        {
             OnDisable();
+            SetHeaderEnabled(false, "");
+        }
     }
 
     public override void RefreshControl()

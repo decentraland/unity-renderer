@@ -38,9 +38,15 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         view.OnJumpInClicked += JumpInToEvent;
+        view.OnBackFromSearch += CloseSearchPanel;
 
         if(searchBarComponentView != null)
             searchBarComponentView.OnSearchText += Search;
+    }
+
+    private void CloseSearchPanel()
+    {
+        searchBarComponentView.SubmitSearch("");
     }
 
     private void JumpInToEvent(EventFromAPIModel obj)
@@ -60,6 +66,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         minimalSearchCts = new CancellationTokenSource();
 
         view.SetAllAsLoading();
+        view.SetHeaderEnabled(!string.IsNullOrEmpty(searchText), searchText);
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
         //SearchPlaces(searchText, cts.Token).Forget();
     }
