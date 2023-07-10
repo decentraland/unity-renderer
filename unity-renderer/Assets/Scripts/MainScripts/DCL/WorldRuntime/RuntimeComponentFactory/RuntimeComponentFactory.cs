@@ -19,7 +19,6 @@ namespace DCL
 
         public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
-            Debug.Log($"VV:: registering for {classId}");
             builders[classId] = builder;
         }
 
