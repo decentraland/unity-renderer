@@ -43,6 +43,7 @@ namespace Test.AvatarSystem
             gpuSkinning = Substitute.For<IGPUSkinning>();
             gpuSkinningThrottlerService = Substitute.For<IGPUSkinningThrottlerService>();
             emoteAnimationEquipper = Substitute.For<IEmoteAnimationEquipper>();
+
             avatar = new Avatar(
                 curator,
                 loader,
@@ -56,96 +57,104 @@ namespace Test.AvatarSystem
         }
 
         [UnityTest]
-        public IEnumerator ThrowIfLoadWithCancelledToken() => UniTask.ToCoroutine(async () =>
-        {
-            CancellationTokenSource cts = new CancellationTokenSource();
-            cts.Cancel();
-
-            await TestUtils.ThrowsAsync<OperationCanceledException>(avatar.Load(new List<string>(), new List<string>(), new AvatarSettings(), cts.Token));
-        });
-
-        [UnityTest]
-        public IEnumerator ThrowIfCuratorFails() => UniTask.ToCoroutine(async () =>
-        {
-            var settings = new AvatarSettings();
-            curator.Configure()
-                   .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-                   .Returns(x => throw new Exception("Curator failed"));
-
-            var wearableIds = new List<string>();
-            var emoteIds = new List<string>();
-
-            await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, emoteIds, settings));
-            visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
-            curator.Received().Curate(settings, wearableIds, emoteIds, Arg.Any<CancellationToken>());
-            loader.DidNotReceiveWithAnyArgs()
-                  .Load(default, default, default);
-        });
-
-        [UnityTest]
-        public IEnumerator ThrowIfLoaderFails() => UniTask.ToCoroutine(async () =>
-        {
-            var settings = new AvatarSettings();
-
-            var bodyWearables = new BodyWearables()
+        public IEnumerator ThrowIfLoadWithCancelledToken() =>
+            UniTask.ToCoroutine(async () =>
             {
-                bodyshape = new WearableItem(),
-                eyes = new WearableItem(),
-                eyebrows = new WearableItem(),
-                mouth = new WearableItem(),
-            };
+                CancellationTokenSource cts = new CancellationTokenSource();
+                cts.Cancel();
 
-            List<WearableItem> wearables = new List<WearableItem>();
-            List<WearableItem> emotes = new List<WearableItem>();
-
-            curator.Configure()
-                   .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-                   .Returns(_ => new UniTask<(BodyWearables bodyWearables, List<WearableItem> wearables, List<WearableItem> emotes)>((bodyWearables, wearables, emotes)));
-            loader.Configure()
-                  .Load(Arg.Any<BodyWearables>(),
-                      Arg.Any<List<WearableItem>>(),
-                      Arg.Any<AvatarSettings>(),
-                      Arg.Any<SkinnedMeshRenderer>(),
-                      Arg.Any<CancellationToken>())
-                  .Returns(x => throw new Exception("Loader failed"));
-
-            await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings));
-
-            loader.Received()
-                .Load(bodyWearables, wearables, settings, cancellationToken:Arg.Any<CancellationToken>());
-        });
+                await TestUtils.ThrowsAsync<OperationCanceledException>(avatar.Load(new List<string>(), new List<string>(), new AvatarSettings(), cts.Token));
+            });
 
         [UnityTest]
-        public IEnumerator FinishSuccessfully() => UniTask.ToCoroutine(async () =>
-        {
-            var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
-            SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();
-            List<Renderer> facialFeatures = new List<Renderer> { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
-            Renderer gpuSkinnedRenderer = CreatePrimitive(container.transform).GetComponent<Renderer>();
-            loader.combinedRenderer.Returns(combinedRenderer);
-            loader.facialFeaturesRenderers.Returns(facialFeatures);
-            loader.bodyshapeContainer.Returns(combinedRenderer.gameObject);
-            gpuSkinning.renderer.Returns(gpuSkinnedRenderer);
-            Vector3 extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
+        public IEnumerator ThrowIfCuratorFails() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                var settings = new AvatarSettings();
 
-            await avatar.Load(new List<string>(), new List<string>(), settings);
+                curator.Configure()
+                       .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
+                       .Returns(x => throw new Exception("Curator failed"));
 
-            Assert.AreEqual(extents, avatar.extents);
-            animator.Received().Prepare(settings.bodyshapeId, combinedRenderer.gameObject);
-            gpuSkinning.Received().Prepare(combinedRenderer);
-            gpuSkinningThrottlerService.Received().Register(gpuSkinning);
-            visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);
-            visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
-            visibility.Received().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
-            lod.Received().Bind(gpuSkinnedRenderer);
-            Assert.AreEqual(IAvatar.Status.Loaded, avatar.status);
-        });
+                var wearableIds = new List<string>();
+                var emoteIds = new List<string>();
+
+                await TestUtils.ThrowsAsync<Exception>(avatar.Load(wearableIds, emoteIds, settings));
+                visibility.DidNotReceive().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
+                curator.Received().Curate(settings, wearableIds, emoteIds, Arg.Any<CancellationToken>());
+
+                loader.DidNotReceiveWithAnyArgs()
+                      .Load(default, default, default);
+            });
+
+        [UnityTest]
+        public IEnumerator ThrowIfLoaderFails() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                var settings = new AvatarSettings();
+
+                var bodyWearables = new BodyWearables(
+                    new WearableItem(),
+                    new WearableItem(),
+                    new WearableItem(),
+                    new WearableItem()
+                );
+
+                List<WearableItem> wearables = new List<WearableItem>();
+                List<WearableItem> emotes = new List<WearableItem>();
+
+                curator.Configure()
+                       .Curate(Arg.Any<AvatarSettings>(), Arg.Any<IEnumerable<string>>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
+                       .Returns(_ => new UniTask<(BodyWearables bodyWearables, List<WearableItem> wearables, List<WearableItem> emotes)>((bodyWearables, wearables, emotes)));
+
+                loader.Configure()
+                      .Load(Arg.Any<BodyWearables>(),
+                           Arg.Any<List<WearableItem>>(),
+                           Arg.Any<AvatarSettings>(),
+                           Arg.Any<SkinnedMeshRenderer>(),
+                           Arg.Any<CancellationToken>())
+                      .Returns(x => throw new Exception("Loader failed"));
+
+                await TestUtils.ThrowsAsync<Exception>(avatar.Load(new List<string>(), new List<string>(), settings));
+
+                loader.Received()
+                      .Load(bodyWearables, wearables, settings, cancellationToken: Arg.Any<CancellationToken>());
+            });
+
+        [UnityTest]
+        public IEnumerator FinishSuccessfully() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                var settings = new AvatarSettings { bodyshapeId = "bodyshapeId" };
+                SkinnedMeshRenderer combinedRenderer = CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>();
+                List<Renderer> facialFeatures = new List<Renderer> { CreatePrimitiveWithSkinnedMeshRenderer(container.transform).GetComponent<SkinnedMeshRenderer>() };
+                Renderer gpuSkinnedRenderer = CreatePrimitive(container.transform).GetComponent<Renderer>();
+                loader.combinedRenderer.Returns(combinedRenderer);
+                loader.facialFeaturesRenderers.Returns(facialFeatures);
+                loader.bodyshapeContainer.Returns(combinedRenderer.gameObject);
+                gpuSkinning.renderer.Returns(gpuSkinnedRenderer);
+                Vector3 extents = loader.combinedRenderer.localBounds.extents * 2f / 100f;
+
+                await avatar.Load(new List<string>(), new List<string>(), settings);
+
+                Assert.AreEqual(extents, avatar.extents);
+                animator.Received().Prepare(settings.bodyshapeId, combinedRenderer.gameObject);
+                gpuSkinning.Received().Prepare(combinedRenderer);
+                gpuSkinningThrottlerService.Received().Register(gpuSkinning);
+                visibility.Received().Bind(gpuSkinnedRenderer, facialFeatures);
+                visibility.Received().AddGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
+                visibility.Received().RemoveGlobalConstrain(Avatar.LOADING_VISIBILITY_CONSTRAIN);
+                lod.Received().Bind(gpuSkinnedRenderer);
+                Assert.AreEqual(IAvatar.Status.Loaded, avatar.status);
+            });
 
         private GameObject CreatePrimitive(Transform parent)
         {
             GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
             if (primitive.TryGetComponent(out Collider collider))
                 Utils.SafeDestroy(collider);
+
             primitive.transform.parent = parent;
 
             return primitive;
@@ -163,6 +172,9 @@ namespace Test.AvatarSystem
         }
 
         [TearDown]
-        public void TearDown() { Utils.SafeDestroy(container); }
+        public void TearDown()
+        {
+            Utils.SafeDestroy(container);
+        }
     }
 }

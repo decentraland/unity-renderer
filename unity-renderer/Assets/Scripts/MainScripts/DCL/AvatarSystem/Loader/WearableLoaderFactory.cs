@@ -23,19 +23,19 @@ namespace AvatarSystem
 
         public IBodyshapeLoader GetBodyShapeLoader(BodyWearables bodyWearables)
         {
-            if (bodyWearables.bodyshape == null)
+            if (bodyWearables.BodyShape == null)
                 throw new Exception("Requested a BodyshapeLoader with a null Bodyshape");
 
-            if (bodyWearables.bodyshape.data.category != WearableLiterals.Categories.BODY_SHAPE)
+            if (bodyWearables.BodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
                 throw new Exception($"Bodyshape's category is not {WearableLiterals.Categories.BODY_SHAPE}");
 
-            if (bodyWearables.eyes != null && bodyWearables.eyes.data.category != WearableLiterals.Categories.EYES)
+            if (bodyWearables.Eyes != null && bodyWearables.Eyes.data.category != WearableLiterals.Categories.EYES)
                 throw new Exception($"Eye's category is not {WearableLiterals.Categories.EYES}");
 
-            if (bodyWearables.eyebrows != null && bodyWearables.eyebrows.data.category != WearableLiterals.Categories.EYEBROWS)
+            if (bodyWearables.Eyebrows != null && bodyWearables.Eyebrows.data.category != WearableLiterals.Categories.EYEBROWS)
                 throw new Exception($"Eyebrows's category is not {WearableLiterals.Categories.EYEBROWS}");
 
-            if (bodyWearables.mouth != null && bodyWearables.mouth.data.category != WearableLiterals.Categories.MOUTH)
+            if (bodyWearables.Mouth != null && bodyWearables.Mouth.data.category != WearableLiterals.Categories.MOUTH)
                 throw new Exception($"Mouth's category is not {WearableLiterals.Categories.MOUTH}");
 
             return new BodyShapeLoader(new RetrieverFactory(), bodyWearables);

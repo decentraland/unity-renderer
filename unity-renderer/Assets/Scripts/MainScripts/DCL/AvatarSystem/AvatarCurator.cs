@@ -41,7 +41,7 @@ namespace AvatarSystem
             try
             {
                 //Old flow contains emotes among the wearablesIds
-                (List<WearableItem> wearableItems, List<WearableItem> emotes) =  await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
+                (List<WearableItem> wearableItems, List<WearableItem> emotes) = await wearableItemResolver.ResolveAndSplit(wearablesId, ct);
 
                 HashSet<string> hiddenCategories = WearableItem.ComposeHiddenCategoriesOrdered(settings.bodyshapeId, settings.forceRender, wearableItems);
 
@@ -53,6 +53,7 @@ namespace AvatarSystem
                     var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
 
                     var loadTimeDelta = DateTime.Now - startLoadTime;
+
                     if (loadTimeDelta.TotalSeconds > 5)
                     {
                         //This error is good to have to detect too long load times early
@@ -65,7 +66,7 @@ namespace AvatarSystem
                         var loadedEmotesFilter = new HashSet<string>();
                         emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
 
-                        foreach(var otherEmote in moreEmotes)
+                        foreach (var otherEmote in moreEmotes)
                             if (otherEmote != null)
                             {
                                 if (loadedEmotesFilter.Contains(otherEmote.id))
@@ -77,6 +78,7 @@ namespace AvatarSystem
                 }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
+
                 for (int i = 0; i < wearableItems.Count; i++)
                 {
                     WearableItem wearableItem = wearableItems[i];
@@ -86,7 +88,7 @@ namespace AvatarSystem
                         continue;
 
                     // Avoid having two items with the same category.
-                    if (wearableItem == null || wearablesByCategory.ContainsKey(wearableItem.data.category) )
+                    if (wearableItem == null || wearablesByCategory.ContainsKey(wearableItem.data.category))
                         continue;
 
                     // Filter wearables without representation for the bodyshape
@@ -104,32 +106,36 @@ namespace AvatarSystem
                 for (int i = 0; i < fallbackWearables.Length; i++)
                 {
                     WearableItem wearableItem = fallbackWearables[i];
+
                     if (wearableItem == null)
                         throw new Exception($"Fallback wearable is null");
+
                     if (!wearableItem.TryGetRepresentation(settings.bodyshapeId, out var representation))
                         throw new Exception($"Fallback wearable {wearableItem} doesn't contain a representation for {settings.bodyshapeId}");
+
                     if (wearablesByCategory.ContainsKey(wearableItem.data.category))
                         throw new Exception($"A wearable in category {wearableItem.data.category} already exists trying to add fallback wearable {wearableItem}");
+
                     wearablesByCategory.Add(wearableItem.data.category, wearableItem);
                 }
 
                 // Wearables that are not bodyshape or facialFeatures
                 List<WearableItem> wearables = wearablesByCategory.Where(
-                                                                      x =>
-                                                                          x.Key != WearableLiterals.Categories.BODY_SHAPE &&
-                                                                          x.Key != WearableLiterals.Categories.EYES &&
-                                                                          x.Key != WearableLiterals.Categories.EYEBROWS &&
-                                                                          x.Key != WearableLiterals.Categories.MOUTH)
+                                                                       x =>
+                                                                           x.Key != WearableLiterals.Categories.BODY_SHAPE &&
+                                                                           x.Key != WearableLiterals.Categories.EYES &&
+                                                                           x.Key != WearableLiterals.Categories.EYEBROWS &&
+                                                                           x.Key != WearableLiterals.Categories.MOUTH)
                                                                   .Select(x => x.Value)
                                                                   .ToList();
 
                 var bodyWearables = new BodyWearables
-                {
-                    bodyshape = wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
-                    eyes = wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYES, out WearableItem eyes) ? eyes : null,
-                    eyebrows = wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYEBROWS, out WearableItem eyebrows) ? eyebrows : null,
-                    mouth = wearablesByCategory.TryGetValue(WearableLiterals.Categories.MOUTH, out WearableItem mouth) ? mouth : null,
-                };
+                (
+                    wearablesByCategory[WearableLiterals.Categories.BODY_SHAPE],
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYES, out WearableItem eyes) ? eyes : null,
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.EYEBROWS, out WearableItem eyebrows) ? eyebrows : null,
+                    wearablesByCategory.TryGetValue(WearableLiterals.Categories.MOUTH, out WearableItem mouth) ? mouth : null
+                );
 
                 return (bodyWearables, wearables, emotes.ToList());
             }
@@ -145,13 +151,14 @@ namespace AvatarSystem
             }
         }
 
-        private async UniTask<WearableItem[]> GetFallbackForMissingNeededCategories(string bodyshapeId, Dictionary<string, WearableItem> wearablesByCategory, HashSet<string> hiddenCategories , CancellationToken ct)
+        private async UniTask<WearableItem[]> GetFallbackForMissingNeededCategories(string bodyshapeId, Dictionary<string, WearableItem> wearablesByCategory, HashSet<string> hiddenCategories, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
 
             try
             {
                 List<UniTask<WearableItem>> neededWearablesTasks = new List<UniTask<WearableItem>>();
+
                 foreach (string neededCategory in WearableLiterals.Categories.REQUIRED_CATEGORIES)
                 {
                     // If a needed category is hidden we dont need to fallback, we skipped it on purpose
@@ -169,6 +176,7 @@ namespace AvatarSystem
 
                     neededWearablesTasks.Add(wearableItemResolver.Resolve(fallbackWearableId, ct));
                 }
+
                 return await UniTask.WhenAll(neededWearablesTasks).AttachExternalCancellation(ct);
             }
             catch (OperationCanceledException)
@@ -178,6 +186,9 @@ namespace AvatarSystem
             }
         }
 
-        public void Dispose() { wearableItemResolver.Dispose(); }
+        public void Dispose()
+        {
+            wearableItemResolver.Dispose();
+        }
     }
 }

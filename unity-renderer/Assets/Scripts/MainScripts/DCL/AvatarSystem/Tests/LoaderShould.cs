@@ -51,13 +51,12 @@ namespace Test.AvatarSystem
             wearableLoaderFactory = Substitute.For<IWearableLoaderFactory>();
             loader = new Loader(wearableLoaderFactory, container, meshCombiner);
 
-            bodyWearables = new ()
-            {
-                bodyshape = wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                eyes = wearablesCatalogService.WearablesCatalog[EYES_ID],
-                eyebrows = wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                mouth = wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-            };
+            bodyWearables = new (
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID]
+            );
 
             avatarSettings = new AvatarSettings
             {
@@ -242,6 +241,7 @@ namespace Test.AvatarSystem
                 List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>
                 {
                     loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
+                    loader.bodyshapeLoader.handsRenderer,
                 };
 
                 allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
@@ -311,7 +311,7 @@ namespace Test.AvatarSystem
             {
                 WearableItem wearableItem = wearablesCatalogService.WearablesCatalog[WEARABLE_IDS[0]];
                 wearableItem.data.hides = new[] { WearableLiterals.Categories.HEAD };
-                var bodyShapeLoader = Substitute.For<IBodyshapeLoader>();
+                var bodyShapeLoader = GetMockedBodyshapeLoaderWithPrimitives(bodyWearables, container);
 
                 wearableLoaderFactory.Configure()
                                      .GetBodyShapeLoader(Arg.Any<BodyWearables>())
@@ -386,6 +386,7 @@ namespace Test.AvatarSystem
                 List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>
                 {
                     loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
+                    loader.bodyshapeLoader.handsRenderer,
                 };
 
                 allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
@@ -450,10 +451,7 @@ namespace Test.AvatarSystem
             wearableLoaderFactory.Configure()
                                  .GetBodyShapeLoader(Arg.Any<BodyWearables>())
                                  .Returns(x => GetMockedBodyshapeLoaderWithPrimitives(
-                                      x.ArgAt<BodyWearables>(0).bodyshape,
-                                      x.ArgAt<BodyWearables>(0).eyes,
-                                      x.ArgAt<BodyWearables>(0).eyebrows,
-                                      x.ArgAt<BodyWearables>(0).mouth,
+                                      x.ArgAt<BodyWearables>(0),
                                       container,
                                       status
                                   ));
@@ -488,7 +486,7 @@ namespace Test.AvatarSystem
             return loader;
         }
 
-        private IBodyshapeLoader GetMockedBodyshapeLoaderWithPrimitives(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, GameObject container,
+        private IBodyshapeLoader GetMockedBodyshapeLoaderWithPrimitives(BodyWearables wearables, GameObject container,
             IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
         {
             var bodyshapeHolder = new GameObject("bodyshape");
@@ -504,10 +502,10 @@ namespace Test.AvatarSystem
             var handsPrimitive = CreatePrimitive(bodyshapeHolder.transform, "hands");
 
             IBodyshapeLoader loader = Substitute.For<IBodyshapeLoader>();
-            loader.bodyShape.Returns(bodyshape);
-            loader.eyes.Returns(eyes);
-            loader.eyebrows.Returns(eyebrows);
-            loader.mouth.Returns(mouth);
+            loader.bodyShape.Returns(wearables.BodyShape);
+            loader.eyes.Returns(wearables.Eyes);
+            loader.eyebrows.Returns(wearables.Eyebrows);
+            loader.mouth.Returns(wearables.Mouth);
 
             loader.headRenderer.Returns(headPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.upperBodyRenderer.Returns(ubodyPrimitive.GetComponent<SkinnedMeshRenderer>());

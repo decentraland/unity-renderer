@@ -96,13 +96,12 @@ namespace Test.AvatarSystem
             {
                 var settings = new AvatarSettings();
 
-                var bodyWearables = new BodyWearables
-                {
-                    bodyshape = new WearableItem(),
-                    eyes = new WearableItem(),
-                    eyebrows = new WearableItem(),
-                    mouth = new WearableItem()
-                };
+                var bodyWearables = new BodyWearables(
+                    new WearableItem(),
+                    new WearableItem(),
+                    new WearableItem(),
+                    new WearableItem()
+                );
 
                 List<WearableItem> wearables = new List<WearableItem>();
                 List<WearableItem> emotes = new List<WearableItem>();

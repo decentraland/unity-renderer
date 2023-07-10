@@ -1,10 +1,18 @@
 ﻿namespace AvatarSystem
 {
-    public struct BodyWearables
+    public class BodyWearables
     {
-        public WearableItem bodyshape;
-        public WearableItem eyes;
-        public WearableItem eyebrows;
-        public WearableItem mouth;
+        public WearableItem BodyShape { get; private set; }
+        public WearableItem Eyes{ get; private set; }
+        public WearableItem Eyebrows{ get; private set; }
+        public WearableItem Mouth{ get; private set; }
+
+        public BodyWearables(WearableItem bodyShape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
+        {
+            this.BodyShape = bodyShape;
+            this.Eyes = eyes;
+            this.Eyebrows = eyebrows;
+            this.Mouth = mouth;
+        }
     }
 }

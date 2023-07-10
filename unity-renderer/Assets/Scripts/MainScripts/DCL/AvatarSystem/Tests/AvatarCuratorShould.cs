@@ -99,17 +99,17 @@ namespace Test.AvatarSystem
             string[] wearablesId = { WearableLiterals.BodyShapes.FEMALE, "ubody_id", "lbody_id", "eyes_id", "eyebrows_id", "mouth_id", "feet_id", "hair_id" };
             (BodyWearables bodyWearables, List<WearableItem> wearables,List<WearableItem> emotes) = await curator.Curate(avatarSettings, wearablesId, new string[] { });
 
-            Assert.NotNull(bodyWearables.bodyshape);
-            Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyWearables.bodyshape);
+            Assert.NotNull(bodyWearables.BodyShape);
+            Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyWearables.BodyShape);
 
-            Assert.NotNull(bodyWearables.eyes);
-            Assert.AreEqual(catalog["eyes_id"], bodyWearables.eyes);
+            Assert.NotNull(bodyWearables.Eyes);
+            Assert.AreEqual(catalog["eyes_id"], bodyWearables.Eyes);
 
-            Assert.NotNull(bodyWearables.eyebrows);
-            Assert.AreEqual(catalog["eyebrows_id"], bodyWearables.eyebrows);
+            Assert.NotNull(bodyWearables.Eyebrows);
+            Assert.AreEqual(catalog["eyebrows_id"], bodyWearables.Eyebrows);
 
-            Assert.NotNull(bodyWearables.mouth);
-            Assert.AreEqual(catalog["mouth_id"], bodyWearables.mouth);
+            Assert.NotNull(bodyWearables.Mouth);
+            Assert.AreEqual(catalog["mouth_id"], bodyWearables.Mouth);
 
             Assert.NotNull(wearables);
             Assert.IsTrue(wearables.Contains(catalog["ubody_id"]));
@@ -123,16 +123,16 @@ namespace Test.AvatarSystem
             string[] wearablesId = { WearableLiterals.BodyShapes.FEMALE, "WontFindThis" };
             (BodyWearables bodyWearables, List<WearableItem> wearables, List<WearableItem> emotes) = await curator.Curate(avatarSettings, wearablesId, new string[] { });
 
-            Assert.NotNull(bodyWearables.bodyshape);
-            Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyWearables.bodyshape);
+            Assert.NotNull(bodyWearables.BodyShape);
+            Assert.AreEqual(catalog[WearableLiterals.BodyShapes.FEMALE], bodyWearables.BodyShape);
 
-            Assert.NotNull(bodyWearables.eyes);
-            Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.EYES)], bodyWearables.eyes);
+            Assert.NotNull(bodyWearables.Eyes);
+            Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.EYES)], bodyWearables.Eyes);
 
-            Assert.Null(bodyWearables.eyebrows);
+            Assert.Null(bodyWearables.Eyebrows);
 
-            Assert.NotNull(bodyWearables.mouth);
-            Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.MOUTH)], bodyWearables.mouth);
+            Assert.NotNull(bodyWearables.Mouth);
+            Assert.AreEqual(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.MOUTH)], bodyWearables.Mouth);
 
             Assert.NotNull(wearables);
             Assert.IsFalse(wearables.Contains(catalog[DefaultWearables.GetDefaultWearable(WearableLiterals.BodyShapes.FEMALE, WearableLiterals.Categories.UPPER_BODY)]));

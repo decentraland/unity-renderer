@@ -54,13 +54,12 @@ namespace Test.AvatarSystem
             retrieverFactory.Configure().GetWearableRetriever().Returns(Substitute.For<IWearableRetriever>());
             retrieverFactory.Configure().GetFacialFeatureRetriever().Returns(Substitute.For<IFacialFeatureRetriever>());
 
-            var bodyWearables = new BodyWearables()
-            {
-                bodyshape = wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                eyes = wearablesCatalogService.WearablesCatalog[EYES_ID],
-                eyebrows = wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                mouth = wearablesCatalogService.WearablesCatalog[MOUTH_ID]
-            };
+            var bodyWearables = new BodyWearables(
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID]
+            );
 
             bodyshapeLoader = new BodyShapeLoader(
                 retrieverFactory,

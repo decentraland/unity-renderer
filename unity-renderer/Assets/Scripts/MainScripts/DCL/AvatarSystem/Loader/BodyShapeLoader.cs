@@ -37,10 +37,10 @@ namespace AvatarSystem
 
         public BodyShapeLoader(IRetrieverFactory retrieverFactory, BodyWearables bodyWearables)
         {
-            this.bodyShape = bodyWearables.bodyshape;
-            this.eyes = bodyWearables.eyes;
-            this.eyebrows = bodyWearables.eyebrows;
-            this.mouth = bodyWearables.mouth;
+            this.bodyShape = bodyWearables.BodyShape;
+            this.eyes = bodyWearables.Eyes;
+            this.eyebrows = bodyWearables.Eyebrows;
+            this.mouth = bodyWearables.Mouth;
 
             bodyShapeRetriever = retrieverFactory.GetWearableRetriever();
             eyesRetriever = retrieverFactory.GetFacialFeatureRetriever();
@@ -157,10 +157,10 @@ namespace AvatarSystem
 
         public bool IsValid(BodyWearables bodyWearables)
         {
-            if (bodyShape.id != bodyWearables.bodyshape?.id) return false;
-            if (this.eyebrows?.id != bodyWearables.eyebrows?.id) return false;
-            if (this.mouth?.id != bodyWearables.mouth?.id) return false;
-            if (this.eyes?.id != bodyWearables.eyes?.id) return false;
+            if (bodyShape.id != bodyWearables.BodyShape?.id) return false;
+            if (this.eyebrows?.id != bodyWearables.Eyebrows?.id) return false;
+            if (this.mouth?.id != bodyWearables.Mouth?.id) return false;
+            if (this.eyes?.id != bodyWearables.Eyes?.id) return false;
             return true;
         }
 

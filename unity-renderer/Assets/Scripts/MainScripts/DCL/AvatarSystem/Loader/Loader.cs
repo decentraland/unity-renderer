@@ -66,11 +66,11 @@ namespace AvatarSystem
 
                 if (activeBodyParts.Contains(bodyshapeLoader.headRenderer))
                 {
-                    if (bodyWearables.eyes != null)
+                    if (bodyWearables.Eyes != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
-                    if (bodyWearables.eyebrows != null)
+                    if (bodyWearables.Eyebrows != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
-                    if (bodyWearables.mouth != null)
+                    if (bodyWearables.Mouth != null)
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
                 }
                 else
