@@ -208,5 +208,160 @@ namespace DCL.PortableExperiences.Confirmation
             view.Received(1).SetModel(Arg.Is<ExperiencesConfirmationViewModel>(e =>
                 !e.IsSmartWearable));
         }
+
+        [Test]
+        public void Accept()
+        {
+            bool acceptCalled = false;
+            bool rejectCalled = false;
+
+            dataStore.world.portableExperiencePendingToConfirm.Set(new ExperiencesConfirmationData
+            {
+                Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                {
+                    ExperienceId = "pxId",
+                },
+                OnAcceptCallback = () =>
+                {
+                    acceptCalled = true;
+                },
+                OnRejectCallback = () =>
+                {
+                    rejectCalled = true;
+                },
+            });
+
+            view.OnKeepShowing += Raise.Event<Action>();
+            view.OnAccepted += Raise.Event<Action>();
+
+            Assert.IsTrue(acceptCalled);
+            Assert.IsFalse(rejectCalled);
+
+            confirmedExperiencesRepository.DidNotReceiveWithAnyArgs().Set(default, default);
+        }
+
+        [Test]
+        public void AcceptAndStoreItAsConfirmed()
+        {
+            bool acceptCalled = false;
+            bool rejectCalled = false;
+
+            dataStore.world.portableExperiencePendingToConfirm.Set(new ExperiencesConfirmationData
+            {
+                Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                {
+                    ExperienceId = "pxId",
+                },
+                OnAcceptCallback = () =>
+                {
+                    acceptCalled = true;
+                },
+                OnRejectCallback = () =>
+                {
+                    rejectCalled = true;
+                },
+            });
+
+            view.OnDontShowAnymore += Raise.Event<Action>();
+            view.OnAccepted += Raise.Event<Action>();
+
+            Assert.IsTrue(acceptCalled);
+            Assert.IsFalse(rejectCalled);
+
+            confirmedExperiencesRepository.Received(1).Set("pxId", true);
+        }
+
+        [Test]
+        public void Reject()
+        {
+            bool acceptCalled = false;
+            bool rejectCalled = false;
+
+            dataStore.world.portableExperiencePendingToConfirm.Set(new ExperiencesConfirmationData
+            {
+                Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                {
+                    ExperienceId = "pxId",
+                },
+                OnAcceptCallback = () =>
+                {
+                    acceptCalled = true;
+                },
+                OnRejectCallback = () =>
+                {
+                    rejectCalled = true;
+                },
+            });
+
+            view.OnKeepShowing += Raise.Event<Action>();
+            view.OnRejected += Raise.Event<Action>();
+
+            Assert.IsFalse(acceptCalled);
+            Assert.IsTrue(rejectCalled);
+
+            confirmedExperiencesRepository.DidNotReceiveWithAnyArgs().Set(default, default);
+        }
+
+        [Test]
+        public void RejectAndStoreItAsConfirmed()
+        {
+            bool acceptCalled = false;
+            bool rejectCalled = false;
+
+            dataStore.world.portableExperiencePendingToConfirm.Set(new ExperiencesConfirmationData
+            {
+                Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                {
+                    ExperienceId = "pxId",
+                },
+                OnAcceptCallback = () =>
+                {
+                    acceptCalled = true;
+                },
+                OnRejectCallback = () =>
+                {
+                    rejectCalled = true;
+                },
+            });
+
+            view.OnDontShowAnymore += Raise.Event<Action>();
+            view.OnRejected += Raise.Event<Action>();
+
+            Assert.IsFalse(acceptCalled);
+            Assert.IsTrue(rejectCalled);
+
+            confirmedExperiencesRepository.Received(1).Set("pxId", false);
+        }
+
+        [Test]
+        public void Cancel()
+        {
+            bool acceptCalled = false;
+            bool rejectCalled = false;
+
+            dataStore.world.portableExperiencePendingToConfirm.Set(new ExperiencesConfirmationData
+            {
+                Experience = new ExperiencesConfirmationData.ExperienceMetadata
+                {
+                    ExperienceId = "pxId",
+                },
+                OnAcceptCallback = () =>
+                {
+                    acceptCalled = true;
+                },
+                OnRejectCallback = () =>
+                {
+                    rejectCalled = true;
+                },
+            });
+
+            view.OnDontShowAnymore += Raise.Event<Action>();
+            view.OnCancelled += Raise.Event<Action>();
+
+            Assert.IsFalse(acceptCalled);
+            Assert.IsTrue(rejectCalled);
+
+            confirmedExperiencesRepository.DidNotReceiveWithAnyArgs().Set(default, default);
+        }
     }
 }

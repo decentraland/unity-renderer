@@ -12,6 +12,8 @@ namespace DCL.PortableExperiences.Confirmation
     {
         [SerializeField] private Button acceptButton;
         [SerializeField] private Button rejectButton;
+        [SerializeField] private Button[] cancelButtons;
+        [SerializeField] private InputAction_Trigger cancelTrigger;
         [SerializeField] private GameObject permissionsContainer;
         [SerializeField] private GameObject descriptionContainer;
         [SerializeField] private TMP_Text permissionsLabel;
@@ -26,6 +28,7 @@ namespace DCL.PortableExperiences.Confirmation
 
         public event Action OnAccepted;
         public event Action OnRejected;
+        public event Action OnCancelled;
         public event Action OnDontShowAnymore;
         public event Action OnKeepShowing;
 
@@ -35,6 +38,10 @@ namespace DCL.PortableExperiences.Confirmation
 
             acceptButton.onClick.AddListener(() => OnAccepted?.Invoke());
             rejectButton.onClick.AddListener(() => OnRejected?.Invoke());
+
+            foreach (Button cancelButton in cancelButtons)
+                cancelButton.onClick.AddListener(() => OnCancelled?.Invoke());
+
             dontAskMeAgainToggle.onValueChanged.AddListener(arg0 =>
             {
                 if (arg0)
@@ -42,6 +49,20 @@ namespace DCL.PortableExperiences.Confirmation
                 else
                     OnKeepShowing?.Invoke();
             });
+        }
+
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            cancelTrigger.OnTriggered += OnCancelTriggered;
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            cancelTrigger.OnTriggered -= OnCancelTriggered;
         }
 
         public override void RefreshControl()
@@ -95,5 +116,8 @@ namespace DCL.PortableExperiences.Confirmation
             if (instant)
                 gameObject.SetActive(false);
         }
+
+        private void OnCancelTriggered(DCLAction_Trigger action) =>
+            OnCancelled?.Invoke();
     }
 }

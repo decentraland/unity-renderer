@@ -47,6 +47,12 @@ namespace DCL.PortableExperiences.Confirmation
                 rejectCallback?.Invoke();
             };
 
+            view.OnCancelled += () =>
+            {
+                view.Hide();
+                rejectCallback?.Invoke();
+            };
+
             view.OnDontShowAnymore += () => dontShowAnymore = true;
             view.OnKeepShowing += () => dontShowAnymore = false;
 

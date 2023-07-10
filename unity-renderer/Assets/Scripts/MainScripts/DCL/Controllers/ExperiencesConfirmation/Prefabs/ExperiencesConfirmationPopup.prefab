@@ -1797,6 +1797,9 @@ MonoBehaviour:
   showHideAnimator: {fileID: 5285629321982451367}
   acceptButton: {fileID: 6819322043546649347}
   rejectButton: {fileID: 7186609317946997171}
+  cancelButtons:
+  - {fileID: 1157310377002194378}
+  cancelTrigger: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   permissionsContainer: {fileID: 6588793677113660830}
   descriptionContainer: {fileID: 7993098867969441567}
   permissionsLabel: {fileID: 7625111150482019826}
