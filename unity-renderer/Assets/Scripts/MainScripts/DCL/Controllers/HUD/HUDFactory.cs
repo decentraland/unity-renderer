@@ -19,6 +19,7 @@ using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
 using Analytics;
 using DCL.MyAccount;
+using DCLServices.PlacesAPIService;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -58,7 +59,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
+                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i, Environment.i.serviceLocator.Get<IPlacesAPIService>());
             case HUDElementID.PROFILE_HUD:
                 ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
 
