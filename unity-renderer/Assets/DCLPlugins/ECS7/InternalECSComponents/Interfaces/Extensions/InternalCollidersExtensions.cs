@@ -29,7 +29,7 @@ namespace DCL.ECS7.InternalComponents
             var compData = colliderInternalComponent.GetFor(scene, entity);
             if (compData != null)
             {
-                return compData.model.colliders.ContainsKey(collider);
+                return compData.Value.model.colliders.ContainsKey(collider);
             }
 
             return false;
@@ -46,9 +46,9 @@ namespace DCL.ECS7.InternalComponents
             if (compData == null)
                 return false;
 
-            bool ret = compData.model.colliders.Remove(collider);
+            bool ret = compData.Value.model.colliders.Remove(collider);
 
-            if (ret && compData.model.colliders.Count == 0)
+            if (ret && compData.Value.model.colliders.Count == 0)
             {
                 colliderInternalComponent.RemoveFor(scene, entity, new InternalColliders(new KeyValueSet<Collider, uint>()));
             }

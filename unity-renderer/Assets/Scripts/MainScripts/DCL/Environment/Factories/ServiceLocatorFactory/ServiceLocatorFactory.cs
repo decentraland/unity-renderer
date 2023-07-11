@@ -12,6 +12,7 @@ using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
 using DCLServices.EmotesCatalog;
+using DCLServices.EmotesCatalog.EmotesCatalogService;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -115,7 +116,9 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     DataStore.i.featureFlags.flags);
-                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
+                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
             });
 
             result.Register<ITeleportController>(() => new TeleportController());

@@ -24,7 +24,7 @@ namespace DCL.ECSComponents
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
-                var containerModel = containerData.model;
+                var containerModel = containerData.Value.model;
                 containerModel.components.Remove(componentId);
 
                 // do parent detach only if not child of root entity

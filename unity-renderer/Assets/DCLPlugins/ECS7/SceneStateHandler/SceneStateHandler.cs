@@ -35,7 +35,7 @@ namespace DCL.ECS7
         internal uint GetSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
-                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model.SceneTick ?? 0;
 
             return 0;
         }

@@ -1,5 +1,9 @@
-﻿using DCLServices.MapRendererV2.ConsumerUtils;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
+using DCLServices.MapRendererV2.ConsumerUtils;
+using DCLServices.PlacesAPIService;
 using System;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL
@@ -13,13 +17,19 @@ namespace DCL
 
         private Vector2 lastClickPosition;
         private Vector2Int currentParcel;
+        private IPlacesAPIService placesAPIService;
 
-        public NavmapToastViewController(MinimapMetadata minimapMetadata, NavmapToastView view, MapRenderImage mapRenderImage)
+        private CancellationTokenSource disposingCts = new CancellationTokenSource();
+        private CancellationTokenSource retrievingFavoritesCts;
+
+        public NavmapToastViewController(MinimapMetadata minimapMetadata, NavmapToastView view, MapRenderImage mapRenderImage, IPlacesAPIService placesAPIService)
         {
+            this.placesAPIService = placesAPIService;
             this.minimapMetadata = minimapMetadata;
             this.view = view;
             this.mapRenderImage = mapRenderImage;
             this.sqrDistanceToCloseView = view.distanceToCloseView * view.distanceToCloseView;
+            this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
         }
 
         public void Activate()
@@ -71,6 +81,7 @@ namespace DCL
             // transform coordinates from rect coordinates to parent of view coordinates
             //currentPosition = GetViewLocalPosition(lastClickPosition);
             view.Open(currentParcel, lastClickPosition);
+            RetrieveFavoriteState();
         }
 
         private void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
@@ -92,8 +103,43 @@ namespace DCL
                 view.Populate(currentParcel, lastClickPosition, sceneInfo);
         }
 
+        private void RetrieveFavoriteState()
+        {
+            retrievingFavoritesCts?.SafeCancelAndDispose();
+            retrievingFavoritesCts = CancellationTokenSource.CreateLinkedTokenSource(disposingCts.Token);
+
+            RetrieveFavoriteStateAsync(retrievingFavoritesCts.Token).Forget();
+        }
+
+        private async UniTaskVoid RetrieveFavoriteStateAsync(CancellationToken ct)
+        {
+            try
+            {
+                view.SetFavoriteLoading(true);
+                var place = await placesAPIService.GetPlace(currentParcel, ct);
+                view.SetIsAPlace(true);
+                bool isFavorite = await placesAPIService.IsFavoritePlace(place, ct);
+                view.SetFavoriteLoading(false);
+                view.SetCurrentFavoriteStatus(place.id, isFavorite);
+            }
+            catch (NotAPlaceException)
+            {
+                view.SetIsAPlace(false);
+            }
+            catch (OperationCanceledException)
+            {
+                view.SetFavoriteLoading(true);
+            }
+        }
+
+        private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
+        {
+            placesAPIService.SetPlaceFavorite(uuid, isFavorite, default).Forget();
+        }
+
         public void Dispose()
         {
+            disposingCts?.SafeCancelAndDispose();
             Unsubscribe();
         }
     }

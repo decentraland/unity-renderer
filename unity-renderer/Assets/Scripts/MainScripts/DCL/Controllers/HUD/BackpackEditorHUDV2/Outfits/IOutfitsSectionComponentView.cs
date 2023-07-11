@@ -8,7 +8,6 @@ namespace DCL.Backpack
     {
         event Action<OutfitItem> OnOutfitEquipped;
         event Action<int> OnOutfitDiscarded;
-        event Action<OutfitItem> OnOutfitSaved;
         event Action<int> OnOutfitLocalSave;
         event Action OnTrySaveAsGuest;
 

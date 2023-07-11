@@ -23,8 +23,9 @@ namespace DCL.Components
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
         private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
-        public UIScreenSpace()
+        public UIScreenSpace(UIShapePool pool) : base(pool)
         {
+            this.pool = pool;
             dataStorePlayer.playerGridPosition.OnChange += OnPlayerCoordinatesChanged;
             DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange += OnChangeSceneUI;
             OnChangeSceneUI(isUIEnabled.Get(), true);
@@ -70,6 +71,9 @@ namespace DCL.Components
             {
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
             }
+
+            if (referencesContainer != null)
+                pool.ReleaseUIShape(referencesContainer);
         }
 
         void OnChangeSceneUI(bool current, bool previous)

@@ -16,6 +16,7 @@ import {
 } from 'shared/types'
 import type { UnityGame } from 'unity-interface/loader'
 import { incrementMessageFromKernelToRendererNative } from 'shared/session/getPerformanceInfo'
+import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
 
 enum RaycastQueryType {
   NONE,
@@ -68,7 +69,6 @@ export class NativeMessagesBridge {
   private callUpdateParcelScene!: (scene: never) => void
   private callUnloadParcelScene!: (sceneId: string) => void
 
-  private callBinaryMessage!: (ptr: number, length: number, sceneId: string) => void
   private callSdk6BinaryMessage!: (ptr: number, length: number) => void
 
   private currentSceneId: string = ''
@@ -78,7 +78,6 @@ export class NativeMessagesBridge {
   private unityModule: any
 
   private queryMemBlockPtr: number = 0
-  private binaryMessageMemBlockPtr: number = 0
   private binarySdk6MessageMemBlockPtr: number = 0
   private currentSceneNumber: number = 0
 
@@ -93,10 +92,7 @@ export class NativeMessagesBridge {
     const QUERY_MEM_SIZE = 40
     this.queryMemBlockPtr = this.unityModule._malloc(QUERY_MEM_SIZE)
 
-    const BINARY_MSG_MEM_SIZE = 8388608
-    this.binaryMessageMemBlockPtr = this.unityModule._malloc(BINARY_MSG_MEM_SIZE)
-
-    const SDK6_BINARY_MSG_MEM_SIZE = 8388608
+    const SDK6_BINARY_MSG_MEM_SIZE = _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE
     this.binarySdk6MessageMemBlockPtr = this.unityModule._malloc(SDK6_BINARY_MSG_MEM_SIZE)
 
     this.callSetEntityId = this.unityModule.cwrap('call_SetEntityId', null, ['string'])
@@ -125,7 +121,8 @@ export class NativeMessagesBridge {
     this.callCreateEntity = this.unityModule.cwrap('call_CreateEntity', null, [])
     this.callRemoveEntity = this.unityModule.cwrap('call_RemoveEntity', null, [])
     this.callSceneReady = this.unityModule.cwrap('call_SceneReady', null, [])
-    this.callBinaryMessage = this.unityModule.cwrap('call_BinaryMessage', null, ['number', 'number', 'string'])
+    // This bind is used in webTransport.ts
+    // this.callBinaryMessage = this.unityModule.cwrap('call_BinaryMessage', null, ['number', 'number', 'string'])
     this.callSdk6BinaryMessage = this.unityModule.cwrap('call_Sdk6BinaryMessage', null, ['number', 'number', 'string'])
   }
 
@@ -305,12 +302,6 @@ export class NativeMessagesBridge {
         this.openNftDialog(action.payload)
         break
     }
-  }
-
-  public binaryMessage(sceneId: string, message: Uint8Array, messageLength: number) {
-    const ptr = this.binaryMessageMemBlockPtr
-    this.unityModule.HEAPU8.set(message, ptr)
-    this.callBinaryMessage(ptr, messageLength, sceneId)
   }
 
   public sdk6BinaryMessage(sceneNumber: number, message: Uint8Array, messageLength: number) {

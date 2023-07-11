@@ -1,15 +1,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Providers;
-using DCLServices.Lambdas;
 using System;
 using UnityEngine;
 
-public class EmotesCatalogService : IEmotesCatalogService
+public class LambdasEmotesCatalogService : IEmotesCatalogService
 {
     [Serializable]
     internal class WearableRequest
@@ -29,12 +27,10 @@ public class EmotesCatalogService : IEmotesCatalogService
     private CancellationTokenSource addressableCts;
     private int retryCount = 3;
 
-    public EmotesCatalogService(IEmotesRequestSource emoteSource, IAddressableResourceProvider addressableResourceProvider)
+    public LambdasEmotesCatalogService(IEmotesRequestSource emoteSource, IAddressableResourceProvider addressableResourceProvider)
     {
         this.emoteSource = emoteSource;
         this.addressableResourceProvider = addressableResourceProvider;
-
-        InitializeAsyncEmbeddedEmotes().Forget();
     }
 
     private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
@@ -65,6 +61,7 @@ public class EmotesCatalogService : IEmotesCatalogService
 
     public void Initialize()
     {
+        InitializeAsyncEmbeddedEmotes().Forget();
         emoteSource.OnEmotesReceived += OnEmotesReceived;
         emoteSource.OnEmoteRejected += OnEmoteRejected;
         emoteSource.OnOwnedEmotesReceived += OnOwnedEmotesReceived;

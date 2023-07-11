@@ -53,13 +53,17 @@ namespace DCL.ECSRuntime
 
         void IECSComponentsGroup.Add(IParcelScene scene, IDCLEntity entity)
         {
+            ((ECSComponent<T1>)component1).TryGet(scene, entity.entityId, out var componentData1);
+            ((ECSComponent<T2>)component2).TryGet(scene, entity.entityId, out var componentData2);
+            ((ECSComponent<T3>)component3).TryGet(scene, entity.entityId, out var componentData3);
+
             ECSComponentsGroupData<T1, T2, T3> data = new ECSComponentsGroupData<T1, T2, T3>
             (
                 scene: scene,
                 entity: entity,
-                componentData1: ((ECSComponent<T1>)component1).Get(scene, entity),
-                componentData2: ((ECSComponent<T2>)component2).Get(scene, entity),
-                componentData3: ((ECSComponent<T3>)component3).Get(scene, entity)
+                componentData1: componentData1,
+                componentData2: componentData2,
+                componentData3: componentData3
             );
 
             list.Add(data);
@@ -79,6 +83,21 @@ namespace DCL.ECSRuntime
             }
 
             return false;
+        }
+
+        void IECSComponentsGroup.Update(IParcelScene scene, IDCLEntity entity, IECSComponent component)
+        {
+            long entityId = entity.entityId;
+            if (!Utils.TryGetDataIndex(list, entity, out int index))
+                return;
+
+            if (Utils.TryGetComponentData<T1>(scene, entityId, component1, component, out var d1))
+                list[index] = list[index].With(d1);
+            if (Utils.TryGetComponentData<T2>(scene, entityId, component2, component, out var d2))
+                list[index] = list[index].With(d2);
+            if (Utils.TryGetComponentData<T3>(scene, entityId, component3, component, out var d3))
+                list[index] = list[index].With(d3);
+
         }
     }
 }
