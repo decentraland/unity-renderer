@@ -13,18 +13,18 @@ namespace DCL
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
-        private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
-        private Vector3 cameraPosition;
-        private Vector3 cameraForward;
-        private GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
-        private SimpleOverlappingTracker overlappingTracker = new SimpleOverlappingTracker(MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
-        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
-        private UnityEngine.Camera mainCamera;
+        private readonly GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
+        private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
+
+        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new ();
+        private UnityEngine.Camera camera;
+        private Transform cameraTransform;
 
         private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
+        private UnityEngine.Camera cachedCamera;
 
         public AvatarsLODController()
         {
@@ -43,6 +43,12 @@ namespace DCL
 
             otherPlayers.OnAdded += RegisterAvatar;
             otherPlayers.OnRemoved += UnregisterAvatar;
+        }
+
+        public void SetCamera(UnityEngine.Camera newCamera)
+        {
+            camera = newCamera;
+            cameraTransform = camera.transform;
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -68,16 +74,13 @@ namespace DCL
 
         public void Update()
         {
-            cameraPosition = CommonScriptableObjects.cameraPosition.Get();
-            cameraForward = CommonScriptableObjects.cameraForward.Get();
-
             UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
         }
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
-            if (mainCamera == null)
-                mainCamera = UnityEngine.Camera.main;
+            if (camera == null)
+                camera = UnityEngine.Camera.main;
 
             var avatarsCount = 0; //Full Avatar + Simple Avatar
             var impostorCount = 0; //Impostor
@@ -110,7 +113,7 @@ namespace DCL
 
                     avatarsCount++;
 
-                    lodController.SetNameVisible(mainCamera == null || overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(mainCamera)));
+                    lodController.SetNameVisible(camera == null || overlappingTracker.RegisterPosition(lodController.player.playerName.ScreenSpacePos(camera)));
 
                     continue;
                 }
@@ -154,8 +157,6 @@ namespace DCL
         /// <summary>
         /// Returns -1 if player is not in front of camera or not found
         /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
         private float DistanceToOwnPlayer(Player player, Vector3 ownPlayerPosition)
         {
             if (player == null || !IsInFrontOfCamera(player.worldPosition))
@@ -164,10 +165,8 @@ namespace DCL
             return Vector3.Distance(ownPlayerPosition, player.worldPosition);
         }
 
-        private bool IsInFrontOfCamera(Vector3 position)
-        {
-            return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
-        }
+        private bool IsInFrontOfCamera(Vector3 position) =>
+            Vector3.Dot(cameraTransform.forward, (position - cameraTransform.position).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
 
         public void Dispose()
         {
