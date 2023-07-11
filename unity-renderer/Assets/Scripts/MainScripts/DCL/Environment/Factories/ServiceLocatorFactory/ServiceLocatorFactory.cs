@@ -32,7 +32,6 @@ using RPC.Transports;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 using WorldsFeaturesAnalytics;
 
 namespace DCL
