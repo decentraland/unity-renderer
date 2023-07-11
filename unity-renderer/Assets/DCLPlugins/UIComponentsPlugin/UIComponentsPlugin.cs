@@ -11,6 +11,7 @@ public class UIComponentsPlugin : IPlugin
     private readonly UIShapePool containerRectPool;
     private readonly UIShapePool scrollRectPool;
     private readonly UIShapePool containerStackPool;
+    private readonly UIShapePool containerStackChildPool;
     private readonly UIShapePool imagePool;
     private readonly UIShapePool textPool;
 
@@ -24,6 +25,7 @@ public class UIComponentsPlugin : IPlugin
         containerRectPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true, 30);
         scrollRectPool = new (uiPoolsRoot, prefabPath: "UIScrollRect");
         containerStackPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true);
+        containerStackChildPool = new (uiPoolsRoot, prefabPath: "UIContainerStackChild", true);
         imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 200);
         textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 100);
 
@@ -39,7 +41,7 @@ public class UIComponentsPlugin : IPlugin
         factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool) );
         factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool) );
         factory.RegisterBuilder((int) CLASS_ID.UI_SLIDER_SHAPE, () => new UIScrollRect(scrollRectPool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool) );
+        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool, containerStackChildPool) );
         factory.RegisterBuilder((int) CLASS_ID.UI_IMAGE_SHAPE, () => new UIImage(imagePool));
         factory.RegisterBuilder((int) CLASS_ID.UI_TEXT_SHAPE, () => new UIText(textPool));
 
