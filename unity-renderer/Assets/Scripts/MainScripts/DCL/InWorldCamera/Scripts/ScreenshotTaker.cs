@@ -151,26 +151,16 @@ public class ScreenshotTaker : MonoBehaviour
     {
         // Save the screenshot
         byte[] fileBytes = texture.EncodeToPNG();
-        // System.IO.File.WriteAllBytes(screenshotFileName, fileBytes);
 
         if (Application.platform == RuntimePlatform.WebGLPlayer)
         {
-            //     string base64String = System.Convert.ToBase64String(fileBytes);
-            //
-            //     // Construct the data URI for the file
-            //     var dataUri = $"data:application/octet-stream;base64,{base64String}";
-            //
-            //     // Open the data URI in a new browser window
-            //     Application.OpenURL(dataUri);
-            //
-            // Save the file bytes to the persistent data path
-            string filePath = Path.Combine(Application.temporaryCachePath, screenshotFileName);
-            // string filePath = Path.Combine(Application.persistentDataPath, screenshotFileName);
+            string base64String = Convert.ToBase64String(fileBytes);
 
-            File.WriteAllBytes(filePath, fileBytes);
+            // Construct the data URI for the file
+            var dataUri = $"data:application/octet-stream;base64,{base64String}";
 
-            // Open the file in the default application
-            Application.OpenURL(GetDownloadLink());
+            // Open the data URI in a new browser window
+            Application.OpenURL(dataUri);
         }
         else // Standalone platforms
         {
@@ -183,11 +173,5 @@ public class ScreenshotTaker : MonoBehaviour
             // Open the file in the default application
             Application.OpenURL(filePath);
         }
-    }
-
-    private string GetDownloadLink()
-    {
-        string url = string.Format("{0}/{1}", Application.temporaryCachePath, screenshotFileName);
-        return url.Replace('\\', '/');
     }
 }
