@@ -19,14 +19,14 @@ namespace DCL.Components
 
         private CanvasGroup canvasGroup;
         private bool isInsideSceneBounds;
-        private BaseVariable<bool> isUIEnabled => DataStore.i.HUDs.isSceneUIEnabled;
+        private BaseVariable<bool> isUIEnabled => DataStore.i.HUDs.isCurrentSceneUiEnabled;
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
         private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
         public UIScreenSpace()
         {
             dataStorePlayer.playerGridPosition.OnChange += OnPlayerCoordinatesChanged;
-            DataStore.i.HUDs.isSceneUIEnabled.OnChange += OnChangeSceneUI;
+            DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange += OnChangeSceneUI;
             OnChangeSceneUI(isUIEnabled.Get(), true);
             model = new Model();
         }
@@ -63,7 +63,7 @@ namespace DCL.Components
         {
             hudCanvasCameraModeController?.Dispose();
             dataStorePlayer.playerGridPosition.OnChange -= OnPlayerCoordinatesChanged;
-            DataStore.i.HUDs.isSceneUIEnabled.OnChange -= OnChangeSceneUI;
+            DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange -= OnChangeSceneUI;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
             if (childHookRectTransform != null)
@@ -105,9 +105,9 @@ namespace DCL.Components
             {
                 DataStore.i.Get<DataStore_World>().currentRaycaster.Set(graphicRaycaster);
             }
-            
+
             bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
-            
+
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
         }

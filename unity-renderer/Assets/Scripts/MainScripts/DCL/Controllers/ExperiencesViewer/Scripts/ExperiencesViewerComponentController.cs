@@ -85,8 +85,8 @@ namespace DCL.ExperiencesViewer
 
                 if (sceneUIComponent != null)
                     sceneUIComponent.canvas.enabled = isVisible;
-                else
-                    Debug.LogError($"Cannot find UIScreenSpace component to change the PX visibility: {pexId}");
+
+                DataStore.i.HUDs.isSceneUiEnabled.AddOrSet(scene.sceneData.sceneNumber, isVisible);
             }
 
             if (!isVisible)
