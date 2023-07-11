@@ -1,6 +1,7 @@
 using MainScripts.DCL.InWorldCamera.Scripts;
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,7 +61,6 @@ namespace DCL
                     canvas.enabled = true;
 
                     Environment.i.serviceLocator.Get<IAvatarsLODController>().SetCamera(screenshotCamera);
-                        // var players = DataStore.i.player.otherPlayers.Get();
                 }
 
                 cameraEnabled = !cameraEnabled;
@@ -119,7 +119,7 @@ namespace DCL
             texture.Apply();
 
             // Gather screenshot metadata
-            // GetScreenshotMetadata();
+            GetScreenshotMetadata();
 
             // Save
             SaveScreenshot(texture);
@@ -163,6 +163,22 @@ namespace DCL
                 }
 
                 return (actualWidth, actualHeight);
+            }
+        }
+
+        private void GetScreenshotMetadata()
+        {
+            var lodControllers = Environment.i.serviceLocator.Get<IAvatarsLODController>().LodControllers;
+
+            foreach (var lodController in lodControllers.Values.Where(lodController => !lodController.IsInvisible))
+            {
+                Debug.Log(lodController.player.name, lodController.player.collider.gameObject);
+
+                Plane[] planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
+                Collider playerCollider = lodController.player.collider;
+
+                if (GeometryUtility.TestPlanesAABB(planes, playerCollider.bounds))
+                    Debug.Log("in frustrum - " + lodController.player.name, lodController.player.collider.gameObject);
             }
         }
 

@@ -19,12 +19,13 @@ namespace DCL
         private readonly GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
         private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
-        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new ();
         private UnityEngine.Camera camera;
         private Transform cameraTransform;
 
-        private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
         private UnityEngine.Camera cachedCamera;
+
+        private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
+        public Dictionary<string, IAvatarLODController> LodControllers { get; } = new ();
 
         public AvatarsLODController()
         {
@@ -35,9 +36,9 @@ namespace DCL
         {
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
-            foreach (IAvatarLODController lodController in lodControllers.Values) { lodController.Dispose(); }
+            foreach (IAvatarLODController lodController in LodControllers.Values) { lodController.Dispose(); }
 
-            lodControllers.Clear();
+            LodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get()) { RegisterAvatar(keyValuePair.Key, keyValuePair.Value); }
 
@@ -51,12 +52,13 @@ namespace DCL
             cameraTransform = camera.transform;
         }
 
+
         public void RegisterAvatar(string id, Player player)
         {
-            if (lodControllers.ContainsKey(id))
+            if (LodControllers.ContainsKey(id))
                 return;
 
-            lodControllers.Add(id, CreateLodController(player));
+            LodControllers.Add(id, CreateLodController(player));
         }
 
         protected internal virtual IAvatarLODController CreateLodController(Player player) =>
@@ -64,12 +66,12 @@ namespace DCL
 
         public void UnregisterAvatar(string id, Player player)
         {
-            if (!lodControllers.ContainsKey(id))
+            if (!LodControllers.ContainsKey(id))
                 return;
 
-            lodControllers[id].SetLOD0();
-            lodControllers[id].Dispose();
-            lodControllers.Remove(id);
+            LodControllers[id].SetLOD0();
+            LodControllers[id].Dispose();
+            LodControllers.Remove(id);
         }
 
         public void Update()
@@ -80,7 +82,14 @@ namespace DCL
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
             if (camera == null)
+            {
                 camera = UnityEngine.Camera.main;
+
+                if (camera == null)
+                    return;
+
+                cameraTransform = camera.transform;
+            }
 
             var avatarsCount = 0; //Full Avatar + Simple Avatar
             var impostorCount = 0; //Impostor
@@ -91,7 +100,7 @@ namespace DCL
             overlappingTracker.Reset();
 
             foreach (var controllerDistancePair in
-                     ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition))
+                     ComposeLODControllersSortedByDistance(LodControllers.Values, ownPlayerPosition))
             {
                 (IAvatarLODController lodController, float distance) = controllerDistancePair;
 
@@ -170,7 +179,7 @@ namespace DCL
 
         public void Dispose()
         {
-            foreach (IAvatarLODController lodController in lodControllers.Values) { lodController.Dispose(); }
+            foreach (IAvatarLODController lodController in LodControllers.Values) { lodController.Dispose(); }
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
