@@ -2,7 +2,6 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -34,8 +33,6 @@ namespace DCL.ExperiencesViewer
         private BaseVariable<string> forcePortableExperience => DataStore.i.world.forcePortableExperience;
 
         internal IExperiencesViewerComponentView view;
-        private UserProfile userProfile;
-        private List<string> lastDisablePEXSentToKernel;
 
         public void Initialize(ISceneController sceneController)
         {
@@ -50,14 +47,6 @@ namespace DCL.ExperiencesViewer
             portableExperienceIds.OnAdded += OnPEXSceneAdded;
             portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded += OnPEXDisabled;
-
-            userProfile = UserProfile.GetOwnUserProfile();
-
-            if (userProfile != null)
-            {
-                userProfile.OnUpdate += OnUserProfileUpdated;
-                OnUserProfileUpdated(userProfile);
-            }
 
             foreach (var pair in disabledPortableExperiences.Get())
                 OnPEXDisabled(pair.Key, pair.Value);
@@ -81,9 +70,6 @@ namespace DCL.ExperiencesViewer
             portableExperienceIds.OnAdded -= OnPEXSceneAdded;
             portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded -= OnPEXDisabled;
-
-            if (userProfile != null)
-                userProfile.OnUpdate -= OnUserProfileUpdated;
         }
 
         internal void OnCloseButtonPressed() =>
@@ -203,37 +189,6 @@ namespace DCL.ExperiencesViewer
 
             view.RemoveAvailableExperience(id);
             numOfLoadedExperiences.Set(GetPortableExperienceCount());
-        }
-
-        private void OnUserProfileUpdated(UserProfile userProfile)
-        {
-            // List<string> experiencesIdsToRemove = new List<string>();
-            //
-            // foreach (var pex in activePEXScenes)
-            // {
-            //     // We remove from the list all those experiences related to wearables that are not equipped
-            //     if (wearableCatalog.ContainsKey(pex.Key) && !userProfile.avatar.wearables.Contains(pex.Key))
-            //         experiencesIdsToRemove.Add(pex.Key);
-            // }
-            //
-            // foreach (string pexId in experiencesIdsToRemove)
-            // {
-            //     view.RemoveAvailableExperience(pexId);
-            //     activePEXScenes.Remove(pexId);
-            //     pausedPEXScenesIds.Remove(pexId);
-            // }
-            //
-            // numOfLoadedExperiences.Set(activePEXScenes.Count);
-            //
-            // if (lastDisablePEXSentToKernel != pausedPEXScenesIds)
-            // {
-            //     lastDisablePEXSentToKernel = pausedPEXScenesIds;
-            //     WebInterface.SetDisabledPortableExperiences(pausedPEXScenesIds.ToArray());
-            // }
-            //
-            // List<ExperienceRowComponentView> loadedExperiences = view.GetAllAvailableExperiences();
-            //
-            // for (int i = 0; i < loadedExperiences.Count; i++) { loadedExperiences[i].SetAllowStartStop(userProfile.avatar.wearables.Contains(loadedExperiences[i].model.id)); }
         }
 
         private int GetPortableExperienceCount() =>
