@@ -369,12 +369,12 @@ namespace ECSSystems.ScenesUiSystem
 
             if (scene == null) return;
 
-            IECSReadOnlyComponentData<InternalUiContainer> sceneUiContainer =
+            ECSComponentData<InternalUiContainer>? sceneUiContainer =
                 internalUiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneUiContainer == null) return;
 
-            sceneUiContainer.model.rootElement.style.display =
+            sceneUiContainer.Value.model.rootElement.style.display =
                 new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
