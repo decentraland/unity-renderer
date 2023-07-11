@@ -10,6 +10,8 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.DCLFileBrowser;
+using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
 using DCLServices.Lambdas;
@@ -200,6 +202,8 @@ namespace DCL
             // Analytics
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
+
+            result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
             return result;
         }
     }
