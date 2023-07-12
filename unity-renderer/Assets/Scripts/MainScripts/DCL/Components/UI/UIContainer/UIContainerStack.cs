@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks.Triggers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -9,7 +8,6 @@ using UnityEngine.UI;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
 using System;
-using Unity.Profiling;
 using Object = UnityEngine.Object;
 
 namespace DCL.Components
@@ -66,9 +64,6 @@ namespace DCL.Components
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
         private readonly UIShapePool childPool;
-
-        private ProfilerMarker refreshContainerForShapeMarker = new ProfilerMarker("FD:: RefreshContainerForShape");
-        private ProfilerMarker refreshContainerInstantiationMarker = new ProfilerMarker("FD:: refreshContainerInstantiation");
 
         public UIContainerStack(UIShapePool containerStackPool, UIShapePool containerStackChildPool) : base(containerStackPool)
         {
@@ -129,24 +124,18 @@ namespace DCL.Components
 
         private void RefreshContainerForShape(BaseDisposable updatedComponent)
         {
-            // Debug.Log ("FD:: RefreshContainerForShape");
-            refreshContainerForShapeMarker.Begin();
             UIShape childComponent = updatedComponent as UIShape;
             Assert.IsTrue(childComponent != null, "This should never happen!!!!");
 
             if (((UIShape.Model)childComponent.GetModel()).parentComponent != this.id)
             {
                 MarkLayoutDirty();
-                refreshContainerForShapeMarker.End();
                 return;
             }
 
             if (!stackContainers.ContainsKey(childComponent.id))
             {
-                refreshContainerInstantiationMarker.Begin();
-                // var stackContainer = Object.Instantiate(Resources.Load("UIContainerStackChild"), referencesContainer.childHookRectTransform, false) as GameObject;
                 var stackContainer = childPool.TakeUIShapeInsideParent(referencesContainer.childHookRectTransform); // FD:: test
-                refreshContainerInstantiationMarker.End();
 #if UNITY_EDITOR
                 stackContainer.name = "UIContainerStackChild - " + childComponent.id;
 #endif
@@ -158,7 +147,6 @@ namespace DCL.Components
             }
 
             MarkLayoutDirty();
-            refreshContainerForShapeMarker.End();
         }
 
         public override void OnChildAttached(UIShape parentComponent, UIShape childComponent)
