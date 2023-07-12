@@ -72,7 +72,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
         {
             markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(model, false);
 
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, model);
+            crdtExecutor.PutComponent(entityId, component, model);
         }
     }
 
@@ -89,7 +89,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
         markAsDirtyComponents[sceneNumber, entityId] = new DirtyData(defaultModel, true);
 
-        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, defaultModel);
+        crdtExecutor.PutComponent(entityId, component, defaultModel);
     }
 
     public void RemoveFor(IParcelScene scene, IDCLEntity entity) =>
@@ -104,17 +104,20 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             return;
 
         markAsDirtyComponents.Remove(sceneNumber, entityId);
-        crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+        crdtExecutor.RemoveComponent(entityId, componentId);
     }
 
-    public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, IDCLEntity entity)
+    public ECSComponentData<T>? GetFor(IParcelScene scene, IDCLEntity entity)
     {
-        return component.Get(scene, entity);
+        return GetFor(scene, entity.entityId);
     }
 
-    public IECSReadOnlyComponentData<T> GetFor(IParcelScene scene, long entityId)
+    public ECSComponentData<T>? GetFor(IParcelScene scene, long entityId)
     {
-        return component.Get(scene, entityId);
+        if (component.TryGet(scene, entityId, out var data))
+            return data;
+
+        return null;
     }
 
     public IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<T>>> GetForAll()
@@ -139,7 +142,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
             }
 
             data.dirty = true;
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+            crdtExecutor.PutComponent(entityId, component, data);
             removeAsDirtyComponents[sceneNumber, entityId] = new DirtyData(data, isRemoval);
         }
 
@@ -164,12 +167,12 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
             if (isRemoval)
             {
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
+                crdtExecutor.RemoveComponent(entityId, componentId);
             }
             else
             {
                 data.dirty = false;
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
+                crdtExecutor.PutComponent(entityId, component, data);
             }
         }
 

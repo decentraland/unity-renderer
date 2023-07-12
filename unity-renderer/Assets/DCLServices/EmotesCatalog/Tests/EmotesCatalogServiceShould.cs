@@ -16,7 +16,7 @@ using UnityEngine.TestTools;
 
 public class EmotesCatalogServiceShould
 {
-    private EmotesCatalogService catalog;
+    private LambdasEmotesCatalogService catalog;
     private IEmotesRequestSource emotesRequestSource;
     private EmbeddedEmote[] embededEmotes;
 
@@ -26,7 +26,7 @@ public class EmotesCatalogServiceShould
         emotesRequestSource = Substitute.For<IEmotesRequestSource>();
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(emotesRequestSource, addressableResourceProvider);
+        catalog = new LambdasEmotesCatalogService(emotesRequestSource, addressableResourceProvider);
         catalog.Initialize();
     }
 
@@ -340,7 +340,8 @@ public class EmotesCatalogServiceShould
 
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
-        catalog = new EmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider);
+        catalog = new LambdasEmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider);
+        catalog.Initialize();
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
         Assert.AreEqual(catalog.emotes["id2"], embededEmotes[1]);

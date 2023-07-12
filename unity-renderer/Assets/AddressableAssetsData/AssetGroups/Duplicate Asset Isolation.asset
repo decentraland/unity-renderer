@@ -361,10 +361,6 @@ MonoBehaviour:
     m_Address: CopyIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 257bf8731440e4fa392f389916143102
-    m_Address: QuestOn
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 1aac5e83391d74318b6be345b5ca43aa
     m_Address: SelectedParcel
     m_ReadOnly: 0
@@ -1367,6 +1363,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 270c3bffb7809438bbdcb901239beff2
     m_Address: MoreIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3c940a5c07400864db483f5212bd11dd
+    m_Address: FavouriteDisabled
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

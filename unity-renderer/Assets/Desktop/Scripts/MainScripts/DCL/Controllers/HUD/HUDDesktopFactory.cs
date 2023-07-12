@@ -4,6 +4,7 @@ using DCL.Browser;
 using DCL.Controllers.HUD;
 using DCL.MyAccount;
 using DCL.SettingsCommon;
+using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
@@ -48,7 +49,7 @@ public class HUDDesktopFactory : HUDFactory
                     webInterfaceBrowserBridge);
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
+                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i, DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>());
                 break;
 
             default:
