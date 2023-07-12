@@ -14,6 +14,8 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
 
     void ShowEvents(List<EventCardComponentModel> events, string searchText);
     void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton);
+    void ShowPlaces(List<PlaceCardComponentModel> places, string searchText);
+    void ShowAllPlaces(List<PlaceCardComponentModel> places, bool showMoreButton);
     void ShowEventModal(EventCardComponentModel eventModel);
     void SetHeaderEnabled(bool isEnabled, string searchText);
 }

@@ -1,21 +1,19 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Tasks;
-using DCLServices.PlacesAPIService;
-using MainScripts.DCL.Helpers.Utils;
-using System;
 using System.Collections.Generic;
-using DCL.Helpers;
+using ExploreV2Analytics;
 using System.Threading;
 using UnityEngine;
 
 public class SearchSubSectionComponentController : ISearchSubSectionComponentController
 {
-    private ISearchSubSectionComponentView view;
-    private SearchBarComponentView searchBarComponentView;
-    private IEventsAPIController eventsAPI;
-    private IUserProfileBridge userProfileBridge;
-    private DataStore dataStore;
+    private readonly ISearchSubSectionComponentView view;
+    private readonly SearchBarComponentView searchBarComponentView;
+    private readonly IEventsAPIController eventsAPI;
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly DataStore dataStore;
 
     private CancellationTokenSource minimalSearchCts;
     private CancellationTokenSource fullSearchCts;
@@ -24,16 +22,17 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         SearchBarComponentView searchBarComponentView,
         IEventsAPIController eventsAPI,
         IUserProfileBridge userProfileBridge,
+        IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
     {
         this.view = view;
         this.searchBarComponentView = searchBarComponentView;
         this.eventsAPI = eventsAPI;
         this.userProfileBridge = userProfileBridge;
+        this.exploreV2Analytics = exploreV2Analytics;
         this.dataStore = dataStore;
 
         view.OnRequestAllEvents += SearchAllEvents;
-
         view.OnInfoClicked += OpenEventDetailsModal;
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
@@ -49,15 +48,16 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         searchBarComponentView.SubmitSearch("");
     }
 
-    private void JumpInToEvent(EventFromAPIModel obj)
+    private void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
-        throw new NotImplementedException();
+        EventsSubSectionComponentController.JumpInToEvent(eventFromAPI);
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
     }
 
     private void OpenEventDetailsModal(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
-        //exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, ActionSource.FromSearch);
     }
 
     private void Search(string searchText)
@@ -76,11 +76,17 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         if (userProfileBridge.GetOwn().isGuest)
             dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
+        {
+            exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
             eventsAPI.RegisterParticipation(eventId);
+        }
     }
 
-    private void UnsubscribeToEvent(string eventId) =>
+    private void UnsubscribeToEvent(string eventId)
+    {
         eventsAPI.RemoveParticipation(eventId);
+        exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
+    }
 
     private void SearchAllEvents(int pageNumber)
     {
@@ -104,7 +110,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         }
     }
 
-    private async UniTaskVoid SearchPlaces(string searchText, CancellationToken cancellationToken)
+    private async UniTaskVoid SearchPlaces(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await eventsAPI.SearchEvents(searchText, 0,5, cancellationToken);
         List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
@@ -113,5 +119,15 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     public void Dispose()
     {
+        view.OnRequestAllEvents -= SearchAllEvents;
+
+        view.OnInfoClicked -= OpenEventDetailsModal;
+        view.OnSubscribeEventClicked -= SubscribeToEvent;
+        view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
+        view.OnJumpInClicked -= JumpInToEvent;
+        view.OnBackFromSearch -= CloseSearchPanel;
+
+        if(searchBarComponentView != null)
+            searchBarComponentView.OnSearchText -= Search;
     }
 }

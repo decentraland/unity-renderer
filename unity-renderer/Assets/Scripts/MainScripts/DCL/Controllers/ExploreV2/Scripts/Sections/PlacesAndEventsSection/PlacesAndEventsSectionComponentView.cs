@@ -42,6 +42,8 @@ public interface IPlacesAndEventsSectionComponentView
     /// </summary>
     /// <param name="isActive"></param>
     void SetActive(bool isActive);
+
+    void EnableSearchBar(bool isActive);
 }
 
 public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
@@ -103,6 +105,11 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         eventsSubSection.SetActive(isActive && currentSelectedIndex == EVENTS_SUB_SECTION_INDEX);
         favoritesSubSection.SetActive(isActive && currentSelectedIndex == FAVORITES_SUB_SECTION_INDEX);
         searchSubSection.SetActive(isActive && currentSelectedIndex == SEARCH_SUB_SECTION_INDEX);
+    }
+
+    public void EnableSearchBar(bool isActive)
+    {
+        searchBar.gameObject.SetActive(isActive);
     }
 
     public override void RefreshControl()

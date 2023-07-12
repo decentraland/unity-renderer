@@ -8,7 +8,7 @@ using Utils = DCL.Helpers.Utils;
 
 public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectionComponentView
 {
-    private const int MAX_EVENTS_COUNT = 5;
+    private const int MAX_POOL_COUNT = 6;
 
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
@@ -23,15 +23,16 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
 
     [SerializeField] private Canvas canvas;
     [SerializeField] private Transform eventsParent;
+    [SerializeField] private Transform placesParent;
     [SerializeField] private RectTransform fullEventsParent;
     [SerializeField] private EventCardComponentView eventPrefab;
+    [SerializeField] private PlaceCardComponentView placePrefab;
     [SerializeField] private GameObject loadingEvents;
     [SerializeField] private GameObject loadingPlaces;
     [SerializeField] private GameObject loadingAll;
     [SerializeField] private Button showAllPlaces;
     [SerializeField] private Button showAllEvents;
     [SerializeField] private Button showMore;
-    [SerializeField] private Button backFromAllList;
 
     [SerializeField] private GameObject noEvents;
     [SerializeField] private GameObject noPlaces;
@@ -51,6 +52,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     private List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
     private UnityObjectPool<EventCardComponentView> fullEventsPool;
     private List<EventCardComponentView> pooledFullEvents = new List<EventCardComponentView>();
+    private UnityObjectPool<PlaceCardComponentView> placesPool;
+    private List<PlaceCardComponentView> pooledPlaces = new List<PlaceCardComponentView>();
+    private UnityObjectPool<PlaceCardComponentView> fullPlacesPool;
+    private List<PlaceCardComponentView> pooledFullPlaces = new List<PlaceCardComponentView>();
     private int currentPage = 0;
 
     public override void Awake()
@@ -60,10 +65,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         showAllEvents.onClick.AddListener(RequestAllEvents);
         showMore.onClick.RemoveAllListeners();
         showMore.onClick.AddListener(RequestAdditionalPage);
-        backFromAllList.onClick.RemoveAllListeners();
-        backFromAllList.onClick.AddListener(CloseFullList);
         backButton.onClick.RemoveAllListeners();
-        backButton.onClick.AddListener(()=>OnBackFromSearch?.Invoke());
+        backButton.onClick.AddListener(OnBackButtonPressed);
         noEvents.SetActive(false);
         noPlaces.SetActive(true);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
@@ -73,6 +76,19 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         currentPage++;
         OnRequestAllEvents?.Invoke(currentPage);
+    }
+
+    private void OnBackButtonPressed()
+    {
+        if (minimalSearchSection.activeSelf)
+        {
+            OnBackFromSearch?.Invoke();
+        }
+        else
+        {
+            minimalSearchSection.SetActive(true);
+            fullSearchSection.SetActive(false);
+        }
     }
 
     private void RequestAllEvents()
@@ -111,6 +127,31 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         }
     }
 
+    public void ShowPlaces(List<PlaceCardComponentModel> places, string searchText)
+    {
+        ClearPlacesPool();
+        foreach (PlaceCardComponentModel placeCardComponentModel in places)
+        {
+            PlaceCardComponentView placeCardComponentView = placesPool.Get();
+            placeCardComponentView.model = placeCardComponentModel;
+            placeCardComponentView.RefreshControl();
+            pooledPlaces.Add(placeCardComponentView);
+            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+        }
+        placesParent.gameObject.SetActive(true);
+        loadingPlaces.gameObject.SetActive(false);
+
+        if (places.Count == 0)
+        {
+            noPlaces.SetActive(true);
+            noPlacesText.text = $"No places found for '{searchText}'";
+        }
+        else
+        {
+            noPlaces.SetActive(false);
+        }
+    }
+
     private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
     {
         view.onInfoClick.RemoveAllListeners();
@@ -120,7 +161,11 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onInfoClick.AddListener(() => OnInfoClicked?.Invoke(model));
         view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
         view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
-        view.onJumpInClick.AddListener(() => OnJumpInClicked?.Invoke(new EventFromAPIModel(){}));
+        view.onJumpInClick.AddListener(() => OnJumpInClicked?.Invoke(model.eventFromAPIInfo));
+    }
+
+    private void ConfigurePlaceCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
+    {
     }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
@@ -144,12 +189,31 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         Utils.ForceRebuildLayoutImmediate(fullEventsParent);
     }
 
+    public void ShowAllPlaces(List<PlaceCardComponentModel> places, bool showMoreButton)
+    {
+        showMore.gameObject.SetActive(showMoreButton);
+        foreach (PlaceCardComponentModel placeCardComponentModel in places)
+        {
+            PlaceCardComponentView placeCardComponentView = fullPlacesPool.Get();
+            placeCardComponentView.model = placeCardComponentModel;
+            placeCardComponentView.RefreshControl();
+            pooledFullPlaces.Add(placeCardComponentView);
+            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+        }
+        loadingAll.SetActive(false);
+        Utils.ForceRebuildLayoutImmediate(fullEventsParent);
+    }
+
     private void InitializePools()
     {
         eventsPool = new UnityObjectPool<EventCardComponentView>(eventPrefab, eventsParent);
-        eventsPool.Prewarm(MAX_EVENTS_COUNT);
+        eventsPool.Prewarm(MAX_POOL_COUNT);
+        placesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, placesParent);
+        placesPool.Prewarm(MAX_POOL_COUNT);
         fullEventsPool = new UnityObjectPool<EventCardComponentView>(eventPrefab, fullEventsParent);
-        fullEventsPool.Prewarm(MAX_EVENTS_COUNT);
+        fullEventsPool.Prewarm(MAX_POOL_COUNT);
+        fullPlacesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, placesParent);
+        fullPlacesPool.Prewarm(MAX_POOL_COUNT);
     }
 
     public void RestartScrollViewPosition()
@@ -200,6 +264,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         ClearEventsPool();
         ClearFullEventsPool();
+        ClearPlacesPool();
+        ClearFullPlacesPool();
     }
 
     private void ClearEventsPool()
@@ -209,9 +275,23 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         pooledEvents.Clear();
     }
 
-    private void ClearFullEventsPool(){
+    private void ClearFullEventsPool()
+    {
         foreach (var pooledEvent in pooledFullEvents)
-                fullEventsPool.Release(pooledEvent);
+            fullEventsPool.Release(pooledEvent);
         pooledFullEvents.Clear();
+    }
+
+    private void ClearPlacesPool()
+    {
+        foreach (var pooledEvent in pooledPlaces)
+            placesPool.Release(pooledEvent);
+        pooledPlaces.Clear();
+    }
+
+    private void ClearFullPlacesPool(){
+        foreach (var pooledEvent in pooledFullPlaces)
+            fullPlacesPool.Release(pooledEvent);
+        pooledFullPlaces.Clear();
     }
 }

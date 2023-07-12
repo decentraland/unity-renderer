@@ -80,6 +80,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.SearchBar,
             eventsAPI,
             userProfileBridge,
+            exploreV2Analytics,
             dataStore);
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
@@ -108,5 +109,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }
 
-    internal void PlacesAndEventsVisibleChanged(bool current, bool _) => view.SetActive(current);
+    internal void PlacesAndEventsVisibleChanged(bool current, bool _)
+    {
+        view.EnableSearchBar(dataStore.featureFlags.flags.Get().IsFeatureEnabled("search_in_places"));
+        view.SetActive(current);
+    }
 }
