@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using MainScripts.DCL.InWorldCamera.Scripts;
 using System;
 using System.IO;
@@ -168,17 +169,36 @@ namespace DCL
 
         private void GetScreenshotMetadata()
         {
+            Debug.Log("---- Taking screenshot ----");
+            Debug.Log($"DateTime: {DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
+            Debug.Log($"Realm: {DataStore.i.realm.realmName.Get()}");
+
+            Debug.Log($"Player name: {DataStore.i.player.ownPlayer.Get().name}");
+            Debug.Log($"Player id: {DataStore.i.player.ownPlayer.Get().id}");
+            Debug.Log($"Player Position: {DataStore.i.player.playerGridPosition.Get()}");
+
+            var sceneInfo =   MinimapMetadata.GetMetadata().GetSceneInfo(
+                DataStore.i.player.playerGridPosition.Get().x,
+                DataStore.i.player.playerGridPosition.Get().y);
+
+            Debug.Log($"Scene name: {sceneInfo.name}");
+
             var lodControllers = Environment.i.serviceLocator.Get<IAvatarsLODController>().LodControllers;
 
             foreach (var lodController in lodControllers.Values.Where(lodController => !lodController.IsInvisible))
             {
-                Debug.Log(lodController.player.name, lodController.player.collider.gameObject);
-
                 Plane[] planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
                 Collider playerCollider = lodController.player.collider;
 
                 if (GeometryUtility.TestPlanesAABB(planes, playerCollider.bounds))
-                    Debug.Log("in frustrum - " + lodController.player.name, lodController.player.collider.gameObject);
+                {
+                    Debug.Log($"Player {lodController.player.name}, {lodController.player.id}", lodController.player.collider.gameObject);
+
+                    var bridge = new UserProfileWebInterfaceBridge();
+                    var userProfile = bridge.Get(lodController.player.id);
+                    foreach (string wearable in userProfile.avatar.wearables)
+                        Debug.Log($"wearable - {wearable}");
+                }
             }
         }
 
