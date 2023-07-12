@@ -17,7 +17,7 @@ namespace ExploreV2Analytics
         void AddFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
         void RemoveFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
-
+        void SendSearch(string searchString);
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
@@ -26,6 +26,7 @@ namespace ExploreV2Analytics
         private const string START_MENU_SECTION_VISIBILITY = "start_menu_section_visibility";
         private const string EXPLORE_EVENT_TELEPORT = "explore_event_teleport";
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
+        private const string EXPLORE_SEARCH = "explore_search";
         private const string EXPLORE_PARTICIPATE_EVENT = "explore_participate_event";
         private const string EXPLORE_REMOVE_PARTICIPATE_EVENT = "explore_remove_participate_event";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
@@ -163,5 +164,13 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(TELEPORT_FAVORITE_PLACE, data);
         }
 
+        public void SendSearch(string searchString)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["search_string"] = searchString
+            };
+            GenericAnalytics.SendAnalytic(EXPLORE_SEARCH, data);
+        }
     }
 }
