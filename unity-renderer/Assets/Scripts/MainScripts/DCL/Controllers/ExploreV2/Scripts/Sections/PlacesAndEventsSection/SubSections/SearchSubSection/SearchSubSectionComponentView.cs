@@ -36,8 +36,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
 
     [SerializeField] private GameObject noEvents;
     [SerializeField] private GameObject noPlaces;
+    [SerializeField] private GameObject noResults;
     [SerializeField] private TMP_Text noEventsText;
     [SerializeField] private TMP_Text noPlacesText;
+    [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
 
     internal EventCardComponentView eventModal;
@@ -116,6 +118,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         eventsParent.gameObject.SetActive(true);
         loadingEvents.gameObject.SetActive(false);
 
+        showAllEvents.gameObject.SetActive(events.Count == 6);
         if (events.Count == 0)
         {
             noEvents.SetActive(true);
@@ -125,6 +128,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         {
             noEvents.SetActive(false);
         }
+        CheckAndSetNoResults(searchText);
     }
 
     public void ShowPlaces(List<PlaceCardComponentModel> places, string searchText)
@@ -141,6 +145,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         placesParent.gameObject.SetActive(true);
         loadingPlaces.gameObject.SetActive(false);
 
+        showAllPlaces.gameObject.SetActive(places.Count == 6);
         if (places.Count == 0)
         {
             noPlaces.SetActive(true);
@@ -150,6 +155,24 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         {
             noPlaces.SetActive(false);
         }
+        CheckAndSetNoResults(searchText);
+    }
+
+    private void CheckAndSetNoResults(string searchText)
+    {
+        if (noPlaces.activeSelf && noEvents.activeSelf)
+        {
+            noResults.SetActive(true);
+            minimalSearchSection.SetActive(false);
+            noResultsText.text = $"No results found for '{searchText}'";
+        }
+        else
+        {
+            noResults.SetActive(false);
+            if(minimalSearchSection.activeSelf == false)
+                minimalSearchSection.SetActive(true);
+        }
+
     }
 
     private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
