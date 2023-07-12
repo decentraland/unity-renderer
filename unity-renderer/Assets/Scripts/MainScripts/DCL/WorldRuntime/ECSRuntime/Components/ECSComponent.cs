@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.ECSRuntime
@@ -31,19 +31,19 @@ namespace DCL.ECSRuntime
 
             if (componentData.ContainsKey(scene, entityId))
             {
-                Debug.LogError($"entity {entityId} already contains component {typeof(ModelType)}", entity.gameObject);
+                Debug.LogError($"entity {entityId.ToString()} already contains component {typeof(ModelType)}", entity.gameObject);
                 return;
             }
 
             var handler = handlerBuilder?.Invoke();
 
-            componentData.Add(scene, entityId, new ECSComponentData<ModelType>()
-            {
-                entity = entity,
-                model = default,
-                scene = scene,
-                handler = handler
-            });
+            componentData.Add(scene, entityId, new ECSComponentData<ModelType>
+            (
+                entity: entity,
+                model: default,
+                scene: scene,
+                handler: handler
+            ));
 
             handler?.OnComponentCreated(scene, entity);
         }
@@ -72,16 +72,25 @@ namespace DCL.ECSRuntime
         /// <param name="model">new model</param>
         public void SetModel(IParcelScene scene, IDCLEntity entity, ModelType model)
         {
-            if (componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
+            SetModel(scene, entity.entityId, model);
+        }
+
+        /// <summary>
+        /// set component model for entity
+        /// </summary>
+        /// <param name="scene">target scene</param>
+        /// <param name="entityId">target entity</param>
+        /// <param name="model">new model</param>
+        public void SetModel(IParcelScene scene, long entityId, ModelType model)
+        {
+            if (!componentData.TryGetValue(scene, entityId, out ECSComponentData<ModelType> data))
             {
-                data.model = model;
-                data.handler?.OnComponentModelUpdated(scene, entity, model);
+                Debug.LogError($"trying to update model but entity {entityId.ToString()} does not contains component {typeof(ModelType)}");
+                return;
             }
-            else
-            {
-                Debug.LogError($"trying to update model but entity {entity.entityId} does not contains component {typeof(ModelType)}",
-                    entity.gameObject);
-            }
+
+            componentData[scene, entityId] = data.With(model);
+            data.handler?.OnComponentModelUpdated(scene, data.entity, model);
         }
 
         /// <summary>
@@ -110,15 +119,12 @@ namespace DCL.ECSRuntime
         /// get component data for an entity
         /// </summary>
         /// <param name="scene">target scene</param>
-        /// <param name="entity">target entity</param>
-        /// <returns>component data, including model</returns>
-        public IECSReadOnlyComponentData<ModelType> Get(IParcelScene scene, IDCLEntity entity)
+        /// <param name="entityId">target entity id</param>
+        /// <param name="data">entity's component data</param>
+        /// <returns>`true` if data is exists</returns>///
+        public bool TryGet(IParcelScene scene, long entityId, out ECSComponentData<ModelType> data)
         {
-            if (componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
-            {
-                return data;
-            }
-            return null;
+            return componentData.TryGetValue(scene, entityId, out data);
         }
 
         /// <summary>
@@ -126,13 +132,12 @@ namespace DCL.ECSRuntime
         /// </summary>
         /// <param name="scene">target scene</param>
         /// <param name="entityId">target entity id</param>
-        /// <returns>component data, including model</returns>
-        public IECSReadOnlyComponentData<ModelType> Get(IParcelScene scene, long entityId)
+        /// <returns>entity's component data</returns>///
+        public ECSComponentData<ModelType>? Get(IParcelScene scene, long entityId)
         {
-            if (componentData.TryGetValue(scene, entityId, out ECSComponentData<ModelType> data))
-            {
+            if (componentData.TryGetValue(scene, entityId, out var data))
                 return data;
-            }
+
             return null;
         }
 

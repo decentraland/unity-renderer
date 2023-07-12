@@ -118,11 +118,11 @@ namespace Tests
                 Assert.IsTrue((!visibleColliders && containsColliderName) || (visibleColliders && !containsColliderName));
                 Assert.AreEqual(unityGameObjectLayer.Value, collider.gameObject.layer);
 
-                if ((mask & (int)ColliderLayer.ClPhysics) != 0) { Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if ((mask & (int)ColliderLayer.ClPhysics) != 0) { Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
 
-                if ((mask & (int)ColliderLayer.ClPointer) != 0) { Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if ((mask & (int)ColliderLayer.ClPointer) != 0) { Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
 
-                if (hasCustomLayer) { Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if (hasCustomLayer) { Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
             }
 
             yield return null;
@@ -140,9 +140,9 @@ namespace Tests
 
             yield return handler.gltfLoader.Promise;
 
-            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
-            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
-            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
+            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
+            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
+            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
             {
@@ -268,14 +268,14 @@ namespace Tests
 
             foreach (var collider in colliders)
             {
-                physicColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
-                pointerColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
-                customLayerColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
+                physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
+                pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
+                customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
             }
 
-            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
-            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
-            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
+            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
+            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
+            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
         }
 
         [UnityTest]

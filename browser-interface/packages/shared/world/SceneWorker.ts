@@ -5,7 +5,15 @@ import { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentralan
 import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { Scene } from '@dcl/schemas'
-import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, FORCE_SEND_MESSAGE, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight, WSS_ENABLED } from 'config'
+import {
+  DEBUG_SCENE_LOG,
+  ETHEREUM_NETWORK,
+  FORCE_SEND_MESSAGE,
+  getAssetBundlesBaseUrl,
+  PIPE_SCENE_CONSOLE,
+  playerHeight,
+  WSS_ENABLED
+} from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
@@ -32,6 +40,7 @@ import { PositionReport } from './positionThings'
 import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
 import { joinBuffers } from 'lib/javascript/uint8arrays'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
+import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -357,10 +366,18 @@ export class SceneWorker {
     this.rpcServer.attachTransport(this.transport, this.rpcContext)
     this.ready |= SceneWorkerReadyState.LOADED
 
+    const MAX_MSG_SIZE_ALLOWED = _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE * 0.9
+    const SIZE_LOGABLE = 50e3 // magic number
     worker.addEventListener('message', (event) => {
       if (event.data?.type === 'actions') {
-        if (event.data.bytes?.length > 50e3) {
-          this.logger.log(`Received actions > 50k: ${event.data.bytes?.length} bytes`)
+        if (event.data.bytes?.length > SIZE_LOGABLE) {
+          this.logger.log(`Received actions > ${SIZE_LOGABLE} bytes: ${event.data.bytes?.length} bytes`)
+          if (event.data.bytes?.length > MAX_MSG_SIZE_ALLOWED) {
+            this.logger.error(
+              `Error sending binary actions from Worker to Renderer: the message size exceed the allocated size in the transport`
+            )
+            return
+          }
         }
         if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
           this.rpcContext.rpcSceneControllerService.sendBatch({ payload: event.data.bytes }).catch((err) => {

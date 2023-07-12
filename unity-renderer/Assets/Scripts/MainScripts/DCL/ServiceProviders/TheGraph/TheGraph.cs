@@ -213,8 +213,9 @@ public class TheGraph : ITheGraph
                 nfts.Add(new Nft
                 {
                     collectionId = nft.collection.id,
+                    blockchainId =  nft.item.blockchainId,
                     tokenId = nft.tokenId,
-                    urn = nft.urn
+                    urn = nft.urn,
                 });
             }
         }

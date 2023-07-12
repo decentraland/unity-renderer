@@ -44,11 +44,11 @@ namespace Tests
         [Test]
         public void NotRemoveComponentWhenComponentsLeft()
         {
-            var model = internalUiContainer.GetFor(scene, entity).model;
+            var model = internalUiContainer.GetFor(scene, entity)?.model;
 
             //  model.components.Count == 1
-            model.rootElement.Clear();
-            internalUiContainer.PutFor(scene, entity, model);
+            model.Value.rootElement.Clear();
+            internalUiContainer.PutFor(scene, entity, model.Value);
 
             Assert.NotNull(internalUiContainer.GetFor(scene, entity));
         }
@@ -56,11 +56,11 @@ namespace Tests
         [Test]
         public void NotRemoveComponentWhenChildrenLeft()
         {
-            var model = internalUiContainer.GetFor(scene, entity).model;
-            model.components.Clear();
+            var model = internalUiContainer.GetFor(scene, entity)?.model;
+            model.Value.components.Clear();
 
             //  model.rootElement.childCount == 1
-            internalUiContainer.PutFor(scene, entity, model);
+            internalUiContainer.PutFor(scene, entity, model.Value);
 
             Assert.NotNull(internalUiContainer.GetFor(scene, entity));
         }
@@ -68,13 +68,13 @@ namespace Tests
         [Test]
         public void RemoveWhenNoChildrenAndNoComponents()
         {
-            var model = internalUiContainer.GetFor(scene, entity).model;
-            model.components.Clear();
-            model.rootElement.Clear();
-            internalUiContainer.PutFor(scene, entity, model);
+            var model = internalUiContainer.GetFor(scene, entity)?.model;
+            model.Value.components.Clear();
+            model.Value.rootElement.Clear();
+            internalUiContainer.PutFor(scene, entity, model.Value);
 
             Assert.IsNull(internalUiContainer.GetFor(scene, entity));
-            Assert.AreEqual(0, model.rootElement.childCount);
+            Assert.AreEqual(0, model.Value.rootElement.childCount);
         }
     }
 }

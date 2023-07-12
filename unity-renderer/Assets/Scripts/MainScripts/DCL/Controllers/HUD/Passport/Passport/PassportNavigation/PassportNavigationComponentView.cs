@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using System;
@@ -34,6 +35,7 @@ namespace DCL.Social.Passports
         private const int PAGE_SIZE = 4;
 
         [SerializeField] private GameObject aboutPanel;
+        [SerializeField] private RectTransform aboutContainerTransform;
         [SerializeField] private GameObject wearablesPanel;
         [SerializeField] private Toggle aboutToggle;
         [SerializeField] private Toggle collectiblesToggle;
@@ -350,6 +352,8 @@ namespace DCL.Social.Passports
                     equippedNftWearableViews.Add(nftIconComponentView);
                 }
             }
+
+            Utils.ForceRebuildLayoutImmediate(aboutContainerTransform);
         }
 
         public void SetCollectibleWearables(WearableItem[] wearables)
