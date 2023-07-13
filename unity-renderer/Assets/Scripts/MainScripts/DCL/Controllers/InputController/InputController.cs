@@ -96,7 +96,12 @@ public enum DCLAction_Measurable
     CharacterYAxis = 2,
     CameraXAxis = 3,
     CameraYAxis = 4,
-    MouseWheel = 5
+    MouseWheel = 5,
+
+    ScreenshotCameraXTranslationAxis = 11,
+    ScreenshotCameraYTranslationAxis = 12,
+    ScreenshotCameraXRotationAxis = 13,
+    ScreenshotCameraYRotationAxis = 14,
 }
 
 /// <summary>
@@ -392,6 +397,20 @@ public class InputController : MonoBehaviour
                 case DCLAction_Measurable.MouseWheel:
                     InputProcessor.FromAxis(action, "Mouse ScrollWheel", modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+
+                case DCLAction_Measurable.ScreenshotCameraXTranslationAxis:
+                    InputProcessor.FromAxis(action, "Horizontal", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraYTranslationAxis:
+                    InputProcessor.FromAxis(action, "Vertical", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraXRotationAxis:
+                    InputProcessor.FromAxis(action, "Mouse X", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraYRotationAxis:
+                    InputProcessor.FromAxis(action, "Mouse Y", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

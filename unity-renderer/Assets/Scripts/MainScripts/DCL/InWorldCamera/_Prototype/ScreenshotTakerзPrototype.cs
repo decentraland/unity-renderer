@@ -19,7 +19,7 @@ namespace DCL
         [SerializeField] private RectTransform canvasRectTransform;
         [SerializeField] private RectTransform imageRectTransform;
         [SerializeField] private Sprite sprite;
-        [FormerlySerializedAs("cameraMovement")] [SerializeField] private ScreenshotCameraMovement_Prototype cameraMovementPrototype;
+        [SerializeField] private ScreenshotCameraMovement_Prototype cameraMovementPrototype;
 
         private readonly string screenshotFileName = "screenshot4.jpg";
         private readonly int desiredWidth = 1920;

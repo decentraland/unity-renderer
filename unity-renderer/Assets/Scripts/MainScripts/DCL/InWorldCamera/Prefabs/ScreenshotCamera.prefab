@@ -143,10 +143,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterController: {fileID: 1657683350}
   movementSpeed: 5
-  characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
-  characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
+  characterXAxis: {fileID: 11400000, guid: abf07b6aa547cdb4cb90fcab32a79cf1, type: 2}
+  characterYAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}
   cameraUpAction: {fileID: 11400000, guid: 0315b943c1d516449bfdb07463c3a3d4, type: 2}
   cameraDownAction: {fileID: 11400000, guid: 9da538e6dbdadbd4db8e3fd1c339706f, type: 2}
   rotationSpeed: 100
-  cameraXAxis: {fileID: 11400000, guid: c5302665e8f998e4ea2673bba5e22914, type: 2}
-  cameraYAxis: {fileID: 11400000, guid: 03d744388580e334391bfa394a66e6d7, type: 2}
+  cameraXAxis: {fileID: 11400000, guid: 2ae727ffde932b04d8b4180993b81f3d, type: 2}
+  cameraYAxis: {fileID: 11400000, guid: 485f3af6b1a262e48890cf2c75da6b1e, type: 2}
