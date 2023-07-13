@@ -15,6 +15,7 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         private bool isInitialized;
 
         private Camera screenshotCamera;
+        private Transform characterCameraTransform;
 
         private void OnEnable()
         {
@@ -43,18 +44,22 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         private void EnableScreenshotCamera()
         {
             if (!isInitialized)
-            {
-                screenshotCamera = Instantiate(cameraPrefab).GetComponent<Camera>();
-                isInitialized = true;
-            }
+                CreateScreenshotCamera();
 
-            CopyMainCamera();
+            screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
-        private void CopyMainCamera()
+        private void CreateScreenshotCamera()
         {
-            screenshotCamera.CopyFrom(cameraController.GetCamera());
+            screenshotCamera = Instantiate(cameraPrefab).GetComponent<Camera>();
+
+            var characterCamera = cameraController.GetCamera();
+            characterCameraTransform = characterCamera.transform;
+
+            screenshotCamera.CopyFrom(characterCamera);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
+
+            isInitialized = true;
         }
     }
 }

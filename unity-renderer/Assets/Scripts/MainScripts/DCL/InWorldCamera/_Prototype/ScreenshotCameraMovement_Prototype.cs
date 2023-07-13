@@ -30,8 +30,6 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         {
             Translate();
 
-            rollInput = 0f;
-
             if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.LeftShift))
                 Roll();
             else
@@ -82,6 +80,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private void Roll()
         {
+            rollInput = 0f;
+
             if (Input.GetKey(KeyCode.LeftShift))
                 rollInput = 1f;
             else if (Input.GetKey(KeyCode.Z))
