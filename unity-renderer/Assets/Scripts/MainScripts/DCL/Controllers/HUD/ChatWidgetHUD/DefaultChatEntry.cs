@@ -285,6 +285,8 @@ namespace DCL.Chat.HUD
 
         public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
         {
+            backgroundImage.color = initialEntryColor;
+
             if (mentionLinkDetector == null)
                 return;
 
