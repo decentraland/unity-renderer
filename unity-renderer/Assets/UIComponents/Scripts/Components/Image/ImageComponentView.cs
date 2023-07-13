@@ -67,14 +67,12 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal string currentUriLoading = null;
     internal string lastLoadedUri = null;
 
-    private bool isSubscribedToImageChanges;
-
     public Image ImageComponent => image;
 
     public void Start()
     {
         image.useSpriteMesh = false;
-        SubscribeToImageChanges();
+        imageObserver.AddListener(OnImageObserverUpdated);
     }
 
     private void LateUpdate()
@@ -110,7 +108,6 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         currentUriLoading = null;
         lastLoadedUri = null;
         imageObserver.RemoveListener(OnImageObserverUpdated);
-        isSubscribedToImageChanges = false;
 
         DestroyInterntally(currentSprite);
 
@@ -143,8 +140,6 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
 
     public void SetImage(Texture2D texture)
     {
-        if (model.texture == texture) return;
-
         model.texture = texture;
 
         if (!Application.isPlaying)
@@ -154,8 +149,6 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         }
 
         SetLoadingIndicatorVisible(true);
-        SubscribeToImageChanges();
-
         imageObserver.RefreshWithTexture(texture);
 
         lastLoadedUri = null;
@@ -173,10 +166,8 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
 
         SetLoadingIndicatorVisible(true);
-
         if (!string.IsNullOrEmpty(uri))
         {
-            SubscribeToImageChanges();
             currentUriLoading = uri;
             imageObserver.RefreshWithUri(uri);
         }
@@ -258,12 +249,5 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         }
 
         return false;
-    }
-
-    private void SubscribeToImageChanges()
-    {
-        if (isSubscribedToImageChanges) return;
-        imageObserver.AddListener(OnImageObserverUpdated);
-        isSubscribedToImageChanges = true;
     }
 }
