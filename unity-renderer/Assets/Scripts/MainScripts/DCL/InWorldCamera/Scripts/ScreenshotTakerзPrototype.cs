@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using MainScripts.DCL.InWorldCamera.Scripts;
 using System;
 using System.IO;
@@ -8,7 +7,7 @@ using UnityEngine.UI;
 
 namespace DCL
 {
-    public class ScreenshotTaker : MonoBehaviour
+    public class ScreenshotTakerзPrototype : MonoBehaviour
     {
         [Space(10)]
         public Camera screenshotCamera;
@@ -20,6 +19,7 @@ namespace DCL
         [SerializeField] private RectTransform imageRectTransform;
         [SerializeField] private Sprite sprite;
         [SerializeField] private ScreenshotCameraMovement cameraMovement;
+
         private readonly string screenshotFileName = "screenshot4.jpg";
         private readonly int desiredWidth = 1920;
         private readonly int desiredHeight = 1080;
