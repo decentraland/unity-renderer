@@ -66,7 +66,7 @@
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "7.0.6-20230713133325.commit-28e9c2a",
     "@dcl/schemas": "^7.4.1",
-    "@dcl/urn-resolver": "^2.0.3",
+    "@dcl/urn-resolver": "^2.2.0",
     "@types/mocha": "^10.0.1",
     "@types/redux-logger": "^3.0.9",
     "@well-known-components/pushable-channel": "^1.0.3",
