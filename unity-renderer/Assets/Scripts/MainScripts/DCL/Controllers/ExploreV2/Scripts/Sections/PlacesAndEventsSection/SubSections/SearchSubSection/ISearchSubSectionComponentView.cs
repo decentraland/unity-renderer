@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,9 +7,13 @@ using UnityEngine;
 public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
 {
     event Action<int> OnRequestAllEvents;
+    event Action<int> OnRequestAllPlaces;
     event Action OnBackFromSearch;
-    public event Action<EventCardComponentModel> OnInfoClicked;
-    public event Action<EventFromAPIModel> OnJumpInClicked;
+    public event Action<EventCardComponentModel> OnEventInfoClicked;
+    public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
+    public event Action<EventFromAPIModel> OnEventJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<string, bool> OnPlaceFavoriteChanged;
     public event Action<string> OnSubscribeEventClicked;
     public event Action<string> OnUnsubscribeEventClicked;
 
@@ -17,5 +22,6 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
     void ShowPlaces(List<PlaceCardComponentModel> places, string searchText);
     void ShowAllPlaces(List<PlaceCardComponentModel> places, bool showMoreButton);
     void ShowEventModal(EventCardComponentModel eventModel);
-    void SetHeaderEnabled(bool isEnabled, string searchText);
+    void ShowPlaceModal(PlaceCardComponentModel placeModel);
+    void SetHeaderEnabled(string searchText);
 }

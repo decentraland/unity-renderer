@@ -27,6 +27,7 @@ namespace DCLServices.PlacesAPIService
     public class PlacesAPIClient: IPlacesAPIClient
     {
         private const string BASE_URL = "https://places.decentraland.org/api/places";
+        private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)
@@ -36,7 +37,7 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct)
         {
-            const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&search={0}&offset={1}&limit={2}";
+            const string URL = BASE_URL_ZONE + "?with_realms_detail=true&search={0}&offset={1}&limit={2}";
             var result = await webRequestController.GetAsync(string.Format(URL, searchString, pageNumber * pageSize, pageSize), cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)

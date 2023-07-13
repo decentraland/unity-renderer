@@ -1,8 +1,12 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Helpers;
 using DCL.Tasks;
+using DCLServices.PlacesAPIService;
 using System.Collections.Generic;
 using ExploreV2Analytics;
+using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -11,6 +15,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private readonly ISearchSubSectionComponentView view;
     private readonly SearchBarComponentView searchBarComponentView;
     private readonly IEventsAPIController eventsAPI;
+    private readonly IPlacesAPIService placesAPIService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
@@ -21,6 +26,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     public SearchSubSectionComponentController(ISearchSubSectionComponentView view,
         SearchBarComponentView searchBarComponentView,
         IEventsAPIController eventsAPI,
+        IPlacesAPIService placesAPIService,
         IUserProfileBridge userProfileBridge,
         IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore)
@@ -28,19 +34,38 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         this.view = view;
         this.searchBarComponentView = searchBarComponentView;
         this.eventsAPI = eventsAPI;
+        this.placesAPIService = placesAPIService;
         this.userProfileBridge = userProfileBridge;
         this.exploreV2Analytics = exploreV2Analytics;
         this.dataStore = dataStore;
 
         view.OnRequestAllEvents += SearchAllEvents;
-        view.OnInfoClicked += OpenEventDetailsModal;
+        view.OnRequestAllPlaces += SearchAllPlaces;
+        view.OnEventInfoClicked += OpenEventDetailsModal;
+        view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
-        view.OnJumpInClicked += JumpInToEvent;
+        view.OnEventJumpInClicked += JumpInToEvent;
+        view.OnPlaceJumpInClicked += JumpInToPlace;
         view.OnBackFromSearch += CloseSearchPanel;
+        view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
 
         if(searchBarComponentView != null)
             searchBarComponentView.OnSearchText += Search;
+    }
+
+    private void ChangePlaceFavorite(string placeId, bool isFavorite)
+    {
+        if (isFavorite)
+        {
+            exploreV2Analytics.AddFavorite(placeId, ActionSource.FromSearch);
+        }
+        else
+        {
+            exploreV2Analytics.RemoveFavorite(placeId, ActionSource.FromSearch);
+        }
+
+        placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
     }
 
     private void CloseSearchPanel()
@@ -54,10 +79,22 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
     }
 
+    private void JumpInToPlace(IHotScenesController.PlaceInfo place)
+    {
+        PlacesSubSectionComponentController.JumpInToPlace(place);
+        exploreV2Analytics.SendPlaceTeleport(place.id, place.title, Utils.ConvertStringToVector(place.base_position), ActionSource.FromSearch);
+    }
+
     private void OpenEventDetailsModal(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
         exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, ActionSource.FromSearch);
+    }
+
+    private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel)
+    {
+        view.ShowPlaceModal(placeModel);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, ActionSource.FromSearch);
     }
 
     private void Search(string searchText)
@@ -66,10 +103,10 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         minimalSearchCts = new CancellationTokenSource();
 
         view.SetAllAsLoading();
-        view.SetHeaderEnabled(!string.IsNullOrEmpty(searchText), searchText);
+        view.SetHeaderEnabled(searchText);
         exploreV2Analytics.SendSearch(searchText);
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
-        //SearchPlaces(searchText, cts.Token).Forget();
+        SearchPlaces(searchText, cancellationToken: minimalSearchCts.Token).Forget();
     }
 
     private void SubscribeToEvent(string eventId)
@@ -96,6 +133,13 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         SearchEvents(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
     }
 
+    private void SearchAllPlaces(int pageNumber)
+    {
+        fullSearchCts.SafeCancelAndDispose();
+        fullSearchCts = new CancellationTokenSource();
+        SearchPlaces(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
+    }
+
     private async UniTaskVoid SearchEvents(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await eventsAPI.SearchEvents(searchText, pageNumber,pageSize, cancellationToken);
@@ -113,20 +157,32 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private async UniTaskVoid SearchPlaces(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
-        var results = await eventsAPI.SearchEvents(searchText, 0,5, cancellationToken);
-        List<EventCardComponentModel> trendingEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
-        view.ShowEvents(trendingEvents, searchText);
+        var results = await placesAPIService.SearchPlaces(searchText, pageNumber, pageSize, cancellationToken);
+        List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results.Item1);
+
+        if (isFullSearch)
+        {
+            view.ShowAllPlaces(places, (pageNumber + 1) * pageSize < results.total);
+        }
+        else
+        {
+            view.ShowPlaces(places, searchText);
+        }
     }
 
     public void Dispose()
     {
         view.OnRequestAllEvents -= SearchAllEvents;
-
-        view.OnInfoClicked -= OpenEventDetailsModal;
+        view.OnRequestAllPlaces -= SearchAllPlaces;
+        view.OnEventInfoClicked -= OpenEventDetailsModal;
+        view.OnPlaceInfoClicked -= OpenPlaceDetailsModal;
+        view.OnEventInfoClicked -= OpenEventDetailsModal;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
-        view.OnJumpInClicked -= JumpInToEvent;
+        view.OnEventJumpInClicked -= JumpInToEvent;
+        view.OnPlaceJumpInClicked -= JumpInToPlace;
         view.OnBackFromSearch -= CloseSearchPanel;
+        view.OnPlaceFavoriteChanged -= ChangePlaceFavorite;
 
         if(searchBarComponentView != null)
             searchBarComponentView.OnSearchText -= Search;

@@ -1,3 +1,4 @@
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
 
     [SerializeField] private GameObject minimalSearchSection;
     [SerializeField] private GameObject fullSearchSection;
-    [SerializeField] private GameObject fullSearchEventsSection;
     [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject searchHeader;
     [SerializeField] private Button backButton;
@@ -25,6 +25,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private Transform eventsParent;
     [SerializeField] private Transform placesParent;
     [SerializeField] private RectTransform fullEventsParent;
+    [SerializeField] private RectTransform fullPlacesParent;
     [SerializeField] private EventCardComponentView eventPrefab;
     [SerializeField] private PlaceCardComponentView placePrefab;
     [SerializeField] private GameObject loadingEvents;
@@ -41,12 +42,18 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private TMP_Text noPlacesText;
     [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
+    [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
 
     internal EventCardComponentView eventModal;
+    internal PlaceCardComponentView placeModal;
     public event Action<int> OnRequestAllEvents;
+    public event Action<int> OnRequestAllPlaces;
     public event Action OnBackFromSearch;
-    public event Action<EventCardComponentModel> OnInfoClicked;
-    public event Action<EventFromAPIModel> OnJumpInClicked;
+    public event Action<EventCardComponentModel> OnEventInfoClicked;
+    public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
+    public event Action<EventFromAPIModel> OnEventJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<string, bool> OnPlaceFavoriteChanged;
     public event Action<string> OnSubscribeEventClicked;
     public event Action<string> OnUnsubscribeEventClicked;
 
@@ -65,19 +72,26 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         InitializePools();
         showAllEvents.onClick.RemoveAllListeners();
         showAllEvents.onClick.AddListener(RequestAllEvents);
+        showAllPlaces.onClick.RemoveAllListeners();
+        showAllPlaces.onClick.AddListener(RequestAllPlaces);
         showMore.onClick.RemoveAllListeners();
         showMore.onClick.AddListener(RequestAdditionalPage);
         backButton.onClick.RemoveAllListeners();
         backButton.onClick.AddListener(OnBackButtonPressed);
         noEvents.SetActive(false);
-        noPlaces.SetActive(true);
+        noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
+        placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
     }
 
     private void RequestAdditionalPage()
     {
         currentPage++;
-        OnRequestAllEvents?.Invoke(currentPage);
+
+        if(fullEventsParent.gameObject.activeSelf)
+            OnRequestAllEvents?.Invoke(currentPage);
+        else if(fullPlacesParent.gameObject.activeSelf)
+            OnRequestAllPlaces?.Invoke(currentPage);
     }
 
     private void OnBackButtonPressed()
@@ -98,10 +112,23 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         currentPage = 0;
         minimalSearchSection.SetActive(false);
         fullSearchSection.SetActive(true);
-        fullSearchEventsSection.SetActive(true);
+        fullEventsParent.gameObject.SetActive(true);
+        fullPlacesParent.gameObject.SetActive(false);
         loadingAll.SetActive(true);
         ClearFullEventsPool();
         OnRequestAllEvents?.Invoke(currentPage);
+    }
+
+    private void RequestAllPlaces()
+    {
+        currentPage = 0;
+        minimalSearchSection.SetActive(false);
+        fullSearchSection.SetActive(true);
+        fullEventsParent.gameObject.SetActive(false);
+        fullPlacesParent.gameObject.SetActive(true);
+        loadingAll.SetActive(true);
+        ClearFullPlacesPool();
+        OnRequestAllPlaces?.Invoke(currentPage);
     }
 
     public void ShowEvents(List<EventCardComponentModel> events, string searchText)
@@ -181,20 +208,37 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onSubscribeClick.RemoveAllListeners();
         view.onUnsubscribeClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
-        view.onInfoClick.AddListener(() => OnInfoClicked?.Invoke(model));
+        view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model));
         view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
         view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
-        view.onJumpInClick.AddListener(() => OnJumpInClicked?.Invoke(model.eventFromAPIInfo));
+        view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
     }
 
     private void ConfigurePlaceCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
     {
+        view.onInfoClick.RemoveAllListeners();
+        view.onJumpInClick.RemoveAllListeners();
+        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.onInfoClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model));
+        view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
+        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+    }
+
+    private void ViewOnOnFavoriteChanged(string placeId, bool isFavorite)
+    {
+        OnPlaceFavoriteChanged?.Invoke(placeId, isFavorite);
     }
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnInfoClicked, OnJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+    }
+
+    public void ShowPlaceModal(PlaceCardComponentModel placeModel)
+    {
+        placeModal.Show();
+        PlacesCardsConfigurator.Configure(placeModal, placeModel, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
@@ -220,11 +264,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             PlaceCardComponentView placeCardComponentView = fullPlacesPool.Get();
             placeCardComponentView.model = placeCardComponentModel;
             placeCardComponentView.RefreshControl();
+            placeCardComponentView.OnLoseFocus();
             pooledFullPlaces.Add(placeCardComponentView);
             ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
         }
         loadingAll.SetActive(false);
-        Utils.ForceRebuildLayoutImmediate(fullEventsParent);
+        Utils.ForceRebuildLayoutImmediate(fullPlacesParent);
     }
 
     private void InitializePools()
@@ -235,7 +280,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         placesPool.Prewarm(MAX_POOL_COUNT);
         fullEventsPool = new UnityObjectPool<EventCardComponentView>(eventPrefab, fullEventsParent);
         fullEventsPool.Prewarm(MAX_POOL_COUNT);
-        fullPlacesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, placesParent);
+        fullPlacesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, fullPlacesParent);
         fullPlacesPool.Prewarm(MAX_POOL_COUNT);
     }
 
@@ -253,14 +298,15 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         CloseFullList();
         eventsParent.gameObject.SetActive(false);
+        placesParent.gameObject.SetActive(false);
         loadingEvents.SetActive(true);
         loadingPlaces.SetActive(true);
     }
 
-    public void SetHeaderEnabled(bool isEnabled, string searchText)
+    public void SetHeaderEnabled(string searchText)
     {
-        normalHeader.SetActive(!isEnabled);
-        searchHeader.SetActive(isEnabled);
+        normalHeader.SetActive(string.IsNullOrEmpty(searchText));
+        searchHeader.SetActive(!string.IsNullOrEmpty(searchText));
         searchTerm.text = $"\"{searchText}\"";
     }
 
@@ -275,7 +321,6 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         else
         {
             OnDisable();
-            SetHeaderEnabled(false, "");
         }
     }
 

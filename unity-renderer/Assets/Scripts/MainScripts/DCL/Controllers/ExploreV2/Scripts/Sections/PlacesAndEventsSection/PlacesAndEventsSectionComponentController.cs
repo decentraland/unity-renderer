@@ -79,6 +79,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.SearchSubSectionView,
             view.SearchBar,
             eventsAPI,
+            placesAPIService,
             userProfileBridge,
             exploreV2Analytics,
             dataStore);
