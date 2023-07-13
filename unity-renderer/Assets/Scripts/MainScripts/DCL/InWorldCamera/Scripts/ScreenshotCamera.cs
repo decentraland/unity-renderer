@@ -1,5 +1,7 @@
 ﻿using DCL.Camera;
 using UnityEngine;
+using UnityEngine.Diagnostics;
+using Utils = DCL.Helpers.Utils;
 
 namespace MainScripts.DCL.InWorldCamera.Scripts
 {
@@ -9,12 +11,15 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         [SerializeField] private CameraController cameraController;
 
         [Space]
-        [SerializeField] private GameObject cameraPrefab;
+        [SerializeField] private Camera cameraPrefab;
+        [SerializeField] private Canvas screenshotHUDViewPrefab;
         [SerializeField] private InputAction_Trigger cameraInputAction;
 
         private bool isInitialized;
 
         private Camera screenshotCamera;
+        private Canvas screenshotHUDView;
+
         private Transform characterCameraTransform;
 
         private void OnEnable()
@@ -35,10 +40,13 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
                 EnableScreenshotCamera();
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            characterController.SetEnabled(!activateScreenshotCamera);
-            cameraController.SetCameraEnabledState(!activateScreenshotCamera);
+            screenshotHUDView.enabled = activateScreenshotCamera;
+
+            Utils.LockCursor();
 
             CommonScriptableObjects.cameraBlocked.Set(activateScreenshotCamera);
+            cameraController.SetCameraEnabledState(!activateScreenshotCamera);
+            characterController.SetEnabled(!activateScreenshotCamera);
         }
 
         private void EnableScreenshotCamera()
@@ -51,7 +59,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private void CreateScreenshotCamera()
         {
-            screenshotCamera = Instantiate(cameraPrefab).GetComponent<Camera>();
+            screenshotCamera = Instantiate(cameraPrefab);
+            screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
 
             var characterCamera = cameraController.GetCamera();
             characterCameraTransform = characterCamera.transform;

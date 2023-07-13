@@ -44,7 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a8fdd7fe1745beac581373ec12db95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraPrefab: {fileID: 1192833813443749521, guid: dffcf881f8cb36a448628ae8e7331ff2,
+  characterController: {fileID: 0}
+  cameraController: {fileID: 0}
+  cameraPrefab: {fileID: 7813136116666180052, guid: dffcf881f8cb36a448628ae8e7331ff2,
+    type: 3}
+  screenshotHUDViewPrefab: {fileID: 405257682719442047, guid: 73f988cecacd42e48920937e996e446d,
     type: 3}
   cameraInputAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815, type: 2}
-  screenshotCamera: {fileID: 0}
