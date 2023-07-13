@@ -49,6 +49,7 @@ public enum DCLAction_Trigger
     ChatNextInHistory = 153,
     ChatMentionNextEntry = 154,
     ChatMentionPreviousEntry = 155,
+    ToggleScreenshotCamera = 156,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -170,7 +171,7 @@ public class InputController : MonoBehaviour
                         InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:
-                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleSettings:
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -285,6 +286,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleAvatarNamesHud:
                     InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleScreenshotCamera:
+                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
