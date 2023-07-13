@@ -3,7 +3,14 @@ echo Downloading Required Packages
 
 echo "${GPG_PRIVATE_KEY_BASE64}" | base64 -d > private.gpg
 gpg  --batch --import private.gpg
-curl -L 'https://renderer-artifacts.decentraland.org/artifacts/requiredPackages.unitypackage.gpg' -o requiredPackages.unitypackage.gpg
+
+if [[ "$BUILD_TARGET" != "WebGL" ]]; then
+    packagesFile='requiredPackages-desktop.unitypackage.gpg'
+else
+    packagesFile='requiredPackages-webgl.unitypackage.gpg'
+fi
+
+curl -L "https://renderer-artifacts.decentraland.org/artifacts/${packagesFile}" -o requiredPackages.unitypackage.gpg
 
 gpg --output requiredPackages.unitypackage --decrypt requiredPackages.unitypackage.gpg
 
