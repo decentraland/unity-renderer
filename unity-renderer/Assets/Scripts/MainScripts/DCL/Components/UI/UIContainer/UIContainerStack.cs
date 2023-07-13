@@ -135,7 +135,7 @@ namespace DCL.Components
 
             if (!stackContainers.ContainsKey(childComponent.id))
             {
-                var stackContainer = childPool.TakeUIShapeInsideParent(referencesContainer.childHookRectTransform); // FD:: test
+                var stackContainer = childPool.TakeUIShapeInsideParent(referencesContainer.childHookRectTransform);
 #if UNITY_EDITOR
                 stackContainer.name = "UIContainerStackChild - " + childComponent.id;
 #endif

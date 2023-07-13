@@ -237,10 +237,16 @@ namespace DCL.Components
             if (parentTransform == null)
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
-            referencesContainer.layoutElement.ignoreLayout = false;
-            ConfigureAlignment(referencesContainer.layoutGroup);
+            if (referencesContainer.layoutElement != null)
+                referencesContainer.layoutElement.ignoreLayout = false;
+
+            if (referencesContainer.layoutGroup != null)
+                ConfigureAlignment(referencesContainer.layoutGroup);
+
             Utils.ForceRebuildLayoutImmediate(parentTransform);
-            referencesContainer.layoutElement.ignoreLayout = true;
+
+            if (referencesContainer.layoutElement != null)
+                referencesContainer.layoutElement.ignoreLayout = true;
 
             Model model = (Model) this.model;
 

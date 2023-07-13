@@ -29,14 +29,14 @@ public class UIComponentsPlugin : IPlugin
         imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 200);
         textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 100);
 
-        // TODO: introduce pooling there instead of dynamicaly assebling the object each time
-        fullScreenPool = new UIShapePool(uiPoolsRoot, prefabPath: "", capacity: 1);
-        screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "", capacity: 1);
+        // TODO: FD:: introduced pooling there instead of dynamicaly assebling the object each time
+        fullScreenPool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
+        screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
 
         // UI
-        factory.RegisterBuilder((int)CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool));
         factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, () => new UIScreenSpace(fullScreenPool) );
         factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool) );
         factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool) );
