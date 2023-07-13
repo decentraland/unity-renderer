@@ -104,9 +104,9 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
         view.SetAllAsLoading();
         view.SetHeaderEnabled(searchText);
-        exploreV2Analytics.SendSearch(searchText);
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
         SearchPlaces(searchText, cancellationToken: minimalSearchCts.Token).Forget();
+        exploreV2Analytics.SendSearch(searchText);
     }
 
     private void SubscribeToEvent(string eventId)
