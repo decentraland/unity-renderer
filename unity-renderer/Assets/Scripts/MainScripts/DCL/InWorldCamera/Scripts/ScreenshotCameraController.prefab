@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a8fdd7fe1745beac581373ec12db95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraPrefab: {fileID: 6442309014142945548, guid: 6b36abfe5d6a45546b4e55abd77d0019,
+  cameraPrefab: {fileID: 1192833813443749521, guid: dffcf881f8cb36a448628ae8e7331ff2,
     type: 3}
   cameraInputAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815, type: 2}
+  screenshotCamera: {fileID: 0}

@@ -229,12 +229,11 @@ namespace DCL.Camera
 
         public Vector3 GetPosition() { return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition; }
 
-        public virtual UnityEngine.Camera GetCamera() =>
-            camera;
+        public UnityEngine.Camera GetCamera() { return camera; }
 
         private void SetInvertYAxis(bool current, bool previous) { thirdPersonCamera.m_YAxis.m_InvertInput = !current; }
 
-        public virtual void SetCameraEnabledState(bool enabled)
+        public void SetCameraEnabledState(bool enabled)
         {
             camera.enabled = enabled;
         }
