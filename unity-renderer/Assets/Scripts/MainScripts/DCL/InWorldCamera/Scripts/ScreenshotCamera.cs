@@ -5,7 +5,7 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 {
     public class ScreenshotCamera : MonoBehaviour
     {
-        [SerializeField] private CharacterController characterController;
+        [SerializeField] private DCLCharacterController characterController;
         [SerializeField] private CameraController cameraController;
 
         [Space]
@@ -28,13 +28,14 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private void ToggleScreenshotCamera(DCLAction_Trigger action)
         {
-            bool cameraIsEnabled = isInitialized && screenshotCamera.enabled;
+            bool activateScreenshotCamera = !(isInitialized && screenshotCamera.gameObject.activeSelf);
 
-            if (!cameraIsEnabled)
+            if (activateScreenshotCamera)
                 EnableScreenshotCamera();
 
-            screenshotCamera.enabled = !cameraIsEnabled;
-            cameraController.SetCameraEnabledState(!screenshotCamera.enabled);
+            screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
+            characterController.SetEnabled(!activateScreenshotCamera);
+            cameraController.SetCameraEnabledState(!activateScreenshotCamera);
         }
 
         private void EnableScreenshotCamera()

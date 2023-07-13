@@ -303,7 +303,7 @@ PrefabInstance:
     - target: {fileID: 1192833813443749521, guid: c7404d7f70328de4490e62c42213d7a4,
         type: 3}
       propertyPath: m_Name
-      value: Screenshot Camera
+      value: Screenshot Camera Prototype
       objectReference: {fileID: 0}
     - target: {fileID: 1192833813443749521, guid: c7404d7f70328de4490e62c42213d7a4,
         type: 3}

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL
@@ -18,7 +19,7 @@ namespace DCL
         [SerializeField] private RectTransform canvasRectTransform;
         [SerializeField] private RectTransform imageRectTransform;
         [SerializeField] private Sprite sprite;
-        [SerializeField] private ScreenshotCameraMovement cameraMovement;
+        [FormerlySerializedAs("cameraMovement")] [SerializeField] private ScreenshotCameraMovement_Prototype cameraMovementPrototype;
 
         private readonly string screenshotFileName = "screenshot4.jpg";
         private readonly int desiredWidth = 1920;
@@ -37,7 +38,7 @@ namespace DCL
         private void Start()
         {
             screenshotCamera.enabled = false;
-            cameraMovement.enabled = false;
+            cameraMovementPrototype.enabled = false;
             canvas.enabled = false;
         }
 
@@ -48,7 +49,7 @@ namespace DCL
                 if (cameraEnabled)
                 {
                     screenshotCamera.enabled = false;
-                    cameraMovement.enabled = false;
+                    cameraMovementPrototype.enabled = false;
                     canvas.enabled = false;
 
                     Environment.i.serviceLocator.Get<IAvatarsLODController>().SetCamera(UnityEngine.Camera.main);
@@ -58,7 +59,7 @@ namespace DCL
                     CopyCamera();
 
                     screenshotCamera.enabled = true;
-                    cameraMovement.enabled = true;
+                    cameraMovementPrototype.enabled = true;
                     canvas.enabled = true;
 
                     Environment.i.serviceLocator.Get<IAvatarsLODController>().SetCamera(screenshotCamera);
