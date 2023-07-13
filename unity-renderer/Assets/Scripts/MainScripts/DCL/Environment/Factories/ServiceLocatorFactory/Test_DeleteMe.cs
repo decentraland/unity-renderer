@@ -23,6 +23,7 @@ namespace DCL
         {
             var result = Environment.i.serviceLocator.Get<IDCLFileBrowserService>().OpenSingleFile("Open File", "", "test", new ExtensionFilter("Text", "txt"));
             Log(result);
+
         }
 
         public void SaveFile()
