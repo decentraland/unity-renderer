@@ -73,6 +73,9 @@ public enum DCLAction_Hold
     Jump = 2,
     ZoomIn = 3,
     ZoomOut = 4,
+    ScreenshotCameraUp = 51,
+    ScreenshotCameraDown = 52,
+
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
@@ -136,7 +139,6 @@ public class InputController : MonoBehaviour
         {
             if (action.isTriggerBlocked != null && action.isTriggerBlocked.Get())
                 continue;
-
 
             switch (action.DCLAction)
             {
@@ -338,6 +340,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Hold.DefaultCancelAction:
                     InputProcessor.FromKey(action, KeyCode.F);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraDown:
+                    InputProcessor.FromKey(action, KeyCode.Q);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraUp:
+                    InputProcessor.FromKey(action, KeyCode.E);
                     break;
                 case DCLAction_Hold.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, InputProcessor.Modifier.FocusNotInInput);
