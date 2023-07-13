@@ -361,10 +361,11 @@ namespace DCL.Chat.HUD
 
         private void OnOwnPlayerMentioned()
         {
-            if (model.senderId == ownUserProfile.userId)
+            if (model.subType != ChatEntryModel.SubType.RECEIVED ||
+                model.senderId == ownUserProfile.userId)
                 return;
 
-            //backgroundImage.color = autoMentionBackgroundColor;
+            backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }
