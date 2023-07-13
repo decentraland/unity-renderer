@@ -8,7 +8,7 @@ mkdir -p "$BUILD_PATH"
 
 # Only import AVPro for Desktop Builds
 if [[ "$BUILD_TARGET" != "WebGL" ]]; then
-  ./ci-import-avpro.sh
+  ./ci-import-required-packages.sh
   ./ci-setup-license.sh # we need to re-import the license after we import something
 fi
 
