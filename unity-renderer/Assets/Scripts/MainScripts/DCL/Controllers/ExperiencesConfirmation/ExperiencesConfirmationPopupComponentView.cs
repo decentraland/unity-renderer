@@ -82,11 +82,13 @@ namespace DCL.PortableExperiences.Confirmation
 
             if (string.IsNullOrEmpty(model.IconUrl))
             {
+                iconImage.UseLoadingIndicator = false;
                 iconImage.SetImage(defaultIconSprite);
                 iconImage.ImageComponent.color = new Color(0.44f, 0.41f, 0.48f, 1f);
             }
             else
             {
+                iconImage.UseLoadingIndicator = true;
                 iconImage.SetImage(model.IconUrl);
                 iconImage.ImageComponent.color = Color.white;
             }
