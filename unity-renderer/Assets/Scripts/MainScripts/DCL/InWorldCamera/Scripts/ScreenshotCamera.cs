@@ -36,6 +36,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
+
+            CommonScriptableObjects.cameraBlocked.Set(activateScreenshotCamera);
         }
 
         private void EnableScreenshotCamera()
