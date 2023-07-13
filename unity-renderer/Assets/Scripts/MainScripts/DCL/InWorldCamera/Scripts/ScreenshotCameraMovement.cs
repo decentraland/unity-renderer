@@ -9,6 +9,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         [Space]
         [SerializeField] private InputAction_Measurable characterXAxis;
         [SerializeField] private InputAction_Measurable characterYAxis;
+        [SerializeField] private InputAction_Hold cameraUpAction;
+        [SerializeField] private InputAction_Hold cameraDownAction;
 
         [Space]
         [SerializeField] private float movementSpeed = 5f;
@@ -34,10 +36,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             float vertical = characterYAxis.GetValue();
 
             var upDown = 0f;
-            // if (Input.GetKey(KeyCode.Q))
-            //     upDown = 1f;
-            // else if (Input.GetKey(KeyCode.E))
-            //     upDown = -1f;
+            if (cameraUpAction.isOn) upDown = 1f;
+            if (cameraDownAction.isOn) upDown = -1f;
 
             Vector3 movement = new Vector3(horizontal, upDown, vertical) * (movementSpeed * Time.deltaTime);
             return transform.position + transform.TransformDirection(movement);
