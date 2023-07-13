@@ -33,6 +33,10 @@ MonoBehaviour:
     m_Address: WalletSectionHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: d73178a7da1894086b95f324c67f7d69
+    m_Address: ExperiencesConfirmationPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

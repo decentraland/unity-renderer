@@ -5,6 +5,8 @@ using NUnit.Framework;
 using System.Collections;
 using DCL;
 using DCL.Controllers;
+using DCL.World.PortableExperiences;
+using NSubstitute;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -15,7 +17,7 @@ public class NFTShape_Tests : IntegrationTestSuite
 
     protected override void InitializeServices(ServiceLocator serviceLocator)
     {
-        serviceLocator.Register<ISceneController>(() => new SceneController());
+        serviceLocator.Register<ISceneController>(() => new SceneController(Substitute.For<IConfirmedExperiencesRepository>()));
         serviceLocator.Register<IWorldState>(() => new WorldState());
         serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         serviceLocator.Register<IWebRequestController>(WebRequestController.Create);

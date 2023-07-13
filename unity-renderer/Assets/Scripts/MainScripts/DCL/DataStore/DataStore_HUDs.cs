@@ -34,7 +34,8 @@ namespace DCL
         public readonly BaseVariable<bool> shouldShowNotificationPanel = new BaseVariable<bool>(true);
         public readonly BaseVariable<Transform> notificationPanelTransform = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> topNotificationPanelTransform = new BaseVariable<Transform>(null);
-        public readonly BaseVariable<bool> isSceneUIEnabled = new BaseVariable<bool>(true);
+        public readonly BaseVariable<bool> isCurrentSceneUiEnabled = new BaseVariable<bool>(true);
+        public readonly BaseDictionary<int, bool> isSceneUiEnabled = new ();
         public readonly BaseVariable<HashSet<string>> visibleTaskbarPanels = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseVariable<HashSet<string>> autoJoinChannelList = new BaseVariable<HashSet<string>>(new HashSet<string>());
         public readonly BaseVariable<string> openChat = new BaseVariable<string>("");

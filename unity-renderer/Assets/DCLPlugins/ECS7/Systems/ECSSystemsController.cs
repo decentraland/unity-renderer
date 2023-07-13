@@ -60,7 +60,8 @@ public class ECSSystemsController : IDisposable
             DataStore.i.ecs7.scenes,
             Environment.i.world.state,
             CommonScriptableObjects.allUIHidden,
-            DataStore.i.HUDs.isSceneUIEnabled);
+            DataStore.i.HUDs.isCurrentSceneUiEnabled,
+            DataStore.i.HUDs.isSceneUiEnabled);
 
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
