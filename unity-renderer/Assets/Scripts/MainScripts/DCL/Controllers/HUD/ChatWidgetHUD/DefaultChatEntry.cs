@@ -285,8 +285,6 @@ namespace DCL.Chat.HUD
 
         public override void ConfigureMentionLinkDetector(UserContextMenu userContextMenu)
         {
-            backgroundImage.color = initialEntryColor;
-
             if (mentionLinkDetector == null)
                 return;
 
@@ -366,7 +364,7 @@ namespace DCL.Chat.HUD
             if (model.senderId == ownUserProfile.userId)
                 return;
 
-            backgroundImage.color = autoMentionBackgroundColor;
+            //backgroundImage.color = autoMentionBackgroundColor;
         }
     }
 }
