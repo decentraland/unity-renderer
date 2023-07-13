@@ -10,7 +10,7 @@ namespace DCL
     public class ScreenshotTakerзPrototype : MonoBehaviour
     {
         [Space(10)]
-        public Camera screenshotCamera;
+        public UnityEngine.Camera screenshotCamera;
         public Image image;
         public Canvas canvas;
 
@@ -51,7 +51,7 @@ namespace DCL
                     cameraMovement.enabled = false;
                     canvas.enabled = false;
 
-                    Environment.i.serviceLocator.Get<IAvatarsLODController>().SetCamera(Camera.main);
+                    Environment.i.serviceLocator.Get<IAvatarsLODController>().SetCamera(UnityEngine.Camera.main);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace DCL
         [ContextMenu(nameof(CopyCamera))]
         private void CopyCamera()
         {
-            screenshotCamera.CopyFrom(Camera.main);
+            screenshotCamera.CopyFrom(UnityEngine.Camera.main);
             gameObject.layer = originalLayer;
         }
 

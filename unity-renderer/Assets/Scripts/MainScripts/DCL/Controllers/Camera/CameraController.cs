@@ -233,7 +233,7 @@ namespace DCL.Camera
 
         private void SetInvertYAxis(bool current, bool previous) { thirdPersonCamera.m_YAxis.m_InvertInput = !current; }
 
-        private void SetCameraEnabledState(bool enabled)
+        public void SetCameraEnabledState(bool enabled)
         {
             camera.enabled = enabled;
         }
