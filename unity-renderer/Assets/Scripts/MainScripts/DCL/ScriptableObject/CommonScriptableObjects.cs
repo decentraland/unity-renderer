@@ -265,6 +265,9 @@ public static class CommonScriptableObjects
     private static BooleanVariable voiceChatDisabledValue;
     public static BooleanVariable voiceChatDisabled => GetOrLoad(ref voiceChatDisabledValue, "ScriptableObjects/VoiceChatDisabled");
 
+    private static BooleanVariable isScreenshotCameraActiveValue;
+    public static BooleanVariable isScreenshotCameraActive => GetOrLoad(ref isScreenshotCameraActiveValue, "ScriptableObjects/IsScreenshotCameraActive");
+
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)
