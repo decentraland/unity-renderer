@@ -50,6 +50,7 @@ public enum DCLAction_Trigger
     ChatMentionNextEntry = 154,
     ChatMentionPreviousEntry = 155,
     ToggleScreenshotCamera = 156,
+    TakeScreenshot = 157,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -296,6 +297,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleScreenshotCamera:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.TakeScreenshot:
+                    InputProcessor.FromKey(action, KeyCode.Space, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

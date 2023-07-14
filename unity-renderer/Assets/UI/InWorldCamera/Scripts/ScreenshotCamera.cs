@@ -1,46 +1,75 @@
-﻿using DCL.Camera;
+﻿using DCL;
+using DCL.Camera;
+using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.Diagnostics;
-using Utils = DCL.Helpers.Utils;
 
 namespace MainScripts.DCL.InWorldCamera.Scripts
 {
     public class ScreenshotCamera : MonoBehaviour
     {
+        [Header("EXTERNAL")]
         [SerializeField] private DCLCharacterController characterController;
         [SerializeField] private CameraController cameraController;
 
-        [Space]
+        [Header("MAIN")]
         [SerializeField] private Camera cameraPrefab;
-        [SerializeField] private Canvas screenshotHUDViewPrefab;
+        [SerializeField] private ScreenshotHUDView screenshotHUDViewPrefab;
         [SerializeField] private InputAction_Trigger cameraInputAction;
+        [SerializeField] private InputAction_Trigger takeScreenshotAction;
 
-        private bool isInitialized;
+        private bool isInstantiated;
+        private bool isInScreenshotMode;
 
         private Camera screenshotCamera;
-        private Canvas screenshotHUDView;
+        private ScreenshotHUDView screenshotHUDView;
 
         private Transform characterCameraTransform;
+        private IAvatarsLODController avatarsLODControllerLazyValue;
+
+        private ScreenshotCapture screenshotCaptureLazyValue;
+
+        private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
+
+        private ScreenshotCapture screenshotCapture
+        {
+            get
+            {
+                if (isInstantiated)
+                    return screenshotCaptureLazyValue;
+
+                InstantiateCameraObjects();
+
+                return screenshotCaptureLazyValue;
+            }
+        }
 
         private void OnEnable()
         {
             cameraInputAction.OnTriggered += ToggleScreenshotCamera;
+            takeScreenshotAction.OnTriggered += CaptureScreenshot;
         }
 
         private void OnDisable()
         {
             cameraInputAction.OnTriggered -= ToggleScreenshotCamera;
+            takeScreenshotAction.OnTriggered -= CaptureScreenshot;
         }
 
-        private void ToggleScreenshotCamera(DCLAction_Trigger action)
+        private void CaptureScreenshot(DCLAction_Trigger _)
         {
-            bool activateScreenshotCamera = !(isInitialized && screenshotCamera.gameObject.activeSelf);
+            if (isInScreenshotMode)
+                screenshotCapture.CaptureScreenshot();
+        }
+
+        private void ToggleScreenshotCamera(DCLAction_Trigger _)
+        {
+            bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
 
             if (activateScreenshotCamera)
                 EnableScreenshotCamera();
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            screenshotHUDView.enabled = activateScreenshotCamera;
+            screenshotHUDView.SwitchVisibility(activateScreenshotCamera);
 
             CommonScriptableObjects.isScreenshotCameraActive.Set(activateScreenshotCamera);
 
@@ -54,17 +83,21 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
+
+            avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
+
+            isInScreenshotMode = activateScreenshotCamera;
         }
 
         private void EnableScreenshotCamera()
         {
-            if (!isInitialized)
-                CreateScreenshotCamera();
+            if (!isInstantiated)
+                InstantiateCameraObjects();
 
             screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
-        private void CreateScreenshotCamera()
+        private void InstantiateCameraObjects()
         {
             screenshotCamera = Instantiate(cameraPrefab);
             screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
@@ -72,7 +105,9 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             characterCameraTransform = cameraController.GetCamera().transform;
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
-            isInitialized = true;
+            screenshotCaptureLazyValue = new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, screenshotHUDView.RefImage);
+
+            isInstantiated = true;
         }
     }
 }
