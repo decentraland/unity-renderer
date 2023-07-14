@@ -249,6 +249,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             EventCardComponentView eventCardComponentView = fullEventsPool.Get();
             eventCardComponentView.model = eventCardComponentModel;
             eventCardComponentView.RefreshControl();
+            eventCardComponentView.transform.SetAsLastSibling();
             pooledFullEvents.Add(eventCardComponentView);
             ConfigureEventCardActions(eventCardComponentView, eventCardComponentModel);
         }
@@ -265,6 +266,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             placeCardComponentView.model = placeCardComponentModel;
             placeCardComponentView.RefreshControl();
             placeCardComponentView.OnLoseFocus();
+            placeCardComponentView.transform.SetAsLastSibling();
             pooledFullPlaces.Add(placeCardComponentView);
             ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
         }
