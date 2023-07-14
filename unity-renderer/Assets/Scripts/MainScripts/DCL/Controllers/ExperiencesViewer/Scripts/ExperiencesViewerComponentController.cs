@@ -1,4 +1,3 @@
-using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using System;
@@ -80,14 +79,7 @@ namespace DCL.ExperiencesViewer
             IParcelScene scene = GetPortableExperienceScene(pexId);
 
             if (scene != null)
-            {
-                UIScreenSpace sceneUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
-
-                if (sceneUIComponent != null)
-                    sceneUIComponent.canvas.enabled = isVisible;
-
                 DataStore.i.HUDs.isSceneUiEnabled.AddOrSet(scene.sceneData.sceneNumber, isVisible);
-            }
 
             if (!isVisible)
                 view.ShowUIHiddenToast();
