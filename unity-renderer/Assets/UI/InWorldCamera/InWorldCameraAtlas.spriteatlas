@@ -41,6 +41,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 07eb99904767349a3a40ad4c2378ecca, type: 3}
   - {fileID: 21300000, guid: 4f17c4c0f7b1c414f8c8113a665a1cae, type: 3}
   - {fileID: 21300000, guid: 24309771332a947be8056230a467061e, type: 3}
+  - {fileID: 21300000, guid: 9400c5d3cfd556444a0754ee1caaf7c5, type: 3}
   - {fileID: 21300000, guid: 4454248949a1d442db50f93a7ac0fb0e, type: 3}
   - {fileID: 21300000, guid: ea19a17bd25d34443b69fae8fef9e27c, type: 3}
   - {fileID: 21300000, guid: 842fd51cf401e4651a850e7cb508ca88, type: 3}
@@ -50,6 +51,7 @@ SpriteAtlas:
   - CornerBottomLeft
   - CameraReelImg
   - CornerBottomRight
+  - KeyboardIcn
   - CornerLeft
   - CornerTopRight
   - ShootIcn

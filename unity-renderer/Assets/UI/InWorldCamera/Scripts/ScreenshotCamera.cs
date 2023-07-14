@@ -43,8 +43,9 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             screenshotHUDView.enabled = activateScreenshotCamera;
 
             Utils.LockCursor();
-
+            CommonScriptableObjects.allUIHidden.Set(activateScreenshotCamera);
             CommonScriptableObjects.cameraBlocked.Set(activateScreenshotCamera);
+
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
         }
