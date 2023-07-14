@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 405257682719442047}
   - component: {fileID: 405257682719442046}
   - component: {fileID: 405257682719442045}
+  - component: {fileID: 8664929919244729531}
   m_Layer: 5
   m_Name: ScreenshotCameraCanvas
   m_TagString: Untagged
@@ -181,6 +182,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8664929919244729531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405257682719442044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 091d44342e7149de9f38e9853be9bcef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <RectTransform>k__BackingField: {fileID: 405257682719442040}
+  <RefImage>k__BackingField: {fileID: 4913311366325189895}
 --- !u!1 &405257684294210920
 GameObject:
   m_ObjectHideFlags: 0
