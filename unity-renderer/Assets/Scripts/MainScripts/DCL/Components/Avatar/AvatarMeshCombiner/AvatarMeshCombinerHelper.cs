@@ -85,8 +85,11 @@ namespace DCL
             // Sanitize renderers list
             renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToArray();
 
-            if ( renderers.Length == 0 )
+            if (renderers.Length == 0)
+            {
+                Profiler.EndSample();
                 return false;
+            }
 
             bool success = CombineInternal(
                 bonesContainer,

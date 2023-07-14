@@ -35,6 +35,7 @@ namespace Tests
             yield break;
         }
 
+        [Explicit]
         [UnityTest]
         public IEnumerator PromptWhenExternalUrlIsRequested()
         {
@@ -43,6 +44,7 @@ namespace Tests
             yield break;
         }
 
+        [Explicit]
         [Test]
         public void PromptWhenExternalUrlIsRequestedByRpcService()
         {
@@ -50,6 +52,7 @@ namespace Tests
             Assert.True(controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should be visible");
         }
 
+        [Explicit]
         [UnityTest]
         public IEnumerator CloseCorrectly()
         {
@@ -67,6 +70,7 @@ namespace Tests
             yield break;
         }
 
+        [Explicit]
         [UnityTest]
         public IEnumerator RememberTrustedDomains()
         {

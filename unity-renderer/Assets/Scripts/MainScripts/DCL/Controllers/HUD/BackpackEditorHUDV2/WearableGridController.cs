@@ -273,7 +273,7 @@ namespace DCL.Backpack
             if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
             {
                 rarity = NftRarity.None;
-                Debug.LogWarning($"Could not parse the rarity of the wearable '{wearable.id}'. Fallback to common.");
+                Debug.LogWarning($"Could not parse the rarity \"{wearable.rarity}\" of the wearable '{wearable.id}'. Fallback to common.");
             }
 
             string currentBodyShapeId = dataStoreBackpackV2.previewBodyShape.Get();

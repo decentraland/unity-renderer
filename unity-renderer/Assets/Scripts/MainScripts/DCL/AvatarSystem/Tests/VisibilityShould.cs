@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AvatarSystem;
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -170,10 +171,10 @@ namespace Test.AvatarSystem
         [TearDown]
         public void TearDown()
         {
-            Object.Destroy(combined.gameObject);
+            Utils.SafeDestroy(combined.gameObject);
             foreach (Renderer facialFeature in facialFeatures)
             {
-                Object.Destroy(facialFeature.gameObject);
+                Utils.SafeDestroy(facialFeature.gameObject);
             }
         }
     }
