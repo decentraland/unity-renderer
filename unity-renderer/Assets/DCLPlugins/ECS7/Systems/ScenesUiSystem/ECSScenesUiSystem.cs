@@ -100,8 +100,26 @@ namespace ECSSystems.ScenesUiSystem
                 if (currentScene != null)
                 {
                     if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isCurrentSceneUiEnabled, isSceneUIEnabled))
-                    {
                         isPendingSceneUI = false;
+
+                    foreach (IParcelScene pxScene in loadedScenes)
+                    {
+                        if (!pxScene.isPortableExperience) continue;
+
+                        ScenePortableExperienceFeatureToggles featureToggle = currentScene.sceneData.scenePortableExperienceFeatureToggles;
+
+                        if (featureToggle == ScenePortableExperienceFeatureToggles.Enable)
+                        {
+                            ApplySceneUI(internalUiContainerComponent,
+                                uiDocument,
+                                pxScene,
+                                isCurrentSceneUiEnabled,
+                                isSceneUIEnabled);
+                        }
+                        else if (featureToggle == ScenePortableExperienceFeatureToggles.HideUi)
+                        {
+                            SetSceneUiVisibility(pxScene.sceneData.sceneNumber, false);
+                        }
                     }
                 }
             }
@@ -135,7 +153,8 @@ namespace ECSSystems.ScenesUiSystem
             model.rootElement.style.display = new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
-        internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort, UIDocument uiDocument,
+        internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort,
+            UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
         {
             // Clear previous call so we do not accumulate

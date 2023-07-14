@@ -60,6 +60,14 @@ namespace DCL.Models
             public string[] allowedMediaHostnames;
 
             public List<Hint> loadingScreenHints;
+            public ScenePortableExperienceFeatureToggles scenePortableExperienceFeatureToggles;
         }
+    }
+
+    public enum ScenePortableExperienceFeatureToggles
+    {
+        Enable,
+        Disable,
+        HideUi
     }
 }
