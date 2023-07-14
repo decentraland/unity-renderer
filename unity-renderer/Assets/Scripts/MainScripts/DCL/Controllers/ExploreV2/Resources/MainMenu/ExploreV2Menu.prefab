@@ -22264,6 +22264,16 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6496376759467236775, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 6496376759467236775, guid: 01095a78852393446834e68bf8628274,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4286344049
+      objectReference: {fileID: 0}
     - target: {fileID: 6505254775904210506, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: m_SizeDelta.x

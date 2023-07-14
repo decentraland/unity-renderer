@@ -75,6 +75,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             exploreV2Analytics,
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
         searchSubSectionComponentController = new SearchSubSectionComponentController(
             view.SearchSubSectionView,
             view.SearchBar,
@@ -83,6 +84,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             userProfileBridge,
             exploreV2Analytics,
             dataStore);
+        searchSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
@@ -106,6 +108,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
         favoritesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         favoritesSubSectionComponentController.Dispose();
+
+        searchSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
 
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }

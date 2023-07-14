@@ -20,6 +20,8 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly DataStore dataStore;
 
+    public event Action OnCloseExploreV2;
+
     private CancellationTokenSource minimalSearchCts;
     private CancellationTokenSource fullSearchCts;
 
@@ -75,12 +77,14 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
+        OnCloseExploreV2?.Invoke();
         EventsSubSectionComponentController.JumpInToEvent(eventFromAPI);
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
     }
 
     private void JumpInToPlace(IHotScenesController.PlaceInfo place)
     {
+        OnCloseExploreV2?.Invoke();
         PlacesSubSectionComponentController.JumpInToPlace(place);
         exploreV2Analytics.SendPlaceTeleport(place.id, place.title, Utils.ConvertStringToVector(place.base_position), ActionSource.FromSearch);
     }

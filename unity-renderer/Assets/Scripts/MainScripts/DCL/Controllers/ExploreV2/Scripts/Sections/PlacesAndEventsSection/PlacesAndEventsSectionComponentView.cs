@@ -105,6 +105,12 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         eventsSubSection.SetActive(isActive && currentSelectedIndex == EVENTS_SUB_SECTION_INDEX);
         favoritesSubSection.SetActive(isActive && currentSelectedIndex == FAVORITES_SUB_SECTION_INDEX);
         searchSubSection.SetActive(isActive && currentSelectedIndex == SEARCH_SUB_SECTION_INDEX);
+
+        if (!isActive)
+        {
+            searchBar.ClearSearch(false);
+            searchSubSection.SetHeaderEnabled("");
+        }
     }
 
     public void EnableSearchBar(bool isActive)
