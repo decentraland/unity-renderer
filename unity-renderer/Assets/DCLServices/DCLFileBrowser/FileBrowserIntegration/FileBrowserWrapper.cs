@@ -5,7 +5,12 @@ namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
 {
     public class FileBrowserWrapper : IDCLFileBrowserService
     {
-        public void Initialize() { }
+        public void Initialize()
+        {
+#if UNITY_WEBGL
+            FileBrowser.Instance.CustomWrapper = FileBrowser.Instance.gameObject.AddComponent<Crosstales.FB.WebGL.FileBrowserWebGL>();
+#endif
+        }
 
         public string OpenSingleFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions) =>
             FileBrowser.Instance.OpenSingleFile(title, directory, defaultName, ConvertExtensionFilters(extensions));
