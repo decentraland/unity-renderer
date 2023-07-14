@@ -11,34 +11,34 @@ namespace AvatarSystem
             if (item == null)
                 throw new Exception("Requested a WearableLoader with a null WearableItem");
 
-            if (item.data.category == WearableLiterals.Categories.BODY_SHAPE ||
-                item.data.category == WearableLiterals.Categories.EYES ||
-                item.data.category == WearableLiterals.Categories.EYEBROWS ||
-                item.data.category == WearableLiterals.Categories.MOUTH)
+            if (item.data.category
+                is WearableLiterals.Categories.BODY_SHAPE
+                or WearableLiterals.Categories.EYES
+                or WearableLiterals.Categories.EYEBROWS
+                or WearableLiterals.Categories.MOUTH)
                 throw new Exception("Requested a WearableLoader with a bodyshape or facial feature");
 
             return new WearableLoader(new WearableRetriever(), item);
         }
 
-        public IBodyshapeLoader GetBodyshapeLoader(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows,
-            WearableItem mouth)
+        public IBodyshapeLoader GetBodyShapeLoader(BodyWearables bodyWearables)
         {
-            if (bodyshape == null)
+            if (bodyWearables.BodyShape == null)
                 throw new Exception("Requested a BodyshapeLoader with a null Bodyshape");
 
-            if (eyes != null && eyes.data.category != WearableLiterals.Categories.EYES)
-                throw new Exception($"Eye's category is not {WearableLiterals.Categories.EYES}");
-
-            if (eyebrows != null && eyebrows.data.category != WearableLiterals.Categories.EYEBROWS)
-                throw new Exception($"Eyebrows's category is not {WearableLiterals.Categories.EYEBROWS}");
-
-            if (mouth != null && mouth.data.category != WearableLiterals.Categories.MOUTH)
-                throw new Exception($"Mouth's category is not {WearableLiterals.Categories.MOUTH}");
-
-            if (bodyshape.data.category != WearableLiterals.Categories.BODY_SHAPE)
+            if (bodyWearables.BodyShape.data.category != WearableLiterals.Categories.BODY_SHAPE)
                 throw new Exception($"Bodyshape's category is not {WearableLiterals.Categories.BODY_SHAPE}");
 
-            return new BodyShapeLoader(new RetrieverFactory(), bodyshape, eyes, eyebrows, mouth);
+            if (bodyWearables.Eyes != null && bodyWearables.Eyes.data.category != WearableLiterals.Categories.EYES)
+                throw new Exception($"Eye's category is not {WearableLiterals.Categories.EYES}");
+
+            if (bodyWearables.Eyebrows != null && bodyWearables.Eyebrows.data.category != WearableLiterals.Categories.EYEBROWS)
+                throw new Exception($"Eyebrows's category is not {WearableLiterals.Categories.EYEBROWS}");
+
+            if (bodyWearables.Mouth != null && bodyWearables.Mouth.data.category != WearableLiterals.Categories.MOUTH)
+                throw new Exception($"Mouth's category is not {WearableLiterals.Categories.MOUTH}");
+
+            return new BodyShapeLoader(new RetrieverFactory(), bodyWearables);
         }
     }
 }
