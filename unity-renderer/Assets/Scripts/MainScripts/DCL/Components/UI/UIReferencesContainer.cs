@@ -25,6 +25,19 @@ namespace DCL.Components
 
         bool VERBOSE = false;
 
+        private bool hasParentRectTransform = false;
+        private RectTransform parentRectTransform;
+
+        public RectTransform GetParentRectTransform()
+        {
+            if (!hasParentRectTransform)
+            {
+                parentRectTransform = GetComponentInParent<RectTransform>();
+                hasParentRectTransform = true;
+            }
+            return parentRectTransform;
+        }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             UIShape.Model ownerModel = (UIShape.Model) owner.GetModel();

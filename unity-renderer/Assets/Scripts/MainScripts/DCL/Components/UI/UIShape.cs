@@ -201,7 +201,7 @@ namespace DCL.Components
 
         protected void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
-            RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
+            RectTransform parentRT = referencesContainer.GetParentRectTransform();
 
             if (refreshSize)
             {
@@ -215,27 +215,26 @@ namespace DCL.Components
             }
         }
 
-        protected virtual void RefreshDCLSize(RectTransform parentTransform = null)
-        {
-            if (parentTransform == null)
-                parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
+        protected virtual void RefreshDCLSize(RectTransform parentTransform)
+        {
             Model model = (Model) this.model;
 
             if (referencesContainer != null && referencesContainer.layoutElementRT != null)
             {
-                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
-                    model.width.GetScaledValue(parentTransform.rect.width));
+                float scaledWidth = model.width.GetScaledValue(parentTransform.rect.width);
+                float scaledHeight = model.height.GetScaledValue(parentTransform.rect.height);
 
-                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                    model.height.GetScaledValue(parentTransform.rect.height));
+                if (referencesContainer.layoutElementRT.rect.width != scaledWidth)
+                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, scaledWidth);
+
+                if (referencesContainer.layoutElementRT.rect.height != scaledHeight)
+                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, scaledHeight);
             }
         }
 
-        public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
+        public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform)
         {
-            if (parentTransform == null)
-                parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
             if (referencesContainer.layoutElement != null)
                 referencesContainer.layoutElement.ignoreLayout = false;

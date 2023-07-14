@@ -244,7 +244,7 @@ namespace DCL.Helpers
         }
 
         /// <summary>
-        /// Reimplementation of the LayoutRebuilder.ForceRebuildLayoutImmediate() function (Unity UI API) for make it more performant.
+        /// Reimplementation of the ForceRebuildLayoutImmediate() to make it more performant.
         /// </summary>
         /// <param name="rectTransformRoot">Root from which to rebuild.</param>
         public static void ForceRebuildLayoutImmediate(RectTransform rectTransformRoot)
@@ -252,24 +252,29 @@ namespace DCL.Helpers
             if (rectTransformRoot == null)
                 return;
 
-            // NOTE(Santi): It seems to be very much cheaper to execute the next instructions manually than execute directly the function
-            //              'LayoutRebuilder.ForceRebuildLayoutImmediate()', that theorically already contains these instructions.
-            var layoutElements = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutElement), true).ToList();
-            layoutElements.RemoveAll(e => (e is Behaviour && !((Behaviour)e).isActiveAndEnabled) || e is TextMeshProUGUI);
+            var componentsInChildren = rectTransformRoot.GetComponentsInChildren<Component>(true);
 
-            foreach (var layoutElem in layoutElements)
+            var layoutElementsList = componentsInChildren
+                                    .OfType<ILayoutElement>()
+                                    .Where(e => !(e is Behaviour behaviour) || behaviour.isActiveAndEnabled)
+                                    .Where(e => !(e is TextMeshProUGUI))
+                                    .ToList();
+
+            var layoutControllersList = componentsInChildren
+                                       .OfType<ILayoutController>()
+                                       .Where(e => !(e is Behaviour behaviour) || behaviour.isActiveAndEnabled)
+                                       .ToList();
+
+            foreach (var layoutElem in layoutElementsList)
             {
-                (layoutElem as ILayoutElement).CalculateLayoutInputHorizontal();
-                (layoutElem as ILayoutElement).CalculateLayoutInputVertical();
+                layoutElem.CalculateLayoutInputHorizontal();
+                layoutElem.CalculateLayoutInputVertical();
             }
 
-            var layoutControllers = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutController), true).ToList();
-            layoutControllers.RemoveAll(e => e is Behaviour && !((Behaviour)e).isActiveAndEnabled);
-
-            foreach (var layoutCtrl in layoutControllers)
+            foreach (var layoutCtrl in layoutControllersList)
             {
-                (layoutCtrl as ILayoutController).SetLayoutHorizontal();
-                (layoutCtrl as ILayoutController).SetLayoutVertical();
+                layoutCtrl.SetLayoutHorizontal();
+                layoutCtrl.SetLayoutVertical();
             }
         }
 
