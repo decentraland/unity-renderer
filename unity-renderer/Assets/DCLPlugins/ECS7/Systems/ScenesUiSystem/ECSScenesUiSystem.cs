@@ -18,11 +18,12 @@ namespace ECSSystems.ScenesUiSystem
         private readonly BooleanVariable hideUiEventVariable;
         private readonly BaseVariable<bool> isCurrentSceneUiEnabled;
         private readonly BaseDictionary<int, bool> isSceneUIEnabled;
+        private readonly List<IParcelScene> globalScenesAddedBuffer = new ();
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
-        private HashSet<IParcelScene> scenesUiToSort = new HashSet<IParcelScene>();
+        private HashSet<IParcelScene> scenesUiToSort = new ();
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
@@ -49,7 +50,6 @@ namespace ECSSystems.ScenesUiSystem
             isCurrentSceneUiEnabled.OnChange += OnHideCurrentSceneUiEvent;
             isSceneUIEnabled.OnSet += OnSceneUiVisibilitySet;
             isSceneUIEnabled.OnAdded += OnSceneUiVisibilityAdded;
-            isSceneUIEnabled.OnRemoved += OnSceneUiVisibilityRemoved;
 
             OnHideAllUiEvent(hideUiEventVariable.Get(), false);
         }
@@ -61,7 +61,6 @@ namespace ECSSystems.ScenesUiSystem
             isCurrentSceneUiEnabled.OnChange -= OnHideCurrentSceneUiEvent;
             isSceneUIEnabled.OnSet -= OnSceneUiVisibilitySet;
             isSceneUIEnabled.OnAdded -= OnSceneUiVisibilityAdded;
-            isSceneUIEnabled.OnRemoved -= OnSceneUiVisibilityRemoved;
         }
 
         public void Update()
@@ -70,13 +69,15 @@ namespace ECSSystems.ScenesUiSystem
             bool sceneChanged = lastSceneNumber != currentSceneNumber;
             lastSceneNumber = currentSceneNumber;
 
-            ApplyParenting(ref scenesUiToSort, uiDocument, internalUiContainerComponent, currentSceneNumber);
+            globalScenesAddedBuffer.Clear();
+
+            ApplyParenting(ref scenesUiToSort, uiDocument, internalUiContainerComponent, currentSceneNumber, globalScenesAddedBuffer);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
-            {
                 SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
-            }
+
+            UpdatePortableExperiencesVisibilityByFeatureToggle(currentScene, globalScenesAddedBuffer);
 
             // clear UI if scene changed
             if (sceneChanged && !isPendingSceneUI)
@@ -102,25 +103,7 @@ namespace ECSSystems.ScenesUiSystem
                     if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isCurrentSceneUiEnabled, isSceneUIEnabled))
                         isPendingSceneUI = false;
 
-                    foreach (IParcelScene pxScene in loadedScenes)
-                    {
-                        if (!pxScene.isPortableExperience) continue;
-
-                        ScenePortableExperienceFeatureToggles featureToggle = currentScene.sceneData.scenePortableExperienceFeatureToggles;
-
-                        if (featureToggle == ScenePortableExperienceFeatureToggles.Enable)
-                        {
-                            ApplySceneUI(internalUiContainerComponent,
-                                uiDocument,
-                                pxScene,
-                                isCurrentSceneUiEnabled,
-                                isSceneUIEnabled);
-                        }
-                        else if (featureToggle == ScenePortableExperienceFeatureToggles.HideUi)
-                        {
-                            SetSceneUiVisibility(pxScene.sceneData.sceneNumber, false);
-                        }
-                    }
+                    UpdatePortableExperiencesVisibilityByFeatureToggle(currentScene, loadedScenes);
                 }
             }
         }
@@ -155,7 +138,9 @@ namespace ECSSystems.ScenesUiSystem
 
         internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort,
             UIDocument uiDocument,
-            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+            int currentSceneNumber,
+            List<IParcelScene> globalScenesAdded = null)
         {
             // Clear previous call so we do not accumulate
             scenesToSort.Clear();
@@ -185,6 +170,7 @@ namespace ECSSystems.ScenesUiSystem
                         uiDocument.rootVisualElement.Add(model.rootElement);
                         model.parentElement = uiDocument.rootVisualElement;
                         internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, model);
+                        globalScenesAdded?.Add(uiContainerData.scene);
                     }
 
                     continue;
@@ -370,16 +356,19 @@ namespace ECSSystems.ScenesUiSystem
             uiDocument.rootVisualElement.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
-        private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled) =>
-            SetSceneUiVisibility(sceneNumber, enabled);
+        private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled)
+        {
+            if (currentScene != null
+                && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)
+                return;
 
-        private void OnSceneUiVisibilityRemoved(int sceneNumber, bool _) =>
-            SetSceneUiVisibility(sceneNumber, true);
+            SetSceneUiVisibility(sceneNumber, enabled);
+        }
 
         private void OnSceneUiVisibilitySet(IEnumerable<KeyValuePair<int, bool>> list)
         {
             foreach ((int sceneNumber, bool enabled) in list)
-                SetSceneUiVisibility(sceneNumber, enabled);
+                OnSceneUiVisibilityAdded(sceneNumber, enabled);
         }
 
         private void SetSceneUiVisibility(int sceneNumber, bool enabled)
@@ -395,6 +384,24 @@ namespace ECSSystems.ScenesUiSystem
 
             sceneUiContainer.Value.model.rootElement.style.display =
                 new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
+        }
+
+        private void UpdatePortableExperiencesVisibilityByFeatureToggle(IParcelScene currentScene, IEnumerable<IParcelScene> scenes)
+        {
+            if (currentScene == null) return;
+
+            foreach (IParcelScene pxScene in scenes)
+            {
+                if (!pxScene.isPortableExperience) continue;
+
+                ScenePortableExperienceFeatureToggles featureToggle =
+                    currentScene.sceneData.scenePortableExperienceFeatureToggles;
+
+                if (featureToggle == ScenePortableExperienceFeatureToggles.HideUi)
+                {
+                    SetSceneUiVisibility(pxScene.sceneData.sceneNumber, false);
+                }
+            }
         }
 
         private readonly struct RightOfData
