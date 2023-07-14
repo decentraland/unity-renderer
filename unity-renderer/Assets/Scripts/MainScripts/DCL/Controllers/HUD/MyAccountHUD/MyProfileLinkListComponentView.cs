@@ -34,7 +34,7 @@ namespace DCL.MyAccount
 
                 OnAddedNew?.Invoke((
                     title: newLinkTitle.text,
-                    url: newLinkUrl.text.Replace("@", UnityWebRequest.EscapeURL("@"))));
+                    url: UnityWebRequest.EscapeURL(newLinkUrl.text)));
             });
 
             newLinkTitle.onValueChanged.AddListener(str => EnableOrDisableAddButton());
@@ -46,7 +46,7 @@ namespace DCL.MyAccount
         public void Add(string title, string url)
         {
             MyProfileLinkComponentView linkComponent = Instantiate(linkPrefab, linksContainer);
-            linkComponent.Set(title, url);
+            linkComponent.Set(title, UnityWebRequest.UnEscapeURL(url));
             linkComponent.OnRemoved += OnRemoved;
             links.Add(linkComponent);
         }
