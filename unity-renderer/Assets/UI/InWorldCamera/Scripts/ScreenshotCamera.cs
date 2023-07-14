@@ -1,19 +1,23 @@
 ﻿using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using System.IO;
 using UnityEngine;
+using Environment = DCL.Environment;
 
-namespace MainScripts.DCL.InWorldCamera.Scripts
+namespace UI.InWorldCamera.Scripts
 {
     public class ScreenshotCamera : MonoBehaviour
     {
-        [Header("EXTERNAL")]
+        [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] private DCLCharacterController characterController;
         [SerializeField] private CameraController cameraController;
 
-        [Header("MAIN")]
+        [Header("MAIN COMPONENTS")]
         [SerializeField] private Camera cameraPrefab;
         [SerializeField] private ScreenshotHUDView screenshotHUDViewPrefab;
+
+        [Header("INPUT ACTIONS")]
         [SerializeField] private InputAction_Trigger cameraInputAction;
         [SerializeField] private InputAction_Trigger takeScreenshotAction;
 
@@ -55,12 +59,6 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             takeScreenshotAction.OnTriggered -= CaptureScreenshot;
         }
 
-        private void CaptureScreenshot(DCLAction_Trigger _)
-        {
-            if (isInScreenshotMode)
-                screenshotCapture.CaptureScreenshot();
-        }
-
         private void ToggleScreenshotCamera(DCLAction_Trigger _)
         {
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
@@ -87,6 +85,21 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
 
             isInScreenshotMode = activateScreenshotCamera;
+        }
+
+        private void CaptureScreenshot(DCLAction_Trigger _)
+        {
+            if (isInScreenshotMode)
+                SaveScreenshot(screenshotCapture.CaptureScreenshot());
+
+            void SaveScreenshot(byte[] fileBytes)
+            {
+                string filePath = Path.Combine(Application.temporaryCachePath, "screenshot1.jpg"); // Application.persistentDataPath
+
+                File.WriteAllBytes(filePath, fileBytes);
+                Application.OpenURL(filePath);
+                Debug.Log(filePath);
+            }
         }
 
         private void EnableScreenshotCamera()
