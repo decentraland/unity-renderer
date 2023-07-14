@@ -69,10 +69,7 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             screenshotCamera = Instantiate(cameraPrefab);
             screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
 
-            var characterCamera = cameraController.GetCamera();
-            characterCameraTransform = characterCamera.transform;
-
-            screenshotCamera.CopyFrom(characterCamera);
+            characterCameraTransform = cameraController.GetCamera().transform;
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
             isInitialized = true;
