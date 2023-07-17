@@ -150,3 +150,4 @@ MonoBehaviour:
   rotationSpeed: 100
   cameraXAxis: {fileID: 11400000, guid: 2ae727ffde932b04d8b4180993b81f3d, type: 2}
   cameraYAxis: {fileID: 11400000, guid: 485f3af6b1a262e48890cf2c75da6b1e, type: 2}
+  mouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}

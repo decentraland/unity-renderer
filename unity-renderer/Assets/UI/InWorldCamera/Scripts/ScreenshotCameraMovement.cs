@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using DCL;
+using DCL.Helpers;
+using UnityEngine;
 
 namespace MainScripts.DCL.InWorldCamera.Scripts
 {
@@ -17,9 +19,11 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
         [SerializeField] private float rotationSpeed = 100f;
         [SerializeField] private InputAction_Measurable cameraXAxis;
         [SerializeField] private InputAction_Measurable cameraYAxis;
+        [SerializeField] private InputAction_Hold mouseFirstClick;
 
         private float mouseX;
         private float mouseY;
+        private bool rotationIsEnabled;
 
         private void Awake()
         {
@@ -27,16 +31,42 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
                 characterController = GetComponent<CharacterController>();
         }
 
+        private void Update()
+        {
+            Translate(newPosition: CalculateNewPosition(Time.deltaTime));
+
+            if (rotationIsEnabled)
+                Rotate(Time.deltaTime);
+        }
+
         private void OnEnable()
         {
             mouseX = transform.rotation.eulerAngles.y;
             mouseY = transform.rotation.eulerAngles.x;
+
+            mouseFirstClick.OnStarted += EnableRotation;
+            mouseFirstClick.OnFinished += DisableRotation;
         }
 
-        private void Update()
+        private void OnDisable()
         {
-            Translate(newPosition: CalculateNewPosition(Time.deltaTime));
-            Rotate(Time.deltaTime);
+            mouseFirstClick.OnStarted -= EnableRotation;
+            mouseFirstClick.OnFinished -= DisableRotation;
+        }
+
+        private void EnableRotation(DCLAction_Hold action) =>
+            SwitchRotation(isEnabled: true);
+
+        private void DisableRotation(DCLAction_Hold action)
+        {
+            SwitchRotation(isEnabled: false);
+            Utils.UnlockCursor();
+        }
+
+        private void SwitchRotation(bool isEnabled)
+        {
+            DataStore.i.camera.panning.Set(false);
+            rotationIsEnabled = isEnabled;
         }
 
         private void Translate(Vector3 newPosition) =>
