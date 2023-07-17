@@ -22,7 +22,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
         private const string PROFILER_TAG = "Outline Screen Effect Pass";
         private readonly Material material = null;
 
-        private RenderTargetIdentifier source { get; set; }
+        private ScriptableRenderer renderer { get; set; }
         private RenderTargetHandle destination { get; set; }
         private RenderTargetHandle outlineMask { get; set; }
 
@@ -40,9 +40,9 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
             material = CoreUtils.CreateEngineMaterial("DCL/OutlinerEffect");
         }
 
-        public void Setup(RenderTargetIdentifier source, RenderTargetHandle destination, RenderTargetHandle outlineTexture)
+        public void Setup(ScriptableRenderer renderer, RenderTargetHandle destination, RenderTargetHandle outlineTexture)
         {
-            this.source = source;
+            this.renderer = renderer;
             this.destination = destination;
             this.outlineMask = outlineTexture;
         }
@@ -87,11 +87,11 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
                 Blit(cmd, outline1.id, outline2.id, material, (int)ShaderPasses.BlurHorizontal); // Apply Vertical blur. Output in outline2
                 Blit(cmd, outline2.id, outline1.id, material, (int)ShaderPasses.BlurVertical); // Apply Horizontal blur. Output in outline1
 
-                Blit(cmd, source, camera.id); // Get camera in a RT
+                Blit(cmd, renderer.cameraColorTargetHandle, camera.id); // Get camera in a RT
                 cmd.SetGlobalTexture("_Source", camera.id); // Apply RT as _Source for the material
                 cmd.SetGlobalTexture("_ComposeMask", outlineMask.id); // Set the original outline mask
 
-                Blit(cmd, outline1.id, source, material, (int)ShaderPasses.Compose);
+                Blit(cmd, outline1.id, renderer.cameraColorTargetHandle, material, (int)ShaderPasses.Compose);
 
                 cmd.ReleaseTemporaryRT(camera.id);
                 cmd.ReleaseTemporaryRT(outline1.id);
@@ -138,7 +138,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        outlinePass.Setup(renderer.cameraColorTarget, RenderTargetHandle.CameraTarget, outlineTexture);
+        outlinePass.Setup(renderer, RenderTargetHandle.CameraTarget, outlineTexture);
         renderer.EnqueuePass(outlinePass);
     }
 }
