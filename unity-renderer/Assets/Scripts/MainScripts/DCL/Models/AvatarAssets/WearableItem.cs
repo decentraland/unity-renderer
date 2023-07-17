@@ -69,6 +69,12 @@ public class WearableItem
         Categories.FACIAL_HAIR
     };
 
+    public static readonly string[] UPPER_BODY_DEFAULT_HIDES =
+    {
+        Categories.HANDS,
+        Categories.HANDS_WEAR
+    };
+
     [Serializable]
     public class MappingPair
     {
@@ -95,6 +101,7 @@ public class WearableItem
         public string[] tags;
         public string[] replaces;
         public string[] hides;
+        public string[] removesDefaultHiding;
         public bool loop;
     }
 
@@ -230,6 +237,14 @@ public class WearableItem
                 ? SKIN_IMPLICIT_CATEGORIES
                 : hides.Concat(SKIN_IMPLICIT_CATEGORIES).Distinct().ToArray();
         }
+
+        // Old UPPER_BODY Wearables are incompatible with the new Hands category,
+        // so we apply this rule to hide the hands by default
+        bool isOrHidesUpperBody = hides.Contains(Categories.UPPER_BODY) || data.category == Categories.UPPER_BODY;
+        bool removesDefault = data.removesDefaultHiding?.Contains(Categories.HANDS) ?? false;
+
+        if (isOrHidesUpperBody && !removesDefault)
+            hides = hides.Concat(UPPER_BODY_DEFAULT_HIDES).Distinct().ToArray();
 
         var replaces = GetReplacesList(bodyShapeType);
 
