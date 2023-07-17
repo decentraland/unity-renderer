@@ -1,9 +1,17 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
+using System;
 using System.Threading;
-using UI.InWorldCamera.Scripts;
 
 namespace DCLServices.CameraReelService
 {
+    public interface ICameraReelNetworkService : IService
+    {
+        UniTask GetScreenshot(string placeUUID, CancellationToken ct, bool renewCache = false);
+
+        UniTask PutScreenshot(string placeUUID, CancellationToken ct, bool renewCache = false);
+    }
+
     public class CameraReelNetworkService : ICameraReelNetworkService
     {
         private readonly ICameraReelClient client;
@@ -17,10 +25,10 @@ namespace DCLServices.CameraReelService
 
         public void Dispose() { }
 
-        public async UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct) =>
-            await client.GetScreenshot(uuid, ct);
+        public UniTask GetScreenshot(string placeUUID, CancellationToken ct, bool renewCache = false) =>
+            throw new NotImplementedException();
 
-        public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct) =>
-            await client.UploadScreenshot(image, metadata, ct);
+        public UniTask PutScreenshot(string placeUUID, CancellationToken ct, bool renewCache = false) =>
+            throw new NotImplementedException();
     }
 }
