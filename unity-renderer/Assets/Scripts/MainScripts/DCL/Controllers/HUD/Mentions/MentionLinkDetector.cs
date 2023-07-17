@@ -70,7 +70,7 @@ namespace DCL.Social.Chat.Mentions
 
         private string GetUserNameByPointerPosition(Vector2 pointerPosition)
         {
-            if (textComponent == null)
+            if (textComponent == null || textComponent.canvas == null)
                 return null;
 
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, pointerPosition, textComponent.canvas.worldCamera);
