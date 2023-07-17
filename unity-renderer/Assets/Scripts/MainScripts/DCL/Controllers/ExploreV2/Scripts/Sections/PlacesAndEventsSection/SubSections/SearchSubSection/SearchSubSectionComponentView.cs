@@ -35,9 +35,9 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private Button showAllEvents;
     [SerializeField] private Button showMore;
 
-    [SerializeField] private GameObject noEvents;
-    [SerializeField] private GameObject noPlaces;
-    [SerializeField] private GameObject noResults;
+    [SerializeField] internal GameObject noEvents;
+    [SerializeField] internal GameObject noPlaces;
+    [SerializeField] internal GameObject noResults;
     [SerializeField] private TMP_Text noEventsText;
     [SerializeField] private TMP_Text noPlacesText;
     [SerializeField] private TMP_Text noResultsText;
@@ -58,30 +58,51 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public event Action<string> OnUnsubscribeEventClicked;
 
     private UnityObjectPool<EventCardComponentView> eventsPool;
-    private List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
+    internal List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
     private UnityObjectPool<EventCardComponentView> fullEventsPool;
-    private List<EventCardComponentView> pooledFullEvents = new List<EventCardComponentView>();
+    internal List<EventCardComponentView> pooledFullEvents = new List<EventCardComponentView>();
     private UnityObjectPool<PlaceCardComponentView> placesPool;
-    private List<PlaceCardComponentView> pooledPlaces = new List<PlaceCardComponentView>();
+    internal List<PlaceCardComponentView> pooledPlaces = new List<PlaceCardComponentView>();
     private UnityObjectPool<PlaceCardComponentView> fullPlacesPool;
-    private List<PlaceCardComponentView> pooledFullPlaces = new List<PlaceCardComponentView>();
+    internal List<PlaceCardComponentView> pooledFullPlaces = new List<PlaceCardComponentView>();
     private int currentPage = 0;
 
     public override void Awake()
     {
         InitializePools();
-        showAllEvents.onClick.RemoveAllListeners();
-        showAllEvents.onClick.AddListener(RequestAllEvents);
-        showAllPlaces.onClick.RemoveAllListeners();
-        showAllPlaces.onClick.AddListener(RequestAllPlaces);
-        showMore.onClick.RemoveAllListeners();
-        showMore.onClick.AddListener(RequestAdditionalPage);
-        backButton.onClick.RemoveAllListeners();
-        backButton.onClick.AddListener(OnBackButtonPressed);
+        InitialiseButtonEvents();
+
         noEvents.SetActive(false);
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+    }
+
+    private void InitialiseButtonEvents()
+    {
+        if (showAllEvents != null)
+        {
+            showAllEvents.onClick.RemoveAllListeners();
+            showAllEvents.onClick.AddListener(RequestAllEvents);
+        }
+
+        if (showAllPlaces != null)
+        {
+            showAllPlaces.onClick.RemoveAllListeners();
+            showAllPlaces.onClick.AddListener(RequestAllPlaces);
+        }
+
+        if (showMore != null)
+        {
+            showMore.onClick.RemoveAllListeners();
+            showMore.onClick.AddListener(RequestAdditionalPage);
+        }
+
+        if (backButton != null)
+        {
+            backButton.onClick.RemoveAllListeners();
+            backButton.onClick.AddListener(OnBackButtonPressed);
+        }
     }
 
     private void RequestAdditionalPage()
@@ -96,7 +117,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
 
     private void OnBackButtonPressed()
     {
-        if (minimalSearchSection.activeSelf)
+        if (minimalSearchSection.activeSelf || noResults.activeSelf)
         {
             OnBackFromSearch?.Invoke();
         }
