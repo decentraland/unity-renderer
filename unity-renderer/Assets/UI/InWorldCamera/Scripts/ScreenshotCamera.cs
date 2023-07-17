@@ -33,6 +33,10 @@ namespace UI.InWorldCamera.Scripts
 
         private ScreenshotCapture screenshotCaptureLazyValue;
 
+        private bool prevUiHiddenState;
+        private bool prevMouseLockState;
+        private bool prevMouseButtonCursorLockMode;
+
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
         private ScreenshotCapture screenshotCapture
@@ -66,8 +70,24 @@ namespace UI.InWorldCamera.Scripts
 
             Utils.UnlockCursor();
 
-            CommonScriptableObjects.allUIHidden.Set(activateScreenshotCamera);
-            CommonScriptableObjects.cameraModeInputLocked.Set(activateScreenshotCamera);
+            if (activateScreenshotCamera)
+            {
+                prevUiHiddenState = CommonScriptableObjects.allUIHidden.Get();
+                CommonScriptableObjects.allUIHidden.Set(true);
+
+                prevMouseLockState = CommonScriptableObjects.cameraModeInputLocked.Get();
+                CommonScriptableObjects.cameraModeInputLocked.Set(false);
+
+                prevMouseButtonCursorLockMode = DataStore.i.camera.leftMouseButtonCursorLock.Get();
+                DataStore.i.camera.leftMouseButtonCursorLock.Set(true);
+            }
+            else
+            {
+                CommonScriptableObjects.allUIHidden.Set(prevUiHiddenState);
+                CommonScriptableObjects.cameraModeInputLocked.Set(prevMouseLockState);
+                DataStore.i.camera.leftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
+            }
+
             CommonScriptableObjects.cameraBlocked.Set(activateScreenshotCamera);
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(activateScreenshotCamera);
             CommonScriptableObjects.userMovementKeysBlocked.Set(activateScreenshotCamera);
