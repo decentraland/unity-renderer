@@ -64,15 +64,7 @@ namespace UI.InWorldCamera.Scripts
         {
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
 
-            if (activateScreenshotCamera)
-                EnableScreenshotCamera();
-
-            screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            screenshotHUDView.SwitchVisibility(activateScreenshotCamera);
-
-            CommonScriptableObjects.isScreenshotCameraActive.Set(activateScreenshotCamera);
-
-            Utils.LockCursor();
+            Utils.UnlockCursor();
 
             CommonScriptableObjects.allUIHidden.Set(activateScreenshotCamera);
             CommonScriptableObjects.cameraModeInputLocked.Set(activateScreenshotCamera);
@@ -83,8 +75,14 @@ namespace UI.InWorldCamera.Scripts
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
 
+            if (activateScreenshotCamera)
+                EnableScreenshotCamera();
+
+            screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
+            screenshotHUDView.SwitchVisibility(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
 
+            CommonScriptableObjects.isScreenshotCameraActive.Set(activateScreenshotCamera);
             isInScreenshotMode = activateScreenshotCamera;
         }
 
@@ -107,16 +105,17 @@ namespace UI.InWorldCamera.Scripts
         {
             if (!isInstantiated)
                 InstantiateCameraObjects();
-
-            screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+            else
+                screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
         private void InstantiateCameraObjects()
         {
-            screenshotCamera = Instantiate(cameraPrefab);
+            characterCameraTransform = cameraController.GetCamera().transform;
+
+            screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
             screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
 
-            characterCameraTransform = cameraController.GetCamera().transform;
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
             screenshotCaptureLazyValue = new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, screenshotHUDView.RefImage);
