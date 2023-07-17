@@ -119,10 +119,10 @@ namespace DCL.Backpack
                 catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
             }
 
-            EquipWearable(outfit.outfit.bodyShape, setAsDirty: false, updateAvatarPreview: false);
+            EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable, setAsDirty: true, updateAvatarPreview: true);
+                EquipWearable(outfitWearable, EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
@@ -455,7 +455,7 @@ namespace DCL.Backpack
         }
 
         private void EquipWearable(string wearableId,
-            EquipWearableSource source = EquipWearableSource.None,
+            EquipWearableSource source,
             bool setAsDirty = true,
             bool updateAvatarPreview = true,
             bool resetOverride = true)
@@ -470,7 +470,7 @@ namespace DCL.Backpack
         }
 
         private void EquipWearable(WearableItem wearable,
-            EquipWearableSource source = EquipWearableSource.None,
+            EquipWearableSource source,
             bool setAsDirty = true,
             bool updateAvatarPreview = true,
             bool resetOverride = true)
