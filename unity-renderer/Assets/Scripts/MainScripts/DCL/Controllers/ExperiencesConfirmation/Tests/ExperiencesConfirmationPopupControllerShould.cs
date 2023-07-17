@@ -150,12 +150,12 @@ namespace DCL.PortableExperiences.Confirmation
 
             view.Received(1)
                 .SetModel(Arg.Is<ExperiencesConfirmationViewModel>(e =>
-                     e.Permissions[0] == "Let the scene perform external HTTP requests."
-                     && e.Permissions[1] == "Let the scene use the Websocket API to establish external connections."
-                     && e.Permissions[2] == "Let the scene open a URL (in a browser tab or web view)."
-                     && e.Permissions[3] == "Let the scene communicate with a wallet."
-                     && e.Permissions[4] == "Let the scene to animate the player’s avatar with an emote."
-                     && e.Permissions[5] == "Let the scene to change the player’s position."));
+                     e.Permissions[0] == "Communicate with 3rd party servers."
+                     && e.Permissions[1] == "Exchange data with other servers."
+                     && e.Permissions[2] == "Open external links."
+                     && e.Permissions[3] == "Interact with your wallet."
+                     && e.Permissions[4] == "Trigger emotes."
+                     && e.Permissions[5] == "Move your position."));
         }
 
         [Test]
