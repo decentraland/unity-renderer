@@ -20,7 +20,7 @@ namespace DCLServices.DCLFileBrowser
 
         public void SaveFile(string title, string directory, string defaultName, byte[] content, params ExtensionFilter[] extensions)
         {
-            if (WebGLFileSaver.IsSavingSupported())
+            if (!WebGLFileSaver.IsSavingSupported())
                 throw new Exception("File saving is not supported in the browser");
             WebGLFileSaver.SaveFile(content, defaultName);
         }
