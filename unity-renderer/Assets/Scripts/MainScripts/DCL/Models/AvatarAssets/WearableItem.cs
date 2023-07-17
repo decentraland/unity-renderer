@@ -64,6 +64,7 @@ public class WearableItem
         Categories.UPPER_BODY,
         Categories.LOWER_BODY,
         Categories.FEET,
+        Categories.HANDS,
         Categories.HANDS_WEAR,
         Categories.HEAD,
         Categories.FACIAL_HAIR
