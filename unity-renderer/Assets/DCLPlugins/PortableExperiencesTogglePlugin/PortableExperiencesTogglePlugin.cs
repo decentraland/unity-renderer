@@ -10,7 +10,8 @@ namespace DCL.PortableExperiencesToggle
                 Environment.i.world.state,
                 new WebInterfacePortableExperiencesBridge(),
                 DataStore.i.world.portableExperienceIds,
-                DataStore.i.world.disabledPortableExperienceIds);
+                DataStore.i.world.disabledPortableExperienceIds,
+                DataStore.i.HUDs.isSceneUiEnabled);
         }
 
         public void Dispose()

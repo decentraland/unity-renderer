@@ -398,9 +398,7 @@ namespace ECSSystems.ScenesUiSystem
                     currentScene.sceneData.scenePortableExperienceFeatureToggles;
 
                 if (featureToggle == ScenePortableExperienceFeatureToggles.HideUi)
-                {
                     SetSceneUiVisibility(pxScene.sceneData.sceneNumber, false);
-                }
             }
         }
 

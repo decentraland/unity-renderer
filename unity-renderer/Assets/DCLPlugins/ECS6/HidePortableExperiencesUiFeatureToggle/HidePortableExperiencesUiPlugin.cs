@@ -8,9 +8,8 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
 
         public HidePortableExperiencesUiPlugin()
         {
-            controller = new HidePortableExperiencesUiController(CommonScriptableObjects.sceneNumber,
+            controller = new HidePortableExperiencesUiController(
                 Environment.i.world.state,
-                DataStore.i.world.portableExperienceIds,
                 DataStore.i.HUDs.isSceneUiEnabled);
         }
 
