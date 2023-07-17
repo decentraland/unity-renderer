@@ -140,6 +140,8 @@ namespace DCL.PortableExperiences.Confirmation
                     return "Trigger emotes.";
                 case "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE":
                     return "Move your position.";
+                case "ALLOW_MEDIA_HOSTNAMES":
+                    return "Play media content (video, audio, etc).";
             }
 
             return permissionId;

@@ -142,6 +142,7 @@ namespace DCL.PortableExperiences.Confirmation
                         "USE_WEB3_API",
                         "ALLOW_TO_TRIGGER_AVATAR_EMOTE",
                         "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE",
+                        "ALLOW_MEDIA_HOSTNAMES",
                     },
                 },
                 OnAcceptCallback = () => { },
@@ -155,7 +156,8 @@ namespace DCL.PortableExperiences.Confirmation
                      && e.Permissions[2] == "Open external links."
                      && e.Permissions[3] == "Interact with your wallet."
                      && e.Permissions[4] == "Trigger emotes."
-                     && e.Permissions[5] == "Move your position."));
+                     && e.Permissions[5] == "Move your position."
+                     && e.Permissions[6] == "Play media content (video, audio, etc)."));
         }
 
         [Test]
