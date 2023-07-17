@@ -29,7 +29,7 @@ namespace DCL
 
         public void SaveFile()
         {
-            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFile("Save File", "", "test.txt", Convert.FromBase64String("hola") ,new ExtensionFilter("Text", "txt"));
+            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFile("Save File", "", "test.txt", Encoding.UTF8.GetBytes("Hey testing save"), new ExtensionFilter("Text", "txt"));
             Log("File saved as test.txt");
         }
 
@@ -40,7 +40,7 @@ namespace DCL
 
         public async UniTask SaveFileAsyncTask()
         {
-            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFileAsync("Save File", "", "test.txt", Convert.FromBase64String("hola") ,new ExtensionFilter("Text", "txt"));
+            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFileAsync("Save File", "", "test.txt", Encoding.UTF8.GetBytes("Hey testing save"), new ExtensionFilter("Text", "txt"));
             Log("File saved as test.txt");
         }
 
