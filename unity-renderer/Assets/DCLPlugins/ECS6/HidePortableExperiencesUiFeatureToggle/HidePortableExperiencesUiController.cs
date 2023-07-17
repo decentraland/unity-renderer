@@ -1,9 +1,12 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using DCL.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
 {
@@ -12,6 +15,7 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
         private readonly IWorldState worldState;
         private readonly BaseDictionary<int, bool> isSceneUiEnabled;
         private readonly BaseHashSet<string> portableExperiencesIds;
+        private CancellationTokenSource disableUiCancellationToken = new ();
 
         public HidePortableExperiencesUiController(
             IWorldState worldState,
@@ -32,6 +36,8 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
             isSceneUiEnabled.OnAdded -= OnSceneUiVisibilityAdded;
             isSceneUiEnabled.OnSet -= OnSceneUiVisibilitySet;
             portableExperiencesIds.OnAdded -= OnPortableExperienceAdded;
+
+            disableUiCancellationToken.SafeCancelAndDispose();
         }
 
         private void OnSceneUiVisibilitySet(IEnumerable<KeyValuePair<int, bool>> scenesVisibility)
@@ -48,7 +54,11 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
             {
                 if (visible
                     && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)
+                {
+                    disableUiCancellationToken = disableUiCancellationToken.SafeRestart();
+                    DisableUiVisibilityOnNextFrame(sceneNumber, disableUiCancellationToken.Token).Forget();
                     return;
+                }
             }
 
             IParcelScene pxScene = worldState.GetScene(sceneNumber);
@@ -77,5 +87,11 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
 
         private IParcelScene GetCurrentScene() =>
             worldState.GetScene(worldState.GetCurrentSceneNumber());
+
+        private async UniTaskVoid DisableUiVisibilityOnNextFrame(int sceneNumber, CancellationToken cancellationToken)
+        {
+            await UniTask.NextFrame(cancellationToken: cancellationToken);
+            isSceneUiEnabled.AddOrSet(sceneNumber, false);
+        }
     }
 }
