@@ -74,11 +74,15 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private Vector3 CalculateNewPosition(float deltaTime)
         {
-            var upDown = 0f;
-            if (cameraUpAction.isOn) upDown = 1f;
-            if (cameraDownAction.isOn) upDown = -1f;
+            Vector3 forward = transform.forward.normalized * characterYAxis.GetValue();
+            Vector3 horizontal = transform.right.normalized * characterXAxis.GetValue();
 
-            return new Vector3(characterXAxis.GetValue(), upDown, characterYAxis.GetValue()) * (movementSpeed * deltaTime);
+            float verticalDirection = cameraUpAction.isOn ? 1 :
+                cameraDownAction.isOn ? -1 : 0f;
+
+            Vector3 vertical = transform.up.normalized * verticalDirection;
+
+            return (forward + horizontal + vertical) * (movementSpeed * deltaTime);
         }
 
         private void Rotate(float deltaTime)
