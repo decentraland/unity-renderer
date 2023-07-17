@@ -1,5 +1,4 @@
 ﻿using DCL;
-using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,71 +14,53 @@ namespace UI.InWorldCamera.Scripts
         public string dateTime;
         public string realm;
         public Scene scene;
-        public VisiblePlayers[] visiblePeople;
+        public VisiblePeople[] visiblePeople;
 
-        public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
+        private static ScreenshotMetadata Create(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            Player ownPlayer = player.ownPlayer.Get();
-            Vector2Int playerPosition = player.playerGridPosition.Get();
+            var ownPlayer = DataStore.i.player.ownPlayer.Get();
+            var playerPosition = DataStore.i.player.playerGridPosition.Get();
 
             var metadata = new ScreenshotMetadata
-            {
-                userName = UserProfileController.userProfilesCatalog.Get(ownPlayer.id).userName,
-                userAddress = ownPlayer.id,
-                dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                realm = DataStore.i.realm.realmName.Get(),
-                scene = new Scene
                 {
-                    name = MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
-                    location = new Location(playerPosition),
-                },
-                visiblePeople = GetVisiblePeoplesMetadata(
-                    visiblePlayers: CalculateVisiblePlayersInFrustum(ownPlayer, avatarsLODController, screenshotCamera)),
-            };
+                    userName = ownPlayer.name,
+                    userAddress = ownPlayer.id,
+                    dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                    realm = DataStore.i.realm.realmName.Get(),
+                    scene = new Scene
+                    {
+                        name = MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
+                        location = new Location(playerPosition),
+                    },
+                    visiblePeople = GetVisiblePeoplesMetadata(visiblePlayers: CalculateVisiblePlayersInFrustrum(avatarsLODController, screenshotCamera)),
+                };
 
             return metadata;
         }
 
-        private static VisiblePlayers[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
+        private static VisiblePeople[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
         {
-            var visiblePeople = new VisiblePlayers[visiblePlayers.Count];
-            UserProfileDictionary userProfilesCatalog = UserProfileController.userProfilesCatalog;
-
-            UserProfile profile;
+            var visiblePeople = new VisiblePeople[visiblePlayers.Count];
+            var bridge = new UserProfileWebInterfaceBridge();
 
             for (var i = 0; i < visiblePlayers.Count; i++)
             {
-                profile = userProfilesCatalog.Get(visiblePlayers[i].id);
-
-                visiblePeople[i] = new VisiblePlayers
-                {
-                    userName = profile.userName,
-                    userAddress = profile.userId,
-                    isGuest = profile.isGuest,
-
-                    wearables = FilterNonBaseWearables(profile.avatar.wearables),
-                };
+                visiblePeople[i].userName = visiblePlayers[i].name;
+                visiblePeople[i].userAddress = visiblePlayers[i].id;
+                visiblePeople[i].wearables = bridge.Get(visiblePlayers[i].id)
+                                                   .avatar.wearables.ToArray();
             }
 
             return visiblePeople;
         }
 
-        private static string[] FilterNonBaseWearables(List<string> avatarWearables) =>
-            avatarWearables.Where(wearable => !wearable.StartsWith(IWearablesCatalogService.BASE_WEARABLES_COLLECTION_ID)).ToArray();
-
-        private static List<Player> CalculateVisiblePlayersInFrustum(Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
+        private static List<Player> CalculateVisiblePlayersInFrustrum(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            var list = new List<Player>();
-            Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
-
-            foreach (IAvatarLODController lodController in avatarsLODController.LodControllers.Values)
-                if (!lodController.IsInvisible && GeometryUtility.TestPlanesAABB(frustumPlanes, lodController.player.collider.bounds))
-                    list.Add(lodController.player);
-
-            if (GeometryUtility.TestPlanesAABB(frustumPlanes, player.collider.bounds))
-                list.Add(player);
-
-            return list;
+            return (from lodController in avatarsLODController.LodControllers.Values.Where(lodController => !lodController.IsInvisible)
+                let planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera)
+                let playerCollider = lodController.player.collider
+                where GeometryUtility.TestPlanesAABB(planes, playerCollider.bounds)
+                select lodController.player).ToList();
         }
     }
 
@@ -104,12 +85,10 @@ namespace UI.InWorldCamera.Scripts
     }
 
     [Serializable]
-    public class VisiblePlayers
+    public class VisiblePeople
     {
         public string userName;
         public string userAddress;
-        public bool isGuest;
-
         public string[] wearables;
     }
 }

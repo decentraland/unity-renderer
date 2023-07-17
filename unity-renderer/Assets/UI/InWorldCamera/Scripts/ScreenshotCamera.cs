@@ -1,7 +1,9 @@
 ﻿using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using DCLServices.CameraReelService;
 using MainScripts.DCL.InWorldCamera.Scripts;
+using System;
 using System.IO;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -50,6 +52,11 @@ namespace UI.InWorldCamera.Scripts
 
                 return screenshotCaptureLazyValue;
             }
+        }
+
+        private void Update()
+        {
+
         }
 
         private void OnEnable()
@@ -108,6 +115,10 @@ namespace UI.InWorldCamera.Scripts
 
         private void CaptureScreenshot(DCLAction_Trigger _)
         {
+            Debug.Log("CAPTURING");
+            var service = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
+            service.GetImage("a");
+
             if (isInScreenshotMode)
                 SaveScreenshot(screenshotCapture.CaptureScreenshot());
 
