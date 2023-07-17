@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCLServices.DCLFileBrowser;
 using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,8 +29,8 @@ namespace DCL
 
         public void SaveFile()
         {
-            var result = Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFile("Save File", "", "test", new ExtensionFilter("Text", "txt"));
-            Log(result);
+            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFile("Save File", "", "test.txt", Convert.FromBase64String("hola") ,new ExtensionFilter("Text", "txt"));
+            Log("File saved as test.txt");
         }
 
         public void SaveFileAsync()
@@ -39,8 +40,8 @@ namespace DCL
 
         public async UniTask SaveFileAsyncTask()
         {
-            var result = await Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFileAsync("Save File", "", "test", new ExtensionFilter("Text", "txt"));
-            Log(result);
+            Environment.i.serviceLocator.Get<IDCLFileBrowserService>().SaveFileAsync("Save File", "", "test.txt", Convert.FromBase64String("hola") ,new ExtensionFilter("Text", "txt"));
+            Log("File saved as test.txt");
         }
 
         private void Log(string s)
