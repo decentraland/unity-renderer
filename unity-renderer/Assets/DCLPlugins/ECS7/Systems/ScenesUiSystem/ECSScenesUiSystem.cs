@@ -16,7 +16,8 @@ namespace ECSSystems.ScenesUiSystem
         private readonly IWorldState worldState;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BooleanVariable hideUiEventVariable;
-        private readonly BaseVariable<bool> isSceneUIEnabled;
+        private readonly BaseVariable<bool> isCurrentSceneUiEnabled;
+        private readonly BaseDictionary<int, bool> isSceneUIEnabled;
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
@@ -28,13 +29,15 @@ namespace ECSSystems.ScenesUiSystem
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
             BooleanVariable hideUiEventVariable,
-            BaseVariable<bool> isSceneUIEnabled)
+            BaseVariable<bool> isCurrentSceneUiEnabled,
+            BaseDictionary<int, bool> isSceneUIEnabled)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
             this.worldState = worldState;
             this.loadedScenes = loadedScenes;
             this.hideUiEventVariable = hideUiEventVariable;
+            this.isCurrentSceneUiEnabled = isCurrentSceneUiEnabled;
             this.isSceneUIEnabled = isSceneUIEnabled;
 
             lastSceneNumber = -1;
@@ -43,7 +46,10 @@ namespace ECSSystems.ScenesUiSystem
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange += OnHideAllUiEvent;
-            isSceneUIEnabled.OnChange += OnHideSceneUiEvent;
+            isCurrentSceneUiEnabled.OnChange += OnHideCurrentSceneUiEvent;
+            isSceneUIEnabled.OnSet += OnSceneUiVisibilitySet;
+            isSceneUIEnabled.OnAdded += OnSceneUiVisibilityAdded;
+            isSceneUIEnabled.OnRemoved += OnSceneUiVisibilityRemoved;
 
             OnHideAllUiEvent(hideUiEventVariable.Get(), false);
         }
@@ -52,7 +58,10 @@ namespace ECSSystems.ScenesUiSystem
         {
             loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange -= OnHideAllUiEvent;
-            isSceneUIEnabled.OnChange -= OnHideSceneUiEvent;
+            isCurrentSceneUiEnabled.OnChange -= OnHideCurrentSceneUiEvent;
+            isSceneUIEnabled.OnSet -= OnSceneUiVisibilitySet;
+            isSceneUIEnabled.OnAdded -= OnSceneUiVisibilityAdded;
+            isSceneUIEnabled.OnRemoved -= OnSceneUiVisibilityRemoved;
         }
 
         public void Update()
@@ -90,7 +99,7 @@ namespace ECSSystems.ScenesUiSystem
                 // we apply current scene UI
                 if (currentScene != null)
                 {
-                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isCurrentSceneUiEnabled, isSceneUIEnabled))
                     {
                         isPendingSceneUI = false;
                     }
@@ -111,7 +120,7 @@ namespace ECSSystems.ScenesUiSystem
             SetDocumentActive(uiDocument, !current);
         }
 
-        private void OnHideSceneUiEvent(bool enabled, bool previous)
+        private void OnHideCurrentSceneUiEvent(bool enabled, bool previous)
         {
             if (currentScene == null)
                 return;
@@ -224,17 +233,24 @@ namespace ECSSystems.ScenesUiSystem
         }
 
         internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            UIDocument uiDocument, IParcelScene currentScene, BaseVariable<bool> isSceneUIEnabled)
+            UIDocument uiDocument, IParcelScene currentScene,
+            BaseVariable<bool> isCurrentSceneUIEnabled,
+            BaseDictionary<int, bool> isSceneUiEnabled)
         {
             ECSComponentData<InternalUiContainer>? sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneRootUiContainer != null)
             {
+                bool isVisible = isCurrentSceneUIEnabled.Get();
+
+                if (isSceneUiEnabled.TryGetValue(currentScene.sceneData.sceneNumber, out bool enabled))
+                    isVisible &= enabled;
+
                 var model = sceneRootUiContainer.Value.model;
                 uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
-                model.rootElement.style.display = new StyleEnum<DisplayStyle>(isSceneUIEnabled.Get() ? DisplayStyle.Flex : DisplayStyle.None);
+                model.rootElement.style.display = new StyleEnum<DisplayStyle>(isVisible ? DisplayStyle.Flex : DisplayStyle.None);
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }
@@ -333,6 +349,33 @@ namespace ECSSystems.ScenesUiSystem
         private static void SetDocumentActive(UIDocument uiDocument, bool active)
         {
             uiDocument.rootVisualElement.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled) =>
+            SetSceneUiVisibility(sceneNumber, enabled);
+
+        private void OnSceneUiVisibilityRemoved(int sceneNumber, bool _) =>
+            SetSceneUiVisibility(sceneNumber, true);
+
+        private void OnSceneUiVisibilitySet(IEnumerable<KeyValuePair<int, bool>> list)
+        {
+            foreach ((int sceneNumber, bool enabled) in list)
+                SetSceneUiVisibility(sceneNumber, enabled);
+        }
+
+        private void SetSceneUiVisibility(int sceneNumber, bool enabled)
+        {
+            IParcelScene scene = GetCurrentScene(sceneNumber, loadedScenes);
+
+            if (scene == null) return;
+
+            ECSComponentData<InternalUiContainer>? sceneUiContainer =
+                internalUiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            if (sceneUiContainer == null) return;
+
+            sceneUiContainer.Value.model.rootElement.style.display =
+                new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
         private readonly struct RightOfData

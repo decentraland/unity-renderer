@@ -12,7 +12,8 @@ namespace SocialFeaturesAnalytics
         ProfileContextMenu,
         FriendsHUD,
         Conversation,
-        ProfileEditHUD
+        ProfileEditHUD,
+        MyProfile,
     }
 
     public enum AvatarOpenSource

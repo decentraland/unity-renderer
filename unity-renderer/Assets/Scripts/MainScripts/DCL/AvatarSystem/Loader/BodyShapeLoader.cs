@@ -13,8 +13,8 @@ namespace AvatarSystem
 {
     public class BodyShapeLoader : IBodyshapeLoader
     {
-        public WearableItem wearable { get; }
-        public Rendereable rendereable => bodyshapeRetriever?.rendereable;
+        public WearableItem bodyShape { get; }
+        public Rendereable rendereable => bodyShapeRetriever?.rendereable;
         public IWearableLoader.Status status { get; private set; }
         public WearableItem eyes { get; }
         public WearableItem eyebrows { get; }
@@ -24,24 +24,29 @@ namespace AvatarSystem
         public SkinnedMeshRenderer mouthRenderer { get; internal set; }
         public SkinnedMeshRenderer headRenderer { get; private set; }
         public SkinnedMeshRenderer feetRenderer { get; private set; }
+        public SkinnedMeshRenderer handsRenderer { get; private set; }
         public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
         public SkinnedMeshRenderer lowerBodyRenderer { get; private set; }
 
-        internal readonly IWearableRetriever bodyshapeRetriever;
+        // This list contains uncategorized body parts that also have their own renderers
+        // this enables us to modify the body shape with new parts without ignoring them during the mesh combine process
+        public IList<SkinnedMeshRenderer> extraRenderers { get; set; }
+
+        internal readonly IWearableRetriever bodyShapeRetriever;
         internal readonly IFacialFeatureRetriever eyesRetriever;
         internal readonly IFacialFeatureRetriever eyebrowsRetriever;
         internal readonly IFacialFeatureRetriever mouthRetriever;
 
-        private readonly Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)> originalBones = new Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)>();
+        private readonly Dictionary<SkinnedMeshRenderer, (Transform rootBone, Transform[] bones)> originalBones = new ();
 
-        public BodyShapeLoader(IRetrieverFactory retrieverFactory, WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth)
+        public BodyShapeLoader(IRetrieverFactory retrieverFactory, BodyWearables bodyWearables)
         {
-            wearable = bodyshape;
-            this.eyes = eyes;
-            this.eyebrows = eyebrows;
-            this.mouth = mouth;
+            this.bodyShape = bodyWearables.BodyShape;
+            this.eyes = bodyWearables.Eyes;
+            this.eyebrows = bodyWearables.Eyebrows;
+            this.mouth = bodyWearables.Mouth;
 
-            bodyshapeRetriever = retrieverFactory.GetWearableRetriever();
+            bodyShapeRetriever = retrieverFactory.GetWearableRetriever();
             eyesRetriever = retrieverFactory.GetFacialFeatureRetriever();
             eyebrowsRetriever = retrieverFactory.GetFacialFeatureRetriever();
             mouthRetriever = retrieverFactory.GetFacialFeatureRetriever();
@@ -65,9 +70,9 @@ namespace AvatarSystem
                 // Store the original bones.
                 originalBones.Clear();
 
-                foreach (SkinnedMeshRenderer skm in bodyshapeRetriever.rendereable.renderers.OfType<SkinnedMeshRenderer>()) { originalBones[skm] = (skm.rootBone, skm.bones); }
+                foreach (SkinnedMeshRenderer skm in bodyShapeRetriever.rendereable.renderers.OfType<SkinnedMeshRenderer>()) { originalBones[skm] = (skm.rootBone, skm.bones); }
 
-                (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer) = AvatarSystemUtils.ExtractBodyshapeParts(bodyshapeRetriever.rendereable);
+                (headRenderer, upperBodyRenderer, lowerBodyRenderer, feetRenderer, eyesRenderer, eyebrowsRenderer, mouthRenderer, handsRenderer, extraRenderers) = AvatarSystemUtils.ExtractBodyShapeParts(bodyShapeRetriever.rendereable);
 
                 await (LoadEyes(ct), LoadEyebrows(ct), LoadMouth(ct));
 
@@ -90,7 +95,7 @@ namespace AvatarSystem
         private async UniTask LoadMouth(CancellationToken ct)
         {
             if (mouth == null) return;
-            (Texture main, Texture mask) = await mouthRetriever.Retrieve(mouth, wearable.id, ct);
+            (Texture main, Texture mask) = await mouthRetriever.Retrieve(mouth, bodyShape.id, ct);
             mouthRenderer.material = new Material(Resources.Load<Material>("Mouth Material"));
 
             if (main == null)
@@ -105,7 +110,7 @@ namespace AvatarSystem
         private async UniTask LoadEyebrows(CancellationToken ct)
         {
             if (eyebrows == null) return;
-            (Texture main, Texture mask) = await eyebrowsRetriever.Retrieve(eyebrows, wearable.id, ct);
+            (Texture main, Texture mask) = await eyebrowsRetriever.Retrieve(eyebrows, bodyShape.id, ct);
             eyebrowsRenderer.material = new Material(Resources.Load<Material>("Eyebrow Material"));
 
             if (main == null)
@@ -120,7 +125,7 @@ namespace AvatarSystem
         private async UniTask LoadEyes(CancellationToken ct)
         {
             if (eyes == null) return;
-            (Texture main, Texture mask) = await eyesRetriever.Retrieve(eyes, wearable.id, ct);
+            (Texture main, Texture mask) = await eyesRetriever.Retrieve(eyes, bodyShape.id, ct);
             eyesRenderer.material = new Material(Resources.Load<Material>("Eye Material"));
 
             if (main == null)
@@ -144,9 +149,9 @@ namespace AvatarSystem
         {
             ct.ThrowIfCancellationRequested();
 
-            bodyshapeRetriever.Dispose();
+            bodyShapeRetriever.Dispose();
 
-            Rendereable bodyshapeRenderable = await bodyshapeRetriever.Retrieve(container, wearable, wearable.id, ct);
+            Rendereable bodyshapeRenderable = await bodyShapeRetriever.Retrieve(container, bodyShape, bodyShape.id, ct);
 
             if (bodyshapeRenderable == null) // fail safe, we shouldnt reach this since .Retrieve should throw if anything goes wrong
                 throw new Exception("Couldn't load bodyshape");
@@ -154,12 +159,12 @@ namespace AvatarSystem
             return bodyshapeRenderable;
         }
 
-        public bool IsValid(WearableItem bodyshape, WearableItem eyebrows, WearableItem eyes, WearableItem mouth)
+        public bool IsValid(BodyWearables bodyWearables)
         {
-            if (wearable.id != bodyshape?.id) return false;
-            if (this.eyebrows?.id != eyebrows?.id) return false;
-            if (this.mouth?.id != mouth?.id) return false;
-            if (this.eyes?.id != eyes?.id) return false;
+            if (bodyShape.id != bodyWearables.BodyShape?.id) return false;
+            if (this.eyebrows?.id != bodyWearables.Eyebrows?.id) return false;
+            if (this.mouth?.id != bodyWearables.Mouth?.id) return false;
+            if (this.eyes?.id != bodyWearables.Eyes?.id) return false;
             return true;
         }
 
@@ -188,7 +193,7 @@ namespace AvatarSystem
 
             originalBones.Clear();
 
-            bodyshapeRetriever?.Dispose();
+            bodyShapeRetriever?.Dispose();
             eyesRetriever?.Dispose();
             eyebrowsRetriever?.Dispose();
             mouthRetriever?.Dispose();

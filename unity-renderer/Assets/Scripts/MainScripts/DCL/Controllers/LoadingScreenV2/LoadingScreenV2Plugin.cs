@@ -1,5 +1,7 @@
 using DCL;
 using DCL.Controllers.LoadingScreenV2;
+using DCL.Helpers;
+using DCL.World.PortableExperiences;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +13,7 @@ public class LoadingScreenV2Plugin : IPlugin
     {
         controller = new LoadingScreenHintsController(
             new HintRequestService(new List<IHintRequestSource>(),
-                new SceneController(), new HintTextureRequestHandler())
+                new SceneController(new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs())), new HintTextureRequestHandler())
             );
     }
 

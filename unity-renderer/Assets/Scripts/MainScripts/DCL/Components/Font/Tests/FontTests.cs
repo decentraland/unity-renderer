@@ -5,6 +5,8 @@ using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using DCL.Controllers;
+using DCL.World.PortableExperiences;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.TestTools;
 using TMPro;
@@ -20,7 +22,7 @@ namespace Tests
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
-            serviceLocator.Register<ISceneController>(() => new SceneController());
+            serviceLocator.Register<ISceneController>(() => new SceneController(Substitute.For<IConfirmedExperiencesRepository>()));
             serviceLocator.Register<IWorldState>(() => new WorldState());
             serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
         }

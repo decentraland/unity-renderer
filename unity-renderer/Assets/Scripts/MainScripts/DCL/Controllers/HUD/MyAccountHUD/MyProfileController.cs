@@ -3,6 +3,7 @@ using DCL.Browser;
 using DCL.Tasks;
 using DCL.UserProfiles;
 using DCLServices.Lambdas.NamesService;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,6 +26,7 @@ namespace DCL.MyAccount
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly KernelConfig kernelConfig;
         private readonly IMyAccountAnalyticsService myAccountAnalyticsService;
+        private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfileAdditionalInfoValueListProvider countryListProvider;
         private readonly IProfileAdditionalInfoValueListProvider genderListProvider;
         private readonly IProfileAdditionalInfoValueListProvider sexualOrientationProvider;
@@ -55,6 +57,7 @@ namespace DCL.MyAccount
             MyAccountSectionHUDController myAccountSectionHUDController,
             KernelConfig kernelConfig,
             IMyAccountAnalyticsService myAccountAnalyticsService,
+            ISocialAnalytics socialAnalytics,
             IProfileAdditionalInfoValueListProvider countryListProvider,
             IProfileAdditionalInfoValueListProvider genderListProvider,
             IProfileAdditionalInfoValueListProvider sexualOrientationProvider,
@@ -71,6 +74,7 @@ namespace DCL.MyAccount
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.kernelConfig = kernelConfig;
             this.myAccountAnalyticsService = myAccountAnalyticsService;
+            this.socialAnalytics = socialAnalytics;
             this.countryListProvider = countryListProvider;
             this.genderListProvider = genderListProvider;
             this.sexualOrientationProvider = sexualOrientationProvider;
@@ -247,6 +251,7 @@ namespace DCL.MyAccount
 
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 myAccountAnalyticsService.SendProfileInfoEditAnalytic(newDesc.Length);
+                socialAnalytics.SendProfileEdit(newDesc.Length, false, PlayerActionSource.MyProfile);
             }
 
             saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();

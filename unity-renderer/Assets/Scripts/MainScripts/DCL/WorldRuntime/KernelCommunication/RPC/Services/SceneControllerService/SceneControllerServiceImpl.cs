@@ -107,13 +107,14 @@ namespace RPC.Services
                     contents = parsedContent,
                     id = request.Entity.Id,
                     sdk7 = request.Sdk7,
-                    name = request.SceneName,
+                    name = parsedMetadata.display?.title ?? request.SceneName,
                     baseUrl = request.BaseUrl,
                     sceneNumber = sceneNumber,
                     isPortableExperience = request.IsPortableExperience,
                     requiredPermissions = parsedMetadata.requiredPermissions,
                     allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
-                    icon = string.Empty // TODO: add icon url!
+                    icon = parsedMetadata.display?.navmapThumbnail,
+                    description = parsedMetadata.display?.description,
                 };
 
                 try
