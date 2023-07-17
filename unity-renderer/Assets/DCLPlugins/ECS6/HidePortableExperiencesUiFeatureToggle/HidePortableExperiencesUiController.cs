@@ -11,22 +11,27 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
     {
         private readonly IWorldState worldState;
         private readonly BaseDictionary<int, bool> isSceneUiEnabled;
+        private readonly BaseHashSet<string> portableExperiencesIds;
 
         public HidePortableExperiencesUiController(
             IWorldState worldState,
-            BaseDictionary<int, bool> isSceneUiEnabled)
+            BaseDictionary<int, bool> isSceneUiEnabled,
+            BaseHashSet<string> portableExperiencesIds)
         {
             this.worldState = worldState;
             this.isSceneUiEnabled = isSceneUiEnabled;
+            this.portableExperiencesIds = portableExperiencesIds;
 
             isSceneUiEnabled.OnAdded += OnSceneUiVisibilityAdded;
             isSceneUiEnabled.OnSet += OnSceneUiVisibilitySet;
+            portableExperiencesIds.OnAdded += OnPortableExperienceAdded;
         }
 
         public void Dispose()
         {
             isSceneUiEnabled.OnAdded -= OnSceneUiVisibilityAdded;
             isSceneUiEnabled.OnSet -= OnSceneUiVisibilitySet;
+            portableExperiencesIds.OnAdded -= OnPortableExperienceAdded;
         }
 
         private void OnSceneUiVisibilitySet(IEnumerable<KeyValuePair<int, bool>> scenesVisibility)
@@ -37,7 +42,7 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
 
         private void OnSceneUiVisibilityAdded(int sceneNumber, bool visible)
         {
-            IParcelScene currentScene = worldState.GetScene(worldState.GetCurrentSceneNumber());
+            IParcelScene currentScene = GetCurrentScene();
 
             if (currentScene != null)
             {
@@ -55,5 +60,22 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
             if (sceneUIComponent != null)
                 sceneUIComponent.canvas.enabled = visible;
         }
+
+        private void OnPortableExperienceAdded(string pxId)
+        {
+            IParcelScene currentScene = GetCurrentScene();
+
+            if (currentScene != null
+                && currentScene.sceneData.scenePortableExperienceFeatureToggles != ScenePortableExperienceFeatureToggles.HideUi)
+                return;
+
+            IParcelScene pxScene = worldState.GetPortableExperienceScene(pxId);
+            if (pxScene == null) return;
+
+            isSceneUiEnabled.AddOrSet(pxScene.sceneData.sceneNumber, false);
+        }
+
+        private IParcelScene GetCurrentScene() =>
+            worldState.GetScene(worldState.GetCurrentSceneNumber());
     }
 }

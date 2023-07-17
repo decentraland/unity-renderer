@@ -358,7 +358,8 @@ namespace ECSSystems.ScenesUiSystem
 
         private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled)
         {
-            if (currentScene != null
+            if (enabled
+                && currentScene != null
                 && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)
                 return;
 

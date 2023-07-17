@@ -10,7 +10,8 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
         {
             controller = new HidePortableExperiencesUiController(
                 Environment.i.world.state,
-                DataStore.i.HUDs.isSceneUiEnabled);
+                DataStore.i.HUDs.isSceneUiEnabled,
+                DataStore.i.world.portableExperienceIds);
         }
 
         public void Dispose()
