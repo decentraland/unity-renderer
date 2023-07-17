@@ -20,7 +20,6 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private float mouseX;
         private float mouseY;
-        private float rollInput;
 
         private void Awake()
         {
@@ -30,8 +29,8 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
 
         private void OnEnable()
         {
-            mouseX = 0;
-            mouseY = 0;
+            mouseX = transform.rotation.eulerAngles.y;
+            mouseY = transform.rotation.eulerAngles.x;
         }
 
         private void Update()
@@ -40,31 +39,24 @@ namespace MainScripts.DCL.InWorldCamera.Scripts
             Rotate(Time.deltaTime);
         }
 
-        private void Translate(Vector3 newPosition)
-        {
-            Vector3 movement = newPosition - transform.position;
-            characterController.Move(movement);
-        }
+        private void Translate(Vector3 newPosition) =>
+            characterController.Move(newPosition);
 
         private Vector3 CalculateNewPosition(float deltaTime)
         {
-            float horizontal = characterXAxis.GetValue();
-            float vertical = characterYAxis.GetValue();
-
             var upDown = 0f;
             if (cameraUpAction.isOn) upDown = 1f;
             if (cameraDownAction.isOn) upDown = -1f;
 
-            Vector3 movement = new Vector3(horizontal, upDown, vertical) * (movementSpeed * deltaTime);
-            return transform.position + transform.TransformDirection(movement);
+            return new Vector3(characterXAxis.GetValue(), upDown, characterYAxis.GetValue()) * (movementSpeed * deltaTime);
         }
 
         private void Rotate(float deltaTime)
         {
             mouseX += cameraXAxis.GetValue() * rotationSpeed * deltaTime;
             mouseY -= cameraYAxis.GetValue() * rotationSpeed * deltaTime;
-            mouseY = Mathf.Clamp(mouseY, -90f, 90f); // Limit vertical rotation to avoid camera flipping
-            transform.localRotation = Quaternion.Euler(new Vector3(mouseY, mouseX, transform.localRotation.z));
+
+            transform.rotation = Quaternion.Euler(mouseY, mouseX, 0f);
         }
     }
 }
