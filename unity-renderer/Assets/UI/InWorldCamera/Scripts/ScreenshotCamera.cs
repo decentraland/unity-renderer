@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using MainScripts.DCL.InWorldCamera.Scripts;
 using System.IO;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -94,7 +95,7 @@ namespace UI.InWorldCamera.Scripts
 
             void SaveScreenshot(byte[] fileBytes)
             {
-                string filePath = Path.Combine(Application.temporaryCachePath, "screenshot1.jpg"); // Application.persistentDataPath
+                string filePath = Path.Combine(Application.persistentDataPath, "screenshot1.jpg");
 
                 File.WriteAllBytes(filePath, fileBytes);
                 Application.OpenURL(filePath);
