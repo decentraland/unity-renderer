@@ -108,9 +108,6 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if (isVisible == visible)
-                return;
-
             isVisible = visible;
 
             SetVisiblePanelList(visible);
