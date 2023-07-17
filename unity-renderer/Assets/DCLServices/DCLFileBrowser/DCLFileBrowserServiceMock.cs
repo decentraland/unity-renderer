@@ -16,18 +16,18 @@ namespace DCLServices.DCLFileBrowser
             throw new NotImplementedException("Using mock implementation of DCLFileBrowserService in production");
         }
 
-        public string SaveFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions)
+        public void SaveFile(string title, string directory, string defaultName, byte[] content, params ExtensionFilter[] extensions)
         {
             #if UNITY_EDITOR
-            return $"{Application.persistentDataPath}/{directory}/{defaultName}";
+            return;
             #endif
             throw new NotImplementedException("Using mock implementation of DCLFileBrowserService in production");
         }
 
-        public async UniTask<string> SaveFileAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions)
+        public UniTask SaveFileAsync(string title, string directory, string defaultName, byte[] content, ExtensionFilter[] extensions)
         {
             #if UNITY_EDITOR
-            return $"{Application.persistentDataPath}/{directory}/{defaultName}";
+            return new UniTask();
             #endif
             throw new NotImplementedException("Using mock implementation of DCLFileBrowserService in production");
         }

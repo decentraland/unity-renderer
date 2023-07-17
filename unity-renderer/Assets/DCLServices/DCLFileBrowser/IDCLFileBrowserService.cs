@@ -6,8 +6,8 @@ namespace DCLServices.DCLFileBrowser
     public interface IDCLFileBrowserService : IService
     {
         string OpenSingleFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions);
-        string SaveFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions);
-        UniTask<string> SaveFileAsync(string title, string directory, string defaultName, params ExtensionFilter[] extensions);
+        void SaveFile(string title, string directory, string defaultName, byte[] content, params ExtensionFilter[] extensions);
+        UniTask SaveFileAsync(string title, string directory, string defaultName, byte[] content, params ExtensionFilter[] extensions);
     }
 }
 

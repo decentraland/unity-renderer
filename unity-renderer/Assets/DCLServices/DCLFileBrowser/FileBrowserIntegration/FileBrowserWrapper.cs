@@ -5,24 +5,23 @@ namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
 {
     public class FileBrowserWrapper : IDCLFileBrowserService
     {
-        public void Initialize()
-        {
-#if UNITY_WEBGL
-            FileBrowser.Instance.CustomWrapper = FileBrowser.Instance.gameObject.AddComponent<Crosstales.FB.WebGL.FileBrowserWebGL>();
-#endif
-        }
+        public void Initialize() { }
 
         public string OpenSingleFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions) =>
             FileBrowser.Instance.OpenSingleFile(title, directory, defaultName, ConvertExtensionFilters(extensions));
 
-        public string SaveFile(string title, string directory, string defaultName, params ExtensionFilter[] extensions) =>
-            FileBrowser.Instance.SaveFile(title, directory, defaultName, ConvertExtensionFilters(extensions));
+        public void SaveFile(string title, string directory, string defaultName, byte[] content, params ExtensionFilter[] extensions)
+        {
+            var path = FileBrowser.Instance.SaveFile(title, directory, defaultName, ConvertExtensionFilters(extensions));
+            System.IO.File.WriteAllBytes(path, content);
+        }
 
-        public UniTask<string> SaveFileAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions)
+        public async UniTask SaveFileAsync(string title, string directory, string defaultName, byte[] content, ExtensionFilter[] extensions)
         {
             UniTaskCompletionSource<string> completionSource = new UniTaskCompletionSource<string>();
             FileBrowser.Instance.SaveFileAsync(path => completionSource.TrySetResult(path), title, directory, defaultName, ConvertExtensionFilters(extensions));
-            return completionSource.Task;
+            var path = await completionSource.Task;
+            await System.IO.File.WriteAllBytesAsync(path, content);
         }
 
         private static Crosstales.FB.ExtensionFilter[] ConvertExtensionFilters(ExtensionFilter[] extensions)
