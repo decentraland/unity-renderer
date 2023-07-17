@@ -108,11 +108,14 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            isVisible = visible;
+            if (isVisible != visible)
+            {
+                isVisible = visible;
 
-            SetVisiblePanelList(visible);
-            chatHudController.SetVisibility(visible);
-            dataStore.HUDs.chatInputVisible.Set(visible);
+                SetVisiblePanelList(visible);
+                chatHudController.SetVisibility(visible);
+                dataStore.HUDs.chatInputVisible.Set(visible);
+            }
 
             if (visible)
             {
