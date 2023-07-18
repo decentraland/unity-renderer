@@ -817,6 +817,7 @@ namespace Tests
 
             IWorldState worldState = Substitute.For<IWorldState>();
             worldState.GetCurrentSceneNumber().Returns(CURRENT_SCENE_NUMBER);
+            worldState.GetScene(CURRENT_SCENE_NUMBER).Returns(currentScene);
 
             BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>
                 { scene, currentScene };
