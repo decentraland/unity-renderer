@@ -233,11 +233,18 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private void SubscribeToEvent(string eventId) =>
+    private void SubscribeToEvent(string eventId)
+    {
+        exploreV2Analytics.SendParticipateEvent(eventId);
         eventsAPIApiController.RegisterParticipation(eventId);
+    }
 
-    private void UnsubscribeToEvent(string eventId) =>
+    private void UnsubscribeToEvent(string eventId)
+    {
+        exploreV2Analytics.SendRemoveParticipateEvent(eventId);
         eventsAPIApiController.RemoveParticipation(eventId);
+    }
+
 
     internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();

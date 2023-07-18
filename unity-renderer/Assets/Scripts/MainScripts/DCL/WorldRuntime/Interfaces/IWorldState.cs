@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Models;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -16,6 +15,7 @@ namespace DCL
         bool TryGetScene<T>(int sceneNumber, out T scene) where T : class, IParcelScene;
         IParcelScene GetScene(Vector2Int coords);
         IParcelScene GetScene(int sceneNumber);
+
         IParcelScene GetPortableExperienceScene(string sceneId);
         bool ContainsScene(int sceneNumber);
         LoadWrapper GetLoaderForEntity(IDCLEntity entity);

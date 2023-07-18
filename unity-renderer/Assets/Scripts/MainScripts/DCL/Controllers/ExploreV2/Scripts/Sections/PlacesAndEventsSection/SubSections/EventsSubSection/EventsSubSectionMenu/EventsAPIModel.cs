@@ -4,6 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class EventListFromAPIModel
 {
+    public int total;
     public bool ok;
     public List<EventFromAPIModel> data;
 }

@@ -8,6 +8,7 @@ using TMPro;
 using UIComponents.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.Social.Passports
@@ -309,7 +310,7 @@ namespace DCL.Social.Passports
 
         private void ClickedLink(string obj)
         {
-            openUrlView.SetUrlInfo(obj, obj);
+            openUrlView.SetUrlInfo(UnityWebRequest.UnEscapeURL(obj), obj);
             openUrlView.SetVisibility(true);
             OnClickedLink?.Invoke();
         }

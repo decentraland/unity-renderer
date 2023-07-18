@@ -16,6 +16,7 @@ namespace DCL.Models
         public string id;
         public int sceneNumber;
         public string name;
+        public string description;
         public string baseUrl;
         public List<ContentServerUtils.MappingPair> contents;
         public string icon;
@@ -45,6 +46,8 @@ namespace DCL.Models
             public int sceneNumber;
             public string baseUrl;
             public string baseUrlBundles;
+            public string description;
+            public string iconUrl;
 
             public List<ContentServerUtils.MappingPair> contents;
 

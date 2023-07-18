@@ -5,6 +5,7 @@ using DCLServices.Lambdas.NamesService;
 using KernelConfigurationTypes;
 using NSubstitute;
 using NUnit.Framework;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace DCL.MyAccount
         private IBrowserBridge browserBridge;
         private KernelConfig kernelConfig;
         private IMyAccountAnalyticsService myAccountAnalyticsService;
+        private ISocialAnalytics socialAnalytics;
         private IProfileAdditionalInfoValueListProvider countryListProvider;
         private IProfileAdditionalInfoValueListProvider genderListProvider;
         private IProfileAdditionalInfoValueListProvider sexualOrientationProvider;
@@ -85,6 +87,7 @@ namespace DCL.MyAccount
             });
 
             myAccountAnalyticsService = Substitute.For<IMyAccountAnalyticsService>();
+            socialAnalytics = Substitute.For<ISocialAnalytics>();
             countryListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
             genderListProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
             sexualOrientationProvider = Substitute.For<IProfileAdditionalInfoValueListProvider>();
@@ -101,6 +104,7 @@ namespace DCL.MyAccount
                 myAccountSectionController,
                 kernelConfig,
                 myAccountAnalyticsService,
+                socialAnalytics,
                 countryListProvider,
                 genderListProvider,
                 sexualOrientationProvider,
@@ -331,6 +335,7 @@ namespace DCL.MyAccount
 
             userProfileBridge.SaveDescription(ANOTHER_DESCRIPTION, Arg.Any<CancellationToken>());
             myAccountAnalyticsService.Received(1).SendProfileInfoEditAnalytic(ANOTHER_DESCRIPTION.Length);
+            socialAnalytics.Received(1).SendProfileEdit(ANOTHER_DESCRIPTION.Length, false, PlayerActionSource.MyProfile);
         }
 
         [TestCase("l1", "http://whatever.com", "l0")]

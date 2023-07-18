@@ -61,7 +61,11 @@ namespace DCL.Backpack
             IBackpackAnalyticsService backpackAnalyticsService = Substitute.For<IBackpackAnalyticsService>();
 
             slotsView = Substitute.For<IAvatarSlotsView>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService);
+
+            IBaseVariable<FeatureFlag> ffBaseVariable = Substitute.For<IBaseVariable<FeatureFlag>>();
+            var featureFlag = new FeatureFlag();
+            ffBaseVariable.Get().Returns(featureFlag);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService, ffBaseVariable);
 
             controller = new WearableGridController(view,
                 userProfileBridge,
