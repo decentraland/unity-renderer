@@ -59,6 +59,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: eb045bd1671ab4469815a093d8e7ab8e, type: 3}
   - {fileID: 21300000, guid: bda43422408ca42209dd311b23a1d06f, type: 3}
   - {fileID: 21300000, guid: 14b14542e832343729c812d8e4c8cbae, type: 3}
+  - {fileID: 21300000, guid: 16866e729ce1061429170517e80ef313, type: 3}
   - {fileID: 21300000, guid: a239a282af9bf48f7a26a34d76d77155, type: 3}
   - {fileID: 21300000, guid: 8d9ff403c413748a7a82ca7f9443e988, type: 3}
   - {fileID: 21300000, guid: 6084de83d5bc748b9a444a61a7c0b96a, type: 3}
@@ -113,6 +114,7 @@ SpriteAtlas:
   - CheckmarkGreen
   - SkinsIcon
   - InfoCardCommon
+  - HandWearIcn
   - BaseThumbnail
   - HiddenIcon
   - TopheadIcon

@@ -83,9 +83,12 @@ namespace DCL.Backpack
             NftSubCategoryFilterComponentView view = poolObj.gameObject.GetComponent<NftSubCategoryFilterComponentView>();
             Sprite icon = iconsByCategory.GetTypeImage(subCategory.Type);
 
+            string categoryName = subCategory.Name;
+            categoryName = WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(categoryName, out string readableCategory) ? readableCategory : categoryName.Replace("_", " ");
+
             view.SetModel(new NftSubCategoryFilterModel
             {
-                Name = subCategory.Name.Replace("_", " "),
+                Name = categoryName,
                 Filter = subCategory.Filter,
                 ResultCount = model.ResultCount,
                 ShowResultCount = showResultCount,
