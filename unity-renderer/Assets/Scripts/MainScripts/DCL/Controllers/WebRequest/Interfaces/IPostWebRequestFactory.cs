@@ -7,6 +7,6 @@ namespace DCL
     {
         void SetBody(string postData);
 
-        public void SetBody(List<IMultipartFormSection> data);
+        public void SetMultipartBody(List<IMultipartFormSection> data);
     }
 }

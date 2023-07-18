@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using DCL.Models;
 using DCLServices.CameraReelService;
 using MainScripts.DCL.InWorldCamera.Scripts;
 using System;
@@ -34,12 +35,14 @@ namespace UI.InWorldCamera.Scripts
         private IAvatarsLODController avatarsLODControllerLazyValue;
 
         private ScreenshotCapture screenshotCaptureLazyValue;
+        private ICameraReelNetworkService cameraReelNetworkServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
         private bool prevMouseButtonCursorLockMode;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
+        private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
 
         private ScreenshotCapture screenshotCapture
         {
@@ -52,11 +55,6 @@ namespace UI.InWorldCamera.Scripts
 
                 return screenshotCaptureLazyValue;
             }
-        }
-
-        private void Update()
-        {
-
         }
 
         private void OnEnable()
@@ -115,21 +113,16 @@ namespace UI.InWorldCamera.Scripts
 
         private void CaptureScreenshot(DCLAction_Trigger _)
         {
-            Debug.Log("CAPTURING");
-            var service = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
-            service.GetImage("a");
+            if (!isInScreenshotMode) return;
 
-            if (isInScreenshotMode)
-                SaveScreenshot(screenshotCapture.CaptureScreenshot());
+            cameraReelNetworkService.UploadScreenshot
+            (
+                screenshot: screenshotCapture.CaptureScreenshot(),
+                metadata: ScreenshotMetadata.Create(avatarsLODController, screenshotCamera)
+            );
 
-            void SaveScreenshot(byte[] fileBytes)
-            {
-                string filePath = Path.Combine(Application.persistentDataPath, "screenshot1.jpg");
-
-                File.WriteAllBytes(filePath, fileBytes);
-                Application.OpenURL(filePath);
-                Debug.Log(filePath);
-            }
+            // Application.OpenURL(response.url);
+            // Application.OpenURL($"https://reels.decentraland.org/{response.id}");
         }
 
         private void EnableScreenshotCamera()
