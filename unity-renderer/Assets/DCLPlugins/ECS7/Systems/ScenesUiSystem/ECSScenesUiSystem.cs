@@ -358,6 +358,9 @@ namespace ECSSystems.ScenesUiSystem
 
         private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled)
         {
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
+            IParcelScene currentScene = worldState.GetScene(currentSceneNumber);
+
             if (enabled
                 && currentScene != null
                 && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)

@@ -95,6 +95,40 @@ namespace DCL.PortableExperiencesToggle
             CollectionAssert.AreEqual(new Dictionary<int, bool>(), isSceneUiEnabled.Get());
         }
 
+        [Test]
+        public void RestoreDisabledPortableExperiences()
+        {
+            GivenScene(CURRENT_SCENE_NUMBER, CURRENT_SCENE_ID, ScenePortableExperienceFeatureToggles.Disable, false);
+            GivenScene(5, "px5", ScenePortableExperienceFeatureToggles.Enable, false);
+            GivenScene(6, "px6", ScenePortableExperienceFeatureToggles.Enable, true);
+            GivenScene(7, "px7", ScenePortableExperienceFeatureToggles.Enable, true);
+
+            portableExperiencesIds.Set(new[] { "px6", "px7" });
+
+            currentSceneVariable.Set(CURRENT_SCENE_NUMBER);
+            portableExperiencesBridge.ClearReceivedCalls();
+            currentSceneVariable.Set(5);
+
+            portableExperiencesBridge.Received(1).SetDisabledPortableExperiences(
+                Arg.Is<IEnumerable<string>>(i => !i.Any()));
+        }
+
+        [Test]
+        public void RestorePortableExperienceVisibility()
+        {
+            GivenScene(CURRENT_SCENE_NUMBER, CURRENT_SCENE_ID, ScenePortableExperienceFeatureToggles.HideUi, false);
+            GivenScene(5, "px5", ScenePortableExperienceFeatureToggles.Enable, false);
+            GivenScene(6, "px6", ScenePortableExperienceFeatureToggles.Enable, true);
+            GivenScene(7, "px7", ScenePortableExperienceFeatureToggles.Enable, true);
+
+            portableExperiencesIds.Set(new[] { "px6", "px7" });
+
+            currentSceneVariable.Set(CURRENT_SCENE_NUMBER);
+            currentSceneVariable.Set(5);
+
+            Assert.IsTrue(isSceneUiEnabled.Count() == 0);
+        }
+
         private IParcelScene GivenScene(int number, string id, ScenePortableExperienceFeatureToggles pxFt, bool isPx)
         {
             IParcelScene scene = Substitute.For<IParcelScene>();

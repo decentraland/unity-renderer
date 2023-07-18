@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -47,7 +48,8 @@ namespace DCL.ExperiencesViewer
             portableExperienceIds.OnAdded += OnPEXSceneAdded;
             portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded += OnPEXDisabled;
-            isSceneUiEnabled.OnAdded += OnSomeExperienceUIVisibilityChanged;
+            isSceneUiEnabled.OnAdded += OnSomeExperienceUIVisibilityAdded;
+            isSceneUiEnabled.OnSet += OnSomeExperienceUIVisibilitySet;
 
             foreach (var pair in disabledPortableExperiences.Get())
                 OnPEXDisabled(pair.Key, pair.Value);
@@ -71,13 +73,14 @@ namespace DCL.ExperiencesViewer
             portableExperienceIds.OnAdded -= OnPEXSceneAdded;
             portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded -= OnPEXDisabled;
-            isSceneUiEnabled.OnAdded -= OnSomeExperienceUIVisibilityChanged;
+            isSceneUiEnabled.OnAdded -= OnSomeExperienceUIVisibilityAdded;
+            isSceneUiEnabled.OnSet -= OnSomeExperienceUIVisibilitySet;
         }
 
         internal void OnCloseButtonPressed() =>
             SetVisibility(false);
 
-        private void OnSomeExperienceUIVisibilityChanged(int pexNumber, bool isVisible)
+        private void OnSomeExperienceUIVisibilityAdded(int pexNumber, bool isVisible)
         {
             IParcelScene scene = GetScene(pexNumber);
             if (scene == null) return;
@@ -86,6 +89,12 @@ namespace DCL.ExperiencesViewer
 
             if (experienceToUpdate != null)
                 experienceToUpdate.SetUIVisibility(isVisible);
+        }
+
+        private void OnSomeExperienceUIVisibilitySet(IEnumerable<KeyValuePair<int, bool>> obj)
+        {
+            foreach ((int sceneNumber, bool visible) in obj)
+                OnSomeExperienceUIVisibilityAdded(sceneNumber, visible);
         }
 
         private void OnViewRequestToChangeUiVisibility(string pexId, bool isVisible)
