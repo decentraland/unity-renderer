@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -7,8 +8,6 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
-using System;
-using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -60,67 +59,54 @@ namespace DCL.Components
             HORIZONTAL
         }
 
-        public Dictionary<string, GameObject> stackContainers = new ();
+        public override string referencesContainerPrefabName => "UIContainerRect";
+
+        public Dictionary<string, GameObject> stackContainers = new Dictionary<string, GameObject>();
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
-        public UIContainerStack(UIShapePool pool) : base(pool)
+        public UIContainerStack() { model = new Model(); }
+
+        public override int GetClassId() { return (int) CLASS_ID.UI_CONTAINER_STACK; }
+
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
-            this.pool = pool;
-            model = new Model();
+            Debug.LogError(
+                "Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
-
-        public override int GetClassId() =>
-            (int) CLASS_ID.UI_CONTAINER_STACK;
-
-        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) =>
-            Debug.LogError("Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            if (referencesContainer && referencesContainer.image)
+            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
+            referencesContainer.image.raycastTarget = model.color.a >= RAYCAST_ALPHA_THRESHOLD;
+
+            if (model.stackOrientation == StackOrientation.VERTICAL && !(layoutGroup is VerticalLayoutGroup))
             {
-                referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
-                referencesContainer.image.raycastTarget = model.color.a >= RAYCAST_ALPHA_THRESHOLD;
+                Object.DestroyImmediate(layoutGroup, false);
+                layoutGroup = childHookRectTransform.gameObject.AddComponent<VerticalLayoutGroup>();
+            }
+            else if (model.stackOrientation == StackOrientation.HORIZONTAL && !(layoutGroup is HorizontalLayoutGroup))
+            {
+                Object.DestroyImmediate(layoutGroup, false);
+                layoutGroup = childHookRectTransform.gameObject.AddComponent<HorizontalLayoutGroup>();
             }
 
-            if (childHookRectTransform)
-            {
-                switch (model.stackOrientation)
-                {
-                    case StackOrientation.VERTICAL when layoutGroup is not VerticalLayoutGroup:
-                        Object.DestroyImmediate(layoutGroup, false);
-                        layoutGroup = childHookRectTransform.gameObject.AddComponent<VerticalLayoutGroup>();
-                        break;
-                    case StackOrientation.HORIZONTAL when layoutGroup is not HorizontalLayoutGroup:
-                        Object.DestroyImmediate(layoutGroup, false);
-                        layoutGroup = childHookRectTransform.gameObject.AddComponent<HorizontalLayoutGroup>();
-                        break;
-                }
-            }
+            layoutGroup.childControlHeight = false;
+            layoutGroup.childControlWidth = false;
+            layoutGroup.childForceExpandWidth = false;
+            layoutGroup.childForceExpandHeight = false;
+            layoutGroup.spacing = model.spacing;
 
-            if (layoutGroup)
-            {
-                layoutGroup.childControlHeight = false;
-                layoutGroup.childControlWidth = false;
-                layoutGroup.childForceExpandWidth = false;
-                layoutGroup.childForceExpandHeight = false;
-                layoutGroup.spacing = model.spacing;
-            }
-
-            if (referencesContainer)
-            {
-                referencesContainer.sizeFitter.adjustHeight = model.adaptHeight;
-                referencesContainer.sizeFitter.adjustWidth = model.adaptWidth;
-            }
+            referencesContainer.sizeFitter.adjustHeight = model.adaptHeight;
+            referencesContainer.sizeFitter.adjustWidth = model.adaptWidth;
 
             MarkLayoutDirty();
             return null;
         }
 
-        private void RefreshContainerForShape(BaseDisposable updatedComponent)
+        void RefreshContainerForShape(BaseDisposable updatedComponent)
         {
             UIShape childComponent = updatedComponent as UIShape;
             Assert.IsTrue(childComponent != null, "This should never happen!!!!");
@@ -131,11 +117,11 @@ namespace DCL.Components
                 return;
             }
 
+            GameObject stackContainer = null;
+
             if (!stackContainers.ContainsKey(childComponent.id))
             {
-                var stackContainer = Object.Instantiate(
-                    Resources.Load("UIContainerStackChild"), referencesContainer.childHookRectTransform, false) as GameObject;
-
+                stackContainer = Object.Instantiate(Resources.Load("UIContainerStackChild")) as GameObject;
 #if UNITY_EDITOR
                 stackContainer.name = "UIContainerStackChild - " + childComponent.id;
 #endif
@@ -143,7 +129,12 @@ namespace DCL.Components
 
                 int oldSiblingIndex = childComponent.referencesContainer.transform.GetSiblingIndex();
                 childComponent.referencesContainer.transform.SetParent(stackContainer.transform, false);
+                stackContainer.transform.SetParent(referencesContainer.childHookRectTransform, false);
                 stackContainer.transform.SetSiblingIndex(oldSiblingIndex);
+            }
+            else
+            {
+                stackContainer = stackContainers[childComponent.id];
             }
 
             MarkLayoutDirty();
@@ -156,14 +147,14 @@ namespace DCL.Components
             childComponent.OnAppliedChanges += RefreshContainerForShape;
         }
 
-        protected override void RefreshDCLLayoutRecursively(bool refreshSize = true,
+        public override void RefreshDCLLayoutRecursively(bool refreshSize = true,
             bool refreshAlignmentAndPosition = true)
         {
             base.RefreshDCLLayoutRecursively(refreshSize, refreshAlignmentAndPosition);
             referencesContainer.sizeFitter.RefreshRecursively();
         }
 
-        protected override void OnChildDetached(UIShape parentComponent, UIShape childComponent)
+        public override void OnChildDetached(UIShape parentComponent, UIShape childComponent)
         {
             if (parentComponent != this)
             {
@@ -180,6 +171,14 @@ namespace DCL.Components
 
             childComponent.OnAppliedChanges -= RefreshContainerForShape;
             RefreshDCLLayout();
+        }
+
+        public override void Dispose()
+        {
+            if (referencesContainer != null)
+                Utils.SafeDestroy(referencesContainer.gameObject);
+
+            base.Dispose();
         }
     }
 }
