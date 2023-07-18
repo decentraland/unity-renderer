@@ -16,7 +16,7 @@ namespace UI.InWorldCamera.Scripts
         public Scene scene;
         public VisiblePeople[] visiblePeople;
 
-        private static ScreenshotMetadata Create(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
+        public static ScreenshotMetadata Create(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
             var ownPlayer = DataStore.i.player.ownPlayer.Get();
             var playerPosition = DataStore.i.player.playerGridPosition.Get();

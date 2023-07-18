@@ -127,7 +127,7 @@ namespace DCL
                 timeout, cancellationToken, headers, isSigned);
         }
 
-        public async UniTask<UnityWebRequest> PostAsync(
+        public async UniTask<UnityWebRequest> PostMultipartAsync(
             string url,
             List<IMultipartFormSection> postData,
             DownloadHandler downloadHandler = null,
@@ -139,7 +139,7 @@ namespace DCL
             Dictionary<string, string> headers = null,
             bool isSigned = false)
         {
-            postWebRequestFactory.SetBody(postData);
+            postWebRequestFactory.SetMultipartBody(postData);
             return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
                 timeout, cancellationToken, headers, isSigned);
         }

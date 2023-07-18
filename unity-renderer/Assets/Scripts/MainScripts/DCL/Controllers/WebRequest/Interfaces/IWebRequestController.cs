@@ -95,7 +95,7 @@ namespace DCL
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="cancellationToken">Token capable of cancelling a request, if so, the result will be "Aborted"</param>
         /// <param name="headers">This will set the headers for the request</param>
-        UniTask<UnityWebRequest> PostAsync(
+        UniTask<UnityWebRequest> PostMultipartAsync(
             string url,
             List<IMultipartFormSection> multiPartpostData,
             DownloadHandler downloadHandler = null,
