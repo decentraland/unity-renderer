@@ -52,7 +52,7 @@ public class WearableItem
         { Categories.EYEBROWS, "Eyebrows" },
         { Categories.BODY_SHAPE, "Body shape" },
         { Categories.FACIAL_HAIR, "Facial hair" },
-        { Categories.HANDS_WEAR, "Hands" },
+        { Categories.HANDS_WEAR, "Hands Wear" },
     };
 
     public static readonly string[] SKIN_IMPLICIT_CATEGORIES =

@@ -45,7 +45,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c319fd971d09e1745b925fff3aa3012a, type: 3}
   - {fileID: 21300000, guid: bc1386f864ce3b64baafbb1e74763408, type: 3}
   m_PackedSpriteNamesToIndex:
-  - ExperienceImg
+  - ExperienceDefaultThumbnail
   - ExperienceIconOn
   - ExperienceIconOff
   - HideIcon
