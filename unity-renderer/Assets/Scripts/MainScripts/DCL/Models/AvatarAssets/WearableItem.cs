@@ -224,40 +224,30 @@ public class WearableItem
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        string[] hides;
+        HashSet<string> hides = new HashSet<string>();
 
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            hides = data.hides;
+            hides.UnionWith(data.hides ?? Enumerable.Empty<string>());
         else
-            hides = representation.overrideHides;
+            hides.UnionWith(representation.overrideHides);
 
         if (IsSkin())
-        {
-            hides = hides == null
-                ? SKIN_IMPLICIT_CATEGORIES
-                : hides.Concat(SKIN_IMPLICIT_CATEGORIES).Distinct().ToArray();
-        }
+            hides.UnionWith(SKIN_IMPLICIT_CATEGORIES);
 
-        // Old UPPER_BODY Wearables are incompatible with the new Hands category,
-        // so we apply this rule to hide the hands by default
+        // we apply this rule to hide the hands by default if the wearable is an upper body or hides the upper body
         bool isOrHidesUpperBody = hides.Contains(Categories.UPPER_BODY) || data.category == Categories.UPPER_BODY;
-        bool removesDefault = data.removesDefaultHiding?.Contains(Categories.HANDS) ?? false;
+        // the rule is ignored if the wearable contains the removal of this default rule (newer upper bodies since the release of hands)
+        bool removesHandDefault = data.removesDefaultHiding?.Contains(Categories.HANDS) ?? false;
+        // why we do this? because old upper bodies contains the base hand mesh, and they might clip with the new handwear items
+        if (isOrHidesUpperBody && !removesHandDefault)
+            hides.UnionWith(UPPER_BODY_DEFAULT_HIDES);
 
-        if (isOrHidesUpperBody && !removesDefault)
-            hides = hides.Concat(UPPER_BODY_DEFAULT_HIDES).Distinct().ToArray();
+        string[] replaces = GetReplacesList(bodyShapeType);
 
-        var replaces = GetReplacesList(bodyShapeType);
+        if (replaces != null)
+            hides.UnionWith(replaces);
 
-        if (hides != null && replaces != null)
-        {
-            //merge hides and replaces removing duplicates and own category
-            var combinedArray = new string[hides.Length + replaces.Length];
-            Array.Copy(hides, combinedArray, hides.Length);
-            Array.Copy(replaces, 0, combinedArray, hides.Length, replaces.Length);
-            return combinedArray.Where(w => w != data.category).ToArray();
-        }
-
-        return hides;
+        return hides.ToArray();
     }
 
     public void SanitizeHidesLists()
