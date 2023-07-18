@@ -15,55 +15,39 @@ MonoBehaviour:
   previewCameraFocusByNftType:
   - nftType: eyes
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: mouth
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: eyebrows
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: hair
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: upper_body
     cameraFocus: 0
-    orthographicZoom: 2
   - nftType: lower_body
     cameraFocus: 0
-    orthographicZoom: 2
   - nftType: feet
     cameraFocus: 0
-    orthographicZoom: 2
   - nftType: head
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: facial_hair
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: tiara
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: hat
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: helmet
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: skin
     cameraFocus: 0
-    orthographicZoom: 2
   - nftType: mask
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: eyewear
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: top_head
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: earring
     cameraFocus: 1
-    orthographicZoom: 1
   - nftType: body_shape
     cameraFocus: 0
-    orthographicZoom: 2
+  - nftType: hands_wear
+    cameraFocus: 0

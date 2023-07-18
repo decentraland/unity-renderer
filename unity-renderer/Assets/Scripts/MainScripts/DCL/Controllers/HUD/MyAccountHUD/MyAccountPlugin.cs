@@ -2,6 +2,7 @@
 using DCL.Providers;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
+using SocialFeaturesAnalytics;
 using System.Threading;
 
 namespace DCL.MyAccount
@@ -46,6 +47,8 @@ namespace DCL.MyAccount
 
             var dataStore = DataStore.i;
 
+            var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+
             myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
                 dataStore);
@@ -53,12 +56,13 @@ namespace DCL.MyAccount
             myProfileController = new MyProfileController(
                 myAccountSectionView.CurrentMyProfileView,
                 dataStore,
-                new UserProfileWebInterfaceBridge(),
+                userProfileWebInterfaceBridge,
                 Environment.i.serviceLocator.Get<INamesService>(),
                 new WebInterfaceBrowserBridge(),
                 myAccountSectionHUDController,
                 KernelConfig.i,
                 new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics),
+                new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge),
                 countryListProvider,
                 genderListProvider,
                 sexualOrientationProvider,

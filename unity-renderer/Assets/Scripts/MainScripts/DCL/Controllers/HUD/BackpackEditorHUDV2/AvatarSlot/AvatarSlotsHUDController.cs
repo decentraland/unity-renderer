@@ -7,18 +7,22 @@ namespace DCL.Backpack
 {
     public class AvatarSlotsHUDController
     {
+        internal const string HANDS_FEATURE = "hands";
         public event Action<string, bool, PreviewCameraFocus, bool> OnToggleSlot;
 
         private readonly IAvatarSlotsView avatarSlotsView;
         private string lastSelectedSlot;
         internal AvatarSlotsDefinitionSO avatarSlotsDefinition;
+        private readonly FeatureFlag featureFlag;
 
         public event Action<string, UnequipWearableSource> OnUnequipFromSlot;
         public event Action<string, bool> OnHideUnhidePressed;
 
         public AvatarSlotsHUDController(IAvatarSlotsView avatarSlotsView,
-            IBackpackAnalyticsService backpackAnalyticsService)
+            IBackpackAnalyticsService backpackAnalyticsService,
+            IBaseVariable<FeatureFlag> featureFlag)
         {
+            this.featureFlag = featureFlag.Get();
             this.avatarSlotsView = avatarSlotsView;
             avatarSlotsView.OnToggleAvatarSlot += ToggleSlot;
             avatarSlotsView.OnUnequipFromSlot += (wearableId) => OnUnequipFromSlot?.Invoke(wearableId, UnequipWearableSource.AvatarSlot);
@@ -36,12 +40,22 @@ namespace DCL.Backpack
 
         public void GenerateSlots()
         {
+            bool showHands = featureFlag.IsFeatureEnabled(HANDS_FEATURE);
             for (var i = 0; i < avatarSlotsDefinition.slotsDefinition.Length; i++)
             {
                 SerializableKeyValuePair<string, List<string>> section = avatarSlotsDefinition.slotsDefinition[i];
                 avatarSlotsView.CreateAvatarSlotSection(section.key, i < avatarSlotsDefinition.slotsDefinition.Length - 1);
+
                 foreach (string avatarSlotSection in section.value)
-                    avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection, CanAvatarSlotBeUnEquipped(avatarSlotSection));
+                {
+                    if (avatarSlotSection == WearableLiterals.Categories.HANDS_WEAR)
+                    {
+                        if (showHands)
+                            avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection, CanAvatarSlotBeUnEquipped(avatarSlotSection));
+                    }
+                    else
+                        avatarSlotsView.AddSlotToSection(section.key, avatarSlotSection, CanAvatarSlotBeUnEquipped(avatarSlotSection));
+                }
             }
             avatarSlotsView.RebuildLayout();
         }

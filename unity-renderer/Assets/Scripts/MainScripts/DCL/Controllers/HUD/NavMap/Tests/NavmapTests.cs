@@ -1,9 +1,14 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCLServices.MapRendererV2;
+using DCLServices.PlacesAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -13,6 +18,7 @@ namespace Tests
     {
         private MinimapHUDController controller;
         private NavmapView navmapView;
+        private IPlacesAPIService placesAPIService;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
@@ -33,7 +39,8 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
+            placesAPIService = Substitute.For<IPlacesAPIService>();
+            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i, placesAPIService);
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }
@@ -75,6 +82,9 @@ namespace Tests
         [Test]
         public void ReactToPlayerCoordsChange()
         {
+            placesAPIService.Configure()
+                            .GetPlace(Arg.Any<Vector2Int>(), Arg.Any<CancellationToken>())
+                            .Returns(x => new UniTask<IHotScenesController.PlaceInfo>(new IHotScenesController.PlaceInfo()));
             const string sceneName = "SCENE_NAME";
             MinimapMetadata.GetMetadata()
                 .AddSceneInfo(

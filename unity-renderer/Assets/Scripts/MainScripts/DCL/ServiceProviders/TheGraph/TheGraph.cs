@@ -12,7 +12,7 @@ public class TheGraph : ITheGraph
 {
     private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
-    private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-goerli";
+    private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-sepolia";
     private const string MANA_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/mana-ethereum-mainnet";
     private const string MANA_SUBGRAPH_URL_POLYGON = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
     private const string NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/collections-ethereum-mainnet";
@@ -213,8 +213,9 @@ public class TheGraph : ITheGraph
                 nfts.Add(new Nft
                 {
                     collectionId = nft.collection.id,
+                    blockchainId =  nft.item.blockchainId,
                     tokenId = nft.tokenId,
-                    urn = nft.urn
+                    urn = nft.urn,
                 });
             }
         }

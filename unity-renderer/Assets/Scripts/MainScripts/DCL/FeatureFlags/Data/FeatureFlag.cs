@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 public class FeatureFlag
 {
-    public readonly Dictionary<string, bool> flags  = new Dictionary<string, bool>();
-    public readonly Dictionary<string, FeatureFlagVariant> variants  = new Dictionary<string, FeatureFlagVariant>();
+    public readonly Dictionary<string, bool> flags  = new ();
+    public readonly Dictionary<string, FeatureFlagVariant> variants  = new ();
 
     public bool IsInitialized { get; private set; }
 

@@ -13,6 +13,8 @@ public class MinimapHUDView : MonoBehaviour
     private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
     private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
 
+    public event Action<string, bool> OnFavoriteToggleClicked;
+
     [Header("Information")] [SerializeField]
     private TextMeshProUGUI sceneNameText;
 
@@ -24,8 +26,9 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal GameObject sceneOptionsPanel;
     [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] internal Button reportSceneButton;
-    [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
     [SerializeField] internal ToggleComponentView setHomeScene;
+    [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
+    [SerializeField] internal Image disableFavorite;
 
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
@@ -48,7 +51,11 @@ public class MinimapHUDView : MonoBehaviour
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     private MinimapHUDController controller;
 
-    private void Awake() { hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera); }
+    private void Awake()
+    {
+        hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
+        favoriteToggle.OnFavoriteChange += (uuid, isFavorite) => OnFavoriteToggleClicked?.Invoke(uuid, isFavorite);
+    }
 
     public void Initialize(MinimapHUDController controller)
     {
@@ -74,8 +81,6 @@ public class MinimapHUDView : MonoBehaviour
             renderer.transform.SetParent(mapRenderContainer);
             renderer.transform.SetAsFirstSibling();
         }*/
-
-        usersAroundListHudButton.gameObject.SetActive(false);
     }
 
     private void ReportScene()
@@ -120,6 +125,21 @@ public class MinimapHUDView : MonoBehaviour
             mainShowHideAnimator.Show();
         else if (!visible && mainShowHideAnimator.isVisible)
             mainShowHideAnimator.Hide();
+    }
+
+    public void SetCurrentFavoriteStatus(string uuid, bool isFavorite)
+    {
+        favoriteToggle.Configure(new FavoriteButtonComponentModel()
+        {
+            placeUUID = uuid,
+            isFavorite = isFavorite
+        });
+    }
+
+    public void SetIsAPlace(bool isAPlace)
+    {
+        favoriteToggle.gameObject.SetActive(isAPlace);
+        disableFavorite.gameObject.SetActive(!isAPlace);
     }
 
     private void OnDestroy()

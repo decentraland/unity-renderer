@@ -11,17 +11,32 @@ namespace DCL.Social.Friends
 {
     public class RPCSocialClientProvider : ISocialClientProvider
     {
-        private readonly string url;
+        private const string RPC_URL = "wss://rpc-social-service.decentraland";
+        private const string MAIN_NET = "mainnet";
+
+        private readonly KernelConfig kernelConfig;
+        
+        private string url = $"{RPC_URL}.org";
+        private string network = MAIN_NET;
 
         public event Action OnTransportError;
 
-        public RPCSocialClientProvider(string url)
+        public RPCSocialClientProvider(KernelConfig kernelConfig)
         {
-            this.url = url;
+            this.kernelConfig = kernelConfig;
         }
 
         public async UniTask<IClientFriendshipsService> Provide(CancellationToken cancellationToken)
         {
+            await kernelConfig.EnsureConfigInitialized();
+            string currentNetwork = kernelConfig.Get().network;
+            if (!currentNetwork.Equals(network, StringComparison.OrdinalIgnoreCase))
+            {
+                string tld = currentNetwork.Equals(MAIN_NET, StringComparison.OrdinalIgnoreCase) ? ".org" : ".zone";
+                url = $"{RPC_URL}{tld}";
+                network = currentNetwork;
+            }
+
             var transport = await CreateWebSocketAndConnect(cancellationToken);
             var client = new RpcClient(transport);
             var socialPort = await client.CreatePort("social-service-port");
