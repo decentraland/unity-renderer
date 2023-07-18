@@ -116,6 +116,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 903e82323051c41339d97e1f52c7c984, type: 3}
   - {fileID: 21300000, guid: d9ea79320a5c7124bbb6e8ffbd1b935c, type: 3}
   - {fileID: 21300000, guid: 6d6f6142025570c4c8c8705c19f66da4, type: 3}
+  - {fileID: 21300000, guid: 3511e442bc30148ee990f816a8fbf595, type: 3}
   - {fileID: 21300000, guid: 16a5648277f4daa4d9c15a5365076da6, type: 3}
   - {fileID: 21300000, guid: 72e0a7824370a4a86a33ecdaf1bdc198, type: 3}
   - {fileID: 21300000, guid: dd2c2092a9ae16c49a268766674e5b2b, type: 3}
@@ -258,6 +259,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 194fcbd882d15453b90e80d668ab4bad, type: 3}
   - {fileID: 21300000, guid: 874182f8d364145bd9836b8e817019eb, type: 3}
   - {fileID: 21300000, guid: 9ed344f88537e43a6b35556d00b77b39, type: 3}
+  - {fileID: 21300000, guid: 8bc7faf89e6a64636a5d17e98874c161, type: 3}
   - {fileID: 21300000, guid: b44b6109984974ac6bb84146469cbc7a, type: 3}
   - {fileID: 21300000, guid: 87bf14092660947eb9909d5772886279, type: 3}
   - {fileID: 21300000, guid: 314ecf09e6e7447d9aa0421d996754cc, type: 3}
@@ -345,6 +347,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9440a54c9ef22324ebdbd9239d2e6021, type: 3}
   - {fileID: 21300000, guid: b3dde05c995029e4c8e4a4acd0f99337, type: 3}
   - {fileID: 21300000, guid: eaad235cc6bf34bdf899e5095b412398, type: 3}
+  - {fileID: 21300000, guid: 3c940a5c07400864db483f5212bd11dd, type: 3}
   - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: f0bcc87cbbf78438ebfb049f6c1aa203, type: 3}
   - {fileID: 21300000, guid: 6017049c5a0dc43f6a4a68f1b4e28664, type: 3}
@@ -469,6 +472,7 @@ SpriteAtlas:
   - Container12Shadow10
   - RectangleLoadingBar
   - InputFieldBuilderFocus
+  - HandleThick
   - SmartItemIcon
   - Key
   - NamesIcon
@@ -488,7 +492,7 @@ SpriteAtlas:
   - ContainerRectLeft20
   - ContainerRadius10@2x
   - DCLIcnColor
-  - Outline1Radius12
+  - Container12Outline1
   - ButtonFlatWhite
   - ExitFullScreenIcon
   - RoundedLine
@@ -537,7 +541,7 @@ SpriteAtlas:
   - ArrowUp
   - BugIcon 1
   - RectRadius12Shadow
-  - RectRadius12Bottom
+  - Container12RectBottom
   - Label26
   - VoiceChatOff
   - BugIcon
@@ -611,6 +615,7 @@ SpriteAtlas:
   - TutorialIcon
   - BackButton
   - ContainerShadow
+  - RedArrow
   - Mic on
   - DecentralandLogo
   - RejectButtonHover
@@ -635,7 +640,7 @@ SpriteAtlas:
   - TaskbarCheckmark
   - Shadow
   - OngoingEventIcon
-  - Handle
+  - HandleThin
   - MicrophoneIcon
   - WheelIcn
   - ContainerRadius16
@@ -698,6 +703,7 @@ SpriteAtlas:
   - RarityCornerEmotes
   - InputRed
   - Container12RectLeft
+  - FavouriteDisabled
   - CrowdIcon
   - OutlineGradient
   - EndVoiceChat
@@ -736,7 +742,7 @@ SpriteAtlas:
   - CardBlockIcon
   - LiveContainer
   - Button10
-  - Container12RectBottom
+  - Container12RectTop
   - ContainerRectTop
   - StarIcon
   - Button6
@@ -751,7 +757,7 @@ SpriteAtlas:
   - PatternPC
   - HomeIcon
   - DialogCornerLeft
-  - Outline3Radius12
+  - Container12Outline3
   - LogOutIcon
   - RoundedContainer44
   - CloseButton
