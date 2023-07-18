@@ -12,7 +12,7 @@ namespace DCLServices.CameraReelService
 {
     public interface ICameraReelClient
     {
-        UniTask<(string, ScreenshotMetadata)> GetImage(string imageUUID, CancellationToken ct);
+        UniTask<CameraReelImageResponse> GetImage(string imageUUID, CancellationToken ct);
 
         UniTask<CameraReelImageResponse> UploadScreenshot(byte[] screenshot, ScreenshotMetadata metadata, CancellationToken ct);
 
@@ -35,8 +35,6 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelImageResponse> UploadScreenshot(byte[] screenshot, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            Debug.Log("START UPLOAD");
-
             List<IMultipartFormSection> formData = new List<IMultipartFormSection>
             {
                 new MultipartFormFileSection("image", screenshot, $"{metadata.dateTime}.jpg", "image/jpeg"),
@@ -45,23 +43,16 @@ namespace DCLServices.CameraReelService
 
             var result = await webRequestController.PostMultipartAsync(IMAGE_BASE_URL, formData, cancellationToken: ct);
 
-            Debug.Log("UPLOAD RESULT");
-
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error uploading screenshot:\n{result.error}");
-            Debug.Log("ORIGINAL:" + result.downloadHandler.text);
 
-            string trimmedResponse = result.downloadHandler.text.Substring(9, result.downloadHandler.text.Length - 2);
-            Debug.Log("TRIMMED:" + trimmedResponse);
-
-            var response = Utils.SafeFromJson<CameraReelImageResponse>(trimmedResponse);
+            var response = Utils.SafeFromJson<CameraReelImageResponse>( result.downloadHandler.text);
             ResponseSanityCheck(response, result.downloadHandler.text);
-            Debug.Log("UPLOAD SANITY CHECK PASSED");
 
             return response;
         }
 
-        public async UniTask<(string, ScreenshotMetadata)> GetImage(string imageUUID, CancellationToken ct)
+        public async UniTask<CameraReelImageResponse> GetImage(string imageUUID, CancellationToken ct)
         {
             var url = $"{IMAGE_BASE_URL}/{imageUUID}";
             var result = await webRequestController.GetAsync(url, cancellationToken: ct);
@@ -70,11 +61,10 @@ namespace DCLServices.CameraReelService
                 throw new Exception($"Error fetching screenshot image with metadata:\n{result.error}");
 
             Debug.Log(result.downloadHandler.text);
-
             var response = Utils.SafeFromJson<CameraReelImageResponse>(result.downloadHandler.text);
             ResponseSanityCheck(response, result.downloadHandler.text);
 
-            return (response.url, response.metadata);
+            return response;
         }
 
         private static void ResponseSanityCheck(CameraReelImageResponse response, string downloadHandlerText)
@@ -101,6 +91,8 @@ namespace DCLServices.CameraReelService
     {
         public string id;
         public string url;
+        public string thumbnailUrl;
+
         public ScreenshotMetadata metadata;
     }
 
