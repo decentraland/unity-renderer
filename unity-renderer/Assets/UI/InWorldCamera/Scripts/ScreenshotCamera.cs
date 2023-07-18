@@ -121,7 +121,6 @@ namespace UI.InWorldCamera.Scripts
                 metadata: ScreenshotMetadata.Create(avatarsLODController, screenshotCamera)
             );
 
-            Application.OpenURL(response.url);
             Application.OpenURL($"https://reels.decentraland.org/{response.id}");
         }
 
