@@ -111,18 +111,18 @@ namespace UI.InWorldCamera.Scripts
             isInScreenshotMode = activateScreenshotCamera;
         }
 
-        private void CaptureScreenshot(DCLAction_Trigger _)
+        private async void CaptureScreenshot(DCLAction_Trigger _)
         {
             if (!isInScreenshotMode) return;
 
-            cameraReelNetworkService.UploadScreenshot
+            var response = await cameraReelNetworkService.UploadScreenshot
             (
                 screenshot: screenshotCapture.CaptureScreenshot(),
                 metadata: ScreenshotMetadata.Create(avatarsLODController, screenshotCamera)
             );
 
-            // Application.OpenURL(response.url);
-            // Application.OpenURL($"https://reels.decentraland.org/{response.id}");
+            Application.OpenURL(response.url);
+            Application.OpenURL($"https://reels.decentraland.org/{response.id}");
         }
 
         private void EnableScreenshotCamera()

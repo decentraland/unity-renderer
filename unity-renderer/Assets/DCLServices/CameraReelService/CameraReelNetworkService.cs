@@ -7,7 +7,7 @@ namespace DCLServices.CameraReelService
 {
     public interface ICameraReelNetworkService : IService
     {
-        UniTask<(string url, ScreenshotMetadata metadata)> GetImage(string imageUUID, CancellationToken ct = default);
+        UniTask<CameraReelImageResponse> GetImage(string imageUUID, CancellationToken ct = default);
 
         UniTask<CameraReelImageResponse> UploadScreenshot(byte[] screenshot, ScreenshotMetadata metadata, CancellationToken ct = default);
     }
@@ -23,7 +23,7 @@ namespace DCLServices.CameraReelService
 
         public void Initialize() { }
 
-        public async UniTask<(string, ScreenshotMetadata)> GetImage(string imageUUID, CancellationToken ct) =>
+        public async UniTask<CameraReelImageResponse> GetImage(string imageUUID, CancellationToken ct) =>
             await client.GetImage(imageUUID, ct);
 
         public async UniTask<CameraReelImageResponse> UploadScreenshot(byte[] screenshot, ScreenshotMetadata metadata, CancellationToken ct) =>
