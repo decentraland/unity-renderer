@@ -363,6 +363,7 @@ namespace ECSSystems.ScenesUiSystem
 
             if (enabled
                 && currentScene != null
+                && currentScene.sceneData.sceneNumber != sceneNumber
                 && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)
                 return;
 
@@ -390,12 +391,13 @@ namespace ECSSystems.ScenesUiSystem
                 new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
-        private void UpdatePortableExperiencesVisibilityByFeatureToggle(IParcelScene currentScene, IEnumerable<IParcelScene> scenes)
+        private void UpdatePortableExperiencesVisibilityByFeatureToggle(IParcelScene currentScene, IReadOnlyList<IParcelScene> scenes)
         {
             if (currentScene == null) return;
 
-            foreach (IParcelScene pxScene in scenes)
+            for (var i = 0; i < scenes.Count; i++)
             {
+                IParcelScene pxScene = scenes[i];
                 if (!pxScene.isPortableExperience) continue;
 
                 ScenePortableExperienceFeatureToggles featureToggle =
