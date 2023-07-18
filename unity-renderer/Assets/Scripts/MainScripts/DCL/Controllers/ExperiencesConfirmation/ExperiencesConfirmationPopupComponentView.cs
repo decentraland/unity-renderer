@@ -104,11 +104,11 @@ namespace DCL.PortableExperiences.Confirmation
             gameObject.SetActive(true);
             base.Show(instant);
 
-            // let the subscribers know that the default option is 'dont show anymore'
-            if (!dontAskMeAgainToggle.isOn)
-                dontAskMeAgainToggle.isOn = true;
+            // let the subscribers know that the default option is 'keep showing'
+            if (dontAskMeAgainToggle.isOn)
+                dontAskMeAgainToggle.isOn = false;
             else
-                OnDontShowAnymore?.Invoke();
+                OnKeepShowing?.Invoke();
         }
 
         public override void Hide(bool instant = false)
