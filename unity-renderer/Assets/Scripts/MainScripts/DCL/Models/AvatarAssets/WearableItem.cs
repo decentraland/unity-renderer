@@ -73,7 +73,6 @@ public class WearableItem
     public static readonly string[] UPPER_BODY_DEFAULT_HIDES =
     {
         Categories.HANDS,
-        Categories.HANDS_WEAR
     };
 
     [Serializable]
