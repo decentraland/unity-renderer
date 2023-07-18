@@ -44,12 +44,12 @@ namespace UI.InWorldCamera.Scripts
             var bridge = new UserProfileWebInterfaceBridge();
 
             for (var i = 0; i < visiblePlayers.Count; i++)
-            {
-                visiblePeople[i].userName = visiblePlayers[i].name;
-                visiblePeople[i].userAddress = visiblePlayers[i].id;
-                visiblePeople[i].wearables = bridge.Get(visiblePlayers[i].id)
-                                                   .avatar.wearables.ToArray();
-            }
+                visiblePeople[i] = new VisiblePeople
+                {
+                    userName = visiblePlayers[i].name,
+                    userAddress = visiblePlayers[i].id,
+                    wearables = bridge.Get(visiblePlayers[i].id).avatar.wearables.ToArray(),
+                };
 
             return visiblePeople;
         }
