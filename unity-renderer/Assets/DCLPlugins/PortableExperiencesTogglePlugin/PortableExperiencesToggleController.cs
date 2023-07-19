@@ -15,7 +15,7 @@ namespace DCL.PortableExperiencesToggle
         private readonly BaseDictionary<int, bool> isSceneUiEnabled;
         private readonly List<string> idsBuffer = new ();
         private readonly List<string> originalDisabledPortableExperiences = new ();
-        private readonly List<(int, bool)> originalPxUiVisibility = new ();
+        private readonly Dictionary<int, (int, bool)> originalPxUiVisibility = new ();
 
         private ScenePortableExperienceFeatureToggles lastToggle = ScenePortableExperienceFeatureToggles.Enable;
 
@@ -57,8 +57,16 @@ namespace DCL.PortableExperiencesToggle
             else if (pxToggle == ScenePortableExperienceFeatureToggles.HideUi)
             {
                 originalPxUiVisibility.Clear();
+
+                foreach (string pxId in portableExperiencesIds.Get())
+                {
+                    IParcelScene pxScene = worldState.GetPortableExperienceScene(pxId);
+                    if (pxScene == null) continue;
+                    originalPxUiVisibility[pxScene.sceneData.sceneNumber] = (pxScene.sceneData.sceneNumber, true);
+                }
+
                 foreach ((int sceneNumber, bool visible) in isSceneUiEnabled)
-                    originalPxUiVisibility.Add((sceneNumber, visible));
+                    originalPxUiVisibility[sceneNumber] = (sceneNumber, visible);
 
                 HideUiOfAllPortableExperiences();
             }
@@ -96,6 +104,6 @@ namespace DCL.PortableExperiencesToggle
             portableExperiencesBridge.SetDisabledPortableExperiences(originalDisabledPortableExperiences);
 
         private void RestorePortableExperiencesUiVisibility() =>
-            isSceneUiEnabled.Set(originalPxUiVisibility);
+            isSceneUiEnabled.Set(originalPxUiVisibility.Values);
     }
 }

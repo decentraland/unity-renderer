@@ -126,7 +126,9 @@ namespace DCL.PortableExperiencesToggle
             currentSceneVariable.Set(CURRENT_SCENE_NUMBER);
             currentSceneVariable.Set(5);
 
-            Assert.IsTrue(isSceneUiEnabled.Count() == 0);
+            Assert.IsTrue(isSceneUiEnabled[6]);
+            Assert.IsTrue(isSceneUiEnabled[7]);
+            Assert.IsTrue(isSceneUiEnabled.Count() == 2);
         }
 
         private IParcelScene GivenScene(int number, string id, ScenePortableExperienceFeatureToggles pxFt, bool isPx)
