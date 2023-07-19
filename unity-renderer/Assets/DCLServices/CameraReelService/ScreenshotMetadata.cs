@@ -17,22 +17,23 @@ namespace UI.InWorldCamera.Scripts
 
         public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            var ownPlayer = player.ownPlayer.Get();
-            var playerPosition = player.playerGridPosition.Get();
+            Player ownPlayer = player.ownPlayer.Get();
+            Vector2Int playerPosition = player.playerGridPosition.Get();
 
             var metadata = new ScreenshotMetadata
+            {
+                userName = ownPlayer.name,
+                userAddress = ownPlayer.id,
+                dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                realm = DataStore.i.realm.realmName.Get(),
+                scene = new Scene
                 {
-                    userName = ownPlayer.name,
-                    userAddress = ownPlayer.id,
-                    dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                    realm = DataStore.i.realm.realmName.Get(),
-                    scene = new Scene
-                    {
-                        name = MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
-                        location = new Location(playerPosition),
-                    },
-                    visiblePeople = GetVisiblePeoplesMetadata(visiblePlayers: CalculateVisiblePlayersInFrustrum(avatarsLODController, screenshotCamera)),
-                };
+                    name = MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
+                    location = new Location(playerPosition),
+                },
+                visiblePeople = GetVisiblePeoplesMetadata(
+                    visiblePlayers: CalculateVisiblePlayersInFrustum(ownPlayer, avatarsLODController, screenshotCamera)),
+            };
 
             return metadata;
         }
@@ -53,19 +54,17 @@ namespace UI.InWorldCamera.Scripts
             return visiblePeople;
         }
 
-        private static List<Player> CalculateVisiblePlayersInFrustrum(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
+        private static List<Player> CalculateVisiblePlayersInFrustum(Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            List<Player> list = new List<Player>();
+            var list = new List<Player>();
+            Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
 
             foreach (IAvatarLODController lodController in avatarsLODController.LodControllers.Values)
-                if (!lodController.IsInvisible)
-                {
-                    Plane[] planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
-                    var player = lodController.player;
+                if (!lodController.IsInvisible && GeometryUtility.TestPlanesAABB(frustumPlanes, lodController.player.collider.bounds))
+                    list.Add(lodController.player);
 
-                    if (GeometryUtility.TestPlanesAABB(planes, player.collider.bounds))
-                        list.Add(player);
-                }
+            if (player.avatar.lodLevel > -1 && GeometryUtility.TestPlanesAABB(frustumPlanes, player.collider.bounds))
+                list.Add(player);
 
             return list;
         }

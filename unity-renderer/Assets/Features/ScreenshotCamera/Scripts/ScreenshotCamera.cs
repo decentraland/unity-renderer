@@ -59,11 +59,11 @@ namespace UI.InWorldCamera.Scripts
             }
         }
 
-        private void Awake()
-        {
-            if (!featureFlags.IsFeatureEnabled("camera_reel"))
-                Destroy(gameObject);
-        }
+        // private void Awake()
+        // {
+        //     if (!featureFlags.IsFeatureEnabled("camera_reel"))
+        //         Destroy(gameObject);
+        // }
 
         private void OnEnable()
         {
@@ -129,6 +129,7 @@ namespace UI.InWorldCamera.Scripts
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
 
+            // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
             Application.OpenURL($"https://reels.decentraland.org/{response.id}");
         }
 

@@ -3,13 +3,12 @@ using UnityEngine.UI;
 
 namespace MainScripts.DCL.InWorldCamera.Scripts
 {
-    [RequireComponent(typeof(Canvas)), DisallowMultipleComponent]
+    [RequireComponent(typeof(Canvas))] [DisallowMultipleComponent]
     public class ScreenshotHUDView : MonoBehaviour
     {
-        [field: SerializeField] public RectTransform RectTransform { get; private set; }
-        [field: SerializeField] public Image RefImage { get; private set;}
-
         private Canvas canvas;
+        [field: SerializeField] public RectTransform RectTransform { get; private set; }
+        [field: SerializeField] public Image RefImage { get; private set; }
 
         private void Awake()
         {
