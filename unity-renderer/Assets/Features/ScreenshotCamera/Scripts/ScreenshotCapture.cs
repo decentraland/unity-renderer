@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.InWorldCamera.Scripts
 {
@@ -14,16 +15,19 @@ namespace UI.InWorldCamera.Scripts
 
         private (float width, float height) spriteRect;
 
-        public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Sprite sprite, RectTransform spriteRectTransform)
+        private Texture2D textureLazyValue;
+        private Texture2D texture => textureLazyValue ??= new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
+
+        public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Image refBoundariesImage)
         {
-            this.sprite = sprite;
-            imageRectTransform = spriteRectTransform;
+            sprite = refBoundariesImage.sprite;
+            imageRectTransform = refBoundariesImage.rectTransform;
 
             this.screenshotCamera = screenshotCamera;
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public virtual byte[] CaptureScreenshot()
+        public byte[] CaptureScreenshot()
         {
             spriteRect = GetCurrentSpriteResolution(imageRectTransform.rect, sprite.bounds);
 
@@ -34,22 +38,19 @@ namespace UI.InWorldCamera.Scripts
             int renderTextureHeight = Mathf.RoundToInt(canvasRectTransform.rect.height * scaleFactorH);
 
             var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24);
-            screenshotCamera.targetTexture = renderTexture;
 
+            screenshotCamera.targetTexture = renderTexture;
             screenshotCamera.Render();
             RenderTexture.active = screenshotCamera.targetTexture;
 
             float cornerX = (renderTextureWidth - DESIRED_WIDTH) / 2f;
             float cornerY = (renderTextureHeight - DESIRED_HEIGHT) / 2f;
 
-            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(cornerX, cornerY, DESIRED_WIDTH, DESIRED_HEIGHT), 0, 0);
             texture.Apply();
 
-            // Check for the HDR being saved correctly, but being lost when converting to JPG
-            // File.WriteAllBytes("Assets/screenshot1.png", texture.EncodeToEXR(Texture2D.EXRFlags.CompressZIP));
-
             // Clean up
+            RenderTexture.active = null;
             screenshotCamera.targetTexture = null;
             RenderTexture.ReleaseTemporary(renderTexture);
 
