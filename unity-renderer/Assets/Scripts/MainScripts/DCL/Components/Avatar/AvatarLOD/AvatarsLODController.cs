@@ -20,7 +20,7 @@ namespace DCL
         private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         private UnityEngine.Camera camera;
-        private Transform cameraTransform;
+        internal Transform cameraTransform;
 
         private UnityEngine.Camera cachedCamera;
 
@@ -85,10 +85,8 @@ namespace DCL
             {
                 camera = UnityEngine.Camera.main;
 
-                if (camera == null)
-                    return;
-
-                cameraTransform = camera.transform;
+                if (camera != null)
+                    cameraTransform = camera.transform;
             }
 
             var avatarsCount = 0; //Full Avatar + Simple Avatar
