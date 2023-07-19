@@ -4,7 +4,6 @@ using DCL.Helpers;
 using DCLServices.CameraReelService;
 using MainScripts.DCL.InWorldCamera.Scripts;
 using UnityEngine;
-using Environment = DCL.Environment;
 
 namespace UI.InWorldCamera.Scripts
 {
@@ -45,6 +44,8 @@ namespace UI.InWorldCamera.Scripts
 
         private DataStore_Player player => DataStore.i.player;
 
+        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
+
         private ScreenshotCapture screenshotCapture
         {
             get
@@ -57,6 +58,12 @@ namespace UI.InWorldCamera.Scripts
                 return screenshotCaptureLazyValue;
             }
         }
+
+        // private void Awake()
+        // {
+        //     if (!featureFlags.IsFeatureEnabled("camera-reel"))
+        //         Destroy(gameObject);
+        // }
 
         private void OnEnable()
         {
