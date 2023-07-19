@@ -1,11 +1,8 @@
 ﻿using DCL;
 using DCL.Camera;
 using DCL.Helpers;
-using DCL.Models;
 using DCLServices.CameraReelService;
 using MainScripts.DCL.InWorldCamera.Scripts;
-using System;
-using System.IO;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -40,9 +37,13 @@ namespace UI.InWorldCamera.Scripts
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
         private bool prevMouseButtonCursorLockMode;
+        private bool? isGuestLazyValue;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
         private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
+        private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
+
+        private DataStore_Player player => DataStore.i.player;
 
         private ScreenshotCapture screenshotCapture
         {
@@ -113,12 +114,12 @@ namespace UI.InWorldCamera.Scripts
 
         private async void CaptureScreenshot(DCLAction_Trigger _)
         {
-            if (!isInScreenshotMode) return;
+            if (!isInScreenshotMode || isGuest) return;
 
-            var response = await cameraReelNetworkService.UploadScreenshot
+            CameraReelImageResponse response = await cameraReelNetworkService.UploadScreenshot
             (
                 screenshot: screenshotCapture.CaptureScreenshot(),
-                metadata: ScreenshotMetadata.Create(avatarsLODController, screenshotCamera)
+                metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
 
             Application.OpenURL($"https://reels.decentraland.org/{response.id}");
