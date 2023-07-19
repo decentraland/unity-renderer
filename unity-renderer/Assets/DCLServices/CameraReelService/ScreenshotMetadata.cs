@@ -1,6 +1,8 @@
 ﻿using DCL;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UI.InWorldCamera.Scripts
@@ -48,11 +50,14 @@ namespace UI.InWorldCamera.Scripts
                 {
                     userName = visiblePlayers[i].name,
                     userAddress = visiblePlayers[i].id,
-                    wearables = bridge.Get(visiblePlayers[i].id).avatar.wearables.ToArray(),
+                    wearables = FilterNonBaseWearables(bridge.Get(visiblePlayers[i].id).avatar.wearables),
                 };
 
             return visiblePeople;
         }
+
+        private static string[] FilterNonBaseWearables(List<string> avatarWearables) =>
+            avatarWearables.Where(wearable => !wearable.StartsWith(IWearablesCatalogService.BASE_WEARABLES_COLLECTION_ID)).ToArray();
 
         private static List<Player> CalculateVisiblePlayersInFrustum(Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
@@ -63,7 +68,7 @@ namespace UI.InWorldCamera.Scripts
                 if (!lodController.IsInvisible && GeometryUtility.TestPlanesAABB(frustumPlanes, lodController.player.collider.bounds))
                     list.Add(lodController.player);
 
-            if (player.avatar.lodLevel > -1 && GeometryUtility.TestPlanesAABB(frustumPlanes, player.collider.bounds))
+            if (GeometryUtility.TestPlanesAABB(frustumPlanes, player.collider.bounds))
                 list.Add(player);
 
             return list;
