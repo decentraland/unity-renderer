@@ -139,7 +139,8 @@ namespace RPC.Services
                     parcels = parsedParcels,
                     contents = parsedContent,
                     requiredPermissions = parsedMetadata.requiredPermissions,
-                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames
+                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
+                    scenePortableExperienceFeatureToggles = ToScenePortableExperienceFeatureToggle(parsedMetadata.featureToggles?.portableExperiences),
                 };
 
                 try
@@ -377,6 +378,18 @@ namespace RPC.Services
                 if (clearMessages)
                     msgs.Clear();
             }
+        }
+
+        private ScenePortableExperienceFeatureToggles ToScenePortableExperienceFeatureToggle(string str)
+        {
+            if (string.Compare(str, "enabled", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.Enable;
+            if (string.Compare(str, "disabled", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.Disable;
+            if (string.Compare(str, "hideui", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.HideUi;
+
+            return ScenePortableExperienceFeatureToggles.Enable;
         }
     }
 }
