@@ -14,8 +14,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
 
-    [SerializeField] private GameObject minimalSearchSection;
-    [SerializeField] private GameObject fullSearchSection;
+    [SerializeField] internal GameObject minimalSearchSection;
+    [SerializeField] internal GameObject fullSearchSection;
     [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject searchHeader;
     [SerializeField] private Button backButton;
