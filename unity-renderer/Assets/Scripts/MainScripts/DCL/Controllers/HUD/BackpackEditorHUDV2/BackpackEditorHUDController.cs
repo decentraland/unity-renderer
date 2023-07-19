@@ -704,10 +704,10 @@ namespace DCL.Backpack
         {
             vrmExportCts?.SafeCancelAndDispose();
             vrmExportCts = new CancellationTokenSource();
-            VRMExport(vrmExportCts.Token).Forget();
+            VrmExport(vrmExportCts.Token).Forget();
         }
 
-        private async UniTaskVoid VRMExport(CancellationToken ct)
+        internal async UniTask VrmExport(CancellationToken ct)
         {
             const int SUCCESS_TOAST_ACTIVE_TIME = 2000;
             try
