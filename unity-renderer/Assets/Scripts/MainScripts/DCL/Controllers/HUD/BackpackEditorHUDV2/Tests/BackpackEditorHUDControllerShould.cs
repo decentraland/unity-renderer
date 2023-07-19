@@ -1,6 +1,8 @@
 ﻿using DCL.Browser;
+using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
@@ -88,7 +90,9 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController,
-                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()));
+                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
+                Substitute.For<IVRMExporter>(),
+                Substitute.For<IDCLFileBrowserService>());
         }
 
         [TearDown]

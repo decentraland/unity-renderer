@@ -1,9 +1,12 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
+using DCLServices.DCLFileBrowser;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using UnityEngine;
 
@@ -21,6 +24,8 @@ namespace DCL.Backpack
         private readonly WearableGridController wearableGridController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private readonly OutfitsController outfitsController;
+        private readonly IVRMExporter vrmExporter;
+        private readonly IDCLFileBrowserService fileBrowser;
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
@@ -36,6 +41,7 @@ namespace DCL.Backpack
 
         private int currentAnimationIndexShown;
         private bool shouldRequestOutfits = true;
+        private CancellationTokenSource vrmExportCts;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -47,7 +53,9 @@ namespace DCL.Backpack
             IBackpackAnalyticsService backpackAnalyticsService,
             WearableGridController wearableGridController,
             AvatarSlotsHUDController avatarSlotsHUDController,
-            OutfitsController outfitsController)
+            OutfitsController outfitsController,
+            IVRMExporter vrmExporter,
+            IDCLFileBrowserService fileBrowser)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -59,6 +67,8 @@ namespace DCL.Backpack
             this.wearableGridController = wearableGridController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
             this.outfitsController = outfitsController;
+            this.vrmExporter = vrmExporter;
+            this.fileBrowser = fileBrowser;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
@@ -88,10 +98,14 @@ namespace DCL.Backpack
             view.OnColorPickerToggle += OnColorPickerToggled;
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
+            view.OnVRMExport += OnVrmExport;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+            view?.SetVRMButtonActive(this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export"));
+            view?.SetVRMButtonEnabled(true);
+            view?.SetVRMSuccessToastActive(false);
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
@@ -140,6 +154,7 @@ namespace DCL.Backpack
 
         public void Dispose()
         {
+            vrmExportCts?.SafeCancelAndDispose();
             ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
@@ -683,6 +698,42 @@ namespace DCL.Backpack
         {
             currentAnimationIndexShown = (currentAnimationIndexShown + 1) % limit;
             return baseString + (currentAnimationIndexShown + 1);
+        }
+
+        private void OnVrmExport()
+        {
+            vrmExportCts?.SafeCancelAndDispose();
+            vrmExportCts = new CancellationTokenSource();
+            VRMExport(vrmExportCts.Token).Forget();
+        }
+
+        private async UniTaskVoid VRMExport(CancellationToken ct)
+        {
+            const int SUCCESS_TOAST_ACTIVE_TIME = 2000;
+            try
+            {
+                view?.SetVRMButtonEnabled(false);
+                view?.SetVRMSuccessToastActive(false);
+
+                backpackAnalyticsService.SendVRMExportStarted();
+                byte[] bytes = await vrmExporter.Export(view?.originalVisibleRenderers, ct);
+
+                string fileName = $"{this.ownUserProfile.userName.Replace("#","_")}_{DateTime.Now.ToString("yyyyMMddhhmmss")}";
+                fileBrowser.SaveFile("Save your VRM", Application.persistentDataPath, fileName, bytes, new ExtensionFilter("vrm", "vrm"));
+
+                view?.SetVRMSuccessToastActive(true);
+                await UniTask.Delay(SUCCESS_TOAST_ACTIVE_TIME, cancellationToken: ct);
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+            finally
+            {
+                view?.SetVRMButtonEnabled(true);
+                view?.SetVRMSuccessToastActive(false);
+            }
+            backpackAnalyticsService.SendVRMExportSucceeded();
         }
     }
 }

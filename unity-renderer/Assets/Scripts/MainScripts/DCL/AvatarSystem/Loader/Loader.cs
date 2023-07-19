@@ -13,6 +13,7 @@ namespace AvatarSystem
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public SkinnedMeshRenderer combinedRenderer { get; private set; }
+        public List<SkinnedMeshRenderer> originalVisibleRenderers { get; private set; } = new List<SkinnedMeshRenderer>();
         public List<Renderer> facialFeaturesRenderers { get; private set; }
         public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
@@ -61,17 +62,27 @@ namespace AvatarSystem
                 }
 
                 var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, settings.bodyshapeId, wearables);
-                combinedRenderer = await MergeAvatar(activeBodyParts, skinnedContainer, cancellationToken);
+                originalVisibleRenderers = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())).ToList();
+                combinedRenderer = await MergeAvatar(originalVisibleRenderers, skinnedContainer, cancellationToken);
                 facialFeaturesRenderers = new List<Renderer>();
 
                 if (activeBodyParts.Contains(bodyshapeLoader.headRenderer))
                 {
                     if (bodyWearables.Eyes != null)
+                    {
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
+                        originalVisibleRenderers.Add(bodyshapeLoader.eyesRenderer);
+                    }
                     if (bodyWearables.Eyebrows != null)
+                    {
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
+                        originalVisibleRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
+                    }
                     if (bodyWearables.Mouth != null)
+                    {
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
+                        originalVisibleRenderers.Add(bodyshapeLoader.mouthRenderer);
+                    }
                 }
                 else
                 {
@@ -172,20 +183,16 @@ namespace AvatarSystem
         public bool IsValidForBodyShape(BodyWearables bodyWearables) =>
             bodyshapeLoader != null && bodyshapeLoader.IsValid(bodyWearables);
 
-        private async UniTask<SkinnedMeshRenderer> MergeAvatar(
-            IList<SkinnedMeshRenderer> activeBodyParts,
-            SkinnedMeshRenderer bonesContainer,
+        private async UniTask<SkinnedMeshRenderer> MergeAvatar(List<SkinnedMeshRenderer> renderers, SkinnedMeshRenderer bonesContainer,
             CancellationToken ct)
         {
-            IEnumerable<SkinnedMeshRenderer> allRenderers = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
-
             // AvatarMeshCombiner is a bit buggy when performing the combine of the same meshes on the same frame,
             // once that's fixed we can remove this wait
             // AttachExternalCancellation is needed because cancellation will take a wait to trigger
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, ct).AttachExternalCancellation(ct);
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
-            bool success = avatarMeshCombiner.Combine(bonesContainer, allRenderers.ToArray());
+            bool success = avatarMeshCombiner.Combine(bonesContainer, renderers);
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;

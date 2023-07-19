@@ -20,5 +20,7 @@ namespace DCL.Backpack
         void SendAvatarColorPick();
         void SendForceHideWearable(string category);
         void SendForceShowWearable(string category);
+        void SendVRMExportStarted();
+        void SendVRMExportSucceeded();
     }
 }

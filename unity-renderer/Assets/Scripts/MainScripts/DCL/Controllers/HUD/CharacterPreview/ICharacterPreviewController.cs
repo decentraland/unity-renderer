@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
     public interface ICharacterPreviewController : IDisposable
     {
+        IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
+
         void PlayEmote(string emoteId, long timestamp);
         UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default);
         void SetFocus(PreviewCameraFocus focus, bool useTransition = true);
