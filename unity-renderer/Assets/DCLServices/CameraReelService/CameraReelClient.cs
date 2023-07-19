@@ -35,35 +35,29 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelImageResponse> UploadScreenshot(byte[] screenshot, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            List<IMultipartFormSection> formData = new List<IMultipartFormSection>
+            var formData = new List<IMultipartFormSection>
             {
                 new MultipartFormFileSection("image", screenshot, $"{metadata.dateTime}.jpg", "image/jpeg"),
                 new MultipartFormDataSection("metadata", JsonUtility.ToJson(metadata)),
             };
 
-            var result = await webRequestController.PostMultipartAsync(IMAGE_BASE_URL, formData, cancellationToken: ct);
-
-            if (result.result != UnityWebRequest.Result.Success)
-                throw new Exception($"Error uploading screenshot:\n{result.error}");
-
-            var response = Utils.SafeFromJson<CameraReelImageResponse>( result.downloadHandler.text);
-            ResponseSanityCheck(response, result.downloadHandler.text);
-
-            return response;
+            UnityWebRequest result = await webRequestController.PostMultipartAsync(IMAGE_BASE_URL, formData, cancellationToken: ct);
+            return ParseScreenshotResponse(result, unSuccessResultMassage: "Error uploading screenshot");
         }
 
         public async UniTask<CameraReelImageResponse> GetImage(string imageUUID, CancellationToken ct)
         {
-            var url = $"{IMAGE_BASE_URL}/{imageUUID}";
-            var result = await webRequestController.GetAsync(url, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{IMAGE_BASE_URL}/{imageUUID}", cancellationToken: ct);
+            return ParseScreenshotResponse(result, unSuccessResultMassage: "Error fetching screenshot image with metadata");
+        }
 
+        private static CameraReelImageResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMassage)
+        {
             if (result.result != UnityWebRequest.Result.Success)
-                throw new Exception($"Error fetching screenshot image with metadata:\n{result.error}");
+                throw new Exception($"{unSuccessResultMassage}:\n{result.error}");
 
-            Debug.Log(result.downloadHandler.text);
-            var response = Utils.SafeFromJson<CameraReelImageResponse>(result.downloadHandler.text);
+            CameraReelImageResponse response = Utils.SafeFromJson<CameraReelImageResponse>(result.downloadHandler.text);
             ResponseSanityCheck(response, result.downloadHandler.text);
-
             return response;
         }
 
@@ -95,5 +89,4 @@ namespace DCLServices.CameraReelService
 
         public ScreenshotMetadata metadata;
     }
-
 }

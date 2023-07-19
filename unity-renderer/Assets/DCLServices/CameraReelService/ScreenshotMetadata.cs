@@ -1,7 +1,6 @@
 ﻿using DCL;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace UI.InWorldCamera.Scripts
@@ -16,10 +15,10 @@ namespace UI.InWorldCamera.Scripts
         public Scene scene;
         public VisiblePeople[] visiblePeople;
 
-        public static ScreenshotMetadata Create(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
+        public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            var ownPlayer = DataStore.i.player.ownPlayer.Get();
-            var playerPosition = DataStore.i.player.playerGridPosition.Get();
+            var ownPlayer = player.ownPlayer.Get();
+            var playerPosition = player.playerGridPosition.Get();
 
             var metadata = new ScreenshotMetadata
                 {
@@ -56,11 +55,19 @@ namespace UI.InWorldCamera.Scripts
 
         private static List<Player> CalculateVisiblePlayersInFrustrum(IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
-            return (from lodController in avatarsLODController.LodControllers.Values.Where(lodController => !lodController.IsInvisible)
-                let planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera)
-                let playerCollider = lodController.player.collider
-                where GeometryUtility.TestPlanesAABB(planes, playerCollider.bounds)
-                select lodController.player).ToList();
+            List<Player> list = new List<Player>();
+
+            foreach (IAvatarLODController lodController in avatarsLODController.LodControllers.Values)
+                if (!lodController.IsInvisible)
+                {
+                    Plane[] planes = GeometryUtility.CalculateFrustumPlanes(screenshotCamera);
+                    var player = lodController.player;
+
+                    if (GeometryUtility.TestPlanesAABB(planes, player.collider.bounds))
+                        list.Add(player);
+                }
+
+            return list;
         }
     }
 
