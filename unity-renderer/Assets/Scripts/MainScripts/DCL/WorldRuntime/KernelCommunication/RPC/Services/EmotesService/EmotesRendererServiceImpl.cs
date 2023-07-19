@@ -92,7 +92,7 @@ namespace RPC.Services
                 return FAILURE_RESPONSE;
 
             // generates an emote id
-            if (!SceneEmoteHelper.TryGenerateEmoteId(scene, request.Path, true, out string emoteId))
+            if (!SceneEmoteHelper.TryGenerateEmoteId(scene, request.Path, request.Loop, out string emoteId))
                 return FAILURE_RESPONSE;
 
             avatarData ??= ownPlayer.Get()?.avatar;

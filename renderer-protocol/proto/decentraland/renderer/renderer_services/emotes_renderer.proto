@@ -11,6 +11,7 @@ message TriggerSelfUserExpressionResponse {}
 message TriggerSceneExpressionRequest {
   string path = 1;
   int32 scene_number = 2;
+  bool loop = 3;
 }
 
 message SuccessResponse {

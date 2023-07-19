@@ -31,8 +31,8 @@ namespace AvatarSystem
                 int loopSeparator = prefixRemoved.LastIndexOf('-');
                 emoteHash = prefixRemoved.Slice(0, loopSeparator).ToString();
 
-                loop = prefixRemoved.Slice(loopSeparator + 1, 3)
-                                    .Equals("true", StringComparison.InvariantCultureIgnoreCase);
+                var loopSpan = prefixRemoved.Slice(loopSeparator + 1, 4);
+                loop = loopSpan.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 
                 return true;
             }

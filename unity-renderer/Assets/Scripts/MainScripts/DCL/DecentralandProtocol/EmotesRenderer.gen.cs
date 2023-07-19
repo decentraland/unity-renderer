@@ -28,23 +28,24 @@ namespace Decentraland.Renderer.RendererServices {
             "dGVzX3JlbmRlcmVyLnByb3RvEidkZWNlbnRyYWxhbmQucmVuZGVyZXIucmVu",
             "ZGVyZXJfc2VydmljZXMiLgogVHJpZ2dlclNlbGZVc2VyRXhwcmVzc2lvblJl",
             "cXVlc3QSCgoCaWQYASABKAkiIwohVHJpZ2dlclNlbGZVc2VyRXhwcmVzc2lv",
-            "blJlc3BvbnNlIkMKHVRyaWdnZXJTY2VuZUV4cHJlc3Npb25SZXF1ZXN0EgwK",
-            "BHBhdGgYASABKAkSFAoMc2NlbmVfbnVtYmVyGAIgASgFIiIKD1N1Y2Nlc3NS",
-            "ZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIMu0CChVFbW90ZXNSZW5kZXJlclNl",
-            "cnZpY2UStAEKGVRyaWdnZXJTZWxmVXNlckV4cHJlc3Npb24SSS5kZWNlbnRy",
-            "YWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuVHJpZ2dlclNlbGZV",
-            "c2VyRXhwcmVzc2lvblJlcXVlc3QaSi5kZWNlbnRyYWxhbmQucmVuZGVyZXIu",
-            "cmVuZGVyZXJfc2VydmljZXMuVHJpZ2dlclNlbGZVc2VyRXhwcmVzc2lvblJl",
-            "c3BvbnNlIgASnAEKFlRyaWdnZXJTY2VuZUV4cHJlc3Npb24SRi5kZWNlbnRy",
-            "YWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuVHJpZ2dlclNjZW5l",
-            "RXhwcmVzc2lvblJlcXVlc3QaOC5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVu",
-            "ZGVyZXJfc2VydmljZXMuU3VjY2Vzc1Jlc3BvbnNlIgBiBnByb3RvMw=="));
+            "blJlc3BvbnNlIlEKHVRyaWdnZXJTY2VuZUV4cHJlc3Npb25SZXF1ZXN0EgwK",
+            "BHBhdGgYASABKAkSFAoMc2NlbmVfbnVtYmVyGAIgASgFEgwKBGxvb3AYAyAB",
+            "KAgiIgoPU3VjY2Vzc1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgy7QIKFUVt",
+            "b3Rlc1JlbmRlcmVyU2VydmljZRK0AQoZVHJpZ2dlclNlbGZVc2VyRXhwcmVz",
+            "c2lvbhJJLmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNl",
+            "cy5UcmlnZ2VyU2VsZlVzZXJFeHByZXNzaW9uUmVxdWVzdBpKLmRlY2VudHJh",
+            "bGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5UcmlnZ2VyU2VsZlVz",
+            "ZXJFeHByZXNzaW9uUmVzcG9uc2UiABKcAQoWVHJpZ2dlclNjZW5lRXhwcmVz",
+            "c2lvbhJGLmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNl",
+            "cy5UcmlnZ2VyU2NlbmVFeHByZXNzaW9uUmVxdWVzdBo4LmRlY2VudHJhbGFu",
+            "ZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5TdWNjZXNzUmVzcG9uc2Ui",
+            "AGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TriggerSelfUserExpressionRequest), global::Decentraland.Renderer.RendererServices.TriggerSelfUserExpressionRequest.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TriggerSelfUserExpressionResponse), global::Decentraland.Renderer.RendererServices.TriggerSelfUserExpressionResponse.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TriggerSceneExpressionRequest), global::Decentraland.Renderer.RendererServices.TriggerSceneExpressionRequest.Parser, new[]{ "Path", "SceneNumber" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TriggerSceneExpressionRequest), global::Decentraland.Renderer.RendererServices.TriggerSceneExpressionRequest.Parser, new[]{ "Path", "SceneNumber", "Loop" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.SuccessResponse), global::Decentraland.Renderer.RendererServices.SuccessResponse.Parser, new[]{ "Success" }, null, null, null, null)
           }));
     }
@@ -429,6 +430,7 @@ namespace Decentraland.Renderer.RendererServices {
     public TriggerSceneExpressionRequest(TriggerSceneExpressionRequest other) : this() {
       path_ = other.path_;
       sceneNumber_ = other.sceneNumber_;
+      loop_ = other.loop_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -462,6 +464,18 @@ namespace Decentraland.Renderer.RendererServices {
       }
     }
 
+    /// <summary>Field number for the "loop" field.</summary>
+    public const int LoopFieldNumber = 3;
+    private bool loop_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Loop {
+      get { return loop_; }
+      set {
+        loop_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -479,6 +493,7 @@ namespace Decentraland.Renderer.RendererServices {
       }
       if (Path != other.Path) return false;
       if (SceneNumber != other.SceneNumber) return false;
+      if (Loop != other.Loop) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -488,6 +503,7 @@ namespace Decentraland.Renderer.RendererServices {
       int hash = 1;
       if (Path.Length != 0) hash ^= Path.GetHashCode();
       if (SceneNumber != 0) hash ^= SceneNumber.GetHashCode();
+      if (Loop != false) hash ^= Loop.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -514,6 +530,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(16);
         output.WriteInt32(SceneNumber);
       }
+      if (Loop != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(Loop);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -532,6 +552,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(16);
         output.WriteInt32(SceneNumber);
       }
+      if (Loop != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(Loop);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -547,6 +571,9 @@ namespace Decentraland.Renderer.RendererServices {
       }
       if (SceneNumber != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(SceneNumber);
+      }
+      if (Loop != false) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -565,6 +592,9 @@ namespace Decentraland.Renderer.RendererServices {
       }
       if (other.SceneNumber != 0) {
         SceneNumber = other.SceneNumber;
+      }
+      if (other.Loop != false) {
+        Loop = other.Loop;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -589,6 +619,10 @@ namespace Decentraland.Renderer.RendererServices {
             SceneNumber = input.ReadInt32();
             break;
           }
+          case 24: {
+            Loop = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -610,6 +644,10 @@ namespace Decentraland.Renderer.RendererServices {
           }
           case 16: {
             SceneNumber = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            Loop = input.ReadBool();
             break;
           }
         }
