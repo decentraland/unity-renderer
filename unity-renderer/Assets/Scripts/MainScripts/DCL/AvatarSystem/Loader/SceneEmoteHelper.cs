@@ -15,7 +15,7 @@ namespace AvatarSystem
         {
             if (scene.contentProvider.TryGetContentHash(emoteFilePath, out string emoteHash))
             {
-                emoteId = $"{SCENE_EMOTE_PREFIX}:{emoteHash}-{(loop ? "true" : "false")}";
+                emoteId = $"{SCENE_EMOTE_PREFIX}{emoteHash}-{(loop ? "true" : "false")}";
                 return true;
             }
 
@@ -27,7 +27,7 @@ namespace AvatarSystem
         {
             try
             {
-                ReadOnlySpan<char> prefixRemoved = emoteId.AsSpan().Slice(SCENE_EMOTE_PREFIX.Length + 1, emoteId.Length - SCENE_EMOTE_PREFIX.Length - 1);
+                ReadOnlySpan<char> prefixRemoved = emoteId.AsSpan().Slice(SCENE_EMOTE_PREFIX.Length, emoteId.Length - SCENE_EMOTE_PREFIX.Length);
                 int loopSeparator = prefixRemoved.LastIndexOf('-');
                 emoteHash = prefixRemoved.Slice(0, loopSeparator).ToString();
 
@@ -91,6 +91,7 @@ namespace AvatarSystem
 
             // flag it as equipped
             currentSceneEquippedEmotes.Add(emoteData);
+            currentScenePendingSceneEmotes.Remove(emoteData);
         }
     }
 }
