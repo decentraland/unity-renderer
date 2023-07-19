@@ -59,11 +59,11 @@ namespace UI.InWorldCamera.Scripts
             }
         }
 
-        // private void Awake()
-        // {
-        //     if (!featureFlags.IsFeatureEnabled("camera-reel"))
-        //         Destroy(gameObject);
-        // }
+        private void Awake()
+        {
+            if (!featureFlags.IsFeatureEnabled("camera_reel"))
+                Destroy(gameObject);
+        }
 
         private void OnEnable()
         {
