@@ -14,8 +14,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
 
-    [SerializeField] internal GameObject minimalSearchSection;
-    [SerializeField] internal GameObject fullSearchSection;
+    [SerializeField] private GameObject minimalSearchSection;
+    [SerializeField] private GameObject fullSearchSection;
     [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject searchHeader;
     [SerializeField] private Button backButton;
@@ -49,8 +49,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public event Action<int> OnRequestAllEvents;
     public event Action<int> OnRequestAllPlaces;
     public event Action OnBackFromSearch;
-    public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
+    public event Action<EventCardComponentModel, int> OnEventInfoClicked;
+    public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnPlaceFavoriteChanged;
@@ -229,7 +229,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onSubscribeClick.RemoveAllListeners();
         view.onUnsubscribeClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
-        view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model));
+        view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
         view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
         view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
@@ -240,7 +240,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onInfoClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
         view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
-        view.onInfoClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model));
+        view.onInfoClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
         view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
     }
@@ -253,13 +253,13 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
         eventModal.Show();
-        EventsCardsConfigurator.Configure(eventModal, eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
+        EventsCardsConfigurator.Configure(eventModal, eventInfo, null, OnEventJumpInClicked, OnSubscribeEventClicked, OnUnsubscribeEventClicked);
     }
 
     public void ShowPlaceModal(PlaceCardComponentModel placeModel)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeModel, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnPlaceFavoriteChanged);
+        PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)

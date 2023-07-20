@@ -9,8 +9,8 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
     event Action<int> OnRequestAllEvents;
     event Action<int> OnRequestAllPlaces;
     event Action OnBackFromSearch;
-    public event Action<EventCardComponentModel> OnEventInfoClicked;
-    public event Action<PlaceCardComponentModel> OnPlaceInfoClicked;
+    public event Action<EventCardComponentModel, int> OnEventInfoClicked;
+    public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnPlaceFavoriteChanged;
