@@ -247,6 +247,9 @@ public class WearableItem
         if (replaces != null)
             hides.UnionWith(replaces);
 
+        // Safeguard so no wearable can hide itself
+        hides.Remove(data.category);
+
         return hides.ToArray();
     }
 

@@ -9,6 +9,31 @@ namespace AvatarAssets_Test
         private const string BODY_SHAPE = "male";
 
         [Test]
+        public void WearableCantHideItself()
+        {
+            var wearable = new WearableItem
+            {
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.UPPER_BODY,
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] { BODY_SHAPE },
+                            overrideHides = new [] {WearableLiterals.Categories.UPPER_BODY }
+                        }
+                    },
+                    hides = new [] {WearableLiterals.Categories.UPPER_BODY }
+                }
+            };
+
+            string[] hides = wearable.GetHidesList(BODY_SHAPE);
+
+            Assert.IsTrue(!hides.Contains(WearableLiterals.Categories.UPPER_BODY), "Wearable does not contain its own category");
+        }
+
+        [Test]
         public void GetHideCategoriesWhenIsSkin()
         {
             var wearable = GivenSkinWearable(null);
