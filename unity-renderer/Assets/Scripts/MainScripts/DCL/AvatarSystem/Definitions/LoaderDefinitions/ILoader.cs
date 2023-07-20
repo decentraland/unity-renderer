@@ -19,11 +19,12 @@ namespace AvatarSystem
 
         GameObject bodyshapeContainer { get; }
         SkinnedMeshRenderer combinedRenderer { get; }
+        IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
         List<Renderer> facialFeaturesRenderers { get; }
         Status status { get; }
 
-        UniTask Load(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken cancellationToken = default);
+        UniTask Load(BodyWearables bodyWearables, List<WearableItem> wearables, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken cancellationToken = default);
         Transform[] GetBones();
-        bool IsValidForBodyShape(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth);
+        bool IsValidForBodyShape(BodyWearables bodyWearables);
     }
 }

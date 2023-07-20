@@ -56,7 +56,12 @@ namespace AvatarSystem
                             Debug.Log($"<color=red>Wearable AB FAILED -> {mainFile} {wearable.entityId} use this ID to reconvert</color>");
                         }
 #endif
+
+                        contentProvider.assetBundlesFetched = true;
                     }
+
+                    // even if it we not fetch the asset bundle because the wearable has no ID, we set this to true to avoid fetching it later for the same content provider
+                    contentProvider.assetBundlesFetched = true;
                 }
 
                 loaderAssetHelper = new RendereableAssetLoadHelper(contentProvider, baseUrl);

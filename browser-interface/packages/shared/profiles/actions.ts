@@ -1,4 +1,4 @@
-import type { Avatar } from '@dcl/schemas'
+import type { Avatar, Outfits } from '@dcl/schemas'
 import { action } from 'typesafe-actions'
 
 // Profile fetching
@@ -50,6 +50,10 @@ export const deployProfileFailure = (userId: string, profile: Avatar, error: any
 
 export type DeployProfileSuccess = ReturnType<typeof deployProfileSuccess>
 export type DeployProfile = ReturnType<typeof deployProfile>
+
+export const DEPLOY_OUTFITS_REQUEST = '[Deploy Current User Outfits] Request'
+export const deployOutfits = (outfits: Outfits) => action(DEPLOY_OUTFITS_REQUEST, { outfits })
+export type DeployOutfits = ReturnType<typeof deployOutfits>
 
 export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
 export const addedProfileToCatalog = (userId: string, profile: Avatar) =>

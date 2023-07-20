@@ -59,11 +59,16 @@ namespace DCLServices.EmotesCatalog
 
         private async UniTask RequestOwnedEmotesAsync(string userId)
         {
-            var url = $"{catalyst.lambdasUrl}users/{userId}/emotes";
+            var url = $"{catalyst.lambdasUrl}/users/{userId}/emotes";
             var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url, cancellationToken: cts.Token);
 
             if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
-            if (result.response.elements.Length <= 0) return;
+
+            if (result.response.elements.Length <= 0)
+            {
+                OnOwnedEmotesReceived?.Invoke(new List<WearableItem>(), userId);
+                return;
+            }
 
             var tempList = PoolUtils.RentList<string>();
             var emoteUrns = tempList.GetList();
@@ -112,10 +117,10 @@ namespace DCLServices.EmotesCatalog
         private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids)
         {
             // the copy of the list is intentional
-            var request = new EmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
+            var request = new LambdasEmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
             var url = $"{catalyst.contentUrl}entities/active";
 
-            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], EmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
+            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], LambdasEmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
 
             if (!response.success) throw new Exception($"Fetching wearables failed! {url}\n{string.Join("\n", request.pointers)}");
 

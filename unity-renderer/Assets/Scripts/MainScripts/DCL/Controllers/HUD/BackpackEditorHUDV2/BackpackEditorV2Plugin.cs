@@ -1,26 +1,55 @@
+using Cysharp.Threading.Tasks;
 using DCL.Browser;
+using DCL.Providers;
+using DCLServices.DCLFileBrowser;
+using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
 namespace DCL.Backpack
 {
     public class BackpackEditorV2Plugin : IPlugin
     {
-        private readonly BackpackEditorHUDController hudController;
+        private BackpackEditorHUDController hudController;
 
         public BackpackEditorV2Plugin()
         {
+            Initialize().Forget();
+        }
+
+        private async UniTaskVoid Initialize()
+        {
+            var assetsProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
+            var vrmExporterReferences = await assetsProvider.Instantiate<VRMExporterReferences>("VRMExporter", "_VRMExporter");
+
             IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
-            var view = BackpackEditorHUDV2ComponentView.Create();
-            view.Initialize(
-            Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
-            new PreviewCameraRotationController(),
-            new PreviewCameraPanningController(),
-            new PreviewCameraZoomController());
-
             DataStore dataStore = DataStore.i;
+
+            var view = BackpackEditorHUDV2ComponentView.Create();
+
+            view.Initialize(
+                Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
+                new PreviewCameraRotationController(),
+                new PreviewCameraPanningController(),
+                new PreviewCameraZoomController());
+
+            var backpackAnalyticsService = new BackpackAnalyticsService(
+                Environment.i.platform.serviceProviders.analytics,
+                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
+
+            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+
+            var outfitsController = new OutfitsController(
+                view.OutfitsSectionComponentView,
+                new LambdaOutfitsService(
+                    Environment.i.serviceLocator.Get<ILambdasService>(),
+                    Environment.i.serviceLocator.Get<IServiceProviders>()),
+                userProfileBridge,
+                dataStore,
+                backpackAnalyticsService);
 
             var backpackEmotesSectionController = new BackpackEmotesSectionController(
                 dataStore,
@@ -28,13 +57,9 @@ namespace DCL.Backpack
                 userProfileBridge,
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>());
 
-            var backpackAnalyticsService = new BackpackAnalyticsService(
-                Environment.i.platform.serviceProviders.analytics,
-                new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
-
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
-            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView, backpackAnalyticsService);
+            var avatarSlotsHUDController = new AvatarSlotsHUDController(view.AvatarSlotsView, backpackAnalyticsService, dataStore.featureFlags.flags);
 
             var wearableGridController = new WearableGridController(view.WearableGridComponentView,
                 userProfileBridge,
@@ -50,11 +75,15 @@ namespace DCL.Backpack
                 dataStore,
                 CommonScriptableObjects.rendererState,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                wearablesCatalogService,
                 backpackEmotesSectionController,
                 backpackAnalyticsService,
                 wearableGridController,
-                avatarSlotsHUDController);
+                avatarSlotsHUDController,
+                outfitsController,
+                new VRMExporter(vrmExporterReferences),
+                Environment.i.platform.serviceLocator.Get<IDCLFileBrowserService>());
+
         }
 
         public void Dispose()

@@ -34,20 +34,20 @@ namespace Tests
             entity = scene.CreateEntity(111);
 
             renderersInternalComponent = Substitute.For<IInternalECSComponent<InternalRenderers>>();
-            ECSComponentData<InternalRenderers> internalCompData = null;
+            ECSComponentData<InternalRenderers>? internalCompData = null;
             renderersInternalComponent.GetFor(scene, entity).Returns(info => internalCompData);
 
             renderersInternalComponent.WhenForAnyArgs(
                                            x => x.PutFor(scene, entity, Arg.Any<InternalRenderers>()))
                                       .Do(info =>
                                        {
-                                           internalCompData ??= new ECSComponentData<InternalRenderers>
-                                           {
-                                               scene = info.ArgAt<IParcelScene>(0),
-                                               entity = info.ArgAt<IDCLEntity>(1),
-                                           };
-
-                                           internalCompData.model = info.ArgAt<InternalRenderers>(2);
+                                           internalCompData = new ECSComponentData<InternalRenderers>
+                                           (
+                                               scene: info.ArgAt<IParcelScene>(0),
+                                               entity: info.ArgAt<IDCLEntity>(1),
+                                               model: info.ArgAt<InternalRenderers>(2),
+                                               handler: null
+                                           );
                                        });
 
             textShapeComponentHandler = new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, renderersInternalComponent, Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
@@ -64,6 +64,7 @@ namespace Tests
             textShapeComponentHandler.OnComponentRemoved(scene, entity);
             testUtils.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
+            Environment.Dispose();
         }
 
         [Test]

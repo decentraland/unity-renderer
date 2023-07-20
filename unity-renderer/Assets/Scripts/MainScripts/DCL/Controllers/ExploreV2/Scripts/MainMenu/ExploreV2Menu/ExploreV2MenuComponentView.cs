@@ -28,6 +28,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
     [SerializeField] internal FeatureEncapsulatorComponentView walletSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView myAccountSection;
 
     [Header("Tutorial References")]
     [SerializeField] internal RectTransform profileCardTooltipReference;
@@ -69,6 +70,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         closeAction.OnTriggered -= OnCloseActionTriggered;
         DataStore.i.exploreV2.isSomeModalOpen.OnChange -= IsSomeModalOpen_OnChange;
         DataStore.i.exploreV2.isInitialized.OnChange -= IsInitialized_OnChange;
+        DataStore.i.myAccount.myAccountSectionOpenFromProfileHUD.OnChange -= OpenMyAccountSection;
 
         if (realmSelectorModal != null)
             realmSelectorModal.Dispose();
@@ -86,17 +88,19 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         exploreSectionsById = new Dictionary<ExploreSection, FeatureEncapsulatorComponentView>
         {
             { ExploreSection.Explore, null },
+            { ExploreSection.Quest, questSection },
             { ExploreSection.Backpack, backpackSection },
             { ExploreSection.Map, mapSection },
-            { ExploreSection.Quest, questSection },
             { ExploreSection.Settings, settingsSection },
             { ExploreSection.Wallet, walletSection },
+            { ExploreSection.MyAccount, myAccountSection },
         };
     }
 
     public void Start()
     {
         DataStore.i.exploreV2.isInitialized.OnChange += IsInitialized_OnChange;
+        DataStore.i.myAccount.myAccountSectionOpenFromProfileHUD.OnChange += OpenMyAccountSection;
         IsInitialized_OnChange(DataStore.i.exploreV2.isInitialized.Get(), false);
 
         ConfigureCloseButton();
@@ -142,9 +146,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
     private void OpenCurrentWalletSection()
     {
-        foreach (var section in exploreSectionsById)
-            if (section.Value != null && section.Value.isVisible)
-                section.Value.Hide();
+        HideAllSections();
 
         foreach (ISectionToggle section in sectionSelector.GetAllSections())
             section?.SetUnselectedVisuals();
@@ -152,11 +154,27 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
         SelectSection(ExploreSection.Wallet, true);
     }
 
+    private void OpenMyAccountSection(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        HideAllSections();
+
+        foreach (ISectionToggle section in sectionSelector.GetAllSections())
+            section?.SetUnselectedVisuals();
+
+        SelectSection(ExploreSection.MyAccount, true);
+    }
+
     private UnityAction<bool> OnSectionSelected(ExploreSection sectionId) =>
         isOn =>
         {
             if (exploreSectionsById[ExploreSection.Wallet].isVisible)
                 exploreSectionsById[ExploreSection.Wallet].Hide();
+
+            if (exploreSectionsById[ExploreSection.MyAccount].isVisible)
+                exploreSectionsById[ExploreSection.MyAccount].Hide();
 
             SelectSection(sectionId, isOn);
         };
@@ -283,7 +301,11 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (Input.GetMouseButton(0) &&
             !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTransform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.ExpandedMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
+            !RectTransformUtility.RectangleContainsScreenPoint(DataStore.i.myAccount.isInitialized.Get() ?
+                HUDController.i.profileHud.view.MyAccountCardLayout :
+                HUDController.i.profileHud.view.ExpandedMenu,
+                Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
+            !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.MyAccountCardMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);
     }
 
@@ -333,5 +355,12 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     {
         currentWalletCard.SetWalletCardActive(isActive);
         currentWalletCard.SetWalletCardAsGuest(isGuest);
+    }
+
+    private void HideAllSections()
+    {
+        foreach (var section in exploreSectionsById)
+            if (section.Value != null && section.Value.isVisible)
+                section.Value.Hide();
     }
 }

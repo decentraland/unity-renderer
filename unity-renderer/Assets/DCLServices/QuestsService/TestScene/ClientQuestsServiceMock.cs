@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Decentraland.Quests;
+using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,39 +13,45 @@ namespace DCLServices.QuestsService.TestScene
 {
     public class ClientQuestsServiceMock : MonoBehaviour, IClientQuestsService
     {
-        public static string PATH_UPDATES => Application.dataPath + "/../../updates.txt";
-        public static string PATH_DEFINITIONS => Application.dataPath + "/../../definitions.txt";
-
-        public int QuestStateUpdatesCount => questStateUpdates.Count;
-        private Queue<UserUpdate> questStateUpdates = new ();
-        private Dictionary<string, Quest> questDefinitions = new ();
+        public int UserUpdatesCount => userUpdates.Count;
+        private Quests getAllQuests = new ();
+        private readonly Queue<UserUpdate> userUpdates = new ();
+        private readonly Dictionary<string, Quest> questDefinitions = new ();
         private Channel<UserUpdate> userUpdateChannel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
 
         private void Awake()
         {
-            string[] updates = File.ReadAllLines(PATH_UPDATES);
+            userUpdates.Clear();
+            questDefinitions.Clear();
+            userUpdateChannel = Channel.CreateSingleConsumerUnbounded<UserUpdate>();
 
-            foreach (string update in updates)
+            #if UNITY_EDITOR
+            getAllQuests = Quests.Parser.ParseJson(File.ReadAllText(QuestsServiceTestScene_Utils.GET_ALL_QUESTS_FILE));
+            string[] userUpdatesEntries = File.ReadAllLines(QuestsServiceTestScene_Utils.USER_UPDATES_FILE);
+            foreach (string userUpdatesEntry in userUpdatesEntries)
+                userUpdates.Enqueue(UserUpdate.Parser.ParseJson(userUpdatesEntry));
+
+            string[] definitionsEntries = File.ReadAllLines(QuestsServiceTestScene_Utils.DEFINITIONS_FILE);
+            foreach (string definitionEntry in definitionsEntries)
             {
-                questStateUpdates.Enqueue(UserUpdate.Parser.ParseJson(update));
+                var definition = Quest.Parser.ParseJson(definitionEntry);
+                questDefinitions[definition.Id] = definition;
             }
+            #endif
         }
 
-        public async UniTask<Quest> GetQuestDefinition(GetQuestDefinitionRequest request) =>
-            questDefinitions[request.QuestId];
+        public UniTask<GetAllQuestsResponse> GetAllQuests(Empty request) => new (new GetAllQuestsResponse() { Quests = getAllQuests });
 
-        public IUniTaskAsyncEnumerable<UserUpdate> Subscribe(UserAddress request) =>
-            userUpdateChannel.Reader.ReadAllAsync();
+        public IUniTaskAsyncEnumerable<UserUpdate> Subscribe(Empty request) => userUpdateChannel.Reader.ReadAllAsync();
+
+        public async UniTask<GetQuestDefinitionResponse> GetQuestDefinition(GetQuestDefinitionRequest request) => new () { Quest = questDefinitions[request.QuestId] };
 
         public void EnqueueChanges(int amount)
         {
-            for (int i = 0; i < amount && questStateUpdates.Count > 0; i++)
-            {
-                userUpdateChannel.Writer.TryWrite(questStateUpdates.Dequeue());
-            }
+            for (int i = 0; i < amount && userUpdates.Count > 0; i++) { userUpdateChannel.Writer.TryWrite(userUpdates.Dequeue()); }
         }
 
-        #region not needed for the mock
+#region not needed for the mock
         // Not needed for the mock
         public UniTask<StartQuestResponse> StartQuest(StartQuestRequest request) =>
             throw new NotImplementedException();
@@ -54,13 +62,6 @@ namespace DCLServices.QuestsService.TestScene
 
         // Not needed for the mock
         public UniTask<EventResponse> SendEvent(EventRequest request) =>
-            throw new NotImplementedException();
-
-        // Not needed for the mock
-        public UniTask<GetAllQuestsResponse> GetAllQuests(UserAddress request) =>
-            throw new NotImplementedException();
-
-        UniTask<GetQuestDefinitionResponse> IClientQuestsService.GetQuestDefinition(GetQuestDefinitionRequest request) =>
             throw new NotImplementedException();
 #endregion
     }

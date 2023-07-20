@@ -1,7 +1,7 @@
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 
-public readonly struct ComponentGroups : IComponentGroups
+public record ComponentGroups : IComponentGroups
 {
     public IECSReadOnlyComponentsGroup<InternalMaterial, InternalTexturizable> texturizableGroup { get; }
     public IECSReadOnlyComponentsGroup<InternalRenderers, InternalVisibility> visibilityGroup { get; }

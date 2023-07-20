@@ -6,6 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 namespace DCL.ECSComponents.UIAbstractElements.Tests
 {
@@ -27,36 +28,38 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
             entity = scene.CreateEntity(1111);
 
             uiInputResultsComponent = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
-            uiInputResults = new InternalUIInputResults();
+            uiInputResults = new InternalUIInputResults(new Queue<InternalUIInputResults.Result>());
 
             uiInputResultsComponent.GetFor(scene, entity).Returns(_ =>
             {
-                var subs = Substitute.For<IECSReadOnlyComponentData<InternalUIInputResults>>();
-                subs.entity.Returns(entity);
-                subs.scene.Returns(scene);
-                subs.model.Returns(uiInputResults);
-                return subs;
+                return new ECSComponentData<InternalUIInputResults>(
+                    scene,
+                    entity,
+                    uiInputResults,
+                    null
+                    );
             });
 
             var uiDoc = InstantiateUiDocument();
 
-            ECSComponentData<InternalUiContainer> internalCompData = null;
+            ECSComponentData<InternalUiContainer>? internalCompData = null;
             internalUiContainer = Substitute.For<IInternalECSComponent<InternalUiContainer>>();
             internalUiContainer.GetFor(scene, entity).Returns((info) => internalCompData);
             internalUiContainer.WhenForAnyArgs(
                                     x => x.PutFor(scene, entity, Arg.Any<InternalUiContainer>()))
                                .Do(info =>
                                 {
-                                    internalCompData ??= new ECSComponentData<InternalUiContainer>
-                                    {
-                                        scene = info.ArgAt<IParcelScene>(0),
-                                        entity = info.ArgAt<IDCLEntity>(1),
-                                    };
-                                    internalCompData.model = info.ArgAt<InternalUiContainer>(2);
+                                    internalCompData = new ECSComponentData<InternalUiContainer>
+                                    (
+                                        scene: info.ArgAt<IParcelScene>(0),
+                                        entity: info.ArgAt<IDCLEntity>(1),
+                                        model: info.ArgAt<InternalUiContainer>(2),
+                                        handler: null
+                                    );
 
                                     // to test events we need a panel, panel comes from `UIDocument`
-                                    if (!uiDoc.rootVisualElement.Contains(internalCompData.model.rootElement))
-                                        uiDoc.rootVisualElement.Add(internalCompData.model.rootElement);
+                                    if (!uiDoc.rootVisualElement.Contains(internalCompData.Value.model.rootElement))
+                                        uiDoc.rootVisualElement.Add(internalCompData.Value.model.rootElement);
                                 });
         }
 

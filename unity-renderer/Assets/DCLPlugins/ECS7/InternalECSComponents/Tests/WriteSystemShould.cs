@@ -6,6 +6,7 @@ using DCL.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Tests
 {
@@ -13,7 +14,7 @@ namespace Tests
     {
         private Action updateMarkComponentsAsDirty;
         private Action updateRemoveComponentsAsDirty;
-        private IReadOnlyKeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponent;
+        private DualKeyValueSet<int, long, InternalECSComponent<InternalVisibility>.DirtyData> markAsDirtyComponent;
         private IDCLEntity entity;
         private IParcelScene scene;
         private IInternalECSComponent<InternalRenderers> renderersComponent;
@@ -27,7 +28,7 @@ namespace Tests
             var manager = new ECSComponentsManager(factory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(manager, factory, executors);
-            markAsDirtyComponent = internalComponents.markAsDirtyComponents;
+            markAsDirtyComponent = ((InternalECSComponent<InternalVisibility>)internalComponents.visibilityComponent).markAsDirtyComponents;
 
             renderersComponent = internalComponents.renderersComponent;
             visibilityComponent = internalComponents.visibilityComponent;
@@ -48,41 +49,33 @@ namespace Tests
         [Test]
         public void HandleDirtyComponents()
         {
-            ComponentIdentifier componentIdentifier = new ComponentIdentifier(scene.sceneData.sceneNumber,
-                entity.entityId,
-                visibilityComponent.ComponentId);
-
-            var model = new InternalVisibility();
+            var model = new InternalVisibility(true);
             visibilityComponent.PutFor(scene, entity, model);
 
-            Assert.AreEqual(model, markAsDirtyComponent[componentIdentifier].Data);
+            Assert.AreEqual(model, markAsDirtyComponent[scene.sceneData.sceneNumber, entity.entityId].Data);
 
             updateMarkComponentsAsDirty();
 
-            Assert.IsTrue(visibilityComponent.GetFor(scene, entity).model.dirty);
+            Assert.IsTrue(visibilityComponent.GetFor(scene, entity)?.model.dirty);
 
             updateRemoveComponentsAsDirty();
-            Assert.IsFalse(visibilityComponent.GetFor(scene, entity).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene, entity)?.model.dirty);
             Assert.AreEqual(0, markAsDirtyComponent.Count);
         }
 
         [Test]
         public void ScheduleRemoveComponentWithDefault()
         {
-            var defaultVisibility = new InternalVisibility();
-            renderersComponent.PutFor(scene, entity, new InternalRenderers());
-            visibilityComponent.PutFor(scene, entity, new InternalVisibility() { visible = !defaultVisibility.visible });
+            var defaultVisibility = new InternalVisibility(true);
+            renderersComponent.PutFor(scene, entity, new InternalRenderers(new List<Renderer>()));
+            visibilityComponent.PutFor(scene, entity, new InternalVisibility(!defaultVisibility.visible));
             visibilityComponent.RemoveFor(scene, entity, defaultVisibility);
-
-            ComponentIdentifier visibilityComponentIdentifier = new ComponentIdentifier(scene.sceneData.sceneNumber,
-                entity.entityId,
-                visibilityComponent.ComponentId);
 
             // Expected `1` since renderersComponent should auto-remove itself when model contains no renderer
             // we are keeping it there to test for any possible race condition with that behavior
             Assert.AreEqual(1, markAsDirtyComponent.Count);
-            Assert.AreEqual(defaultVisibility, markAsDirtyComponent[visibilityComponentIdentifier].Data);
-            Assert.IsTrue(markAsDirtyComponent[visibilityComponentIdentifier].IsDelayedRemoval);
+            Assert.AreEqual(defaultVisibility, markAsDirtyComponent[scene.sceneData.sceneNumber, entity.entityId].Data);
+            Assert.IsTrue(markAsDirtyComponent[scene.sceneData.sceneNumber, entity.entityId].IsDelayedRemoval);
 
             updateMarkComponentsAsDirty();
             updateRemoveComponentsAsDirty();
@@ -94,7 +87,7 @@ namespace Tests
         [Test]
         public void RemoveComponentWithoutDefault()
         {
-            visibilityComponent.PutFor(scene, entity, new InternalVisibility());
+            visibilityComponent.PutFor(scene, entity, new InternalVisibility(true));
             Assert.AreEqual(1, markAsDirtyComponent.Count);
 
             visibilityComponent.RemoveFor(scene, entity);

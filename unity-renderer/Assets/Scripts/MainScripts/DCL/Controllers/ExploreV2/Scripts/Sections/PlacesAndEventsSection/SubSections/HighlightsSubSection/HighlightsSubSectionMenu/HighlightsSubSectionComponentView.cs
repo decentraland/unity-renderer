@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
+using System.Linq;
 using DCL;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +21,13 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     private const string LIVE_EVENT_CARDS_POOL_NAME = "Highlights_LiveEventCardsPool";
     private const int LIVE_EVENT_CARDS_POOL_PREWARM = 3;
 
-    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new ();
+    private Func<CancellationToken, UniTask> setPlacesTask;
+    private Func<CancellationToken, UniTask> setLiveEventsTask;
+    private Func<CancellationToken, UniTask> setTrendingTask;
     private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
-    private readonly CancellationTokenSource cancellationTokenSource = new ();
+    private readonly CancellationTokenSource disposeCts = new ();
+    private CancellationTokenSource setPlacesCts;
+    private CancellationTokenSource updateVisualsCts;
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardLongPrefab;
@@ -102,7 +108,9 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         base.Dispose();
 
-        cancellationTokenSource.Cancel();
+        disposeCts?.SafeCancelAndDispose();
+        setPlacesCts?.SafeCancelAndDispose();
+        updateVisualsCts?.SafeCancelAndDispose();
 
         trendingPlacesAndEvents.Dispose();
         featuredPlaces.Dispose();
@@ -125,12 +133,22 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
 
     public void SetActive(bool isActive)
     {
+        if (canvas.enabled == isActive)
+            return;
+        updateVisualsCts?.SafeCancelAndDispose();
         canvas.enabled = isActive;
 
         if (isActive)
+        {
+            updateVisualsCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+            UpdateCardsVisualProcess(updateVisualsCts.Token).Forget();
             OnEnable();
+        }
         else
+        {
+            poolsPrewarmAsyncsBuffer.Clear();
             OnDisable();
+        }
     }
 
     public void ConfigurePools()
@@ -209,17 +227,20 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         SetFeaturedPlacesAsLoading(false);
         featuredPlacesNoDataText.gameObject.SetActive(places.Count == 0);
 
+        setPlacesCts?.SafeCancelAndDispose();
+        setPlacesCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        setPlacesTask = (ct) => SetPlacesAsync(places, CancellationTokenSource.CreateLinkedTokenSource(setPlacesCts.Token, ct).Token);
+    }
+
+    private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+            return;
         featuredPlaceCardsPool.ReleaseAll();
 
         featuredPlaces.ExtractItems();
         featuredPlaces.RemoveItems();
 
-        cardsVisualUpdateBuffer.Enqueue(() => SetPlacesAsync(places, cancellationTokenSource.Token));
-        UpdateCardsVisual();
-    }
-
-    private async UniTask SetPlacesAsync(List<PlaceCardComponentModel> places, CancellationToken cancellationToken)
-    {
         foreach (PlaceCardComponentModel place in places)
         {
             PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(featuredPlaceCardsPool, place, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
@@ -239,17 +260,16 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         SetLiveAsLoading(false);
         liveEventsNoDataText.gameObject.SetActive(events.Count == 0);
 
+        setLiveEventsTask = (ct) => SetLiveEventsAsync(events, liveEvents, liveEventCardsPool, disposeCts.Token);
+    }
+
+    private async UniTask SetLiveEventsAsync(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool, CancellationToken cancellationToken)
+    {
         liveEventCardsPool.ReleaseAll();
 
         liveEvents.ExtractItems();
         liveEvents.RemoveItems();
 
-        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, liveEvents, liveEventCardsPool, cancellationTokenSource.Token));
-        UpdateCardsVisual();
-    }
-
-    private async UniTask SetEventsAsync(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Pool pool, CancellationToken cancellationToken)
-    {
         foreach (EventCardComponentModel eventInfo in events)
         {
             eventsGrid.AddItem(
@@ -267,18 +287,17 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
     {
         SetTrendingPlacesAndEventsAsLoading(false);
 
+        setTrendingTask = (ct) => SetTrendingsAsync(places, events, CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token, ct).Token);
+    }
+
+    private async UniTask SetTrendingsAsync(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events, CancellationToken cancellationToken)
+    {
         trendingPlaceCardsPool.ReleaseAll();
         trendingEventCardsPool.ReleaseAll();
 
         trendingPlacesAndEvents.ExtractItems();
         trendingPlacesAndEvents.RemoveItems();
 
-        cardsVisualUpdateBuffer.Enqueue(() => SetTrendingsAsync(places, events, cancellationTokenSource.Token));
-        UpdateCardsVisual();
-    }
-
-    private async UniTask SetTrendingsAsync(List<PlaceCardComponentModel> places, List<EventCardComponentModel> events, CancellationToken cancellationToken)
-    {
         int eventId = 0;
         int placeId = 0;
 
@@ -310,22 +329,45 @@ public class HighlightsSubSectionComponentView : BaseComponentView, IHighlightsS
         poolsPrewarmAsyncsBuffer.Enqueue(() => trendingPlaceCardsPool.PrewarmAsync(HighlightsSubSectionComponentController.DEFAULT_NUMBER_OF_TRENDING_PLACES, cancellationToken));
     }
 
-    private void UpdateCardsVisual()
+    private async UniTask UpdateCardsVisualProcess(CancellationToken ct)
     {
-        if (!isUpdatingCardsVisual)
-            UpdateCardsVisualProcess().Forget();
-
-        async UniTask UpdateCardsVisualProcess()
+        try
         {
-            isUpdatingCardsVisual = true;
+            while (true)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (setPlacesTask != null)
+                {
+                    await setPlacesTask.Invoke(ct);
+                    setPlacesTask = null;
+                }
 
-            while (cardsVisualUpdateBuffer.Count > 0)
-                await cardsVisualUpdateBuffer.Dequeue().Invoke();
+                ct.ThrowIfCancellationRequested();
+                if (setLiveEventsTask != null)
+                {
+                    await setLiveEventsTask.Invoke(ct);
+                    setLiveEventsTask = null;
+                }
 
-            while (poolsPrewarmAsyncsBuffer.Count > 0)
-                await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
+                ct.ThrowIfCancellationRequested();
+                if(setTrendingTask != null)
+                {
+                    await setTrendingTask.Invoke(ct);
+                    setTrendingTask = null;
+                }
 
-            isUpdatingCardsVisual = false;
+                ct.ThrowIfCancellationRequested();
+
+                while (poolsPrewarmAsyncsBuffer.Count > 0)
+                {
+
+                    ct.ThrowIfCancellationRequested();
+                    await poolsPrewarmAsyncsBuffer.Dequeue().Invoke();
+                }
+
+                await UniTask.Yield();
+            }
         }
+        catch (OperationCanceledException) { }
     }
 }

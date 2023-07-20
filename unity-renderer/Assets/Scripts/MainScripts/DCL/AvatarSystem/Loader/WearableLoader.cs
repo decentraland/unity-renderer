@@ -18,7 +18,7 @@ namespace AvatarSystem
             defaultWearablesResolver.Resolve(WearableLiterals.DefaultWearables.GetDefaultWearables());
         }
 
-        public WearableItem wearable { get; }
+        public WearableItem bodyShape { get; }
         public Rendereable rendereable => retriever?.rendereable;
         public IWearableLoader.Status status { get; private set; }
 
@@ -27,7 +27,7 @@ namespace AvatarSystem
 
         public WearableLoader(IWearableRetriever retriever, WearableItem wearable)
         {
-            this.wearable = wearable;
+            this.bodyShape = wearable;
             this.retriever = retriever;
         }
 
@@ -49,7 +49,7 @@ namespace AvatarSystem
 
                 try
                 {
-                    await LoadWearable(container, wearable, settings.bodyshapeId, ct);
+                    await LoadWearable(container, bodyShape, settings.bodyshapeId, ct);
                 }
                 catch (OperationCanceledException)
                 {
@@ -69,7 +69,7 @@ namespace AvatarSystem
                 }
 
                 //Try getting a default if category is needed
-                if (AvatarSystemUtils.IsCategoryRequired(wearable.data.category))
+                if (AvatarSystemUtils.IsCategoryRequired(bodyShape.data.category))
                     await FallbackToDefault(container, ct);
 
                 if (rendereable != null)
@@ -95,8 +95,8 @@ namespace AvatarSystem
 
             try
             {
-                string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, wearable.data.category);
-                Debug.Log($"Falling back {wearable.id} to wearable {wearableId}");
+                string wearableId = WearableLiterals.DefaultWearables.GetDefaultWearable(currentSettings.bodyshapeId, bodyShape.data.category);
+                Debug.Log($"Falling back {bodyShape.id} to wearable {wearableId}");
 
                 WearableItem defaultWearable = await defaultWearablesResolver.Resolve(wearableId, ct);
 

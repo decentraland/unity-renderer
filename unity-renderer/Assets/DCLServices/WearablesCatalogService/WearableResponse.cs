@@ -82,6 +82,7 @@ namespace DCLServices.WearablesCatalogService
                         public string[] tags;
                         public string[] replaces;
                         public string[] hides;
+                        public string[] removesDefaultHiding;
                     }
 
                     public DataDto data;
@@ -118,6 +119,7 @@ namespace DCLServices.WearablesCatalogService
                             hides = metadata.data.hides,
                             replaces = metadata.data.replaces,
                             tags = metadata.data.tags,
+                            removesDefaultHiding = metadata.data.removesDefaultHiding,
                         },
                         baseUrl = contentBaseUrl,
                         baseUrlBundles = bundlesBaseUrl,

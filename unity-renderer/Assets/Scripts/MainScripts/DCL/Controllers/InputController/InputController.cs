@@ -156,7 +156,7 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     if (!allUIHidden)
-                        InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.None);
+                        InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleWorldChat:
                     if (!allUIHidden)

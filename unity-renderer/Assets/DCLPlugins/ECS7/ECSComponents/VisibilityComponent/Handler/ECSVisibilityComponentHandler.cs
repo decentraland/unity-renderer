@@ -14,16 +14,16 @@ namespace DCL.ECSComponents
         {
             this.visibilityInternalComponent = visibilityInternalComponent;
         }
-        
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            visibilityInternalComponent.RemoveFor(scene, entity, new InternalVisibility() { visible = true });
+            visibilityInternalComponent.RemoveFor(scene, entity, new InternalVisibility(true));
         }
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBVisibilityComponent model)
         {
-            var internalModel = new InternalVisibility() { visible = model.GetVisible() };
+            var internalModel = new InternalVisibility(model.GetVisible());
             visibilityInternalComponent.PutFor(scene, entity, internalModel);
         }
     }

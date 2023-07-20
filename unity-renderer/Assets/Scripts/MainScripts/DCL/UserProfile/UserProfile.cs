@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using DCL.UserProfiles;
 using Decentraland.Renderer.KernelServices;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,10 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         EmotesWheel,
         Shortcut,
         Command,
-        Backpack
+        Backpack,
     }
+
+    private const string FALLBACK_NAME = "fallback";
 
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
@@ -31,23 +34,31 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string face256SnapshotURL => model.ComposeCorrectUrl(model.snapshots.face256);
     public string baseUrl => model.baseUrl;
     public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
-    public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
+    public List<string> blocked => model.blocked ?? new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
     public bool isGuest => !model.hasConnectedWeb3;
     public AvatarModel avatar => model.avatar;
     public int tutorialStep => model.tutorialStep;
+    public List<UserProfileModel.Link> Links => model.links;
+    public AdditionalInfo AdditionalInfo => model.AdditionalInfo;
 
-    internal Dictionary<string, int> inventory = new Dictionary<string, int>();
+    internal Dictionary<string, int> inventory = new ();
 
     public ILazyTextureObserver snapshotObserver = new LazyTextureObserver();
     public ILazyTextureObserver bodySnapshotObserver = new LazyTextureObserver();
 
-    internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
-    {
-        avatar = new AvatarModel()
-    };
+    internal static UserProfile ownUserProfile;
+
+    // Empty initialization to avoid null-checks
+    internal UserProfileModel model = new () { avatar = new AvatarModel() };
+
+    private UserProfileModel ModelFallback() =>
+        UserProfileModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
+
+    private AvatarModel AvatarFallback() =>
+        AvatarModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
 
     private int emoteLamportTimestamp = 1;
 
@@ -55,11 +66,24 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (newModel == null)
         {
-            model = new UserProfileModel();
-            return;
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+                Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
+
+            // Check if there is a previous model to fallback to. Because default model has everything empty or null.
+            newModel = string.IsNullOrEmpty(model.userId) ? ModelFallback() : model;
         }
 
-        bool isModelDirty = !newModel.Equals(model);
+        if (newModel.avatar == null)
+        {
+            model.avatar = new AvatarModel();
+
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+                Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
+
+            // Check if there is a previous avatar to fallback to.
+            newModel.avatar = string.IsNullOrEmpty(model.userId) ? AvatarFallback() : model.avatar;
+        }
+
         bool faceSnapshotDirty = model.snapshots.face256 != newModel.snapshots.face256;
         bool bodySnapshotDirty = model.snapshots.body != newModel.snapshots.body;
 
@@ -78,15 +102,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.blocked = newModel.blocked;
         model.muted = newModel.muted;
         model.version = newModel.version;
+        model.links = newModel.links;
+        model.AdditionalInfo.CopyFrom(newModel.AdditionalInfo);
 
-        if (model.snapshots != null && faceSnapshotDirty)
+        if (faceSnapshotDirty)
             snapshotObserver.RefreshWithUri(face256SnapshotURL);
 
-        if (model.snapshots != null && bodySnapshotDirty)
+        if (bodySnapshotDirty)
             bodySnapshotObserver.RefreshWithUri(bodySnapshotURL);
 
-        if (isModelDirty)
-            OnUpdate?.Invoke(this);
+        OnUpdate?.Invoke(this);
     }
 
     public int GetItemAmount(string itemId)
@@ -141,23 +166,22 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public bool ContainsInInventory(string wearableId) => inventory.ContainsKey(wearableId);
 
-    public string[] GetInventoryItemsIds() { return inventory.Keys.ToArray(); }
+    public string[] GetInventoryItemsIds() =>
+        inventory.Keys.ToArray();
 
-    internal static UserProfile ownUserProfile;
-
+    // TODO: Remove this call. The own user profile should be accessed via IUserProfileBridge.GetOwn()
     public static UserProfile GetOwnUserProfile()
     {
         if (ownUserProfile == null)
-        {
             ownUserProfile = Resources.Load<UserProfile>("ScriptableObjects/OwnUserProfile");
-        }
 
         return ownUserProfile;
     }
 
     public UserProfileModel CloneModel() => model.Clone();
 
-    public bool IsBlocked(string userId) { return blocked != null && blocked.Contains(userId); }
+    public bool IsBlocked(string userId) =>
+        blocked != null && blocked.Contains(userId);
 
     public void Block(string userId)
     {

@@ -1,6 +1,8 @@
 using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -11,6 +13,7 @@ using NUnit.Framework;
 using RPC.Context;
 using System;
 using System.Collections.Generic;
+using TestUtils;
 
 namespace Tests
 {
@@ -20,7 +23,8 @@ namespace Tests
         private ECS7TestScene scene;
         private SceneStateHandler sceneStateHandler;
         private IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-        private IECSComponentWriter componentWriter;
+        private DualKeyValueSet<long, int, WriteData> outgoingMessages;
+        private WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool;
         private InternalECSComponents internalComponents;
 
         private Action updateSystems;
@@ -34,12 +38,19 @@ namespace Tests
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             inputResultComponent = internalComponents.inputEventResultsComponent;
-            componentWriter = Substitute.For<IECSComponentWriter>();
+            outgoingMessages = new DualKeyValueSet<long, int, WriteData>();
+
+            var componentsWriter = new Dictionary<int, ComponentWriter>()
+            {
+                { 666, new ComponentWriter(outgoingMessages) }
+            };
+
+            componentPool = new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(0, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult()));
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
 
-            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, internalComponents.EngineInfo, componentWriter);
+            var systemUpdate = ECSInputSenderSystem.CreateSystem(inputResultComponent, internalComponents.EngineInfo, componentsWriter, componentPool);
 
             updateSystems = () =>
             {
@@ -50,7 +61,7 @@ namespace Tests
 
             sceneStateHandler = new SceneStateHandler(
                 Substitute.For<CRDTServiceContext>(),
-                new Dictionary<int, IParcelScene>() { {scene.sceneData.sceneNumber, scene} },
+                new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
                 internalComponents.EngineInfo,
                 internalComponents.GltfContainerLoadingStateComponent);
 
@@ -83,13 +94,11 @@ namespace Tests
 
             updateSystems();
 
-            componentWriter.Received(5)
-                           .AppendComponent(
-                                scene.sceneData.sceneNumber,
-                                SpecialEntityId.SCENE_ROOT_ENTITY,
-                                ComponentID.POINTER_EVENTS_RESULT,
-                                Arg.Any<PBPointerEventsResult>(),
-                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            outgoingMessages.Append_Called<PBPointerEventsResult>(
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.POINTER_EVENTS_RESULT,
+                null
+            );
         }
 
         [Test]
@@ -110,7 +119,7 @@ namespace Tests
             }
 
             var compData = inputResultComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var model = compData.model;
+            var model = compData.Value.model;
 
             inputResultComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
 
@@ -120,13 +129,10 @@ namespace Tests
 
             updateSystems();
 
-            componentWriter.DidNotReceive()
-                           .PutComponent(
-                                scene.sceneData.sceneNumber,
-                                SpecialEntityId.SCENE_ROOT_ENTITY,
-                                ComponentID.POINTER_EVENTS_RESULT,
-                                Arg.Any<PBPointerEventsResult>(),
-                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            outgoingMessages.Append_NotCalled(
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.POINTER_EVENTS_RESULT
+            );
         }
 
         [Test]
@@ -148,13 +154,11 @@ namespace Tests
 
             updateSystems();
 
-            componentWriter.Received(1)
-                           .AppendComponent(
-                                scene.sceneData.sceneNumber,
-                                SpecialEntityId.SCENE_ROOT_ENTITY,
-                                ComponentID.POINTER_EVENTS_RESULT,
-                                Arg.Is<PBPointerEventsResult>((result) => result.TickNumber == 3),
-                                ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+            outgoingMessages.Append_Called<PBPointerEventsResult>(
+                SpecialEntityId.SCENE_ROOT_ENTITY,
+                ComponentID.POINTER_EVENTS_RESULT,
+                (result) => result.TickNumber == 3
+            );
         }
     }
 }

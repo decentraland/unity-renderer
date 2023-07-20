@@ -34,7 +34,7 @@ namespace DCL.Social.Friends
                              .Returns(
                                   (args) =>
                                   {
-                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey");
+                                      args[1] = new FriendRequest(FRIEND_REQUEST_ID, new DateTime(621355968001000000), SENDER_ID, OWN_ID, "hey");
                                       return true;
                                   });
 
@@ -134,7 +134,7 @@ namespace DCL.Social.Friends
 
             friendsController.RejectFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
-                                  UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
+                                  UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, new DateTime(100), SENDER_ID, OWN_ID, "hey")));
 
             view.OnRejectFriendRequest += Raise.Event<Action>();
 
@@ -174,7 +174,7 @@ namespace DCL.Social.Friends
         {
             friendsController.AcceptFriendshipAsync(FRIEND_REQUEST_ID, Arg.Any<CancellationToken>())
                              .Returns(
-                                  UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, 100, SENDER_ID, OWN_ID, "hey")));
+                                  UniTask.FromResult(new FriendRequest(FRIEND_REQUEST_ID, new DateTime(100), SENDER_ID, OWN_ID, "hey")));
 
             WhenShow();
             view.ClearReceivedCalls();

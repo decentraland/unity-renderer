@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using DCL;
@@ -10,7 +11,9 @@ using DCL.Social.Friends;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
+using System.Threading;
 using UnityEngine;
+using Channel = DCL.Chat.Channels.Channel;
 
 public class WorldChatWindowControllerShould
 {
@@ -34,7 +37,7 @@ public class WorldChatWindowControllerShould
     {
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID });
         userProfileBridge.GetOwn().Returns(ownUserProfile);
         mouseCatcher = Substitute.For<IMouseCatcher>();
         chatController = Substitute.For<IChatController>();
@@ -42,12 +45,15 @@ public class WorldChatWindowControllerShould
         chatController.GetAllocatedChannel("nearby").Returns(new Channel("nearby", "nearby", 0, 0, true, false, ""));
         friendsController = Substitute.For<IFriendsController>();
         friendsController.IsInitialized.Returns(true);
+        friendsController.GetFriendshipStatus(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(FriendshipStatus.NOT_FRIEND));
         socialAnalytics = Substitute.For<ISocialAnalytics>();
         channelsFeatureFlagService = Substitute.For<IChannelsFeatureFlagService>();
         channelsFeatureFlagService.IsChannelsFeatureEnabled().Returns(true);
         channelsFeatureFlagService.GetAutoJoinChannelsList().Returns(null as AutomaticJoinChannelList);
         dataStore = new DataStore();
         browserBridge = Substitute.For<IBrowserBridge>();
+
         controller = new WorldChatWindowController(userProfileBridge,
             friendsController,
             chatController,
@@ -67,8 +73,9 @@ public class WorldChatWindowControllerShould
     {
         controller.Initialize(view);
 
-        view.Received(1).SetPublicChat(Arg.Is<PublicChatModel>(p => p.name == "nearby"
-                                                                    && p.channelId == "nearby"));
+        view.Received(1)
+            .SetPublicChat(Arg.Is<PublicChatModel>(p => p.name == "nearby"
+                                                        && p.channelId == "nearby"));
     }
 
     [Test]
@@ -79,13 +86,15 @@ public class WorldChatWindowControllerShould
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
 
         controller.Initialize(view);
-        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
-            new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, messageBody)});
 
-        view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => !p.isBlocked
-                                                                      && !p.isOnline
-                                                                      && !p.isBlocked
-                                                                      && p.recentMessage.body == messageBody));
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
+            new[] { new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, messageBody) });
+
+        view.Received(1)
+            .SetPrivateChat(Arg.Is<PrivateChatModel>(p => !p.isBlocked
+                                                          && !p.isOnline
+                                                          && !p.isBlocked
+                                                          && p.recentMessage.body == messageBody));
     }
 
     [Test]
@@ -94,6 +103,7 @@ public class WorldChatWindowControllerShould
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
 
         controller.Initialize(view);
+
         friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
             new UserStatus
@@ -114,6 +124,7 @@ public class WorldChatWindowControllerShould
         GivenFriend(FRIEND_ID, PresenceStatus.OFFLINE);
 
         controller.Initialize(view);
+
         friendsController.OnUpdateUserStatus += Raise.Event<Action<string, UserStatus>>(
             FRIEND_ID,
             new UserStatus
@@ -147,7 +158,7 @@ public class WorldChatWindowControllerShould
     public void ShowPrivateChatsLoadingWhenAuthenticatedWithWallet()
     {
         friendsController.IsInitialized.Returns(false);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = true });
 
         controller.Initialize(view);
 
@@ -158,7 +169,7 @@ public class WorldChatWindowControllerShould
     public void DoNotShowChatsLoadingWhenIsGuestUser()
     {
         friendsController.IsInitialized.Returns(false);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = false });
 
         controller.Initialize(view);
 
@@ -169,7 +180,7 @@ public class WorldChatWindowControllerShould
     public void HideChatsLoadWhenFriendsIsInitialized()
     {
         friendsController.IsInitialized.Returns(false);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = true });
 
         controller.Initialize(view);
         friendsController.OnInitialized += Raise.Event<Action>();
@@ -206,8 +217,9 @@ public class WorldChatWindowControllerShould
         view.ContainsPrivateChannel(FRIEND_ID).Returns(true);
 
         controller.Initialize(view);
+
         chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
-            new[] {new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow")});
+            new[] { new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, "wow") });
 
         view.Received(1).SetPrivateChat(Arg.Is<PrivateChatModel>(p => p.userId == FRIEND_ID));
         view.DidNotReceiveWithAnyArgs().ShowMoreChatsToLoadHint(default);
@@ -268,8 +280,10 @@ public class WorldChatWindowControllerShould
     public void SearchChannels()
     {
         controller.Initialize(view);
+
         chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
             new Channel("channelId", "channelName", 0, 1, true, false, ""));
+
         view.ClearReceivedCalls();
 
         view.OnSearchChatRequested += Raise.Event<Action<string>>("nam");
@@ -287,10 +301,11 @@ public class WorldChatWindowControllerShould
         GivenFriend("bleh", PresenceStatus.ONLINE);
 
         controller.SetVisibility(true);
+
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
             {
-                new FriendWithDirectMessages {userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6}
+                new FriendWithDirectMessages { userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6 }
             });
 
         view.Received(1).ShowMoreChatsToLoadHint(10);
@@ -308,7 +323,7 @@ public class WorldChatWindowControllerShould
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
             {
-                new FriendWithDirectMessages {userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6}
+                new FriendWithDirectMessages { userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6 }
             });
 
         view.Received(1).HideMoreChatsToLoadHint();
@@ -338,7 +353,7 @@ public class WorldChatWindowControllerShould
         friendsController.OnAddFriendsWithDirectMessages += Raise.Event<Action<List<FriendWithDirectMessages>>>(
             new List<FriendWithDirectMessages>
             {
-                new FriendWithDirectMessages {userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6}
+                new FriendWithDirectMessages { userId = "bleh", lastMessageBody = "hey", lastMessageTimestamp = 6 }
             });
 
         view.OnRequireMorePrivateChats += Raise.Event<Action>();
@@ -425,6 +440,7 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
 
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Search);
+
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 1, true, false, ""));
 
@@ -437,6 +453,7 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
 
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+
         chatController.OnChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
 
@@ -449,6 +466,7 @@ public class WorldChatWindowControllerShould
         controller.Initialize(view);
 
         dataStore.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+
         chatController.OnAutoChannelJoined +=
             Raise.Event<Action<Channel>>(new Channel("channelId", "channelName", 0, 2, true, false, ""));
 
@@ -459,8 +477,9 @@ public class WorldChatWindowControllerShould
     public void RemoveChannelWhenLeaveIsConfirmed()
     {
         controller.Initialize(view);
+
         chatController.GetAllocatedChannel("channelId")
-            .Returns(new Channel("channelId", "channelName", 0, 0, true, false, ""));
+                      .Returns(new Channel("channelId", "channelName", 0, 0, true, false, ""));
 
         dataStore.channels.channelLeaveSource.Set(ChannelLeaveSource.Command);
 
@@ -483,7 +502,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void ShowConnectWalletWhenIsGuest()
     {
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = false });
 
         controller.Initialize(view, false);
         controller.SetVisibility(true);
@@ -495,13 +514,13 @@ public class WorldChatWindowControllerShould
     [Test]
     public void ShowConnectWalletWhenIsGuestAndTheProfileUpdates()
     {
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = true });
 
         controller.Initialize(view, false);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
 
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = false });
 
         view.Received(1).ShowConnectWallet();
         view.DidNotReceive().HideConnectWallet();
@@ -510,7 +529,7 @@ public class WorldChatWindowControllerShould
     [Test]
     public void HideConnectWalletWhenIsAuthenticatedUser()
     {
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = true });
 
         controller.Initialize(view, false);
         controller.SetVisibility(true);
@@ -522,13 +541,13 @@ public class WorldChatWindowControllerShould
     [Test]
     public void HideConnectWalletWhenIsAuthenticatedUserAndProfileUpdates()
     {
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = true});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = true });
 
         controller.Initialize(view, false);
         controller.SetVisibility(true);
         view.ClearReceivedCalls();
 
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, name = "bleh"});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, name = "bleh" });
 
         view.Received(1).HideConnectWallet();
         view.DidNotReceive().ShowConnectWallet();
@@ -562,8 +581,10 @@ public class WorldChatWindowControllerShould
 
         chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
             new Channel("channelId", "channelName", 0, 1, true, false, ""));
+
         chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
             new Channel("otherChannelId", "otherChannelName", 0, 1, true, false, ""));
+
         chatController.OnChannelUpdated += Raise.Event<Action<Channel>>(
             new Channel("channelId", "channelName", 0, 1, true, false, ""));
 
@@ -575,17 +596,18 @@ public class WorldChatWindowControllerShould
     public void JoinAutomaticChannelWhenChatInitializes()
     {
         channelsFeatureFlagService.GetAutoJoinChannelsList()
-            .Returns(new AutomaticJoinChannelList
-            {
-                automaticJoinChannelList = new[]
-                {
-                    new AutomaticJoinChannel
-                    {
-                        channelId = "automatic-channel",
-                        enableNotifications = false
-                    }
-                }
-            });
+                                  .Returns(new AutomaticJoinChannelList
+                                   {
+                                       automaticJoinChannelList = new[]
+                                       {
+                                           new AutomaticJoinChannel
+                                           {
+                                               channelId = "automatic-channel",
+                                               enableNotifications = false
+                                           }
+                                       }
+                                   });
+
         controller.Initialize(view);
         chatController.ClearReceivedCalls();
 
@@ -599,7 +621,7 @@ public class WorldChatWindowControllerShould
     public void HideLoadingOfChannelsWhenIsGuest()
     {
         chatController.IsInitialized.Returns(false);
-        ownUserProfile.UpdateData(new UserProfileModel {userId = OWN_USER_ID, hasConnectedWeb3 = false});
+        ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID, hasConnectedWeb3 = false });
         controller.Initialize(view, false);
 
         controller.SetVisibility(true);
@@ -607,13 +629,41 @@ public class WorldChatWindowControllerShould
         view.Received(1).HideChannelsLoading();
     }
 
+    [Test]
+    public void DoNotAddThePrivateChatWhenUserIsNotFriend()
+    {
+        const string MESSAGE_BODY = "wow";
+
+        friendsController.GetFriendshipStatus(FRIEND_ID)
+                         .Returns(UniTask.FromResult(FriendshipStatus.NOT_FRIEND));
+        GivenProfile(FRIEND_ID);
+
+        controller.Initialize(view);
+
+        chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(
+            new[] { new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, MESSAGE_BODY) });
+
+        view.DidNotReceiveWithAnyArgs().SetPrivateChat(default(PrivateChatModel));
+    }
+
+    private void GivenProfile(string userId)
+    {
+        var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
+        friendProfile.UpdateData(new UserProfileModel { userId = userId, name = userId });
+        userProfileBridge.Get(userId).Returns(friendProfile);
+    }
+
     private void GivenFriend(string friendId, PresenceStatus presence)
     {
         var friendProfile = ScriptableObject.CreateInstance<UserProfile>();
-        friendProfile.UpdateData(new UserProfileModel {userId = friendId, name = friendId});
+        friendProfile.UpdateData(new UserProfileModel { userId = friendId, name = friendId });
         userProfileBridge.Get(friendId).Returns(friendProfile);
         friendsController.IsFriend(friendId).Returns(true);
-        friendsController.GetUserStatus(friendId).Returns(new UserStatus
-            {userId = friendId, presence = presence, friendshipStatus = FriendshipStatus.FRIEND});
+        friendsController.GetFriendshipStatus(friendId, Arg.Any<CancellationToken>())
+                         .Returns(UniTask.FromResult(FriendshipStatus.FRIEND));
+
+        friendsController.GetUserStatus(friendId)
+                         .Returns(new UserStatus
+                              { userId = friendId, presence = presence, friendshipStatus = FriendshipStatus.FRIEND });
     }
 }

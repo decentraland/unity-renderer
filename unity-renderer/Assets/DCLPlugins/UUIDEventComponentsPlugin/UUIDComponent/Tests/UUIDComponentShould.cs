@@ -6,7 +6,9 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.World.PortableExperiences;
 using Newtonsoft.Json;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -23,7 +25,7 @@ namespace Tests
 
         protected override void InitializeServices(ServiceLocator serviceLocator)
         {
-            serviceLocator.Register<ISceneController>(() => new SceneController());
+            serviceLocator.Register<ISceneController>(() => new SceneController(Substitute.For<IConfirmedExperiencesRepository>()));
             serviceLocator.Register<IWorldState>(() => new WorldState());
             serviceLocator.Register<IRuntimeComponentFactory>(() => new RuntimeComponentFactory());
             serviceLocator.Register<IWebRequestController>(WebRequestController.Create);

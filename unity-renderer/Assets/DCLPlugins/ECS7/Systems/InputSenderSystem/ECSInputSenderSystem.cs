@@ -1,9 +1,10 @@
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Models;
 using System;
+using System.Collections.Generic;
 
 namespace ECSSystems.InputSenderSystem
 {
@@ -13,20 +14,23 @@ namespace ECSSystems.InputSenderSystem
         {
             public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
             public IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
-            public IECSComponentWriter componentWriter;
+            public IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+            public WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool;
             public uint lastTimestamp = 0;
         }
 
         public static Action CreateSystem(
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
             IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
-            IECSComponentWriter componentWriter)
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool)
         {
             var state = new State()
             {
                 inputResultComponent = inputResultComponent,
                 engineInfoComponent = engineInfoComponent,
-                componentWriter = componentWriter
+                componentsWriter = componentsWriter,
+                componentPool = componentPool,
             };
 
             return () => Update(state);
@@ -35,7 +39,6 @@ namespace ECSSystems.InputSenderSystem
         private static void Update(State state)
         {
             var inputResults = state.inputResultComponent.GetForAll();
-            var writer = state.componentWriter;
 
             for (int i = 0; i < inputResults.Count; i++)
             {
@@ -47,24 +50,24 @@ namespace ECSSystems.InputSenderSystem
                 var scene = inputResults[i].value.scene;
                 var entity = inputResults[i].value.entity;
 
+                if (!state.componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                    continue;
+
                 int count = model.events.Count;
 
                 for (int j = 0; j < count; j++)
                 {
                     InternalInputEventResults.EventData inputEvent = model.events[j];
 
-                    writer.AppendComponent(scene.sceneData.sceneNumber,
-                        entity.entityId,
-                        ComponentID.POINTER_EVENTS_RESULT,
-                        new PBPointerEventsResult()
-                        {
-                            Button = inputEvent.button,
-                            Hit = inputEvent.hit,
-                            State = inputEvent.type,
-                            Timestamp = state.lastTimestamp++,
-                            TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick
-                        },
-                        ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY);
+                    var componentPooled = state.componentPool.Get();
+                    var componentModel = componentPooled.WrappedComponent.Model;
+                    componentModel.Button = inputEvent.button;
+                    componentModel.Hit = inputEvent.hit;
+                    componentModel.State = inputEvent.type;
+                    componentModel.Timestamp = state.lastTimestamp++;
+                    componentModel.TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
+
+                    writer.Append(entity.entityId, ComponentID.POINTER_EVENTS_RESULT, componentPooled);
                 }
 
                 model.events.Clear();

@@ -20,9 +20,9 @@ namespace DCL.ECS7.InternalComponents
 
             for (int i = 0; i < renderers.Count; i++)
             {
-                model.renderers.Remove(renderers[i]);
+                model.Value.renderers.Remove(renderers[i]);
             }
-            texurizableInternalComponent.PutFor(scene, entity, model);
+            texurizableInternalComponent.PutFor(scene, entity, model.Value);
         }
 
         public static void AddRenderers(this IInternalECSComponent<InternalTexturizable> texurizableInternalComponent,
@@ -31,7 +31,7 @@ namespace DCL.ECS7.InternalComponents
             if (renderers == null)
                 return;
 
-            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable(new List<Renderer>());
             for (int i = 0; i < renderers.Count; i++)
             {
                 model.renderers.Add(renderers[i]);
@@ -50,8 +50,8 @@ namespace DCL.ECS7.InternalComponents
             if (model == null)
                 return;
 
-            model.renderers.Remove(renderer);
-            texurizableInternalComponent.PutFor(scene, entity, model);
+            model.Value.renderers.Remove(renderer);
+            texurizableInternalComponent.PutFor(scene, entity, model.Value);
         }
 
         public static void AddRenderer(this IInternalECSComponent<InternalTexturizable> texurizableInternalComponent,
@@ -60,7 +60,7 @@ namespace DCL.ECS7.InternalComponents
             if (renderer == null)
                 return;
 
-            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable();
+            var model = texurizableInternalComponent.GetFor(scene, entity)?.model ?? new InternalTexturizable(new List<Renderer>());
             model.renderers.Add(renderer);
             texurizableInternalComponent.PutFor(scene, entity, model);
         }

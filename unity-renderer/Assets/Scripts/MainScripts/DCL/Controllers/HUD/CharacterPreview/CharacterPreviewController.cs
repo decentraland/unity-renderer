@@ -1,6 +1,7 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => avatar?.originalVisibleRenderers;
 
         private Dictionary<PreviewCameraFocus, Transform> cameraFocusLookUp;
 
@@ -32,7 +34,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private Transform baseAvatarContainer;
         [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
         [SerializeField] private GameObject avatarShadow;
-
         private Service<IAvatarFactory> avatarFactory;
 
         private IAvatar avatar;
@@ -135,6 +136,30 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
                 }, ct);
             }
             catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+        }
+
+        public async UniTask<Texture2D> TakeBodySnapshotAsync()
+        {
+            global::DCL.Environment.i.platform.cullingController.Stop();
+            if (avatar.status != IAvatar.Status.Loaded)
+                return null;
+
+            var current = cameraController.CurrentTargetTexture;
+            cameraController.SetTargetTexture(null);
+            var avatarAnimator = avatarContainer.gameObject.GetComponentInChildren<AvatarAnimatorLegacy>();
+
+            SetFocus(PreviewCameraFocus.BodySnapshot, false);
+            avatarAnimator.Reset();
+            await UniTask.Yield();
+
+            Texture2D body = cameraController.TakeSnapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
+
+            SetFocus(PreviewCameraFocus.DefaultEditing, false);
+
+            cameraController.SetTargetTexture(current);
+            global::DCL.Environment.i.platform.cullingController.Start();
+
+            return body;
         }
 
         public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)

@@ -16,25 +16,29 @@ namespace ECSSystems.ScenesUiSystem
         private readonly IWorldState worldState;
         private readonly BaseList<IParcelScene> loadedScenes;
         private readonly BooleanVariable hideUiEventVariable;
-        private readonly BaseVariable<bool> isSceneUIEnabled;
+        private readonly BaseVariable<bool> isCurrentSceneUiEnabled;
+        private readonly BaseDictionary<int, bool> isSceneUIEnabled;
+        private readonly List<IParcelScene> globalScenesAddedBuffer = new ();
 
         private int lastSceneNumber;
         private bool isPendingSceneUI;
         private IParcelScene currentScene;
-        private HashSet<IParcelScene> scenesUiToSort = new HashSet<IParcelScene>();
+        private HashSet<IParcelScene> scenesUiToSort = new ();
 
         public ECSScenesUiSystem(UIDocument uiDocument,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             BaseList<IParcelScene> loadedScenes,
             IWorldState worldState,
             BooleanVariable hideUiEventVariable,
-            BaseVariable<bool> isSceneUIEnabled)
+            BaseVariable<bool> isCurrentSceneUiEnabled,
+            BaseDictionary<int, bool> isSceneUIEnabled)
         {
             this.uiDocument = uiDocument;
             this.internalUiContainerComponent = internalUiContainerComponent;
             this.worldState = worldState;
             this.loadedScenes = loadedScenes;
             this.hideUiEventVariable = hideUiEventVariable;
+            this.isCurrentSceneUiEnabled = isCurrentSceneUiEnabled;
             this.isSceneUIEnabled = isSceneUIEnabled;
 
             lastSceneNumber = -1;
@@ -43,7 +47,9 @@ namespace ECSSystems.ScenesUiSystem
 
             loadedScenes.OnRemoved += LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange += OnHideAllUiEvent;
-            isSceneUIEnabled.OnChange += OnHideSceneUiEvent;
+            isCurrentSceneUiEnabled.OnChange += OnHideCurrentSceneUiEvent;
+            isSceneUIEnabled.OnSet += OnSceneUiVisibilitySet;
+            isSceneUIEnabled.OnAdded += OnSceneUiVisibilityAdded;
 
             OnHideAllUiEvent(hideUiEventVariable.Get(), false);
         }
@@ -52,7 +58,9 @@ namespace ECSSystems.ScenesUiSystem
         {
             loadedScenes.OnRemoved -= LoadedScenesOnOnRemoved;
             hideUiEventVariable.OnChange -= OnHideAllUiEvent;
-            isSceneUIEnabled.OnChange -= OnHideSceneUiEvent;
+            isCurrentSceneUiEnabled.OnChange -= OnHideCurrentSceneUiEvent;
+            isSceneUIEnabled.OnSet -= OnSceneUiVisibilitySet;
+            isSceneUIEnabled.OnAdded -= OnSceneUiVisibilityAdded;
         }
 
         public void Update()
@@ -61,13 +69,15 @@ namespace ECSSystems.ScenesUiSystem
             bool sceneChanged = lastSceneNumber != currentSceneNumber;
             lastSceneNumber = currentSceneNumber;
 
-            ApplyParenting(ref scenesUiToSort, uiDocument, internalUiContainerComponent, currentSceneNumber);
+            globalScenesAddedBuffer.Clear();
+
+            ApplyParenting(ref scenesUiToSort, uiDocument, internalUiContainerComponent, currentSceneNumber, globalScenesAddedBuffer);
 
             // If parenting detects that the order for ui elements has changed, it should sort the ui tree
             if (scenesUiToSort.Count > 0)
-            {
                 SortSceneUiTree(internalUiContainerComponent, scenesUiToSort);
-            }
+
+            UpdatePortableExperiencesVisibilityByFeatureToggle(currentScene, globalScenesAddedBuffer);
 
             // clear UI if scene changed
             if (sceneChanged && !isPendingSceneUI)
@@ -90,10 +100,10 @@ namespace ECSSystems.ScenesUiSystem
                 // we apply current scene UI
                 if (currentScene != null)
                 {
-                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isSceneUIEnabled))
-                    {
+                    if (ApplySceneUI(internalUiContainerComponent, uiDocument, currentScene, isCurrentSceneUiEnabled, isSceneUIEnabled))
                         isPendingSceneUI = false;
-                    }
+
+                    UpdatePortableExperiencesVisibilityByFeatureToggle(currentScene, loadedScenes);
                 }
             }
         }
@@ -111,23 +121,26 @@ namespace ECSSystems.ScenesUiSystem
             SetDocumentActive(uiDocument, !current);
         }
 
-        private void OnHideSceneUiEvent(bool enabled, bool previous)
+        private void OnHideCurrentSceneUiEvent(bool enabled, bool previous)
         {
             if (currentScene == null)
                 return;
 
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.rootElement.style.display = new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
         }
 
-        internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort, UIDocument uiDocument,
-            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent, int currentSceneNumber)
+        internal static void ApplyParenting(ref HashSet<IParcelScene> scenesToSort,
+            UIDocument uiDocument,
+            IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+            int currentSceneNumber,
+            List<IParcelScene> globalScenesAdded = null)
         {
             // Clear previous call so we do not accumulate
             scenesToSort.Clear();
@@ -157,6 +170,7 @@ namespace ECSSystems.ScenesUiSystem
                         uiDocument.rootVisualElement.Add(model.rootElement);
                         model.parentElement = uiDocument.rootVisualElement;
                         internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, model);
+                        globalScenesAdded?.Add(uiContainerData.scene);
                     }
 
                     continue;
@@ -166,7 +180,7 @@ namespace ECSSystems.ScenesUiSystem
                 if (uiContainerData.model.parentElement != null)
                     continue;
 
-                InternalUiContainer parentDataModel = GetParentContainerModel(
+                var parentDataModel = GetParentContainerModel(
                     internalUiContainerComponent,
                     uiContainerData.scene,
                     uiContainerData.model.parentId);
@@ -175,10 +189,10 @@ namespace ECSSystems.ScenesUiSystem
                 if (parentDataModel != null)
                 {
                     var currentContainerModel = uiContainerData.model;
-                    parentDataModel.rootElement.Add(uiContainerData.model.rootElement);
-                    currentContainerModel.parentElement = parentDataModel.rootElement;
+                    parentDataModel.Value.rootElement.Add(uiContainerData.model.rootElement);
+                    currentContainerModel.parentElement = parentDataModel.Value.rootElement;
 
-                    internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.model.parentId, parentDataModel);
+                    internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.model.parentId, parentDataModel.Value);
                     internalUiContainerComponent.PutFor(uiContainerData.scene, uiContainerData.entity, currentContainerModel);
                 }
             }
@@ -187,13 +201,13 @@ namespace ECSSystems.ScenesUiSystem
         internal static void ClearCurrentSceneUI(UIDocument uiDocument, IParcelScene currentScene,
             IInternalECSComponent<InternalUiContainer> internalUiContainerComponent)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> currentSceneContainer =
+            ECSComponentData<InternalUiContainer>? currentSceneContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (currentSceneContainer == null)
                 return;
 
-            InternalUiContainer model = currentSceneContainer.model;
+            InternalUiContainer model = currentSceneContainer.Value.model;
             model.parentElement = null;
 
             if (uiDocument.rootVisualElement.Contains(model.rootElement))
@@ -224,17 +238,24 @@ namespace ECSSystems.ScenesUiSystem
         }
 
         internal static bool ApplySceneUI(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
-            UIDocument uiDocument, IParcelScene currentScene, BaseVariable<bool> isSceneUIEnabled)
+            UIDocument uiDocument, IParcelScene currentScene,
+            BaseVariable<bool> isCurrentSceneUIEnabled,
+            BaseDictionary<int, bool> isSceneUiEnabled)
         {
-            IECSReadOnlyComponentData<InternalUiContainer> sceneRootUiContainer =
+            ECSComponentData<InternalUiContainer>? sceneRootUiContainer =
                 internalUiContainerComponent.GetFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY);
 
             if (sceneRootUiContainer != null)
             {
-                var model = sceneRootUiContainer.model;
+                bool isVisible = isCurrentSceneUIEnabled.Get();
+
+                if (isSceneUiEnabled.TryGetValue(currentScene.sceneData.sceneNumber, out bool enabled))
+                    isVisible &= enabled;
+
+                var model = sceneRootUiContainer.Value.model;
                 uiDocument.rootVisualElement.Insert(0, model.rootElement);
                 model.parentElement = uiDocument.rootVisualElement;
-                model.rootElement.style.display = new StyleEnum<DisplayStyle>(isSceneUIEnabled.Get() ? DisplayStyle.Flex : DisplayStyle.None);
+                model.rootElement.style.display = new StyleEnum<DisplayStyle>(isVisible ? DisplayStyle.Flex : DisplayStyle.None);
                 internalUiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
                 return true;
             }
@@ -242,20 +263,20 @@ namespace ECSSystems.ScenesUiSystem
             return false;
         }
 
-        private static InternalUiContainer GetParentContainerModel(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
+        private static InternalUiContainer? GetParentContainerModel(IInternalECSComponent<InternalUiContainer> internalUiContainerComponent,
             IParcelScene scene, long parentId)
         {
-            InternalUiContainer parentDataModel =
+            InternalUiContainer? parentDataModel =
                 internalUiContainerComponent.GetFor(scene, parentId)?.model;
 
             // create root entity ui container if needed
             if (parentDataModel == null && parentId == SpecialEntityId.SCENE_ROOT_ENTITY)
             {
                 parentDataModel = new InternalUiContainer(parentId);
-                var style = parentDataModel.rootElement.style;
+                var style = parentDataModel.Value.rootElement.style;
 
                 // Initialize with default values
-                parentDataModel.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
+                parentDataModel.Value.rootElement.pickingMode = PickingMode.Ignore; // to avoid blocking pointer
                 style.width = new Length(100f, LengthUnit.Percent);
                 style.height = new Length(100f, LengthUnit.Percent);
                 style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
@@ -304,7 +325,7 @@ namespace ECSSystems.ScenesUiSystem
                     sortSceneTree[model.parentElement] = sceneTreeDictionary;
                 }
 
-                sceneTreeDictionary[model.rigthOf] = new RightOfData(model.rootElement,
+                sceneTreeDictionary[model.rightOf] = new RightOfData(model.rootElement,
                     uiContainerData.entity.entityId);
 
                 model.shouldSort = false;
@@ -333,6 +354,58 @@ namespace ECSSystems.ScenesUiSystem
         private static void SetDocumentActive(UIDocument uiDocument, bool active)
         {
             uiDocument.rootVisualElement.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void OnSceneUiVisibilityAdded(int sceneNumber, bool enabled)
+        {
+            int currentSceneNumber = worldState.GetCurrentSceneNumber();
+            IParcelScene currentScene = worldState.GetScene(currentSceneNumber);
+
+            if (enabled
+                && currentScene != null
+                && currentScene.sceneData.sceneNumber != sceneNumber
+                && currentScene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.HideUi)
+                return;
+
+            SetSceneUiVisibility(sceneNumber, enabled);
+        }
+
+        private void OnSceneUiVisibilitySet(IEnumerable<KeyValuePair<int, bool>> list)
+        {
+            foreach ((int sceneNumber, bool enabled) in list)
+                OnSceneUiVisibilityAdded(sceneNumber, enabled);
+        }
+
+        private void SetSceneUiVisibility(int sceneNumber, bool enabled)
+        {
+            IParcelScene scene = GetCurrentScene(sceneNumber, loadedScenes);
+
+            if (scene == null) return;
+
+            ECSComponentData<InternalUiContainer>? sceneUiContainer =
+                internalUiContainerComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
+
+            if (sceneUiContainer == null) return;
+
+            sceneUiContainer.Value.model.rootElement.style.display =
+                new StyleEnum<DisplayStyle>(enabled ? DisplayStyle.Flex : DisplayStyle.None);
+        }
+
+        private void UpdatePortableExperiencesVisibilityByFeatureToggle(IParcelScene currentScene, IReadOnlyList<IParcelScene> scenes)
+        {
+            if (currentScene == null) return;
+
+            for (var i = 0; i < scenes.Count; i++)
+            {
+                IParcelScene pxScene = scenes[i];
+                if (!pxScene.isPortableExperience) continue;
+
+                ScenePortableExperienceFeatureToggles featureToggle =
+                    currentScene.sceneData.scenePortableExperienceFeatureToggles;
+
+                if (featureToggle == ScenePortableExperienceFeatureToggles.HideUi)
+                    SetSceneUiVisibility(pxScene.sceneData.sceneNumber, false);
+            }
         }
 
         private readonly struct RightOfData

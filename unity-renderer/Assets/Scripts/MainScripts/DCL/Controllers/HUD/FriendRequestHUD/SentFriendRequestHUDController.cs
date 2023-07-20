@@ -73,7 +73,7 @@ namespace DCL.Social.Friends
             }
 
             view.SetBodyMessage(friendRequest.MessageBody);
-            view.SetTimestamp(DateTimeOffset.FromUnixTimeMilliseconds(friendRequest.Timestamp).DateTime);
+            view.SetTimestamp(friendRequest.Timestamp);
 
             var recipientProfile = userProfileBridge.Get(friendRequest.To);
 
@@ -104,7 +104,7 @@ namespace DCL.Social.Friends
                 {
                     FriendRequest request = await friendsController.CancelRequestAsync(friendRequestId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal");
+                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To, "modal", request.FriendRequestId);
 
                     view.Close();
                 }

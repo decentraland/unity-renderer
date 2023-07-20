@@ -19,17 +19,30 @@ public class AvatarModel : BaseModel
     public string id;
     public string name;
     public string bodyShape;
+
     public Color skinColor;
     public Color hairColor;
     public Color eyeColor;
-    public List<string> wearables = new List<string>();
-    public HashSet<string> forceRender = new HashSet<string>();
 
-    public List<AvatarEmoteEntry> emotes = new List<AvatarEmoteEntry>();
+    public List<string> wearables = new ();
+    public HashSet<string> forceRender = new ();
+    public List<AvatarEmoteEntry> emotes = new ();
 
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
     public bool talking = false;
+
+    public static AvatarModel FallbackModel(string name, int id) =>
+        new ()
+        {
+            id = $"{name}_{id}",
+            name = name,
+            bodyShape = "urn:decentraland:off-chain:base-avatars:BaseMale",
+
+            skinColor = new Color(0.800f, 0.608f, 0.467f),
+            hairColor = new Color(0.596f, 0.373f, 0.216f),
+            eyeColor = new Color(0.373f, 0.224f, 0.196f),
+        };
 
     public override BaseModel GetDataFromPb(ComponentBodyPayload pbModel)
     {
@@ -47,9 +60,11 @@ public class AvatarModel : BaseModel
         if (pbModel.AvatarShape.HasExpressionTriggerId) model.expressionTriggerId = pbModel.AvatarShape.ExpressionTriggerId;
         if (pbModel.AvatarShape.HasExpressionTriggerTimestamp) model.expressionTriggerTimestamp = pbModel.AvatarShape.ExpressionTriggerTimestamp;
         if (pbModel.AvatarShape.Wearables is { Count: > 0 }) model.wearables = pbModel.AvatarShape.Wearables.ToList();
+
         if (pbModel.AvatarShape.Emotes is { Count: > 0 })
         {
             model.emotes = new List<AvatarEmoteEntry>(pbModel.AvatarShape.Emotes.Count);
+
             for (var i = 0; i < pbModel.AvatarShape.Emotes.Count; i++)
             {
                 if (pbModel.AvatarShape.Emotes[i] == null) continue;
@@ -62,7 +77,6 @@ public class AvatarModel : BaseModel
         }
 
         return model;
-
     }
 
     public bool HaveSameWearablesAndColors(AvatarModel other)
@@ -84,8 +98,10 @@ public class AvatarModel : BaseModel
         //emotes are the same
         if (emotes == null && other.emotes != null)
             return false;
+
         if (emotes != null && other.emotes == null)
             return false;
+
         if (emotes != null && other.emotes != null)
         {
             if (emotes.Count != other.emotes.Count)
@@ -94,6 +110,7 @@ public class AvatarModel : BaseModel
             for (var i = 0; i < emotes.Count; i++)
             {
                 AvatarEmoteEntry emote = emotes[i];
+
                 if (other.emotes.FirstOrDefault(x => x.urn == emote.urn) == null)
                     return false;
             }
@@ -105,12 +122,6 @@ public class AvatarModel : BaseModel
                eyeColor == other.eyeColor;
     }
 
-    public bool HaveSameExpressions(AvatarModel other)
-    {
-        return expressionTriggerId == other.expressionTriggerId &&
-               expressionTriggerTimestamp == other.expressionTriggerTimestamp;
-    }
-
     public bool Equals(AvatarModel other)
     {
         if (other == null) return false;
@@ -120,19 +131,19 @@ public class AvatarModel : BaseModel
                                  && wearables.Count == other.wearables.Count;
 
         bool forceRenderAreEqual = forceRender.All(other.forceRender.Contains)
-                                 && other.forceRender.All(forceRender.Contains)
-                                 && forceRender.Count == other.forceRender.Count;
+                                   && other.forceRender.All(forceRender.Contains)
+                                   && forceRender.Count == other.forceRender.Count;
 
-        return id == other.id &&
-               name == other.name &&
-               bodyShape == other.bodyShape &&
-               skinColor == other.skinColor &&
-               hairColor == other.hairColor &&
-               eyeColor == other.eyeColor &&
-               expressionTriggerId == other.expressionTriggerId &&
-               expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
-               wearablesAreEqual &&
-               forceRenderAreEqual;
+        return id == other.id
+               && name == other.name
+               && bodyShape == other.bodyShape
+               && skinColor == other.skinColor
+               && hairColor == other.hairColor
+               && eyeColor == other.eyeColor
+               && expressionTriggerId == other.expressionTriggerId
+               && expressionTriggerTimestamp == other.expressionTriggerTimestamp
+               && wearablesAreEqual
+               && forceRenderAreEqual;
     }
 
     public void CopyFrom(AvatarModel other)
@@ -155,25 +166,4 @@ public class AvatarModel : BaseModel
 
     public override BaseModel GetDataFromJSON(string json) =>
         Utils.SafeFromJson<AvatarModel>(json);
-
-    public AvatarModelDTO ToAvatarModelDto()
-    {
-        AvatarModelDTO avatarModelDto = new AvatarModelDTO
-            {
-                id = this.id,
-                name = this.name,
-                bodyShape = this.bodyShape,
-                skinColor = this.skinColor,
-                hairColor = this.hairColor,
-                eyeColor = this.eyeColor,
-                wearables = this.wearables,
-                forceRender = this.forceRender.ToList(),
-                emotes = this.emotes,
-                expressionTriggerId = this.expressionTriggerId,
-                expressionTriggerTimestamp = this.expressionTriggerTimestamp,
-                talking = this.talking,
-            };
-
-        return avatarModelDto;
-    }
 }

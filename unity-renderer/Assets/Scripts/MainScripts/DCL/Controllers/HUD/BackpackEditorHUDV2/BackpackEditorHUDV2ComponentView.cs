@@ -4,6 +4,7 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,6 +18,8 @@ namespace DCL.Backpack
         public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
         public event Action OnAvatarUpdated;
+        public event Action OnOutfitsOpened;
+        public event Action OnVRMExport;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -31,14 +34,24 @@ namespace DCL.Backpack
         [SerializeField] internal ColorPickerComponentView colorPickerComponentView;
         [SerializeField] internal ColorPresetsSO colorPresetsSO;
         [SerializeField] internal ColorPresetsSO skinColorPresetsSO;
+        [SerializeField] internal Color selectedOutfitButtonColor;
         [SerializeField] private BackpackFiltersComponentView backpackFiltersComponentView;
+        [SerializeField] private OutfitsSectionComponentView outfitsSectionComponentView;
         [SerializeField] internal Button saveAvatarButton;
+        [SerializeField] internal GameObject normalSection;
+        [SerializeField] internal GameObject outfitSection;
+        [SerializeField] internal Button outfitButton;
+        [SerializeField] internal Image outfitButtonIcon;
+        [SerializeField] internal Button vrmExportButton;
+        [SerializeField] internal RectTransform vrmExportedToast;
 
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
         public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
+        public OutfitsSectionComponentView OutfitsSectionComponentView => outfitsSectionComponentView;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -69,6 +82,41 @@ namespace DCL.Backpack
                 avatarPreviewZoomController);
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
+
+            outfitButton.onClick.RemoveAllListeners();
+            outfitButton.onClick.AddListener(ToggleOutfitSection);
+
+            vrmExportButton.onClick.RemoveAllListeners();
+            vrmExportButton.onClick.AddListener(() => OnVRMExport?.Invoke());
+
+            outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
+        }
+
+        public void SetOutfitsEnabled(bool isEnabled) =>
+            outfitButton.gameObject.SetActive(isEnabled);
+
+        private void ToggleOutfitSection()
+        {
+            if (outfitSection.activeInHierarchy)
+            {
+                ToggleNormalSection();
+            }
+            else
+            {
+                normalSection.SetActive(false);
+                outfitSection.SetActive(true);
+                outfitButton.image.color = selectedOutfitButtonColor;
+                outfitButtonIcon.color = Color.white;
+                OnOutfitsOpened?.Invoke();
+            }
+        }
+
+        private void ToggleNormalSection()
+        {
+            normalSection.SetActive(true);
+            outfitSection.SetActive(false);
+            outfitButton.image.color = Color.white;
+            outfitButtonIcon.color = Color.black;
         }
 
         private void Update() =>
@@ -90,6 +138,7 @@ namespace DCL.Backpack
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
+            outfitsSectionComponentView.OnBackButtonPressed -= ToggleNormalSection;
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>
@@ -103,6 +152,7 @@ namespace DCL.Backpack
 
         public override void Hide(bool instant = false)
         {
+            ToggleNormalSection();
             gameObject.SetActive(false);
             backpackPreviewPanel.SetPreviewEnabled(false);
             colorPickerComponentView.SetActive(false);
@@ -195,6 +245,21 @@ namespace DCL.Backpack
 
         public void HideContinueSignup() =>
             saveAvatarButton.gameObject.SetActive(false);
+
+        public void SetVRMButtonActive(bool enabled)
+        {
+            vrmExportButton.gameObject.SetActive(enabled);
+        }
+
+        public void SetVRMButtonEnabled(bool enabled)
+        {
+            vrmExportButton.enabled = enabled;
+        }
+
+        public void SetVRMSuccessToastActive(bool active)
+        {
+            vrmExportedToast.gameObject.SetActive(active);
+        }
 
         public void OnPointerDown(PointerEventData eventData)
         {
