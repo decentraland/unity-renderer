@@ -166,6 +166,7 @@ namespace RPC.Services
             if (cancellationTokenSources.TryGetValue(scene, out var cancellationTokenSource))
             {
                 cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
                 cancellationTokenSources.Remove(scene);
             }
 
