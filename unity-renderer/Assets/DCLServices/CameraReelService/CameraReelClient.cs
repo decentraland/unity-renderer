@@ -67,10 +67,10 @@ namespace DCLServices.CameraReelService
                 throw new Exception($"Error parsing screenshot response:\n{downloadHandlerText}");
 
             if (string.IsNullOrEmpty(response.url))
-                throw new Exception($"No image url info retrieved:\n{downloadHandlerText}");
+                throw new Exception($"No screenshot image url info retrieved:\n{downloadHandlerText}");
 
             if (response.metadata == null)
-                throw new Exception($"No metadata info retrieved:\n{downloadHandlerText}");
+                throw new Exception($"No screenshot metadata info retrieved:\n{downloadHandlerText}");
         }
 
         public UniTask GetImageMetadata(string imageUUID, CancellationToken ct) =>
