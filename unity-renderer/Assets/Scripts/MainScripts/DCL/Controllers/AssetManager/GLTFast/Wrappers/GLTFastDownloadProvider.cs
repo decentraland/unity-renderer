@@ -1,7 +1,7 @@
-﻿using Cysharp.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GLTFast.Loading;
 using MainScripts.DCL.Controllers.AssetManager;
 using UnityEngine;
@@ -32,7 +32,7 @@ namespace DCL.GLTFast.Wrappers
             this.texturePromiseKeeper = texturePromiseKeeper;
         }
 
-        public async Task<IDownload> Request(Uri uri)
+        public async UniTask<IDownload> Request(Uri uri)
         {
             if (isDisposed)
                 return null;
@@ -75,7 +75,7 @@ namespace DCL.GLTFast.Wrappers
             return uri.OriginalString;
         }
 
-        public async Task<ITextureDownload> RequestTexture(Uri uri, bool nonReadable, bool forceLinear)
+        public async UniTask<ITextureDownload> RequestTexture(Uri uri, bool nonReadable, bool forceLinear)
         {
             if (isDisposed)
                 return null;
