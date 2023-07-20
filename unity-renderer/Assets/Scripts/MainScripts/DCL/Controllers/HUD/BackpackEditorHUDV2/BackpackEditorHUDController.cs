@@ -719,7 +719,7 @@ namespace DCL.Backpack
                 byte[] bytes = await vrmExporter.Export(view?.originalVisibleRenderers, ct);
 
                 string fileName = $"{this.ownUserProfile.userName.Replace("#","_")}_{DateTime.Now.ToString("yyyyMMddhhmmss")}";
-                fileBrowser.SaveFile("Save your VRM", Application.persistentDataPath, fileName, bytes, new ExtensionFilter("vrm", "vrm"));
+                await fileBrowser.SaveFileAsync("Save your VRM", Application.persistentDataPath, fileName, bytes, new ExtensionFilter("vrm", "vrm"));
 
                 view?.SetVRMSuccessToastActive(true);
                 await UniTask.Delay(SUCCESS_TOAST_ACTIVE_TIME, cancellationToken: ct);
