@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -89,16 +90,16 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         exploreV2Analytics.SendPlaceTeleport(place.id, place.title, Utils.ConvertStringToVector(place.base_position), ActionSource.FromSearch);
     }
 
-    private void OpenEventDetailsModal(EventCardComponentModel eventModel)
+    private void OpenEventDetailsModal(EventCardComponentModel eventModel, int index)
     {
         view.ShowEventModal(eventModel);
-        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, index, ActionSource.FromSearch);
     }
 
-    private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel)
+    private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel, int index)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
     }
 
     private void Search(string searchText)
@@ -110,7 +111,6 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.SetHeaderEnabled(searchText);
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
         SearchPlaces(searchText, cancellationToken: minimalSearchCts.Token).Forget();
-        exploreV2Analytics.SendSearch(searchText);
     }
 
     private void SubscribeToEvent(string eventId)
@@ -148,6 +148,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         var results = await eventsAPI.SearchEvents(searchText, pageNumber,pageSize, cancellationToken);
         List<EventCardComponentModel> searchedEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
+        exploreV2Analytics.SendSearchEvents(searchText, searchedEvents.Select(e=>e.coords).ToArray(), searchedEvents.Select(p=>p.eventFromAPIInfo.id).ToArray());
 
         if (isFullSearch)
         {
@@ -163,6 +164,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         var results = await placesAPIService.SearchPlaces(searchText, pageNumber, pageSize, cancellationToken);
         List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results.Item1);
+        exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
 
         if (isFullSearch)
         {

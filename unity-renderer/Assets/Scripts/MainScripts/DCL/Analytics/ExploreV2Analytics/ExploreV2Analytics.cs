@@ -9,15 +9,16 @@ namespace ExploreV2Analytics
         void SendStartMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method);
         void SendStartMenuSectionVisibility(ExploreSection section, bool isVisible);
         void SendEventTeleport(string eventId, string eventName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
-        void SendClickOnEventInfo(string eventId, string eventName, ActionSource source = ActionSource.FromExplore);
+        void SendClickOnEventInfo(string eventId, string eventName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
-        void SendClickOnPlaceInfo(string placeId, string placeName, ActionSource source = ActionSource.FromExplore);
+        void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
         void SendRemoveParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
         void AddFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
         void RemoveFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
-        void SendSearch(string searchString);
+        void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
+        void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
@@ -26,7 +27,8 @@ namespace ExploreV2Analytics
         private const string START_MENU_SECTION_VISIBILITY = "start_menu_section_visibility";
         private const string EXPLORE_EVENT_TELEPORT = "explore_event_teleport";
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
-        private const string EXPLORE_SEARCH = "explore_search";
+        private const string EXPLORE_SEARCH_EVENTS = "explore_search_events";
+        private const string EXPLORE_SEARCH_PLACES = "explore_search_places";
         private const string EXPLORE_PARTICIPATE_EVENT = "explore_participate_event";
         private const string EXPLORE_REMOVE_PARTICIPATE_EVENT = "explore_remove_participate_event";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
@@ -105,12 +107,13 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_REMOVE_PARTICIPATE_EVENT, data);
         }
 
-        public void SendClickOnEventInfo(string eventId, string eventName, ActionSource source = ActionSource.FromExplore)
+        public void SendClickOnEventInfo(string eventId, string eventName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("event_id", eventId);
             data.Add("event_name", eventName);
             data.Add("source", source.ToString());
+            data.Add("result_position", resultPosition.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_EVENT_INFO, data);
         }
 
@@ -125,12 +128,13 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_PLACE_TELEPORT, data);
         }
 
-        public void SendClickOnPlaceInfo(string placeId, string placeName, ActionSource source = ActionSource.FromExplore)
+        public void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("place_id", placeId);
             data.Add("place_name", placeName);
             data.Add("source", source.ToString());
+            data.Add("result_position", resultPosition.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_PLACE_INFO, data);
         }
 
@@ -164,13 +168,26 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(TELEPORT_FAVORITE_PLACE, data);
         }
 
-        public void SendSearch(string searchString)
+        public void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds)
         {
             var data = new Dictionary<string, string>
             {
-                ["search_string"] = searchString
+                ["search_string"] = searchString,
+                ["first_results_coordinates"] = string.Join(",", firstResultsCoordinates),
+                ["first_results_ids"] = string.Join(",", firstResultsIds)
             };
-            GenericAnalytics.SendAnalytic(EXPLORE_SEARCH, data);
+            GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_EVENTS, data);
+        }
+
+        public void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["search_string"] = searchString,
+                ["first_results_coordinates"] = string.Join(",", firstResultsCoordinates),
+                ["first_results_ids"] = string.Join(",", firstResultsIds)
+            };
+            GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_PLACES, data);
         }
     }
 }
