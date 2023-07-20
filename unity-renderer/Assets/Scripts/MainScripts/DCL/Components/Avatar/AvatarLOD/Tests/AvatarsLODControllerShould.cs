@@ -131,8 +131,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void UpdateAllLODsCorrectly_Distance()
         {
-            controller.cameraTransform = MockCameraTransform();
-            Vector3 cameraPosition = controller.cameraTransform.position;
+            controller.cameraTransformValue = MockCameraTransform();
+            Vector3 cameraPosition = controller.cameraTransformValue.position;
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
             float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
@@ -174,8 +174,8 @@ namespace Tests.AvatarsLODController
         public void HideCharacterClippingAvatars()
         {
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
-            controller.cameraTransform = MockCameraTransform();
-            Vector3 cameraPosition = controller.cameraTransform.position;
+            controller.cameraTransformValue = MockCameraTransform();
+            Vector3 cameraPosition = controller.cameraTransformValue.position;
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
 
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
@@ -199,8 +199,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void UpdateImpostorsTintAndInterpolationMovement()
         {
-            controller.cameraTransform = MockCameraTransform();
-            Vector3 cameraPosition = controller.cameraTransform.position;
+            controller.cameraTransformValue = MockCameraTransform();
+            Vector3 cameraPosition = controller.cameraTransformValue.position;
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
             float simpleAvatarDistance = DataStore.i.avatarsLOD.simpleAvatarDistance.Get();
             float tintMinDistance = 30f; // default internal value
@@ -226,8 +226,8 @@ namespace Tests.AvatarsLODController
         [Test]
         public void SetNonRenderedAvatarsAsInvisible()
         {
-            controller.cameraTransform = MockCameraTransform();
-            Vector3 cameraPosition = controller.cameraTransform.position;
+            controller.cameraTransformValue = MockCameraTransform();
+            Vector3 cameraPosition = controller.cameraTransformValue.position;
             CommonScriptableObjects.playerUnityPosition.Set(cameraPosition);
             float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
 
@@ -262,7 +262,7 @@ namespace Tests.AvatarsLODController
             controller.LodControllers["player2"] = CreateMockLODController(otherPlayers["player2"]);
 
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
-            controller.cameraTransform = MockCameraTransform();
+            controller.cameraTransformValue = MockCameraTransform();
             controller.Update();
 
             controller.LodControllers["player0"].Received().SetLOD0();
@@ -281,7 +281,7 @@ namespace Tests.AvatarsLODController
             controller.LodControllers["player2"] = CreateMockLODController(otherPlayers["player2"]);
 
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
-            controller.cameraTransform = MockCameraTransform();
+            controller.cameraTransformValue = MockCameraTransform();
             controller.Update();
 
             controller.LodControllers["player0"].Received().SetLOD1();
@@ -300,7 +300,7 @@ namespace Tests.AvatarsLODController
             controller.LodControllers["player2"] = CreateMockLODController(otherPlayers["player2"]);
 
             DataStore.i.avatarsLOD.maxAvatars.Set(2);
-            controller.cameraTransform = MockCameraTransform();
+            controller.cameraTransformValue = MockCameraTransform();
             controller.Update();
 
             controller.LodControllers["player0"].Received().SetLOD2();
@@ -324,7 +324,7 @@ namespace Tests.AvatarsLODController
 
             DataStore.i.avatarsLOD.maxAvatars.Set(3);
             DataStore.i.avatarsLOD.maxImpostors.Set(1);
-            controller.cameraTransform = MockCameraTransform();
+            controller.cameraTransformValue = MockCameraTransform();
             controller.Update();
 
             controller.LodControllers["player0"].Received().SetLOD1(); //Takes one of the free avatar spots
