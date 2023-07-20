@@ -2,88 +2,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.ExperiencesViewer
 {
-    public interface IExperiencesViewerComponentView
-    {
-        /// <summary>
-        /// It will be triggered when the close button is clicked.
-        /// </summary>
-        event Action onCloseButtonPressed;
-
-        /// <summary>
-        /// It will be triggered when the UI visibility of some experience changes.
-        /// </summary>
-        event Action<string, bool> onSomeExperienceUIVisibilityChanged;
-
-        /// <summary>
-        /// It will be triggered when the execution of some experience changes.
-        /// </summary>
-        event Action<string, bool> onSomeExperienceExecutionChanged;
-
-        /// <summary>
-        /// It represents the container transform of the component.
-        /// </summary>
-        Transform experienceViewerTransform { get; }
-
-        /// <summary>
-        /// Set the available experiences component with a list of experiences.
-        /// </summary>
-        /// <param name="experiences">List of experiences (model) to be loaded.</param>
-        void SetAvailableExperiences(List<ExperienceRowComponentModel> experiences);
-
-        /// <summary>
-        /// Add an experience into the available experiences component.
-        /// </summary>
-        /// <param name="experience">Experience to add.</param>
-        void AddAvailableExperience(ExperienceRowComponentModel experience);
-
-        /// <summary>
-        /// Remove an experience from the available experiences component.
-        /// </summary>
-        /// <param name="id">Experience id to remove.</param>
-        void RemoveAvailableExperience(string id);
-
-        /// <summary>
-        /// Get all experiences.
-        /// </summary>
-        /// <returns>A list of experiences.</returns>
-        List<ExperienceRowComponentView> GetAllAvailableExperiences();
-
-        /// <summary>
-        /// Get a specific experience.
-        /// </summary>
-        /// <param name="id">Id of the experience to search.</param>
-        /// <returns>An experience.</returns>
-        ExperienceRowComponentView GetAvailableExperienceById(string id);
-
-        /// <summary>
-        /// Shows/Hides the game object of the Experiences Viewer.
-        /// </summary>
-        /// <param name="isActive">True to show it.</param>
-        void SetVisible(bool isActive);
-
-        /// <summary>
-        /// Shows the info toast for when the UI of an experience is hidden.
-        /// </summary>
-        void ShowUIHiddenToast();
-    }
-
     public class ExperiencesViewerComponentView : BaseComponentView, IExperiencesViewerComponentView
     {
+        private const int EXPERIENCES_POOL_PREWARM = 10;
+        private const float UI_HIDDEN_TOAST_SHOWING_TIME = 2f;
         internal const string EXPERIENCES_POOL_NAME = "ExperiencesViewer_ExperienceRowsPool";
-        internal const int EXPERIENCES_POOL_PREWARM = 10;
-        internal const float UI_HIDDEN_TOAST_SHOWING_TIME = 2f;
 
         [Header("Assets References")]
         [SerializeField] internal ExperienceRowComponentView experienceRowPrefab;
 
         [Header("Prefab References")]
-        [SerializeField] internal ButtonComponentView closeButton;
+        [SerializeField] internal Button closeButton;
         [SerializeField] internal GridContainerComponentView availableExperiences;
-        [SerializeField] internal ShowHideAnimator hiddenUIToastAnimator;
+        [SerializeField] internal ShowHideAnimator toastAnimator;
+        [SerializeField] internal TMP_Text toastLabel;
+
         public Color rowsBackgroundColor;
         public Color rowsOnHoverColor;
 
@@ -92,7 +31,7 @@ namespace DCL.ExperiencesViewer
         public event Action<string, bool> onSomeExperienceExecutionChanged;
 
         internal Pool experiencesPool;
-        internal Coroutine uiHiddenToastCoroutine;
+        internal Coroutine toastRoutine;
 
         public Transform experienceViewerTransform => transform;
 
@@ -115,11 +54,8 @@ namespace DCL.ExperiencesViewer
             availableExperiences.ExtractItems();
             experiencesPool.ReleaseAll();
 
-            List<BaseComponentView> experiencesToAdd = new List<BaseComponentView>();
             foreach (ExperienceRowComponentModel exp in experiences)
-            {
                 AddAvailableExperience(exp);
-            }
         }
 
         public void AddAvailableExperience(ExperienceRowComponentModel experience)
@@ -163,15 +99,60 @@ namespace DCL.ExperiencesViewer
 
         public void SetVisible(bool isActive) { gameObject.SetActive(isActive); }
 
-        public void ShowUIHiddenToast()
+        public void ShowUiHiddenToast(string pxName)
         {
-            if (uiHiddenToastCoroutine != null)
+            if (toastRoutine != null)
             {
-                StopCoroutine(uiHiddenToastCoroutine);
-                uiHiddenToastCoroutine = null;
+                StopCoroutine(toastRoutine);
+                toastRoutine = null;
             }
 
-            uiHiddenToastCoroutine = StartCoroutine(ShowUIHiddenToastCoroutine());
+            pxName = string.IsNullOrEmpty(pxName) ? "Experience" : pxName;
+
+            toastLabel.text = $"<b>{pxName}</b> UI hidden";
+            toastRoutine = StartCoroutine(ShowToastRoutine());
+        }
+
+        public void ShowUiShownToast(string pxName)
+        {
+            if (toastRoutine != null)
+            {
+                StopCoroutine(toastRoutine);
+                toastRoutine = null;
+            }
+
+            pxName = string.IsNullOrEmpty(pxName) ? "Experience" : pxName;
+
+            toastLabel.text = $"<b>{pxName}</b> UI shown";
+            toastRoutine = StartCoroutine(ShowToastRoutine());
+        }
+
+        public void ShowEnabledToast(string pxName)
+        {
+            if (toastRoutine != null)
+            {
+                StopCoroutine(toastRoutine);
+                toastRoutine = null;
+            }
+
+            pxName = string.IsNullOrEmpty(pxName) ? "Experience" : pxName;
+
+            toastLabel.text = $"<b>{pxName}</b> activated";
+            toastRoutine = StartCoroutine(ShowToastRoutine());
+        }
+
+        public void ShowDisabledToast(string pxName)
+        {
+            if (toastRoutine != null)
+            {
+                StopCoroutine(toastRoutine);
+                toastRoutine = null;
+            }
+
+            pxName = string.IsNullOrEmpty(pxName) ? "Experience" : pxName;
+
+            toastLabel.text = $"<b>{pxName}</b> deactivated";
+            toastRoutine = StartCoroutine(ShowToastRoutine());
         }
 
         public override void Dispose()
@@ -198,7 +179,7 @@ namespace DCL.ExperiencesViewer
             {
                 experiencesPool = PoolManager.i.AddPool(
                     EXPERIENCES_POOL_NAME,
-                    GameObject.Instantiate(experienceRowPrefab).gameObject,
+                    Instantiate(experienceRowPrefab).gameObject,
                     maxPrewarmCount: EXPERIENCES_POOL_PREWARM,
                     isPersistent: true);
 
@@ -206,11 +187,11 @@ namespace DCL.ExperiencesViewer
             }
         }
 
-        internal IEnumerator ShowUIHiddenToastCoroutine()
+        private IEnumerator ShowToastRoutine()
         {
-            hiddenUIToastAnimator.Show();
+            toastAnimator.Show();
             yield return new WaitForSeconds(UI_HIDDEN_TOAST_SHOWING_TIME);
-            hiddenUIToastAnimator.Hide();
+            toastAnimator.Hide();
         }
 
         internal static ExperiencesViewerComponentView Create()
