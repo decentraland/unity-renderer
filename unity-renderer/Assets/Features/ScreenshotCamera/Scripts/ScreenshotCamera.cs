@@ -138,9 +138,10 @@ namespace UI.InWorldCamera.Scripts
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
 
-            Debug.Log(response.id);
             // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
             Application.OpenURL($"https://reels.decentraland.org/{response.id}");
+            Application.OpenURL(response.url);
+
         }
 
         private void EnableScreenshotCamera()
