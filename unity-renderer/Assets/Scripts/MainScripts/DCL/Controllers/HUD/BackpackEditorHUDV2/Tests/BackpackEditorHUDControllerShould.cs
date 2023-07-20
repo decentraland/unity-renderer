@@ -374,7 +374,7 @@ namespace DCL.Backpack
 
                 // Assert exportation
                 vrmExporter.Export(smrs);
-                fileBrowserService.SaveFile(Arg.Any<string>(),
+                fileBrowserService.SaveFileAsync(Arg.Any<string>(),
                     Arg.Any<string>(),
                     Arg.Is<string>(s => s.StartsWith("testing_name")),
                     Arg.Any<byte[]>(),
