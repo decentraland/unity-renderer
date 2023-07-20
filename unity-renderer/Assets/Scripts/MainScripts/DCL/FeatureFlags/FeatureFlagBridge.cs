@@ -27,11 +27,6 @@ public class FeatureFlagBridge : MonoBehaviour
 
         config.SetAsInitialized();
 
-        foreach (var flag in config.flags.Keys)
-        {
-            Debug.Log($"Flag :: {flag}");
-        }
-        
         DataStore.i.featureFlags.flags.Set(config);
     }
 }
