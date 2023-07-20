@@ -13,7 +13,8 @@ namespace AvatarSystem
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public SkinnedMeshRenderer combinedRenderer { get; private set; }
-        public List<SkinnedMeshRenderer> originalVisibleRenderers { get; private set; } = new List<SkinnedMeshRenderer>();
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers  => originalVisibleRenderersValue;
+        public List<SkinnedMeshRenderer> originalVisibleRenderersValue { get; private set; } = new List<SkinnedMeshRenderer>();
         public List<Renderer> facialFeaturesRenderers { get; private set; }
         public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
@@ -62,8 +63,8 @@ namespace AvatarSystem
                 }
 
                 var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, settings.bodyshapeId, wearables);
-                originalVisibleRenderers = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())).ToList();
-                combinedRenderer = await MergeAvatar(originalVisibleRenderers, skinnedContainer, cancellationToken);
+                originalVisibleRenderersValue = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())).ToList();
+                combinedRenderer = await MergeAvatar(originalVisibleRenderersValue, skinnedContainer, cancellationToken);
                 facialFeaturesRenderers = new List<Renderer>();
 
                 if (activeBodyParts.Contains(bodyshapeLoader.headRenderer))
@@ -71,17 +72,17 @@ namespace AvatarSystem
                     if (bodyWearables.Eyes != null)
                     {
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
-                        originalVisibleRenderers.Add(bodyshapeLoader.eyesRenderer);
+                        originalVisibleRenderersValue.Add(bodyshapeLoader.eyesRenderer);
                     }
                     if (bodyWearables.Eyebrows != null)
                     {
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
-                        originalVisibleRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
+                        originalVisibleRenderersValue.Add(bodyshapeLoader.eyebrowsRenderer);
                     }
                     if (bodyWearables.Mouth != null)
                     {
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
-                        originalVisibleRenderers.Add(bodyshapeLoader.mouthRenderer);
+                        originalVisibleRenderersValue.Add(bodyshapeLoader.mouthRenderer);
                     }
                 }
                 else

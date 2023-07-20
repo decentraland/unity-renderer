@@ -34,11 +34,14 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
         private readonly VRMExporterReferences vrmExporterReferences;
         private readonly IReadOnlyDictionary<string, Transform> toExportBones;
         private readonly ExportingState exportingState = new ();
+        private readonly UniGLTF.GltfExportSettings settings = new ();
+        private readonly RuntimeTextureSerializer textureSerializer = new ();
 
         public VRMExporter(VRMExporterReferences vrmExporterReferences)
         {
             this.vrmExporterReferences = vrmExporterReferences;
             toExportBones = VRMExporterUtils.CacheFBXBones(vrmExporterReferences.bonesRoot);
+            vrmExporterReferences.metaObject.Version = "1.0, UniVRM v0.112.0";
         }
 
         public UniTask<byte[]> Export(string name, string reference, IEnumerable<SkinnedMeshRenderer> wearables, CancellationToken ct = default)
@@ -53,12 +56,11 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
 
             vrmExporterReferences.metaObject.Author = name;
             vrmExporterReferences.metaObject.Reference = reference;
-            vrmExporterReferences.metaObject.Version = "1.0, UniVRM v0.112.0";
 
             // Normalize Bones
             GameObject toExportNormalized = VRMBoneNormalizer.Execute(vrmExporterReferences.toExport, true);
             exportingState.objects.Add(toExportNormalized);
-            var vrmNormalized = VRM.VRMExporter.Export(new UniGLTF.GltfExportSettings(), toExportNormalized, new RuntimeTextureSerializer());
+            var vrmNormalized = VRM.VRMExporter.Export(settings, toExportNormalized, textureSerializer);
 
             return new UniTask<byte[]>(vrmNormalized.ToGlbBytes());
         }
@@ -104,7 +106,13 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
                 Transform originalBone = originalBones[i];
 
                 if (TryGetFbxBone(originalBone, out var fbxBone))
-                    newBones[i] = fbxBone;
+                {
+                    if (fbxBone == null)
+                    {
+                        Debug.LogError($"Couldnt find a bone with name {originalBone.name} for mesh {wearable.sharedMesh.name} in object {wearable.transform.GetHierarchyPath()}");
+                        continue;
+                    }
+                    newBones[i] = fbxBone;}
             }
 
             copiedWearable.bones = newBones;
@@ -142,11 +150,12 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
                         break;
                     }
                     case "DCL/Universal Render Pipeline/Lit":
-                    default:
                         outputMaterial[i] = new Material(toonMaterial);
                         exportingState.objects.Add(outputMaterial[i]);
                         VRMExporterUtils.ConvertLitMaterial(material, outputMaterial[i]);
                         break;
+                    default:
+                        throw new Exception($"Material {material.name} with shader {material.shader.name} is not supported");
                 }
             }
 
