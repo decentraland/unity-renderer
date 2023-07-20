@@ -100,13 +100,17 @@ namespace DCL.Components
             DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange -= OnChangeSceneUI;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
-            if (childHookRectTransform != null)
-            {
-                Utils.SafeDestroy(childHookRectTransform.gameObject);
-            }
+            // FD::
+            // if (childHookRectTransform != null)
+            // {
+            //     Utils.SafeDestroy(childHookRectTransform.gameObject);
+            // }
 
             if (referencesContainer != null)
                 pool.ReleaseUIShape(referencesContainer);
+
+            if (childHookRectTransform)
+                childHookRectTransform.GetComponent<UIReferencesContainer>()?.owner.Dispose();
         }
 
         void OnChangeSceneUI(bool current, bool previous)
@@ -222,6 +226,7 @@ namespace DCL.Components
             CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
         }
 
+        // FD:: remove this method when we are sure the new canvas is working as expected
         void InitializeCanvasOriginal()
         {
             if (VERBOSE)

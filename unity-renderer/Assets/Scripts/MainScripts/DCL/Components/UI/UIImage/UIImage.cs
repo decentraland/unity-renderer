@@ -168,13 +168,13 @@ namespace DCL.Components
 
             dclTexture?.DetachFrom(this);
 
+            base.Dispose();
+
             if (referencesContainer != null)
             {
                 referencesContainer.image.texture = null;
-                referencesContainer = null;
+                // referencesContainer = null; // FD::
             }
-
-            base.Dispose();
         }
     }
 }

@@ -394,8 +394,11 @@ namespace DCL.Components
                 referencesContainer = null;
             }
 
+            // FD::
+            // if (childHookRectTransform)
+            //     Utils.SafeDestroy(childHookRectTransform.gameObject);
             if (childHookRectTransform)
-                Utils.SafeDestroy(childHookRectTransform.gameObject);
+                childHookRectTransform.GetComponent<UIReferencesContainer>()?.owner.Dispose();
 
             screenSize.OnChange -= OnScreenResize;
 
