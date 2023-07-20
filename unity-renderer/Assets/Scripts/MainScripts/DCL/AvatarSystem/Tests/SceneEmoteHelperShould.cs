@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -85,7 +86,6 @@ namespace Test.AvatarSystem
                     emotesOnUse,
                     currentScenePendingSceneEmotes,
                     currentSceneEquippedEmotes,
-                    () => false,
                     default
                 );
 
@@ -105,11 +105,19 @@ namespace Test.AvatarSystem
             BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> animations = new BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData>();
             HashSet<(string bodyshapeId, string emoteId)> currentScenePendingSceneEmotes = new HashSet<(string bodyshapeId, string emoteId)>();
             HashSet<(string bodyshapeId, string emoteId)> currentSceneEquippedEmotes = new HashSet<(string bodyshapeId, string emoteId)>();
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
             yield return UniTask.ToCoroutine(async () =>
             {
                 try
                 {
+                    // schedule cancellation after request starts
+                    UniTask.Create(async () =>
+                    {
+                        await UniTask.Yield();
+                        cancellationTokenSource.Cancel();
+                    });
+
                     await SceneEmoteHelper.RequestLoadSceneEmote(
                         BODY_SHAPE,
                         EMOTE_ID,
@@ -117,8 +125,7 @@ namespace Test.AvatarSystem
                         emotesOnUse,
                         currentScenePendingSceneEmotes,
                         currentSceneEquippedEmotes,
-                        () => true, // force cancellation
-                        default
+                        cancellationTokenSource.Token
                     );
                 }
                 catch (OperationCanceledException _)
@@ -156,7 +163,6 @@ namespace Test.AvatarSystem
                     emotesOnUse,
                     currentScenePendingSceneEmotes,
                     currentSceneEquippedEmotes,
-                    () => false,
                     default
                 );
 
@@ -167,7 +173,6 @@ namespace Test.AvatarSystem
                     emotesOnUse,
                     currentScenePendingSceneEmotes,
                     currentSceneEquippedEmotes,
-                    () => false,
                     default
                 );
 

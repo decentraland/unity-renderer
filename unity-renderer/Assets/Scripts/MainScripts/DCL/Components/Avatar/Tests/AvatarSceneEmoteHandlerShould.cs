@@ -5,7 +5,6 @@ using DCL.Emotes;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -55,10 +54,9 @@ namespace Tests
 
             yield return UniTask.ToCoroutine(async () =>
             {
-                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.Cancel();
-
-                await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID, cancellationTokenSource.Token);
+                var task = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
+                handler.cancellationTokenSource.Cancel();
+                await task;
 
                 var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
                 Assert.IsFalse(animations.ContainsKey(emoteData));

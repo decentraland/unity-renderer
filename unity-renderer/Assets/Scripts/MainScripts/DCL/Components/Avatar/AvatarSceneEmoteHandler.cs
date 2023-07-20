@@ -17,7 +17,7 @@ namespace DCL
         private readonly HashSet<(string bodyshapeId, string emoteId)> equippedEmotesByScene;
 
         private long lamportTimestamp = 0;
-        private bool cleanedUp = false;
+        internal CancellationTokenSource cancellationTokenSource = null;
 
         public AvatarSceneEmoteHandler(IAvatar avatar,
             IBaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> alreadyLoadedEmotes,
@@ -40,10 +40,10 @@ namespace DCL
             lamportTimestamp = timestamp;
         }
 
-        public async UniTask LoadAndPlayEmote(string bodyShapeId, string emoteId, CancellationToken ct = default)
+        public async UniTask LoadAndPlayEmote(string bodyShapeId, string emoteId)
         {
             long timestamp = lamportTimestamp;
-            cleanedUp = false;
+            cancellationTokenSource ??= new CancellationTokenSource();
 
             try
             {
@@ -54,8 +54,7 @@ namespace DCL
                     emotesInUse,
                     pendingEmotesByScene,
                     equippedEmotesByScene,
-                    ShouldCancelEmoteLoading,
-                    ct
+                    cancellationTokenSource.Token
                 );
 
                 //avoid playing emote if timestamp has change,
@@ -78,6 +77,13 @@ namespace DCL
 
         public void CleanUp()
         {
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
+            }
+
             foreach (var emoteData in equippedEmotesByScene)
             {
                 avatar?.UnequipEmote(emoteData.emoteId);
@@ -91,10 +97,6 @@ namespace DCL
 
             equippedEmotesByScene.Clear();
             pendingEmotesByScene.Clear();
-            cleanedUp = true;
         }
-
-        private bool ShouldCancelEmoteLoading() =>
-            cleanedUp;
     }
 }

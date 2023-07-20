@@ -26,6 +26,7 @@ namespace RPC.Services
         private readonly BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse;
         private readonly IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> pendingEmotesByScene;
         private readonly IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene;
+        private readonly IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources;
 
         private IAvatar avatarData;
 
@@ -42,7 +43,8 @@ namespace RPC.Services
                     alreadyLoadedEmotes: DataStore.i.emotes.animations,
                     emotesInUse: DataStore.i.emotes.emotesOnUse,
                     pendingEmotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>(),
-                    equippedEmotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>()
+                    equippedEmotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>(),
+                    cancellationTokenSources: new Dictionary<IParcelScene, CancellationTokenSource>()
                 ));
         }
 
@@ -55,7 +57,8 @@ namespace RPC.Services
             IBaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> alreadyLoadedEmotes,
             BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse,
             IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> pendingEmotesByScene,
-            IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene
+            IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene,
+            IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources
         )
         {
             this.worldState = worldState;
@@ -66,6 +69,7 @@ namespace RPC.Services
             this.pendingEmotesByScene = pendingEmotesByScene;
             this.equippedEmotesByScene = equippedEmotesByScene;
             this.emotesInUse = emotesInUse;
+            this.cancellationTokenSources = cancellationTokenSources;
 
             port.OnClose += OnPortClosed;
         }
@@ -116,6 +120,13 @@ namespace RPC.Services
                 equippedEmotesByScene.Add(scene, sceneEquippedEmotes);
             }
 
+            // get / create cancellation source for scene
+            if (!cancellationTokenSources.TryGetValue(scene, out var cancellationTokenSource))
+            {
+                cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                cancellationTokenSources.Add(scene, cancellationTokenSource);
+            }
+
             sceneController.OnSceneRemoved -= OnSceneRemoved;
             sceneController.OnSceneRemoved += OnSceneRemoved;
 
@@ -131,8 +142,7 @@ namespace RPC.Services
                     emotesInUse,
                     scenePendingEmotes,
                     sceneEquippedEmotes,
-                    () => !worldState.ContainsScene(request.SceneNumber),
-                    ct);
+                    cancellationTokenSource.Token);
 
                 // make emote play
                 avatarData.EquipEmote(emoteId, alreadyLoadedEmotes[(userBodyShape, emoteId)]);
@@ -153,6 +163,12 @@ namespace RPC.Services
 
         private void OnSceneRemoved(IParcelScene scene)
         {
+            if (cancellationTokenSources.TryGetValue(scene, out var cancellationTokenSource))
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSources.Remove(scene);
+            }
+
             if (equippedEmotesByScene.TryGetValue(scene, out var equippedEmotes))
             {
                 foreach (var emoteData in equippedEmotes)

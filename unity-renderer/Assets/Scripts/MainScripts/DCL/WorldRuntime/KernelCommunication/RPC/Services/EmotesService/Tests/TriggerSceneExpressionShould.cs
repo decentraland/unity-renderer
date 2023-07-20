@@ -13,6 +13,7 @@ using RPC.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -29,6 +30,7 @@ namespace Tests
         private BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse;
         private IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> pendingEmotesByScene;
         private IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene;
+        private IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources;
         private IClientEmotesRendererService client;
 
         [UnitySetUp]
@@ -42,6 +44,7 @@ namespace Tests
             emotesInUse = new BaseRefCountedCollection<(string bodyshapeId, string emoteId)>();
             pendingEmotesByScene = new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>();
             equippedEmotesByScene = new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>();
+            cancellationTokenSources = new Dictionary<IParcelScene, CancellationTokenSource>();
 
             Environment.i.serviceLocator.Register<IRPC>(() => Substitute.For<IRPC>());
 
@@ -221,7 +224,7 @@ namespace Tests
                 UniTask.Create(async () =>
                 {
                     await UniTask.Yield();
-                    worldState.ContainsScene(SCENE_NUMBER).Returns(false);
+                    cancellationTokenSources[scene].Cancel();
                 });
 
                 var result = await client.TriggerSceneExpression(
@@ -376,7 +379,8 @@ namespace Tests
                         animations,
                         emotesInUse,
                         pendingEmotesByScene,
-                        equippedEmotesByScene
+                        equippedEmotesByScene,
+                        cancellationTokenSources
                     ));
             });
 

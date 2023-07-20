@@ -57,7 +57,6 @@ namespace AvatarSystem
             BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse,
             HashSet<(string bodyshapeId, string emoteId)> currentScenePendingSceneEmotes,
             HashSet<(string bodyshapeId, string emoteId)> currentSceneEquippedEmotes,
-            Func<bool> cancelCondition,
             CancellationToken ct)
         {
             var emoteData = (bodyShapeId, emoteId);
@@ -75,18 +74,19 @@ namespace AvatarSystem
                 emotesInUse.IncreaseRefCount(emoteData);
             }
 
-            // wait until emote is loaded
-            while (!animations.ContainsKey(emoteData))
+            try
             {
-                // if cancelled or scene was unloaded
-                if (ct.IsCancellationRequested || cancelCondition())
+                // wait until emote is loaded
+                while (!animations.ContainsKey(emoteData))
                 {
-                    currentScenePendingSceneEmotes.Remove(emoteData);
-                    emotesInUse.DecreaseRefCount(emoteData);
-                    throw new OperationCanceledException(ct);
+                    await UniTask.Yield(ct);
                 }
-
-                await UniTask.Yield(ct);
+            }
+            catch (OperationCanceledException e)
+            {
+                currentScenePendingSceneEmotes.Remove(emoteData);
+                emotesInUse.DecreaseRefCount(emoteData);
+                throw e;
             }
 
             // flag it as equipped
