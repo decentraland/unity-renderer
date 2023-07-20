@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ExporterVersion: 
   Title: DCL Avatar
-  Version: 1.0
-  Author: Decentraland Foundation
+  Version: 1.0, UniVRM v0.112.0
+  Author: AceClover
   ContactInformation: info@decentraland.org
   Reference: 
   Thumbnail: {fileID: 0}
-  AllowedUser: 0
+  AllowedUser: 2
   ViolentUssage: 0
   SexualUssage: 0
   CommercialUssage: 0
