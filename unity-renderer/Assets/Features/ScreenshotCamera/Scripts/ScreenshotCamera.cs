@@ -2,7 +2,7 @@
 using DCL.Camera;
 using DCL.Helpers;
 using DCLServices.CameraReelService;
-using MainScripts.DCL.InWorldCamera.Scripts;
+using Features.ScreenshotCamera.Scripts;
 using System.Collections;
 using UnityEngine;
 
@@ -129,9 +129,9 @@ namespace UI.InWorldCamera.Scripts
         {
             if (!isInScreenshotMode) return;
 
-            CameraReelImageResponse response = await cameraReelNetworkService.UploadScreenshot
+            CameraReelResponse response = await cameraReelNetworkService.UploadScreenshot
             (
-                screenshot: screenshotCapture.CaptureScreenshot(),
+                image: screenshotCapture.CaptureScreenshot(),
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
 

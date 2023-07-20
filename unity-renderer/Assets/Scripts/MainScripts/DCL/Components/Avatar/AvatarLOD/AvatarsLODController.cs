@@ -52,7 +52,6 @@ namespace DCL
             cameraTransform = camera.transform;
         }
 
-
         public void RegisterAvatar(string id, Player player)
         {
             if (LodControllers.ContainsKey(id))
