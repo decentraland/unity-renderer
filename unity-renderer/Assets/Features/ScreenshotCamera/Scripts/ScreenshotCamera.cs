@@ -59,11 +59,11 @@ namespace UI.InWorldCamera.Scripts
             }
         }
 
-        // private void Awake()
-        // {
-        //     if (!featureFlags.IsFeatureEnabled("camera_reel"))
-        //         Destroy(gameObject);
-        // }
+        private void Awake()
+        {
+            if (!featureFlags.IsFeatureEnabled("camera_reel") || isGuest)
+                Destroy(gameObject);
+        }
 
         private void OnEnable()
         {
@@ -121,7 +121,7 @@ namespace UI.InWorldCamera.Scripts
 
         private async void CaptureScreenshot(DCLAction_Trigger _)
         {
-            if (!isInScreenshotMode || isGuest) return;
+            if (!isInScreenshotMode) return;
 
             CameraReelImageResponse response = await cameraReelNetworkService.UploadScreenshot
             (
