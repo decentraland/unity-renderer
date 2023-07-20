@@ -19,6 +19,8 @@ namespace DCL.PortableExperiences.Confirmation
         [SerializeField] private TMP_Text permissionsLabel;
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text descriptionLabel;
+        [SerializeField] private TMP_Text allowButtonLabel;
+        [SerializeField] private TMP_Text rejectButtonLabel;
         [SerializeField] private Toggle dontAskMeAgainToggle;
         [SerializeField] private ImageComponentView iconImage;
         [SerializeField] private Texture2D defaultIconSprite;
@@ -95,6 +97,17 @@ namespace DCL.PortableExperiences.Confirmation
 
             smartWearableTitle.SetActive(model.IsSmartWearable);
             scenePxTitle.SetActive(!model.IsSmartWearable);
+
+            if (model.IsSmartWearable)
+            {
+                allowButtonLabel.text = "ALLOW AND EQUIP";
+                rejectButtonLabel.text = "DON'T ALLOW\nAND EQUIP";
+            }
+            else
+            {
+                allowButtonLabel.text = "OK";
+                rejectButtonLabel.text = "DON'T ALLOW";
+            }
 
             root.ForceUpdateLayout();
         }
