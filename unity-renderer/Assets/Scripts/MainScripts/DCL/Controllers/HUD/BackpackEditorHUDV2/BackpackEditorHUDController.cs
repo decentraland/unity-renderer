@@ -6,7 +6,7 @@ using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 using System.Threading;
 using UnityEngine;
 
@@ -716,7 +716,27 @@ namespace DCL.Backpack
                 view?.SetVRMSuccessToastActive(false);
 
                 backpackAnalyticsService.SendVRMExportStarted();
-                byte[] bytes = await vrmExporter.Export(view?.originalVisibleRenderers, ct);
+
+                StringBuilder reference = new StringBuilder();
+
+                try
+                {
+                    var wearables = await this.ownUserProfile.avatar.wearables.Select(x => this.wearablesCatalogService.RequestWearableAsync(x, ct));
+                    foreach (WearableItem wearableItem in wearables)
+                    {
+                        reference.AppendLine(string.Join(":",
+                            wearableItem.data.category,
+                            wearableItem.GetName(),
+                            wearableItem.GetMarketplaceLink()
+                        ));
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                byte[] bytes = await vrmExporter.Export($"{this.ownUserProfile.userName} Avatar", reference.ToString(), view?.originalVisibleRenderers, ct);
 
                 string fileName = $"{this.ownUserProfile.userName.Replace("#","_")}_{DateTime.Now.ToString("yyyyMMddhhmmss")}";
                 await fileBrowser.SaveFileAsync("Save your VRM", Application.persistentDataPath, fileName, bytes, new ExtensionFilter("vrm", "vrm"));

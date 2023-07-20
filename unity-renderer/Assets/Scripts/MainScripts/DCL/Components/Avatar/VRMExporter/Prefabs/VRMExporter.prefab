@@ -270,6 +270,7 @@ MonoBehaviour:
   vrmToonMaterial: {fileID: 2100000, guid: 3f26c33fcd0c42a47856180f16914536, type: 2}
   vrmUnlitMaterial: {fileID: 2100000, guid: 9504627f9f807d54abae7b14414cd3d9, type: 2}
   vrmbonesMapping: {fileID: 11400000, guid: 00a5b5aad00dbb44f9eca4fcebc0ca0b, type: 2}
+  metaObject: {fileID: 11400000, guid: 86d30a5b29f6f424c965c3ddd3ebb891, type: 2}
 --- !u!114 &4916680273185058626
 MonoBehaviour:
   m_ObjectHideFlags: 0

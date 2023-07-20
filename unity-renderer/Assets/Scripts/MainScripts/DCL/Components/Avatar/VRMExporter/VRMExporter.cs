@@ -14,7 +14,7 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
 {
     public interface IVRMExporter
     {
-        UniTask<byte[]> Export(IEnumerable<SkinnedMeshRenderer> wearables, CancellationToken ct = default);
+        UniTask<byte[]> Export(string name, string reference, IEnumerable<SkinnedMeshRenderer> wearables, CancellationToken ct = default);
     }
 
     public class VRMExporter : IVRMExporter
@@ -41,7 +41,7 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
             toExportBones = VRMExporterUtils.CacheFBXBones(vrmExporterReferences.bonesRoot);
         }
 
-        public async UniTask<byte[]> Export(IEnumerable<SkinnedMeshRenderer> wearables, CancellationToken ct = default)
+        public UniTask<byte[]> Export(string name, string reference, IEnumerable<SkinnedMeshRenderer> wearables, CancellationToken ct = default)
         {
             exportingState.Dispose();
 
@@ -51,12 +51,16 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
             foreach (SkinnedMeshRenderer wearable in wearables)
                 AddWearableToExport(wearable);
 
+            vrmExporterReferences.metaObject.Author = name;
+            vrmExporterReferences.metaObject.Reference = reference;
+            vrmExporterReferences.metaObject.Version = "1.0, UniVRM v0.112.0";
+
             // Normalize Bones
             GameObject toExportNormalized = VRMBoneNormalizer.Execute(vrmExporterReferences.toExport, true);
             exportingState.objects.Add(toExportNormalized);
             var vrmNormalized = VRM.VRMExporter.Export(new UniGLTF.GltfExportSettings(), toExportNormalized, new RuntimeTextureSerializer());
 
-            return vrmNormalized.ToGlbBytes();
+            return new UniTask<byte[]>(vrmNormalized.ToGlbBytes());
         }
 
         private void AddWearableToExport(SkinnedMeshRenderer wearable)

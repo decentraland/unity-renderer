@@ -1,4 +1,5 @@
 using UnityEngine;
+using VRM;
 
 namespace MainScripts.DCL.Components.Avatar.VRMExporter
 {
@@ -10,5 +11,6 @@ namespace MainScripts.DCL.Components.Avatar.VRMExporter
         public Material vrmToonMaterial;
         public Material vrmUnlitMaterial;
         public VRMBonesMappingSO vrmbonesMapping;
+        public VRMMetaObject metaObject;
     }
 }

@@ -373,7 +373,7 @@ namespace DCL.Backpack
                 backpackAnalyticsService.SendVRMExportStarted();
 
                 // Assert exportation
-                vrmExporter.Export(smrs);
+                vrmExporter.Export(Arg.Any<string>(), Arg.Any<string>(), smrs);
                 fileBrowserService.SaveFileAsync(Arg.Any<string>(),
                     Arg.Any<string>(),
                     Arg.Is<string>(s => s.StartsWith("testing_name")),
