@@ -15,9 +15,6 @@ namespace UI.InWorldCamera.Scripts
 
         private (float width, float height) spriteRect;
 
-        private Texture2D textureLazyValue;
-        private Texture2D texture => textureLazyValue ??= new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
-
         public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Image refBoundariesImage)
         {
             sprite = refBoundariesImage.sprite;
@@ -46,11 +43,11 @@ namespace UI.InWorldCamera.Scripts
             float cornerX = (renderTextureWidth - DESIRED_WIDTH) / 2f;
             float cornerY = (renderTextureHeight - DESIRED_HEIGHT) / 2f;
 
+            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(cornerX, cornerY, DESIRED_WIDTH, DESIRED_HEIGHT), 0, 0);
             texture.Apply();
 
             // Clean up
-            RenderTexture.active = null;
             screenshotCamera.targetTexture = null;
             RenderTexture.ReleaseTemporary(renderTexture);
 
