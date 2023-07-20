@@ -473,7 +473,7 @@ SpriteAtlas:
   - RectangleLoadingBar
   - InputFieldBuilderFocus
   - HandleThick
-  - SmartItemIcon
+  - SmartItemIcn
   - Key
   - NamesIcon
   - NFTUniqueContainer
