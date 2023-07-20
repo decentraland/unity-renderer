@@ -64,11 +64,12 @@ namespace UI.InWorldCamera.Scripts
         private IEnumerator Start()
         {
             enabled = false;
-            yield return new WaitUntil(() => DataStore.i.player.ownPlayer.Get() != null);
             yield return new WaitUntil(() => featureFlags.IsInitialized);
 
             if (!featureFlags.IsFeatureEnabled("camera_reel") || isGuest)
                 Destroy(gameObject);
+            else
+                enabled = true;
         }
 
         private void OnEnable()
@@ -135,6 +136,7 @@ namespace UI.InWorldCamera.Scripts
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
 
+            Debug.Log(response.id);
             // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
             Application.OpenURL($"https://reels.decentraland.org/{response.id}");
         }
