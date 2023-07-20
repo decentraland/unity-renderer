@@ -3,6 +3,7 @@ using DCL.Camera;
 using DCL.Helpers;
 using DCLServices.CameraReelService;
 using MainScripts.DCL.InWorldCamera.Scripts;
+using System.Collections;
 using UnityEngine;
 
 namespace UI.InWorldCamera.Scripts
@@ -59,8 +60,13 @@ namespace UI.InWorldCamera.Scripts
             }
         }
 
-        private void Awake()
+        // TODO(Vitaly): Remove this logic when feature flag will be enalbed
+        private IEnumerator Start()
         {
+            enabled = false;
+            yield return new WaitUntil(() => DataStore.i.player.ownPlayer.Get() != null);
+            yield return new WaitUntil(() => featureFlags.IsInitialized);
+
             if (!featureFlags.IsFeatureEnabled("camera_reel") || isGuest)
                 Destroy(gameObject);
         }
