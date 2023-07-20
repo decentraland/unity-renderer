@@ -66,7 +66,7 @@ namespace UI.InWorldCamera.Scripts
             enabled = false;
             yield return new WaitUntil(() => featureFlags.IsInitialized);
 
-            if (!featureFlags.IsFeatureEnabled("camera_reel") || isGuest)
+            if (!featureFlags.IsFeatureEnabled("camera_reel"))
                 Destroy(gameObject);
             else
                 enabled = true;
@@ -86,6 +86,8 @@ namespace UI.InWorldCamera.Scripts
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _)
         {
+            if (isGuest) return;
+
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
 
             Utils.UnlockCursor();
@@ -128,7 +130,7 @@ namespace UI.InWorldCamera.Scripts
 
         private async void CaptureScreenshot(DCLAction_Trigger _)
         {
-            if (!isInScreenshotMode) return;
+            if (!isInScreenshotMode || isGuest) return;
 
             CameraReelResponse response = await cameraReelNetworkService.UploadScreenshot
             (
