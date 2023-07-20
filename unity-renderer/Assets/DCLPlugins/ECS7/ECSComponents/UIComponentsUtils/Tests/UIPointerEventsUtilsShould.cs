@@ -1,8 +1,7 @@
-﻿using DCL.ECS7.InternalComponents;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using DCL.ECSRuntime;
-using DCL.Models;
-using Google.Protobuf;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
@@ -62,27 +61,31 @@ namespace DCL.ECSComponents.Tests
         public IEnumerator AddInternalInputResult()
         {
             ECSComponentData<InternalUIInputResults> internalCompData = new ECSComponentData<InternalUIInputResults>
-            {
-                model = new InternalUIInputResults()
-            };
+            (
+                scene: scene,
+                entity: entity,
+                model: new InternalUIInputResults(new Queue<InternalUIInputResults.Result>()),
+                handler: null
+            );
 
             var inputResultsComp = Substitute.For<IInternalECSComponent<InternalUIInputResults>>();
-            var result = Substitute.For<IMessage>();
+            IPooledWrappedComponent result = Substitute.For<IPooledWrappedComponent>();
 
             inputResultsComp.GetFor(scene, entity).Returns(_ => internalCompData);
 
             yield return CreateStretchedElement();
 
             callback = UIPointerEventsUtils
-               .RegisterFeedback<PointerUpEvent, IMessage>(inputResultsComp, _ => result, scene, entity, uiElement, COMPONENT_ID);
+               .RegisterFeedback<PointerUpEvent>(inputResultsComp, _ => result, scene, entity, uiElement, COMPONENT_ID);
 
             using (var evt = PointerUpEvent.GetPooled(new Event
                    {
                        type = EventType.MouseUp,
-                       mousePosition = new UnityEngine.Vector2(50f, 50f)
+                       mousePosition = new Vector2(50f, 50f)
                    })) { document.rootVisualElement.panel.visualTree.SendEvent(evt); }
 
             CollectionAssert.Contains(internalCompData.model.Results, new InternalUIInputResults.Result(result, COMPONENT_ID));
         }
     }
 }
+

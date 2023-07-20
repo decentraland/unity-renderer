@@ -11,6 +11,7 @@ using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -23,7 +24,7 @@ namespace Test.AvatarSystem
         private const string EYES_ID = "urn:decentraland:off-chain:base-avatars:f_eyes_00";
         private const string EYEBROWS_ID = "urn:decentraland:off-chain:base-avatars:f_eyebrows_00";
         private const string MOUTH_ID = "urn:decentraland:off-chain:base-avatars:f_mouth_00";
-        private static readonly string[] WEARABLE_IDS = new []
+        private static readonly string[] WEARABLE_IDS = new[]
         {
             "urn:decentraland:off-chain:base-avatars:black_sun_glasses",
             "urn:decentraland:off-chain:base-avatars:bear_slippers",
@@ -38,6 +39,8 @@ namespace Test.AvatarSystem
         private GameObject container;
         private IAvatarMeshCombinerHelper meshCombiner;
         private IWearablesCatalogService wearablesCatalogService;
+        private BodyWearables bodyWearables;
+        private AvatarSettings avatarSettings;
 
         [SetUp]
         public void SetUp()
@@ -48,6 +51,21 @@ namespace Test.AvatarSystem
             meshCombiner = Substitute.For<IAvatarMeshCombinerHelper>();
             wearableLoaderFactory = Substitute.For<IWearableLoaderFactory>();
             loader = new Loader(wearableLoaderFactory, container, meshCombiner);
+
+            bodyWearables = new (
+                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
+                wearablesCatalogService.WearablesCatalog[EYES_ID],
+                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
+                wearablesCatalogService.WearablesCatalog[MOUTH_ID]
+            );
+
+            avatarSettings = new AvatarSettings
+            {
+                bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
+                eyesColor = Color.blue,
+                hairColor = Color.yellow,
+                skinColor = Color.green
+            };
         }
 
         [Test]
@@ -57,6 +75,7 @@ namespace Test.AvatarSystem
             List<WearableItem> items = GetStandardWearableList();
             Dictionary<string, IWearableLoader> currentLoaders = new Dictionary<string, IWearableLoader>();
             IWearableLoaderFactory loaderFactory = Substitute.For<IWearableLoaderFactory>();
+
             loaderFactory.Configure()
                          .GetWearableLoader(Arg.Any<WearableItem>())
                          .Returns(x => GetMockedWearableLoader(x.ArgAt<WearableItem>(0)));
@@ -68,10 +87,8 @@ namespace Test.AvatarSystem
             Assert.AreEqual(0, notReusableLoaders.Count);
             Assert.AreEqual(4, newLoaders.Count);
             Assert.AreEqual(items.Count, newLoaders.Count);
-            for (int i = 0; i < newLoaders.Count; i++)
-            {
-                Assert.AreEqual(items[i], newLoaders[i].wearable);
-            }
+
+            for (int i = 0; i < newLoaders.Count; i++) { Assert.AreEqual(items[i], newLoaders[i].bodyShape); }
         }
 
         [Test]
@@ -79,12 +96,15 @@ namespace Test.AvatarSystem
         {
             //Arrange
             List<WearableItem> items = GetStandardWearableList();
-            Dictionary<string, IWearableLoader> currentLoaders = new Dictionary<string, IWearableLoader>()
+
+            Dictionary<string, IWearableLoader> currentLoaders = new Dictionary<string, IWearableLoader>
             {
                 { items[0].data.category, GetMockedWearableLoader(items[0]) },
                 { items[1].data.category, GetMockedWearableLoader(items[1]) }
             };
+
             IWearableLoaderFactory loaderFactory = Substitute.For<IWearableLoaderFactory>();
+
             loaderFactory.Configure()
                          .GetWearableLoader(Arg.Any<WearableItem>())
                          .Returns(x => GetMockedWearableLoader(x.ArgAt<WearableItem>(0)));
@@ -97,8 +117,8 @@ namespace Test.AvatarSystem
             Assert.AreEqual(4, newLoaders.Count);
             Assert.IsTrue(currentLoaders.ContainsValue(newLoaders[0]));
             Assert.IsTrue(currentLoaders.ContainsValue(newLoaders[1]));
-            Assert.AreEqual(items[2], newLoaders[2].wearable);
-            Assert.AreEqual(items[3], newLoaders[3].wearable);
+            Assert.AreEqual(items[2], newLoaders[2].bodyShape);
+            Assert.AreEqual(items[3], newLoaders[3].bodyShape);
         }
 
         [Test]
@@ -106,12 +126,15 @@ namespace Test.AvatarSystem
         {
             //Arrange
             List<WearableItem> items = GetStandardWearableList();
-            Dictionary<string, IWearableLoader> currentLoaders = new Dictionary<string, IWearableLoader>()
+
+            Dictionary<string, IWearableLoader> currentLoaders = new Dictionary<string, IWearableLoader>
             {
                 { WearableLiterals.Categories.HAIR, GetMockedWearableLoader(new WearableItem { id = "NotReusable", data = new WearableItem.Data { category = WearableLiterals.Categories.HAIR } }) },
                 { items[1].data.category, GetMockedWearableLoader(items[1]) }
             };
+
             IWearableLoaderFactory loaderFactory = Substitute.For<IWearableLoaderFactory>();
+
             loaderFactory.Configure()
                          .GetWearableLoader(Arg.Any<WearableItem>())
                          .Returns(x => GetMockedWearableLoader(x.ArgAt<WearableItem>(0)));
@@ -124,8 +147,8 @@ namespace Test.AvatarSystem
             Assert.AreEqual(4, newLoaders.Count);
             Assert.IsFalse(currentLoaders.ContainsValue(newLoaders[0]));
             Assert.IsTrue(currentLoaders.ContainsValue(newLoaders[1]));
-            Assert.AreEqual(items[2], newLoaders[2].wearable);
-            Assert.AreEqual(items[3], newLoaders[3].wearable);
+            Assert.AreEqual(items[2], newLoaders[2].bodyShape);
+            Assert.AreEqual(items[3], newLoaders[3].bodyShape);
             Assert.AreEqual(currentLoaders[WearableLiterals.Categories.HAIR], notReusableLoaders[0]);
         }
 
@@ -136,7 +159,8 @@ namespace Test.AvatarSystem
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };
             WearableItem wearable1 = new WearableItem { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.LOWER_BODY } };
             WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } };
-            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>()
+
+            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>
             {
                 { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Succeeded) },
                 { wearable1.data.category, GetMockedWearableLoader(wearable1, IWearableLoader.Status.Succeeded) },
@@ -157,7 +181,8 @@ namespace Test.AvatarSystem
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } };
             WearableItem wearable1 = new WearableItem { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.LOWER_BODY } };
             WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } };
-            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>()
+
+            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>
             {
                 { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Failed) },
                 { wearable1.data.category, GetMockedWearableLoader(wearable1, IWearableLoader.Status.Succeeded) },
@@ -178,7 +203,8 @@ namespace Test.AvatarSystem
             WearableItem wearable0 = new WearableItem { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
             WearableItem wearable1 = new WearableItem { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
             WearableItem wearable2 = new WearableItem { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
-            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>()
+
+            Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>
             {
                 { wearable0.data.category, GetMockedWearableLoader(wearable0, IWearableLoader.Status.Failed) },
                 { wearable1.data.category, GetMockedWearableLoader(wearable1, IWearableLoader.Status.Succeeded) },
@@ -193,173 +219,158 @@ namespace Test.AvatarSystem
         }
 
         [UnityTest]
-        public IEnumerator LoadCorrectly() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
-            MockWearableLoaderFactory();
-            MockCombinesMesh();
+        public IEnumerator LoadCorrectly() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+                MockWearableLoaderFactory();
+                MockCombinesMesh();
 
-            SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
-            SkinnedMeshRenderer[] renderersReceivedByCombiner = null;
-            meshCombiner.Combine(
-                            Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
-                            Arg.Do<SkinnedMeshRenderer[]>(x => renderersReceivedByCombiner = x))
-                        .Returns(true);
+                SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
+                List<SkinnedMeshRenderer> renderersReceivedByCombiner = null;
 
-            await loader.Load(
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                IdsToWearables(WEARABLE_IDS),
-                new AvatarSettings()
+                meshCombiner.Combine(
+                                 Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
+                                 Arg.Do<List<SkinnedMeshRenderer>>(x => renderersReceivedByCombiner = x))
+                            .Returns(true);
+
+                await loader.Load(bodyWearables, IdsToWearables(WEARABLE_IDS), avatarSettings);
+
+                Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
+                Assert.AreEqual(ILoader.Status.Succeeded, loader.status);
+
+                List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>
                 {
-                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                    eyesColor = Color.blue,
-                    hairColor = Color.yellow,
-                    skinColor = Color.green
-                },
-                null
-            );
+                    loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
+                    loader.bodyshapeLoader.handsRenderer,
+                    loader.bodyshapeLoader.extraRenderers[0]
+                };
 
-            Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
-            Assert.AreEqual(ILoader.Status.Succeeded, loader.status);
+                allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
 
-            List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>()
-            {
-                loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
-            };
-            allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
-            //Assert the mesh combiner received the proper data
-            Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
-            for (var i = 0; i < allRenderers.Count; i++)
-            {
-                Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i]));
-            }
-        });
+                //Assert the mesh combiner received the proper data
+                CollectionAssert.AreEqual(allRenderers, renderersReceivedByCombiner);
+            });
 
         [UnityTest]
-        public IEnumerator UseBonesContainerProvided() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
-            MockWearableLoaderFactory();
-            MockCombinesMesh();
-            SkinnedMeshRenderer bonesContainer = CreatePrimitive(container.transform).GetComponent<SkinnedMeshRenderer>();
-
-            await loader.Load(
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                IdsToWearables(WEARABLE_IDS),
-                new AvatarSettings()
-                {
-                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                    eyesColor = Color.blue,
-                    hairColor = Color.yellow,
-                    skinColor = Color.green
-                },
-                bonesContainer
-            );
-
-            foreach (KeyValuePair<string, IWearableLoader> load in loader.loaders)
+        public IEnumerator UseBonesContainerProvided() =>
+            UniTask.ToCoroutine(async () =>
             {
-                foreach (SkinnedMeshRenderer skinned in load.Value.rendereable.meshes.OfType<SkinnedMeshRenderer>())
-                {
-                    Assert.AreEqual(bonesContainer.rootBone, skinned.rootBone);
-                    for (int i = 0; i < skinned.bones.Length; i++)
-                    {
-                        Assert.AreEqual(bonesContainer.bones[i], skinned.bones[i]);
-                    }
-                }
-            }
+                MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+                MockWearableLoaderFactory();
+                MockCombinesMesh();
+                SkinnedMeshRenderer bonesContainer = CreatePrimitive(container.transform).GetComponent<SkinnedMeshRenderer>();
 
-        });
-
-        [UnityTest]
-        public IEnumerator UseUpperBodyContainer() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
-            MockWearableLoaderFactory();
-            MockCombinesMesh();
-
-            await loader.Load(
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                IdsToWearables(WEARABLE_IDS),
-                new AvatarSettings()
-                {
-                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                    eyesColor = Color.blue,
-                    hairColor = Color.yellow,
-                    skinColor = Color.green
-                },
-                null
-            );
-
-            foreach (KeyValuePair<string, IWearableLoader> load in loader.loaders)
-            {
-                foreach (SkinnedMeshRenderer skinned in load.Value.rendereable.meshes.OfType<SkinnedMeshRenderer>())
-                {
-                    Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer.rootBone, skinned.rootBone);
-                    for (int i = 0; i < skinned.bones.Length; i++)
-                    {
-                        Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer.bones[i], skinned.bones[i]);
-                    }
-                }
-            }
-
-        });
-
-        [UnityTest]
-        public IEnumerator DisablesFacialWhenHeadIsHidden() => UniTask.ToCoroutine(async () =>
-        {
-            WearableItem wearableItem = wearablesCatalogService.WearablesCatalog[WEARABLE_IDS[0]];
-            wearableItem.data.hides = new string[] { WearableLiterals.Misc.HEAD };
-            var bodyShapeLoader = Substitute.For<IBodyshapeLoader>();
-            wearableLoaderFactory.Configure()
-                                 .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
-                                 .Returns(x => bodyShapeLoader);
-
-            wearableLoaderFactory.Configure()
-                                 .GetWearableLoader(Arg.Any<WearableItem>())
-                                 .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
-
-            MockCombinesMesh();
-
-            await loader.Load(
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                new List<WearableItem>() { wearableItem },
-                new AvatarSettings()
-                {
-                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                    eyesColor = Color.blue,
-                    hairColor = Color.yellow,
-                    skinColor = Color.green
-                },
-                meshCombiner.renderer
-            );
-            bodyShapeLoader.Received().DisableFacialRenderers();
-        });
-
-        [UnityTest]
-        public IEnumerator ThrowWithFailedBodyshape() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Failed);
-
-            TestUtils.ThrowsAsync<Exception>(
-                loader.Load(
-                    wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                    wearablesCatalogService.WearablesCatalog[EYES_ID],
-                    wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                    wearablesCatalogService.WearablesCatalog[MOUTH_ID],
+                await loader.Load(
+                    bodyWearables,
                     IdsToWearables(WEARABLE_IDS),
-                    new AvatarSettings()
+                    avatarSettings,
+                    bonesContainer
+                );
+
+                foreach (KeyValuePair<string, IWearableLoader> load in loader.loaders)
+                {
+                    foreach (SkinnedMeshRenderer skinned in load.Value.rendereable.meshes.OfType<SkinnedMeshRenderer>())
+                    {
+                        Assert.AreEqual(bonesContainer.rootBone, skinned.rootBone);
+
+                        for (int i = 0; i < skinned.bones.Length; i++) { Assert.AreEqual(bonesContainer.bones[i], skinned.bones[i]); }
+                    }
+                }
+            });
+
+        [UnityTest]
+        public IEnumerator UseUpperBodyContainer() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+                MockWearableLoaderFactory();
+                MockCombinesMesh();
+
+                await loader.Load(
+                    bodyWearables,
+                    IdsToWearables(WEARABLE_IDS),
+                    avatarSettings,
+                    null
+                );
+
+                foreach (KeyValuePair<string, IWearableLoader> load in loader.loaders)
+                {
+                    foreach (SkinnedMeshRenderer skinned in load.Value.rendereable.meshes.OfType<SkinnedMeshRenderer>())
+                    {
+                        Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer.rootBone, skinned.rootBone);
+
+                        for (int i = 0; i < skinned.bones.Length; i++) { Assert.AreEqual(loader.bodyshapeLoader.upperBodyRenderer.bones[i], skinned.bones[i]); }
+                    }
+                }
+            });
+
+        [UnityTest]
+        public IEnumerator DisablesFacialWhenHeadIsHidden() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                WearableItem wearableItem = wearablesCatalogService.WearablesCatalog[WEARABLE_IDS[0]];
+                wearableItem.data.hides = new[] { WearableLiterals.Categories.HEAD };
+                var bodyShapeLoader = GetMockedBodyshapeLoaderWithPrimitives(bodyWearables, container);
+
+                wearableLoaderFactory.Configure()
+                                     .GetBodyShapeLoader(Arg.Any<BodyWearables>())
+                                     .Returns(x => bodyShapeLoader);
+
+                wearableLoaderFactory.Configure()
+                                     .GetWearableLoader(Arg.Any<WearableItem>())
+                                     .Returns(x => GetMockedWearableLoaderWithPrimitive(wearableItem, container));
+
+                MockCombinesMesh();
+
+                await loader.Load(bodyWearables, new List<WearableItem> { wearableItem }, avatarSettings, meshCombiner.renderer);
+
+                bodyShapeLoader.Received().DisableFacialRenderers();
+            });
+
+        [UnityTest]
+        public IEnumerator ThrowWithFailedBodyshape() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                MockBodyShapeLoader(IWearableLoader.Status.Failed);
+
+                TestUtils.ThrowsAsync<Exception>(
+                    loader.Load(
+                        bodyWearables,
+                        IdsToWearables(WEARABLE_IDS),
+                        avatarSettings,
+                        null
+                    ));
+            });
+
+        [UnityTest]
+        public IEnumerator LoadCorrectlyWithFailedNotRequiredWearables() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+
+                wearableLoaderFactory.Configure()
+                                     .GetWearableLoader(Arg.Any<WearableItem>())
+                                     .Returns(x => GetMockedWearableLoaderWithPrimitive(
+                                          x.ArgAt<WearableItem>(0),
+                                          container,
+                                          WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(x.ArgAt<WearableItem>(0).data.category) ? IWearableLoader.Status.Succeeded : IWearableLoader.Status.Failed
+                                      ));
+
+                MockCombinesMesh();
+
+                SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
+                List<SkinnedMeshRenderer> renderersReceivedByCombiner = null;
+
+                meshCombiner.Combine(
+                                 Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
+                                 Arg.Do<List<SkinnedMeshRenderer>>(x => renderersReceivedByCombiner = x))
+                            .Returns(true);
+
+                await loader.Load(
+                    bodyWearables,
+                    IdsToWearables(WEARABLE_IDS),
+                    new AvatarSettings
                     {
                         bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
                         eyesColor = Color.blue,
@@ -367,102 +378,62 @@ namespace Test.AvatarSystem
                         skinColor = Color.green
                     },
                     null
-                ));
-        });
+                );
 
-        [UnityTest]
-        public IEnumerator LoadCorrectlyWithFailedNotRequiredWearables() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+                Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
+                Assert.AreEqual(ILoader.Status.Failed_Minor, loader.status);
 
-            wearableLoaderFactory.Configure()
-                                 .GetWearableLoader(Arg.Any<WearableItem>())
-                                 .Returns(x => GetMockedWearableLoaderWithPrimitive(
-                                     x.ArgAt<WearableItem>(0),
-                                     container,
-                                     WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(x.ArgAt<WearableItem>(0).data.category) ? IWearableLoader.Status.Succeeded : IWearableLoader.Status.Failed
-                                 ));
-
-            MockCombinesMesh();
-
-            SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
-            SkinnedMeshRenderer[] renderersReceivedByCombiner = null;
-            meshCombiner.Combine(
-                            Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
-                            Arg.Do<SkinnedMeshRenderer[]>(x => renderersReceivedByCombiner = x))
-                        .Returns(true);
-
-            await loader.Load(
-                wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                wearablesCatalogService.WearablesCatalog[EYES_ID],
-                wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                IdsToWearables(WEARABLE_IDS),
-                new AvatarSettings()
+                List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>
                 {
-                    bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                    eyesColor = Color.blue,
-                    hairColor = Color.yellow,
-                    skinColor = Color.green
-                },
-                null
-            );
+                    loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
+                    loader.bodyshapeLoader.handsRenderer,
+                };
 
-            Assert.AreEqual(meshCombiner.renderer, loader.combinedRenderer);
-            Assert.AreEqual(ILoader.Status.Failed_Minor, loader.status);
+                allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
 
-            List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>()
-            {
-                loader.bodyshapeLoader.headRenderer, //The rest will be hidden by the wearables
-            };
-            allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
-            //Assert the mesh combiner received the proper data
-            Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
-            for (var i = 0; i < allRenderers.Count; i++)
-            {
-                Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i]));
-            }
-        });
+                //Assert the mesh combiner received the proper data
+                Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Count);
+
+                for (var i = 0; i < allRenderers.Count; i++) { Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i])); }
+            });
 
         [UnityTest]
-        public IEnumerator ThrowIfFailedRequiredWearable() => UniTask.ToCoroutine(async () =>
-        {
-            MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
+        public IEnumerator ThrowIfFailedRequiredWearable() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                MockBodyShapeLoader(IWearableLoader.Status.Succeeded);
 
-            wearableLoaderFactory.Configure()
-                                 .GetWearableLoader(Arg.Any<WearableItem>())
-                                 .Returns(x => GetMockedWearableLoaderWithPrimitive(
-                                     x.ArgAt<WearableItem>(0),
-                                     container,
-                                     WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(x.ArgAt<WearableItem>(0).data.category) ? IWearableLoader.Status.Failed : IWearableLoader.Status.Succeeded
-                                 ));
+                wearableLoaderFactory.Configure()
+                                     .GetWearableLoader(Arg.Any<WearableItem>())
+                                     .Returns(x => GetMockedWearableLoaderWithPrimitive(
+                                          x.ArgAt<WearableItem>(0),
+                                          container,
+                                          WearableLiterals.Categories.REQUIRED_CATEGORIES.Contains(x.ArgAt<WearableItem>(0).data.category) ? IWearableLoader.Status.Failed : IWearableLoader.Status.Succeeded
+                                      ));
 
-            TestUtils.ThrowsAsync<Exception>(
-                loader.Load(
-                    wearablesCatalogService.WearablesCatalog[FEMALE_ID],
-                    wearablesCatalogService.WearablesCatalog[EYES_ID],
-                    wearablesCatalogService.WearablesCatalog[EYEBROWS_ID],
-                    wearablesCatalogService.WearablesCatalog[MOUTH_ID],
-                    IdsToWearables(WEARABLE_IDS),
-                    new AvatarSettings()
-                    {
-                        bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
-                        eyesColor = Color.blue,
-                        hairColor = Color.yellow,
-                        skinColor = Color.green
-                    },
-                    null
-                ));
-        });
+                TestUtils.ThrowsAsync<Exception>(
+                    loader.Load(
+                        bodyWearables,
+                        IdsToWearables(WEARABLE_IDS),
+                        new AvatarSettings
+                        {
+                            bodyshapeId = WearableLiterals.BodyShapes.FEMALE,
+                            eyesColor = Color.blue,
+                            hairColor = Color.yellow,
+                            skinColor = Color.green
+                        },
+                        null
+                    ));
+            });
 
         private List<WearableItem> GetStandardWearableList()
         {
-            return new List<WearableItem>()
+            return new List<WearableItem>
             {
-                new WearableItem() { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } },
-                new WearableItem() { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } },
-                new WearableItem() { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.LOWER_BODY } },
-                new WearableItem() { id = "Item3", data = new WearableItem.Data { category = WearableLiterals.Categories.HAIR } },
+                new () { id = "Item0", data = new WearableItem.Data { category = WearableLiterals.Categories.FEET } },
+                new () { id = "Item1", data = new WearableItem.Data { category = WearableLiterals.Categories.UPPER_BODY } },
+                new () { id = "Item2", data = new WearableItem.Data { category = WearableLiterals.Categories.LOWER_BODY } },
+                new () { id = "Item3", data = new WearableItem.Data { category = WearableLiterals.Categories.HAIR } },
             };
         }
 
@@ -471,39 +442,36 @@ namespace Test.AvatarSystem
             var combined = CreatePrimitive(container.transform, "CombinedRenderer");
             meshCombiner.container.Returns(combined);
             meshCombiner.renderer.Returns(combined.GetComponent<SkinnedMeshRenderer>());
-            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<SkinnedMeshRenderer[]>(), Arg.Any<Material>()).Returns(true);
-            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<SkinnedMeshRenderer[]>()).Returns(true);
+            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<List<SkinnedMeshRenderer>>(), Arg.Any<Material>()).Returns(true);
+            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<List<SkinnedMeshRenderer>>()).Returns(true);
         }
 
         private void MockBodyShapeLoader(IWearableLoader.Status status)
         {
             wearableLoaderFactory.Configure()
-                                     .GetBodyshapeLoader(Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>(), Arg.Any<WearableItem>())
-                                     .Returns(x => GetMockedBodyshapeLoaderWithPrimitives(
-                                         x.ArgAt<WearableItem>(0),
-                                         x.ArgAt<WearableItem>(1),
-                                         x.ArgAt<WearableItem>(2),
-                                         x.ArgAt<WearableItem>(3),
-                                         container,
-                                         status
-                                     ));
+                                 .GetBodyShapeLoader(Arg.Any<BodyWearables>())
+                                 .Returns(x => GetMockedBodyshapeLoaderWithPrimitives(
+                                      x.ArgAt<BodyWearables>(0),
+                                      container,
+                                      status
+                                  ));
         }
 
         private void MockWearableLoaderFactory()
         {
             wearableLoaderFactory.Configure()
-                                     .GetWearableLoader(Arg.Any<WearableItem>())
-                                     .Returns(x => GetMockedWearableLoaderWithPrimitive(
-                                         x.ArgAt<WearableItem>(0),
-                                         container,
-                                         IWearableLoader.Status.Succeeded
-                                     ));
+                                 .GetWearableLoader(Arg.Any<WearableItem>())
+                                 .Returns(x => GetMockedWearableLoaderWithPrimitive(
+                                      x.ArgAt<WearableItem>(0),
+                                      container,
+                                      IWearableLoader.Status.Succeeded
+                                  ));
         }
 
         private IWearableLoader GetMockedWearableLoader(WearableItem wearable, IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
         {
             IWearableLoader loader = Substitute.For<IWearableLoader>();
-            loader.wearable.Returns(wearable);
+            loader.bodyShape.Returns(wearable);
             loader.status.Returns(status);
             return loader;
         }
@@ -511,14 +479,15 @@ namespace Test.AvatarSystem
         private IWearableLoader GetMockedWearableLoaderWithPrimitive(WearableItem wearable, GameObject container, IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
         {
             IWearableLoader loader = Substitute.For<IWearableLoader>();
-            loader.wearable.Returns(wearable);
+            loader.bodyShape.Returns(wearable);
             loader.status.Returns(status);
             Rendereable rendereable = Rendereable.CreateFromGameObject(CreatePrimitive(container.transform, wearable.id));
             loader.rendereable.Returns(rendereable);
             return loader;
         }
 
-        private IBodyshapeLoader GetMockedBodyshapeLoaderWithPrimitives(WearableItem bodyshape, WearableItem eyes, WearableItem eyebrows, WearableItem mouth, GameObject container, IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
+        private IBodyshapeLoader GetMockedBodyshapeLoaderWithPrimitives(BodyWearables wearables, GameObject container,
+            IWearableLoader.Status status = IWearableLoader.Status.Succeeded)
         {
             var bodyshapeHolder = new GameObject("bodyshape");
             bodyshapeHolder.transform.SetParent(container.transform);
@@ -530,12 +499,14 @@ namespace Test.AvatarSystem
             var eyesPrimitive = CreatePrimitive(bodyshapeHolder.transform, "eyes");
             var eyebrowsPrimitive = CreatePrimitive(bodyshapeHolder.transform, "eyebrows");
             var mouthPrimitive = CreatePrimitive(bodyshapeHolder.transform, "mouth");
+            var handsPrimitive = CreatePrimitive(bodyshapeHolder.transform, "hands");
+            var mistery = CreatePrimitive(bodyshapeHolder.transform, "misteryPartX");
 
             IBodyshapeLoader loader = Substitute.For<IBodyshapeLoader>();
-            loader.wearable.Returns(bodyshape);
-            loader.eyes.Returns(eyes);
-            loader.eyebrows.Returns(eyebrows);
-            loader.mouth.Returns(mouth);
+            loader.bodyShape.Returns(wearables.BodyShape);
+            loader.eyes.Returns(wearables.Eyes);
+            loader.eyebrows.Returns(wearables.Eyebrows);
+            loader.mouth.Returns(wearables.Mouth);
 
             loader.headRenderer.Returns(headPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.upperBodyRenderer.Returns(ubodyPrimitive.GetComponent<SkinnedMeshRenderer>());
@@ -544,6 +515,8 @@ namespace Test.AvatarSystem
             loader.eyesRenderer.Returns(eyesPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.eyebrowsRenderer.Returns(eyebrowsPrimitive.GetComponent<SkinnedMeshRenderer>());
             loader.mouthRenderer.Returns(mouthPrimitive.GetComponent<SkinnedMeshRenderer>());
+            loader.handsRenderer.Returns(handsPrimitive.GetComponent<SkinnedMeshRenderer>());
+            loader.extraRenderers.Returns(new List<SkinnedMeshRenderer>() { mistery.GetComponent<SkinnedMeshRenderer>() });
 
             loader.rendereable.Returns(Rendereable.CreateFromGameObject(bodyshapeHolder));
             loader.status.Returns(status);
@@ -551,13 +524,18 @@ namespace Test.AvatarSystem
             return loader;
         }
 
-        private List<WearableItem> IdsToWearables(IEnumerable<string> wearablesIds) { return wearablesIds.Where(x => wearablesCatalogService.WearablesCatalog.ContainsKey(x)).Select(x => wearablesCatalogService.WearablesCatalog[x]).ToList(); }
+        private List<WearableItem> IdsToWearables(IEnumerable<string> wearablesIds)
+        {
+            return wearablesIds.Where(x => wearablesCatalogService.WearablesCatalog.ContainsKey(x)).Select(x => wearablesCatalogService.WearablesCatalog[x]).ToList();
+        }
 
         private GameObject CreatePrimitive(Transform parent, string gameObjectName = "Name")
         {
             GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
             if (primitive.TryGetComponent(out Collider collider))
-                Object.Destroy(collider);
+                Utils.SafeDestroy(collider);
+
             primitive.transform.parent = parent;
             primitive.name = gameObjectName;
 
@@ -565,7 +543,7 @@ namespace Test.AvatarSystem
             SkinnedMeshRenderer skr = primitive.AddComponent<SkinnedMeshRenderer>();
             AddMockBones(skr);
             skr.sharedMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
-            Object.Destroy(renderer);
+            Utils.SafeDestroy(renderer);
 
             return primitive;
         }
@@ -580,15 +558,16 @@ namespace Test.AvatarSystem
             head.transform.parent = hips.transform;
             hips.transform.parent = renderer.transform;
             renderer.rootBone = hips.transform;
-            renderer.bones = new Transform[] { hips.transform, head.transform, neck.transform};
+            renderer.bones = new[] { hips.transform, head.transform, neck.transform };
         }
 
         [TearDown]
         public void TearDown()
         {
             loader?.Dispose();
+
             if (container != null)
-                Object.Destroy(container);
+                Utils.SafeDestroy(container);
 
             wearablesCatalogService.Dispose();
         }

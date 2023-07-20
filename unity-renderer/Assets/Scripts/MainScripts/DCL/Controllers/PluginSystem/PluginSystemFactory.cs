@@ -11,11 +11,15 @@ using DCL.EquippedEmotes;
 using DCL.ExperiencesViewer;
 using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
+using DCL.MyAccount;
+using DCL.PortableExperiences.Confirmation;
+using DCL.PortableExperiencesToggle;
 using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
+using DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
@@ -43,6 +47,7 @@ namespace DCL
             pluginSystem.Register<PreviewMenuPlugin>(() => new PreviewMenuPlugin());
             pluginSystem.Register<SkyboxController>(() => new SkyboxController(DataStore.i));
             pluginSystem.Register<ExperiencesViewerFeature>(() => new ExperiencesViewerFeature());
+            pluginSystem.RegisterWithFlag<ExperiencesConfirmationPlugin>(() => new ExperiencesConfirmationPlugin(), "px_confirm_enabled");
             pluginSystem.Register<EmoteAnimationsPlugin>(() => new EmoteAnimationsPlugin());
             pluginSystem.Register<TeleportHUDPlugin>(() => new TeleportHUDPlugin());
             pluginSystem.Register<EquippedEmotesInitializerPlugin>(() => new EquippedEmotesInitializerPlugin());
@@ -65,6 +70,8 @@ namespace DCL
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
             pluginSystem.Register<LoadingScreenPlugin>(() => new LoadingScreenPlugin());
             pluginSystem.Register<SignupHUDPlugin>(() => new SignupHUDPlugin());
+            pluginSystem.Register<PortableExperiencesTogglePlugin>(() => new PortableExperiencesTogglePlugin());
+            pluginSystem.Register<HidePortableExperiencesUiPlugin>(() => new HidePortableExperiencesUiPlugin());
 
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
@@ -98,6 +105,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
+            pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

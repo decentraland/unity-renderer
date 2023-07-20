@@ -12,6 +12,7 @@ namespace DCL
         public static bool VERBOSE = false;
 
         public string baseUrl;
+        public string baseUrlBundles;
         public string assetBundlesBaseUrl;
         public string assetBundlesVersion;
         public string sceneCid;
@@ -19,6 +20,7 @@ namespace DCL
         public List<MappingPair> contents = new ();
         public Dictionary<string, string> fileToHash = new ();
         public HashSet<string> assetBundles = new ();
+        public bool assetBundlesFetched;
 
         public override string ToString()
         {

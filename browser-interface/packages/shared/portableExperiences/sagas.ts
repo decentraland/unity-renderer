@@ -92,7 +92,6 @@ function* handlePortableExperienceChanges() {
 // reload portable experience
 function* reloadPortableExperienceChanges(action: ReloadScenePortableExperienceAction) {
   const allDesiredPortableExperiences: LoadableScene[] = yield select(getDesiredPortableExperiences)
-
   const filteredDesiredPortableExperiences = allDesiredPortableExperiences.filter(
     ($) => $.id !== action.payload.data.id
   )

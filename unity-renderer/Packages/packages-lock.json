@@ -54,7 +54,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "75f485918a93247053137aad677521c8ebee1d0b"
+      "hash": "b40c694fbe1136431fcf0b895ba0f5f55e7bff6b"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
@@ -143,7 +143,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.22",
+      "version": "3.0.24",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -197,6 +197,13 @@
       "dependencies": {
         "com.unity.modules.physics": "1.0.0"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.profiling.core": {
+      "version": "1.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
@@ -320,6 +327,46 @@
         "com.unity.modules.xr": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.vrmc.gltf": {
+      "version": "https://github.com/decentraland/UniVRM.git?path=/Assets/UniGLTF#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.vrmc.vrmshaders": "0.112.0",
+        "com.unity.modules.animation": "1.0.0"
+      },
+      "hash": "36366769363b862446f411870ec19594bf7cb81a"
+    },
+    "com.vrmc.univrm": {
+      "version": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRM#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.vrmc.vrmshaders": "0.112.0",
+        "com.vrmc.gltf": "0.112.0",
+        "com.unity.ugui": "1.0.0"
+      },
+      "hash": "36366769363b862446f411870ec19594bf7cb81a"
+    },
+    "com.vrmc.vrm": {
+      "version": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRM10#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.vrmc.vrmshaders": "0.112.0",
+        "com.vrmc.gltf": "0.112.0"
+      },
+      "hash": "36366769363b862446f411870ec19594bf7cb81a"
+    },
+    "com.vrmc.vrmshaders": {
+      "version": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRMShaders#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.modules.imageconversion": "1.0.0"
+      },
+      "hash": "36366769363b862446f411870ec19594bf7cb81a"
     },
     "io.sentry.unity": {
       "version": "https://github.com/getsentry/unity.git#0.28.0",

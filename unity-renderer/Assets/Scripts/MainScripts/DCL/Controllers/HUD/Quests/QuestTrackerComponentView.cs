@@ -22,6 +22,7 @@ namespace DCL.Quests
             jumpInButton.onClick.RemoveAllListeners();
             jumpInButton.onClick.AddListener(() => OnJumpIn?.Invoke(model.coordinates));
             SetVisible(false);
+            SetSupportsJumpIn(false);
         }
 
         public override void RefreshControl()
@@ -53,7 +54,7 @@ namespace DCL.Quests
             {
                 QuestStepComponentView questStep = Instantiate(stepPrefab, stepsContainer);
                 questStep.SetModel(step);
-
+                questStep.OnJumpIn += OnJumpIn;
                 currentQuestSteps.Add(questStep.gameObject);
             }
         }

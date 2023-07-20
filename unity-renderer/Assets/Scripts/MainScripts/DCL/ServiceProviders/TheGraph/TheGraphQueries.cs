@@ -90,6 +90,9 @@ public static class TheGraphQueries
             collection {
                 id
             }
+            item {
+                blockchainId
+            }
             tokenId
         }
     }
@@ -101,6 +104,9 @@ public static class TheGraphQueries
             urn,
             collection {
                 id
+            }
+            item {
+                blockchainId
             }
             tokenId
         }

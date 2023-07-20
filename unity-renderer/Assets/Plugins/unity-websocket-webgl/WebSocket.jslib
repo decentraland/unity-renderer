@@ -265,20 +265,64 @@ var LibraryWebSocket = {
 	 */
 	WebSocketSend: function(instanceId, bufferPtr, length) {
 	
+	    if (webSocketState.debug)
+            console.log("[JSLIB WebSocket] Send.");
+    				
 		var instance = webSocketState.instances[instanceId];
-		if (!instance) return -1;
+		if (!instance) 
+		{
+		    if (webSocketState.debug)
+                console.log("[JSLIB WebSocket] Error occured -1.");
+		    return -1;
+		}
 		
 		if (instance.ws === null)
+		{
+		    if (webSocketState.debug)
+                console.log("[JSLIB WebSocket] Error occured -3.");
 			return -3;
+        }
 
 		if (instance.ws.readyState !== 1)
+		{
+		    if (webSocketState.debug)
+                console.log("[JSLIB WebSocket] Error occured -6.");
 			return -6;
+        }
 
 		instance.ws.send(HEAPU8.buffer.slice(bufferPtr, bufferPtr + length));
 
 		return 0;
-
 	},
+
+	WebSocketSendString: function(instanceId, data) {
+    	
+    	    if (webSocketState.debug)
+                console.log("[JSLIB WebSocket] Send.");
+        				
+    		var instance = webSocketState.instances[instanceId];
+    		if (!instance) 
+    		{
+                console.log("[JSLIB WebSocket] Error occured -1.");
+    		    return -1;
+    		}
+    		
+    		if (instance.ws === null)
+    		{
+                console.log("[JSLIB WebSocket] Error occured -3.");
+    			return -3;
+            }
+    
+    		if (instance.ws.readyState !== 1)
+    		{
+                console.log("[JSLIB WebSocket] Error occured -6.");
+    			return -6;
+            }
+
+            instance.ws.send(UTF8ToString(data));
+    
+    		return 0;
+    	},
 
 	/**
 	 * Return WebSocket readyState

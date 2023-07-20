@@ -108,14 +108,14 @@ namespace DCL.Chat.HUD
 
         public void SetVisibility(bool visible)
         {
-            if (isVisible == visible)
-                return;
+            if (isVisible != visible)
+            {
+                isVisible = visible;
 
-            isVisible = visible;
-
-            SetVisiblePanelList(visible);
-            chatHudController.SetVisibility(visible);
-            dataStore.HUDs.chatInputVisible.Set(visible);
+                SetVisiblePanelList(visible);
+                chatHudController.SetVisibility(visible);
+                dataStore.HUDs.chatInputVisible.Set(visible);
+            }
 
             if (visible)
             {
@@ -190,6 +190,7 @@ namespace DCL.Chat.HUD
         {
             message.messageType = ChatMessage.Type.PUBLIC;
             message.recipient = channelId;
+            message.channelName = channel.Name;
 
             var isValidMessage = !string.IsNullOrEmpty(message.body)
                                  && !string.IsNullOrWhiteSpace(message.body)

@@ -13,7 +13,7 @@ namespace DCL.Quests
         [SerializeField] internal TMP_Text questStepText;
         [SerializeField] internal Button jumpInButton;
 
-        [SerializeField] internal Color normalTextColor = Color.white;
+        [SerializeField] internal Color normalTextColor = Color.black;
         [SerializeField] internal Color completedTextColor = Color.gray;
 
         public event Action<Vector2Int> OnJumpIn;

@@ -21,6 +21,8 @@ public class HighlightsSubSectionComponentViewTests
         highlightsSubSectionComponent = Instantiate(Resources.Load<GameObject>("Sections/PlacesAndEventsSection/HighlightsSubSection/HighlightsSubSection")).GetComponent<HighlightsSubSectionComponentView>();
         highlightsSubSectionComponent.ConfigurePools();
         highlightsSubSectionComponent.Start();
+        highlightsSubSectionComponent.SetActive(false);
+        highlightsSubSectionComponent.SetActive(true);
         testTexture = new Texture2D(20, 20);
         testSprite = Sprite.Create(testTexture, new Rect(), Vector2.zero);
     }
@@ -58,7 +60,7 @@ public class HighlightsSubSectionComponentViewTests
         // Act
         highlightsSubSectionComponent.SetTrendingPlacesAndEvents(testPlaces, testEvents);
 
-        for (int i = 0; i < testPlaces.Count + testEvents.Count - 1; i++)
+        for (int i = 0; i < testPlaces.Count + testEvents.Count + 1; i++)
             yield return null;
 
         // Assert
@@ -109,10 +111,12 @@ public class HighlightsSubSectionComponentViewTests
         highlightsSubSectionComponent.gameObject.SetActive(false); // hack needed for fix AABB canvas fails on tests (happens only in the tests)
         List<PlaceCardComponentModel> testPlaces = ExplorePlacesTestHelpers.CreateTestPlaces(testSprite, spritesAmount);
 
+        yield return null;
         // Act
         highlightsSubSectionComponent.SetFeaturedPlaces(testPlaces);
 
-        for (int i = 0; i < spritesAmount - 1; i++)
+        // Add an interation for the buffer task to catch the visuals
+        for (int i = 0; i < spritesAmount; i++)
             yield return null;
 
         // Assert
@@ -155,7 +159,8 @@ public class HighlightsSubSectionComponentViewTests
         // Act
         highlightsSubSectionComponent.SetLiveEvents(testEvents);
 
-        for (int i = 0; i < spritesAmount - 1; i++)
+        // Add an interation for the buffer task to catch the visuals
+        for (int i = 0; i < spritesAmount; i++)
             yield return null;
 
         // Assert

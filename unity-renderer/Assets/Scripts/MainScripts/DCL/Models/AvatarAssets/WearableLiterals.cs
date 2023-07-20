@@ -4,11 +4,6 @@ using System.Linq;
 
 public static class WearableLiterals
 {
-    public static class Misc
-    {
-        public const string HEAD = "head";
-    }
-
     public static class Tags
     {
         public const string BASE_WEARABLE = "base-wearable";
@@ -17,7 +12,11 @@ public static class WearableLiterals
 
     public static class Categories
     {
-        public static readonly ReadOnlyCollection<string> REQUIRED_CATEGORIES = new ReadOnlyCollection<string>(new List<string> { EYES, MOUTH });
+        public static readonly IReadOnlyCollection<string> REQUIRED_CATEGORIES = new HashSet<string>
+        {
+            EYES,
+            MOUTH
+        };
 
         public const string BODY_SHAPE = "body_shape";
         public const string UPPER_BODY = "upper_body";
@@ -37,19 +36,9 @@ public static class WearableLiterals
         public const string TOP_HEAD = "top_head";
         public const string HELMET = "helmet";
         public const string MASK = "mask";
-
-        //TODO: Implement an IReadOnlyCollection for HashSet to make them immutable
-        public static readonly HashSet<string> ALL  = new HashSet<string>
-        {
-            UPPER_BODY,
-            LOWER_BODY,
-            EYEBROWS,
-            FACIAL,
-            MOUTH,
-            FEET,
-            EYES,
-            SKIN
-        };
+        public const string HANDS = "hands";
+        public const string HANDS_WEAR = "hands_wear";
+        public const string HEAD = "head";
     }
 
     public static class BodyShapes

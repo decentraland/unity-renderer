@@ -35,6 +35,8 @@ namespace DCL.Chat.Notifications
         {
             chatController = Substitute.For<IChatController>();
             friendsController = Substitute.For<IFriendsController>();
+            friendsController.GetFriendshipStatus(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult(FriendshipStatus.FRIEND));
             mainNotificationsView = Substitute.For<IMainChatNotificationsComponentView>();
             topNotificationsView = Substitute.For<ITopNotificationsComponentView>();
             topPanelTransform = new GameObject("TopPanelTransform");
@@ -223,7 +225,7 @@ namespace DCL.Chat.Notifications
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(new FriendRequest(
                 "test",
-                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                DateTime.UtcNow,
                 "sender",
                 OWN_USER_ID,
                 "hey"));
@@ -404,7 +406,7 @@ namespace DCL.Chat.Notifications
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
-                new FriendRequest("friendRequestId", 0, "ownId", "friendId", "hey"));
+                new FriendRequest("friendRequestId", new DateTime(0), "ownId", "friendId", "hey"));
 
             mainNotificationsView.Received(1)
                                  .AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
@@ -430,7 +432,7 @@ namespace DCL.Chat.Notifications
             dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(
-                new FriendRequest("friendRequestId", 100, "friendId", OWN_USER_ID, "hey!"));
+                new FriendRequest("friendRequestId", new DateTime(100), "friendId", OWN_USER_ID, "hey!"));
 
             mainNotificationsView.Received(1)
                                  .AddNewFriendRequestNotification(Arg.Is<FriendRequestNotificationModel>(f =>
@@ -457,7 +459,7 @@ namespace DCL.Chat.Notifications
             friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
-                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  args[1] = new FriendRequest("fr", new DateTime(100), "sender", "receiver", "");
                                   return true;
                               });
 
@@ -473,7 +475,7 @@ namespace DCL.Chat.Notifications
             friendsController.TryGetAllocatedFriendRequest("fr", out Arg.Any<FriendRequest>())
                              .Returns((args) =>
                               {
-                                  args[1] = new FriendRequest("fr", 100, "sender", "receiver", "");
+                                  args[1] = new FriendRequest("fr", new DateTime(100), "sender", "receiver", "");
                                   return true;
                               });
 
@@ -536,6 +538,37 @@ namespace DCL.Chat.Notifications
             mainNotificationsView.Received(1)
                                  .AddNewChatNotification(Arg.Is<PublicChannelMessageNotificationModel>(m =>
                                       m.IsOwnPlayerMentioned && m.ShouldPlayMentionSfx == expectedSfx));
+        }
+
+        [Test]
+        public void DoNotAddPrivateMessageWhenTheUserIsNotFriend()
+        {
+            var senderUserProfile = ScriptableObject.CreateInstance<UserProfile>();
+
+            senderUserProfile.UpdateData(new UserProfileModel
+            {
+                userId = "sender",
+                name = "imsender",
+                snapshots = new UserProfileModel.Snapshots { face256 = "face256" }
+            });
+
+            userProfileBridge.Get("sender").Returns(senderUserProfile);
+            friendsController.GetFriendshipStatus("sender", Arg.Any<CancellationToken>())
+                             .Returns(UniTask.FromResult(FriendshipStatus.REQUESTED_FROM));
+
+            chatController.OnAddMessage += Raise.Event<Action<ChatMessage[]>>(new[]
+            {
+                new ChatMessage("mid",
+                        ChatMessage.Type.PRIVATE, "sender", "hey",
+                        (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+                    { recipient = "me" }
+            });
+
+            topNotificationsView.DidNotReceiveWithAnyArgs()
+                                .AddNewChatNotification(default(PrivateChatMessageNotificationModel));
+
+            mainNotificationsView.DidNotReceiveWithAnyArgs()
+                                .AddNewChatNotification(default(PrivateChatMessageNotificationModel));
         }
 
         private void GivenProfile(string userId, string userName)

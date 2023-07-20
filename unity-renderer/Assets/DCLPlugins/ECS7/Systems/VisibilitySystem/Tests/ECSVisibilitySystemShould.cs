@@ -66,20 +66,9 @@ namespace Tests
             Renderer renderer10 = entity10.gameObject.AddComponent<MeshRenderer>();
 
             // add texturizable component
-            renderersComponent.PutFor(scene0, entity00, new InternalRenderers()
-            {
-                renderers = new List<Renderer>() { renderer00 }
-            });
-
-            renderersComponent.PutFor(scene0, entity01, new InternalRenderers()
-            {
-                renderers = new List<Renderer>() { renderer01 }
-            });
-
-            renderersComponent.PutFor(scene1, entity10, new InternalRenderers()
-            {
-                renderers = new List<Renderer>() { renderer10 }
-            });
+            renderersComponent.PutFor(scene0, entity00, new InternalRenderers(new List<Renderer>() { renderer00 }));
+            renderersComponent.PutFor(scene0, entity01, new InternalRenderers(new List<Renderer>() { renderer01 }));
+            renderersComponent.PutFor(scene1, entity10, new InternalRenderers(new List<Renderer>() { renderer10 }));
 
             // update system
             systemsUpdate();
@@ -90,15 +79,8 @@ namespace Tests
             Assert.IsTrue(renderer10.enabled);
 
             // create visibility component for scene0 entities
-            visibilityComponent.PutFor(scene0, entity00, new InternalVisibility()
-            {
-                visible = true
-            });
-
-            visibilityComponent.PutFor(scene0, entity01, new InternalVisibility()
-            {
-                visible = false
-            });
+            visibilityComponent.PutFor(scene0, entity00, new InternalVisibility(true));
+            visibilityComponent.PutFor(scene0, entity01, new InternalVisibility(false));
 
             // update system
             systemsUpdate();
@@ -108,19 +90,16 @@ namespace Tests
             Assert.IsFalse(renderer01.enabled);
 
             // components should not be dirty anymore
-            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity01).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene0, entity01).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene0, entity01).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene0, entity01).Value.model.dirty);
 
             // entity from scene1 should not have changed
             Assert.IsTrue(renderer10.enabled);
 
             // create visibility for scene1 entity
-            visibilityComponent.PutFor(scene1, entity10, new InternalVisibility()
-            {
-                visible = false
-            });
+            visibilityComponent.PutFor(scene1, entity10, new InternalVisibility(false));
 
             // update system
             systemsUpdate();
@@ -129,14 +108,11 @@ namespace Tests
             Assert.IsFalse(renderer10.enabled);
 
             // components should not be dirty anymore
-            Assert.IsFalse(visibilityComponent.GetFor(scene1, entity10).model.dirty);
-            Assert.IsFalse(renderersComponent.GetFor(scene1, entity10).model.dirty);
+            Assert.IsFalse(visibilityComponent.GetFor(scene1, entity10).Value.model.dirty);
+            Assert.IsFalse(renderersComponent.GetFor(scene1, entity10).Value.model.dirty);
 
             // change visibility for scene1 entity
-            visibilityComponent.PutFor(scene1, entity10, new InternalVisibility()
-            {
-                visible = true
-            });
+            visibilityComponent.PutFor(scene1, entity10, new InternalVisibility(true));
 
             // update system
             systemsUpdate();

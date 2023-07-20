@@ -103,6 +103,12 @@ public class CatalystSceneEntityMetadata
         }
     }
 
+    [Serializable]
+    public class FeatureToggles
+    {
+        public string portableExperiences;
+    }
+
     public Display display;
     public Contact contact;
     public Scene scene;
@@ -113,4 +119,5 @@ public class CatalystSceneEntityMetadata
     public string[] tags;
     public string[] requiredPermissions;
     public string[] allowedMediaHostnames;
+    public FeatureToggles featureToggles;
 }

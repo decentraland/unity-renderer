@@ -54,7 +54,7 @@ export async function bindHandlersToCommsContext(room: RoomConnection) {
   pingRequests.clear()
 
   // RFC4 messages
-  room.events.on('position', processPositionMessage)
+  room.events.on('position', (e) => processPositionMessage(room, e))
   room.events.on('profileMessage', processProfileUpdatedMessage)
   room.events.on('chatMessage', processChatMessage)
   room.events.on('sceneMessageBus', processParcelSceneCommsMessage)
@@ -238,7 +238,9 @@ function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
-
+  profile.userId = message.address
+  profile.ethAddress = message.address
+  peerTrackingInfo.lastProfileVersion = profile.version
   if (!validateAvatar(profile)) {
     console.trace('Invalid avatar received', validateAvatar.errors)
     debugger
@@ -279,6 +281,12 @@ export function createReceiveProfileOverCommsChannel() {
   })
 }
 
-function processPositionMessage(message: Package<proto.Position>) {
-  receiveUserPosition(message.address, message.data)
+function processPositionMessage(room: RoomConnection, message: Package<proto.Position>) {
+  const peer = receiveUserPosition(message.address, message.data)
+  if (peer?.lastProfileVersion === -1) {
+    room.sendProfileRequest({
+      address: message.address,
+      profileVersion: 0
+    })
+  }
 }

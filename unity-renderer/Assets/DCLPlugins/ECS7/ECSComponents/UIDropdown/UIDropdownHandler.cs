@@ -1,4 +1,6 @@
 ﻿using DCL.Controllers;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements;
 using DCL.ECSComponents.Utils;
@@ -20,6 +22,7 @@ namespace DCL.ECSComponents.UIDropdown
         private readonly int resultComponentId;
         private readonly IInternalECSComponent<InternalUIInputResults> inputResults;
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
+        private readonly WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>> componentPool;
 
         private EventCallback<ChangeEvent<string>> onValueChanged;
 
@@ -33,12 +36,14 @@ namespace DCL.ECSComponents.UIDropdown
             int resultComponentId,
             IInternalECSComponent<InternalUIInputResults> inputResults,
             AssetPromiseKeeper_Font fontPromiseKeeper,
-            int componentId)
+            int componentId,
+            WrappedComponentPool<IWrappedComponent<PBUiDropdownResult>> componentPool)
             : base(internalUiContainer, componentId)
         {
             this.resultComponentId = resultComponentId;
             this.inputResults = inputResults;
             this.fontPromiseKeeper = fontPromiseKeeper;
+            this.componentPool = componentPool;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -54,7 +59,7 @@ namespace DCL.ECSComponents.UIDropdown
 
             // it seems strange but `DropdownField` notifies with `string`, not `int`
             onValueChanged = UIPointerEventsUtils
-               .RegisterFeedback<ChangeEvent<string>, PBUiDropdownResult>
+               .RegisterFeedback<ChangeEvent<string>>
                 (inputResults,
                     CreateInputResult,
                     scene,
@@ -63,8 +68,13 @@ namespace DCL.ECSComponents.UIDropdown
                     resultComponentId);
         }
 
-        private PBUiDropdownResult CreateInputResult(ChangeEvent<string> onValueChange) =>
-            new() { Value = uiElement.index };
+        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
+        {
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.Value = uiElement.index;
+            return componentPooled;
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {

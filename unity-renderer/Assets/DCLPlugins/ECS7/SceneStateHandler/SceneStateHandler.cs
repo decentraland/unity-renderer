@@ -35,7 +35,7 @@ namespace DCL.ECS7
         internal uint GetSceneTick(int sceneNumber)
         {
             if (scenes.TryGetValue(sceneNumber, out var scene))
-                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).model.SceneTick;
+                return engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model.SceneTick ?? 0;
 
             return 0;
         }
@@ -45,8 +45,11 @@ namespace DCL.ECS7
             if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
 
             var model = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)?.model;
-            model.SceneTick++;
-            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, model);
+
+            InternalEngineInfo finalModel = model.Value;
+            finalModel.SceneTick++;
+
+            engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, finalModel);
         }
 
         internal bool IsSceneGltfLoadingFinished(int sceneNumber)
@@ -57,7 +60,7 @@ namespace DCL.ECS7
                 foreach (long entityId in keys)
                 {
                     var model = gltfContainerLoadingState.GetFor(scene, entityId)?.model;
-                    if (model != null && model.LoadingState == LoadingState.Loading)
+                    if (model != null && model.Value.LoadingState == LoadingState.Loading)
                         return false;
                 }
             }
@@ -70,12 +73,7 @@ namespace DCL.ECS7
             if (!scenes.TryGetValue(sceneNumber, out var scene)) return;
 
             engineInfoComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY,
-                new InternalEngineInfo()
-                {
-                    SceneTick = 0,
-                    SceneInitialRunTime = Time.realtimeSinceStartup,
-                    SceneInitialFrameCount = Time.frameCount
-                });
+                new InternalEngineInfo(0, Time.realtimeSinceStartup));
         }
 
         public void Dispose()

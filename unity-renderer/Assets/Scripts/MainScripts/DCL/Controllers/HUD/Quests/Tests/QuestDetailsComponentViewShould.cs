@@ -121,18 +121,6 @@ namespace DCL.Quests
         }
 
         [Test]
-        public void JumpInFromMainButton()
-        {
-            Vector2Int receivedCoords = new Vector2Int(0,0);
-            Vector2Int targetCoords = new Vector2Int(3, 65);
-            questDetailsComponentView.OnJumpIn += (coords) => receivedCoords = coords;
-            questDetailsComponentView.SetCoordinates(targetCoords);
-
-            questDetailsComponentView.jumpInButton.onClick?.Invoke();
-            Assert.AreEqual(targetCoords, receivedCoords, "Set coordinates and event propagated ones are not the same");
-        }
-
-        [Test]
         public void JumpInFromStepButton()
         {
             Vector2Int receivedCoords = new Vector2Int(0,0);

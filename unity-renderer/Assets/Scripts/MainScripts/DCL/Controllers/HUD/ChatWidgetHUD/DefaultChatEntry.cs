@@ -38,7 +38,6 @@ namespace DCL.Chat.HUD
         [SerializeField] private MentionLinkDetector mentionLinkDetector;
         [SerializeField] private Color autoMentionBackgroundColor;
         [SerializeField] private Image backgroundImage;
-        [SerializeField] internal UserProfile ownUserProfile;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -262,7 +261,7 @@ namespace DCL.Chat.HUD
             populationTaskCancellationTokenSource.Cancel();
 
             if (mentionLinkDetector != null)
-                mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
+                mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)
@@ -289,8 +288,8 @@ namespace DCL.Chat.HUD
                 return;
 
             mentionLinkDetector.SetContextMenu(userContextMenu);
-            mentionLinkDetector.OnOwnPlayerMentioned -= OnOwnPlayerMentioned;
-            mentionLinkDetector.OnOwnPlayerMentioned += OnOwnPlayerMentioned;
+            mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
+            mentionLinkDetector.OnPlayerMentioned += OnPlayerMentioned;
         }
 
         private void Update()
@@ -359,9 +358,9 @@ namespace DCL.Chat.HUD
             return text.Replace("\t", "    ");
         }
 
-        private void OnOwnPlayerMentioned()
+        private void OnPlayerMentioned()
         {
-            if (model.senderId == ownUserProfile.userId)
+            if (!MentionsUtils.IsUserMentionedInText(UserProfile.GetOwnUserProfile().userName, model.bodyText))
                 return;
 
             backgroundImage.color = autoMentionBackgroundColor;

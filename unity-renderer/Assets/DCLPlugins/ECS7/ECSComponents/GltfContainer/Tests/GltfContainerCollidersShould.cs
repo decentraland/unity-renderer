@@ -118,11 +118,11 @@ namespace Tests
                 Assert.IsTrue((!visibleColliders && containsColliderName) || (visibleColliders && !containsColliderName));
                 Assert.AreEqual(unityGameObjectLayer.Value, collider.gameObject.layer);
 
-                if ((mask & (int)ColliderLayer.ClPhysics) != 0) { Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if ((mask & (int)ColliderLayer.ClPhysics) != 0) { Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
 
-                if ((mask & (int)ColliderLayer.ClPointer) != 0) { Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if ((mask & (int)ColliderLayer.ClPointer) != 0) { Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
 
-                if (hasCustomLayer) { Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.ContainsKey(collider)); }
+                if (hasCustomLayer) { Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.ContainsKey(collider)); }
             }
 
             yield return null;
@@ -140,9 +140,9 @@ namespace Tests
 
             yield return handler.gltfLoader.Promise;
 
-            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
-            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
-            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.Count > 0);
+            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
+            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
+            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count > 0);
 
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer()
             {
@@ -268,18 +268,18 @@ namespace Tests
 
             foreach (var collider in colliders)
             {
-                physicColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
-                pointerColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
-                customLayerColliderComponent.GetFor(scene, entity).model.colliders.Remove(collider);
+                physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
+                pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
+                customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Remove(collider);
             }
 
-            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
-            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
-            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).model.colliders.Count == 0);
+            Assert.IsTrue(physicColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
+            Assert.IsTrue(pointerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
+            Assert.IsTrue(customLayerColliderComponent.GetFor(scene, entity).Value.model.colliders.Count == 0);
         }
 
         [UnityTest]
-        public IEnumerator DontCreateCollidersOnSkinnedMeshRenderers()
+        public IEnumerator CreateCollidersOnSkinnedMeshRenderers()
         {
             const uint visibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
             const uint invisibleColliders = (uint)(ColliderLayer.ClPointer | ColliderLayer.ClPhysics | ColliderLayer.ClCustom1);
@@ -295,7 +295,22 @@ namespace Tests
 
             var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true).ToArray();
 
-            Assert.AreEqual(0, colliders.Length, "Ammount of colliders");
+            Assert.IsTrue(colliders.Length > 0, "Ammount of colliders");
+        }
+
+        [UnityTest]
+        public IEnumerator NotCreateVisibleCollidersAsDefault()
+        {
+            handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer
+            {
+                Src = "sharknado", // this specific model is 100% skinned mesh renderer
+            });
+
+            yield return handler.gltfLoader.Promise;
+
+            var colliders = handler.gameObject.GetComponentsInChildren<Collider>(true).ToArray();
+
+            Assert.IsTrue(colliders.Length == 0, "should not have create any collider");
         }
 
         private static bool HasColliderName(Collider collider)

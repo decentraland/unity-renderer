@@ -38,12 +38,14 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: becc7661af6be4d33b1cc83d8e83bfed, type: 3}
   - {fileID: 21300000, guid: 631d90c1a84401a4ab1b438f04f37e24, type: 3}
   - {fileID: 21300000, guid: 3e119603a7cc61744b63c95d90495efc, type: 3}
   - {fileID: 21300000, guid: 2cc1bc54dd98f77459c059ab58670f74, type: 3}
   - {fileID: 21300000, guid: c319fd971d09e1745b925fff3aa3012a, type: 3}
   - {fileID: 21300000, guid: bc1386f864ce3b64baafbb1e74763408, type: 3}
   m_PackedSpriteNamesToIndex:
+  - ExperienceDefaultThumbnail
   - ExperienceIconOn
   - ExperienceIconOff
   - HideIcon

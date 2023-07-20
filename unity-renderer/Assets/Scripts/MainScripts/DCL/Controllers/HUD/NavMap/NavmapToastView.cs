@@ -1,4 +1,5 @@
 using DCL.Interface;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ namespace DCL
     public class NavmapToastView : MonoBehaviour
     {
         private static readonly int triggerLoadingComplete = Animator.StringToHash("LoadingComplete");
+
+        public event Action<string, bool> OnFavoriteToggleClicked;
 
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
@@ -19,6 +22,9 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
+        [SerializeField] internal GameObject favoriteContainer;
+        [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
+        [SerializeField] internal GameObject favoriteLoading;
 
         [field: SerializeField]
         [Tooltip("Distance in units")]
@@ -45,6 +51,7 @@ namespace DCL
 
         private void Awake()
         {
+            favoriteToggle.OnFavoriteChange += (uuid, isFavorite) => OnFavoriteToggleClicked?.Invoke(uuid, isFavorite);
             minimapMetadata = MinimapMetadata.GetMetadata();
             rectTransform = transform as RectTransform;
         }
@@ -162,6 +169,26 @@ namespace DCL
         {
             scenePreviewImage.texture = texture;
             toastAnimator.SetTrigger(triggerLoadingComplete);
+        }
+
+        public void SetFavoriteLoading(bool isLoading)
+        {
+            favoriteLoading.SetActive(isLoading);
+            favoriteToggle.gameObject.SetActive(!isLoading);
+        }
+
+        public void SetCurrentFavoriteStatus(string uuid, bool isFavorite)
+        {
+            favoriteToggle.Configure(new FavoriteButtonComponentModel()
+            {
+                placeUUID = uuid,
+                isFavorite = isFavorite
+            });
+        }
+
+        public void SetIsAPlace(bool isAPlace)
+        {
+            favoriteContainer.SetActive(isAPlace);
         }
     }
 }

@@ -2,7 +2,8 @@
     "name": "DCL.CRDTProtocol.Executor.Interface",
     "rootNamespace": "",
     "references": [
-        "GUID:80f579cff5cf4136aa8969bf6fa1098c"
+        "GUID:80f579cff5cf4136aa8969bf6fa1098c",
+        "GUID:9b110c16a6b8f4d54ae0f56af2163334"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

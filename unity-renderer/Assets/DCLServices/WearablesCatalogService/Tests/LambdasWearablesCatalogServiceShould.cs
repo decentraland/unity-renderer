@@ -65,6 +65,7 @@ namespace DCLServices.WearablesCatalogService
             ICatalyst catalyst = Substitute.For<ICatalyst>();
             catalyst.contentUrl.Returns(CONTENT_URL);
             catalyst.lambdasUrl.Returns(LAMBDAS_URL);
+            catalyst.GetLambdaUrl(CancellationToken.None).Returns(UniTask.FromResult(LAMBDAS_URL));
             serviceProviders.catalyst.Returns(catalyst);
 
             BaseVariable<FeatureFlag> featureFlags = new BaseVariable<FeatureFlag>();

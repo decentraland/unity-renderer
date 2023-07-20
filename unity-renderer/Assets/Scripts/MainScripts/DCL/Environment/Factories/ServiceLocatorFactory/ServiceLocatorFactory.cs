@@ -2,6 +2,7 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
@@ -9,21 +10,24 @@ using DCL.Services;
 using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCL.World.PortableExperiences;
+using DCLServices.DCLFileBrowser;
+using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
+using DCLServices.EmotesCatalog.EmotesCatalogService;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
+using DCLServices.PlacesAPIService;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
-using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.FriendsController;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
-using rpc_csharp.transport;
-using RPC.Transports;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
 
@@ -51,7 +55,7 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
 
-            result.Register<IWebRequestController>(() => new WebRequestController(
+            var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
                 new WebRequestAssetBundleFactory(),
                 new WebRequestTextureFactory(),
@@ -61,7 +65,8 @@ namespace DCL
                 new PatchWebRequestFactory(),
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
-            ));
+            );
+            result.Register<IWebRequestController>(() => webRequestController);
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
             result.Register<ILambdasService>(() => new LambdasService());
@@ -75,7 +80,7 @@ namespace DCL
             result.Register<IAvatarsLODController>(() => new AvatarsLODController());
             result.Register<IFeatureFlagController>(() => new FeatureFlagController());
             result.Register<IGPUSkinningThrottlerService>(() => GPUSkinningThrottlerService.Create(true));
-            result.Register<ISceneController>(() => new SceneController());
+            result.Register<ISceneController>(() => new SceneController(new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs())));
             result.Register<IWorldState>(() => new WorldState());
             result.Register<ISceneBoundsChecker>(() => new SceneBoundsChecker());
             result.Register<IWorldBlockersController>(() => new WorldBlockersController());
@@ -86,12 +91,9 @@ namespace DCL
 
             result.Register<ISocialApiBridge>(() =>
             {
-                ITransport TransportProvider() =>
-                    new WebSocketClientTransport("wss://rpc-social-service.decentraland.zone");
-
                 var rpcSocialApiBridge = new RPCSocialApiBridge(MatrixInitializationBridge.GetOrCreate(),
                     userProfileWebInterfaceBridge,
-                    TransportProvider);
+                    new RPCSocialClientProvider(KernelConfig.i));
 
                 return new ProxySocialApiBridge(rpcSocialApiBridge, DataStore.i);
             });
@@ -105,7 +107,7 @@ namespace DCL
                         webInterfaceFriendsApiBridge,
                         RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
                         DataStore.i), result.Get<ISocialApiBridge>(),
-                    DataStore.i);
+                    DataStore.i, userProfileWebInterfaceBridge);
             });
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
@@ -116,7 +118,9 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     DataStore.i.featureFlags.flags);
-                return new EmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
+                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
             });
 
             result.Register<ITeleportController>(() => new TeleportController());
@@ -189,9 +193,12 @@ namespace DCL
 
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
+            result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
+
             // Analytics
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
+            result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
             return result;
         }
     }
