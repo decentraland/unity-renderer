@@ -139,9 +139,13 @@ namespace UI.InWorldCamera.Scripts
             );
 
             // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
-            Application.OpenURL($"https://reels.decentraland.org/{response.id}");
-            Application.OpenURL(response.url);
+            { // temporal debug part
+                Application.OpenURL($"https://reels.decentraland.org/{response.id}");
+                Application.OpenURL(response.url);
+                Application.OpenURL(response.thumbnailUrl);
+            }
 
+            screenshotCapture.CaptureScreenshot();
         }
 
         private void EnableScreenshotCamera()
