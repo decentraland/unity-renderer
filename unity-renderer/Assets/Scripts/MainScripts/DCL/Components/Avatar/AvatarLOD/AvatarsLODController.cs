@@ -34,6 +34,9 @@ namespace DCL
             }
         }
 
+        private Vector3 cameraTransformPosition => cameraTransform != null ? cameraTransform.position : Vector3.zero;
+        private Vector3 cameraTransformForward => cameraTransform != null ? cameraTransform.forward : Vector3.forward;
+
         public AvatarsLODController()
         {
             gpuSkinningThrottlingCurve = Resources.Load<GPUSkinningThrottlingCurveSO>("GPUSkinningThrottlingCurve");
@@ -184,7 +187,7 @@ namespace DCL
         }
 
         private bool IsInFrontOfCamera(Vector3 position) =>
-            Vector3.Dot(cameraTransform.forward, (position - cameraTransform.position).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
+            Vector3.Dot(cameraTransformForward, (position - cameraTransformPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
 
         public void Dispose()
         {
