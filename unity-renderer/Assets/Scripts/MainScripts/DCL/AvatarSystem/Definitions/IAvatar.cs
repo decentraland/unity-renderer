@@ -29,6 +29,7 @@ namespace AvatarSystem
         Transform[] GetBones();
 
         Renderer GetMainRenderer();
+        IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
 
         event Action<Renderer> OnCombinedRendererUpdate;
     }

@@ -1,8 +1,10 @@
 ﻿using Crosstales.FB;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
 {
+    [UsedImplicitly]
     public class FileBrowserWrapper : IDCLFileBrowserService
     {
         public void Initialize() { }

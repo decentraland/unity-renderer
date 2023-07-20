@@ -1,6 +1,7 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => avatar?.originalVisibleRenderers;
 
         private Dictionary<PreviewCameraFocus, Transform> cameraFocusLookUp;
 
@@ -32,7 +34,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         [SerializeField] private Transform baseAvatarContainer;
         [SerializeField] private BaseAvatarReferences baseAvatarReferencesPrefab;
         [SerializeField] private GameObject avatarShadow;
-
         private Service<IAvatarFactory> avatarFactory;
 
         private IAvatar avatar;
