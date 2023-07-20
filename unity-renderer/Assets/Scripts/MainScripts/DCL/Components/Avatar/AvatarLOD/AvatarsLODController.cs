@@ -20,12 +20,19 @@ namespace DCL
         private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
         private UnityEngine.Camera camera;
-        internal Transform cameraTransform;
-
-        private UnityEngine.Camera cachedCamera;
+        internal Transform cameraTransformValue;
 
         private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
         public Dictionary<string, IAvatarLODController> LodControllers { get; } = new ();
+
+        private Transform cameraTransform
+        {
+            get
+            {
+                GetMainCamera();
+                return cameraTransformValue;
+            }
+        }
 
         public AvatarsLODController()
         {
@@ -49,7 +56,7 @@ namespace DCL
         public void SetCamera(UnityEngine.Camera newCamera)
         {
             camera = newCamera;
-            cameraTransform = camera.transform;
+            cameraTransformValue = camera.transform;
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -80,13 +87,7 @@ namespace DCL
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
-            if (camera == null)
-            {
-                camera = UnityEngine.Camera.main;
-
-                if (camera != null)
-                    cameraTransform = camera.transform;
-            }
+            GetMainCamera();
 
             var avatarsCount = 0; //Full Avatar + Simple Avatar
             var impostorCount = 0; //Impostor
@@ -135,6 +136,17 @@ namespace DCL
                 }
 
                 lodController.SetInvisible();
+            }
+        }
+
+        private void GetMainCamera()
+        {
+            if (camera == null)
+            {
+                camera = UnityEngine.Camera.main;
+
+                if (camera != null)
+                    cameraTransformValue = camera.transform;
             }
         }
 
