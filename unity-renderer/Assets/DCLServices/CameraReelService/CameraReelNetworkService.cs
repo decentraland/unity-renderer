@@ -1,9 +1,18 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using System.Threading;
+using System.Threading.Tasks;
 using UI.InWorldCamera.Scripts;
 
 namespace DCLServices.CameraReelService
 {
+    public interface ICameraReelNetworkService : IService
+    {
+        UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct = default);
+        Task<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct = default);
+        UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct = default);
+    }
+
     public class CameraReelNetworkService : ICameraReelNetworkService
     {
         private readonly ICameraReelClient client;
@@ -19,6 +28,9 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct) =>
             await client.GetScreenshot(uuid, ct);
+
+        public async Task<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct) =>
+            await client.GetScreenshotGallery(userAddress, ct);
 
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct) =>
             await client.UploadScreenshot(image, metadata, ct);

@@ -10,15 +10,43 @@ using UnityEngine.Networking;
 
 namespace DCLServices.CameraReelService
 {
+    public interface ICameraReelClient
+    {
+        UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct);
+        UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct);
+        UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct);
+    }
+
     public class CameraReelClient : ICameraReelClient
     {
         private const string IMAGE_BASE_URL = "https://camera-reel-service.decentraland.zone/api/images";
+        private const string GALLERY_BASE_URL = "https://camera-reel-service.decentraland.zone/api/users";
+        // https://camera-reel-service.decentraland.zone/api/users/0x05de05303eab867d51854e8b4fe03f7acb0624d9/images
+        // https://camera-reel-service.decentraland.zone/api/users/0x05de05303eab867d51854e8b4fe03f7acb0624d9/images?limit=2&offset=0
 
         private readonly IWebRequestController webRequestController;
 
         public CameraReelClient(IWebRequestController webRequestController)
         {
             this.webRequestController = webRequestController;
+        }
+
+        public async UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct)
+        {
+            UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images", cancellationToken: ct);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching user screenshot gallery :\n{result.error}");
+
+            CameraReelResponse[] responseData = Utils.ParseJsonArray<CameraReelResponse[]>(result.downloadHandler.text);
+
+            return responseData;
+        }
+
+        [Serializable]
+        internal class CameraReelResponses
+        {
+            public CameraReelResponse[] responses;
         }
 
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
@@ -45,6 +73,7 @@ namespace DCLServices.CameraReelService
                 throw new Exception($"{unSuccessResultMassage}:\n{result.error}");
 
             CameraReelResponse response = Utils.SafeFromJson<CameraReelResponse>(result.downloadHandler.text);
+
             ResponseSanityCheck(response, result.downloadHandler.text);
             return response;
         }
