@@ -144,8 +144,6 @@ namespace UI.InWorldCamera.Scripts
                 Application.OpenURL(response.url);
                 Application.OpenURL(response.thumbnailUrl);
             }
-
-            screenshotCapture.CaptureScreenshot();
         }
 
         private void EnableScreenshotCamera()

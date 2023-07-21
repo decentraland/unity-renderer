@@ -34,18 +34,21 @@ namespace UI.InWorldCamera.Scripts
             int renderTextureWidth = Mathf.RoundToInt(canvasRectTransform.rect.width * scaleFactorW);
             int renderTextureHeight = Mathf.RoundToInt(canvasRectTransform.rect.height * scaleFactorH);
 
-            var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24);
-
+            var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.sRGB);
             screenshotCamera.targetTexture = renderTexture;
+
             screenshotCamera.Render();
             RenderTexture.active = screenshotCamera.targetTexture;
 
             float cornerX = (renderTextureWidth - DESIRED_WIDTH) / 2f;
             float cornerY = (renderTextureHeight - DESIRED_HEIGHT) / 2f;
 
-            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
+            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGBAFloat, false, true);
             texture.ReadPixels(new Rect(cornerX, cornerY, DESIRED_WIDTH, DESIRED_HEIGHT), 0, 0);
             texture.Apply();
+
+            // Check for the HDR being saved correctly, but being lost when converting to JPG
+            // File.WriteAllBytes("Assets/screenshot1.png", texture.EncodeToEXR(Texture2D.EXRFlags.CompressZIP));
 
             // Clean up
             screenshotCamera.targetTexture = null;
