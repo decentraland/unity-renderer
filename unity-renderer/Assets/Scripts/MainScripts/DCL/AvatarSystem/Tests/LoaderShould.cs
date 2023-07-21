@@ -227,11 +227,11 @@ namespace Test.AvatarSystem
                 MockCombinesMesh();
 
                 SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
-                SkinnedMeshRenderer[] renderersReceivedByCombiner = null;
+                List<SkinnedMeshRenderer> renderersReceivedByCombiner = null;
 
                 meshCombiner.Combine(
                                  Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
-                                 Arg.Do<SkinnedMeshRenderer[]>(x => renderersReceivedByCombiner = x))
+                                 Arg.Do<List<SkinnedMeshRenderer>>(x => renderersReceivedByCombiner = x))
                             .Returns(true);
 
                 await loader.Load(bodyWearables, IdsToWearables(WEARABLE_IDS), avatarSettings);
@@ -360,11 +360,11 @@ namespace Test.AvatarSystem
                 MockCombinesMesh();
 
                 SkinnedMeshRenderer bonesContainerReceivedByCombiner = null;
-                SkinnedMeshRenderer[] renderersReceivedByCombiner = null;
+                List<SkinnedMeshRenderer> renderersReceivedByCombiner = null;
 
                 meshCombiner.Combine(
                                  Arg.Do<SkinnedMeshRenderer>(x => bonesContainerReceivedByCombiner = x),
-                                 Arg.Do<SkinnedMeshRenderer[]>(x => renderersReceivedByCombiner = x))
+                                 Arg.Do<List<SkinnedMeshRenderer>>(x => renderersReceivedByCombiner = x))
                             .Returns(true);
 
                 await loader.Load(
@@ -392,7 +392,7 @@ namespace Test.AvatarSystem
                 allRenderers.AddRange(loader.loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>()));
 
                 //Assert the mesh combiner received the proper data
-                Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Length);
+                Assert.AreEqual(allRenderers.Count, renderersReceivedByCombiner.Count);
 
                 for (var i = 0; i < allRenderers.Count; i++) { Assert.IsTrue(renderersReceivedByCombiner.Contains(allRenderers[i])); }
             });
@@ -442,8 +442,8 @@ namespace Test.AvatarSystem
             var combined = CreatePrimitive(container.transform, "CombinedRenderer");
             meshCombiner.container.Returns(combined);
             meshCombiner.renderer.Returns(combined.GetComponent<SkinnedMeshRenderer>());
-            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<SkinnedMeshRenderer[]>(), Arg.Any<Material>()).Returns(true);
-            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<SkinnedMeshRenderer[]>()).Returns(true);
+            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<List<SkinnedMeshRenderer>>(), Arg.Any<Material>()).Returns(true);
+            meshCombiner.Configure().Combine(Arg.Any<SkinnedMeshRenderer>(), Arg.Any<List<SkinnedMeshRenderer>>()).Returns(true);
         }
 
         private void MockBodyShapeLoader(IWearableLoader.Status status)

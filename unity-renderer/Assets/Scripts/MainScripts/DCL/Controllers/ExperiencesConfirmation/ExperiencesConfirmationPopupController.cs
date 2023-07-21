@@ -129,17 +129,19 @@ namespace DCL.PortableExperiences.Confirmation
             switch (permissionId)
             {
                 case "USE_FETCH":
-                    return "Let the scene perform external HTTP requests.";
+                    return "Communicate with 3rd party servers.";
                 case "USE_WEBSOCKET":
-                    return "Let the scene use the Websocket API to establish external connections.";
+                    return "Exchange data with other servers.";
                 case "OPEN_EXTERNAL_LINK":
-                    return "Let the scene open a URL (in a browser tab or web view).";
+                    return "Open external links.";
                 case "USE_WEB3_API":
-                    return "Let the scene communicate with a wallet.";
+                    return "Interact with your wallet.";
                 case "ALLOW_TO_TRIGGER_AVATAR_EMOTE":
-                    return "Let the scene to animate the player’s avatar with an emote.";
+                    return "Trigger emotes.";
                 case "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE":
-                    return "Let the scene to change the player’s position.";
+                    return "Move your position.";
+                case "ALLOW_MEDIA_HOSTNAMES":
+                    return "Play media content (video, audio, etc).";
             }
 
             return permissionId;

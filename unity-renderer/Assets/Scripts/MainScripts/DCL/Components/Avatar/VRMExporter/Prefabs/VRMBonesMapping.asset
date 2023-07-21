@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a9fd462014f474dae993eeec33a6c2f, type: 3}
+  m_Name: VRMBonesMapping
+  m_EditorClassIdentifier: 
+  bonesMapping:
+  - nameDCL: Avatar_Head
+    nameVRM: head
+  - nameDCL: Avatar_Hips
+    nameVRM: hips
+  - nameDCL: Avatar_LeftArm
+    nameVRM: upper_arm.L
+  - nameDCL: Avatar_LeftFoot
+    nameVRM: foot.L
+  - nameDCL: Avatar_LeftForeArm
+    nameVRM: lower_arm.L
+  - nameDCL: Avatar_LeftHand
+    nameVRM: hand.L
+  - nameDCL: Avatar_LeftHandIndex1
+    nameVRM: index.proximal.L
+  - nameDCL: Avatar_LeftHandIndex2
+    nameVRM: Index.intermediate.L
+  - nameDCL: Avatar_LeftHandIndex3
+    nameVRM: index.distal.L
+  - nameDCL: Avatar_LeftHandIndex4
+    nameVRM: index.distal.L_end
+  - nameDCL: Avatar_LeftHandMiddle1
+    nameVRM: middle.proximal.L
+  - nameDCL: Avatar_LeftHandMiddle2
+    nameVRM: middle.intermediate.L
+  - nameDCL: Avatar_LeftHandMiddle3
+    nameVRM: middle.distal.L
+  - nameDCL: Avatar_LeftHandMiddle4
+    nameVRM: middle.distal.L_end
+  - nameDCL: Avatar_LeftHandPinky1
+    nameVRM: little.proximal.L
+  - nameDCL: Avatar_LeftHandPinky2
+    nameVRM: little.intermediate.L
+  - nameDCL: Avatar_LeftHandPinky3
+    nameVRM: little.distal.L
+  - nameDCL: Avatar_LeftHandPinky4
+    nameVRM: little.distal.L_end
+  - nameDCL: Avatar_LeftHandRing1
+    nameVRM: ring.proximal.L
+  - nameDCL: Avatar_LeftHandRing2
+    nameVRM: ring.intermediate.L
+  - nameDCL: Avatar_LeftHandRing3
+    nameVRM: ring.distal.L
+  - nameDCL: Avatar_LeftHandRing4
+    nameVRM: ring.distal.L_end
+  - nameDCL: Avatar_LeftHandThumb1
+    nameVRM: thumb.proximal.L
+  - nameDCL: Avatar_LeftHandThumb2
+    nameVRM: thumb.intermediate.L
+  - nameDCL: Avatar_LeftHandThumb3
+    nameVRM: thumb.distal.L
+  - nameDCL: Avatar_LeftHandThumb4
+    nameVRM: thumb.distal.L_end
+  - nameDCL: Avatar_LeftLeg
+    nameVRM: lower_leg.L
+  - nameDCL: Avatar_LeftShoulder
+    nameVRM: shoulder.L
+  - nameDCL: Avatar_LeftToeBase
+    nameVRM: toes.L
+  - nameDCL: Avatar_LeftUpLeg
+    nameVRM: upper_leg.L
+  - nameDCL: Avatar_Neck
+    nameVRM: neck
+  - nameDCL: Avatar_RightArm
+    nameVRM: upper_arm.R
+  - nameDCL: Avatar_RightFoot
+    nameVRM: foot.R
+  - nameDCL: Avatar_RightForeArm
+    nameVRM: lower_arm.R
+  - nameDCL: Avatar_RightHand
+    nameVRM: hand.R
+  - nameDCL: Avatar_RightHandIndex1
+    nameVRM: index.proximal.R
+  - nameDCL: Avatar_RightHandIndex2
+    nameVRM: index.intermediate.R
+  - nameDCL: Avatar_RightHandIndex3
+    nameVRM: index.distal.R
+  - nameDCL: Avatar_RightHandIndex4
+    nameVRM: index.distal.R_end
+  - nameDCL: Avatar_RightHandMiddle1
+    nameVRM: middle.proximal.R
+  - nameDCL: Avatar_RightHandMiddle2
+    nameVRM: middle.intermediate.R
+  - nameDCL: Avatar_RightHandMiddle3
+    nameVRM: middle.distal.R
+  - nameDCL: Avatar_RightHandMiddle4
+    nameVRM: middle.distal.R_end
+  - nameDCL: Avatar_RightHandPinky1
+    nameVRM: little.proximal.R
+  - nameDCL: Avatar_RightHandPinky2
+    nameVRM: little.intermediate.R
+  - nameDCL: Avatar_RightHandPinky3
+    nameVRM: little.distal.R
+  - nameDCL: Avatar_RightHandPinky4
+    nameVRM: little.distal.R_end
+  - nameDCL: Avatar_RightHandRing1
+    nameVRM: ring.proximal.R
+  - nameDCL: Avatar_RightHandRing2
+    nameVRM: ring.intermediate.R
+  - nameDCL: Avatar_RightHandRing3
+    nameVRM: ring.distal.R
+  - nameDCL: Avatar_RightHandRing4
+    nameVRM: ring.distal.R_end
+  - nameDCL: Avatar_RightHandThumb1
+    nameVRM: thumb.proximal.R
+  - nameDCL: Avatar_RightHandThumb2
+    nameVRM: thumb.intermediate.R
+  - nameDCL: Avatar_RightHandThumb3
+    nameVRM: thumb.distal.R
+  - nameDCL: Avatar_RightHandThumb4
+    nameVRM: thumb.distal.R_end
+  - nameDCL: Avatar_RightLeg
+    nameVRM: lower_leg.R
+  - nameDCL: Avatar_RightShoulder
+    nameVRM: shoulder.R
+  - nameDCL: Avatar_RightToeBase
+    nameVRM: toes.R
+  - nameDCL: Avatar_RightUpLeg
+    nameVRM: upper_leg.R
+  - nameDCL: Avatar_Spine
+    nameVRM: spine
+  - nameDCL: Avatar_Spine1
+    nameVRM: chest
+  - nameDCL: Avatar_Spine2
+    nameVRM: chest_end

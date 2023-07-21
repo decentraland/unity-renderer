@@ -24,6 +24,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
+    internal ISearchSubSectionComponentController searchSubSectionComponentController;
     private DataStore dataStore;
 
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
@@ -75,6 +76,16 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
+        searchSubSectionComponentController = new SearchSubSectionComponentController(
+            view.SearchSubSectionView,
+            view.SearchBar,
+            eventsAPI,
+            placesAPIService,
+            userProfileBridge,
+            exploreV2Analytics,
+            dataStore);
+        searchSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
     }
@@ -98,8 +109,14 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         favoritesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         favoritesSubSectionComponentController.Dispose();
 
+        searchSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }
 
-    internal void PlacesAndEventsVisibleChanged(bool current, bool _) => view.SetActive(current);
+    internal void PlacesAndEventsVisibleChanged(bool current, bool _)
+    {
+        view.EnableSearchBar(dataStore.featureFlags.flags.Get().IsFeatureEnabled("search_in_places"));
+        view.SetActive(current);
+    }
 }

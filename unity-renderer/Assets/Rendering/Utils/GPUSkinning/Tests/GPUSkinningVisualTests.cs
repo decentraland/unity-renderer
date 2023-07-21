@@ -102,7 +102,7 @@ public class GPUSkinningVisualTests : VisualTestsBase
 
 
         List<SkinnedMeshRenderer> rends = wearableLoader.rendereable.renderers.OfType<SkinnedMeshRenderer>().ToList();
-        combiner.Combine(rends[0], rends.ToArray(), new Material(avatarMaterial));
+        combiner.Combine(rends[0], rends, new Material(avatarMaterial));
 
         combiner.container.transform.SetParent(rends[0].transform.parent);
         combiner.container.transform.localPosition = rends[0].transform.localPosition;

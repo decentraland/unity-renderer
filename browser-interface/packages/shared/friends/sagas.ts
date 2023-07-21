@@ -984,8 +984,8 @@ export async function getPrivateMessages(getPrivateMessagesPayload: GetPrivateMe
   getUnityInstance().AddChatMessages(addChatMessagesPayload)
 }
 
-export function getUnseenMessagesByUser() {
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+export async function getUnseenMessagesByUser() {
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return
@@ -1006,7 +1006,7 @@ export function getUnseenMessagesByUser() {
 export async function getFriendsWithDirectMessages(request: GetFriendsWithDirectMessagesPayload) {
   const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return

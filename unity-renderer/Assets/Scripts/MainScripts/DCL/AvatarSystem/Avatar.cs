@@ -193,6 +193,8 @@ namespace AvatarSystem
         public Renderer GetMainRenderer() =>
             gpuSkinning.renderer;
 
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => loader.originalVisibleRenderers;
+
         public void Dispose()
         {
             status = IAvatar.Status.Idle;
