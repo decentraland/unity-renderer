@@ -105,7 +105,7 @@ export async function triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: Port
   }
 
   const request = {
-    path: req.scr,
+    path: req.src,
     sceneNumber: ctx.sceneData.sceneNumber,
     loop: req.loop ?? false
   }
