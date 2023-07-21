@@ -103,6 +103,7 @@ namespace DCL.Backpack
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+            Debug.Log(this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export"));
             view?.SetVRMButtonActive(this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export"));
             view?.SetVRMButtonEnabled(true);
             view?.SetVRMSuccessToastActive(false);

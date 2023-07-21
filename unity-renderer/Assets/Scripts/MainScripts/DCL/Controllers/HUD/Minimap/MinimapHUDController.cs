@@ -27,6 +27,7 @@ public class MinimapHUDController : IHUD
     private IHomeLocationController locationController;
     private DCL.Environment.Model environment;
     private readonly IPlacesAPIService placesAPIService;
+    private readonly IPlacesAnalytics placesAnalytics;
     private BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
 
     private static readonly MapLayer RENDER_LAYERS
@@ -40,13 +41,20 @@ public class MinimapHUDController : IHUD
 
     public MinimapHUDModel model { get; private set; } = new ();
 
-    public MinimapHUDController(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, DCL.Environment.Model environment, IPlacesAPIService placesAPIService)
+    public MinimapHUDController(
+        MinimapMetadataController minimapMetadataController,
+        IHomeLocationController locationController,
+        DCL.Environment.Model environment,
+        IPlacesAPIService placesAPIService,
+        IPlacesAnalytics placesAnalytics
+        )
     {
         minimapZoom.Set(1f);
         metadataController = minimapMetadataController;
         this.locationController = locationController;
         this.environment = environment;
         this.placesAPIService = placesAPIService;
+        this.placesAnalytics = placesAnalytics;
 
         if(metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
@@ -260,6 +268,11 @@ public class MinimapHUDController : IHUD
 
     private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
     {
+        if(isFavorite)
+            placesAnalytics.AddFavorite(uuid, IPlacesAnalytics.ActionSource.FromMinimap);
+        else
+            placesAnalytics.RemoveFavorite(uuid, IPlacesAnalytics.ActionSource.FromMinimap);
+
         placesAPIService.SetPlaceFavorite(uuid, isFavorite, default).Forget();
     }
 

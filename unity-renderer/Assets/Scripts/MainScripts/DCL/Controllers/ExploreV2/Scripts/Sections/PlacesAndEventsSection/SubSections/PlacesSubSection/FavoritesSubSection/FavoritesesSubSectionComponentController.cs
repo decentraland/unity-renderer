@@ -24,6 +24,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
@@ -38,12 +39,14 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         IPlacesAPIService placesAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
         DataStore dataStore)
     {
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.view = view;
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
         placesAPIService = placesAPI;
 
         this.view.OnReady += FirstLoading;
@@ -60,14 +63,10 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
-        if (isFavorite)
-        {
-            exploreV2Analytics.AddFavorite(placeUUID);
-        }
+        if(isFavorite)
+            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
         else
-        {
-            exploreV2Analytics.RemoveFavorite(placeUUID);
-        }
+            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
 
         cts?.Cancel();
         cts?.Dispose();
