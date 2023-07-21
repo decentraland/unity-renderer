@@ -39,7 +39,8 @@
         "GUID:c8ea72e806cd2ab47b539b37895b86b7",
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:68069f49d86442cd9618861b4d74b1aa",
-        "GUID:fbcc413e192ef9048811d47ab0aca0c0"
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -48,8 +49,7 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Newtonsoft.Json.dll",
-        "NSubstitute.dll",
-        "System.Threading.Tasks.Extensions.dll"
+        "NSubstitute.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
