@@ -64,7 +64,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "^1.0.0-5623934099.commit-07e0626",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "https://sdk-team-cdn.decentraland.org/@dcl/scene-runtime/branch/chore/bump-protocol/dcl-scene-runtime-7.0.6-20230719180500.commit-a0be59c.tgz",
+    "@dcl/scene-runtime": "7.0.6-20230721154039.commit-22b60b9",
     "@dcl/schemas": "^7.4.1",
     "@dcl/urn-resolver": "^2.2.0",
     "@types/mocha": "^10.0.1",
