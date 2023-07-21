@@ -6,7 +6,6 @@ numberOfReviewers: 1
 useReviewGroups: true
 reviewGroups:
   techleads:
-    - AjimenezDCL
     - Kinerius
     - mikhail-dcl
   devs:    
