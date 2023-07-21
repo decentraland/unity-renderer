@@ -24,7 +24,7 @@ namespace UI.InWorldCamera.Scripts
 
             var metadata = new ScreenshotMetadata
             {
-                userName = ownPlayer.name,
+                userName = UserProfileController.userProfilesCatalog.Get(ownPlayer.id).userName,
                 userAddress = ownPlayer.id,
                 dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 realm = DataStore.i.realm.realmName.Get(),
@@ -43,15 +43,17 @@ namespace UI.InWorldCamera.Scripts
         private static VisiblePeople[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
         {
             var visiblePeople = new VisiblePeople[visiblePlayers.Count];
-            var bridge = new UserProfileWebInterfaceBridge();
+            var userProfilesCatalog = UserProfileController.userProfilesCatalog;
 
             for (var i = 0; i < visiblePlayers.Count; i++)
+            {
                 visiblePeople[i] = new VisiblePeople
                 {
-                    userName = visiblePlayers[i].name,
+                    userName = userProfilesCatalog.Get(visiblePlayers[i].id).userName,
                     userAddress = visiblePlayers[i].id,
-                    wearables = FilterNonBaseWearables(bridge.Get(visiblePlayers[i].id).avatar.wearables),
+                    wearables = FilterNonBaseWearables(userProfilesCatalog.Get(visiblePlayers[i].id).avatar.wearables),
                 };
+            }
 
             return visiblePeople;
         }
