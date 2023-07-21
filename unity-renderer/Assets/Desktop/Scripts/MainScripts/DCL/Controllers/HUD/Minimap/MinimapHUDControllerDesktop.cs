@@ -7,7 +7,13 @@ namespace DCL.Controllers.HUD
         protected override MinimapHUDView CreateView() =>
             MinimapHUDViewDesktop.Create(this);
 
-        public MinimapHUDControllerDesktop(MinimapMetadataController minimapMetadataController, IHomeLocationController locationController, global::DCL.Environment.Model environment, IPlacesAPIService placesAPIService)
-            : base(minimapMetadataController, locationController, environment, placesAPIService) { }
+        public MinimapHUDControllerDesktop(
+            MinimapMetadataController minimapMetadataController,
+            IHomeLocationController locationController,
+            Environment.Model environment,
+            IPlacesAPIService placesAPIService,
+            IPlacesAnalytics placesAnalytics
+            )
+            : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics) { }
     }
 }

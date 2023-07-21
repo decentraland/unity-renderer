@@ -18,13 +18,21 @@ namespace DCL
         private Vector2 lastClickPosition;
         private Vector2Int currentParcel;
         private IPlacesAPIService placesAPIService;
+        private readonly IPlacesAnalytics placesAnalytics;
 
         private CancellationTokenSource disposingCts = new CancellationTokenSource();
         private CancellationTokenSource retrievingFavoritesCts;
 
-        public NavmapToastViewController(MinimapMetadata minimapMetadata, NavmapToastView view, MapRenderImage mapRenderImage, IPlacesAPIService placesAPIService)
+        public NavmapToastViewController(
+            MinimapMetadata minimapMetadata,
+            NavmapToastView view,
+            MapRenderImage mapRenderImage,
+            IPlacesAPIService placesAPIService,
+            IPlacesAnalytics placesAnalytics
+            )
         {
             this.placesAPIService = placesAPIService;
+            this.placesAnalytics = placesAnalytics;
             this.minimapMetadata = minimapMetadata;
             this.view = view;
             this.mapRenderImage = mapRenderImage;
@@ -134,6 +142,11 @@ namespace DCL
 
         private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
         {
+            if(isFavorite)
+                placesAnalytics.AddFavorite(uuid, IPlacesAnalytics.ActionSource.FromNavmap);
+            else
+                placesAnalytics.RemoveFavorite(uuid, IPlacesAnalytics.ActionSource.FromNavmap);
+
             placesAPIService.SetPlaceFavorite(uuid, isFavorite, default).Forget();
         }
 

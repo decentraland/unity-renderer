@@ -19,6 +19,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private readonly IPlacesAPIService placesAPIService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
 
     public event Action OnCloseExploreV2;
@@ -32,6 +33,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         IPlacesAPIService placesAPIService,
         IUserProfileBridge userProfileBridge,
         IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
         DataStore dataStore)
     {
         this.view = view;
@@ -40,6 +42,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         this.placesAPIService = placesAPIService;
         this.userProfileBridge = userProfileBridge;
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
         this.dataStore = dataStore;
 
         view.OnRequestAllEvents += SearchAllEvents;
@@ -59,14 +62,10 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private void ChangePlaceFavorite(string placeId, bool isFavorite)
     {
-        if (isFavorite)
-        {
-            exploreV2Analytics.AddFavorite(placeId, ActionSource.FromSearch);
-        }
+        if(isFavorite)
+            placesAnalytics.AddFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
         else
-        {
-            exploreV2Analytics.RemoveFavorite(placeId, ActionSource.FromSearch);
-        }
+            placesAnalytics.RemoveFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
 
         placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
     }

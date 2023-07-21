@@ -14,7 +14,7 @@ public class ExploreV2Feature : IPlugin
         exploreV2MenuComponentController.Initialize();
     }
 
-    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>());
+    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
 
     public void Dispose()
     {

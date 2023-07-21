@@ -35,7 +35,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IPlacesAPIService placesAPIService)
+        IPlacesAPIService placesAPIService,
+        IPlacesAnalytics placesAnalytics
+        )
     {
         this.view = view;
         this.dataStore = dataStore;
@@ -48,6 +50,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             eventsAPI,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
         highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
@@ -57,6 +60,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPIService,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
@@ -73,6 +77,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPIService,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
@@ -83,6 +88,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPIService,
             userProfileBridge,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         searchSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 

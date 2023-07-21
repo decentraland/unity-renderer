@@ -36,7 +36,7 @@ namespace DCL
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
         public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoom zoom, NavmapToastView toastView,
-            NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService)
+            NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
         {
             this.navmapVisible = navmapVisible;
 
@@ -46,7 +46,7 @@ namespace DCL
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
-            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService);
+            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
             navmapZoomViewController = new NavmapZoomViewController(zoom);
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);

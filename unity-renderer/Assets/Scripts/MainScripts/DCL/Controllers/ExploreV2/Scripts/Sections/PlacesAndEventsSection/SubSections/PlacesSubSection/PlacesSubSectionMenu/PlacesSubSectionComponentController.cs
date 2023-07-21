@@ -25,6 +25,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
@@ -35,7 +36,13 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private CancellationTokenSource showMoreCts = new ();
     private CancellationTokenSource disposeCts = new ();
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIService placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public PlacesSubSectionComponentController(
+        IPlacesSubSectionComponentView view,
+        IPlacesAPIService placesAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
+        DataStore dataStore)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -59,6 +66,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
 
         view.ConfigurePools();
     }
@@ -84,14 +92,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
-        if (isFavorite)
-        {
-            exploreV2Analytics.AddFavorite(placeUUID);
-        }
+        if(isFavorite)
+            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
         else
-        {
-            exploreV2Analytics.RemoveFavorite(placeUUID);
-        }
+            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
 
         placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
     }
