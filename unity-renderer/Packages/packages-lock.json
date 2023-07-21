@@ -10,16 +10,17 @@
       "url": "https://package.openupm.com"
     },
     "com.atteneder.gltfast": {
-      "version": "https://github.com/decentraland/glTFast.git",
+      "version": "https://github.com/decentraland/glTFast.git#chore/implement-unitask",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.mathematics": "1.2.6",
-        "com.unity.burst": "1.6.6"
+        "com.unity.burst": "1.6.6",
+        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
       },
-      "hash": "76b63cdf60ffbc04c2f2851ffde777496e5ef25e"
+      "hash": "fa40c263ce2fd772e78198969d87bf87ed677c65"
     },
     "com.brunomikoski.animationsequencer": {
       "version": "0.3.8",

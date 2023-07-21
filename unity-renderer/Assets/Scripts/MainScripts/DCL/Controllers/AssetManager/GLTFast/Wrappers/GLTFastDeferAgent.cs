@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using GLTFast;
 using UnityEngine;
 
@@ -64,16 +65,16 @@ namespace DCL.GLTFast.Wrappers
         private bool FitsInCurrentFrame(float duration) =>
             duration <= timeBudget - (Time.realtimeSinceStartup - lastTime);
 
-        public async Task BreakPoint()
+        public async UniTask BreakPoint()
         {
             if (ShouldDefer())
-                await Task.Yield();
+                await UniTask.Yield();
         }
 
-        public async Task BreakPoint(float duration)
+        public async UniTask BreakPoint(float duration)
         {
             if (ShouldDefer(duration))
-                await Task.Yield();
+                await UniTask.Yield();
         }
     }
 }
