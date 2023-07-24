@@ -304,7 +304,7 @@ namespace ECSSystems.PointerInputSystem
 
             // If entity has pointer event component for this `pointerEventType` we setup the `hit` data
             // otherwise we leave it empty (global input)
-            if (HasInputEvent(entityEvents, pointerEventType, raycastHit.distance))
+            if (HasInputEvent(entityEvents, pointerEventType, buttonId, raycastHit.distance))
             {
                 ray.origin = WorldStateUtils.ConvertUnityToScenePosition(ray.origin, scene);
 
@@ -430,6 +430,7 @@ namespace ECSSystems.PointerInputSystem
         private static bool HasInputEvent(
             IReadOnlyList<InternalPointerEvents.Entry> entityEvents,
             PointerEventType pointerEventType,
+            InputAction actionButton,
             float distance)
         {
             if (entityEvents == null)
@@ -439,13 +440,15 @@ namespace ECSSystems.PointerInputSystem
             {
                 var inputEventEntry = entityEvents[i];
 
-                if (inputEventEntry.EventType == pointerEventType)
-                {
-                    if (distance <= inputEventEntry.EventInfo.MaxDistance)
-                    {
-                        return true;
-                    }
-                }
+                if (inputEventEntry.EventInfo.Button != actionButton
+                    && inputEventEntry.EventInfo.Button != InputAction.IaAny)
+                    continue;
+
+                if (inputEventEntry.EventType != pointerEventType)
+                    continue;
+
+                if (distance <= inputEventEntry.EventInfo.MaxDistance)
+                    return true;
             }
 
             return false;
