@@ -36,19 +36,21 @@ namespace DCLServices.CameraReelService
             UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
-                throw new Exception($"Error fetching user screenshot gallery :\n{result.error}");
+                throw new Exception($"Error fetching user screenshots gallery :\n{result.error}");
 
-            CameraReelResponse[] responseData = Utils.ParseJsonArray<CameraReelResponse[]>(result.downloadHandler.text);
+            CameraReelResponses responseData = Utils.SafeFromJson<CameraReelResponses>(result.downloadHandler.text);
 
-            return responseData;
+            if (responseData == null)
+                throw new Exception($"Error parsing screenshots gallery response:\n{result.downloadHandler.text}");
+
+            Debug.Log(responseData.currentImages);
+            Debug.Log(responseData.maxImages);
+
+            foreach (CameraReelResponse response in responseData.images)
+                ResponseSanityCheck(response, result.downloadHandler.text);
+
+            return responseData.images.ToArray();
         }
-
-        [Serializable]
-        internal class CameraReelResponses
-        {
-            public CameraReelResponse[] responses;
-        }
-
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
             var formData = new List<IMultipartFormSection>
@@ -92,6 +94,14 @@ namespace DCLServices.CameraReelService
             if (response.metadata == null)
                 throw new Exception($"No screenshot metadata info retrieved:\n{downloadHandlerText}");
         }
+    }
+
+    [Serializable]
+    public class CameraReelResponses
+    {
+        public List<CameraReelResponse> images = new ();
+        public ulong currentImages;
+        public ulong maxImages;
     }
 
     [Serializable]
