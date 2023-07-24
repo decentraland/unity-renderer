@@ -13,7 +13,7 @@ namespace DCLServices.CameraReelService
     public interface ICameraReelClient
     {
         UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct);
-        UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct);
+        UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct);
         UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct);
     }
 
@@ -31,9 +31,9 @@ namespace DCLServices.CameraReelService
             this.webRequestController = webRequestController;
         }
 
-        public async UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, CancellationToken ct)
+        public async UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images", cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user screenshot gallery :\n{result.error}");

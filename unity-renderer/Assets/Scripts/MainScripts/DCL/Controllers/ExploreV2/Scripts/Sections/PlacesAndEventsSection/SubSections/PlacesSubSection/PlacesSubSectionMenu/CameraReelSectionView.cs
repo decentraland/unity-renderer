@@ -1,5 +1,5 @@
+using DCL;
 using DCLServices.CameraReelService;
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -19,6 +19,9 @@ public class CameraReelSectionView : MonoBehaviour
 
     private Canvas gridCanvas;
 
+    private const int LIMIT = 20;
+    private int offset;
+
     public void Awake()
     {
         gridCanvas = gridContrainer.GetComponent<Canvas>();
@@ -37,12 +40,11 @@ public class CameraReelSectionView : MonoBehaviour
     private async void LoadImages()
     {
         ICameraReelNetworkService cameraReelNetworkService = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
-        var response1 = await cameraReelNetworkService.GetScreenshotGallery("0x05de05303eab867d51854e8b4fe03f7acb0624d9");
+        var reelImages = await cameraReelNetworkService.GetScreenshotGallery(DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
+        offset += LIMIT;
 
-        foreach (var reel in response1)
-        {
-            StartCoroutine(DownloadImageAndCreateObject(reel.url));
-        }
+        foreach (var reel in reelImages)
+            StartCoroutine(DownloadImageAndCreateObject(reel.thumbnailUrl));
     }
 
     private IEnumerator DownloadImageAndCreateObject(string url)
