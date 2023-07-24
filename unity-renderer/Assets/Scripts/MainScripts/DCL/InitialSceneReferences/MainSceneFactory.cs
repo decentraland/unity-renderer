@@ -11,7 +11,7 @@ namespace DCL
             List<GameObject> result = new List<GameObject>();
             GameObject playerGo = LoadAndInstantiate("Player");
             var playerReferences = playerGo.GetComponent<PlayerReferences>();
-            SceneReferences.i.playerAvatarController = playerReferences.avatarController;
+
             SceneReferences.i.inputController = playerReferences.inputController;
             SceneReferences.i.cursorCanvas = playerReferences.cursorCanvas;
             SceneReferences.i.cameraController = playerReferences.cameraController;
@@ -25,7 +25,6 @@ namespace DCL
             result.Add( playerReferences.cursorCanvas.gameObject );
             result.Add( playerReferences.cameraController.gameObject );
             result.Add( playerReferences.inputController.gameObject );
-            result.Add( playerReferences.avatarController.gameObject );
             result.Add( playerGo );
 
             return result;
