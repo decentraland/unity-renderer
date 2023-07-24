@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Social.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using NSubstitute;
@@ -24,6 +23,7 @@ namespace DCL.Social.Chat
         private IProfanityFilter profanityFilter;
         private Func<List<UserProfile>> suggestedProfilesAction;
         private IUserProfileBridge userProfileBridge;
+        private IClipboard clipboard;
 
         [SetUp]
         public void SetUp()
@@ -42,12 +42,13 @@ namespace DCL.Social.Chat
             ownUserProfile.UpdateData(new UserProfileModel { userId = OWN_USER_ID });
             userProfileBridge.GetOwn().Returns(ownUserProfile);
             suggestedProfilesAction = () => new List<UserProfile>();
+            clipboard = Substitute.For<IClipboard>();
 
             controller = new ChatHUDController(dataStore, userProfileBridge, true,
                 (name, count, token) => UniTask.FromResult(suggestedProfilesAction.Invoke()),
                 Substitute.For<ISocialAnalytics>(),
                 Substitute.For<IChatController>(),
-                Substitute.For<IClipboard>(),
+                clipboard,
                 profanityFilter);
 
             controller.Initialize(view);
@@ -512,6 +513,26 @@ namespace DCL.Social.Chat
                 userProfileBridge.Received(1).RequestFullUserProfileAsync(SENDER_ID, Arg.Any<CancellationToken>());
 
                 view.SetEntry(Arg.Is<ChatEntryModel>(c => c.senderName == "0xfa...7fd4" && c.recipientName == "0xfa...f3df"));
+            });
+
+        [UnityTest]
+        public IEnumerator CopyToClipboardMessageTextAndDisplayNotification() =>
+            UniTask.ToCoroutine(async () =>
+            {
+                const string BODY_TEXT = "any useful body message with @mentions and #channels";
+
+                var notification = "";
+                dataStore.notifications.DefaultErrorNotification.OnChange += (current, _) => notification = current;
+
+                view.OnCopyMessageRequested += Raise.Event<Action<ChatEntryModel>>(new ChatEntryModel
+                {
+                    messageType = ChatMessage.Type.PUBLIC,
+                    senderName = "test",
+                    bodyText = BODY_TEXT,
+                });
+
+                clipboard.Received(1).WriteText(BODY_TEXT);
+                Assert.AreEqual("Text copied", notification);
             });
 
         private UserProfile GivenProfile(string userId, string username, string face256)
