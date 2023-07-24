@@ -1,6 +1,6 @@
 using DCL.AvatarEditor;
 using DCL.Backpack;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
 using DCL.Controllers.LoadingScreenV2;
@@ -16,6 +16,7 @@ using DCL.PortableExperiences.Confirmation;
 using DCL.PortableExperiencesToggle;
 using DCL.Providers;
 using DCL.Skybox;
+using DCL.Social.Chat;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;

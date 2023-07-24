@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelContextualMenu : BaseComponentView
     {
@@ -23,15 +23,15 @@ namespace DCL.Chat.HUD
         public override void Awake()
         {
             base.Awake();
-            
+
             leaveButton.onClick.AddListener(() =>
             {
                 OnLeave?.Invoke();
                 Hide();
             });
-            
+
             closeButton.onClick.AddListener(() => Hide());
-            
+
             RefreshControl();
         }
 

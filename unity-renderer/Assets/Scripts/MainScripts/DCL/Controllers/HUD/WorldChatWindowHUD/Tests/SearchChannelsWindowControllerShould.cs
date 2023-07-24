@@ -1,3 +1,4 @@
+using DCL.Chat;
 using System;
 using System.Collections;
 using DCL.Chat.Channels;
@@ -7,7 +8,7 @@ using SocialFeaturesAnalytics;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class SearchChannelsWindowControllerShould
     {
@@ -108,7 +109,7 @@ namespace DCL.Chat.HUD
             view.Received(1).HideLoadingMore();
             chatController.Received(1).GetChannels(SearchChannelsWindowController.LOAD_PAGE_SIZE, "page1");
         }
-        
+
         [UnityTest]
         public IEnumerator LoadMoreChannelsByName()
         {
@@ -214,12 +215,12 @@ namespace DCL.Chat.HUD
             var channel = new Channel(channelId, "name", 15, 11, true, false, "desc");
             chatController.GetAllocatedChannel(channelId).Returns(channel);
             controller.SetVisibility(true);
-            
+
             view.OnOpenChannel += Raise.Event<Action<string>>(channelId);
-            
+
             Assert.AreEqual("channelId", dataStore.channels.channelToBeOpened.Get());
         }
-        
+
         [Test]
         public void DontNavigateToChannelWhenIsNotJoined()
         {
@@ -227,9 +228,9 @@ namespace DCL.Chat.HUD
             var channel = new Channel(channelId, "name", 15, 11, false, false, "desc");
             chatController.GetAllocatedChannel(channelId).Returns(channel);
             controller.SetVisibility(true);
-            
+
             view.OnOpenChannel += Raise.Event<Action<string>>(channelId);
-            
+
             Assert.IsNull(dataStore.channels.channelToBeOpened.Get());
         }
     }

@@ -1,7 +1,8 @@
+using DCL.Social.Chat;
 using DCL.Providers;
 using System.Threading;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLimitReachedWindowPlugin : IPlugin
     {
@@ -13,7 +14,7 @@ namespace DCL.Chat.HUD
         {
             Initialize(cts.Token);
         }
-        
+
         private async void Initialize(CancellationToken ct)
         {
             var view = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()

@@ -2,7 +2,7 @@ using System;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLimitReachedWindowControllerShould
     {
@@ -30,7 +30,7 @@ namespace DCL.Chat.HUD
         public void HideWhenViewCloses()
         {
             view.OnClose += Raise.Event<Action>();
-            
+
             view.Received(1).Hide();
         }
     }

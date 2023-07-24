@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatMentionSuggestionComponentView : MonoBehaviour
     {

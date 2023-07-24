@@ -1,10 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.HelpAndSupportHUD;
 using DCL.NotificationModel;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;

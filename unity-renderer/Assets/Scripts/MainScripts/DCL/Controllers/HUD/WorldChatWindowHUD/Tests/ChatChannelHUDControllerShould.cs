@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,7 +11,7 @@ using System.Threading;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatChannelHUDControllerShould
     {
@@ -57,7 +56,8 @@ namespace DCL.Chat.HUD
                 Substitute.For<IMouseCatcher>(),
                 socialAnalytics,
                 profanityFilter,
-                mentionSuggestionProvider);
+                mentionSuggestionProvider,
+                Substitute.For<IClipboard>());
 
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();

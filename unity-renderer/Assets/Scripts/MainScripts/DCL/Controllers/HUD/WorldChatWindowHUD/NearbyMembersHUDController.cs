@@ -1,6 +1,7 @@
-﻿using System;
+﻿using DCL.Social.Chat;
+using System;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class NearbyMembersHUDController : IDisposable
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DCL.Interface;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [CreateAssetMenu(fileName = "PoolChatEntryFactory", menuName = "DCL/Social/PoolChatEntryFactory")]
     public class PoolChatEntryFactory : ScriptableObject, IChatEntryFactory
@@ -16,15 +16,15 @@ namespace DCL.Chat.HUD
         [SerializeField] private DefaultChatEntry privateSentMessagePrefab;
         [SerializeField] private DefaultChatEntry publicReceivedMessagePrefab;
         [SerializeField] private DefaultChatEntry publicSentMessagePrefab;
-        
+
         private readonly Dictionary<ChatEntry, PoolableObject> pooledObjects =
             new Dictionary<ChatEntry, PoolableObject>();
-        
+
         public ChatEntry Create(ChatEntryModel model)
         {
             if (model.messageType == ChatMessage.Type.SYSTEM)
                 return GetEntryFromPool("SYSTEM", systemMessagePrefab);
-                
+
             if (model.messageType == ChatMessage.Type.PUBLIC)
             {
                 if (model.subType == ChatEntryModel.SubType.RECEIVED)
