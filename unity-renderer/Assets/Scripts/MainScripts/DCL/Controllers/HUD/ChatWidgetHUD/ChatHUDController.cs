@@ -525,6 +525,7 @@ namespace DCL.Social.Chat
         private void HandleCopyMessageToClipboard(ChatEntryModel model)
         {
             clipboard.WriteText(ChatUtils.RemoveNoParse(model.bodyText));
+            dataStore.notifications.DefaultErrorNotification.Set("Text copied", true);
         }
     }
 }
