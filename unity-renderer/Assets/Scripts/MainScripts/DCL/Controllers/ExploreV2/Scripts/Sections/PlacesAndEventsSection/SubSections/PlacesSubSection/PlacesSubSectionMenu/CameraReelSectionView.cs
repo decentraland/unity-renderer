@@ -1,8 +1,8 @@
 using DCL;
-using DCL.Helpers;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,6 +11,7 @@ using Environment = DCL.Environment;
 
 public class CameraReelSectionView : MonoBehaviour
 {
+    private const int LIMIT = 20;
     [Header("Gallery view")]
     [SerializeField] private Button showMore;
     [SerializeField] internal Image prefab;
@@ -18,7 +19,6 @@ public class CameraReelSectionView : MonoBehaviour
 
     [SerializeField] internal ScrollRect scrollView;
     [SerializeField] private Canvas canvas;
-    private Canvas gridCanvas;
 
     [Header("Screenshot View")]
     [SerializeField] private GameObject screenShotView;
@@ -28,9 +28,8 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] private TMP_Text sceneInfo;
 
     [SerializeField] internal GameObject profileCard;
-    [SerializeField] internal GridContainerComponentView profileGridContrainer;
-
-    private const int LIMIT = 20;
+    [SerializeField] internal Transform profileGridContrainer;
+    private Canvas gridCanvas;
     private int offset;
 
     public void Awake()
@@ -56,28 +55,29 @@ public class CameraReelSectionView : MonoBehaviour
 
         offset += LIMIT;
 
-        foreach (var reel in reelImages)
-            StartCoroutine(DownloadImageAndCreateObject(reel));
+        StartCoroutine(DownloadImageAndCreateObject(reelImages));
     }
 
-    private IEnumerator DownloadImageAndCreateObject(CameraReelResponse reel)
+    private IEnumerator DownloadImageAndCreateObject(CameraReelResponse[] reelImages)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
-        yield return request.SendWebRequest();
-        if(request.result != UnityWebRequest.Result.Success)
+        foreach (CameraReelResponse reel in reelImages)
         {
-            Debug.Log(request.error);
-        }
-        else
-        {
-            Texture2D texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
+            yield return request.SendWebRequest();
 
-            Image image = Instantiate(prefab, gridContrainer.transform);
-            image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            image.gameObject.SetActive(true);
+            if (request.result != UnityWebRequest.Result.Success)
+                Debug.Log(request.error);
+            else
+            {
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
 
-            var button = image.GetComponent<Button>();
-            button.onClick.AddListener(() => StartCoroutine(ShowScreenshotWithMetadata(reel)));
+                Image image = Instantiate(prefab, gridContrainer.transform);
+                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                image.gameObject.SetActive(true);
+
+                Button button = image.GetComponent<Button>();
+                button.onClick.AddListener(() => StartCoroutine(ShowScreenshotWithMetadata(reel)));
+            }
         }
     }
 
@@ -85,27 +85,44 @@ public class CameraReelSectionView : MonoBehaviour
     {
         screenShotView.SetActive(true);
 
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
-        yield return request.SendWebRequest();
-
-        if(request.result != UnityWebRequest.Result.Success)
+        // Show Screenshot
         {
-            Debug.Log(request.error);
-        }
-        else
-        {
-            sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
+            yield return request.SendWebRequest();
 
-            Texture2D texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
-            screenImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-            if (long.TryParse(reel.metadata.dateTime, out long unixTimestamp))
+            if (request.result != UnityWebRequest.Result.Success)
+                Debug.Log(request.error);
+            else
             {
-                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                DateTime localTime = epoch.AddSeconds(unixTimestamp).ToLocalTime();
+                sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
 
-                dataTime.text = localTime.ToString("MMMM dd, yyyy");
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                screenImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
         }
+
+        // Show DateTime Metadata
+        if (long.TryParse(reel.metadata.dateTime, out long unixTimestamp))
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            dataTime.text = epoch.AddSeconds(unixTimestamp).ToLocalTime().ToString("MMMM dd, yyyy");
+        }
+
+        // Show Visible Persons
+        foreach (GameObject p in profiles)
+            Destroy(p);
+        profiles.Clear();
+
+        foreach (var person in reel.metadata.visiblePeople)
+        {
+            GameObject profile = Instantiate(profileCard, profileGridContrainer);
+            var button = profile.GetComponentInChildren<ButtonComponentView>();
+            button.SetText(person.userName);
+            profile.gameObject.SetActive(true);
+
+            profiles.Add(profile);
+        }
     }
+
+    private readonly List<GameObject> profiles = new ();
 }
