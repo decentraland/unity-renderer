@@ -9,6 +9,11 @@ const http = require('http')
 const singleRun = !(process.env.SINGLE_RUN === 'true')
 const port = process.env.PORT || 8080
 const app = express()
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  next();
+});
 
 const server = http.createServer(app)
 
@@ -49,6 +54,8 @@ const server = http.createServer(app)
     express.static(resolve(__dirname, './static/preview.html'), {
       setHeaders: (res) => {
         res.setHeader('Content-Type', 'text/html')
+        res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+        res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
       }
     })
   )
@@ -58,6 +65,8 @@ const server = http.createServer(app)
     express.static(resolve(__dirname, './static/index.html'), {
       setHeaders: (res) => {
         res.setHeader('Content-Type', 'text/html')
+        res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+        res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
       }
     })
   )

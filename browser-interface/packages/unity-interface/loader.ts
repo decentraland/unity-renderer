@@ -5,7 +5,8 @@ import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 const generatedFiles = {
   frameworkUrl: 'unity.framework.js',
   dataUrl: 'unity.data',
-  codeUrl: 'unity.wasm'
+  codeUrl: 'unity.wasm',
+  workerUrl: 'unity.worker.js'
 }
 
 export type LoadRendererResult = {
@@ -103,6 +104,7 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
     dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl + postfix),
     frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl + postfix),
     codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl + postfix),
+    workerUrl: resolveWithBaseUrl(generatedFiles.workerUrl + postfix),
     streamingAssetsUrl: new URL('StreamingAssets', baseUrl).toString(),
     companyName: 'Decentraland',
     productName: 'Decentraland World Client',
