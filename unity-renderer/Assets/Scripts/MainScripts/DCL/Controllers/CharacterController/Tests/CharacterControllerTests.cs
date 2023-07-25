@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.Interface;
+using MainScripts.DCL.Controllers.CharacterController;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -45,7 +46,7 @@ namespace Tests
 
             DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
 
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 2.0f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(CharacterGlobals.characterPosition.worldPosition, position), 2.0f);
 
             yield return null;
         }
@@ -393,7 +394,7 @@ namespace Tests
         {
             yield return InitCharacterPosition(50, 2, 0);
             DataStore.i.player.lastTeleportPosition.Set(Vector3.zero);
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, Vector3.zero), 2.0f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(CharacterGlobals.characterPosition.worldPosition, Vector3.zero), 2.0f);
         }
 
         [Test]

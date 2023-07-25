@@ -1,11 +1,11 @@
-using System;
 using UnityEngine;
+using static InputAction_Hold;
 
 /// <summary>
 /// An on/off action that triggers Start when the input is read and Finished when the input has gone
 /// </summary>
 [CreateAssetMenu(fileName = "InputAction_Hold", menuName = "InputActions/Hold")]
-public class InputAction_Hold : ScriptableObject
+public class InputAction_Hold : ScriptableObject, IInputActionHold
 {
     public delegate void Started(DCLAction_Hold action);
     public delegate void Finished(DCLAction_Hold action);
@@ -56,4 +56,11 @@ public class InputAction_Hold : ScriptableObject
 
     #endregion
 
+}
+
+public interface IInputActionHold
+{
+    event Started OnStarted;
+    event Finished OnFinished;
+    bool isOn { get; }
 }

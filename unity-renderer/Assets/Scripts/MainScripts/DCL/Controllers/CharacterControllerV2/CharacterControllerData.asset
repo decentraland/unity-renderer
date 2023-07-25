@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d11c1f01169f45bc9156e8579855e94d, type: 3}
+  m_Name: CharacterControllerData
+  m_EditorClassIdentifier: 
+  walkSpeed: 3
+  jogSpeed: 10
+  runSpeed: 15
+  acceleration: 50
+  airAcceleration: 10
+  gravity: -18
+  jumpHeight: 2
