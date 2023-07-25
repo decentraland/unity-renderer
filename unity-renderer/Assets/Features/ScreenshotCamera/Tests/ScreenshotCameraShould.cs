@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace DCLServices.QuestsService.Tests
@@ -37,7 +38,7 @@ namespace DCLServices.QuestsService.Tests
             takeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
 
             screenshotCamera.cameraPrefab = gameObject.AddComponent<Camera>();
-            screenshotCamera.screenshotHUDViewPrefab = gameObject.AddComponent<ScreenshotHUDViewMock>();
+            screenshotCamera.screenshotHUDViewPrefab = gameObject.AddComponent<ScreenshotHUDViewDummy>();
 
             screenshotCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
             screenshotCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
@@ -60,7 +61,7 @@ namespace DCLServices.QuestsService.Tests
             screenshotCamera.SetExternalDependencies(allUIHidden, cameraModeInputLocked, cameraLeftMouseButtonCursorLock,
                 cameraBlocked, featureKeyTriggersBlocked, userMovementKeysBlocked, isScreenshotCameraActive);
 
-            screenshotCamera.screenshotCaptureLazyValue = new ScreenshotCaptureMock();
+            screenshotCamera.screenshotCaptureLazyValue = new ScreenshotCaptureDummy();
             screenshotCamera.InstantiateCameraObjects();
 
             screenshotCamera.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
@@ -140,15 +141,15 @@ namespace DCLServices.QuestsService.Tests
             new GameObject().AddComponent<Camera>();
     }
 
-    public class ScreenshotCaptureMock : ScreenshotCapture
+    public class ScreenshotCaptureDummy : ScreenshotCapture
     {
-        public ScreenshotCaptureMock() : base(null, null, null, null) { }
+        public ScreenshotCaptureDummy() : base(null, null, null, null) { }
 
         public override byte[] CaptureScreenshot() =>
             Array.Empty<byte>();
     }
 
-    public class ScreenshotHUDViewMock : ScreenshotHUDView
+    public class ScreenshotHUDViewDummy : ScreenshotHUDView
     {
         public override void SwitchVisibility(bool isVisible) { }
     }
