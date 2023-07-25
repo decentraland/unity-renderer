@@ -34,7 +34,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   private voiceHandler: VoiceHandler
 
   constructor(private config: LivekitConfig) {
-    this.room = new Room()
+    this.room = new Room();
+
+    // TODO: UN-HACK
+    (window as any).livekit_participants = this.room.participants
 
     this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
 
