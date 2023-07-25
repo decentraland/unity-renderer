@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Helpers;
 using DCLServices.CameraReelService;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -93,11 +94,18 @@ public class CameraReelSectionView : MonoBehaviour
         }
         else
         {
+            sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
+
             Texture2D texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
             screenImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
-            dataTime.text = Utils.UnixTimeStampToLocalTime(ulong.Parse(reel.metadata.dateTime));
-            sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
+            if (long.TryParse(reel.metadata.dateTime, out long unixTimestamp))
+            {
+                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                DateTime localTime = epoch.AddSeconds(unixTimestamp).ToLocalTime();
+
+                dataTime.text = localTime.ToString("MMMM dd, yyyy");
+            }
         }
     }
 }
