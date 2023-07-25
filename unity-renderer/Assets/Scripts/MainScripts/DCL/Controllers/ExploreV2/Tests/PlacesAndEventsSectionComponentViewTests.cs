@@ -22,11 +22,9 @@ public class PlacesAndEventsSectionComponentViewTests
     [Test]
     [TestCase(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX)]
     [TestCase(PlacesAndEventsSectionComponentView.PLACES_SUB_SECTION_INDEX)]
-    [TestCase(PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX)]
     public void CreateSubSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
-        placesAndEventsSectionComponent.highlightsSubSection.GetComponent<Canvas>().enabled = false;
         placesAndEventsSectionComponent.placesSubSection.GetComponent<Canvas>().enabled = false;
         placesAndEventsSectionComponent.eventsSubSection.GetComponent<Canvas>().enabled = false;
 
@@ -37,9 +35,6 @@ public class PlacesAndEventsSectionComponentViewTests
         // Assert
         switch (subSectionIndex)
         {
-            case PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX:
-                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.GetComponent<Canvas>().enabled);
-                break;
             case PlacesAndEventsSectionComponentView.PLACES_SUB_SECTION_INDEX:
                 Assert.IsTrue(placesAndEventsSectionComponent.placesSubSection.GetComponent<Canvas>().enabled);
                 break;
@@ -52,7 +47,6 @@ public class PlacesAndEventsSectionComponentViewTests
     [Test]
     [TestCase(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX)]
     [TestCase(PlacesAndEventsSectionComponentView.PLACES_SUB_SECTION_INDEX)]
-    [TestCase(PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX)]
     public void RemoveSectionSelectorMappingsCorrectly(int subSectionIndex)
     {
         // Arrange
@@ -60,7 +54,6 @@ public class PlacesAndEventsSectionComponentViewTests
         placesAndEventsSectionComponent.CreateSubSectionSelectorMappings();
         placesAndEventsSectionComponent.placesSubSection.gameObject.SetActive(false);
         placesAndEventsSectionComponent.eventsSubSection.gameObject.SetActive(false);
-        placesAndEventsSectionComponent.highlightsSubSection.gameObject.SetActive(false);
 
         // Act
         placesAndEventsSectionComponent.RemoveSectionSelectorMappings();
@@ -75,16 +68,12 @@ public class PlacesAndEventsSectionComponentViewTests
             case PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX:
                 Assert.IsFalse(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
                 break;
-            case PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX:
-                Assert.IsFalse(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
-                break;
         }
     }
 
     [Test]
     [TestCase(PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX)]
     [TestCase(PlacesAndEventsSectionComponentView.PLACES_SUB_SECTION_INDEX)]
-    [TestCase(PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX)]
     public void GoToSubsectionCorrectly(int subSectionIndex)
     {
         // Act
@@ -98,9 +87,6 @@ public class PlacesAndEventsSectionComponentViewTests
                 break;
             case PlacesAndEventsSectionComponentView.EVENTS_SUB_SECTION_INDEX:
                 Assert.IsTrue(placesAndEventsSectionComponent.eventsSubSection.gameObject.activeSelf);
-                break;
-            case PlacesAndEventsSectionComponentView.HIGHLIGHTS_SUB_SECTION_INDEX:
-                Assert.IsTrue(placesAndEventsSectionComponent.highlightsSubSection.gameObject.activeSelf);
                 break;
         }
     }

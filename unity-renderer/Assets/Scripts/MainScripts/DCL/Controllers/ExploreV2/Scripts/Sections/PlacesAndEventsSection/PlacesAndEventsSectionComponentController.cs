@@ -44,17 +44,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
         EventsAPIController eventsAPI = new EventsAPIController();
 
-        highlightsSubSectionComponentController = new HighlightsSubSectionComponentController(
-            view.HighlightsSubSectionView,
-            placesAPIService,
-            eventsAPI,
-            friendsController,
-            exploreV2Analytics,
-            placesAnalytics,
-            dataStore);
-        highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
-        highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
-
         placesSubSectionComponentController = new PlacesSubSectionComponentController(
             view.PlacesSubSectionView,
             placesAPIService,

@@ -18,8 +18,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 {
     public event Action OnCloseExploreV2;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 5;
-    private const int PAGE_SIZE = 12;
+    internal const int INITIAL_NUMBER_OF_ROWS = 3;
+    private const int PAGE_SIZE = 18;
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
