@@ -70,6 +70,7 @@ public class UserContextMenu : MonoBehaviour
     [SerializeField] internal Button deleteFriendButton;
     [SerializeField] internal Button messageButton;
     [SerializeField] internal Button mentionButton;
+    [SerializeField] internal Button copyNameButton;
 
     public static event Action<string> OnOpenPrivateChatRequest;
 
@@ -89,22 +90,23 @@ public class UserContextMenu : MonoBehaviour
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
     private CancellationTokenSource friendOperationsCancellationToken = new ();
-    private bool isFreomMentionContextMenu = false;
+    private bool isFromMentionContextMenu;
+    private IFriendsController friendsControllerInternal;
+    private IClipboard clipboardInternal;
     private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
-    internal ISocialAnalytics socialAnalytics;
-
-    private IFriendsController _friendsController;
 
     private IFriendsController friendsController
     {
         get
         {
-            if (_friendsController == null) { _friendsController = Environment.i.serviceLocator.Get<IFriendsController>(); }
-
-            return _friendsController;
+            return friendsControllerInternal ??= Environment.i.serviceLocator.Get<IFriendsController>();
         }
     }
+
+    private IClipboard clipboard => clipboardInternal ??= Clipboard.Create();
+
+    internal ISocialAnalytics socialAnalytics;
 
     /// <summary>
     /// Show context menu
@@ -189,7 +191,7 @@ public class UserContextMenu : MonoBehaviour
 
     public void SetPassportOpenSource(bool isFromMention)
     {
-        isFreomMentionContextMenu = isFromMention;
+        isFromMentionContextMenu = isFromMention;
     }
 
     private void Awake()
@@ -202,6 +204,7 @@ public class UserContextMenu : MonoBehaviour
         addFriendButton.onClick.AddListener(OnAddFriendButtonPressed);
         cancelFriendButton.onClick.AddListener(OnCancelFriendRequestButtonPressed);
         messageButton.onClick.AddListener(OnMessageButtonPressed);
+        copyNameButton.onClick.AddListener(OnCopyNameButtonPressed);
 
         if (mentionButton != null)
             mentionButton.onClick.AddListener(OnMentionButtonPressed);
@@ -220,7 +223,7 @@ public class UserContextMenu : MonoBehaviour
     private void OnPassportButtonPressed()
     {
         OnPassport?.Invoke(userId);
-        currentPlayerId.Set((userId, isFreomMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
+        currentPlayerId.Set((userId, isFromMentionContextMenu ? OPEN_PASSPORT_MENTION_SOURCE : OPEN_PASSPORT_NORMAL_SOURCE));
         Hide();
 
         AudioScriptableObjects.dialogOpen.Play(true);
@@ -512,6 +515,11 @@ public class UserContextMenu : MonoBehaviour
     {
         DataStore.i.notifications.DefaultErrorNotification.Set("This user was not found.", true);
         Debug.LogError($"User {userIdOrName} was not found in the catalog!");
+    }
+
+    private void OnCopyNameButtonPressed()
+    {
+        clipboard.WriteText(userName.text);
     }
 
 #if UNITY_EDITOR

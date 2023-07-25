@@ -1,5 +1,4 @@
-﻿using DCL.Social.Chat;
-using System;
+﻿using System;
 
 namespace DCL.Social.Chat
 {
