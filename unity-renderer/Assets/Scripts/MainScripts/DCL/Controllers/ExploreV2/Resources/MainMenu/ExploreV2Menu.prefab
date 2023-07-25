@@ -10220,6 +10220,11 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.44313726
       objectReference: {fileID: 0}
+    - target: {fileID: 3725923502685340037, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4469143239268576428, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
         type: 3}
       propertyPath: m_fontSize
@@ -10306,13 +10311,17 @@ PrefabInstance:
       value: -33.69105
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 7887689455078732951, guid: ab19e19dd7d19cc4c9bb1876293bcd22, type: 3}
-    - {fileID: 8274474938483644853, guid: ab19e19dd7d19cc4c9bb1876293bcd22, type: 3}
-    - {fileID: 1442316120381234285, guid: ab19e19dd7d19cc4c9bb1876293bcd22, type: 3}
+    - {fileID: 3725923502685340037, guid: ab19e19dd7d19cc4c9bb1876293bcd22, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ab19e19dd7d19cc4c9bb1876293bcd22, type: 3}
 --- !u!224 &2583109062928417543 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 54622623229548845, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
+    type: 3}
+  m_PrefabInstance: {fileID: 2529618902317324842}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7549562477303102509 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5466927874646222343, guid: ab19e19dd7d19cc4c9bb1876293bcd22,
     type: 3}
   m_PrefabInstance: {fileID: 2529618902317324842}
   m_PrefabAsset: {fileID: 0}
@@ -12131,6 +12140,11 @@ PrefabInstance:
       propertyPath: screenImage
       value: 
       objectReference: {fileID: 3577984432243595573}
+    - target: {fileID: 3421415901152613930, guid: 02c9c3e59ec665748b30c0ca02b0f871,
+        type: 3}
+      propertyPath: wearableCard
+      value: 
+      objectReference: {fileID: 7549562477303102509}
     - target: {fileID: 3421415901152613930, guid: 02c9c3e59ec665748b30c0ca02b0f871,
         type: 3}
       propertyPath: screenShotView

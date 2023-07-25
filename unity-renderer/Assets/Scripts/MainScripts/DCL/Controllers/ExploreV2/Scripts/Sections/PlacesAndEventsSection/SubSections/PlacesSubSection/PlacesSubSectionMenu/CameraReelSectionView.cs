@@ -1,9 +1,14 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.CameraReelService;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using TMPro;
+using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -29,6 +34,8 @@ public class CameraReelSectionView : MonoBehaviour
 
     [SerializeField] internal GameObject profileCard;
     [SerializeField] internal Transform profileGridContrainer;
+    [SerializeField] internal GameObject wearableCard;
+
     private Canvas gridCanvas;
     private int offset;
 
@@ -113,6 +120,8 @@ public class CameraReelSectionView : MonoBehaviour
             Destroy(p);
         profiles.Clear();
 
+        var wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+
         foreach (var person in reel.metadata.visiblePeople)
         {
             GameObject profile = Instantiate(profileCard, profileGridContrainer);
@@ -121,6 +130,38 @@ public class CameraReelSectionView : MonoBehaviour
             profile.gameObject.SetActive(true);
 
             profiles.Add(profile);
+
+            FetchWearables(person, wearablesService, profile.gameObject.transform);
+        }
+    }
+
+    private async void FetchWearables(VisiblePeople person, IWearablesCatalogService wearablesService, Transform parent)
+    {
+        foreach (string wearable in person.wearables)
+        {
+            var wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
+
+            var button = Instantiate(wearableCard, parent).GetComponent<ButtonComponentView>();
+            button.SetText(wearableItem.GetName());
+
+            // Show Screenshot
+            {
+                UnityWebRequest request = UnityWebRequestTexture.GetTexture(wearableItem.ComposeThumbnailUrl());
+
+                await request.SendWebRequest();
+
+                if (request.result != UnityWebRequest.Result.Success)
+                    Debug.Log(request.error);
+                else
+                {
+                    Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                    var sprite  = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                    button.SetIcon(sprite);
+                }
+            }
+
+            button.gameObject.SetActive(true);
         }
     }
 
