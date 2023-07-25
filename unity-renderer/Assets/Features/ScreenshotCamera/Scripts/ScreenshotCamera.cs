@@ -2,15 +2,17 @@
 using DCL.Camera;
 using DCL.Helpers;
 using DCLServices.CameraReelService;
-using Features.ScreenshotCamera.Scripts;
 using System.Collections;
+using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.InWorldCamera.Scripts
+namespace Features.ScreenshotCamera.Scripts
 {
     public class ScreenshotCamera : MonoBehaviour
     {
+        private const DCLAction_Trigger DUMMY_DCL_ACTION_TRIGGER = new ();
+
         [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] internal DCLCharacterController characterController;
         [SerializeField] internal CameraController cameraController;
@@ -27,13 +29,13 @@ namespace UI.InWorldCamera.Scripts
         internal bool? isGuestLazyValue;
         internal BooleanVariable isScreenshotCameraActive;
 
-        private bool isInstantiated;
-
         internal Camera screenshotCamera;
+        internal IAvatarsLODController avatarsLODControllerLazyValue;
+
+        private bool isInstantiated;
         private ScreenshotHUDView screenshotHUDView;
 
         private Transform characterCameraTransform;
-        internal IAvatarsLODController avatarsLODControllerLazyValue;
         private ICameraReelNetworkService cameraReelNetworkServiceLazyValue;
 
         private bool prevUiHiddenState;
@@ -195,7 +197,11 @@ namespace UI.InWorldCamera.Scripts
             characterCameraTransform = cameraController.GetCamera().transform;
 
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
+
             screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
+
+            screenshotHUDView.CloseButton?.onClick.AddListener(DisableScreenshotCameraMode);
+            screenshotHUDView.TakeScreenshotButton?.onClick.AddListener(() => CaptureScreenshot(DUMMY_DCL_ACTION_TRIGGER));
 
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
@@ -203,6 +209,12 @@ namespace UI.InWorldCamera.Scripts
             screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
 
             isInstantiated = true;
+        }
+
+        private void DisableScreenshotCameraMode()
+        {
+            if (isScreenshotCameraActive.Get())
+                ToggleScreenshotCamera(DUMMY_DCL_ACTION_TRIGGER);
         }
     }
 }
