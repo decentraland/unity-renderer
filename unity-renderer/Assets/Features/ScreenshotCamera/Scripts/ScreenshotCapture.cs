@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI.InWorldCamera.Scripts
 {
@@ -15,16 +14,16 @@ namespace UI.InWorldCamera.Scripts
 
         private (float width, float height) spriteRect;
 
-        public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Image refBoundariesImage)
+        public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Sprite sprite, RectTransform spriteRectTransform)
         {
-            sprite = refBoundariesImage.sprite;
-            imageRectTransform = refBoundariesImage.rectTransform;
+            this.sprite = sprite;
+            imageRectTransform = spriteRectTransform;
 
             this.screenshotCamera = screenshotCamera;
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public byte[] CaptureScreenshot()
+        public virtual byte[] CaptureScreenshot()
         {
             spriteRect = GetCurrentSpriteResolution(imageRectTransform.rect, sprite.bounds);
 
