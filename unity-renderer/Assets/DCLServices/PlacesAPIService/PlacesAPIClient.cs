@@ -38,7 +38,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct)
         {
             const string URL = BASE_URL_ZONE + "?with_realms_detail=true&search={0}&offset={1}&limit={2}";
-            var result = await webRequestController.GetAsync(string.Format(URL, searchString.Replace(" ", "+"), pageNumber * pageSize, pageSize), cancellationToken: ct);
+            var result = await webRequestController.GetAsync(string.Format(URL, searchString.Replace(" ", "+"), pageNumber * pageSize, pageSize), cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching most active places info:\n{result.error}");
@@ -57,7 +57,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct)
         {
             const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&offset={0}&limit={1}";
-            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), cancellationToken: ct);
+            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching most active places info:\n{result.error}");
@@ -76,7 +76,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct)
         {
             const string URL = BASE_URL + "?positions={0},{1}&with_realms_detail=true";
-            var result = await webRequestController.GetAsync(string.Format(URL, coords.x, coords.y), cancellationToken: ct);
+            var result = await webRequestController.GetAsync(string.Format(URL, coords.x, coords.y), cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
@@ -95,7 +95,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct)
         {
             var url = $"{BASE_URL}/{placeUUID}?with_realms_detail=true";
-            var result = await webRequestController.GetAsync(url, cancellationToken: ct);
+            var result = await webRequestController.GetAsync(url, cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
