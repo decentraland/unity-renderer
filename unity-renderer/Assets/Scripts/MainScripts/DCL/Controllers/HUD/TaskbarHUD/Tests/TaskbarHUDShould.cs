@@ -197,7 +197,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IChannelsFeatureFlagService>(),
             Substitute.For<IBrowserBridge>(),
             CommonScriptableObjects.rendererState,
-            new DataStore_Mentions());
+            new DataStore_Mentions(),
+            Substitute.For<IClipboard>());
 
         controller.Initialize(GivenView());
 

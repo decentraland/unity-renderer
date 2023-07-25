@@ -1,9 +1,8 @@
-using DCL.Social.Chat;
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Helpers;
 using TMPro;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
@@ -82,6 +81,7 @@ namespace DCL.Social.Chat
         public event Action OnCreateChannel;
         public event Action OnSignUp;
         public event Action OnRequireWalletReadme;
+        public event Action<string> OnCopyChannelNameRequested;
 
         public RectTransform Transform => (RectTransform) transform;
         public bool IsActive => gameObject.activeInHierarchy;
@@ -111,6 +111,7 @@ namespace DCL.Social.Chat
             searchBar.OnSearchText += text => OnSearchChatRequested?.Invoke(text);
             scroll.onValueChanged.AddListener(RequestMorePrivateChats);
             channelContextualMenu.OnLeave += () => OnLeaveChannel?.Invoke(optionsChannelId);
+            channelContextualMenu.OnNameCopied += channelName => OnCopyChannelNameRequested?.Invoke(channelName);
             createChannelButton.onClick.AddListener(() => OnCreateChannel?.Invoke());
             connectWalletButton.onClick.AddListener(() => OnSignUp?.Invoke());
             whatIsWalletButton.onClick.AddListener(() => OnRequireWalletReadme?.Invoke());

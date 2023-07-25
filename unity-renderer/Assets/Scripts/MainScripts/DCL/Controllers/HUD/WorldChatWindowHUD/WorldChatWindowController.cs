@@ -12,7 +12,6 @@ using DCl.Social.Friends;
 using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
-using DCL.Social.Chat;
 using DCL.Tasks;
 
 namespace DCL.Social.Chat
@@ -34,6 +33,7 @@ namespace DCL.Social.Chat
         private readonly IBrowserBridge browserBridge;
         private readonly RendererState rendererState;
         private readonly DataStore_Mentions mentionsDataStore;
+        private readonly IClipboard clipboard;
         private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
         private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
         private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
@@ -48,7 +48,7 @@ namespace DCL.Social.Chat
         private IWorldChatWindowView view;
         private UserProfile ownUserProfile;
         private bool isRequestingDMs;
-        private bool areUnseenMessajesRequestedByFirstTime;
+        private bool areUnseenMessagesRequestedByFirstTime;
         private string channelToJoinAtTheBeginning;
         private CancellationTokenSource hideChannelsLoadingCancellationToken = new CancellationTokenSource();
         private CancellationTokenSource hidePrivateChatsLoadingCancellationToken = new CancellationTokenSource();
@@ -78,7 +78,8 @@ namespace DCL.Social.Chat
             IChannelsFeatureFlagService channelsFeatureFlagService,
             IBrowserBridge browserBridge,
             RendererState rendererState,
-            DataStore_Mentions mentionsDataStore)
+            DataStore_Mentions mentionsDataStore,
+            IClipboard clipboard)
         {
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
@@ -90,6 +91,7 @@ namespace DCL.Social.Chat
             this.browserBridge = browserBridge;
             this.rendererState = rendererState;
             this.mentionsDataStore = mentionsDataStore;
+            this.clipboard = clipboard;
         }
 
         public void Initialize(IWorldChatWindowView view, bool isVisible = true)
@@ -139,6 +141,7 @@ namespace DCL.Social.Chat
                 view.OnOpenChannelSearch += OpenChannelSearch;
                 view.OnLeaveChannel += LeaveChannel;
                 view.OnCreateChannel += OpenChannelCreationWindow;
+                view.OnCopyChannelNameRequested += CopyChannelNameToClipboard;
 
                 chatController.OnChannelUpdated += HandleChannelUpdated;
                 chatController.OnChannelJoined += HandleChannelJoined;
@@ -234,7 +237,7 @@ namespace DCL.Social.Chat
                         view.HideChannelsLoading();
                     }
 
-                    if (!areUnseenMessajesRequestedByFirstTime)
+                    if (!areUnseenMessagesRequestedByFirstTime)
                         RequestUnreadChannelsMessages();
                 }
 
@@ -686,7 +689,7 @@ namespace DCL.Social.Chat
         private void RequestUnreadChannelsMessages()
         {
             chatController.GetUnseenMessagesByChannel();
-            areUnseenMessajesRequestedByFirstTime = true;
+            areUnseenMessagesRequestedByFirstTime = true;
         }
 
         private void OpenChannelSearch()
@@ -744,5 +747,10 @@ namespace DCL.Social.Chat
             browserBridge.OpenUrl("https://docs.decentraland.org/player/blockchain-integration/get-a-wallet/");
 
         private void SignUp() => userProfileBridge.SignUp();
+
+        private void CopyChannelNameToClipboard(string channelName)
+        {
+            clipboard.WriteText(channelName);
+        }
     }
 }

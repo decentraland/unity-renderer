@@ -17,8 +17,10 @@ namespace DCL.Social.Chat
         [SerializeField] internal TMP_Text headerTiler;
         [SerializeField] internal Button leaveButton;
         [SerializeField] internal Button closeButton;
+        [SerializeField] internal Button copyNameButton;
 
         public event Action OnLeave;
+        public event Action<string> OnNameCopied;
 
         public override void Awake()
         {
@@ -31,6 +33,7 @@ namespace DCL.Social.Chat
             });
 
             closeButton.onClick.AddListener(() => Hide());
+            copyNameButton.onClick.AddListener(() => OnNameCopied?.Invoke(headerTiler.text));
 
             RefreshControl();
         }

@@ -32,6 +32,7 @@ namespace DCL.Social.Chat
         private IChannelsFeatureFlagService channelsFeatureFlagService;
         private DataStore dataStore;
         private IBrowserBridge browserBridge;
+        private IClipboard clipboard;
 
         [SetUp]
         public void SetUp()
@@ -54,6 +55,7 @@ namespace DCL.Social.Chat
             channelsFeatureFlagService.GetAutoJoinChannelsList().Returns(null as AutomaticJoinChannelList);
             dataStore = new DataStore();
             browserBridge = Substitute.For<IBrowserBridge>();
+            clipboard = Substitute.For<IClipboard>();
 
             controller = new WorldChatWindowController(userProfileBridge,
                 friendsController,
@@ -64,7 +66,8 @@ namespace DCL.Social.Chat
                 channelsFeatureFlagService,
                 browserBridge,
                 CommonScriptableObjects.rendererState,
-                new DataStore_Mentions());
+                new DataStore_Mentions(),
+                clipboard);
 
             view = Substitute.For<IWorldChatWindowView>();
         }
@@ -645,6 +648,16 @@ namespace DCL.Social.Chat
                 new[] { new ChatMessage(ChatMessage.Type.PRIVATE, FRIEND_ID, MESSAGE_BODY) });
 
             view.DidNotReceiveWithAnyArgs().SetPrivateChat(default(PrivateChatModel));
+        }
+
+        [Test]
+        public void CopyChannelNameToClipboard()
+        {
+            controller.Initialize(view);
+
+            view.OnCopyChannelNameRequested += Raise.Event<Action<string>>("#channel");
+
+            clipboard.Received(1).WriteText("#channel");
         }
 
         private void GivenProfile(string userId)

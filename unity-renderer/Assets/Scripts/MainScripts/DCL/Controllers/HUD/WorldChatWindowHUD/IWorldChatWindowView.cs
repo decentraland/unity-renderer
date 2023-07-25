@@ -16,6 +16,7 @@ namespace DCL.Social.Chat
         event Action OnCreateChannel;
         event Action OnSignUp;
         event Action OnRequireWalletReadme;
+        event Action<string> OnCopyChannelNameRequested;
 
         RectTransform Transform { get; }
         bool IsActive { get; }

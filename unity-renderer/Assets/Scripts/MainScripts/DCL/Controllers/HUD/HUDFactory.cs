@@ -107,7 +107,8 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
                     new WebInterfaceBrowserBridge(),
                     CommonScriptableObjects.rendererState,
-                    DataStore.i.mentions);
+                    DataStore.i.mentions,
+                    Clipboard.Create());
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 return new PrivateChatWindowController(
                     DataStore.i,
