@@ -42,13 +42,13 @@ export const getConversations = (
  * Get all conversations `ConversationType.DIRECT` with friends the user has befriended
  * @return `conversation` & `unreadMessages` boolean that indicates whether the conversation has unread messages.
  */
-export const getAllFriendsConversationsWithMessages = (
+export const getAllFriendsConversationsWithMessages = async (
   store: RootFriendsState
-): Array<{ conversation: Conversation; unreadMessages: boolean }> => {
+): Promise<Array<{ conversation: Conversation; unreadMessages: boolean} >> => {
   const client = getSocialClient(store)
   if (!client) return []
 
-  const conversations = client.getAllCurrentFriendsConversations()
+  const conversations = await client.getAllCurrentFriendsConversations()
 
   return conversations
     .filter((conv) => conv.conversation.hasMessages)

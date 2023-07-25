@@ -20,10 +20,14 @@ namespace DCL.Backpack
         private const string AVATAR_COLOR_PICK = "avatar_color_pick";
         private const string FORCE_SHOW_WEARABLE = "show_wearable";
         private const string FORCE_HIDE_WEARABLE = "hide_wearable";
+        private const string VRM_EXPORT_STARTED = "vrm_export_started";
+        private const string VRM_EXPORT_SUCCEEDED = "vrm_export_finished";
 
         private readonly IAnalytics analytics;
         private readonly INewUserExperienceAnalytics newUserExperienceAnalytics;
         private const int NORMAL_OUTFIT_SLOTS_COUNT = 3;
+        private static readonly Dictionary<string, string> EMPTY = new ();
+
 
         public BackpackAnalyticsService(
             IAnalytics analytics,
@@ -96,7 +100,7 @@ namespace DCL.Backpack
         }
 
         public void SendAvatarColorPick() =>
-            analytics.SendAnalytic(AVATAR_COLOR_PICK, new Dictionary<string, string>());
+            analytics.SendAnalytic(AVATAR_COLOR_PICK, EMPTY);
 
         public void SendForceHideWearable(string category)
         {
@@ -116,6 +120,16 @@ namespace DCL.Backpack
             };
 
             analytics.SendAnalytic(FORCE_SHOW_WEARABLE, data);
+        }
+
+        public void SendVRMExportStarted()
+        {
+            analytics.SendAnalytic(VRM_EXPORT_STARTED, EMPTY);
+        }
+
+        public void SendVRMExportSucceeded()
+        {
+            analytics.SendAnalytic(VRM_EXPORT_SUCCEEDED, EMPTY);
         }
 
         private string CalculateSorting(NftOrderByOperation order, bool asc)

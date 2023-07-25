@@ -5,4 +5,10 @@ namespace ExploreV2Analytics
         FromShortcut,
         FromClick,
     }
+
+    public enum ActionSource
+    {
+        FromExplore,
+        FromSearch
+    }
 }

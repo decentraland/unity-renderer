@@ -247,6 +247,9 @@ public class WearableItem
         if (replaces != null)
             hides.UnionWith(replaces);
 
+        // Safeguard so no wearable can hide itself
+        hides.Remove(data.category);
+
         return hides.ToArray();
     }
 
@@ -403,6 +406,24 @@ public class WearableItem
 
     public override string ToString() =>
         id;
+
+    public string GetMarketplaceLink()
+    {
+        if (!IsCollectible())
+            return "";
+
+        const string MARKETPLACE = "https://market.decentraland.org/contracts/{0}/items/{1}";
+        var split = id.Split(":");
+
+        if (split.Length < 2)
+            return "";
+
+        // If this is not correct, we could retrieve the marketplace link by checking TheGraph, but that's super slow
+        if (!split[^2].StartsWith("0x") || !int.TryParse(split[^1], out int _))
+            return "";
+
+        return string.Format(MARKETPLACE, split[^2], split[^1]);
+    }
 }
 
 [Serializable]

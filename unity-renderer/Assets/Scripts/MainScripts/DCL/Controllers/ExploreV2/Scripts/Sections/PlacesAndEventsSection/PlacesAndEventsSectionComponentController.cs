@@ -24,6 +24,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
+    internal ISearchSubSectionComponentController searchSubSectionComponentController;
     private DataStore dataStore;
 
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
@@ -34,7 +35,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         DataStore dataStore,
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
-        IPlacesAPIService placesAPIService)
+        IPlacesAPIService placesAPIService,
+        IPlacesAnalytics placesAnalytics
+        )
     {
         this.view = view;
         this.dataStore = dataStore;
@@ -47,6 +50,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             eventsAPI,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         highlightsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
         highlightsSubSectionComponentController.OnGoToEventsSubSection += GoToEventsSubSection;
@@ -56,6 +60,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPIService,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
@@ -72,8 +77,20 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             placesAPIService,
             friendsController,
             exploreV2Analytics,
+            placesAnalytics,
             dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
+        searchSubSectionComponentController = new SearchSubSectionComponentController(
+            view.SearchSubSectionView,
+            view.SearchBar,
+            eventsAPI,
+            placesAPIService,
+            userProfileBridge,
+            exploreV2Analytics,
+            placesAnalytics,
+            dataStore);
+        searchSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         placesAndEventsVisible.OnChange += PlacesAndEventsVisibleChanged;
         PlacesAndEventsVisibleChanged(placesAndEventsVisible.Get(), false);
@@ -98,8 +115,14 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         favoritesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         favoritesSubSectionComponentController.Dispose();
 
+        searchSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+
         placesAndEventsVisible.OnChange -= PlacesAndEventsVisibleChanged;
     }
 
-    internal void PlacesAndEventsVisibleChanged(bool current, bool _) => view.SetActive(current);
+    internal void PlacesAndEventsVisibleChanged(bool current, bool _)
+    {
+        view.EnableSearchBar(dataStore.featureFlags.flags.Get().IsFeatureEnabled("search_in_places"));
+        view.SetActive(current);
+    }
 }
