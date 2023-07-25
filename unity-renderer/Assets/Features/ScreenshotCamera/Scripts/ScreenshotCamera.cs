@@ -98,11 +98,7 @@ namespace UI.InWorldCamera.Scripts
         {
             if (isGuest) return;
 
-            Debug.Log(isInstantiated);
-            Debug.Log(screenshotCamera.gameObject.activeSelf);
-
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
-            Debug.Log(activateScreenshotCamera);
 
             Utils.UnlockCursor();
 

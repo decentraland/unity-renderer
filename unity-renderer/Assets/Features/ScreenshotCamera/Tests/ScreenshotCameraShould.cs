@@ -10,27 +10,6 @@ using Object = UnityEngine.Object;
 
 namespace DCLServices.QuestsService.Tests
 {
-    public class CameraControllerMock : CameraController
-    {
-        public override void SetCameraEnabledState(bool _) { }
-
-        public override Camera GetCamera() =>
-            new GameObject().AddComponent<Camera>();
-    }
-
-    public class ScreenshotCaptureMock : ScreenshotCapture
-    {
-        public ScreenshotCaptureMock() : base(null, null, null, null) { }
-
-        public override byte[] CaptureScreenshot() =>
-            Array.Empty<byte>();
-    }
-
-    public class ScreenshotHUDViewMock : ScreenshotHUDView
-    {
-        public override void SwitchVisibility(bool isVisible) { }
-    }
-
     [Category("EditModeCI")]
     public class ScreenshotCameraShould
     {
@@ -94,6 +73,26 @@ namespace DCLServices.QuestsService.Tests
         }
 
         [Test]
+        public void ToggleScreenshotCamera_WhenGuest_DoesNothing_ExternalVarsNotToggled()
+        {
+            // Arrange
+            screenshotCamera.isGuestLazyValue = true;
+            screenshotCamera.screenshotCamera.gameObject.SetActive(false);
+
+            // Act
+            screenshotCamera.ToggleScreenshotCamera(new DCLAction_Trigger());
+
+            // Assert
+            Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(allUIHidden.Get());
+            Assert.IsFalse(cameraModeInputLocked.Get());
+            Assert.IsFalse(cameraBlocked.Get());
+            Assert.IsFalse(featureKeyTriggersBlocked.Get());
+            Assert.IsFalse(userMovementKeysBlocked.Get());
+            cameraLeftMouseButtonCursorLock.DidNotReceive().Set(true);
+        }
+
+        [Test]
         public void ToggleScreenshotCamera_WhenNotGuest_ActivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
@@ -114,16 +113,22 @@ namespace DCLServices.QuestsService.Tests
         }
 
         [Test]
-        public void ToggleScreenshotCamera_WhenGuest_DoesNothing()
+        public void ToggleScreenshotCamera_WhenNotGuest_DeactivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
-            screenshotCamera.isGuestLazyValue = true;
+            screenshotCamera.isGuestLazyValue = false;
+            screenshotCamera.screenshotCamera.gameObject.SetActive(true);
 
             // Act
             screenshotCamera.ToggleScreenshotCamera(new DCLAction_Trigger());
 
             // Assert
-            Assert.That(screenshotCamera.isScreenshotCameraActive.Get(), Is.False);
+            Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(allUIHidden.Get());
+            Assert.IsFalse(cameraBlocked.Get());
+            Assert.IsFalse(featureKeyTriggersBlocked.Get());
+            Assert.IsFalse(userMovementKeysBlocked.Get());
+            cameraLeftMouseButtonCursorLock.Received().Set(false);
         }
 
         // [Test]
@@ -158,5 +163,26 @@ namespace DCLServices.QuestsService.Tests
         //     // If the UploadScreenshot method was not called, then we know CaptureScreenshot didn't do anything.
         //     screenshotCamera.cameraReelNetworkService.DidNotReceive().UploadScreenshot(Arg.Any<byte[]>(), Arg.Any<ScreenshotMetadata>());
         // }
+    }
+
+    public class CameraControllerMock : CameraController
+    {
+        public override void SetCameraEnabledState(bool _) { }
+
+        public override Camera GetCamera() =>
+            new GameObject().AddComponent<Camera>();
+    }
+
+    public class ScreenshotCaptureMock : ScreenshotCapture
+    {
+        public ScreenshotCaptureMock() : base(null, null, null, null) { }
+
+        public override byte[] CaptureScreenshot() =>
+            Array.Empty<byte>();
+    }
+
+    public class ScreenshotHUDViewMock : ScreenshotHUDView
+    {
+        public override void SwitchVisibility(bool isVisible) { }
     }
 }
