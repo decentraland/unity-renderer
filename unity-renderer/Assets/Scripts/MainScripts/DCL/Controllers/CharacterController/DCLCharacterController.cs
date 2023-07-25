@@ -3,6 +3,7 @@ using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
 using Cinemachine;
+using MainScripts.DCL.Controllers.CharacterController;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -18,8 +19,6 @@ public class DCLCharacterController : MonoBehaviour
     public float jumpForce = 12f;
     public float movementSpeed = 8f;
     public float runningSpeedMultiplier = 2f;
-
-    public DCLCharacterPosition characterPosition;
 
     [Header("Collisions")]
     public LayerMask groundLayers;
@@ -122,7 +121,7 @@ public class DCLCharacterController : MonoBehaviour
         dataStorePlayer.playerGridPosition.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
 
-        characterPosition = new DCLCharacterPosition();
+        CharacterGlobals.characterPosition = new DCLCharacterPosition();
         characterController = GetComponent<CharacterController>();
         freeMovementController = GetComponent<FreeMovementController>();
         collider = GetComponent<Collider>();
@@ -179,7 +178,7 @@ public class DCLCharacterController : MonoBehaviour
     void OnWorldReposition(Vector3 current, Vector3 previous)
     {
         Vector3 oldPos = this.transform.position;
-        this.transform.position = characterPosition.unityPosition; //CommonScriptableObjects.playerUnityPosition;
+        this.transform.position = CharacterGlobals.characterPosition.unityPosition; //CommonScriptableObjects.playerUnityPosition;
 
         if (CinemachineCore.Instance.BrainCount > 0)
         {
@@ -195,26 +194,26 @@ public class DCLCharacterController : MonoBehaviour
             newPosition.y = minimumYPosition + 2f;
         }
 
-        lastPosition = characterPosition.worldPosition;
-        characterPosition.worldPosition = newPosition;
-        transform.position = characterPosition.unityPosition;
+        lastPosition = CharacterGlobals.characterPosition.worldPosition;
+        CharacterGlobals.characterPosition.worldPosition = newPosition;
+        transform.position = CharacterGlobals.characterPosition.unityPosition;
         Environment.i.platform.physicsSyncController?.MarkDirty();
 
-        CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
-        dataStorePlayer.playerWorldPosition.Set(characterPosition.worldPosition);
-        Vector2Int playerPosition = Utils.WorldToGridPosition(characterPosition.worldPosition);
+        CommonScriptableObjects.playerUnityPosition.Set(CharacterGlobals.characterPosition.unityPosition);
+        dataStorePlayer.playerWorldPosition.Set(CharacterGlobals.characterPosition.worldPosition);
+        Vector2Int playerPosition = Utils.WorldToGridPosition(CharacterGlobals.characterPosition.worldPosition);
         CommonScriptableObjects.playerCoords.Set(playerPosition);
         dataStorePlayer.playerGridPosition.Set(playerPosition);
-        dataStorePlayer.playerUnityPosition.Set(characterPosition.unityPosition);
+        dataStorePlayer.playerUnityPosition.Set(CharacterGlobals.characterPosition.unityPosition);
 
         if (Moved(lastPosition))
         {
             if (Moved(lastPosition, useThreshold: true))
                 ReportMovement();
 
-            OnCharacterMoved?.Invoke(characterPosition);
+            OnCharacterMoved?.Invoke(CharacterGlobals.characterPosition);
 
-            float distance = Vector3.Distance(characterPosition.worldPosition, lastPosition) - movingPlatformSpeed;
+            float distance = Vector3.Distance(CharacterGlobals.characterPosition.worldPosition, lastPosition) - movingPlatformSpeed;
 
             if (distance > 0f && isGrounded)
                 OnMoved?.Invoke(distance);
@@ -237,7 +236,7 @@ public class DCLCharacterController : MonoBehaviour
 
         if (OnPositionSet != null)
         {
-            OnPositionSet.Invoke(characterPosition);
+            OnPositionSet.Invoke(CharacterGlobals.characterPosition);
         }
 
         if (!initialPositionAlreadySet)
@@ -254,9 +253,9 @@ public class DCLCharacterController : MonoBehaviour
     bool Moved(Vector3 previousPosition, bool useThreshold = false)
     {
         if (useThreshold)
-            return Vector3.Distance(characterPosition.worldPosition, previousPosition) > 0.001f;
+            return Vector3.Distance(CharacterGlobals.characterPosition.worldPosition, previousPosition) > 0.001f;
         else
-            return characterPosition.worldPosition != previousPosition;
+            return CharacterGlobals.characterPosition.worldPosition != previousPosition;
     }
 
     internal void LateUpdate()
@@ -266,7 +265,7 @@ public class DCLCharacterController : MonoBehaviour
 
         if (transform.position.y < minimumYPosition)
         {
-            SetPosition(characterPosition.worldPosition);
+            SetPosition(CharacterGlobals.characterPosition.worldPosition);
             return;
         }
 
@@ -444,7 +443,7 @@ public class DCLCharacterController : MonoBehaviour
             {
                 bool groundHasMoved = (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation);
 
-                if (!characterPosition.RepositionedWorldLastFrame()
+                if (!CharacterGlobals.characterPosition.RepositionedWorldLastFrame()
                     && groundHasMoved)
                 {
                     isOnMovingPlatform = true;
@@ -547,7 +546,7 @@ public class DCLCharacterController : MonoBehaviour
 
     void ReportMovement()
     {
-        var reportPosition = characterPosition.worldPosition;
+        var reportPosition = CharacterGlobals.characterPosition.worldPosition;
         var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
         var cameraRotation = Quaternion.LookRotation(cameraForward.Get());
 

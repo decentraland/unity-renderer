@@ -5,7 +5,7 @@ using UnityEngine;
 /// An analogical action that raises events when the value is changed. The most common use-case is implementing axis
 /// </summary>
 [CreateAssetMenu(fileName = "InputAction_Measurable", menuName = "InputActions/Measurable")]
-public class InputAction_Measurable : ScriptableObject
+public class InputAction_Measurable : ScriptableObject, IInputActionMeasurable
 {
     public delegate void ValueChanged(DCLAction_Measurable action, float value);
     public event ValueChanged OnValueChanged;
@@ -50,4 +50,12 @@ public class InputAction_Measurable : ScriptableObject
 
     #endregion
 
+
+}
+
+public interface IInputActionMeasurable
+{
+    event InputAction_Measurable.ValueChanged OnValueChanged;
+
+    float GetValue();
 }

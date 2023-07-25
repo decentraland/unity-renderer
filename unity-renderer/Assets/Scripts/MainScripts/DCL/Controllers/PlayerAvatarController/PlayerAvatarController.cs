@@ -7,6 +7,7 @@ using DCL.Interface;
 using DCL.NotificationModel;
 using DCLServices.WearablesCatalogService;
 using GPUSkinning;
+using MainScripts.DCL.Controllers.CharacterController;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
-    private bool repositioningWorld => DCLCharacterController.i.characterPosition.RepositionedWorldLastFrame();
+    private bool repositioningWorld => CharacterGlobals.characterPosition.RepositionedWorldLastFrame();
     private bool enableCameraCheck;
     private Camera mainCamera;
     private IFatalErrorReporter fatalErrorReporter; // TODO?

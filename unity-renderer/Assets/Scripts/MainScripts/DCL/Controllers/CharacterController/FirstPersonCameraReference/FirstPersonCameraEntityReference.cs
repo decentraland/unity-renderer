@@ -11,6 +11,10 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
 
     private void Awake()
     {
+        // todo: this reference was inside Player prefab
+        cameraController = FindObjectOfType<CameraController>();
+        cameraPosition = cameraController.gameObject.transform.Find("FirstPerson_VC");
+
         // Assign the camera position to the game object
         if (cameraPosition != null)
         {
@@ -18,7 +22,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         }
 
         initialParent = transform.parent;
-        
+
         firstPersonParent = cameraController.GetCamera().transform;
 
         // Listen to changes on the camera mode

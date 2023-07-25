@@ -13,7 +13,7 @@ namespace DCL
         public GameObject groundVisual { get; internal set; }
         public InputController inputController { get; internal set; }
         public GameObject cursorCanvas { get; internal set; }
-        public PlayerAvatarController playerAvatarController { get; internal set; }
+        public PlayerAvatarController playerAvatarController { get; set; }
         public CameraController cameraController { get; internal set; }
         public UnityEngine.Camera mainCamera { get; internal set; }
         public GameObject bridgeGameObject { get; internal set; }
@@ -22,32 +22,5 @@ namespace DCL
         public CinemachineFreeLook thirdPersonCamera { get; internal set; }
         public CinemachineVirtualCamera firstPersonCamera { get; internal set; }
         public void Dispose() {  }
-
-        public void Initialize(MouseCatcher mouseCatcher,
-            GameObject groundVisual,
-            InputController inputController,
-            GameObject cursorCanvas,
-            PlayerAvatarController playerAvatarController,
-            CameraController cameraController,
-            UnityEngine.Camera mainCamera,
-            GameObject bridgeGameObject,
-            Light environmentLight,
-            Volume postProcessVolume,
-            CinemachineFreeLook thirdPersonCamera,
-            CinemachineVirtualCamera firstPersonCamera)
-        {
-            this.mouseCatcher = mouseCatcher;
-            this.groundVisual = groundVisual;
-            this.inputController = inputController;
-            this.cursorCanvas = cursorCanvas;
-            this.playerAvatarController = playerAvatarController;
-            this.cameraController = cameraController;
-            this.mainCamera = mainCamera;
-            this.bridgeGameObject = bridgeGameObject;
-            this.environmentLight = environmentLight;
-            this.postProcessVolume = postProcessVolume;
-            this.thirdPersonCamera = thirdPersonCamera;
-            this.firstPersonCamera = firstPersonCamera;
-        }
     }
 }

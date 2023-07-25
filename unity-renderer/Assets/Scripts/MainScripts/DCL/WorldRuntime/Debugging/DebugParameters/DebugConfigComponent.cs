@@ -1,6 +1,9 @@
 using DCL.Components;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
+using System.Linq;
 using Debug = UnityEngine.Debug;
 using Utils = DCL.Helpers.Utils;
 
@@ -48,6 +51,13 @@ namespace DCL
             SEPOLIA,
         }
 
+        [Serializable]
+        public class FeatureFlagToggle
+        {
+            public bool enabled = true;
+            public string name;
+        }
+
         [Header("General Settings")] public bool OpenBrowserOnStart;
         public bool webSocketSSL = false;
 
@@ -70,6 +80,8 @@ namespace DCL
 
         [Tooltip("Set this value to load the catalog from another wallet for debug purposes")]
         public string overrideUserID = "";
+
+        public FeatureFlagToggle[] flags;
 
         [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
 
@@ -159,7 +171,7 @@ namespace DCL
 
         private void OpenWebBrowser()
         {
-#if (UNITY_EDITOR)
+#if UNITY_EDITOR
             string baseUrl = "";
             string debugString = "";
 
@@ -260,8 +272,20 @@ namespace DCL
                     "[REMINDER] To be able to connect with SSL you should start Chrome with the --ignore-certificate-errors argument specified (or enabling the following option: chrome://flags/#allow-insecure-localhost). In Firefox set the configuration option `network.websocket.allowInsecureFromHTTPS` to true, then use the ws:// rather than the wss:// address.");
             }
 
+            string flags = "";
+
+            foreach (var flag in this.flags)
+            {
+                if (flag.enabled)
+                {
+                    flags += "&ENABLE_" + flag.name;
+                } else {
+                    flags += "&DISABLE_" + flag.name;
+                }
+            }
+
             Application.OpenURL(
-                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}");
+                $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws={DataStore.i.wsCommunication.url}&{flags}");
 #endif
         }
 

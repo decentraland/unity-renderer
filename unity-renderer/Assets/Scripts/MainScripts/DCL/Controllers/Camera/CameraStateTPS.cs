@@ -119,13 +119,17 @@ namespace DCL.Camera
         {
             defaultVirtualCameraAsFreeLook.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
 
-            bool didHit = DCLCharacterController.i.CastGroundCheckingRays(20, 0.1f, out RaycastHit hitInfo);
+            // TODO: remove this singleton usage, its horrible
+            if (DCLCharacterController.i != null)
+            {
+                bool didHit = DCLCharacterController.i.CastGroundCheckingRays(20, 0.1f, out RaycastHit hitInfo);
 
-            cameraDampOnSprint.Update();
-            cameraDampOnGroundType.Update(didHit, hitInfo);
-            cameraFreefall.Update(didHit, hitInfo);
+                cameraDampOnSprint.Update();
+                cameraDampOnGroundType.Update(didHit, hitInfo);
+                cameraFreefall.Update(didHit, hitInfo);
 
-            UpdateAvatarRotationDamping();
+                UpdateAvatarRotationDamping();
+            }
         }
 
         /// <summary>

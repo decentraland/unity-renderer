@@ -1,0 +1,30 @@
+{
+    "name": "CharacterControllerV2",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:2995626b54c60644988f134a69a77450",
+        "GUID:fc6576239b03d8445ba1a26d4b7b7b5d",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:c82a7bd4346dd3d4c9334dbf01ab9a87",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:f7e9188a17be15d47a0263f53dc7142c",
+        "GUID:fb529e4714eec4e4da9a3ff3e4da8eee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
