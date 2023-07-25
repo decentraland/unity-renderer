@@ -16,7 +16,7 @@ namespace Features.ScreenshotCamera.Scripts
             canvas = GetComponent<Canvas>();
         }
 
-        public void SwitchVisibility(bool isVisible)
+        public virtual void SwitchVisibility(bool isVisible)
         {
             canvas.enabled = isVisible;
         }

@@ -5,39 +5,49 @@ using DCLServices.CameraReelService;
 using Features.ScreenshotCamera.Scripts;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.InWorldCamera.Scripts
 {
     public class ScreenshotCamera : MonoBehaviour
     {
         [Header("EXTERNAL DEPENDENCIES")]
-        [SerializeField] private DCLCharacterController characterController;
-        [SerializeField] private CameraController cameraController;
+        [SerializeField] internal DCLCharacterController characterController;
+        [SerializeField] internal CameraController cameraController;
 
         [Header("MAIN COMPONENTS")]
-        [SerializeField] private Camera cameraPrefab;
-        [SerializeField] private ScreenshotHUDView screenshotHUDViewPrefab;
+        [SerializeField] internal Camera cameraPrefab;
+        [SerializeField] internal ScreenshotHUDView screenshotHUDViewPrefab;
 
         [Header("INPUT ACTIONS")]
-        [SerializeField] private InputAction_Trigger cameraInputAction;
-        [SerializeField] private InputAction_Trigger takeScreenshotAction;
+        [SerializeField] internal InputAction_Trigger cameraInputAction;
+        [SerializeField] internal InputAction_Trigger takeScreenshotAction;
+
+        internal ScreenshotCapture screenshotCaptureLazyValue;
+        internal bool? isGuestLazyValue;
+        internal BooleanVariable isScreenshotCameraActive;
 
         private bool isInstantiated;
-        private bool isInScreenshotMode;
 
-        private Camera screenshotCamera;
+        internal Camera screenshotCamera;
         private ScreenshotHUDView screenshotHUDView;
 
         private Transform characterCameraTransform;
-        private IAvatarsLODController avatarsLODControllerLazyValue;
-
-        private ScreenshotCapture screenshotCaptureLazyValue;
+        internal IAvatarsLODController avatarsLODControllerLazyValue;
         private ICameraReelNetworkService cameraReelNetworkServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
         private bool prevMouseButtonCursorLockMode;
-        private bool? isGuestLazyValue;
+
+        private BooleanVariable allUIHidden;
+        private BooleanVariable cameraModeInputLocked;
+        private BaseVariable<bool> cameraLeftMouseButtonCursorLock;
+        private BooleanVariable cameraBlocked;
+        private BooleanVariable featureKeyTriggersBlocked;
+        private BooleanVariable userMovementKeysBlocked;
+
+        private bool externalDependenciesSet;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
         private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
@@ -72,48 +82,56 @@ namespace UI.InWorldCamera.Scripts
                 enabled = true;
         }
 
-        private void OnEnable()
+        internal void OnEnable()
         {
             cameraInputAction.OnTriggered += ToggleScreenshotCamera;
             takeScreenshotAction.OnTriggered += CaptureScreenshot;
         }
 
-        private void OnDisable()
+        internal void OnDisable()
         {
             cameraInputAction.OnTriggered -= ToggleScreenshotCamera;
             takeScreenshotAction.OnTriggered -= CaptureScreenshot;
         }
 
-        private void ToggleScreenshotCamera(DCLAction_Trigger _)
+        internal void ToggleScreenshotCamera(DCLAction_Trigger _)
         {
             if (isGuest) return;
 
+            Debug.Log(isInstantiated);
+            Debug.Log(screenshotCamera.gameObject.activeSelf);
+
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
+            Debug.Log(activateScreenshotCamera);
 
             Utils.UnlockCursor();
 
-            if (activateScreenshotCamera)
-            {
-                prevUiHiddenState = CommonScriptableObjects.allUIHidden.Get();
-                CommonScriptableObjects.allUIHidden.Set(true);
+            if (!externalDependenciesSet)
+                SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
 
-                prevMouseLockState = CommonScriptableObjects.cameraModeInputLocked.Get();
-                CommonScriptableObjects.cameraModeInputLocked.Set(false);
+            ToggleExternalSystems(activateScreenshotCamera);
+            ToggleCameraSystems(activateScreenshotCamera);
 
-                prevMouseButtonCursorLockMode = DataStore.i.camera.leftMouseButtonCursorLock.Get();
-                DataStore.i.camera.leftMouseButtonCursorLock.Set(true);
-            }
-            else
-            {
-                CommonScriptableObjects.allUIHidden.Set(prevUiHiddenState);
-                CommonScriptableObjects.cameraModeInputLocked.Set(prevMouseLockState);
-                DataStore.i.camera.leftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
-            }
+            isScreenshotCameraActive.Set(activateScreenshotCamera);
+        }
 
-            CommonScriptableObjects.cameraBlocked.Set(activateScreenshotCamera);
-            CommonScriptableObjects.featureKeyTriggersBlocked.Set(activateScreenshotCamera);
-            CommonScriptableObjects.userMovementKeysBlocked.Set(activateScreenshotCamera);
+        internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
+            BooleanVariable cameraBlocked, BooleanVariable featureKeyTriggersBlocked, BooleanVariable userMovementKeysBlocked, BooleanVariable isScreenshotCameraActive)
+        {
+            this.allUIHidden = allUIHidden;
+            this.cameraModeInputLocked = cameraModeInputLocked;
+            this.cameraLeftMouseButtonCursorLock = cameraLeftMouseButtonCursorLock;
+            this.cameraBlocked = cameraBlocked;
+            this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
+            this.userMovementKeysBlocked = userMovementKeysBlocked;
 
+            this.isScreenshotCameraActive = isScreenshotCameraActive;
+
+            externalDependenciesSet = true;
+        }
+
+        private void ToggleCameraSystems(bool activateScreenshotCamera)
+        {
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
 
@@ -123,14 +141,36 @@ namespace UI.InWorldCamera.Scripts
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             screenshotHUDView.SwitchVisibility(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
+        }
 
-            CommonScriptableObjects.isScreenshotCameraActive.Set(activateScreenshotCamera);
-            isInScreenshotMode = activateScreenshotCamera;
+        private void ToggleExternalSystems(bool activateScreenshotCamera)
+        {
+            if (activateScreenshotCamera)
+            {
+                prevUiHiddenState = allUIHidden.Get();
+                allUIHidden.Set(true);
+
+                prevMouseLockState = cameraModeInputLocked.Get();
+                cameraModeInputLocked.Set(false);
+
+                prevMouseButtonCursorLockMode = cameraLeftMouseButtonCursorLock.Get();
+                cameraLeftMouseButtonCursorLock.Set(true);
+            }
+            else
+            {
+                allUIHidden.Set(prevUiHiddenState);
+                cameraModeInputLocked.Set(prevMouseLockState);
+                cameraLeftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
+            }
+
+            cameraBlocked.Set(activateScreenshotCamera);
+            featureKeyTriggersBlocked.Set(activateScreenshotCamera);
+            userMovementKeysBlocked.Set(activateScreenshotCamera);
         }
 
         private async void CaptureScreenshot(DCLAction_Trigger _)
         {
-            if (!isInScreenshotMode || isGuest) return;
+            if (!isScreenshotCameraActive.Get() || isGuest) return;
 
             CameraReelResponse response = await cameraReelNetworkService.UploadScreenshot
             (
@@ -154,7 +194,7 @@ namespace UI.InWorldCamera.Scripts
                 screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
-        private void InstantiateCameraObjects()
+        internal void InstantiateCameraObjects()
         {
             characterCameraTransform = cameraController.GetCamera().transform;
 
@@ -163,7 +203,8 @@ namespace UI.InWorldCamera.Scripts
 
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
-            screenshotCaptureLazyValue = new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, screenshotHUDView.RefImage);
+            Image refBoundariesImage = screenshotHUDView.RefImage;
+            screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
 
             isInstantiated = true;
         }
