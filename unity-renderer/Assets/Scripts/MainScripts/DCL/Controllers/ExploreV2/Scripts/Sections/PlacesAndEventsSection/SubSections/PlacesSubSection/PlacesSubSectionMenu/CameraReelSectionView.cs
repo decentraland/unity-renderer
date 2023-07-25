@@ -35,6 +35,7 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] internal GameObject profileCard;
     [SerializeField] internal Transform profileGridContrainer;
     [SerializeField] internal GameObject wearableCard;
+    [SerializeField] internal Button downloadButton;
 
     private Canvas gridCanvas;
     private int offset;
@@ -48,11 +49,19 @@ public class CameraReelSectionView : MonoBehaviour
     {
         showMore.onClick.AddListener(LoadImages);
         closeScreenshotView.onClick.AddListener(() => screenShotView.SetActive(false));
+        downloadButton.onClick.AddListener(Download);
+    }
+
+    private void Download()
+    {
+        Application.OpenURL(currentScreenshot.url);
     }
 
     private void OnDisable()
     {
-        showMore.onClick.RemoveListener(LoadImages);
+        showMore.onClick.RemoveAllListeners();
+        downloadButton.onClick.RemoveAllListeners();
+        closeScreenshotView.onClick.RemoveAllListeners();
     }
 
     private async void LoadImages()
@@ -88,10 +97,11 @@ public class CameraReelSectionView : MonoBehaviour
         }
     }
 
+    private CameraReelResponse currentScreenshot;
     private IEnumerator ShowScreenshotWithMetadata(CameraReelResponse reel)
     {
+        currentScreenshot = reel;
         screenShotView.SetActive(true);
-
         // Show Screenshot
         {
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
