@@ -27,6 +27,7 @@ namespace DCL.Social.Chat
         private IProfanityFilter profanityFilter;
         private IUserProfileBridge userProfileBridge;
         private IChatMentionSuggestionProvider mentionSuggestionProvider;
+        private IClipboard clipboard;
 
         [SetUp]
         public void SetUp()
@@ -50,6 +51,8 @@ namespace DCL.Social.Chat
             profanityFilter = Substitute.For<IProfanityFilter>();
             mentionSuggestionProvider = Substitute.For<IChatMentionSuggestionProvider>();
 
+            clipboard = Substitute.For<IClipboard>();
+
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
@@ -57,7 +60,7 @@ namespace DCL.Social.Chat
                 socialAnalytics,
                 profanityFilter,
                 mentionSuggestionProvider,
-                Substitute.For<IClipboard>());
+                clipboard);
 
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
@@ -193,6 +196,14 @@ namespace DCL.Social.Chat
             chatView.OnMessageUpdated += Raise.Event<Action<string, int>>(text, 1);
 
             mentionSuggestionProvider.Received(1).GetProfilesFromChatChannelsStartingWith(name, CHANNEL_ID, 5, Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void CopyChannelNameToClipboard()
+        {
+            view.OnCopyNameRequested += Raise.Event<Action<string>>("#my-channel");
+
+            clipboard.Received(1).WriteText("#my-channel");
         }
     }
 }

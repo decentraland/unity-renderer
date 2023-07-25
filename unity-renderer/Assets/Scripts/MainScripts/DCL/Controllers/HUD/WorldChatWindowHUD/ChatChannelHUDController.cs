@@ -75,6 +75,7 @@ namespace DCL.Social.Chat
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
+            view.OnCopyNameRequested += CopyNameToClipboard;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
@@ -95,6 +96,11 @@ namespace DCL.Social.Chat
 
             SetVisibility(isVisible);
             this.isVisible = isVisible;
+        }
+
+        private void CopyNameToClipboard(string channelName)
+        {
+            clipboard.WriteText(channelName);
         }
 
         public void Setup(string channelId)

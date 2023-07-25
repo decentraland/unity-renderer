@@ -1,5 +1,4 @@
-﻿using DCL.Social.Chat;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace DCL.Social.Chat
@@ -7,19 +6,18 @@ namespace DCL.Social.Chat
     public interface IChatChannelWindowView
     {
         event Action OnClose;
-        event Action<bool> OnFocused;
         event Action OnBack;
         event Action OnRequireMoreMessages;
         event Action OnLeaveChannel;
         event Action OnShowMembersList;
         event Action OnHideMembersList;
         event Action<bool> OnMuteChanged;
+        event Action<string> OnCopyNameRequested;
 
         bool IsActive { get; }
         IChatHUDComponentView ChatHUD { get; }
         IChannelMembersComponentView ChannelMembersHUD { get; }
         RectTransform Transform { get; }
-        bool IsFocused { get; }
 
         void Dispose();
         void Hide();
