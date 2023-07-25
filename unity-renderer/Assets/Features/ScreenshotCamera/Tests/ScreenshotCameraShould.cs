@@ -130,39 +130,6 @@ namespace DCLServices.QuestsService.Tests
             Assert.IsFalse(userMovementKeysBlocked.Get());
             cameraLeftMouseButtonCursorLock.Received().Set(false);
         }
-
-        // [Test]
-        // public void CaptureScreenshot_WhenInScreenshotModeAndNotGuest_UploadsScreenshot()
-        // {
-        //     // Arrange
-        //     screenshotCamera.isGuestLazyValue = false;
-        //     screenshotCamera.isInScreenshotMode = true;
-        //     screenshotCamera.cameraReelNetworkService = Substitute.For<ICameraReelNetworkService>();
-        //     screenshotCamera.screenshotCapture = Substitute.For<ScreenshotCapture>();
-        //
-        //     // Act
-        //     screenshotCamera.CaptureScreenshot(Arg.Any<DCLAction_Trigger>());
-        //
-        //     // Assert
-        //     // Now we should expect that UploadScreenshot was called.
-        //     screenshotCamera.cameraReelNetworkService.Received().UploadScreenshot(Arg.Any<byte[]>(), Arg.Any<ScreenshotMetadata>());
-        // }
-
-        // [Test]
-        // public void CaptureScreenshot_WhenNotInScreenshotModeOrGuest_DoesNothing()
-        // {
-        //     // Arrange
-        //     screenshotCamera.isGuestLazyValue = true;
-        //     screenshotCamera.isInScreenshotMode = false;
-        //
-        //     // Act
-        //     screenshotCamera.CaptureScreenshot(Arg.Any<DCLAction_Trigger>());
-        //
-        //     // Assert
-        //     // We assume that cameraReelNetworkService has a method called UploadScreenshot that we can substitute.
-        //     // If the UploadScreenshot method was not called, then we know CaptureScreenshot didn't do anything.
-        //     screenshotCamera.cameraReelNetworkService.DidNotReceive().UploadScreenshot(Arg.Any<byte[]>(), Arg.Any<ScreenshotMetadata>());
-        // }
     }
 
     public class CameraControllerMock : CameraController
