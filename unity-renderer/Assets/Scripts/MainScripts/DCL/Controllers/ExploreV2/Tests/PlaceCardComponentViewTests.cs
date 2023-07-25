@@ -166,7 +166,8 @@ public class PlaceCardComponentViewTests
 
         // Assert
         Assert.AreEqual(testAuthor, placeCardModalComponent.model.placeAuthor, "The place card author does not match in the model.");
-        Assert.AreEqual(testAuthor, placeCardModalComponent.placeAuthorText.text);
+        Assert.AreEqual(testAuthor, placeCardModalComponent.placeAuthorOnIdleText.text);
+        Assert.AreEqual(testAuthor, placeCardModalComponent.placeAuthorOnFocusText.text);
     }
 
     [Test]

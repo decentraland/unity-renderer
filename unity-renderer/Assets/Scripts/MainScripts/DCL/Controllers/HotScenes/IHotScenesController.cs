@@ -75,7 +75,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int likes;
             public int dislikes;
             public string[] categories;
-            public int like_rate;
+            public float like_rate;
             public bool highlighted;
             public string highlighted_image;
             public bool featured;

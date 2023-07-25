@@ -65,6 +65,18 @@ public interface IPlaceCardComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the the number of visits in the last 30 days.
+    /// </summary>
+    /// <param name="userVisits">Number of visits.</param>
+    void SetUserVisits(int userVisits);
+
+    /// <summary>
+    /// Set the the user rating that considers only up and down votes with at least 100 VotingPower.
+    /// </summary>
+    /// <param name="userRating">User rating value.</param>
+    void SetUserRating(float userRating);
+
+    /// <summary>
     /// Set the place coords.
     /// </summary>
     /// <param name="newCoords">Place coords.</param>
@@ -97,7 +109,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeNameOnIdleText;
     [SerializeField] internal TMP_Text placeNameOnFocusText;
     [SerializeField] internal TMP_Text placeDescText;
-    [SerializeField] internal TMP_Text placeAuthorText;
+    [SerializeField] internal TMP_Text placeAuthorOnIdleText;
+    [SerializeField] internal TMP_Text placeAuthorOnFocusText;
+    [SerializeField] internal TMP_Text userVisitsText;
+    [SerializeField] internal TMP_Text userRatingText;
     [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal Button modalBackgroundButton;
@@ -188,6 +203,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceName(model.placeName);
         SetPlaceDescription(model.placeDescription);
         SetPlaceAuthor(model.placeAuthor);
+        SetUserVisits(model.userVisits);
+        SetUserRating(model.userRating);
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
         SetFavoriteButton(model.isFavorite, model.placeInfo.id);
@@ -377,10 +394,23 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     {
         model.placeAuthor = newText;
 
-        if (placeAuthorText == null)
-            return;
+        if (placeAuthorOnIdleText != null)
+            placeAuthorOnIdleText.text = newText;
 
-        placeAuthorText.text = newText;
+        if(placeAuthorOnFocusText != null)
+            placeAuthorOnFocusText.text = newText;
+    }
+
+    public void SetUserVisits(int userVisits)
+    {
+        if (userVisitsText != null)
+            userVisitsText.text = userVisits.ToString();
+    }
+
+    public void SetUserRating(float userRating)
+    {
+        if (userRatingText != null)
+            userRatingText.text = $"{(userRating * 100):0}%";
     }
 
     public void SetNumberOfUsers(int newNumberOfUsers)

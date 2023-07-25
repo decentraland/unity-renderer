@@ -20,7 +20,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     public event Action<bool> OnCloseExploreV2;
 
     internal IPlacesAndEventsSectionComponentView view;
-    internal IHighlightsSubSectionComponentController highlightsSubSectionComponentController;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
@@ -91,10 +90,6 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     public void Dispose()
     {
-        highlightsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
-        highlightsSubSectionComponentController.OnGoToEventsSubSection -= GoToEventsSubSection;
-        highlightsSubSectionComponentController.Dispose();
-
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         placesSubSectionComponentController.Dispose();
 
