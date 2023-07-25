@@ -27,6 +27,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     internal readonly IEventsAPIController eventsAPIApiController;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
@@ -43,6 +44,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         IEventsAPIController eventsAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
         DataStore dataStore)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
@@ -74,6 +76,7 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
 
         view.ConfigurePools();
     }
@@ -106,13 +109,10 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
         if (isFavorite)
-        {
-            exploreV2Analytics.AddFavorite(placeUUID);
-        }
+            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
         else
-        {
-            exploreV2Analytics.RemoveFavorite(placeUUID);
-        }
+            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+
         setFavoriteCts?.SafeCancelAndDispose();
         setFavoriteCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
         placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, setFavoriteCts.Token);
@@ -233,11 +233,18 @@ public class HighlightsSubSectionComponentController : IHighlightsSubSectionComp
         exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private void SubscribeToEvent(string eventId) =>
+    private void SubscribeToEvent(string eventId)
+    {
+        exploreV2Analytics.SendParticipateEvent(eventId);
         eventsAPIApiController.RegisterParticipation(eventId);
+    }
 
-    private void UnsubscribeToEvent(string eventId) =>
+    private void UnsubscribeToEvent(string eventId)
+    {
+        exploreV2Analytics.SendRemoveParticipateEvent(eventId);
         eventsAPIApiController.RemoveParticipation(eventId);
+    }
+
 
     internal void GoToEventsSubSection() =>
         OnGoToEventsSubSection?.Invoke();

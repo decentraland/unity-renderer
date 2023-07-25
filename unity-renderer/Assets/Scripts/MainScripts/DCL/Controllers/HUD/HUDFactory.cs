@@ -59,7 +59,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i, Environment.i.serviceLocator.Get<IPlacesAPIService>());
+                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i, Environment.i.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
             case HUDElementID.PROFILE_HUD:
                 ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
 

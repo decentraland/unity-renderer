@@ -13,11 +13,13 @@ using DCL.Guests.HUD.ConnectWallet;
 using DCL.Helpers;
 using DCL.MyAccount;
 using DCL.PortableExperiences.Confirmation;
+using DCL.PortableExperiencesToggle;
 using DCL.Providers;
 using DCL.Skybox;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
+using DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
@@ -68,6 +70,8 @@ namespace DCL
             pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
             pluginSystem.Register<LoadingScreenPlugin>(() => new LoadingScreenPlugin());
             pluginSystem.Register<SignupHUDPlugin>(() => new SignupHUDPlugin());
+            pluginSystem.Register<PortableExperiencesTogglePlugin>(() => new PortableExperiencesTogglePlugin());
+            pluginSystem.Register<HidePortableExperiencesUiPlugin>(() => new HidePortableExperiencesUiPlugin());
 
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");

@@ -19,6 +19,7 @@ namespace AvatarSystem
 
         GameObject bodyshapeContainer { get; }
         SkinnedMeshRenderer combinedRenderer { get; }
+        IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
         List<Renderer> facialFeaturesRenderers { get; }
         Status status { get; }
 

@@ -18,7 +18,13 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i, DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>());
+            controller = new MinimapHUDController(
+                Substitute.For<MinimapMetadataController>(),
+                Substitute.For<IHomeLocationController>(),
+                DCL.Environment.i,
+                DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                Substitute.For<IPlacesAnalytics>()
+                );
             controller.Initialize();
         }
 

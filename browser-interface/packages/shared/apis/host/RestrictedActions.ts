@@ -17,9 +17,11 @@ import type {
   MovePlayerToResponse,
   OpenExternalUrlRequest,
   OpenNftDialogRequest,
+  SuccessResponse,
   TeleportToRequest,
   TriggerEmoteRequest,
-  TriggerEmoteResponse
+  TriggerEmoteResponse,
+  TriggerSceneEmoteRequest
 } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { RestrictedActionsServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { changeRealm } from 'shared/dao'
@@ -85,6 +87,32 @@ export function triggerEmote(req: TriggerEmoteRequest, ctx: PortContext): Trigge
     .catch(defaultLogger.error)
 
   return {}
+}
+
+export async function triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: PortContext): Promise<SuccessResponse> {
+  // checks permissions
+  assertHasPermission(PermissionItem.PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE, ctx)
+
+  if (!isPositionValid(lastPlayerPosition, ctx)) {
+    ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
+    return { success: false }
+  }
+
+  const emoteService = getRendererModules(store.getState())?.emotes
+
+  if (!emoteService) {
+    return { success: false }
+  }
+
+  const request = {
+    path: req.src,
+    sceneNumber: ctx.sceneData.sceneNumber,
+    loop: req.loop ?? false
+  }
+
+  const response = await emoteService.triggerSceneExpression({ ...request })
+
+  return response
 }
 
 function isPositionValid(position: Vector3, ctx: PortContext) {
@@ -172,6 +200,10 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
 
       return {}
+    },
+    async triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: PortContext) {
+      const response = await triggerSceneEmote(req, ctx)
+      return response
     }
   }))
 }

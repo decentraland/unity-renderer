@@ -843,6 +843,16 @@ namespace DCL
                                 && !IsPortableExperienceConfirmedAndAccepted(pxId);
                 }
 
+                IWorldState worldState = Environment.i.world.state;
+                IParcelScene scene = worldState.GetScene(worldState.GetCurrentSceneNumber());
+
+                if (scene != null
+                    && scene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.Disable)
+                {
+                    confirmPx = false;
+                    disablePx = true;
+                }
+
                 if (confirmPx)
                     ConfirmPortableExperience(globalScene);
                 else if (disablePx)

@@ -198,11 +198,17 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (userProfileBridge.GetOwn().isGuest)
             ConnectWallet();
         else
+        {
             eventsAPIApiController.RegisterParticipation(eventId);
+            exploreV2Analytics.SendParticipateEvent(eventId);
+        }
     }
 
-    private void UnsubscribeToEvent(string eventId) =>
+    private void UnsubscribeToEvent(string eventId)
+    {
         eventsAPIApiController.RemoveParticipation(eventId);
+        exploreV2Analytics.SendRemoveParticipateEvent(eventId);
+    }
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
     {

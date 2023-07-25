@@ -51,6 +51,7 @@ public class ECS7TestScene : IParcelScene
         throw new NotImplementedException();
     }
     ISceneMetricsCounter IParcelScene.metricsCounter => throw new NotImplementedException();
+
     public HashSet<Vector2Int> GetParcels()
     {
         throw new NotImplementedException();
