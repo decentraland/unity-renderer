@@ -515,10 +515,8 @@ namespace DCL.Social.Friends
 
         private void HandleUnfriend(string userId)
         {
-            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
-                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
-                () => friendsController.RemoveFriend(userId)), true);
-        }
+            Debug.LogError($"HandleUnfriend FriendsHUDCOntroller userId {userId}");
+       }
 
         private void HandleRequestRejected(FriendRequestEntryModel entry)
         {

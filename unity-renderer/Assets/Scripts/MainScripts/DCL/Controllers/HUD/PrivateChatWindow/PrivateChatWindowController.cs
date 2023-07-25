@@ -281,13 +281,8 @@ public class PrivateChatWindowController : IHUD
 
     private void Unfriend(string friendId)
     {
-        dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
-            UserProfileController.userProfilesCatalog.Get(friendId)?.userName,
-            () =>
-            {
-                friendsController.RemoveFriend(friendId);
-                Hide();
-            }), true);
+                    Debug.LogError($"PrivateChatWindowController#Unfriend userId {friendId}");
+        Hide();
     }
 
     private bool IsMessageFomCurrentConversation(ChatMessage message)
