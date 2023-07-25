@@ -15,7 +15,7 @@ namespace UI.InWorldCamera.Scripts
         public string dateTime;
         public string realm;
         public Scene scene;
-        public VisiblePeople[] visiblePeople;
+        public VisiblePlayers[] visiblePeople;
 
         public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
@@ -40,18 +40,23 @@ namespace UI.InWorldCamera.Scripts
             return metadata;
         }
 
-        private static VisiblePeople[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
+        private static VisiblePlayers[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
         {
-            var visiblePeople = new VisiblePeople[visiblePlayers.Count];
+            var visiblePeople = new VisiblePlayers[visiblePlayers.Count];
             var userProfilesCatalog = UserProfileController.userProfilesCatalog;
 
+            UserProfile profile;
             for (var i = 0; i < visiblePlayers.Count; i++)
             {
-                visiblePeople[i] = new VisiblePeople
+                profile = userProfilesCatalog.Get(visiblePlayers[i].id);
+
+                visiblePeople[i] = new VisiblePlayers
                 {
-                    userName = userProfilesCatalog.Get(visiblePlayers[i].id).userName,
-                    userAddress = visiblePlayers[i].id,
-                    wearables = FilterNonBaseWearables(userProfilesCatalog.Get(visiblePlayers[i].id).avatar.wearables),
+                    userName = profile.userName,
+                    userAddress = profile.userId,
+                    isGuest = profile.isGuest,
+
+                    wearables = FilterNonBaseWearables(profile.avatar.wearables),
                 };
             }
 
@@ -98,10 +103,12 @@ namespace UI.InWorldCamera.Scripts
     }
 
     [Serializable]
-    public class VisiblePeople
+    public class VisiblePlayers
     {
         public string userName;
         public string userAddress;
+        public bool isGuest;
+
         public string[] wearables;
     }
 }
