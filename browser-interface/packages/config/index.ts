@@ -110,7 +110,6 @@ export const commConfigurations = {
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 'mainnet',
-  GOERLI = 'goerli',
   SEPOLIA = 'sepolia'
 }
 
@@ -194,18 +193,6 @@ export namespace ethereumConfigurations {
     EstateProxy: assertValue(contractInfo.mainnet.EstateProxy),
     CatalystProxy: assertValue(contractInfo.mainnet.CatalystProxy),
     MANAToken: assertValue(contractInfo.mainnet.MANAToken)
-  }
-  export const goerli = {
-    wss: 'wss://rpc.decentraland.org/goerli',
-    http: 'https://rpc.decentraland.org/goerli',
-    etherscan: 'https://goerli.etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-goerli',
-
-    // contracts
-    LANDProxy: assertValue(contractInfo.goerli.LANDProxy),
-    EstateProxy: assertValue(contractInfo.goerli.EstateProxy),
-    CatalystProxy: assertValue(contractInfo.goerli.CatalystProxy || contractInfo.goerli.Catalyst),
-    MANAToken: assertValue(contractInfo.goerli.MANAToken)
   }
   export const sepolia = {
     wss: 'wss://rpc.decentraland.org/sepolia',
