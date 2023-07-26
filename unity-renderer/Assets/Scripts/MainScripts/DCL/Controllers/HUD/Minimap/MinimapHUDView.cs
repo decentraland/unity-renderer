@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System;
 using DCL;
+using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +30,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
     [SerializeField] internal Image disableFavorite;
     [SerializeField] internal Button copyLocationButton;
+    [SerializeField] internal ShowHideAnimator locationCopiedToast;
 
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
@@ -116,7 +120,10 @@ public class MinimapHUDView : MonoBehaviour
         playerPositionText.text = model.playerPosition;
     }
 
-    public void ToggleOptions() { sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf); }
+    public void ToggleOptions()
+    {
+        sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf);
+    }
 
     public void SetVisibility(bool visible)
     {
@@ -141,10 +148,17 @@ public class MinimapHUDView : MonoBehaviour
         disableFavorite.gameObject.SetActive(!isAPlace);
     }
 
+    public void ShowLocationCopiedToast()
+    {
+        locationCopiedToast.gameObject.SetActive(true);
+        locationCopiedToast.ShowDelayHide(3);
+    }
+
     private void OnDestroy()
     {
-        if(mouseCatcher != null)
+        if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= OnMouseLocked;
+
         hudCanvasCameraModeController?.Dispose();
     }
 }

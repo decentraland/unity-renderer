@@ -289,6 +289,9 @@ public class MinimapHUDController : IHUD
     private void SetVisibility(bool current, bool _) =>
         SetVisibility(current);
 
-    private void OnCopyLocationToClipboard() =>
+    private void OnCopyLocationToClipboard()
+    {
         clipboard.WriteText($"{model.sceneName}: {model.playerPosition}");
+        view.ShowLocationCopiedToast();
+    }
 }
