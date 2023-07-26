@@ -58,7 +58,7 @@ public class CameraReelSectionView : MonoBehaviour
         closeScreenshotView.onClick.AddListener(() => screenShotView.SetActive(false));
         downloadButton.onClick.AddListener(Download);
 
-        // deleteButton.onClick.AddListener(DeleteImage);
+        deleteButton.onClick.AddListener(DeleteImage);
         linkButton.onClick.AddListener(CopyLink);
         // twitterButton.onClick.AddListener(CopyTwitterLink);
     }
@@ -83,6 +83,12 @@ public class CameraReelSectionView : MonoBehaviour
     private void Download()
     {
         Application.OpenURL(currentScreenshot.url);
+    }
+
+    private async void DeleteImage()
+    {
+        ICameraReelNetworkService cameraReelNetworkService = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
+        await cameraReelNetworkService.DeleteScreenshot(currentScreenshot.id);
     }
 
     private async void LoadImages()

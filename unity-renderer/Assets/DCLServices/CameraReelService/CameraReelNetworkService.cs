@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UI.InWorldCamera.Scripts;
@@ -12,6 +13,7 @@ namespace DCLServices.CameraReelService
         Task<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct = default);
 
         UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct = default);
+        UniTask DeleteScreenshot(string uuid, CancellationToken ct = default);
     }
 
     public class CameraReelNetworkService : ICameraReelNetworkService
@@ -35,5 +37,8 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct) =>
             await client.UploadScreenshot(image, metadata, ct);
+
+        public async UniTask DeleteScreenshot(string uuid, CancellationToken ct = default) =>
+            await client.DeleteScreenshot(uuid, ct);
     }
 }

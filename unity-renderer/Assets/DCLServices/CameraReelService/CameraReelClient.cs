@@ -15,6 +15,7 @@ namespace DCLServices.CameraReelService
         UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct);
         UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct);
         UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct);
+        UniTask DeleteScreenshot(string uuid, CancellationToken ct);
     }
 
     public class CameraReelClient : ICameraReelClient
@@ -61,6 +62,14 @@ namespace DCLServices.CameraReelService
 
             UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, cancellationToken: ct);
             return ParseScreenshotResponse(result, unSuccessResultMassage: "Error uploading screenshot");
+        }
+
+        public async UniTask DeleteScreenshot(string uuid, CancellationToken ct)
+        {
+            UnityWebRequest result = await webRequestController.DeleteAsync($"{IMAGE_BASE_URL}/{uuid}", isSigned: true, cancellationToken: ct);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
         }
 
         public async UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct)
