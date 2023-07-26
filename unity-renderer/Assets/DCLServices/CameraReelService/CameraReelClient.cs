@@ -7,6 +7,7 @@ using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
 namespace DCLServices.CameraReelService
 {
@@ -101,8 +102,8 @@ namespace DCLServices.CameraReelService
     public class CameraReelResponses
     {
         public List<CameraReelResponse> images = new ();
-        public ulong currentImages;
-        public ulong maxImages;
+        public int currentImages;
+        public int maxImages;
     }
 
     [Serializable]

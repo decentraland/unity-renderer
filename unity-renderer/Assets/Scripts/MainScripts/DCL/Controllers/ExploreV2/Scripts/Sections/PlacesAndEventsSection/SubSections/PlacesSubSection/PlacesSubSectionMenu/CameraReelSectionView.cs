@@ -179,9 +179,27 @@ public class CameraReelSectionView : MonoBehaviour
             button.SetText(person.userName);
             profile.gameObject.SetActive(true);
 
+            UpdateProfileIcon(person.userAddress, button);
+
             profiles.Add(profile);
 
             FetchWearables(person, wearablesService, profile.gameObject.transform);
+        }
+    }
+
+    private async void UpdateProfileIcon(string userId, ButtonComponentView button)
+    {
+        UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId) ?? await UserProfileController.i.RequestFullUserProfileAsync(userId);
+
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(profile.face256SnapshotURL);
+        await request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+            Debug.Log(request.error);
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            button.SetIcon(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
         }
     }
 
