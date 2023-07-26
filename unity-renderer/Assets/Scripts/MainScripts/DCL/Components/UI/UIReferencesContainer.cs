@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DCL.Interface;
+using UnityEngine.Serialization;
 
 namespace DCL.Components
 {
@@ -19,6 +20,10 @@ namespace DCL.Components
         public HorizontalLayoutGroup layoutGroup;
         public LayoutElement layoutElement;
         public RectTransform layoutElementRT;
+
+        [Header("Initial State")]
+        [Tooltip("If true, the UI will be visible when created or loaded from the pool.")]
+        public bool startsVisible = true;
 
         [Tooltip("Children of this UI object will reparent to this rectTransform.")]
         public RectTransform childHookRectTransform;
@@ -55,6 +60,25 @@ namespace DCL.Components
             {
                 WebInterface.ReportOnClickEvent(owner.scene.sceneData.sceneNumber, ownerModel.onClick);
             }
+        }
+
+        public void Initialize()
+        {
+            SetVisibility(startsVisible);
+        }
+
+        public void SetVisibility(bool visible, float opacity = 1f)
+        {
+            if (canvasGroup == null) return;
+
+            canvasGroup.alpha = visible ? opacity : 0;
+        }
+
+        public void SetBlockRaycast(bool isPointerBlocker)
+        {
+            if (canvasGroup == null) return;
+
+            canvasGroup.blocksRaycasts = isPointerBlocker;
         }
     }
 }

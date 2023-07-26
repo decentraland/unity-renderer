@@ -65,6 +65,7 @@ namespace DCL.Components
             referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
             referencesContainer.image.raycastTarget = model.color.a >= RAYCAST_ALPHA_THRESHOLD;
 
+            // FD:: check if this can be optimized
             Outline outline = referencesContainer.image.GetComponent<Outline>();
 
             if (model.thickness > 0f)

@@ -172,10 +172,6 @@ namespace DCL.Components
 
             if (stackContainers.ContainsKey(childComponent.id))
             {
-                // FD:: this seems not to be responsible for destroying the child component
-                // Object.Destroy(stackContainers[childComponent.id]);
-                // stackContainers[childComponent.id].transform.SetParent(null);
-                // stackContainers[childComponent.id].name += "- Detached";
                 stackContainers.Remove(childComponent.id);
             }
 

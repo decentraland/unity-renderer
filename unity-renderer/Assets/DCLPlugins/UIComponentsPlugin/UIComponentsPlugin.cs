@@ -30,7 +30,7 @@ public class UIComponentsPlugin : IPlugin
         textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 100);
 
         // TODO: FD:: introduced partial pooling there instead of dynamicaly assebling the object each time
-        // this needs to be fully converted to pooling when we shiift this part to Addressables
+        // this needs to be fully converted to pooling when we shift this part to Addressables
         fullScreenPool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
         screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
 

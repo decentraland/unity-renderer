@@ -131,6 +131,7 @@ MonoBehaviour:
   layoutGroup: {fileID: 0}
   layoutElement: {fileID: 0}
   layoutElementRT: {fileID: 3851819414174258569}
+  startsVisible: 0
   childHookRectTransform: {fileID: 0}
   UiScreenSpaceCanvas: {fileID: 3295628318479954191}
   UiScreenSpaceCanvasScaler: {fileID: 3755925815950754486}

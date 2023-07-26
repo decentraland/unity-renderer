@@ -57,8 +57,7 @@ namespace DCL.Components
                 Resources.Load<UIReferencesContainer>(prefabPath), root, false);
 
         private static void OnTakeShapeFromPool(UIReferencesContainer uiShape)
-        {
-        }
+        { }
 
         private void OnReturnShapeToPool(UIReferencesContainer uiShape)
         {

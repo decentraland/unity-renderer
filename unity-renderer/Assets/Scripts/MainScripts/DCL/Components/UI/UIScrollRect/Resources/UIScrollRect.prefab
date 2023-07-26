@@ -330,6 +330,7 @@ MonoBehaviour:
   layoutGroup: {fileID: 5516778534138712963}
   layoutElement: {fileID: 2525528187900339089}
   layoutElementRT: {fileID: 6820324277899345557}
+  startsVisible: 0
   childHookRectTransform: {fileID: 8125847689933021503}
   paddingLayoutGroup: {fileID: 5516778534138712963}
   HScrollbar: {fileID: 5706182002887018840}

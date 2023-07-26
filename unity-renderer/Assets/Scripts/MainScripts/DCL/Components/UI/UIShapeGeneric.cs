@@ -1,4 +1,7 @@
 ﻿
+using Castle.Core.Internal;
+using UnityEngine;
+
 namespace DCL.Components
 {
      public class UIShape<ReferencesContainerType, ModelType> : UIShape
@@ -26,9 +29,9 @@ namespace DCL.Components
         public override ComponentUpdateHandler CreateUpdateHandler() =>
             new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this);
 
-        bool raiseOnAttached;
+        private bool raiseOnAttached;
 
-        bool firstApplyChangesCall;
+        private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
         /// <summary>
         /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
@@ -38,14 +41,12 @@ namespace DCL.Components
             model = (ModelType) newModel;
 
             raiseOnAttached = false;
-            firstApplyChangesCall = false;
 
             if (referencesContainer == null)
             {
                 referencesContainer = GetUIGameObjectFromPool<ReferencesContainerType>();
 
                 raiseOnAttached = true;
-                firstApplyChangesCall = true;
             }
             else if (ReparentComponent(referencesContainer.rectTransform, model.parentComponent))
             {
@@ -61,14 +62,15 @@ namespace DCL.Components
             SetComponentDebugName();
 #endif
 
-            // We hide the component visibility when it's created (first applychanges)
-            // as it has default values and appears in the middle of the screen
-            if (firstApplyChangesCall)
-                referencesContainer.canvasGroup.alpha = 0f;
-            else
-                referencesContainer.canvasGroup.alpha = model.visible ? model.opacity : 0f;
+            bool isInsideSceneBounds = this.scene.IsInsideSceneBoundaries(dataStorePlayer.playerGridPosition.Get());
 
-            referencesContainer.canvasGroup.blocksRaycasts = model.visible && model.isPointerBlocker;
+            // We hide the component visibility when it's not inside the scene bounds and it's not a child of another UI component
+            if (!isInsideSceneBounds && referencesContainer.transform.parent == null)
+                referencesContainer.SetVisibility(visible: false);
+            else
+                referencesContainer.SetVisibility(model.visible, model.opacity);
+
+            referencesContainer.SetBlockRaycast(model.visible && model.isPointerBlocker);
 
             base.RaiseOnAppliedChanges();
 

@@ -173,7 +173,6 @@ namespace DCL.Components
             if (referencesContainer != null)
             {
                 referencesContainer.image.texture = null;
-                // referencesContainer = null; // FD::
             }
         }
     }

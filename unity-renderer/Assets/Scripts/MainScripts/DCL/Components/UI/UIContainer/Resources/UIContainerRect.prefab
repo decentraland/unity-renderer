@@ -30,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 790978731735109419}
   m_Father: {fileID: 0}
@@ -65,8 +66,8 @@ MonoBehaviour:
   layoutGroup: {fileID: 5223530969182936658}
   layoutElement: {fileID: 1805516699383666392}
   layoutElementRT: {fileID: 790978731735109419}
+  startsVisible: 0
   childHookRectTransform: {fileID: 790978731735109419}
-  forceRefresh: 0
   image: {fileID: 3399205195266371661}
   sizeFitter: {fileID: 1027506699608874891}
 --- !u!114 &5223530969182936658
@@ -94,6 +95,7 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!225 &6407918535855574709
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -136,6 +138,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4878839740631635299}
   m_RootOrder: 0
@@ -168,6 +171,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.023529412}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

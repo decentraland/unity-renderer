@@ -394,9 +394,7 @@ namespace DCL.Components
                 referencesContainer = null;
             }
 
-            // FD::
-            // if (childHookRectTransform)
-            //     Utils.SafeDestroy(childHookRectTransform.gameObject);
+            // FD:: Optimize this
             if (childHookRectTransform)
                 childHookRectTransform.GetComponent<UIReferencesContainer>()?.owner.Dispose();
 
