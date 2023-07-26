@@ -49,6 +49,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.OnRequestAllPlaces += SearchAllPlaces;
         view.OnEventInfoClicked += OpenEventDetailsModal;
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
+        view.OnVoteChanged += ChangeVote;
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         view.OnEventJumpInClicked += JumpInToEvent;
@@ -58,6 +59,11 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
         if(searchBarComponentView != null)
             searchBarComponentView.OnSearchText += Search;
+    }
+
+    private void ChangeVote(string placeId, bool? isUpvote)
+    {
+        placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
     }
 
     private void ChangePlaceFavorite(string placeId, bool isFavorite)

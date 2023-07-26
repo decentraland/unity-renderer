@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
 {
-    event Action<string, bool> OnFavoritePlaceChange;
+    event Action<string, bool?> OnVoteChanged;
 
     FriendsHandler friendsHandler { get; set; }
 
@@ -119,6 +120,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
     [SerializeField] internal ButtonComponentView infoButton;
+    [SerializeField] internal ButtonComponentView upvoteButton;
+    [SerializeField] internal ButtonComponentView downvoteButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
     [SerializeField] internal GameObject imageContainer;
@@ -146,7 +149,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public event Action<string, bool> OnFavoriteChanged;
 
     private bool thumbnailFromMarketPlaceRequested;
-    public event Action<string, bool> OnFavoritePlaceChange;
+    public event Action<string, bool?> OnVoteChanged;
 
     public override void Awake()
     {
@@ -167,7 +170,21 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
 
+        if(upvoteButton != null)
+            upvoteButton.onClick.AddListener(() => ChangeVote(true));
+
+        if(downvoteButton != null)
+            downvoteButton.onClick.AddListener(() => ChangeVote(false));
+
         CleanFriendHeadsItems();
+    }
+
+    private void ChangeVote(bool upvote)
+    {
+        if(upvote)
+            OnVoteChanged?.Invoke(model.placeInfo.id, model.isUpvote ? (bool?)null : true);
+        else
+            OnVoteChanged?.Invoke(model.placeInfo.id, model.isDownvote ? (bool?)null : false);
     }
 
     public void Configure(PlaceCardComponentModel newModel)

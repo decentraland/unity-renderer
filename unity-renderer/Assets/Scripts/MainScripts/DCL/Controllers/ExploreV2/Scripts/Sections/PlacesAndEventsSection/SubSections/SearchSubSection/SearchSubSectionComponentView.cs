@@ -53,6 +53,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnPlaceFavoriteChanged;
     public event Action<string> OnSubscribeEventClicked;
     public event Action<string> OnUnsubscribeEventClicked;
@@ -240,9 +241,16 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onInfoClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
         view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.OnVoteChanged -= ViewOnVoteChanged;
         view.onInfoClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
-        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
+        view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
+    private void ViewOnVoteChanged(string arg1, bool? arg2)
+    {
+        OnVoteChanged?.Invoke(arg1, arg2);
     }
 
     private void ViewOnOnFavoriteChanged(string placeId, bool isFavorite)
@@ -259,7 +267,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeModel)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnPlaceFavoriteChanged);
+        PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)

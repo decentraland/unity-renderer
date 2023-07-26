@@ -22,6 +22,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
+        UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
     }
 
     public class PlacesAPIClient: IPlacesAPIClient
@@ -135,6 +136,24 @@ namespace DCLServices.PlacesAPIService
             const string FAVORITE_PAYLOAD = "{\"favorites\": true}";
             const string NOT_FAVORITE_PAYLOAD = "{\"favorites\": false}";
             var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), isFavorite ? FAVORITE_PAYLOAD : NOT_FAVORITE_PAYLOAD, isSigned: true, cancellationToken: ct);
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching place info:\n{result.error}");
+        }
+
+        public async UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct)
+        {
+            const string URL = BASE_URL + "/{0}/likes";
+            const string LIKE_PAYLOAD = "{\"like\": true}";
+            const string DISLIKE_PAYLOAD = "{\"like\": false}";
+            const string NO_LIKE_PAYLOAD = "{\"like\": null}";
+            string payload;
+
+            if (isUpvote == null)
+                payload = NO_LIKE_PAYLOAD;
+            else
+                payload = isUpvote == true ? LIKE_PAYLOAD : DISLIKE_PAYLOAD;
+
+            var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), payload, isSigned: true, cancellationToken: ct);
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
         }

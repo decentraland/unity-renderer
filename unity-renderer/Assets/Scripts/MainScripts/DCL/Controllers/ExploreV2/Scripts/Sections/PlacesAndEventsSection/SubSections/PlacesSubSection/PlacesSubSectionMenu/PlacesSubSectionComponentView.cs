@@ -48,6 +48,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
     public event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
+    public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
@@ -131,7 +132,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         foreach (PlaceCardComponentModel place in places)
         {
-            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
             this.places.AddItem(placeCard);
@@ -161,7 +162,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
     }
 
     public void HidePlaceModal()

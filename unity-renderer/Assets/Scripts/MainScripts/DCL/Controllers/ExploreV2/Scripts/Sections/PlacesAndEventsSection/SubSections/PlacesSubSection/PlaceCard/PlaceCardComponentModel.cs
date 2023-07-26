@@ -13,6 +13,8 @@ public class PlaceCardComponentModel : BaseComponentModel
     public string placeAuthor;
     public int numberOfUsers;
     public int userVisits;
+    public bool isUpvote;
+    public bool isDownvote;
     public float userRating;
     public Vector2Int coords;
     public Vector2Int[] parcels;

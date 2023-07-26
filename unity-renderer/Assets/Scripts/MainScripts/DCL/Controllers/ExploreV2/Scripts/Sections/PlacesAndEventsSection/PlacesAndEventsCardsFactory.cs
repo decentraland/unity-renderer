@@ -36,8 +36,8 @@ public static class PlacesAndEventsCardsFactory
     public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked) =>
         EventsCardsConfigurator.Configure(pool.Get<EventCardComponentView>(), eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
 
-    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked) =>
-        PlacesCardsConfigurator.Configure(pool.Get<PlaceCardComponentView>(), placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
+    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool?> OnVoteChanged, Action<string, bool> OnFavoriteClicked) =>
+        PlacesCardsConfigurator.Configure(pool.Get<PlaceCardComponentView>(), placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnVoteChanged, OnFavoriteClicked);
 
     /// <summary>
     /// Instantiates (if does not already exists) a place card modal from the given prefab.
@@ -93,7 +93,9 @@ public static class PlacesAndEventsCardsFactory
                     userVisits = place.user_visits,
                     userRating = place.like_rate,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike
                 });
             count++;
             if(count >= amountToTake)
@@ -127,7 +129,9 @@ public static class PlacesAndEventsCardsFactory
                     userRating = place.like_rate,
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike
                 });
         }
 
@@ -152,7 +156,9 @@ public static class PlacesAndEventsCardsFactory
                     userRating = place.like_rate,
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike
                 });
         }
 

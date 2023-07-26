@@ -23,6 +23,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
+        UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
         UniTask SetPlaceFavorite(Vector2Int coords, bool isFavorite, CancellationToken ct);
 
         UniTask<bool> IsFavoritePlace(IHotScenesController.PlaceInfo placeInfo, CancellationToken ct, bool renewCache = false);
@@ -170,6 +171,11 @@ namespace DCLServices.PlacesAPIService
             localFavorites[placeUUID] = isFavorite;
             composedFavoritesDirty = true;
             await client.SetPlaceFavorite(placeUUID, isFavorite, ct);
+        }
+
+        public async UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct)
+        {
+            await client.SetPlaceVote(isUpvote, placeUUID, ct);
         }
 
         public async UniTask SetPlaceFavorite(Vector2Int coords, bool isFavorite, CancellationToken ct)

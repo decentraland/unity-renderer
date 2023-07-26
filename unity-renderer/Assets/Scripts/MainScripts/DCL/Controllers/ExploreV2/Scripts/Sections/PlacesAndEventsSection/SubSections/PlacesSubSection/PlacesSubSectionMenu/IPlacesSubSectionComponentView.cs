@@ -30,6 +30,8 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// </summary>
     event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
 
+    event Action<string, bool?> OnVoteChanged;
+
     /// <summary>
     /// It will be triggered when the favorite button is clicked.
     /// </summary>

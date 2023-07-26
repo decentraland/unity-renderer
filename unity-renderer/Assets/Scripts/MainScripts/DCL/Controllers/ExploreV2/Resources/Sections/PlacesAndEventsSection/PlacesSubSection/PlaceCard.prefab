@@ -185,6 +185,8 @@ MonoBehaviour:
   closeCardButton: {fileID: 0}
   closeAction: {fileID: 0}
   infoButton: {fileID: 5294372551058558209}
+  upvoteButton: {fileID: 215043342255055367}
+  downvoteButton: {fileID: 8764315371030090019}
   jumpinButton: {fileID: 5307741102947407199}
   friendsGrid: {fileID: 3985515287302666467}
   imageContainer: {fileID: 1464577790094710649}
@@ -207,6 +209,8 @@ MonoBehaviour:
     placeAuthor: Author's Name
     numberOfUsers: 73
     userVisits: 0
+    isUpvote: 0
+    isDownvote: 0
     userRating: 0
     coords: {x: 0, y: 0}
     parcels: []
@@ -3185,6 +3189,18 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 555295490507876881, guid: 69bd596225e56a64ba21d5ac4b2e8351, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 69bd596225e56a64ba21d5ac4b2e8351, type: 3}
+--- !u!114 &215043342255055367 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 308949545735719555, guid: 69bd596225e56a64ba21d5ac4b2e8351,
+    type: 3}
+  m_PrefabInstance: {fileID: 482561627635607684}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1602666728222123847 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1193374580596543427, guid: 69bd596225e56a64ba21d5ac4b2e8351,
@@ -4590,3 +4606,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 9072643958813105056}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8764315371030090019 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 308949545735719555, guid: 69bd596225e56a64ba21d5ac4b2e8351,
+    type: 3}
+  m_PrefabInstance: {fileID: 9072643958813105056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274bf6bf95184804cb2606eda1bf2a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -53,7 +53,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
-
+        this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -88,6 +88,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
         cardsReloader.Dispose();
+    }
+
+    private void View_OnVoteChanged(string placeId, bool? isUpvote)
+    {
+        placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
     }
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)

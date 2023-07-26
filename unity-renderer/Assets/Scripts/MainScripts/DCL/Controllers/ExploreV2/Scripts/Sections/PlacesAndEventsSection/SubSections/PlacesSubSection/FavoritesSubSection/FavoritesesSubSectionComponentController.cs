@@ -52,6 +52,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnVoteChanged += VoteChanegd;
         this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
@@ -59,6 +60,11 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         view.ConfigurePools();
+    }
+
+    private void VoteChanegd(string placeId, bool? isUpvote)
+    {
+        placesAPIService.SetPlaceVote(isUpvote, placeId, default);
     }
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
