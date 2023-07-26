@@ -18,6 +18,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal Button leaveButton;
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Button copyNameButton;
+        [SerializeField] internal ShowHideAnimator nameCopiedToast;
 
         public event Action OnLeave;
         public event Action<string> OnNameCopied;
@@ -33,7 +34,13 @@ namespace DCL.Social.Chat
             });
 
             closeButton.onClick.AddListener(() => Hide());
-            copyNameButton.onClick.AddListener(() => OnNameCopied?.Invoke(headerTiler.text));
+            copyNameButton.onClick.AddListener(() =>
+            {
+                OnNameCopied?.Invoke(headerTiler.text);
+
+                nameCopiedToast.gameObject.SetActive(true);
+                nameCopiedToast.ShowDelayHide(3);
+            });
 
             RefreshControl();
         }
