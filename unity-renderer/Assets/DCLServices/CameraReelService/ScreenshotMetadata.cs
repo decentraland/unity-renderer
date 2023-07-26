@@ -43,9 +43,10 @@ namespace UI.InWorldCamera.Scripts
         private static VisiblePlayers[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
         {
             var visiblePeople = new VisiblePlayers[visiblePlayers.Count];
-            var userProfilesCatalog = UserProfileController.userProfilesCatalog;
+            UserProfileDictionary userProfilesCatalog = UserProfileController.userProfilesCatalog;
 
             UserProfile profile;
+
             for (var i = 0; i < visiblePlayers.Count; i++)
             {
                 profile = userProfilesCatalog.Get(visiblePlayers[i].id);
