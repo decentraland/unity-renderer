@@ -1,8 +1,4 @@
-﻿
-using Castle.Core.Internal;
-using UnityEngine;
-
-namespace DCL.Components
+﻿namespace DCL.Components
 {
      public class UIShape<ReferencesContainerType, ModelType> : UIShape
         where ReferencesContainerType : UIReferencesContainer
