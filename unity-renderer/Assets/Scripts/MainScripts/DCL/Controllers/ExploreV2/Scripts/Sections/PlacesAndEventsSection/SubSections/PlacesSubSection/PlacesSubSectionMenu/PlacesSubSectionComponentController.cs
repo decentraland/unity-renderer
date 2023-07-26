@@ -18,8 +18,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 {
     public event Action OnCloseExploreV2;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 3;
-    private const int PAGE_SIZE = 18;
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    private const int PAGE_SIZE = 12;
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
@@ -145,7 +145,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             }
 
             view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
-
             view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
         }
         catch (OperationCanceledException) { }

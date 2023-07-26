@@ -268,6 +268,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void SetVoteButtons(bool isUpvoted, bool isDownvoted)
     {
+        if(upvoteOn == null || upvoteOff == null || downvoteOn == null || downvoteOff == null)
+            return;
+
         upvoteOn.SetActive(isUpvoted);
         upvoteOff.SetActive(!isUpvoted);
         downvoteOn.SetActive(isDownvoted);

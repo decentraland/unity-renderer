@@ -176,7 +176,7 @@ MonoBehaviour:
   placeNameOnFocusText: {fileID: 6695988557997684973}
   placeDescText: {fileID: 0}
   placeAuthorOnIdleText: {fileID: 7544269963899785199}
-  placeAuthorOnFocusText: {fileID: 6695988557997684973}
+  placeAuthorOnFocusText: {fileID: 7976896817663832654}
   userVisitsText: {fileID: 2941433744369225119}
   userRatingText: {fileID: 1591632374566363125}
   numberOfUsersText: {fileID: 2081338695787485507}
@@ -718,7 +718,7 @@ GameObject:
   - component: {fileID: 2108069446975343473}
   - component: {fileID: 7976896817663832654}
   m_Layer: 5
-  m_Name: PlaceName_OnFocus (1)
+  m_Name: PlaceCreator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1151,7 +1151,7 @@ GameObject:
   - component: {fileID: 5577169512989167342}
   - component: {fileID: 6695988557997684973}
   m_Layer: 5
-  m_Name: PlaceName_OnFocus
+  m_Name: PlaceName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1990,7 +1990,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 166.3}
+  m_AnchoredPosition: {x: 0, y: 172}
   m_SizeDelta: {x: 0, y: 129.5}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2679924458526965660
@@ -3507,12 +3507,12 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 90
+      value: 237
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -12.6
+      value: 113.9
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
