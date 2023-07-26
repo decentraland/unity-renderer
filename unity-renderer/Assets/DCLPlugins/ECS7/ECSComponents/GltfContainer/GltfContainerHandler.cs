@@ -74,7 +74,7 @@ namespace DCL.ECSComponents
             gltfLoader.settings.forceGPUOnlyMesh = true;
             gltfLoader.settings.parent = transform;
             gltfLoader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION;
-            gltfLoader.settings.smrUpdateWhenOffScreen = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
+            gltfLoader.settings.smrUpdateWhenOffScreen = featureFlags.flags.Get().IsFeatureEnabled(SMR_UPDATE_OFFSCREEN_FEATURE_FLAG);
 
             collidersHandler = new GltfContainerCollidersHandler();
         }

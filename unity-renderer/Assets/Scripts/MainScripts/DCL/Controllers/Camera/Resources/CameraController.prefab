@@ -1563,7 +1563,7 @@ MonoBehaviour:
   - {fileID: 5141921647443392041}
   - {fileID: 8626957695305342742}
   cameraChangeAction: {fileID: 11400000, guid: 6701d7e30ddf77c48accc629429f7e30, type: 2}
-  mouseWheelAction: {fileID: 0}
+  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
 --- !u!114 &699965395904555009
 MonoBehaviour:
   m_ObjectHideFlags: 0

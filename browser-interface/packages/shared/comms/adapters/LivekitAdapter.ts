@@ -37,6 +37,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     this.room = new Room();
 
     // TODO: UN-HACK
+    // used browser-interface/packages/shared/apis/host/CommsAPI.ts
+    // used unity-renderer/Assets/Scripts/MainScripts/DCL/Components/Video/Plugins/WebVideoPlayer.jslib
     (window as any).livekit_participants = this.room.participants
 
     this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)

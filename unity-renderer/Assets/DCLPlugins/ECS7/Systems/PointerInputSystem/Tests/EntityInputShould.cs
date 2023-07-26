@@ -295,7 +295,7 @@ namespace Tests
         [Test]
         public void DetectPointerHoverEnter_WithPointerEvents()
         {
-            dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = false;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPointer] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
@@ -306,7 +306,7 @@ namespace Tests
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverEnter,
-                        new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
+                        new InternalPointerEvents.Info(InputAction.IaPointer, string.Empty, float.MaxValue, false))
                 })
             );
 
@@ -367,11 +367,11 @@ namespace Tests
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
-                        new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
+                        new InternalPointerEvents.Info(InputAction.IaPointer, string.Empty, float.MaxValue, false))
                 })
             );
 
-            dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = false;
+            dataStoreEcs7.inputActionState[(int)InputAction.IaPointer] = false;
 
             dataStoreEcs7.lastPointerRayHit.didHit = true;
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
