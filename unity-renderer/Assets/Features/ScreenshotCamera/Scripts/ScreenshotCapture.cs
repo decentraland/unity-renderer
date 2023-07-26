@@ -33,7 +33,7 @@ namespace UI.InWorldCamera.Scripts
             int renderTextureWidth = Mathf.RoundToInt(canvasRectTransform.rect.width * scaleFactorW);
             int renderTextureHeight = Mathf.RoundToInt(canvasRectTransform.rect.height * scaleFactorH);
 
-            var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.sRGB);
+            var renderTexture = RenderTexture.GetTemporary(renderTextureWidth, renderTextureHeight, 24);
             screenshotCamera.targetTexture = renderTexture;
 
             screenshotCamera.Render();
@@ -42,7 +42,7 @@ namespace UI.InWorldCamera.Scripts
             float cornerX = (renderTextureWidth - DESIRED_WIDTH) / 2f;
             float cornerY = (renderTextureHeight - DESIRED_HEIGHT) / 2f;
 
-            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGBAFloat, false, true);
+            var texture = new Texture2D(Mathf.RoundToInt(DESIRED_WIDTH), Mathf.RoundToInt(DESIRED_HEIGHT), TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(cornerX, cornerY, DESIRED_WIDTH, DESIRED_HEIGHT), 0, 0);
             texture.Apply();
 
