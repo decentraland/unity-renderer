@@ -60,7 +60,7 @@ public class CameraReelSectionView : MonoBehaviour
 
         deleteButton.onClick.AddListener(DeleteImage);
         linkButton.onClick.AddListener(CopyLink);
-        // twitterButton.onClick.AddListener(CopyTwitterLink);
+        twitterButton.onClick.AddListener(CopyTwitterLink);
     }
 
     private void OnDisable()
@@ -74,10 +74,22 @@ public class CameraReelSectionView : MonoBehaviour
         twitterButton.onClick.RemoveAllListeners();
     }
 
+    private void CopyTwitterLink()
+    {
+        var description = "Check out what I'm doing in Decentraland right now and join me!";
+        var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+        var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
+
+        GUIUtility.systemCopyBuffer = twitterUrl;
+        Application.OpenURL(twitterUrl);
+    }
+
     private void CopyLink()
     {
-        GUIUtility.systemCopyBuffer = $"https://reels.decentraland.org/{currentScreenshot.id}";
-        // Application.OpenURL($"https://reels.decentraland.org/{currentScreenshot.id}");
+        var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+
+        GUIUtility.systemCopyBuffer = url;
+        Application.OpenURL(url);
     }
 
     private void Download()
@@ -160,7 +172,7 @@ public class CameraReelSectionView : MonoBehaviour
 
         IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
-        foreach (VisiblePeople person in reel.metadata.visiblePeople)
+        foreach (VisiblePerson person in reel.metadata.visiblePeople)
         {
             GameObject profile = Instantiate(profileCard, profileGridContrainer);
             ButtonComponentView button = profile.GetComponentInChildren<ButtonComponentView>();
@@ -173,7 +185,7 @@ public class CameraReelSectionView : MonoBehaviour
         }
     }
 
-    private async void FetchWearables(VisiblePeople person, IWearablesCatalogService wearablesService, Transform parent)
+    private async void FetchWearables(VisiblePerson person, IWearablesCatalogService wearablesService, Transform parent)
     {
         foreach (string wearable in person.wearables)
         {

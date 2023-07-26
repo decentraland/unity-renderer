@@ -7,7 +7,8 @@ namespace DCLServices.CameraReelService
     public interface ICameraReelClient
     {
         UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct);
-
+        UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct);
         UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct);
+        UniTask DeleteScreenshot(string uuid, CancellationToken ct);
     }
 }

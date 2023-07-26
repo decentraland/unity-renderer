@@ -10,14 +10,6 @@ using UnityEngine.Networking;
 
 namespace DCLServices.CameraReelService
 {
-    public interface ICameraReelClient
-    {
-        UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct);
-        UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct);
-        UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct);
-        UniTask DeleteScreenshot(string uuid, CancellationToken ct);
-    }
-
     public class CameraReelClient : ICameraReelClient
     {
         private const string IMAGE_BASE_URL = "https://camera-reel-service.decentraland.zone/api/images";
