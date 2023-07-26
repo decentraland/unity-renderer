@@ -10,9 +10,6 @@ public class MinimapHUDView : MonoBehaviour
     public const string VIEW_PATH = "MinimapHUD";
     public const string VIEW_OBJECT_NAME = "_MinimapHUD";
 
-    private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
-    private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
-
     public event Action<string, bool> OnFavoriteToggleClicked;
 
     [Header("Information")] [SerializeField]
@@ -29,6 +26,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal ToggleComponentView setHomeScene;
     [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
     [SerializeField] internal Image disableFavorite;
+    [SerializeField] internal Button copyLocationButton;
 
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
@@ -44,12 +42,12 @@ public class MinimapHUDView : MonoBehaviour
 
     public RectTransform mapViewport;
 
-    public static System.Action<MinimapHUDModel> OnUpdateData;
-    public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
     private IMouseCatcher mouseCatcher;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     private MinimapHUDController controller;
+
+    public event Action OnCopyLocationRequested;
 
     private void Awake()
     {
@@ -69,6 +67,7 @@ public class MinimapHUDView : MonoBehaviour
         reportSceneButton.onClick.AddListener(ReportScene);
         setHomeScene.OnSelectedChanged += (isOn, id, name) => SetHomeScene(isOn);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
+        copyLocationButton.onClick.AddListener(() => OnCopyLocationRequested?.Invoke());
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += OnMouseLocked;
