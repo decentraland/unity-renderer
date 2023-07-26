@@ -522,7 +522,7 @@ public class UserContextMenu : MonoBehaviour
 
     private void OnCopyNameButtonPressed()
     {
-        clipboard.WriteText(userName.text);
+        clipboard.WriteText($"@{userName.text}");
         nameCopiedToast.gameObject.SetActive(true);
         nameCopiedToast.ShowDelayHide(3);
     }
