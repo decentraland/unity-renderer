@@ -200,8 +200,11 @@ namespace Features.ScreenshotCamera.Scripts
 
             screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
 
-            screenshotHUDView.CloseButton?.onClick.AddListener(DisableScreenshotCameraMode);
-            screenshotHUDView.TakeScreenshotButton?.onClick.AddListener(() => CaptureScreenshot(DUMMY_DCL_ACTION_TRIGGER));
+            if (screenshotHUDView.CloseButton != null)
+                screenshotHUDView.CloseButton.onClick.AddListener(DisableScreenshotCameraMode);
+
+            if (screenshotHUDView.TakeScreenshotButton != null)
+                screenshotHUDView.TakeScreenshotButton.onClick.AddListener(() => CaptureScreenshot(DUMMY_DCL_ACTION_TRIGGER));
 
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
