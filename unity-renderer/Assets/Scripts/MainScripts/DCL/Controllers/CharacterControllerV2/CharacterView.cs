@@ -58,15 +58,15 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             var background = panel.AddComponent<Image>();
             Color backgroundColor = Color.gray;
-            backgroundColor.a = 0.15f;
+            backgroundColor.a = 0.25f;
             background.color = backgroundColor;
 
             var rectTransform = panel.GetComponent<RectTransform>();
             rectTransform.pivot = new Vector2(0, 1);
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
-            rectTransform.anchoredPosition = new Vector2(300, -10f);
-            rectTransform.sizeDelta = new Vector2(75+30+300, (7 * 40) + 14);
+            rectTransform.anchoredPosition = new Vector2(300, -30f);
+            rectTransform.sizeDelta = new Vector2(75+30+300, (8 * 40) + 14);
 
             var cv = mouseCatcher.AddComponent<Canvas>();
             cv.renderMode = RenderMode.ScreenSpaceOverlay;
