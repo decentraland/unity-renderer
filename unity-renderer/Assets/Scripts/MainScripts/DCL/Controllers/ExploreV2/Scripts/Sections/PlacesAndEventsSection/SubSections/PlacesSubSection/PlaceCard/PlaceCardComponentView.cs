@@ -122,6 +122,10 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView upvoteButton;
     [SerializeField] internal ButtonComponentView downvoteButton;
+    [SerializeField] internal GameObject upvoteOff;
+    [SerializeField] internal GameObject upvoteOn;
+    [SerializeField] internal GameObject downvoteOff;
+    [SerializeField] internal GameObject downvoteOn;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
     [SerializeField] internal GameObject imageContainer;
@@ -181,10 +185,19 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private void ChangeVote(bool upvote)
     {
-        if(upvote)
+        if (upvote)
+        {
             OnVoteChanged?.Invoke(model.placeInfo.id, model.isUpvote ? (bool?)null : true);
+            model.isUpvote = !model.isUpvote;
+            model.isDownvote = false;
+        }
         else
+        {
             OnVoteChanged?.Invoke(model.placeInfo.id, model.isDownvote ? (bool?)null : false);
+            model.isDownvote = !model.isDownvote;
+            model.isUpvote = false;
+        }
+        SetVoteButtons(model.isUpvote, model.isDownvote);
     }
 
     public void Configure(PlaceCardComponentModel newModel)
@@ -233,6 +246,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
                 favoriteButtonContainer.SetActive(false);
         }
 
+        SetVoteButtons(model.isUpvote, model.isDownvote);
         RebuildCardLayouts();
     }
 
@@ -250,6 +264,14 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
+    }
+
+    private void SetVoteButtons(bool isUpvoted, bool isDownvoted)
+    {
+        upvoteOn.SetActive(isUpvoted);
+        upvoteOff.SetActive(!isUpvoted);
+        downvoteOn.SetActive(isDownvoted);
+        downvoteOff.SetActive(!isDownvoted);
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)

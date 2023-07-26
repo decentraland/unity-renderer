@@ -179,6 +179,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
   - {fileID: 21300000, guid: 4e9a4135cdf6d42afb73b12a76bf53f2, type: 3}
+  - {fileID: 21300000, guid: 0bdc0535d7df44cc8b9af21779e4207b, type: 3}
   - {fileID: 21300000, guid: 17e94f45af7624a0996b2a78cf3009ad, type: 3}
   - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
@@ -372,6 +373,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a0422c4d3e4fd483f98f3bbd16e5ae2e, type: 3}
   - {fileID: 21300000, guid: cf43c05d20914491481a6f7736f2eec6, type: 3}
   - {fileID: 21300000, guid: 59758d5dbedcd0746be3439895558d6a, type: 3}
+  - {fileID: 21300000, guid: 871dd18d15e4c4712985e30bc63a6168, type: 3}
   - {fileID: 21300000, guid: c6cb56bd6fdab4d49879218fffcfc7f7, type: 3}
   - {fileID: 21300000, guid: afc72abd3262c43798a1167db98081d9, type: 3}
   - {fileID: 21300000, guid: 463541cd13ac34ce992618e04bc5dc9f, type: 3}
@@ -535,6 +537,7 @@ SpriteAtlas:
   - Button14
   - ContainerShadowRadiusSix
   - JumpInSquare
+  - LikeSolid
   - LeftClickIcn
   - BubblePeak
   - Frame5
@@ -728,6 +731,7 @@ SpriteAtlas:
   - Div
   - EllipticalShadow
   - rectangle_100
+  - Like
   - EmotesOff
   - OutlineRightRect12
   - Cursor
