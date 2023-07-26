@@ -72,6 +72,9 @@ public class UserContextMenu : MonoBehaviour
     [SerializeField] internal Button mentionButton;
     [SerializeField] internal Button copyNameButton;
 
+    [Header("Misc")]
+    [SerializeField] private ShowHideAnimator nameCopiedToast;
+
     public static event Action<string> OnOpenPrivateChatRequest;
 
     public bool isVisible => gameObject.activeSelf;
@@ -520,6 +523,8 @@ public class UserContextMenu : MonoBehaviour
     private void OnCopyNameButtonPressed()
     {
         clipboard.WriteText(userName.text);
+        nameCopiedToast.gameObject.SetActive(true);
+        nameCopiedToast.ShowDelayHide(3);
     }
 
 #if UNITY_EDITOR

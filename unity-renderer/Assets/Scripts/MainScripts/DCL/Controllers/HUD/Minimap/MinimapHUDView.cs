@@ -1,9 +1,6 @@
-using Cysharp.Threading.Tasks;
-using System;
 using DCL;
-using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
-using System.Threading;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
