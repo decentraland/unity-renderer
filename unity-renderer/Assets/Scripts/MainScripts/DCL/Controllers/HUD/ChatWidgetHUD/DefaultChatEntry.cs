@@ -35,9 +35,12 @@ namespace DCL.Social.Chat
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private RectTransform copyBodyPositionReference;
         [SerializeField] private MentionLinkDetector mentionLinkDetector;
         [SerializeField] private Color autoMentionBackgroundColor;
         [SerializeField] private Image backgroundImage;
+        [SerializeField] private Button copyBodyButton;
+        [SerializeField] private ShowHideAnimator bodyCopiedToast;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -74,6 +77,31 @@ namespace DCL.Social.Chat
         public void Awake()
         {
             initialEntryColor = backgroundImage.color;
+
+            copyBodyButton.onClick.AddListener(() =>
+            {
+                OnCopyClicked?.Invoke(this);
+                bodyCopiedToast.gameObject.SetActive(true);
+                bodyCopiedToast.ShowDelayHide(3);
+            });
+        }
+
+        private void OnEnable()
+        {
+            copyBodyButton.gameObject.SetActive(false);
+        }
+
+        private void OnDisable()
+        {
+            OnPointerExit(null);
+        }
+
+        private void OnDestroy()
+        {
+            populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
         }
 
         public override void Populate(ChatEntryModel chatEntryModel) =>
@@ -83,7 +111,7 @@ namespace DCL.Social.Chat
         {
             model = chatEntryModel;
 
-            if (chatEntryModel is {subType: ChatEntryModel.SubType.RECEIVED, messageType: ChatMessage.Type.PUBLIC })
+            if (chatEntryModel is { subType: ChatEntryModel.SubType.RECEIVED, messageType: ChatMessage.Type.PUBLIC })
                 backgroundImage.color = initialEntryColor;
 
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
@@ -209,11 +237,7 @@ namespace DCL.Social.Chat
             int linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position, body.canvas.worldCamera);
 
-            if (linkIndex == -1)
-            {
-                OnCopyClicked?.Invoke(this);
-                return;
-            }
+            if (linkIndex == -1) return;
 
             string link = body.textInfo.linkInfo[linkIndex].GetLinkID();
 
@@ -233,6 +257,10 @@ namespace DCL.Social.Chat
                 return;
 
             hoverPanelTimer = timeToHoverPanel;
+            copyBodyButton.gameObject.SetActive(true);
+            var copyBodyButtonTransform = (RectTransform)copyBodyButton.transform;
+            copyBodyButtonTransform.pivot = copyBodyPositionReference.pivot;
+            copyBodyButtonTransform.position = copyBodyPositionReference.position;
         }
 
         public void OnPointerExit(PointerEventData pointerEventData)
@@ -241,6 +269,7 @@ namespace DCL.Social.Chat
                 return;
 
             hoverPanelTimer = 0f;
+            copyBodyButton.gameObject.SetActive(false);
 
             var linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
@@ -254,19 +283,6 @@ namespace DCL.Social.Chat
             }
 
             OnCancelHover?.Invoke();
-        }
-
-        private void OnDisable()
-        {
-            OnPointerExit(null);
-        }
-
-        private void OnDestroy()
-        {
-            populationTaskCancellationTokenSource.Cancel();
-
-            if (mentionLinkDetector != null)
-                mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)

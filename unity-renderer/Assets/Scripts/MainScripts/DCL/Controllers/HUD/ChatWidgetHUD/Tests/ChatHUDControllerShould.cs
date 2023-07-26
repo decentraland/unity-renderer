@@ -516,13 +516,10 @@ namespace DCL.Social.Chat
             });
 
         [UnityTest]
-        public IEnumerator CopyToClipboardMessageTextAndDisplayNotification() =>
+        public IEnumerator CopyToClipboardMessageText() =>
             UniTask.ToCoroutine(async () =>
             {
                 const string BODY_TEXT = "any useful body message with @mentions and #channels";
-
-                var notification = "";
-                dataStore.notifications.DefaultErrorNotification.OnChange += (current, _) => notification = current;
 
                 view.OnCopyMessageRequested += Raise.Event<Action<ChatEntryModel>>(new ChatEntryModel
                 {
@@ -532,7 +529,6 @@ namespace DCL.Social.Chat
                 });
 
                 clipboard.Received(1).WriteText(BODY_TEXT);
-                Assert.AreEqual("Text copied", notification);
             });
 
         private UserProfile GivenProfile(string userId, string username, string face256)
