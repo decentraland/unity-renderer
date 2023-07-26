@@ -175,13 +175,6 @@ namespace Features.ScreenshotCamera.Scripts
                 image: screenshotCapture.CaptureScreenshot(),
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
-
-            // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
-            { // temporal debug part
-                Application.OpenURL($"https://reels.decentraland.org/{response.id}");
-                Application.OpenURL(response.url);
-                Application.OpenURL(response.thumbnailUrl);
-            }
         }
 
         private void EnableScreenshotCamera()

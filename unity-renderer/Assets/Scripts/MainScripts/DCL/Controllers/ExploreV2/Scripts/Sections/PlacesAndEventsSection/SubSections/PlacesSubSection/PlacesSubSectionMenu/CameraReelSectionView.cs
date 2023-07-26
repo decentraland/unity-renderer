@@ -5,7 +5,6 @@ using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TMPro;
 using UI.InWorldCamera.Scripts;
@@ -17,6 +16,8 @@ using Environment = DCL.Environment;
 public class CameraReelSectionView : MonoBehaviour
 {
     private const int LIMIT = 20;
+
+    private readonly List<GameObject> profiles = new ();
     [Header("Gallery view")]
     [SerializeField] private Button showMore;
     [SerializeField] internal Image prefab;
@@ -35,10 +36,16 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] internal GameObject profileCard;
     [SerializeField] internal Transform profileGridContrainer;
     [SerializeField] internal GameObject wearableCard;
+
     [SerializeField] internal Button downloadButton;
+    [SerializeField] internal Button deleteButton;
+    [SerializeField] internal Button linkButton;
+    [SerializeField] internal Button twitterButton;
 
     private Canvas gridCanvas;
     private int offset;
+
+    private CameraReelResponse currentScreenshot;
 
     public void Awake()
     {
@@ -50,11 +57,10 @@ public class CameraReelSectionView : MonoBehaviour
         showMore.onClick.AddListener(LoadImages);
         closeScreenshotView.onClick.AddListener(() => screenShotView.SetActive(false));
         downloadButton.onClick.AddListener(Download);
-    }
 
-    private void Download()
-    {
-        Application.OpenURL(currentScreenshot.url);
+        // deleteButton.onClick.AddListener(DeleteImage);
+        linkButton.onClick.AddListener(CopyLink);
+        // twitterButton.onClick.AddListener(CopyTwitterLink);
     }
 
     private void OnDisable()
@@ -62,6 +68,21 @@ public class CameraReelSectionView : MonoBehaviour
         showMore.onClick.RemoveAllListeners();
         downloadButton.onClick.RemoveAllListeners();
         closeScreenshotView.onClick.RemoveAllListeners();
+
+        deleteButton.onClick.RemoveAllListeners();
+        linkButton.onClick.RemoveAllListeners();
+        twitterButton.onClick.RemoveAllListeners();
+    }
+
+    private void CopyLink()
+    {
+        GUIUtility.systemCopyBuffer = $"https://reels.decentraland.org/{currentScreenshot.id}";
+        // Application.OpenURL($"https://reels.decentraland.org/{currentScreenshot.id}");
+    }
+
+    private void Download()
+    {
+        Application.OpenURL(currentScreenshot.url);
     }
 
     private async void LoadImages()
@@ -97,11 +118,11 @@ public class CameraReelSectionView : MonoBehaviour
         }
     }
 
-    private CameraReelResponse currentScreenshot;
     private IEnumerator ShowScreenshotWithMetadata(CameraReelResponse reel)
     {
         currentScreenshot = reel;
         screenShotView.SetActive(true);
+
         // Show Screenshot
         {
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
@@ -128,14 +149,15 @@ public class CameraReelSectionView : MonoBehaviour
         // Show Visible Persons
         foreach (GameObject p in profiles)
             Destroy(p);
+
         profiles.Clear();
 
-        var wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+        IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
 
-        foreach (var person in reel.metadata.visiblePeople)
+        foreach (VisiblePeople person in reel.metadata.visiblePeople)
         {
             GameObject profile = Instantiate(profileCard, profileGridContrainer);
-            var button = profile.GetComponentInChildren<ButtonComponentView>();
+            ButtonComponentView button = profile.GetComponentInChildren<ButtonComponentView>();
             button.SetText(person.userName);
             profile.gameObject.SetActive(true);
 
@@ -149,9 +171,9 @@ public class CameraReelSectionView : MonoBehaviour
     {
         foreach (string wearable in person.wearables)
         {
-            var wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
+            WearableItem wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
 
-            var button = Instantiate(wearableCard, parent).GetComponent<ButtonComponentView>();
+            ButtonComponentView button = Instantiate(wearableCard, parent).GetComponent<ButtonComponentView>();
             button.SetText(wearableItem.GetName());
 
             // Show Screenshot
@@ -165,7 +187,7 @@ public class CameraReelSectionView : MonoBehaviour
                 else
                 {
                     Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    var sprite  = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                    var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                     button.SetIcon(sprite);
                 }
@@ -174,6 +196,4 @@ public class CameraReelSectionView : MonoBehaviour
             button.gameObject.SetActive(true);
         }
     }
-
-    private readonly List<GameObject> profiles = new ();
 }
