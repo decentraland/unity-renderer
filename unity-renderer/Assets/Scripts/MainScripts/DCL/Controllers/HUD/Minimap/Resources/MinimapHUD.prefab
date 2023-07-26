@@ -3000,6 +3000,7 @@ GameObject:
   - component: {fileID: 3714597375162625211}
   - component: {fileID: 6092858593562593927}
   - component: {fileID: 5985667873791372442}
+  - component: {fileID: 3211705795413414728}
   m_Layer: 5
   m_Name: CopyLocationButton
   m_TagString: Untagged
@@ -3109,6 +3110,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3211705795413414728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290631435154145140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &7369622533085329868
 GameObject:
   m_ObjectHideFlags: 0

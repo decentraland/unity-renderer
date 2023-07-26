@@ -572,6 +572,7 @@ GameObject:
   - component: {fileID: 3613284109973235132}
   - component: {fileID: 1428625465161831531}
   - component: {fileID: 975921391264126493}
+  - component: {fileID: 2877273718104557471}
   m_Layer: 5
   m_Name: CopyBodyButton
   m_TagString: Untagged
@@ -702,6 +703,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2877273718104557471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5656691516279895309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &7075606557539565290
 GameObject:
   m_ObjectHideFlags: 0
