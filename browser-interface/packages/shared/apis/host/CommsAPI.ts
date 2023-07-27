@@ -6,6 +6,7 @@ import { RemoteParticipant } from 'livekit-client'
 import { getRealmAdapter } from 'shared/realm/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { dclWorldUrl, isDclEns } from 'shared/realm/resolver'
+import { getLivekitParticipants } from 'shared/comms/selectors'
 
 export function registerCommsApiServiceServerImplementation(port: RpcServerPort<PortContext>) {
     codegen.registerService(port, CommsApiServiceDefinition, async () => ({
@@ -19,9 +20,8 @@ export function registerCommsApiServiceServerImplementation(port: RpcServerPort<
                 return { streams: [] }
             }
 
-            // TODO: scene permissions
-
-            const participants: Map<string, RemoteParticipant> | undefined = (window as any).livekit_participants
+            // TODO: scene permissions?
+            const participants: Map<string, RemoteParticipant> | undefined = getLivekitParticipants(store.getState())
 
             if (!participants)
                 return { streams: [] }

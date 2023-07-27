@@ -1,6 +1,9 @@
 import future from 'fp-future'
+import { RemoteParticipant } from 'livekit-client'
 import { trackEvent } from 'shared/analytics/trackEvent'
+import { getLivekitParticipants } from 'shared/comms/selectors'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
+import { store } from 'shared/store/isolatedStore'
 
 const generatedFiles = {
   frameworkUrl: 'unity.framework.js',
@@ -74,6 +77,12 @@ export type CommonRendererOptions = {
   onMessage: (type: string, payload: string) => void
 }
 
+type EngineRequestsNames = keyof IEngineRequests
+
+interface IEngineRequests {
+  livekitVideoTrack: { videoTrackSrc: string }
+}
+
 function extractSemver(url: string): string | null {
   const r = url.match(/([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?/)
 
@@ -128,6 +137,24 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
     // This function is called from the unity renderer to send messages back to the scenes
     BinaryMessageFromEngine(data: Uint8Array) {
       if (!!onBinaryMessage) onBinaryMessage(data)
+    },
+
+    RequestFromEngine(request: { type: string, payload: any }) {
+      const requestType = request.type as EngineRequestsNames
+      return onRequest(requestType, request.payload)
+
+      function onRequest<T extends EngineRequestsNames>(type: T, payload: IEngineRequests[T]) {
+        if (type === 'livekitVideoTrack') {
+          const split = (payload as IEngineRequests['livekitVideoTrack']).videoTrackSrc.split('/')
+          if (split.length < 2)
+            return undefined
+
+          const videoSid = split[split.length - 1]
+          const participantSid = split[split.length - 2]
+          const participants: Map<string, RemoteParticipant> | undefined = getLivekitParticipants(store.getState())
+          return participants?.get(participantSid)?.videoTracks.get(videoSid)?.videoTrack?.mediaStream
+        }
+      }
     }
   }
 

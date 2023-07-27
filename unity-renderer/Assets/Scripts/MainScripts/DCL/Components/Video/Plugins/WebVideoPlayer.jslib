@@ -85,24 +85,8 @@ var WebVideoPlayer = {
 
             videoData["hlsInstance"] = hls;
         } else if (videoType === VIDEO_LIVEKIT) {
-            const split = videoUrl.split('/')
-            if (split.length > 2) {
-                const videoSid = split[split.length - 1]
-                const participantSid = split[split.length - 2]
-
-                // chaining operator not working
-                // window.livekit_participants?.get(participantSid)?.videoTracks.get(videoSid)?.mediaStream
-                const participants = window.livekit_participants
-                if (participants) {
-                    const participant = participants.get(participantSid)
-                    if (participant) {
-                        const videoTrack = participant.videoTracks.get(videoSid)
-                        if (videoTrack) {
-                            vid.srcObject = videoTrack.track.mediaStream
-                        }
-                    }
-                }
-            }
+            const mediaStream = window.DCL.RequestFromEngine({ type: 'livekitVideoTrack', payload: { videoTrackSrc: videoUrl } })
+            vid.srcObject = mediaStream
         } else {
             vid.src = videoUrl;
         }
