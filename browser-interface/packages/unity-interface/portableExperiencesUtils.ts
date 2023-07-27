@@ -88,7 +88,7 @@ export async function getPortableExperienceFromUrn(sceneUrn: string): Promise<Lo
   const baseUrl: string = resolvedEntity.baseUrl || new URL('.', resolvedUrl).toString()
 
   return {
-    id: sceneUrn,
+    id: removeQueryParamsFromUrn(sceneUrn),
     entity,
     baseUrl,
     parentCid: 'main'
