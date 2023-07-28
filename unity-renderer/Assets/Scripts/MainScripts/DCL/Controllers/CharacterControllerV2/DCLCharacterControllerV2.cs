@@ -22,6 +22,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly Vector3Variable cameraForward;
         private readonly Vector3Variable cameraRight;
 
+        private readonly CharacterState characterState;
+
         private SpeedState speedState;
         private bool isJumping;
         private float xAxis;
@@ -45,6 +47,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             RegisterInputEvents();
             speedState = SpeedState.JOG;
+            characterState = new CharacterState();
         }
 
         private void RegisterInputEvents()
@@ -111,28 +114,25 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             velocity.x = horizontalVelocity.x;
             velocity.z = horizontalVelocity.z;
-            velocity.y += data.gravity * deltaTime;
+
+            if (isGrounded)
+                velocity.y = data.gravity * deltaTime;
+            else
+                velocity.y += data.gravity * deltaTime;
 
             if (isJumping && isGrounded)
             {
+                characterState.Jump();
                 velocity.y += Mathf.Sqrt(-2 * data.jumpHeight * data.gravity);
                 isJumping = false;
             }
 
-            if (velocity.sqrMagnitude > float.Epsilon)
-            {
-                var collisionFlags = view.Move(velocity * deltaTime);
+            isGrounded = view.Move(velocity * deltaTime);
 
-                if ((collisionFlags & CollisionFlags.Below) != 0)
-                {
-                    velocity.y = 0;
-                    isGrounded = true;
-                }
-                else
-                {
-                    isGrounded = false;
-                }
-            }
+            characterState.IsGrounded = isGrounded;
+            characterState.FlatVelocity = horizontalVelocity;
+            characterState.SpeedState = speedState;
+            characterState.MaxVelocity = velocityLimit;
         }
 
         private float GetVelocityLimit()
@@ -145,5 +145,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                        _ => throw new ArgumentOutOfRangeException(),
                    };
         }
+
+        public CharacterState GetCharacterState() =>
+            characterState;
     }
 }

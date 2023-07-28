@@ -38,6 +38,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         try
         {
             addressableCts = new CancellationTokenSource();
+            // todo: load EmbeddedEmotes_Legacy when locomotion_v2 is disabled
             embeddedEmotesSo = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCts.Token);
         }
         catch (OperationCanceledException) { return; }

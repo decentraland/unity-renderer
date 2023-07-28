@@ -5,8 +5,6 @@ using DCL.Components;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
-using DCLServices.WearablesCatalogService;
-using GPUSkinning;
 using MainScripts.DCL.Controllers.CharacterController;
 using SocialFeaturesAnalytics;
 using System;
@@ -88,10 +86,13 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     {
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatar(
             avatarContainer,
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            GetCharacterAnimation(),
             NoLODs.i,
             new Visibility());
     }
+
+    private IAnimator GetCharacterAnimation() =>
+        GetComponentInChildren<IAnimator>();
 
     private IAvatar GetAvatarWithHologram()
     {
@@ -100,7 +101,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
             new BaseAvatar(baseAvatarReferences),
-            GetComponentInChildren<AvatarAnimatorLegacy>(),
+            GetCharacterAnimation(),
             NoLODs.i,
             new Visibility());
     }

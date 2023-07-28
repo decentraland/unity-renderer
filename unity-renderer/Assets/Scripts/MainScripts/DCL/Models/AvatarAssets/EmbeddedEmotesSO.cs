@@ -1,4 +1,5 @@
 ﻿using System;
+
 using UnityEngine;
 
 namespace DCL.Emotes
@@ -16,6 +17,9 @@ namespace DCL.Emotes
         public AnimationClip maleAnimation;
         public bool dontShowInBackpack;
 
-        public override bool ShowInBackpack() { return !dontShowInBackpack; }
+        public override bool ShowInBackpack()
+        {
+            return !dontShowInBackpack;
+        }
     }
 }

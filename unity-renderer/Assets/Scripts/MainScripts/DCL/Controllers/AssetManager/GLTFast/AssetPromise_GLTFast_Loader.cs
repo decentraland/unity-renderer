@@ -111,7 +111,8 @@ namespace DCL
                 {
                     GenerateMipMaps = false,
                     AnisotropicFilterLevel = 3,
-                    NodeNameMethod = NameImportMethod.OriginalUnique
+                    NodeNameMethod = NameImportMethod.OriginalUnique,
+                    AnimationMethod = AnimationMethod.Mecanim
                 };
 
                 bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken);

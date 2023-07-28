@@ -120,7 +120,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public void Start() { OnPoolGet(); }
 
     // AvatarSystem entry points
-    public bool Prepare(string bodyshapeId, GameObject container)
+    public void Prepare(string bodyshapeId, GameObject container)
     {
         animation = container.gameObject.GetOrCreateComponent<Animation>();
         container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
@@ -145,8 +145,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             }
 
         }
-
-        return true;
     }
 
     private void PrepareLocomotionAnims(string bodyshapeId)

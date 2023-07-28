@@ -2,6 +2,7 @@
 using System.Threading;
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Emotes
@@ -31,26 +32,29 @@ namespace DCL.Emotes
 
             Rendereable rendereable = await retriever.Retrieve(container, emote, bodyShapeId, ct);
 
+            AnimationClip animationClip = null;
             var animation = rendereable.container.GetComponentInChildren<Animation>();
 
-            if (animation == null)
+            if (animation != null)
             {
-                Debug.LogError("Animation component not found in the container for emote " + emote.id);
-                return;
+                animation.enabled = false;
+                animationClip = animation.clip;
             }
-
-            animation.enabled = false;
-            var animationClip = animation.clip;
+            else
+            {
+                animationClip = rendereable.animationClips.First();
+            }
 
             if (animationClip == null)
             {
-                Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
+                Debug.LogError("AnimationClip not found in the container for emote " + emote.id, rendereable.container);
                 return;
             }
 
             //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
             this.loadedAnimationClip = animationClip;
             animationClip.name = emote.id;
+
         }
 
         public void Dispose()

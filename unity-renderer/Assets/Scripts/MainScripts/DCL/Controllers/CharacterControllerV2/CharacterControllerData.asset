@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d11c1f01169f45bc9156e8579855e94d, type: 3}
   m_Name: CharacterControllerData
   m_EditorClassIdentifier: 
-  walkSpeed: 3
+  walkSpeed: 5
   jogSpeed: 10
   runSpeed: 15
-  acceleration: 50
-  airAcceleration: 10
-  gravity: -18
-  jumpHeight: 2
+  acceleration: 100
+  airAcceleration: 25
+  gravity: -9.81
+  jumpHeight: 3

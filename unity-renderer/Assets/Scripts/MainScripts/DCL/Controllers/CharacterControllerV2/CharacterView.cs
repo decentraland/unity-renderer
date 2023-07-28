@@ -15,6 +15,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
     public class CharacterView : MonoBehaviour, ICharacterView
     {
         [SerializeField] private UnityEngine.CharacterController characterController;
+        [SerializeField] private CharacterAnimationController animationController;
 
         [Header("Data")]
         [SerializeField] private CharacterControllerData data;
@@ -38,6 +39,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private void Awake()
         {
             controller = new DCLCharacterControllerV2(this, data, jumpAction, sprintAction, characterXAxis, characterYAxis, cameraForward, cameraRight);
+
+            animationController.SetupCharacterState(controller.GetCharacterState());
 
             // TODO: Remove this?
             CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
@@ -91,7 +94,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             var newPosition = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
             dataStorePlayer.lastTeleportPosition.Set(newPosition, notifyEvent: true);
 
-
             CharacterGlobals.characterPosition.worldPosition = newPosition;
             Environment.i.platform.physicsSyncController?.MarkDirty();
             CommonScriptableObjects.playerUnityPosition.Set(CharacterGlobals.characterPosition.unityPosition);
@@ -105,12 +107,11 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private void Update()
         {
             controller.Update(Time.deltaTime);
-
         }
 
-        public CollisionFlags Move(Vector3 delta)
+        public bool Move(Vector3 delta)
         {
-            CollisionFlags collisionFlags = characterController.Move(delta);
+            characterController.Move(delta);
 
             Vector3 transformPosition = transform.position;
 
@@ -118,7 +119,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             {
                 transform.position = new Vector3(transformPosition.x, 0, transformPosition.z);
             }
-            return collisionFlags;
+
+            return characterController.isGrounded;
         }
 
         public void SetForward(Vector3 forward)
@@ -148,7 +150,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             data.jumpHeight = DrawFloatSlider(baseWidth, separation1, data.jumpHeight, "jumpHeight");
         }
 
-
         private float DrawFloatSlider(int baseWidth, int separation1, float value, string label)
         {
             if (!valuesTemp.ContainsKey(label))
@@ -171,7 +172,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
     public interface ICharacterView
     {
-        CollisionFlags Move(Vector3 delta);
+        bool Move(Vector3 delta);
 
         void SetForward(Vector3 forward);
     }

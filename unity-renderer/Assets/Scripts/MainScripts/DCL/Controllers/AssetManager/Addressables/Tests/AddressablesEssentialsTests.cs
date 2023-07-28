@@ -19,6 +19,7 @@ public class AddressablesEssentialsTests
         var addressableProvider = new AddressableResourceProvider();
 
         //Act
+        // todo: load EmbeddedEmotes_Legacy when locomotion_v2 is disabled
         EmbeddedEmotesSO asset = await addressableProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset");
 
         //Assert

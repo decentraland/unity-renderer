@@ -8,7 +8,7 @@ AnimationClip:
   m_PrefabAsset: {fileID: 0}
   m_Name: Jump
   serializedVersion: 6
-  m_Legacy: 1
+  m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
   m_RotationCurves:

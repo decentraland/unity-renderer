@@ -36,6 +36,8 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             try
             {
                 addressableCTS = new CancellationTokenSource();
+
+                // todo: load EmbeddedEmotes_Legacy when locomotion_v2 is disabled
                 embeddedEmotesSO = await addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>("EmbeddedEmotes.asset", addressableCTS.Token);
             }
             catch (OperationCanceledException) { return; }
