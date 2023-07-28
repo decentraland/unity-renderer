@@ -1131,6 +1131,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9122324151661324192}
     m_Modifications:
+    - target: {fileID: 6305135970340749138, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
+        type: 3}
+      propertyPath: m_text
+      value: Channel copied
+      objectReference: {fileID: 0}
     - target: {fileID: 7841483112454866825, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_Name
