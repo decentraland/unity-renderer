@@ -29,6 +29,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal Color[] friendColors = null;
     [SerializeField] internal GameObject showMorePlacesButtonContainer;
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
+    [SerializeField] internal Button poiButton;
+    [SerializeField] internal GameObject poiDeselected;
+    [SerializeField] internal GameObject poiSelected;
+    [SerializeField] internal Button featuredButton;
+    [SerializeField] internal GameObject featuredDeselected;
+    [SerializeField] internal GameObject featuredSelected;
+    [SerializeField] internal DropdownComponentView sortDropdown;
 
     [SerializeField] private Canvas canvas;
 
@@ -44,6 +51,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void SetShowMoreButtonActive(bool isActive) => SetShowMorePlacesButtonActive(isActive);
     public int CurrentTilesPerRow => currentPlacesPerRow;
     public int CurrentGoingTilesPerRow { get; }
+    public string filter { get; private set; }
+    public string sort { get; private set; }
 
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
@@ -52,6 +61,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
+    public event Action OnFilterSorterChanged;
     public event Action OnShowMorePlacesClicked;
 
     public override void Awake()
@@ -68,12 +78,71 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
         showMorePlacesButton.onClick.RemoveAllListeners();
         showMorePlacesButton.onClick.AddListener(() => OnShowMorePlacesClicked?.Invoke());
-
+        poiButton.onClick.RemoveAllListeners();
+        poiButton.onClick.AddListener(ClickedOnPOI);
+        featuredButton.onClick.RemoveAllListeners();
+        featuredButton.onClick.AddListener(ClickedOnFeatured);
+        sortDropdown.OnOptionSelectionChanged += SortDropdownValueChanged;
+        filter = "";
+        sort = "";
         OnReady?.Invoke();
+    }
+
+    private void SortDropdownValueChanged(bool arg1, string arg2, string arg3)
+    {
+        sort = arg2;
+    }
+
+    private void ClickedOnFeatured()
+    {
+        if (filter == "only_featured=true")
+        {
+            filter = "";
+            SetPoiStatus(false);
+            SetFeaturedStatus(false);
+        }
+        else
+        {
+            filter = "only_featured=true";
+            SetPoiStatus(false);
+            SetFeaturedStatus(true);
+        }
+        OnFilterSorterChanged?.Invoke();
+    }
+
+    private void ClickedOnPOI()
+    {
+        if (filter == "only_pois=true")
+        {
+            filter = "";
+            SetPoiStatus(false);
+            SetFeaturedStatus(false);
+        }
+        else
+        {
+            filter = "only_pois=true";
+            SetPoiStatus(true);
+            SetFeaturedStatus(false);
+        }
+        OnFilterSorterChanged?.Invoke();
+    }
+
+    private void SetPoiStatus(bool isSelected)
+    {
+        poiDeselected.SetActive(!isSelected);
+        poiSelected.SetActive(isSelected);
+    }
+
+    private void SetFeaturedStatus(bool isSelected)
+    {
+        featuredDeselected.SetActive(!isSelected);
+        featuredSelected.SetActive(isSelected);
     }
 
     public override void OnEnable()
     {
+        filter = "";
+        sort = "";
         OnPlacesSubSectionEnable?.Invoke();
     }
 

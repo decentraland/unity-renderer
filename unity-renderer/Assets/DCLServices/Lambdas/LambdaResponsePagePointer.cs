@@ -56,7 +56,7 @@ namespace DCLServices.Lambdas
         /// </summary>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="OperationCanceledException"></exception>
-        public async UniTask<(T response, bool success)> GetPageAsync(int pageNum, CancellationToken localCancellationToken)
+        public async UniTask<(T response, bool success)> GetPageAsync(int pageNum, CancellationToken localCancellationToken = default, Dictionary<string, string> additionalData = null)
         {
             if (isDisposed)
                 throw new ObjectDisposedException(nameof(LambdaResponsePagePointer<T>));
@@ -76,7 +76,7 @@ namespace DCLServices.Lambdas
             if (localCancellationToken != CancellationToken.None && !localCancellationToken.Equals(ct))
                 ct = CancellationTokenSource.CreateLinkedTokenSource(this.cancellationToken, localCancellationToken).Token;
 
-            var res = await serviceConsumer.CreateRequest(constEndPoint, pageSize, pageNum, ct);
+            var res = await serviceConsumer.CreateRequest(constEndPoint, pageSize, pageNum, additionalData, ct);
 
             if (res.success)
             {

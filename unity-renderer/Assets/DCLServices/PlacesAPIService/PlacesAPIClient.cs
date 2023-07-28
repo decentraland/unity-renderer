@@ -14,7 +14,7 @@ namespace DCLServices.PlacesAPIService
     public interface IPlacesAPIClient
     {
         UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct);
-        UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct);
+        UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default);
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct);
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct);
@@ -55,10 +55,10 @@ namespace DCLServices.PlacesAPIService
             return response;
         }
 
-        public async UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct)
+        public async UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default)
         {
-            const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&offset={0}&limit={1}";
-            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), cancellationToken: ct, isSigned: true);
+            const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&offset={0}&limit={1}&{2}";
+            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize, filter), cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching most active places info:\n{result.error}");

@@ -14,7 +14,7 @@ namespace DCLServices.PlacesAPIService
     {
         UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> SearchPlaces(string searchText, int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
 
-        UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
+        UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default, bool renewCache = false);
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct, bool renewCache = false);
 
@@ -35,8 +35,7 @@ namespace DCLServices.PlacesAPIService
     {
         private readonly IPlacesAPIClient client;
 
-        internal readonly Dictionary<int, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> activePlacesPagePointers = new ();
-        internal readonly Dictionary<int, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> searchedPlacesPagePointers = new ();
+        internal readonly Dictionary<string, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> activePlacesPagePointers = new ();
         internal readonly Dictionary<string, IHotScenesController.PlaceInfo> placesById = new ();
         internal readonly Dictionary<Vector2Int, IHotScenesController.PlaceInfo> placesByCoords = new ();
 
@@ -61,26 +60,26 @@ namespace DCLServices.PlacesAPIService
             return (placesAPIResponse.data, placesAPIResponse.total);
         }
 
-        public async UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
+        public async UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)> GetMostActivePlaces(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default, bool renewCache = false)
         {
             var createNewPointer = false;
 
-            if (!activePlacesPagePointers.TryGetValue(pageSize, out var pagePointer)) { createNewPointer = true; }
+            if (!activePlacesPagePointers.TryGetValue($"{pageSize}_{filter}_{sort}", out var pagePointer)) { createNewPointer = true; }
             else if (renewCache)
             {
                 pagePointer.Dispose();
-                activePlacesPagePointers.Remove(pageSize);
+                activePlacesPagePointers.Remove($"{pageSize}_{filter}_{sort}");
                 createNewPointer = true;
             }
 
             if (createNewPointer)
             {
-                activePlacesPagePointers[pageSize] = pagePointer = new LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>(
+                activePlacesPagePointers[$"{pageSize}_{filter}_{sort}"] = pagePointer = new LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>(
                     $"", // not needed, the consumer will compose the URL
                     pageSize, disposeCts.Token, this, TimeSpan.FromSeconds(30));
             }
 
-            (IHotScenesController.PlacesAPIResponse response, bool _) = await pagePointer.GetPageAsync(pageNumber, ct);
+            (IHotScenesController.PlacesAPIResponse response, bool _) = await pagePointer.GetPageAsync(pageNumber, ct, new Dictionary<string, string>(){{"filter", filter},{"sort", sort}});
 
             foreach (IHotScenesController.PlaceInfo place in response.data)
             {
@@ -232,9 +231,9 @@ namespace DCLServices.PlacesAPIService
             foreach (Vector2Int placeInfoPosition in placeInfo.Positions) { placesByCoords[placeInfoPosition] = placeInfo; }
         }
 
-        public async UniTask<(IHotScenesController.PlacesAPIResponse response, bool success)> CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken ct)
+        public async UniTask<(IHotScenesController.PlacesAPIResponse response, bool success)> CreateRequest(string endPoint, int pageSize, int pageNumber, Dictionary<string,string> additionalData, CancellationToken ct = default)
         {
-            var response = await client.GetMostActivePlaces(pageNumber, pageSize, ct);
+            var response = await client.GetMostActivePlaces(pageNumber, pageSize,additionalData["filter"],additionalData["sort"], ct);
             // Client will handle most of the error handling and throw if needed
             return (response, true);
         }

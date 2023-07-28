@@ -5,6 +5,7 @@ using DCL.Social.Friends;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
+using Google.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnJumpInClicked -= OnJumpInToPlace;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
+        view.OnFilterSorterChanged -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
 
@@ -108,6 +110,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        view.OnFilterSorterChanged += RequestAllPlaces;
         cardsReloader.Initialize();
     }
 
@@ -134,13 +137,13 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         try
         {
-            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, view.filter, view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             placesFromAPI.Clear();
             placesFromAPI.AddRange(firstPage.places);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, view.filter, view.sort, ct);
                 placesFromAPI.AddRange(secondPage.places);
             }
 
@@ -159,7 +162,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, showMoreCts.Token);
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, view.filter, view.sort, showMoreCts.Token);
 
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));

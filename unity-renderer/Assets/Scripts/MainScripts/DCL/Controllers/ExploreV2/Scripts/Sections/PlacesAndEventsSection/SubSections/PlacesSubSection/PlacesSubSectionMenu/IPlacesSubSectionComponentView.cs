@@ -10,6 +10,9 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// </summary>
     Color[] currentFriendColors { get; }
 
+    string filter { get; }
+    string sort { get; }
+
     /// <summary>
     /// Number of places per row that fit with the current places grid configuration.
     /// </summary>
@@ -46,6 +49,7 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnPlacesSubSectionEnable;
+    event Action OnFilterSorterChanged;
 
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
