@@ -91,6 +91,7 @@ namespace DCL.Social.Passports
         [SerializeField] private ButtonComponentView viewAllNAMEs;
         [SerializeField] private ButtonComponentView viewAllLANDs;
         [SerializeField] private Button copyDescriptionButton;
+        [SerializeField] private ShowHideAnimator copyDescriptionToast;
 
         private static readonly Vector3 NFT_ICON_SCALE = new Vector3(0.75f, 0.75f, 0.75f);
         public event Action<string, string> OnClickBuyNft;
@@ -141,7 +142,12 @@ namespace DCL.Social.Passports
             viewAllEmotes.onClick.AddListener(() => OpenViewAllSection(PassportSection.Emotes));
             viewAllNAMEs.onClick.AddListener(() => OpenViewAllSection(PassportSection.Names));
             viewAllLANDs.onClick.AddListener(() => OpenViewAllSection(PassportSection.Lands));
-            copyDescriptionButton.onClick.AddListener(() => OnCopyDescription?.Invoke());
+            copyDescriptionButton.onClick.AddListener(() =>
+            {
+                OnCopyDescription?.Invoke();
+                copyDescriptionToast.gameObject.SetActive(true);
+                copyDescriptionToast.ShowDelayHide(3);
+            });
 
             descriptionText.SubscribeToClickEvents(OnDescriptionClicked);
             nftWearablesPagesEntryPool = GetNftPagesEntryPool(NFT_PAGES_POOL_NAME_PREFIX + "Wearables");
