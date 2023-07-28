@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCLServices.WearablesCatalogService;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 public class ScreenshotVisiblePersonView : MonoBehaviour
 {
@@ -100,5 +100,7 @@ public class ScreenshotVisiblePersonView : MonoBehaviour
             wearablesListContainer.gameObject.SetActive(isShowingWearablesList);
         else
             emptyWearablesListMessage.SetActive(isShowingWearablesList);
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(this.transform as RectTransform);
     }
 }
