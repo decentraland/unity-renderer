@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
@@ -21,7 +22,7 @@ public class UserContextMenuShould
     [UnitySetUp]
     public IEnumerator SetUp()
     {
-        var prefab = Resources.Load<UserContextMenu>("UserContextMenuPanel");
+        var prefab = AssetDatabase.LoadAssetAtPath<UserContextMenu>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/UserContextMenu/UserContextMenuPanel.prefab");
         contextMenu = Object.Instantiate(prefab);
         contextMenu.socialAnalytics = Substitute.For<ISocialAnalytics>();
 
