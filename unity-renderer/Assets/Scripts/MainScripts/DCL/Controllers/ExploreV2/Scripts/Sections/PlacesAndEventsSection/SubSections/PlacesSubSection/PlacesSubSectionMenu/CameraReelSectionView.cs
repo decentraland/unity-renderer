@@ -175,7 +175,7 @@ public class CameraReelSectionView : MonoBehaviour
             ProfileCardComponentView profile = Instantiate(profileCard, profileGridContrainer).GetComponent<ProfileCardComponentView>();
             profile.SetProfileName(person.userName);
             profile.SetProfileAddress(person.userAddress);
-            // profile.gameObject.SetActive(true);
+            profile.gameObject.SetActive(true);
 
             UpdateProfileIcon(person.userAddress, profile);
 
