@@ -1,10 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.CameraReelService;
-using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UI.InWorldCamera.Scripts;
@@ -86,22 +84,8 @@ namespace CameraReel.ScreenshotViewer
             {
                 ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContrainer);
 
-                ProfileCardComponentView profile = profileEntry.ProfileCard;
                 profiles.Add(profileEntry.gameObject);
-
-                profile.SetProfileName(visiblePerson.userName);
-                profile.SetProfileAddress(visiblePerson.userAddress);
-                UpdateProfileIcon(visiblePerson.userAddress, profile);
-
-                if (visiblePerson.isGuest)
-                    profileEntry.SetAsGuest();
-                else if (visiblePerson.wearables.Length > 0)
-                {
-                    profileEntry.WearablesListContainer.gameObject.SetActive(true);
-                    IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
-                    FetchWearables(visiblePerson, wearablesService, profileEntry);
-                }
-
+                profileEntry.Configure(visiblePerson);
                 profileEntry.gameObject.SetActive(true);
             }
         }
@@ -110,6 +94,7 @@ namespace CameraReel.ScreenshotViewer
         {
             sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
         }
+
         private void SetDateText(CameraReelResponse reel)
         {
             if (!long.TryParse(reel.metadata.dateTime, out long unixTimestamp)) return;
@@ -117,6 +102,7 @@ namespace CameraReel.ScreenshotViewer
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             dataTime.text = epoch.AddSeconds(unixTimestamp).ToLocalTime().ToString("MMMM dd, yyyy");
         }
+
         private async Task SetScreenshotImage(CameraReelResponse reel)
         {
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
@@ -129,48 +115,6 @@ namespace CameraReel.ScreenshotViewer
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 screenshotImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
-        }
-
-        private static async void UpdateProfileIcon(string userId, IProfileCardComponentView person)
-        {
-            UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId) ?? await UserProfileController.i.RequestFullUserProfileAsync(userId);
-
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(profile.face256SnapshotURL);
-            await request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-                Debug.Log(request.error);
-            else
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                person.SetProfilePicture(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
-            }
-        }
-
-        private async void FetchWearables(VisiblePerson person, IWearablesCatalogService wearablesService, ScreenshotVisiblePersonView profileEntry)
-        {
-            foreach (string wearable in person.wearables)
-            {
-                WearableItem wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
-                NFTIconComponentView wearableEntry = Instantiate(profileEntry.WearableTemplate, profileEntry.WearablesListContainer);
-
-                var newModel = new NFTIconComponentModel
-                {
-                    name = wearableItem.GetName(),
-                    imageURI = wearableItem.ComposeThumbnailUrl(),
-                    rarity = wearableItem.rarity,
-                    nftInfo = wearableItem.GetNftInfo(),
-                    marketplaceURI = wearableItem.GetMarketplaceLink(),
-                    showMarketplaceButton = true,
-                    showType = false,
-                    type = wearableItem.data.category,
-                };
-
-                wearableEntry.Configure(newModel);
-                wearableEntry.gameObject.SetActive(true);
-            }
-
-            profileEntry.WearablesListContainer.gameObject.SetActive(false);
         }
 
         private void CopyTwitterLink()
