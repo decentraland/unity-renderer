@@ -3,7 +3,9 @@ using DCLServices.CameraReelService;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
@@ -68,47 +70,32 @@ namespace CameraReel.ScreenshotViewer
             currentScreenshot = reel;
             gameObject.SetActive(true);
 
-            // Show Screenshot
-            {
-                UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
-                await request.SendWebRequest();
+            SetSceneInfoText(reel);
+            SetDateText(reel);
+            SetScreenshotImage(reel);
+            ShowVisiblePersons(reel);
+        }
 
-                if (request.result != UnityWebRequest.Result.Success)
-                    Debug.Log(request.error);
-                else
-                {
-                    sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
-
-                    Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    screenshotImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                }
-            }
-
-            // Show DateTime Metadata
-            if (long.TryParse(reel.metadata.dateTime, out long unixTimestamp))
-            {
-                var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                dataTime.text = epoch.AddSeconds(unixTimestamp).ToLocalTime().ToString("MMMM dd, yyyy");
-            }
-
-            // Show Visible Persons
+        private void ShowVisiblePersons(CameraReelResponse reel)
+        {
             foreach (GameObject profileGameObject in profiles)
                 Destroy(profileGameObject);
-
             profiles.Clear();
 
-            foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople)
+            foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy( person => person.isGuest).ThenByDescending(person => person.wearables.Length))
             {
-                ScreenshotVisiblePersonView profileEntry = Instantiate(this.profileEntryTemplate, profileGridContrainer);
-                ProfileCardComponentView profile = profileEntry.ProfileCard;
-                profile.SetProfileName(visiblePerson.userName);
-                profile.SetProfileAddress(visiblePerson.userAddress);
+                ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContrainer);
 
+                ProfileCardComponentView profile = profileEntry.ProfileCard;
                 profiles.Add(profileEntry.gameObject);
 
+                profile.SetProfileName(visiblePerson.userName);
+                profile.SetProfileAddress(visiblePerson.userAddress);
                 UpdateProfileIcon(visiblePerson.userAddress, profile);
 
-                if (visiblePerson.wearables.Length > 0)
+                if (visiblePerson.isGuest)
+                    profileEntry.SetAsGuest();
+                else if (visiblePerson.wearables.Length > 0)
                 {
                     profileEntry.WearablesListContainer.gameObject.SetActive(true);
                     IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
@@ -119,7 +106,32 @@ namespace CameraReel.ScreenshotViewer
             }
         }
 
-        private async void UpdateProfileIcon(string userId, ProfileCardComponentView person)
+        private void SetSceneInfoText(CameraReelResponse reel)
+        {
+            sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
+        }
+        private void SetDateText(CameraReelResponse reel)
+        {
+            if (!long.TryParse(reel.metadata.dateTime, out long unixTimestamp)) return;
+
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            dataTime.text = epoch.AddSeconds(unixTimestamp).ToLocalTime().ToString("MMMM dd, yyyy");
+        }
+        private async Task SetScreenshotImage(CameraReelResponse reel)
+        {
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
+            await request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+                Debug.Log(request.error);
+            else
+            {
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                screenshotImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            }
+        }
+
+        private static async void UpdateProfileIcon(string userId, IProfileCardComponentView person)
         {
             UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId) ?? await UserProfileController.i.RequestFullUserProfileAsync(userId);
 
@@ -141,7 +153,8 @@ namespace CameraReel.ScreenshotViewer
             {
                 WearableItem wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
                 NFTIconComponentView wearableEntry = Instantiate(profileEntry.WearableTemplate, profileEntry.WearablesListContainer);
-                NFTIconComponentModel newModel = new NFTIconComponentModel
+
+                var newModel = new NFTIconComponentModel
                 {
                     name = wearableItem.GetName(),
                     imageURI = wearableItem.ComposeThumbnailUrl(),
@@ -156,6 +169,8 @@ namespace CameraReel.ScreenshotViewer
                 wearableEntry.Configure(newModel);
                 wearableEntry.gameObject.SetActive(true);
             }
+
+            profileEntry.WearablesListContainer.gameObject.SetActive(false);
         }
 
         private void CopyTwitterLink()
