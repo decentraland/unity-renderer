@@ -10,6 +10,7 @@ using TMPro;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -17,7 +18,7 @@ public class CameraReelSectionView : MonoBehaviour
 {
     private const int LIMIT = 20;
 
-    private readonly List<ProfileCardComponentView> profiles = new ();
+    private readonly List<GameObject> profiles = new ();
     [Header("Gallery view")]
     [SerializeField] private Button showMore;
     [SerializeField] internal Image prefab;
@@ -33,9 +34,9 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] private TMP_Text dataTime;
     [SerializeField] private TMP_Text sceneInfo;
 
-    [SerializeField] internal GameObject profileCard;
+    [FormerlySerializedAs("profileEntry")] [SerializeField] internal ScreenshotVisiblePersonView profileEntryTemplate;
     [SerializeField] internal Transform profileGridContrainer;
-    [SerializeField] internal GameObject wearableCard;
+    [SerializeField] private NFTItemInfo nftItemInfo;
 
     [SerializeField] internal Button downloadButton;
     [SerializeField] internal Button deleteButton;
@@ -165,24 +166,31 @@ public class CameraReelSectionView : MonoBehaviour
         }
 
         // Show Visible Persons
-        foreach (ProfileCardComponentView p in profiles)
-            Destroy(p.gameObject);
+        foreach (GameObject profileGameObject in profiles)
+            Destroy(profileGameObject);
 
         profiles.Clear();
 
-        foreach (VisiblePerson person in reel.metadata.visiblePeople)
+
+        foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople)
         {
-            ProfileCardComponentView profile = Instantiate(profileCard, profileGridContrainer).GetComponent<ProfileCardComponentView>();
-            profile.SetProfileName(person.userName);
-            profile.SetProfileAddress(person.userAddress);
+            ScreenshotVisiblePersonView profileEntry = Instantiate(this.profileEntryTemplate, profileGridContrainer);
+
+            ProfileCardComponentView profile = profileEntry.ProfileCard;
+            profile.SetProfileName(visiblePerson.userName);
+            profile.SetProfileAddress(visiblePerson.userAddress);
             profile.gameObject.SetActive(true);
 
-            UpdateProfileIcon(person.userAddress, profile);
+            profiles.Add(profileEntry.gameObject);
 
-            profiles.Add(profile);
+            UpdateProfileIcon(visiblePerson.userAddress, profile);
 
-            // IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
-            // FetchWearables(person, wearablesService, profile.gameObject.transform);
+            if(visiblePerson.wearables.Length > 0)
+            {
+                profileEntry.WearablesListContainer.gameObject.SetActive(true);
+                IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+                FetchWearables(visiblePerson, wearablesService, profileEntry);
+            }
         }
     }
 
@@ -202,33 +210,49 @@ public class CameraReelSectionView : MonoBehaviour
         }
     }
 
-    private async void FetchWearables(VisiblePerson person, IWearablesCatalogService wearablesService, Transform parent)
+    private async void FetchWearables(VisiblePerson person, IWearablesCatalogService wearablesService, ScreenshotVisiblePersonView profileEntry)
     {
         foreach (string wearable in person.wearables)
         {
             WearableItem wearableItem = await wearablesService.RequestWearableAsync(wearable, default(CancellationToken));
 
-            ButtonComponentView button = Instantiate(wearableCard, parent).GetComponent<ButtonComponentView>();
-            button.SetText(wearableItem.GetName());
-
-            // Show Screenshot
-            {
-                UnityWebRequest request = UnityWebRequestTexture.GetTexture(wearableItem.ComposeThumbnailUrl());
-
-                await request.SendWebRequest();
-
-                if (request.result != UnityWebRequest.Result.Success)
-                    Debug.Log(request.error);
-                else
+            NFTIconComponentView wearableEntry = Instantiate(profileEntry.WearableTemplate, profileEntry.WearablesListContainer);
+            NFTIconComponentModel newModel = new NFTIconComponentModel
                 {
-                    Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                    var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                    name = wearableItem.GetName(),
+                    imageURI = wearableItem.ComposeThumbnailUrl(),
+                    rarity = wearableItem.rarity,
+                    nftInfo = wearableItem.GetNftInfo(),
+                    marketplaceURI = wearableItem.GetMarketplaceLink(),
+                    showMarketplaceButton = true,
+                    showType = false,
+                    type = wearableItem.data.category,
+                };
 
-                    button.SetIcon(sprite);
-                }
-            }
+            wearableEntry.Configure(newModel);
+            // // Show Screenshot
+            // {
+            //     UnityWebRequest request = UnityWebRequestTexture.GetTexture(wearableItem.ComposeThumbnailUrl());
+            //
+            //     await request.SendWebRequest();
+            //
+            //     if (request.result != UnityWebRequest.Result.Success)
+            //         Debug.Log(request.error);
+            //     else
+            //     {
+            //         Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            //         var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            //
+            //         newModel.imageURI = wearableItem.ComposeThumbnailUrl();
+            //         newModel.isOwned = true;
+            //
+            //
+            //         wearableEntry.Configure(newModel);
+            //             ConfigureNFTItemInfo(nftItemInfo, wearableItem, true);
+            //     }
+            // }
 
-            button.gameObject.SetActive(true);
+            wearableEntry.gameObject.SetActive(true);
         }
     }
 }
