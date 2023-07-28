@@ -17,7 +17,7 @@ public class CameraReelSectionView : MonoBehaviour
 {
     private const int LIMIT = 20;
 
-    private readonly List<GameObject> profiles = new ();
+    private readonly List<ProfileCardComponentView> profiles = new ();
     [Header("Gallery view")]
     [SerializeField] private Button showMore;
     [SerializeField] internal Image prefab;
@@ -165,29 +165,28 @@ public class CameraReelSectionView : MonoBehaviour
         }
 
         // Show Visible Persons
-        foreach (GameObject p in profiles)
-            Destroy(p);
+        foreach (ProfileCardComponentView p in profiles)
+            Destroy(p.gameObject);
 
         profiles.Clear();
 
-        IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
-
         foreach (VisiblePerson person in reel.metadata.visiblePeople)
         {
-            GameObject profile = Instantiate(profileCard, profileGridContrainer);
-            ButtonComponentView button = profile.GetComponentInChildren<ButtonComponentView>();
-            button.SetText(person.userName);
-            profile.gameObject.SetActive(true);
+            ProfileCardComponentView profile = Instantiate(profileCard, profileGridContrainer).GetComponent<ProfileCardComponentView>();
+            profile.SetProfileName(person.userName);
+            profile.SetProfileAddress(person.userAddress);
+            // profile.gameObject.SetActive(true);
 
-            UpdateProfileIcon(person.userAddress, button);
+            UpdateProfileIcon(person.userAddress, profile);
 
             profiles.Add(profile);
 
-            FetchWearables(person, wearablesService, profile.gameObject.transform);
+            // IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+            // FetchWearables(person, wearablesService, profile.gameObject.transform);
         }
     }
 
-    private async void UpdateProfileIcon(string userId, ButtonComponentView button)
+    private async void UpdateProfileIcon(string userId, ProfileCardComponentView person)
     {
         UserProfile profile = UserProfileController.userProfilesCatalog.Get(userId) ?? await UserProfileController.i.RequestFullUserProfileAsync(userId);
 
@@ -199,7 +198,7 @@ public class CameraReelSectionView : MonoBehaviour
         else
         {
             Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            button.SetIcon(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
+            person.SetProfilePicture(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
         }
     }
 

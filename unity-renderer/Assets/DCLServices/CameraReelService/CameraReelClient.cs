@@ -53,7 +53,7 @@ namespace DCLServices.CameraReelService
                 new MultipartFormDataSection("metadata", JsonUtility.ToJson(metadata)),
             };
 
-            UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData,  isSigned: true, cancellationToken: ct);
             return ParseScreenshotResponse(result, unSuccessResultMassage: "Error uploading screenshot");
         }
 
