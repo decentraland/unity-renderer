@@ -51,6 +51,7 @@ public class CameraReelSectionView : MonoBehaviour
     public void Awake()
     {
         gridCanvas = gridContrainer.GetComponent<Canvas>();
+        profileEntryTemplate.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -175,11 +176,9 @@ public class CameraReelSectionView : MonoBehaviour
         foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople)
         {
             ScreenshotVisiblePersonView profileEntry = Instantiate(this.profileEntryTemplate, profileGridContrainer);
-
             ProfileCardComponentView profile = profileEntry.ProfileCard;
             profile.SetProfileName(visiblePerson.userName);
             profile.SetProfileAddress(visiblePerson.userAddress);
-            profile.gameObject.SetActive(true);
 
             profiles.Add(profileEntry.gameObject);
 
@@ -191,6 +190,8 @@ public class CameraReelSectionView : MonoBehaviour
                 IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
                 FetchWearables(visiblePerson, wearablesService, profileEntry);
             }
+
+            profileEntry.gameObject.SetActive(true);
         }
     }
 
