@@ -1162,13 +1162,22 @@ MonoBehaviour:
   placeNameOnIdleText: {fileID: 6451535475317719883}
   placeNameOnFocusText: {fileID: 0}
   placeDescText: {fileID: 2442989255529211191}
-  placeAuthorText: {fileID: 137311636302676078}
+  placeAuthorOnIdleText: {fileID: 137311636302676078}
+  placeAuthorOnFocusText: {fileID: 0}
+  userVisitsText: {fileID: 0}
+  userRatingText: {fileID: 0}
   numberOfUsersText: {fileID: 0}
   coordsText: {fileID: 3036884130066497032}
   modalBackgroundButton: {fileID: 9072824849294888897}
   closeCardButton: {fileID: 9179686715425177228}
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   infoButton: {fileID: 0}
+  upvoteButton: {fileID: 0}
+  downvoteButton: {fileID: 0}
+  upvoteOff: {fileID: 0}
+  upvoteOn: {fileID: 0}
+  downvoteOff: {fileID: 0}
+  downvoteOn: {fileID: 0}
   jumpinButton: {fileID: 5143636963063585730}
   friendsGrid: {fileID: 0}
   imageContainer: {fileID: 1969214295826712859}
@@ -1190,19 +1199,13 @@ MonoBehaviour:
     placeDescription: This is a test description...
     placeAuthor: Author <b>Name</b>
     numberOfUsers: 0
+    userVisits: 0
+    isUpvote: 0
+    isDownvote: 0
+    userRating: 0
     coords: {x: 0, y: 0}
     parcels: []
     isFavorite: 0
-    hotSceneInfo:
-      id: 
-      name: 
-      creator: 
-      description: 
-      thumbnail: 
-      baseCoords: {x: 0, y: 0}
-      parcels: []
-      usersTotalCount: 0
-      realms: []
     placeInfo:
       id: 
       title: 
@@ -1211,6 +1214,7 @@ MonoBehaviour:
       owner: 
       tags: []
       positions: []
+      Positions: []
       base_position: 
       contact_name: 
       contact_email: 
