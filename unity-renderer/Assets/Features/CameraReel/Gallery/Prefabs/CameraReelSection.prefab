@@ -147,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storageBar: {fileID: 6935866532503718208}
+  storageText: {fileID: 7111862958578208401}
   galleryView: {fileID: 2095025394756811457}
   screenshotViewer: {fileID: 0}
 --- !u!1 &9034640272514066781
@@ -1126,6 +1127,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7111862958578208401 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9133666086165988265, guid: 30d342c895b80e144903119d8c05dd0a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2050023246478495032}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8083605386500987151 stripped

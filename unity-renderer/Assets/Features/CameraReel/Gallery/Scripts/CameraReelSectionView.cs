@@ -1,12 +1,16 @@
 using CameraReel.Gallery;
 using CameraReel.ScreenshotViewer;
 using DCLServices.CameraReelService;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CameraReelSectionView : MonoBehaviour
 {
+
+
     [SerializeField] private Slider storageBar;
+    [SerializeField] private TMP_Text storageText;
 
     [SerializeField] private CameraReelGalleryView galleryView;
     [SerializeField] private ScreenshotViewerHUDView screenshotViewer;
@@ -34,8 +38,11 @@ public class CameraReelSectionView : MonoBehaviour
 
     private void UpdateStorageBar((int current, int max) storage)
     {
+        storageText.text = $"Storage status: {storage.current}/{storage.max} photo taken";
+
+        storageBar.maxValue = storage.max;
         storageBar.value = storage.current;
-        storageBar.maxValue = storage.max;;
+        storageBar.gameObject.SetActive(true);
     }
 
     private void ShowScreenshotWithMetadata(CameraReelResponse reel)
