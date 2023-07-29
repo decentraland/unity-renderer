@@ -10648,6 +10648,11 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 669525209913506011, guid: 02c9c3e59ec665748b30c0ca02b0f871,
+        type: 3}
+      propertyPath: screenshotViewer
+      value: 
+      objectReference: {fileID: 7907428067848416994}
     - target: {fileID: 1005009549659147678, guid: 02c9c3e59ec665748b30c0ca02b0f871,
         type: 3}
       propertyPath: m_AnchorMax.y
