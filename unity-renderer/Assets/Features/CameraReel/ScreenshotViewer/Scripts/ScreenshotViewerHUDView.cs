@@ -18,6 +18,7 @@ namespace CameraReel.ScreenshotViewer
         private readonly List<GameObject> profiles = new ();
 
         [SerializeField] private Image screenshotImage;
+        [SerializeField] internal PanelSizeModeAnimator panelSizeModeAnimator;
 
         [Header("NAVIGATION BUTTONS")]
         [SerializeField] private Button closeView;
@@ -27,6 +28,7 @@ namespace CameraReel.ScreenshotViewer
         [SerializeField] internal Button deleteButton;
         [SerializeField] internal Button linkButton;
         [SerializeField] internal Button twitterButton;
+        [SerializeField] internal Button infoButton;
 
         [Header("INFORMATION PANEL")]
         [SerializeField] private TMP_Text dataTime;
@@ -47,10 +49,12 @@ namespace CameraReel.ScreenshotViewer
         {
             closeView.onClick.AddListener(() => gameObject.SetActive(false));
 
-            downloadButton.onClick.AddListener(Download);
+            downloadButton.onClick.AddListener(DownloadImage);
             deleteButton.onClick.AddListener(DeleteImage);
             linkButton.onClick.AddListener(CopyLink);
             twitterButton.onClick.AddListener(CopyTwitterLink);
+
+            infoButton.onClick.AddListener(ToggleMetadataPanel);
         }
 
         private void OnDisable()
@@ -61,9 +65,16 @@ namespace CameraReel.ScreenshotViewer
             deleteButton.onClick.RemoveAllListeners();
             linkButton.onClick.RemoveAllListeners();
             twitterButton.onClick.RemoveAllListeners();
+
+            infoButton.onClick.RemoveAllListeners();
         }
 
-        public async void Show(CameraReelResponse reel)
+        private void ToggleMetadataPanel()
+        {
+            panelSizeModeAnimator.ToggleSizeMode();
+        }
+
+        public void Show(CameraReelResponse reel)
         {
             currentScreenshot = reel;
             gameObject.SetActive(true);
@@ -78,9 +89,10 @@ namespace CameraReel.ScreenshotViewer
         {
             foreach (GameObject profileGameObject in profiles)
                 Destroy(profileGameObject);
+
             profiles.Clear();
 
-            foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy( person => person.isGuest).ThenByDescending(person => person.wearables.Length))
+            foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
             {
                 ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContrainer);
 
@@ -135,7 +147,7 @@ namespace CameraReel.ScreenshotViewer
             Application.OpenURL(url);
         }
 
-        private void Download()
+        private void DownloadImage()
         {
             Application.OpenURL(currentScreenshot.url);
         }
