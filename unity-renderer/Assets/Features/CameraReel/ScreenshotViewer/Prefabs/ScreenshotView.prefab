@@ -1296,7 +1296,8 @@ MonoBehaviour:
   infoButton: {fileID: 1785379996272778809}
   infoPanelTextButton: {fileID: 2370975110819273519}
   dataTime: {fileID: 1825401341386507051}
-  sceneInfo: {fileID: 6916888363915532654}
+  sceneInfo: {fileID: 7883359387345562062}
+  sceneInfoButton: {fileID: 2251760877796885514}
   profileEntryTemplate: {fileID: 2295598390666694304}
   profileGridContrainer: {fileID: 1949720824290588837}
 --- !u!1 &4241874738425812757
@@ -2066,6 +2067,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1949720824290588837}
     m_Modifications:
+    - target: {fileID: 88618477953342369, guid: 265a497ea4c730246958e732ee9b8f7d,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 2771610990336384369, guid: 265a497ea4c730246958e732ee9b8f7d,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3158,6 +3164,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9655de17706cf24888b3691e237c46d, type: 3}
+--- !u!114 &2251760877796885514 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7717550497078844843, guid: a9655de17706cf24888b3691e237c46d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8369346030037277089}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6419293128490376397 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3256114392390223212, guid: a9655de17706cf24888b3691e237c46d,

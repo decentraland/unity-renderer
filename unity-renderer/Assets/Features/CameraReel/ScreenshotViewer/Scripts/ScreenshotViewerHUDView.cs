@@ -36,6 +36,7 @@ namespace CameraReel.ScreenshotViewer
         [Header("INFORMATION PANEL")]
         [SerializeField] private TMP_Text dataTime;
         [SerializeField] private TMP_Text sceneInfo;
+        [SerializeField] private Button sceneInfoButton;
 
         [Header("VISIBLE PEOPLE PANEL")]
         [SerializeField] internal ScreenshotVisiblePersonView profileEntryTemplate;
@@ -63,6 +64,8 @@ namespace CameraReel.ScreenshotViewer
 
             infoButton.onClick.AddListener(ToggleMetadataPanel);
             infoPanelTextButton.onClick.AddListener(ToggleMetadataPanel);
+
+            sceneInfoButton.onClick.AddListener(JumpInScene);
         }
 
         private void OnDisable()
@@ -76,6 +79,12 @@ namespace CameraReel.ScreenshotViewer
 
             infoButton.onClick.RemoveAllListeners();
             infoPanelTextButton.onClick.RemoveAllListeners();
+        }
+
+        private void JumpInScene()
+        {
+            if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+                Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
         }
 
         private void ToggleMetadataPanel()
