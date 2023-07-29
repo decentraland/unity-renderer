@@ -15,10 +15,12 @@ namespace CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerHUDView : MonoBehaviour
     {
+        private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
+
         private readonly List<GameObject> profiles = new ();
 
         [SerializeField] private Image screenshotImage;
-        [SerializeField] internal PanelSizeModeAnimator panelSizeModeAnimator;
+        [SerializeField] private RectTransform rootContainer;
 
         [Header("NAVIGATION BUTTONS")]
         [SerializeField] private Button closeView;
@@ -29,6 +31,7 @@ namespace CameraReel.ScreenshotViewer
         [SerializeField] internal Button linkButton;
         [SerializeField] internal Button twitterButton;
         [SerializeField] internal Button infoButton;
+        [SerializeField] internal Button infoPanelTextButton;
 
         [Header("INFORMATION PANEL")]
         [SerializeField] private TMP_Text dataTime;
@@ -40,9 +43,13 @@ namespace CameraReel.ScreenshotViewer
 
         private CameraReelResponse currentScreenshot;
 
+        private MetadataSidePanelAnimator metadataSidePanelAnimator;
+        private bool metadataPanelIsOpen = true;
+
         public void Awake()
         {
             profileEntryTemplate.gameObject.SetActive(false);
+            metadataSidePanelAnimator = new MetadataSidePanelAnimator(rootContainer, infoButton.image);
         }
 
         private void OnEnable()
@@ -55,6 +62,7 @@ namespace CameraReel.ScreenshotViewer
             twitterButton.onClick.AddListener(CopyTwitterLink);
 
             infoButton.onClick.AddListener(ToggleMetadataPanel);
+            infoPanelTextButton.onClick.AddListener(ToggleMetadataPanel);
         }
 
         private void OnDisable()
@@ -67,11 +75,13 @@ namespace CameraReel.ScreenshotViewer
             twitterButton.onClick.RemoveAllListeners();
 
             infoButton.onClick.RemoveAllListeners();
+            infoPanelTextButton.onClick.RemoveAllListeners();
         }
 
         private void ToggleMetadataPanel()
         {
-            panelSizeModeAnimator.ToggleSizeMode();
+            metadataSidePanelAnimator.ToggleSizeMode(toFullScreen: metadataPanelIsOpen, SIDE_PANEL_ANIM_DURATION);
+            metadataPanelIsOpen = !metadataPanelIsOpen;
         }
 
         public void Show(CameraReelResponse reel)
