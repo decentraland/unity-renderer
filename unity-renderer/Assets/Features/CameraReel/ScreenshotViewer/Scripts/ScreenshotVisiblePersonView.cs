@@ -39,7 +39,10 @@ public class ScreenshotVisiblePersonView : MonoBehaviour
         UpdateProfileIcon(visiblePerson.userAddress, profileCard);
 
         if (visiblePerson.isGuest)
+        {
             isGuestImage.SetActive(true);
+            wearablesListButton.interactable = false;
+        }
         else if (visiblePerson.wearables.Length > 0)
         {
             IWearablesCatalogService wearablesService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
