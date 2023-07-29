@@ -11,10 +11,11 @@ public class CameraReelSectionView : MonoBehaviour
 {
     private const int LIMIT = 20;
 
-    [Header("GALLERY VIEW")]
-    [SerializeField] private Button showMore;
-    [SerializeField] internal Image prefab;
     [SerializeField] internal GridContainerComponentView gridContrainer;
+    [SerializeField] internal Image prefab;
+
+    [SerializeField] private Slider storageBar;
+    [SerializeField] private Button showMore;
 
     [Space(10)]
     [SerializeField] private ScreenshotViewerHUDView screenshotViewer;
@@ -55,14 +56,17 @@ public class CameraReelSectionView : MonoBehaviour
     private async void LoadImages()
     {
         ICameraReelNetworkService cameraReelNetworkService = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
-        CameraReelResponse[] reelImages = await cameraReelNetworkService.GetScreenshotGallery(DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
+        CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
+
+        storageBar.value = reelImages.currentImages;
+        storageBar.maxValue = reelImages.maxImages;
 
         offset += LIMIT;
 
-        StartCoroutine(DownloadImageAndCreateObject(reelImages));
+        StartCoroutine(DownloadImageAndCreateObject(reelImages.images));
     }
 
-    private IEnumerator DownloadImageAndCreateObject(CameraReelResponse[] reelImages)
+    private IEnumerator DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
     {
         foreach (CameraReelResponse reel in reelImages)
         {

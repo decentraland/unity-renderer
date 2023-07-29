@@ -7,7 +7,6 @@ using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 
 namespace DCLServices.CameraReelService
 {
@@ -15,8 +14,6 @@ namespace DCLServices.CameraReelService
     {
         private const string IMAGE_BASE_URL = "https://camera-reel-service.decentraland.zone/api/images";
         private const string GALLERY_BASE_URL = "https://camera-reel-service.decentraland.zone/api/users";
-        // https://camera-reel-service.decentraland.zone/api/users/0x05de05303eab867d51854e8b4fe03f7acb0624d9/images
-        // https://camera-reel-service.decentraland.zone/api/users/0x05de05303eab867d51854e8b4fe03f7acb0624d9/images?limit=2&offset=0
 
         private readonly IWebRequestController webRequestController;
 
@@ -25,7 +22,7 @@ namespace DCLServices.CameraReelService
             this.webRequestController = webRequestController;
         }
 
-        public async UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
+        public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
 
@@ -37,13 +34,10 @@ namespace DCLServices.CameraReelService
             if (responseData == null)
                 throw new Exception($"Error parsing screenshots gallery response:\n{result.downloadHandler.text}");
 
-            Debug.Log(responseData.currentImages);
-            Debug.Log(responseData.maxImages);
-
             foreach (CameraReelResponse response in responseData.images)
                 ResponseSanityCheck(response, result.downloadHandler.text);
 
-            return responseData.images.ToArray();
+            return responseData;
         }
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
@@ -63,12 +57,6 @@ namespace DCLServices.CameraReelService
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
-        }
-
-        public async UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct)
-        {
-            UnityWebRequest result = await webRequestController.GetAsync($"{IMAGE_BASE_URL}/{uuid}", cancellationToken: ct);
-            return ParseScreenshotResponse(result, unSuccessResultMassage: "Error fetching screenshot image with metadata");
         }
 
         private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMassage)

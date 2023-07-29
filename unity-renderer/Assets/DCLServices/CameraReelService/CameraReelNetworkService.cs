@@ -18,10 +18,7 @@ namespace DCLServices.CameraReelService
 
         public void Dispose() { }
 
-        public async UniTask<CameraReelResponse> GetScreenshot(string uuid, CancellationToken ct) =>
-            await client.GetScreenshot(uuid, ct);
-
-        public async UniTask<CameraReelResponse[]> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
+        public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
             await client.GetScreenshotGallery(userAddress, limit, offset, ct);
 
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct) =>
