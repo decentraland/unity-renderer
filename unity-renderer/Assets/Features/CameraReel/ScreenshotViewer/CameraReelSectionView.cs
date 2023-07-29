@@ -2,10 +2,10 @@ using CameraReel.ScreenshotViewer;
 using DCL;
 using DCLServices.CameraReelService;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using Environment = DCL.Environment;
 
 public class CameraReelSectionView : MonoBehaviour
 {
@@ -20,15 +20,36 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] private ScreenshotViewerHUDView screenshotViewer;
 
     private int offset;
+    private readonly LinkedList<CameraReelResponse> reels = new ();
 
     private void OnEnable()
     {
         showMore.onClick.AddListener(LoadImages);
+        screenshotViewer.PrevScreenshotClicked += LoadPrevScreenshot;
+        screenshotViewer.NextScreenshotClicked += LoadNextScreenshot;
     }
 
     private void OnDisable()
     {
         showMore.onClick.RemoveAllListeners();
+        screenshotViewer.PrevScreenshotClicked -= LoadPrevScreenshot;
+        screenshotViewer.NextScreenshotClicked -= LoadNextScreenshot;
+    }
+
+    private void LoadNextScreenshot(CameraReelResponse current)
+    {
+        CameraReelResponse next = reels.Find(current)?.Next?.Value;
+
+        if (next != null)
+            ShowScreenshotWithMetadata(next);
+    }
+
+    private void LoadPrevScreenshot(CameraReelResponse current)
+    {
+        CameraReelResponse prev = reels.Find(current)?.Previous?.Value;
+
+        if (prev != null)
+            ShowScreenshotWithMetadata(prev);
     }
 
     private async void LoadImages()
@@ -45,6 +66,8 @@ public class CameraReelSectionView : MonoBehaviour
     {
         foreach (CameraReelResponse reel in reelImages)
         {
+            reels.AddLast(reel);
+
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
             yield return request.SendWebRequest();
 

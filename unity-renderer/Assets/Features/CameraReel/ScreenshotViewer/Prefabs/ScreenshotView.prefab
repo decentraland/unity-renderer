@@ -1289,6 +1289,8 @@ MonoBehaviour:
   screenshotImage: {fileID: 2939665440784465048}
   rootContainer: {fileID: 1522328342354028589}
   closeView: {fileID: 2407029326180614974}
+  prevScreenshotButton: {fileID: 5459027054078162034}
+  nextScreenshotButton: {fileID: 1136926198915509957}
   downloadButton: {fileID: 8182032445057779325}
   deleteButton: {fileID: 380981886299163808}
   linkButton: {fileID: 5028877316584621841}
@@ -2042,6 +2044,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef36d92936f59874a9727d64cf7b2725, type: 3}
+--- !u!114 &1136926198915509957 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1917638845293333306, guid: ef36d92936f59874a9727d64cf7b2725,
+    type: 3}
+  m_PrefabInstance: {fileID: 1539102990995203583}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1137013283542355599 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1917554372015025008, guid: ef36d92936f59874a9727d64cf7b2725,
@@ -2051,6 +2065,18 @@ RectTransform:
 --- !u!114 &2407029326180614974 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3764026803001435841, guid: ef36d92936f59874a9727d64cf7b2725,
+    type: 3}
+  m_PrefabInstance: {fileID: 1539102990995203583}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5459027054078162034 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6816657815270183309, guid: ef36d92936f59874a9727d64cf7b2725,
     type: 3}
   m_PrefabInstance: {fileID: 1539102990995203583}
   m_PrefabAsset: {fileID: 0}

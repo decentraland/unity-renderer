@@ -15,6 +15,9 @@ namespace CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerHUDView : MonoBehaviour
     {
+        public event Action<CameraReelResponse> PrevScreenshotClicked;
+        public event Action<CameraReelResponse> NextScreenshotClicked;
+
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
         private readonly List<GameObject> profiles = new ();
@@ -24,6 +27,8 @@ namespace CameraReel.ScreenshotViewer
 
         [Header("NAVIGATION BUTTONS")]
         [SerializeField] private Button closeView;
+        [SerializeField] private Button prevScreenshotButton;
+        [SerializeField] private Button nextScreenshotButton;
 
         [Header("ACTIONS PANEL")]
         [SerializeField] internal Button downloadButton;
@@ -66,6 +71,9 @@ namespace CameraReel.ScreenshotViewer
             infoPanelTextButton.onClick.AddListener(ToggleMetadataPanel);
 
             sceneInfoButton.onClick.AddListener(JumpInScene);
+
+            prevScreenshotButton.onClick.AddListener( () => PrevScreenshotClicked?.Invoke(currentScreenshot) );
+            nextScreenshotButton.onClick.AddListener( () => NextScreenshotClicked?.Invoke(currentScreenshot) );
         }
 
         private void OnDisable()
@@ -79,6 +87,9 @@ namespace CameraReel.ScreenshotViewer
 
             infoButton.onClick.RemoveAllListeners();
             infoPanelTextButton.onClick.RemoveAllListeners();
+
+            prevScreenshotButton.onClick.RemoveAllListeners();
+            nextScreenshotButton.onClick.RemoveAllListeners();
         }
 
         private void JumpInScene()
