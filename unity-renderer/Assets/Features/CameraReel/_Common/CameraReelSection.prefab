@@ -151,6 +151,7 @@ MonoBehaviour:
   galleryView: {fileID: 2095025394756811457}
   screenshotViewerPrefab: {fileID: 5968333022774604085, guid: 08892dc27f1f1f549a7a2e521aaad444,
     type: 3}
+  canvas: {fileID: 1679649065625505989}
 --- !u!1 &9034640272514066781
 GameObject:
   m_ObjectHideFlags: 0

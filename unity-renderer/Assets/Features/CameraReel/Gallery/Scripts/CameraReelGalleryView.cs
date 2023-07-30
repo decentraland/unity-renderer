@@ -38,7 +38,6 @@ namespace CameraReel.Gallery
 
         private void OnEnable()
         {
-            Debug.Log("ENABLED");
             showMoreButton.onClick.AddListener(LoadImages);
         }
 

@@ -1,6 +1,8 @@
 using CameraReel.Gallery;
 using CameraReel.ScreenshotViewer;
+using DCL;
 using DCLServices.CameraReelService;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +14,7 @@ public class CameraReelSectionView : MonoBehaviour
 
     [SerializeField] private CameraReelGalleryView galleryView;
     [SerializeField] private ScreenshotViewerHUDView screenshotViewerPrefab;
+    [SerializeField] private Canvas canvas;
 
     private ScreenshotViewerHUDView screenshotViewer;
 
@@ -23,8 +26,15 @@ public class CameraReelSectionView : MonoBehaviour
 
     private void OnEnable()
     {
+        DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchVisibility;
+
         galleryView.ScreenshotsStorageUpdated += UpdateStorageBar;
         galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
+    }
+
+    private void SwitchVisibility(bool isVisible, bool _)
+    {
+        canvas.enabled = isVisible;
     }
 
     private void OnDisable()
