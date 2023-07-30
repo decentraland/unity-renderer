@@ -137,13 +137,8 @@ namespace CameraReel.ScreenshotViewer
             sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
         }
 
-        private void SetDateText(CameraReelResponse reel)
-        {
-            if (!long.TryParse(reel.metadata.dateTime, out long unixTimestamp)) return;
-
-            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            dataTime.text = epoch.AddSeconds(unixTimestamp).ToLocalTime().ToString("MMMM dd, yyyy");
-        }
+        private void SetDateText(CameraReelResponse reel) =>
+            dataTime.text = reel.metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy");
 
         private async Task SetScreenshotImage(CameraReelResponse reel)
         {

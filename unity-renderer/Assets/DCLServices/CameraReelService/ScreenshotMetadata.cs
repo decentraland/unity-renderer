@@ -81,6 +81,14 @@ namespace UI.InWorldCamera.Scripts
 
             return list;
         }
+
+        public DateTime GetLocalizedDateTime()
+        {
+            if (!long.TryParse(dateTime, out long unixTimestamp)) return new DateTime();
+
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddSeconds(unixTimestamp).ToLocalTime();
+        }
     }
 
     [Serializable]
