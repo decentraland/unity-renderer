@@ -2,7 +2,6 @@ using CameraReel.Gallery;
 using CameraReel.ScreenshotViewer;
 using DCL;
 using DCLServices.CameraReelService;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,20 +26,24 @@ public class CameraReelSectionView : MonoBehaviour
     private void OnEnable()
     {
         DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchVisibility;
+        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange += ParentViewToExploreSection;
 
         galleryView.ScreenshotsStorageUpdated += UpdateStorageBar;
         galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
     }
 
-    private void SwitchVisibility(bool isVisible, bool _)
-    {
-        canvas.enabled = isVisible;
-    }
-
     private void OnDisable()
     {
+        DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchVisibility;
+        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
+
         galleryView.ScreenshotsStorageUpdated -= UpdateStorageBar;
         galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
+    }
+
+    private void ParentViewToExploreSection(Transform current, Transform _)
+    {
+        galleryView.transform.SetParent(current);
     }
 
     private void OnDestroy()
@@ -51,6 +54,9 @@ public class CameraReelSectionView : MonoBehaviour
             screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
         }
     }
+
+    private void SwitchVisibility(bool isVisible, bool _) =>
+        canvas.enabled = isVisible;
 
     private void UpdateStorageBar((int current, int max) storage)
     {

@@ -15,6 +15,7 @@ namespace DCL
         public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> configureCameraReelInFullScreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureQuestInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureSettingsInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureWalletSectionInFullscreenMenu = new BaseVariable<Transform>(null);
