@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
 using DCLServices.CameraReelService;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,13 +19,18 @@ public class CameraReelSectionView : MonoBehaviour
     [SerializeField] private CameraReelGalleryView galleryView;
     [SerializeField] private ScreenshotViewerHUDView screenshotViewerPrefab;
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject loadingSpinner;
 
     private ScreenshotViewerHUDView screenshotViewer;
+    private Canvas galleryCanvas;
 
     private void Awake()
     {
         storageBar.gameObject.SetActive(false);
         storageText.gameObject.SetActive(false);
+
+        galleryCanvas = galleryView.GetComponent<Canvas>();
+        galleryCanvas.enabled = false;
     }
 
     private void OnEnable()
@@ -55,8 +61,24 @@ public class CameraReelSectionView : MonoBehaviour
     public static async UniTask<CameraReelSectionView> Create(IAddressableResourceProvider assetProvider) =>
         await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
 
-    private void SwitchVisibility(bool isVisible, bool _) =>
+    private bool firstLoad = true;
+    private void SwitchVisibility(bool isVisible, bool _)
+    {
         canvas.enabled = isVisible;
+
+        if (firstLoad)
+        {
+            galleryView.LoadImagesAsync();
+            galleryView.ScreenshotsStorageUpdated += ShowGalleryWhenLoaded;
+            firstLoad = false;
+        }
+    }
+
+    private void ShowGalleryWhenLoaded((int current, int max) obj)
+    {
+        galleryCanvas.enabled = true;
+        loadingSpinner.SetActive(false);
+    }
 
     private void UpdateStorageBar((int current, int max) storage)
     {

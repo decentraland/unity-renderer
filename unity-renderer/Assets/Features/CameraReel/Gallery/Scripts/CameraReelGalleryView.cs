@@ -38,7 +38,7 @@ namespace CameraReel.Gallery
 
         private void OnEnable()
         {
-            showMoreButton.onClick.AddListener(LoadImages);
+            showMoreButton.onClick.AddListener(LoadImagesAsync);
         }
 
         private void OnDisable()
@@ -46,7 +46,7 @@ namespace CameraReel.Gallery
             showMoreButton.onClick.RemoveAllListeners();
         }
 
-        private async void LoadImages()
+        public async void LoadImagesAsync()
         {
             CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(
                 DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
