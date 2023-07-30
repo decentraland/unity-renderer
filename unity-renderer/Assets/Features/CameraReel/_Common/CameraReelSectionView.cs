@@ -1,6 +1,8 @@
 using CameraReel.Gallery;
 using CameraReel.ScreenshotViewer;
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Providers;
 using DCLServices.CameraReelService;
 using TMPro;
 using UnityEngine;
@@ -8,6 +10,8 @@ using UnityEngine.UI;
 
 public class CameraReelSectionView : MonoBehaviour
 {
+    private const string ADDRESS = "CameraReelSectionView";
+
     [SerializeField] private Slider storageBar;
     [SerializeField] private TMP_Text storageText;
 
@@ -21,12 +25,15 @@ public class CameraReelSectionView : MonoBehaviour
     {
         storageBar.gameObject.SetActive(false);
         storageText.gameObject.SetActive(false);
+
+        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange += ParentViewToExploreSection;
+
+        Debug.Log($"Subscribed to cameraReel fullScreen", gameObject);
     }
 
     private void OnEnable()
     {
         DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchVisibility;
-        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange += ParentViewToExploreSection;
 
         galleryView.ScreenshotsStorageUpdated += UpdateStorageBar;
         galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
@@ -35,15 +42,9 @@ public class CameraReelSectionView : MonoBehaviour
     private void OnDisable()
     {
         DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchVisibility;
-        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
 
         galleryView.ScreenshotsStorageUpdated -= UpdateStorageBar;
         galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
-    }
-
-    private void ParentViewToExploreSection(Transform current, Transform _)
-    {
-        galleryView.transform.SetParent(current);
     }
 
     private void OnDestroy()
@@ -53,6 +54,18 @@ public class CameraReelSectionView : MonoBehaviour
             screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
             screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
         }
+
+        if (transform.parent == null)
+            DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
+    }
+
+    public static async UniTask<CameraReelSectionView> Create(IAddressableResourceProvider assetProvider, Transform parent) =>
+        await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
+
+    private void ParentViewToExploreSection(Transform current, Transform _)
+    {
+        galleryView.transform.SetParent(current);
+        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
     }
 
     private void SwitchVisibility(bool isVisible, bool _) =>
