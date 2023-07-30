@@ -25,10 +25,6 @@ public class CameraReelSectionView : MonoBehaviour
     {
         storageBar.gameObject.SetActive(false);
         storageText.gameObject.SetActive(false);
-
-        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange += ParentViewToExploreSection;
-
-        Debug.Log($"Subscribed to cameraReel fullScreen", gameObject);
     }
 
     private void OnEnable()
@@ -54,19 +50,10 @@ public class CameraReelSectionView : MonoBehaviour
             screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
             screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
         }
-
-        if (transform.parent == null)
-            DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
     }
 
-    public static async UniTask<CameraReelSectionView> Create(IAddressableResourceProvider assetProvider, Transform parent) =>
+    public static async UniTask<CameraReelSectionView> Create(IAddressableResourceProvider assetProvider) =>
         await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
-
-    private void ParentViewToExploreSection(Transform current, Transform _)
-    {
-        galleryView.transform.SetParent(current);
-        DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.OnChange -= ParentViewToExploreSection;
-    }
 
     private void SwitchVisibility(bool isVisible, bool _) =>
         canvas.enabled = isVisible;
