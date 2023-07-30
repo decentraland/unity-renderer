@@ -16,14 +16,16 @@ namespace CameraReel.Gallery
         private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
-        [SerializeField] internal GameObject monthSeparatorTemplate;
-        [SerializeField] internal GridContainerComponentView monthGridContainerTemplate;
-        [SerializeField] internal Image thumbnailPrefab;
-        [SerializeField] internal Transform container;
-
-        [SerializeField] private Button showMore;
-
         private readonly Dictionary<int, GridContainerComponentView> monthContainers = new ();
+
+        [SerializeField] internal RectTransform container;
+        [SerializeField] private Button showMoreButton;
+        [SerializeField] private RectTransform showMoreButtonPanel;
+
+        [Header("RESOURCES")]
+        [SerializeField] internal GameObject monthHeaderPrefab;
+        [SerializeField] internal GridContainerComponentView monthGridContainerPrefab;
+        [SerializeField] internal Image thumbnailPrefab;
 
         internal GridContainerComponentView currentMonthGridContainer;
         private int offset;
@@ -32,16 +34,17 @@ namespace CameraReel.Gallery
         private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
 
         public event Action<CameraReelResponse> ScreenshotThumbnailClicked;
-        public event Action<(int current, int max)> ScreenshotsLoaded;
+        public event Action<(int current, int max)> ScreenshotsStorageUpdated;
 
         private void OnEnable()
         {
-            showMore.onClick.AddListener(LoadImages);
+            Debug.Log("ENABLED");
+            showMoreButton.onClick.AddListener(LoadImages);
         }
 
         private void OnDisable()
         {
-            showMore.onClick.RemoveAllListeners();
+            showMoreButton.onClick.RemoveAllListeners();
         }
 
         private async void LoadImages()
@@ -49,7 +52,7 @@ namespace CameraReel.Gallery
             CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(
                 DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
 
-            ScreenshotsLoaded?.Invoke((reelImages.currentImages, reelImages.maxImages));
+            ScreenshotsStorageUpdated?.Invoke((reelImages.currentImages, reelImages.maxImages));
 
             offset += LIMIT;
 
@@ -68,23 +71,23 @@ namespace CameraReel.Gallery
 
                 if (!monthContainers.ContainsKey(month))
                 {
-                    var separator = Instantiate(monthSeparatorTemplate, container);
+                    GameObject separator = Instantiate(monthHeaderPrefab, container);
                     separator.gameObject.SetActive(true);
-                    gridContainer = Instantiate(monthGridContainerTemplate, container);
+                    gridContainer = Instantiate(monthGridContainerPrefab, container);
                     gridContainer.gameObject.SetActive(true);
+
+                    showMoreButtonPanel.SetAsLastSibling();
 
                     monthContainers.Add(month, gridContainer);
                 }
                 else
-                {
                     gridContainer = monthContainers[month];
-                }
 
                 Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
                 image.gameObject.SetActive(true);
 
                 Button button = image.GetComponent<Button>();
-                button.onClick.AddListener( () => ScreenshotThumbnailClicked?.Invoke(reel));
+                button.onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
 
                 SetThumbnailFromWebAsync(reel, image);
             }
@@ -94,6 +97,7 @@ namespace CameraReel.Gallery
         {
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
             await request.SendWebRequest();
+
             if (request.result != UnityWebRequest.Result.Success)
                 Debug.Log(request.error);
             else
