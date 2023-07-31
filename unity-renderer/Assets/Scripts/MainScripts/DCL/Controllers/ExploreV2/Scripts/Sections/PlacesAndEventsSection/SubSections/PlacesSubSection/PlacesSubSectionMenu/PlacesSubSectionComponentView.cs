@@ -13,6 +13,10 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 {
     internal const string PLACE_CARDS_POOL_NAME = "Places_PlaceCardsPool";
     private const int PLACE_CARDS_POOL_PREWARM = 20;
+    private const string MOST_ACTIVE_FILTER_ID = "most_active";
+    private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
+    private const string HIGHEST_RATED_FILTER_ID = "like_rate";
+    private const string HIGHEST_RATED_FILTER_TEXT = "Highest rated";
 
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setPlacesCts = new ();
@@ -35,7 +39,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal Button featuredButton;
     [SerializeField] internal GameObject featuredDeselected;
     [SerializeField] internal GameObject featuredSelected;
-    [SerializeField] internal DropdownComponentView sortDropdown;
+    [SerializeField] internal DropdownComponentView sortByDropdown;
 
     [SerializeField] private Canvas canvas;
 
@@ -75,6 +79,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
 
         places.RemoveItems();
+        LoadSortByDropdown();
 
         showMorePlacesButton.onClick.RemoveAllListeners();
         showMorePlacesButton.onClick.AddListener(() => OnShowMorePlacesClicked?.Invoke());
@@ -82,15 +87,22 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         poiButton.onClick.AddListener(ClickedOnPOI);
         featuredButton.onClick.RemoveAllListeners();
         featuredButton.onClick.AddListener(ClickedOnFeatured);
-        sortDropdown.OnOptionSelectionChanged += SortDropdownValueChanged;
+        sortByDropdown.OnOptionSelectionChanged += SortByDropdownValueChanged;
         filter = "";
         sort = "";
         OnReady?.Invoke();
     }
 
-    private void SortDropdownValueChanged(bool arg1, string arg2, string arg3)
+    private void LoadSortByDropdown()
     {
-        sort = arg2;
+        List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>
+        {
+            new () { id = MOST_ACTIVE_FILTER_ID, text = MOST_ACTIVE_FILTER_TEXT, isOn = true, isTextActive = true, changeTextColorOnSelect = true },
+            new () { id = HIGHEST_RATED_FILTER_ID, text = HIGHEST_RATED_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+        };
+
+        sortByDropdown.SetTitle(sortingMethodsToAdd[0].text);
+        sortByDropdown.SetOptions(sortingMethodsToAdd);
     }
 
     private void ClickedOnFeatured()
@@ -124,6 +136,16 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             SetPoiStatus(true);
             SetFeaturedStatus(false);
         }
+        OnFilterSorterChanged?.Invoke();
+    }
+
+    private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
+    {
+        if (!isOn)
+            return;
+
+        sort = optionId;
+        sortByDropdown.SetTitle(optionName);
         OnFilterSorterChanged?.Invoke();
     }
 
