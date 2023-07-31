@@ -19,23 +19,12 @@ namespace DCL
         private readonly GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
         private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
 
+        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new ();
         private UnityEngine.Camera camera;
-        internal Transform cameraTransformValue;
+        private Transform cameraTransform;
 
         private readonly List<(IAvatarLODController lodController, float distance)> lodControllersWithDistance = new ();
-        public Dictionary<string, IAvatarLODController> LodControllers { get; } = new ();
-
-        private Transform cameraTransform
-        {
-            get
-            {
-                GetMainCamera();
-                return cameraTransformValue;
-            }
-        }
-
-        private Vector3 cameraTransformPosition => cameraTransform != null ? cameraTransform.position : Vector3.zero;
-        private Vector3 cameraTransformForward => cameraTransform != null ? cameraTransform.forward : Vector3.forward;
+        private UnityEngine.Camera cachedCamera;
 
         public AvatarsLODController()
         {
@@ -46,9 +35,9 @@ namespace DCL
         {
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
 
-            foreach (IAvatarLODController lodController in LodControllers.Values) { lodController.Dispose(); }
+            foreach (IAvatarLODController lodController in lodControllers.Values) { lodController.Dispose(); }
 
-            LodControllers.Clear();
+            lodControllers.Clear();
 
             foreach (var keyValuePair in otherPlayers.Get()) { RegisterAvatar(keyValuePair.Key, keyValuePair.Value); }
 
@@ -59,15 +48,15 @@ namespace DCL
         public void SetCamera(UnityEngine.Camera newCamera)
         {
             camera = newCamera;
-            cameraTransformValue = camera.transform;
+            cameraTransform = camera.transform;
         }
 
         public void RegisterAvatar(string id, Player player)
         {
-            if (LodControllers.ContainsKey(id))
+            if (lodControllers.ContainsKey(id))
                 return;
 
-            LodControllers.Add(id, CreateLodController(player));
+            lodControllers.Add(id, CreateLodController(player));
         }
 
         protected internal virtual IAvatarLODController CreateLodController(Player player) =>
@@ -75,12 +64,12 @@ namespace DCL
 
         public void UnregisterAvatar(string id, Player player)
         {
-            if (!LodControllers.ContainsKey(id))
+            if (!lodControllers.ContainsKey(id))
                 return;
 
-            LodControllers[id].SetLOD0();
-            LodControllers[id].Dispose();
-            LodControllers.Remove(id);
+            lodControllers[id].SetLOD0();
+            lodControllers[id].Dispose();
+            lodControllers.Remove(id);
         }
 
         public void Update()
@@ -90,7 +79,8 @@ namespace DCL
 
         internal void UpdateAllLODs(int maxAvatars = DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
-            GetMainCamera();
+            if (camera == null)
+                camera = UnityEngine.Camera.main;
 
             var avatarsCount = 0; //Full Avatar + Simple Avatar
             var impostorCount = 0; //Impostor
@@ -101,7 +91,7 @@ namespace DCL
             overlappingTracker.Reset();
 
             foreach (var controllerDistancePair in
-                     ComposeLODControllersSortedByDistance(LodControllers.Values, ownPlayerPosition))
+                     ComposeLODControllersSortedByDistance(lodControllers.Values, ownPlayerPosition))
             {
                 (IAvatarLODController lodController, float distance) = controllerDistancePair;
 
@@ -142,17 +132,6 @@ namespace DCL
             }
         }
 
-        private void GetMainCamera()
-        {
-            if (camera == null)
-            {
-                camera = UnityEngine.Camera.main;
-
-                if (camera != null)
-                    cameraTransformValue = camera.transform;
-            }
-        }
-
         private static bool IsInInvisibleDistance(float distance)
         {
             bool firstPersonCamera = CommonScriptableObjects.cameraMode.Get() == CameraMode.ModeId.FirstPerson;
@@ -187,11 +166,11 @@ namespace DCL
         }
 
         private bool IsInFrontOfCamera(Vector3 position) =>
-            Vector3.Dot(cameraTransformForward, (position - cameraTransformPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
+            Vector3.Dot(cameraTransform.forward, (position - cameraTransform.position).normalized) >= RENDERED_DOT_PRODUCT_ANGLE;
 
         public void Dispose()
         {
-            foreach (IAvatarLODController lodController in LodControllers.Values) { lodController.Dispose(); }
+            foreach (IAvatarLODController lodController in lodControllers.Values) { lodController.Dispose(); }
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
