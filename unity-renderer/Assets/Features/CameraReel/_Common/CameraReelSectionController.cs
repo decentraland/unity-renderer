@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Providers;
 using DCLServices.CameraReelService;
 using System;
+using System.Threading.Tasks;
 
 namespace Features.CameraReel
 {
@@ -17,6 +18,7 @@ namespace Features.CameraReel
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
 
+        private CameraReelModel cameraReelModel;
         private ScreenshotViewerHUDView screenshotViewer;
 
         private bool firstLoad = true;
@@ -24,6 +26,8 @@ namespace Features.CameraReel
         public CameraReelSectionController(IAddressableResourceProvider assetProvider, CameraReelSectionView sectionView, CameraReelGalleryView galleryView, CameraReelGalleryStorageView galleryStorageView)
         {
             this.assetProvider = assetProvider;
+
+            // Views
             this.sectionView = sectionView;
             this.galleryView = galleryView;
             this.galleryStorageView = galleryStorageView;
@@ -31,52 +35,41 @@ namespace Features.CameraReel
 
         public void Initialize()
         {
+            cameraReelModel = new CameraReelModel();
+            cameraReelModel.LoadedScreenshotsUpdated += OnModelUpdated;
             DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchGalleryVisibility;
-            galleryView.ScreenshotsStorageUpdated += UpdateStorageBar;
-            galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
-        }
-
-        private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
-        {
-            if (screenshotViewer == null)
-            {
-                screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, "ScreenshotViewer");
-                screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
-                screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
-            }
-
-            screenshotViewer.Show(reelResponse);
+            // galleryView.ShowMoreButtonClicked += LoadMoreImages;
+            // galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
         }
 
         public void Dispose()
         {
+            cameraReelModel.LoadedScreenshotsUpdated -= OnModelUpdated;
             DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchGalleryVisibility;
-            galleryView.ScreenshotsStorageUpdated -= UpdateStorageBar;
-            galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
 
-            if (screenshotViewer != null)
-            {
-                screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
-                screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
-            }
+            // galleryView.ShowMoreButtonClicked -= LoadMoreImages;
+            // galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
+
+            // if (screenshotViewer != null)
+            // {
+            //     screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
+            //     screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
+            // }
 
             Utils.SafeDestroy(screenshotViewer);
         }
 
-        private void ShowNextScreenshot(CameraReelResponse current)
+        private void OnModelUpdated(CameraReelResponses reelResponses)
         {
-            CameraReelResponse next = galleryView.GetNextScreenshot(current);
+            galleryStorageView.UpdateStorageBar(reelResponses.currentImages, reelResponses.maxImages);
 
-            if (next != null)
-                ShowScreenshotWithMetadata(next);
-        }
+            if (firstLoad)
+            {
+                sectionView.ShowGalleryWhenLoaded();
+                firstLoad = false;
+            }
 
-        private void ShowPrevScreenshot(CameraReelResponse current)
-        {
-            CameraReelResponse prev = galleryView.GetPreviousScreenshot(current);
-
-            if (prev != null)
-                ShowScreenshotWithMetadata(prev);
+            galleryView.DownloadImageAndCreateObject(reelResponses.images);
         }
 
         private void SwitchGalleryVisibility(bool isVisible, bool _)
@@ -84,19 +77,37 @@ namespace Features.CameraReel
             sectionView.SwitchVisibility(isVisible);
 
             if (firstLoad)
-            {
-                galleryView.LoadImagesAsync();
-                galleryView.ScreenshotsStorageUpdated += ShowGalleryWhenLoaded;
-                firstLoad = false;
-            }
+                cameraReelModel.LoadImagesAsync();
         }
 
-        private void ShowGalleryWhenLoaded((int current, int max) _)
-        {
-            sectionView.ShowGalleryWhenLoaded();
-        }
-
-        private void UpdateStorageBar((int current, int max) storage) =>
-            galleryStorageView.UpdateStorageBar(storage.current, storage.max);
+        //
+        // private async Task InstantiateScreenshotViewer()
+        // {
+        //     screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, "ScreenshotViewer");
+        //     // screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
+        //     // screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
+        // }
+        // private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
+        // {
+        //     if (screenshotViewer == null)
+        //         await InstantiateScreenshotViewer();
+        //
+        //     screenshotViewer.Show(reelResponse);
+        // }
+        // private void ShowNextScreenshot(CameraReelResponse current)
+        // {
+        //     CameraReelResponse next = galleryView.GetNextScreenshot(current);
+        //
+        //     if (next != null)
+        //         ShowScreenshotWithMetadata(next);
+        // }
+        //
+        // private void ShowPrevScreenshot(CameraReelResponse current)
+        // {
+        //     CameraReelResponse prev = galleryView.GetPreviousScreenshot(current);
+        //
+        //     if (prev != null)
+        //         ShowScreenshotWithMetadata(prev);
+        // }
     }
 }

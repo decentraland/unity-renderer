@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using Environment = DCL.Environment;
 
 namespace CameraReel.Gallery
 {
     public class CameraReelGalleryView : MonoBehaviour
     {
-        private const int LIMIT = 20;
-        private readonly LinkedList<CameraReelResponse> reels = new ();
         private readonly Dictionary<int, GridContainerComponentView> monthContainers = new ();
 
         [SerializeField] internal RectTransform container;
@@ -27,42 +24,27 @@ namespace CameraReel.Gallery
         [SerializeField] internal Image thumbnailPrefab;
 
         internal GridContainerComponentView currentMonthGridContainer;
-        private int offset;
-
-        private ICameraReelNetworkService cameraReelNetworkServiceLazy;
-        private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
 
         public event Action<CameraReelResponse> ScreenshotThumbnailClicked;
-        public event Action<(int current, int max)> ScreenshotsStorageUpdated;
+        public event Action ShowMoreButtonClicked;
 
         private void OnEnable()
         {
-            showMoreButton.onClick.AddListener(LoadImagesAsync);
+            showMoreButton.onClick.AddListener(EmitShowMoreClickEvent);
         }
 
         private void OnDisable()
         {
-            showMoreButton.onClick.RemoveAllListeners();
+            showMoreButton.onClick.RemoveListener(EmitShowMoreClickEvent);
         }
 
-        public async void LoadImagesAsync()
-        {
-            CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(
-                DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
+        private void EmitShowMoreClickEvent() =>
+            ShowMoreButtonClicked?.Invoke();
 
-            ScreenshotsStorageUpdated?.Invoke((reelImages.currentImages, reelImages.maxImages));
-
-            offset += LIMIT;
-
-            DownloadImageAndCreateObject(reelImages.images);
-        }
-
-        private void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
+        public void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
         {
             foreach (CameraReelResponse reel in reelImages)
             {
-                reels.AddLast(reel);
-
                 int month = reel.metadata.GetLocalizedDateTime().Month;
 
                 GridContainerComponentView gridContainer;
@@ -104,11 +86,5 @@ namespace CameraReel.Gallery
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
         }
-
-        public CameraReelResponse GetPreviousScreenshot(CameraReelResponse current) =>
-            reels.Find(current)?.Previous?.Value;
-
-        public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>
-            reels.Find(current)?.Next?.Value;
     }
 }
