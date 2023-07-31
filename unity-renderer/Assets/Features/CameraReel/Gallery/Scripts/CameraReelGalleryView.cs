@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace CameraReel.Gallery
+namespace Features.CameraReel.Gallery
 {
     public class CameraReelGalleryView : MonoBehaviour
     {

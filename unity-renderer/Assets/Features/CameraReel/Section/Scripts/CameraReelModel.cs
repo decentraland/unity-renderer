@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Environment = DCL.Environment;
 
-namespace Features.CameraReel
+namespace Features.CameraReel.Section
 {
     public class CameraReelModel
     {

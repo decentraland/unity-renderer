@@ -1,9 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
+using Features.CameraReel.Section;
 using UnityEngine;
 
-namespace Features.CameraReel
+namespace DCLPlugins.CameraReelPlugin
 {
     public class CameraReelPlugin : IPlugin
     {

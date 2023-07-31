@@ -1,12 +1,12 @@
-﻿using CameraReel.Gallery;
-using DCL;
+﻿using DCL;
 using DCL.Helpers;
 using DCLServices.CameraReelService;
+using Features.CameraReel.Gallery;
 using Features.CameraReel.ScreenshotViewer;
 using System;
 using Object = UnityEngine.Object;
 
-namespace Features.CameraReel
+namespace Features.CameraReel.Section
 {
     public class CameraReelSectionController : IDisposable
     {

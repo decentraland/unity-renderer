@@ -1,4 +1,3 @@
-using CameraReel;
 using DCL.AvatarEditor;
 using DCL.Backpack;
 using DCL.Social.Chat;
@@ -20,6 +19,7 @@ using DCL.Social.Chat;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
+using DCLPlugins.CameraReelPlugin;
 using DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
@@ -29,6 +29,7 @@ using DCLPlugins.SignupHUDPlugin;
 using DCLPlugins.ToSPopupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
 using Features.CameraReel;
+using Features.CameraReel.Section;
 
 namespace DCL
 {

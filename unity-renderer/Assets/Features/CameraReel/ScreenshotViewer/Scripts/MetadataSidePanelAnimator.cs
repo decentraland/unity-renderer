@@ -2,43 +2,46 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MetadataSidePanelAnimator
+namespace Features.CameraReel.ScreenshotViewer
 {
-    private readonly RectTransform panelRectTransform;
-    private readonly Image infoButtonImage;
-    private readonly float initOffset;
-
-    private float rightOffset;
-    private Tweener currentTween;
-
-    public MetadataSidePanelAnimator(RectTransform panelRectTransform, Image infoButtonImage)
+    public class MetadataSidePanelAnimator
     {
-        this.infoButtonImage = infoButtonImage;
-        this.panelRectTransform = panelRectTransform;
+        private readonly RectTransform panelRectTransform;
+        private readonly Image infoButtonImage;
+        private readonly float initOffset;
 
-        initOffset = panelRectTransform.offsetMax.x;
-        rightOffset = -initOffset;
-    }
+        private float rightOffset;
+        private Tweener currentTween;
 
-    public void ToggleSizeMode(bool toFullScreen, float duration)
-    {
-        currentTween.Kill();
-
-        if (toFullScreen)
+        public MetadataSidePanelAnimator(RectTransform panelRectTransform, Image infoButtonImage)
         {
-            currentTween = DOVirtual.Float(rightOffset, 0, duration, UpdateSizeMode);
-            infoButtonImage.DOFade(0f, duration);
-        }
-        else
-        {
-            currentTween = DOVirtual.Float(rightOffset, -initOffset, duration, UpdateSizeMode);
-            infoButtonImage.DOFade(1f, duration);
-        }
-    }
+            this.infoButtonImage = infoButtonImage;
+            this.panelRectTransform = panelRectTransform;
 
-    private void UpdateSizeMode(float value)
-    {
-        rightOffset = value;
-        panelRectTransform.offsetMax = new Vector2(-rightOffset, panelRectTransform.offsetMax.y);
+            initOffset = panelRectTransform.offsetMax.x;
+            rightOffset = -initOffset;
+        }
+
+        public void ToggleSizeMode(bool toFullScreen, float duration)
+        {
+            currentTween.Kill();
+
+            if (toFullScreen)
+            {
+                currentTween = DOVirtual.Float(rightOffset, 0, duration, UpdateSizeMode);
+                infoButtonImage.DOFade(0f, duration);
+            }
+            else
+            {
+                currentTween = DOVirtual.Float(rightOffset, -initOffset, duration, UpdateSizeMode);
+                infoButtonImage.DOFade(1f, duration);
+            }
+        }
+
+        private void UpdateSizeMode(float value)
+        {
+            rightOffset = value;
+            panelRectTransform.offsetMax = new Vector2(-rightOffset, panelRectTransform.offsetMax.y);
+        }
     }
 }
