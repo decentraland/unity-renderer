@@ -18,7 +18,9 @@ namespace Features.CameraReel
         private readonly CameraReelSectionView sectionView;
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
-        private ScreenshotViewerHUDView screenshotViewer;
+
+        private ScreenshotViewerHUDView screenshotViewerView;
+        private ScreenshotViewerController screenshotViewerController;
 
         private bool firstLoad = true;
 
@@ -31,6 +33,7 @@ namespace Features.CameraReel
 
             // Model
             cameraReelModel = new CameraReelModel();
+
         }
 
         public void Initialize()
@@ -51,13 +54,13 @@ namespace Features.CameraReel
             galleryView.ShowMoreButtonClicked -= cameraReelModel.LoadImagesAsync;
             galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
 
-            if (screenshotViewer != null)
+            if (screenshotViewerView != null)
             {
-                screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
-                screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
+                screenshotViewerView.PrevScreenshotClicked -= ShowPrevScreenshot;
+                screenshotViewerView.NextScreenshotClicked -= ShowNextScreenshot;
             }
 
-            Utils.SafeDestroy(screenshotViewer);
+            Utils.SafeDestroy(screenshotViewerView);
         }
 
         private void OnModelUpdated(CameraReelResponses reelResponses)
@@ -83,14 +86,17 @@ namespace Features.CameraReel
 
         private void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
         {
-            if (screenshotViewer == null)
+            if (screenshotViewerView == null)
             {
-                screenshotViewer = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
-                screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
-                screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
+                screenshotViewerView = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
+                screenshotViewerController = new ScreenshotViewerController(screenshotViewerView, cameraReelModel);
+                screenshotViewerController.Initialize();
+
+                screenshotViewerView.PrevScreenshotClicked += ShowPrevScreenshot;
+                screenshotViewerView.NextScreenshotClicked += ShowNextScreenshot;
             }
 
-            screenshotViewer.Show(reelResponse);
+            screenshotViewerView.Show(reelResponse);
         }
 
         private void ShowNextScreenshot(CameraReelResponse current)

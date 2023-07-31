@@ -75,10 +75,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e2bcc32e3a55084d959ede1dacda873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <GalleryStorageView>k__BackingField: {fileID: 8428949374722732860}
-  <GalleryView>k__BackingField: {fileID: 2095025394756811457}
   <ScreenshotViewerPrefab>k__BackingField: {fileID: 5968333022774604085, guid: 08892dc27f1f1f549a7a2e521aaad444,
     type: 3}
+  <GalleryStorageView>k__BackingField: {fileID: 8428949374722732860}
+  <GalleryView>k__BackingField: {fileID: 2095025394756811457}
   canvas: {fileID: 1679649065625505989}
   loadingSpinner: {fileID: 1144671229806250720}
 --- !u!1 &9034640272514066781

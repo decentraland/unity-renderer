@@ -9,7 +9,6 @@ using TMPro;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -17,9 +16,6 @@ namespace Features.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerHUDView : MonoBehaviour
     {
-        public event Action<CameraReelResponse> PrevScreenshotClicked;
-        public event Action<CameraReelResponse> NextScreenshotClicked;
-
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
         private readonly List<GameObject> profiles = new ();
@@ -32,15 +28,8 @@ namespace Features.CameraReel.ScreenshotViewer
         [SerializeField] private Button prevScreenshotButton;
         [SerializeField] private Button nextScreenshotButton;
 
-        [Header("ACTIONS PANEL")]
-        [SerializeField] internal Button downloadButton;
-        [SerializeField] internal Button deleteButton;
-        [SerializeField] internal Button linkButton;
-        [SerializeField] internal Button twitterButton;
-        [SerializeField] internal Button infoButton;
-        [SerializeField] internal Button infoPanelTextButton;
-
         [Header("INFORMATION PANEL")]
+        [SerializeField] internal Button infoPanelTextButton;
         [SerializeField] private TMP_Text dataTime;
         [SerializeField] private TMP_Text sceneInfo;
         [SerializeField] private Button sceneInfoButton;
@@ -49,45 +38,37 @@ namespace Features.CameraReel.ScreenshotViewer
         [SerializeField] internal ScreenshotVisiblePersonView profileEntryTemplate;
         [SerializeField] internal Transform profileGridContainer;
 
-        private CameraReelResponse currentScreenshot;
+        public CameraReelResponse currentScreenshot;
 
         private MetadataSidePanelAnimator metadataSidePanelAnimator;
         private bool metadataPanelIsOpen = true;
+        [field: SerializeField] public ScreenshotViewerActionsPanelView ActionPanel { get; private set; }
+
+        public event Action<CameraReelResponse> PrevScreenshotClicked;
+        public event Action<CameraReelResponse> NextScreenshotClicked;
 
         public void Awake()
         {
             profileEntryTemplate.gameObject.SetActive(false);
-            metadataSidePanelAnimator = new MetadataSidePanelAnimator(rootContainer, infoButton.image);
+            metadataSidePanelAnimator = new MetadataSidePanelAnimator(rootContainer, ActionPanel.InfoButtonBackground);
         }
 
         private void OnEnable()
         {
             closeView.onClick.AddListener(Hide);
 
-            downloadButton.onClick.AddListener(DownloadImage);
-            deleteButton.onClick.AddListener(DeleteImage);
-            linkButton.onClick.AddListener(CopyLink);
-            twitterButton.onClick.AddListener(CopyTwitterLink);
-
-            infoButton.onClick.AddListener(ToggleMetadataPanel);
-            infoPanelTextButton.onClick.AddListener(ToggleMetadataPanel);
+            infoPanelTextButton.onClick.AddListener(ToggleInfoPanel);
 
             sceneInfoButton.onClick.AddListener(JumpInScene);
 
-            prevScreenshotButton.onClick.AddListener( () => PrevScreenshotClicked?.Invoke(currentScreenshot) );
-            nextScreenshotButton.onClick.AddListener( () => NextScreenshotClicked?.Invoke(currentScreenshot) );
+            prevScreenshotButton.onClick.AddListener(() => PrevScreenshotClicked?.Invoke(currentScreenshot));
+            nextScreenshotButton.onClick.AddListener(() => NextScreenshotClicked?.Invoke(currentScreenshot));
         }
 
         private void OnDisable()
         {
             closeView.onClick.RemoveAllListeners();
 
-            downloadButton.onClick.RemoveAllListeners();
-            deleteButton.onClick.RemoveAllListeners();
-            linkButton.onClick.RemoveAllListeners();
-            twitterButton.onClick.RemoveAllListeners();
-
-            infoButton.onClick.RemoveAllListeners();
             infoPanelTextButton.onClick.RemoveAllListeners();
 
             prevScreenshotButton.onClick.RemoveAllListeners();
@@ -104,7 +85,7 @@ namespace Features.CameraReel.ScreenshotViewer
             }
         }
 
-        private void ToggleMetadataPanel()
+        public void ToggleInfoPanel()
         {
             metadataSidePanelAnimator.ToggleSizeMode(toFullScreen: metadataPanelIsOpen, SIDE_PANEL_ANIM_DURATION);
             metadataPanelIsOpen = !metadataPanelIsOpen;
@@ -114,6 +95,7 @@ namespace Features.CameraReel.ScreenshotViewer
         {
             gameObject.SetActive(false);
         }
+
         public void Show(CameraReelResponse reel)
         {
             currentScreenshot = reel;
@@ -162,35 +144,6 @@ namespace Features.CameraReel.ScreenshotViewer
                 Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 screenshotImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
-        }
-
-        private void CopyTwitterLink()
-        {
-            var description = "Check out what I'm doing in Decentraland right now and join me!";
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
-            var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
-
-            GUIUtility.systemCopyBuffer = twitterUrl;
-            Application.OpenURL(twitterUrl);
-        }
-
-        private void CopyLink()
-        {
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
-
-            GUIUtility.systemCopyBuffer = url;
-            Application.OpenURL(url);
-        }
-
-        private void DownloadImage()
-        {
-            Application.OpenURL(currentScreenshot.url);
-        }
-
-        private async void DeleteImage()
-        {
-            ICameraReelNetworkService cameraReelNetworkService = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
-            await cameraReelNetworkService.DeleteScreenshot(currentScreenshot.id);
         }
     }
 }
