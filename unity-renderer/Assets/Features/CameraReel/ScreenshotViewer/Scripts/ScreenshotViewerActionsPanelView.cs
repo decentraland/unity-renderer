@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Features.CameraReel.ScreenshotViewer
 {
-    public class ScreenshotViewerActionsPanelView: MonoBehaviour
+    public class ScreenshotViewerActionsPanelView : MonoBehaviour
     {
         [SerializeField] private Button downloadButton;
         [SerializeField] private Button deleteButton;
@@ -12,13 +12,13 @@ namespace Features.CameraReel.ScreenshotViewer
         [SerializeField] private Button twitterButton;
         [SerializeField] private Button infoButton;
 
+        public Image InfoButtonBackground => infoButton.image;
+
         public event Action DownloadClicked;
         public event Action DeleteClicked;
         public event Action LinkClicked;
         public event Action TwitterClicked;
         public event Action InfoClicked;
-
-        public Image InfoButtonBackground => infoButton.image;
 
         private void Awake()
         {

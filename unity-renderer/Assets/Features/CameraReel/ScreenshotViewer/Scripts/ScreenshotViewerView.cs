@@ -9,7 +9,7 @@ namespace Features.CameraReel.ScreenshotViewer
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
         [SerializeField] private Image screenshotImage;
-        [SerializeField] public RectTransform rootContainer;
+        [SerializeField] private RectTransform rootContainer;
 
         [Header("NAVIGATION BUTTONS")]
         [SerializeField] private Button closeView;
@@ -18,14 +18,14 @@ namespace Features.CameraReel.ScreenshotViewer
 
         private MetadataSidePanelAnimator metadataSidePanelAnimator;
 
+        private bool metadataPanelIsOpen = true;
+
         [field: SerializeField] public ScreenshotViewerActionsPanelView ActionPanel { get; private set; }
         [field: SerializeField] public ScreenshotViewerInfoSidePanelView InfoSidePanel { get; private set; }
 
         public event Action CloseButtonClicked;
         public event Action PrevScreenshotClicked;
         public event Action NextScreenshotClicked;
-
-        private bool metadataPanelIsOpen = true;
 
         private void Awake()
         {

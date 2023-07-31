@@ -13,20 +13,22 @@ namespace CameraReel.Gallery
     {
         private readonly Dictionary<int, GridContainerComponentView> monthContainers = new ();
 
-        [SerializeField] internal RectTransform container;
+        [SerializeField] private RectTransform container;
         [SerializeField] private Button showMoreButton;
         [SerializeField] private RectTransform showMoreButtonPanel;
-        [SerializeField] public Canvas canvas;
+        [SerializeField] private Canvas canvas;
 
         [Header("RESOURCES")]
-        [SerializeField] internal GameObject monthHeaderPrefab;
-        [SerializeField] internal GridContainerComponentView monthGridContainerPrefab;
-        [SerializeField] internal Image thumbnailPrefab;
+        [SerializeField] private GameObject monthHeaderPrefab;
+        [SerializeField] private GridContainerComponentView monthGridContainerPrefab;
+        [SerializeField] private Image thumbnailPrefab;
 
-        internal GridContainerComponentView currentMonthGridContainer;
+        private GridContainerComponentView currentMonthGridContainer;
 
         public event Action<CameraReelResponse> ScreenshotThumbnailClicked;
         public event Action ShowMoreButtonClicked;
+
+        private Dictionary<CameraReelResponse, GameObject> screenshotThumbnails = new ();
 
         private void Awake()
         {
@@ -45,6 +47,14 @@ namespace CameraReel.Gallery
 
         public void SwitchVisibility(bool isVisible) =>
             canvas.enabled = isVisible;
+
+        public void DeleteScreenshotThumbnail(CameraReelResponse reel)
+        {
+            if (!screenshotThumbnails.ContainsKey(reel)) return;
+
+            Destroy(screenshotThumbnails[reel]);
+            screenshotThumbnails.Remove(reel);
+        }
 
         public void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
         {
@@ -69,10 +79,10 @@ namespace CameraReel.Gallery
                     gridContainer = monthContainers[month];
 
                 Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
+                image.GetComponent<Button>().onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
                 image.gameObject.SetActive(true);
 
-                Button button = image.GetComponent<Button>();
-                button.onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
+                screenshotThumbnails.Add(reel, image.gameObject);
 
                 SetThumbnailFromWebAsync(reel, image);
             }

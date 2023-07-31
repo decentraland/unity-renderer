@@ -5,15 +5,12 @@ using UnityEngine;
 
 public class CameraReelSectionView : MonoBehaviour
 {
-    [field: SerializeField] public ScreenshotViewerView ScreenshotViewerPrefab { get; private set; }
-    [field: SerializeField] public CameraReelGalleryStorageView GalleryStorageView { get; private set;}
-    [field: SerializeField] public CameraReelGalleryView GalleryView { get; private set; }
-
-    [Space]
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject loadingSpinner;
 
-    private Canvas galleryCanvas;
+    [field: SerializeField] public ScreenshotViewerView ScreenshotViewerPrefab { get; private set; }
+    [field: SerializeField] public CameraReelGalleryStorageView GalleryStorageView { get; private set; }
+    [field: SerializeField] public CameraReelGalleryView GalleryView { get; private set; }
 
     public void SwitchVisibility(bool isVisible) =>
         canvas.enabled = isVisible;

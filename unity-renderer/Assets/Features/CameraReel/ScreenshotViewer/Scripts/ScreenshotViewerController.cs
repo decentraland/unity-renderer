@@ -89,16 +89,14 @@ namespace Features.CameraReel.ScreenshotViewer
             }
         }
 
-        private async void DeleteScreenshot()
+        private void DeleteScreenshot()
         {
-            ICameraReelNetworkService cameraReelNetworkService = Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
-            await cameraReelNetworkService.DeleteScreenshot(currentScreenshot.id);
+            model.RemoveScreenshot(currentScreenshot);
+            view.Hide();
         }
 
-        private void DownloadScreenshot()
-        {
+        private void DownloadScreenshot() =>
             Application.OpenURL(currentScreenshot.url);
-        }
 
         private void CopyScreenshotLink()
         {

@@ -10,6 +10,8 @@ namespace Features.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerInfoSidePanelView : MonoBehaviour
     {
+        private readonly List<GameObject> profiles = new ();
+
         [Header("INFORMATION PANEL")]
         [SerializeField] private Button infoPanelTextButton;
         [SerializeField] private TMP_Text dataTime;
@@ -21,7 +23,6 @@ namespace Features.CameraReel.ScreenshotViewer
         [SerializeField] private Transform profileGridContainer;
 
         private MetadataSidePanelAnimator metadataSidePanelAnimator;
-        private readonly List<GameObject> profiles = new ();
 
         public event Action SceneButtonClicked;
         public event Action SidePanelButtonClicked;
@@ -34,7 +35,7 @@ namespace Features.CameraReel.ScreenshotViewer
         private void OnEnable()
         {
             infoPanelTextButton.onClick.AddListener(() => SidePanelButtonClicked?.Invoke());
-            sceneInfoButton.onClick.AddListener( () => SceneButtonClicked?.Invoke());
+            sceneInfoButton.onClick.AddListener(() => SceneButtonClicked?.Invoke());
         }
 
         private void OnDisable()

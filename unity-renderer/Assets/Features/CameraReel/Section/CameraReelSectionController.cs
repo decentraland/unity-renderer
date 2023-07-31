@@ -35,7 +35,8 @@ namespace Features.CameraReel
 
         public void Initialize()
         {
-            cameraReelModel.Updated += OnModelUpdated;
+            cameraReelModel.ScreenshotBatchFetched += OnModelScreenshotBatchFetched;
+            cameraReelModel.ScreenshotRemovalStarted += galleryView.DeleteScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
@@ -45,7 +46,8 @@ namespace Features.CameraReel
 
         public void Dispose()
         {
-            cameraReelModel.Updated -= OnModelUpdated;
+            cameraReelModel.ScreenshotBatchFetched -= OnModelScreenshotBatchFetched;
+            cameraReelModel.ScreenshotRemovalStarted -= galleryView.DeleteScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
             galleryView.ShowMoreButtonClicked -= cameraReelModel.RequestScreenshotsBatchAsync;
@@ -54,7 +56,7 @@ namespace Features.CameraReel
             Utils.SafeDestroy(screenshotViewerView);
         }
 
-        private void OnModelUpdated(CameraReelResponses reelResponses)
+        private void OnModelScreenshotBatchFetched(CameraReelResponses reelResponses)
         {
             galleryStorageView.UpdateStorageBar(reelResponses.currentImages, reelResponses.maxImages);
 

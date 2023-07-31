@@ -14,11 +14,14 @@ namespace Features.CameraReel
         private ICameraReelNetworkService cameraReelNetworkServiceLazy;
         private int offset;
 
+        public bool IsUpdating { get; private set; }
+
         private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
 
-        public event Action<CameraReelResponses> Updated;
-
-        public bool IsUpdating { get; private set; }
+        public event Action<CameraReelResponses> ScreenshotBatchFetched;
+        public event Action<CameraReelResponse> ScreenshotRemovalStarted;
+        public event Action<CameraReelResponse> ScreenshotRemovalFailed;
+        public event Action<CameraReelResponse> ScreenshotRemovalFinished;
 
         public async void RequestScreenshotsBatchAsync()
         {
@@ -33,7 +36,7 @@ namespace Features.CameraReel
                 reels.AddLast(reel);
 
             IsUpdating = false;
-            Updated?.Invoke(reelImages);
+            ScreenshotBatchFetched?.Invoke(reelImages);
         }
 
         public async void RemoveScreenshot(CameraReelResponse current)
@@ -42,6 +45,11 @@ namespace Features.CameraReel
 
             if (nodeToRemove != null)
                 reels.Remove(nodeToRemove);
+
+            ScreenshotRemovalStarted?.Invoke(current);
+            try { await cameraReelNetworkService.DeleteScreenshot(current.id); }
+            catch (Exception) { ScreenshotRemovalFailed?.Invoke(current); }
+            finally { ScreenshotRemovalFinished?.Invoke(current); }
         }
 
         public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>
