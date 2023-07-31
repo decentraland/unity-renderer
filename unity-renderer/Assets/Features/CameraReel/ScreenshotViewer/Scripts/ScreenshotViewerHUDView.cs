@@ -1,16 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL;
-using DCLServices.CameraReelService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TMPro;
-using UI.InWorldCamera.Scripts;
+﻿using System;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
-using Environment = DCL.Environment;
 
 namespace Features.CameraReel.ScreenshotViewer
 {
@@ -18,132 +8,63 @@ namespace Features.CameraReel.ScreenshotViewer
     {
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
-        private readonly List<GameObject> profiles = new ();
-
         [SerializeField] private Image screenshotImage;
-        [SerializeField] private RectTransform rootContainer;
+        [SerializeField] public RectTransform rootContainer;
 
         [Header("NAVIGATION BUTTONS")]
         [SerializeField] private Button closeView;
         [SerializeField] private Button prevScreenshotButton;
         [SerializeField] private Button nextScreenshotButton;
 
-        [Header("INFORMATION PANEL")]
-        [SerializeField] internal Button infoPanelTextButton;
-        [SerializeField] private TMP_Text dataTime;
-        [SerializeField] private TMP_Text sceneInfo;
-        [SerializeField] private Button sceneInfoButton;
-
-        [Header("VISIBLE PEOPLE PANEL")]
-        [SerializeField] internal ScreenshotVisiblePersonView profileEntryTemplate;
-        [SerializeField] internal Transform profileGridContainer;
-
-        public CameraReelResponse currentScreenshot;
-
         private MetadataSidePanelAnimator metadataSidePanelAnimator;
-        private bool metadataPanelIsOpen = true;
+
         [field: SerializeField] public ScreenshotViewerActionsPanelView ActionPanel { get; private set; }
+        [field: SerializeField] public ScreenshotViewerInfoSidePanelView InfoSidePanel { get; private set; }
 
-        public event Action<CameraReelResponse> PrevScreenshotClicked;
-        public event Action<CameraReelResponse> NextScreenshotClicked;
+        public event Action CloseButtonClicked;
+        public event Action PrevScreenshotClicked;
+        public event Action NextScreenshotClicked;
 
-        public void Awake()
+        private bool metadataPanelIsOpen = true;
+
+        private void Awake()
         {
-            profileEntryTemplate.gameObject.SetActive(false);
             metadataSidePanelAnimator = new MetadataSidePanelAnimator(rootContainer, ActionPanel.InfoButtonBackground);
         }
 
         private void OnEnable()
         {
-            closeView.onClick.AddListener(Hide);
-
-            infoPanelTextButton.onClick.AddListener(ToggleInfoPanel);
-
-            sceneInfoButton.onClick.AddListener(JumpInScene);
-
-            prevScreenshotButton.onClick.AddListener(() => PrevScreenshotClicked?.Invoke(currentScreenshot));
-            nextScreenshotButton.onClick.AddListener(() => NextScreenshotClicked?.Invoke(currentScreenshot));
+            closeView.onClick.AddListener(() => CloseButtonClicked?.Invoke());
+            prevScreenshotButton.onClick.AddListener(() => PrevScreenshotClicked?.Invoke());
+            nextScreenshotButton.onClick.AddListener(() => NextScreenshotClicked?.Invoke());
         }
 
         private void OnDisable()
         {
             closeView.onClick.RemoveAllListeners();
-
-            infoPanelTextButton.onClick.RemoveAllListeners();
-
             prevScreenshotButton.onClick.RemoveAllListeners();
             nextScreenshotButton.onClick.RemoveAllListeners();
         }
 
-        private void JumpInScene()
+        public void Hide()
         {
-            if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
-            {
-                Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
-                Hide();
-                DataStore.i.exploreV2.isOpen.Set(false);
-            }
+            gameObject.SetActive(false);
         }
 
-        public void ToggleInfoPanel()
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void ToggleInfoSidePanel()
         {
             metadataSidePanelAnimator.ToggleSizeMode(toFullScreen: metadataPanelIsOpen, SIDE_PANEL_ANIM_DURATION);
             metadataPanelIsOpen = !metadataPanelIsOpen;
         }
 
-        private void Hide()
+        public void SetScreenshotImage(Sprite sprite)
         {
-            gameObject.SetActive(false);
-        }
-
-        public void Show(CameraReelResponse reel)
-        {
-            currentScreenshot = reel;
-            gameObject.SetActive(true);
-
-            SetSceneInfoText(reel);
-            SetDateText(reel);
-            SetScreenshotImage(reel);
-            ShowVisiblePersons(reel);
-        }
-
-        private void ShowVisiblePersons(CameraReelResponse reel)
-        {
-            foreach (GameObject profileGameObject in profiles)
-                Destroy(profileGameObject);
-
-            profiles.Clear();
-
-            foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
-            {
-                ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
-
-                profiles.Add(profileEntry.gameObject);
-                profileEntry.Configure(visiblePerson);
-                profileEntry.gameObject.SetActive(true);
-            }
-        }
-
-        private void SetSceneInfoText(CameraReelResponse reel)
-        {
-            sceneInfo.text = $"{reel.metadata.scene.name}, {reel.metadata.scene.location.x}, {reel.metadata.scene.location.y}";
-        }
-
-        private void SetDateText(CameraReelResponse reel) =>
-            dataTime.text = reel.metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy");
-
-        private async Task SetScreenshotImage(CameraReelResponse reel)
-        {
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
-            await request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-                Debug.Log(request.error);
-            else
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                screenshotImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
+            screenshotImage.sprite = sprite;
         }
     }
 }

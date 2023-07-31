@@ -1,12 +1,9 @@
 ﻿using CameraReel.Gallery;
 using DCL;
 using DCL.Helpers;
-using DCL.Providers;
 using DCLServices.CameraReelService;
 using Features.CameraReel.ScreenshotViewer;
 using System;
-using System.Threading.Tasks;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Features.CameraReel
@@ -33,14 +30,13 @@ namespace Features.CameraReel
 
             // Model
             cameraReelModel = new CameraReelModel();
-
         }
 
         public void Initialize()
         {
             cameraReelModel.Updated += OnModelUpdated;
 
-            DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchGalleryVisibility;
+            DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
             galleryView.ShowMoreButtonClicked += cameraReelModel.LoadImagesAsync;
             galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
@@ -50,15 +46,9 @@ namespace Features.CameraReel
         {
             cameraReelModel.Updated -= OnModelUpdated;
 
-            DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchGalleryVisibility;
+            DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
             galleryView.ShowMoreButtonClicked -= cameraReelModel.LoadImagesAsync;
             galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
-
-            if (screenshotViewerView != null)
-            {
-                screenshotViewerView.PrevScreenshotClicked -= ShowPrevScreenshot;
-                screenshotViewerView.NextScreenshotClicked -= ShowNextScreenshot;
-            }
 
             Utils.SafeDestroy(screenshotViewerView);
         }
@@ -91,28 +81,9 @@ namespace Features.CameraReel
                 screenshotViewerView = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
                 screenshotViewerController = new ScreenshotViewerController(screenshotViewerView, cameraReelModel);
                 screenshotViewerController.Initialize();
-
-                screenshotViewerView.PrevScreenshotClicked += ShowPrevScreenshot;
-                screenshotViewerView.NextScreenshotClicked += ShowNextScreenshot;
             }
 
-            screenshotViewerView.Show(reelResponse);
-        }
-
-        private void ShowNextScreenshot(CameraReelResponse current)
-        {
-            CameraReelResponse next = cameraReelModel.GetNextScreenshot(current);
-
-            if (next != null)
-                ShowScreenshotWithMetadata(next);
-        }
-
-        private void ShowPrevScreenshot(CameraReelResponse current)
-        {
-            CameraReelResponse prev = cameraReelModel.GetPreviousScreenshot(current);
-
-            if (prev != null)
-                ShowScreenshotWithMetadata(prev);
+            screenshotViewerController.Show(reelResponse);
         }
     }
 }

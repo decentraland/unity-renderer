@@ -13,7 +13,7 @@ namespace DCL
         public readonly BaseVariable<bool> signupVisible = new (false);
         public readonly BaseVariable<bool> controlsVisible = new (false);
         public readonly BaseVariable<bool> isCameraReelInitialized = new (true);
-        public readonly BaseVariable<bool> cameraReelVisible = new (false);
+        public readonly BaseVariable<bool> cameraReelSectionVisible = new (false);
         public readonly BaseVariable<bool> isAvatarEditorInitialized = new (false);
         public readonly BaseVariable<bool> avatarEditorVisible = new (false);
         public readonly BaseVariable<bool> emotesVisible = new (false);

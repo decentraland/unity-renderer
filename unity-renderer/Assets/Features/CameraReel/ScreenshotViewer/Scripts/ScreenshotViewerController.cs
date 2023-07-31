@@ -1,6 +1,11 @@
-﻿using DCLServices.CameraReelService;
+﻿using Cysharp.Threading.Tasks;
+using DCL;
+using DCLServices.CameraReelService;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using Environment = DCL.Environment;
 
 namespace Features.CameraReel.ScreenshotViewer
@@ -9,8 +14,9 @@ namespace Features.CameraReel.ScreenshotViewer
     {
         private readonly ScreenshotViewerHUDView view;
         private readonly CameraReelModel model;
+        private readonly List<GameObject> profiles = new ();
 
-        private CameraReelResponse currentScreenshot => view.currentScreenshot;
+        private CameraReelResponse currentScreenshot;
 
         public ScreenshotViewerController(ScreenshotViewerHUDView view, CameraReelModel model)
         {
@@ -20,22 +26,70 @@ namespace Features.CameraReel.ScreenshotViewer
 
         public void Initialize()
         {
+            view.CloseButtonClicked += view.Hide;
+            view.PrevScreenshotClicked += ShowPrevScreenshot;
+            view.NextScreenshotClicked += ShowNextScreenshot;
+
             view.ActionPanel.DownloadClicked += DownloadScreenshot;
             view.ActionPanel.DeleteClicked += DeleteScreenshot;
             view.ActionPanel.LinkClicked += CopyScreenshotLink;
             view.ActionPanel.TwitterClicked += ShareOnTwitter;
+            view.ActionPanel.InfoClicked += view.ToggleInfoSidePanel;
 
-            view.ActionPanel.InfoClicked += ToggleInfoPanel;
+            view.InfoSidePanel.SidePanelButtonClicked += view.ToggleInfoSidePanel;
+            view.InfoSidePanel.SceneButtonClicked += JumpInScene;
         }
 
         public void Dispose()
         {
+            view.CloseButtonClicked -= view.Hide;
+            view.PrevScreenshotClicked -= ShowPrevScreenshot;
+            view.NextScreenshotClicked -= ShowNextScreenshot;
+
             view.ActionPanel.DownloadClicked -= DownloadScreenshot;
             view.ActionPanel.DeleteClicked -= DeleteScreenshot;
             view.ActionPanel.LinkClicked -= CopyScreenshotLink;
             view.ActionPanel.TwitterClicked -= ShareOnTwitter;
+            view.ActionPanel.InfoClicked -= view.ToggleInfoSidePanel;
 
-            view.ActionPanel.InfoClicked -= ToggleInfoPanel;
+            view.InfoSidePanel.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
+            view.InfoSidePanel.SceneButtonClicked -= JumpInScene;
+        }
+
+        public void Show(CameraReelResponse reel)
+        {
+            if (reel == null) return;
+
+            currentScreenshot = reel;
+
+            view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
+            view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
+
+            SetScreenshotImage(reel);
+
+            // ShowVisiblePersons(reel);
+
+            view.Show();
+        }
+
+        private void ShowPrevScreenshot() =>
+            Show(model.GetPreviousScreenshot(currentScreenshot));
+
+        private void ShowNextScreenshot() =>
+            Show(model.GetNextScreenshot(currentScreenshot));
+
+        private async Task SetScreenshotImage(CameraReelResponse reel)
+        {
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
+            await request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+                Debug.Log(request.error);
+            else
+            {
+                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                view.SetScreenshotImage(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
+            }
         }
 
         private async void DeleteScreenshot()
@@ -67,9 +121,31 @@ namespace Features.CameraReel.ScreenshotViewer
             Application.OpenURL(twitterUrl);
         }
 
-        private void ToggleInfoPanel()
+        private void JumpInScene()
         {
-            view.ToggleInfoPanel();
+            if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+            {
+                Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
+                view.Hide();
+                DataStore.i.exploreV2.isOpen.Set(false);
+            }
         }
+
+        // private void ShowVisiblePersons(CameraReelResponse reel)
+        // {
+        //     foreach (GameObject profileGameObject in profiles)
+        //         Destroy(profileGameObject);
+        //
+        //     profiles.Clear();
+        //
+        //     foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
+        //     {
+        //         ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
+        //
+        //         profiles.Add(profileEntry.gameObject);
+        //         profileEntry.Configure(visiblePerson);
+        //         profileEntry.gameObject.SetActive(true);
+        //     }
+        // }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Features.CameraReel.ScreenshotViewer
@@ -11,7 +10,7 @@ namespace Features.CameraReel.ScreenshotViewer
         [SerializeField] private Button deleteButton;
         [SerializeField] private Button linkButton;
         [SerializeField] private Button twitterButton;
-        [FormerlySerializedAs("InfoButton")] [SerializeField] private Button infoButton;
+        [SerializeField] private Button infoButton;
 
         public event Action DownloadClicked;
         public event Action DeleteClicked;
