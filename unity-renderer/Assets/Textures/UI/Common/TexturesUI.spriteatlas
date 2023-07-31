@@ -227,7 +227,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
   - {fileID: 21300000, guid: 5f5d6367f6d5ebc4ab5480df6fb70c5f, type: 3}
-  - {fileID: 21300000, guid: 87a25a674771b42209ef0ae9b6b6bce7, type: 3}
   - {fileID: 21300000, guid: b22119773231a487caa76e1b94ae9af5, type: 3}
   - {fileID: 21300000, guid: f5f102872b9fb41c6a606b3f038538aa, type: 3}
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
@@ -591,7 +590,6 @@ SpriteAtlas:
   - Switch32
   - ContainerRadius11Shadow
   - WalletConnectLogo
-  - VideoCameraIcnSmall
   - SliderHightlightWhite
   - BuilderIcon
   - VoiceChatDisable
