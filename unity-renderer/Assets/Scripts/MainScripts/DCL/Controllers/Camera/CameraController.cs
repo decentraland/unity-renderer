@@ -64,6 +64,7 @@ namespace DCL.Camera
         {
             cameraTransform = this.camera.transform;
             DataStore.i.camera.transform.Set(cameraTransform);
+            DataStore.i.camera.tpsCamera.Set(thirdPersonCamera);
 
             SetCameraEnabledState(CommonScriptableObjects.rendererState.Get());
 

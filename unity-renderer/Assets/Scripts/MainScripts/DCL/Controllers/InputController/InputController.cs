@@ -72,6 +72,7 @@ public enum DCLAction_Hold
     Jump = 2,
     ZoomIn = 3,
     ZoomOut = 4,
+    Walk = 5,
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
@@ -305,6 +306,10 @@ public class InputController : MonoBehaviour
             switch (action.DCLAction)
             {
                 case DCLAction_Hold.Sprint:
+                    InputProcessor.FromKey(action, InputSettings.RunButtonKeyCode,
+                        InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
+                    break;
+                case DCLAction_Hold.Walk:
                     InputProcessor.FromKey(action, InputSettings.WalkButtonKeyCode,
                         InputProcessor.Modifier.FocusNotInInput | InputProcessor.Modifier.NotInStartMenu);
                     break;

@@ -33,24 +33,23 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void Setup(FeatureFlag featureFlag)
         {
+            // TODO: this reference was inside Player prefab
+            FollowWithDamping followWithDamping = FindObjectOfType<FollowWithDamping>();
+
             GameObject controller;
             if (featureFlag.IsFeatureEnabled(FEATURE_LOCOMOTION_V2))
             {
-                Debug.Log("NEW ONE!");
                 controller = Instantiate(newController);
+                controller.GetComponent<CharacterView>().PostStart(followWithDamping);
             }
             else
             {
-                Debug.Log("old one :(");
                 controller = Instantiate(oldController);
+                followWithDamping.target = controller.transform;
             }
 
             // TODO: Kernel is still sending messages so we cant change the name, we need to get rid of this or setup a bridge
             controller.name = "CharacterController";
-
-            // TODO: this reference was inside Player prefab
-            FollowWithDamping followWithDamping = FindObjectOfType<FollowWithDamping>();
-            followWithDamping.target = controller.transform;
         }
     }
 }

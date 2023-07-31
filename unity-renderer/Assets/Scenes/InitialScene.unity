@@ -238,7 +238,7 @@ MonoBehaviour:
   customURL: https://play.decentraland.zone/?
   network: 0
   realm: loki
-  startInCoords: {x: 149, y: 149}
+  startInCoords: {x: 0, y: 0}
   overrideUserID: 
   flags:
   - enabled: 1

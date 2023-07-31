@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 
 namespace DCL
@@ -11,5 +12,6 @@ namespace DCL
         public readonly BaseVariable<bool> invertYAxis = new BaseVariable<bool>();
         public readonly BaseVariable<bool> leftMouseButtonCursorLock = new BaseVariable<bool>();
         public readonly BaseVariable<Camera> hudsCamera = new BaseVariable<Camera>();
+        public readonly BaseVariable<CinemachineFreeLook> tpsCamera = new BaseVariable<CinemachineFreeLook>();
     }
 }

@@ -100,7 +100,8 @@ namespace DCL
 
         public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
-            float characterMinHeight = DCLCharacterController.i.characterController.height * 0.5f;
+            //todo: get half height some somewhere else
+            float characterMinHeight = 1.6f * 0.5f;
 
             MoveTo(
                 new Vector3(position.x, Math.Max(position.y - characterMinHeight, -characterMinHeight), position.z), // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet

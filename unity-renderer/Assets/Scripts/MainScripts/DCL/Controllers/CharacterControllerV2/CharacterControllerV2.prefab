@@ -401,6 +401,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 47cfcbf883a4f2d438ffd56818e5b6e5, type: 2}
   jumpAction: {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   sprintAction: {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
+  walkAction: {fileID: 11400000, guid: 2b9a8249daeada149be90467c4bb981c, type: 2}
   characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
   cameraForward: {fileID: 11400000, guid: 4148c1b844a23af4b8436b890de533a6, type: 2}
@@ -422,6 +423,7 @@ MonoBehaviour:
   defaultLocomotion:
   - {fileID: 11400000, guid: 20df7c6181f687a45af45f1192bdd0e0, type: 2}
   - {fileID: 11400000, guid: b80f2827a43dc3c4fa7349f2c693a7fa, type: 2}
+  data: {fileID: 11400000, guid: 47cfcbf883a4f2d438ffd56818e5b6e5, type: 2}
 --- !u!1001 &4253840962834057931
 PrefabInstance:
   m_ObjectHideFlags: 0

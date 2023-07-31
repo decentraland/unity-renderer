@@ -7,6 +7,7 @@ public class FollowWithDamping : MonoBehaviour
     public Transform target;
     public Vector3 damping;
     public float dampingChangeSpeed = 0.5f;
+    public float additionalHeight = 0;
 
     [Header("Debug Zone")]
     public Vector3 currentDamping;
@@ -39,7 +40,7 @@ public class FollowWithDamping : MonoBehaviour
         if ( target == null ) return;
 
         Vector3 myPosition = transform.position;
-        Vector3 targetPosition = target.position;
+        Vector3 targetPosition = target.position + (Vector3.up * additionalHeight);
         Vector3 finalPosition = myPosition;
 
         currentDamping += Damper.Damp( damping - currentDamping, Vector3.one * dampingChangeSpeed, Time.deltaTime);
