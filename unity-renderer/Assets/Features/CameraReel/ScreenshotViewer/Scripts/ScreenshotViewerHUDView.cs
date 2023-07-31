@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace Features.CameraReel.ScreenshotViewer
 
         private void OnEnable()
         {
-            closeView.onClick.AddListener(() => gameObject.SetActive(false));
+            closeView.onClick.AddListener(Hide);
 
             downloadButton.onClick.AddListener(DownloadImage);
             deleteButton.onClick.AddListener(DeleteImage);
@@ -95,7 +96,11 @@ namespace Features.CameraReel.ScreenshotViewer
         private void JumpInScene()
         {
             if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+            {
                 Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
+                Hide();
+                DataStore.i.exploreV2.isOpen.Set(false);
+            }
         }
 
         private void ToggleMetadataPanel()
@@ -104,6 +109,10 @@ namespace Features.CameraReel.ScreenshotViewer
             metadataPanelIsOpen = !metadataPanelIsOpen;
         }
 
+        private void Hide()
+        {
+            gameObject.SetActive(false);
+        }
         public void Show(CameraReelResponse reel)
         {
             currentScreenshot = reel;
