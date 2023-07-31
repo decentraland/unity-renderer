@@ -10,14 +10,20 @@ namespace Features.CameraReel
     {
         private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
+
         private ICameraReelNetworkService cameraReelNetworkServiceLazy;
         private int offset;
+
         private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
 
-        public event Action<CameraReelResponses> LoadedScreenshotsUpdated;
+        public event Action<CameraReelResponses> Updated;
+
+        public bool IsUpdating { get; private set; }
 
         public async void LoadImagesAsync()
         {
+            IsUpdating = true;
+
             CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(
                 DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
 
@@ -26,7 +32,14 @@ namespace Features.CameraReel
             foreach (CameraReelResponse reel in reelImages.images)
                 reels.AddLast(reel);
 
-            LoadedScreenshotsUpdated?.Invoke(reelImages);
+            IsUpdating = false;
+            Updated?.Invoke(reelImages);
         }
+
+        public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>
+            reels.Find(current)?.Next?.Value;
+
+        public CameraReelResponse GetPreviousScreenshot(CameraReelResponse current) =>
+            reels.Find(current)?.Previous?.Value;
     }
 }

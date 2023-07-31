@@ -31,30 +31,34 @@ namespace Features.CameraReel
             this.sectionView = sectionView;
             this.galleryView = galleryView;
             this.galleryStorageView = galleryStorageView;
+
+            // Model
+            cameraReelModel = new CameraReelModel();
         }
 
         public void Initialize()
         {
-            cameraReelModel = new CameraReelModel();
-            cameraReelModel.LoadedScreenshotsUpdated += OnModelUpdated;
+            cameraReelModel.Updated += OnModelUpdated;
+
             DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchGalleryVisibility;
-            // galleryView.ShowMoreButtonClicked += LoadMoreImages;
-            // galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
+
+            galleryView.ShowMoreButtonClicked += cameraReelModel.LoadImagesAsync;
+            galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
         }
 
         public void Dispose()
         {
-            cameraReelModel.LoadedScreenshotsUpdated -= OnModelUpdated;
+            cameraReelModel.Updated -= OnModelUpdated;
+
             DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchGalleryVisibility;
+            galleryView.ShowMoreButtonClicked -= cameraReelModel.LoadImagesAsync;
+            galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
 
-            // galleryView.ShowMoreButtonClicked -= LoadMoreImages;
-            // galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
-
-            // if (screenshotViewer != null)
-            // {
-            //     screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
-            //     screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
-            // }
+            if (screenshotViewer != null)
+            {
+                screenshotViewer.PrevScreenshotClicked -= ShowPrevScreenshot;
+                screenshotViewer.NextScreenshotClicked -= ShowNextScreenshot;
+            }
 
             Utils.SafeDestroy(screenshotViewer);
         }
@@ -76,38 +80,39 @@ namespace Features.CameraReel
         {
             sectionView.SwitchVisibility(isVisible);
 
-            if (firstLoad)
+            if (firstLoad && !cameraReelModel.IsUpdating)
                 cameraReelModel.LoadImagesAsync();
         }
 
-        //
-        // private async Task InstantiateScreenshotViewer()
-        // {
-        //     screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, "ScreenshotViewer");
-        //     // screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
-        //     // screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
-        // }
-        // private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
-        // {
-        //     if (screenshotViewer == null)
-        //         await InstantiateScreenshotViewer();
-        //
-        //     screenshotViewer.Show(reelResponse);
-        // }
-        // private void ShowNextScreenshot(CameraReelResponse current)
-        // {
-        //     CameraReelResponse next = galleryView.GetNextScreenshot(current);
-        //
-        //     if (next != null)
-        //         ShowScreenshotWithMetadata(next);
-        // }
-        //
-        // private void ShowPrevScreenshot(CameraReelResponse current)
-        // {
-        //     CameraReelResponse prev = galleryView.GetPreviousScreenshot(current);
-        //
-        //     if (prev != null)
-        //         ShowScreenshotWithMetadata(prev);
-        // }
+        private async Task InstantiateScreenshotViewer()
+        {
+            screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, SCREENSHOT_VIEW);
+            screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
+            screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
+        }
+
+        private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
+        {
+            if (screenshotViewer == null)
+                await InstantiateScreenshotViewer();
+
+            screenshotViewer.Show(reelResponse);
+        }
+
+        private void ShowNextScreenshot(CameraReelResponse current)
+        {
+            CameraReelResponse next = cameraReelModel.GetNextScreenshot(current);
+
+            if (next != null)
+                ShowScreenshotWithMetadata(next);
+        }
+
+        private void ShowPrevScreenshot(CameraReelResponse current)
+        {
+            CameraReelResponse prev = cameraReelModel.GetPreviousScreenshot(current);
+
+            if (prev != null)
+                ShowScreenshotWithMetadata(prev);
+        }
     }
 }
