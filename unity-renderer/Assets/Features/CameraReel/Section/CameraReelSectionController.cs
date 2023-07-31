@@ -11,12 +11,12 @@ namespace Features.CameraReel
     public class CameraReelSectionController : IDisposable
     {
         private readonly CameraReelModel cameraReelModel;
-
         private readonly CameraReelSectionView sectionView;
+
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
 
-        private ScreenshotViewerHUDView screenshotViewerView;
+        private ScreenshotViewerView screenshotViewerView;
         private ScreenshotViewerController screenshotViewerController;
 
         private bool firstLoad = true;
@@ -25,8 +25,9 @@ namespace Features.CameraReel
         {
             // Views
             this.sectionView = sectionView;
-            this.galleryView = galleryView;
+
             this.galleryStorageView = galleryStorageView;
+            this.galleryView = galleryView;
 
             // Model
             cameraReelModel = new CameraReelModel();
@@ -38,7 +39,7 @@ namespace Features.CameraReel
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
-            galleryView.ShowMoreButtonClicked += cameraReelModel.LoadImagesAsync;
+            galleryView.ShowMoreButtonClicked += cameraReelModel.RequestScreenshotsBatchAsync;
             galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
         }
 
@@ -47,7 +48,7 @@ namespace Features.CameraReel
             cameraReelModel.Updated -= OnModelUpdated;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
-            galleryView.ShowMoreButtonClicked -= cameraReelModel.LoadImagesAsync;
+            galleryView.ShowMoreButtonClicked -= cameraReelModel.RequestScreenshotsBatchAsync;
             galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
 
             Utils.SafeDestroy(screenshotViewerView);
@@ -71,7 +72,7 @@ namespace Features.CameraReel
             sectionView.SwitchVisibility(isVisible);
 
             if (firstLoad && !cameraReelModel.IsUpdating)
-                cameraReelModel.LoadImagesAsync();
+                cameraReelModel.RequestScreenshotsBatchAsync();
         }
 
         private void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)

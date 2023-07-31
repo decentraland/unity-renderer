@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Features.CameraReel.ScreenshotViewer
 {
-    public class ScreenshotViewerHUDView : MonoBehaviour
+    public class ScreenshotViewerView : MonoBehaviour
     {
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
@@ -56,15 +56,15 @@ namespace Features.CameraReel.ScreenshotViewer
             gameObject.SetActive(true);
         }
 
+        public void SetScreenshotImage(Sprite sprite)
+        {
+            screenshotImage.sprite = sprite;
+        }
+
         public void ToggleInfoSidePanel()
         {
             metadataSidePanelAnimator.ToggleSizeMode(toFullScreen: metadataPanelIsOpen, SIDE_PANEL_ANIM_DURATION);
             metadataPanelIsOpen = !metadataPanelIsOpen;
-        }
-
-        public void SetScreenshotImage(Sprite sprite)
-        {
-            screenshotImage.sprite = sprite;
         }
     }
 }

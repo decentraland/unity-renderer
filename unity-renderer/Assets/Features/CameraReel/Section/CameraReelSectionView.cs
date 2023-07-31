@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CameraReelSectionView : MonoBehaviour
 {
-    [field: SerializeField] public ScreenshotViewerHUDView ScreenshotViewerPrefab { get; private set; }
+    [field: SerializeField] public ScreenshotViewerView ScreenshotViewerPrefab { get; private set; }
     [field: SerializeField] public CameraReelGalleryStorageView GalleryStorageView { get; private set;}
     [field: SerializeField] public CameraReelGalleryView GalleryView { get; private set; }
 
@@ -15,18 +15,12 @@ public class CameraReelSectionView : MonoBehaviour
 
     private Canvas galleryCanvas;
 
-    private void Awake()
-    {
-        galleryCanvas = GalleryView.GetComponent<Canvas>();
-        galleryCanvas.enabled = false;
-    }
-
     public void SwitchVisibility(bool isVisible) =>
         canvas.enabled = isVisible;
 
     public void ShowGalleryWhenLoaded()
     {
-        galleryCanvas.enabled = true;
+        GalleryView.SwitchVisibility(isVisible: true);
         loadingSpinner.SetActive(false);
     }
 }

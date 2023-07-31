@@ -567,6 +567,7 @@ MonoBehaviour:
   container: {fileID: 6878456623671606729}
   showMoreButton: {fileID: 5201337163451206210}
   showMoreButtonPanel: {fileID: 4290208090933550867}
+  canvas: {fileID: 2452549162064602847}
   monthHeaderPrefab: {fileID: 816142868648288106, guid: 4631d5288231697489b884df705df08e,
     type: 3}
   monthGridContainerPrefab: {fileID: 6408376535620168257, guid: ec6e563cf5a659e4c8d81d46d9a8eec2,
@@ -1240,12 +1241,12 @@ PrefabInstance:
     - target: {fileID: 7630522682485300339, guid: f338fa1f7fa2fa2448131444b455ba89,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7630522682485300339, guid: f338fa1f7fa2fa2448131444b455ba89,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7630522682485300339, guid: f338fa1f7fa2fa2448131444b455ba89,
         type: 3}
@@ -1265,7 +1266,7 @@ PrefabInstance:
     - target: {fileID: 7630522682485300339, guid: f338fa1f7fa2fa2448131444b455ba89,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f338fa1f7fa2fa2448131444b455ba89, type: 3}

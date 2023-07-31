@@ -20,7 +20,7 @@ namespace Features.CameraReel
 
         public bool IsUpdating { get; private set; }
 
-        public async void LoadImagesAsync()
+        public async void RequestScreenshotsBatchAsync()
         {
             IsUpdating = true;
 

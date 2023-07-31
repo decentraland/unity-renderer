@@ -16,6 +16,7 @@ namespace CameraReel.Gallery
         [SerializeField] internal RectTransform container;
         [SerializeField] private Button showMoreButton;
         [SerializeField] private RectTransform showMoreButtonPanel;
+        [SerializeField] public Canvas canvas;
 
         [Header("RESOURCES")]
         [SerializeField] internal GameObject monthHeaderPrefab;
@@ -27,18 +28,23 @@ namespace CameraReel.Gallery
         public event Action<CameraReelResponse> ScreenshotThumbnailClicked;
         public event Action ShowMoreButtonClicked;
 
+        private void Awake()
+        {
+            SwitchVisibility(isVisible: false);
+        }
+
         private void OnEnable()
         {
-            showMoreButton.onClick.AddListener(EmitShowMoreClickEvent);
+            showMoreButton.onClick.AddListener(() => ShowMoreButtonClicked?.Invoke());
         }
 
         private void OnDisable()
         {
-            showMoreButton.onClick.RemoveListener(EmitShowMoreClickEvent);
+            showMoreButton.onClick.RemoveAllListeners();
         }
 
-        private void EmitShowMoreClickEvent() =>
-            ShowMoreButtonClicked?.Invoke();
+        public void SwitchVisibility(bool isVisible) =>
+            canvas.enabled = isVisible;
 
         public void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
         {

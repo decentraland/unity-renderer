@@ -2,7 +2,6 @@
 using DCL;
 using DCLServices.CameraReelService;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,13 +11,12 @@ namespace Features.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerController : IDisposable
     {
-        private readonly ScreenshotViewerHUDView view;
+        private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
-        private readonly List<GameObject> profiles = new ();
 
         private CameraReelResponse currentScreenshot;
 
-        public ScreenshotViewerController(ScreenshotViewerHUDView view, CameraReelModel model)
+        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model)
         {
             this.view = view;
             this.model = model;
@@ -62,12 +60,11 @@ namespace Features.CameraReel.ScreenshotViewer
 
             currentScreenshot = reel;
 
-            view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
-            view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
-
             SetScreenshotImage(reel);
 
-            // ShowVisiblePersons(reel);
+            view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
+            view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
+            view.InfoSidePanel.ShowVisiblePersons(reel.metadata.visiblePeople);
 
             view.Show();
         }
@@ -130,22 +127,5 @@ namespace Features.CameraReel.ScreenshotViewer
                 DataStore.i.exploreV2.isOpen.Set(false);
             }
         }
-
-        // private void ShowVisiblePersons(CameraReelResponse reel)
-        // {
-        //     foreach (GameObject profileGameObject in profiles)
-        //         Destroy(profileGameObject);
-        //
-        //     profiles.Clear();
-        //
-        //     foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
-        //     {
-        //         ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
-        //
-        //         profiles.Add(profileEntry.gameObject);
-        //         profileEntry.Configure(visiblePerson);
-        //         profileEntry.gameObject.SetActive(true);
-        //     }
-        // }
     }
 }
