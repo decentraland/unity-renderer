@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-namespace CameraReel.ScreenshotViewer
+namespace Features.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerHUDView : MonoBehaviour
     {

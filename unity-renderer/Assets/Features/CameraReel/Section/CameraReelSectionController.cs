@@ -1,9 +1,9 @@
 ﻿using CameraReel.Gallery;
-using CameraReel.ScreenshotViewer;
 using DCL;
 using DCL.Helpers;
 using DCL.Providers;
 using DCLServices.CameraReelService;
+using Features.CameraReel.ScreenshotViewer;
 using System;
 using System.Threading.Tasks;
 
@@ -14,11 +14,11 @@ namespace Features.CameraReel
         private const string SCREENSHOT_VIEW = "ScreenshotView";
 
         private readonly IAddressableResourceProvider assetProvider;
+        private readonly CameraReelModel cameraReelModel;
+
         private readonly CameraReelSectionView sectionView;
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
-
-        private CameraReelModel cameraReelModel;
         private ScreenshotViewerHUDView screenshotViewer;
 
         private bool firstLoad = true;
@@ -84,17 +84,14 @@ namespace Features.CameraReel
                 cameraReelModel.LoadImagesAsync();
         }
 
-        private async Task InstantiateScreenshotViewer()
-        {
-            screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, SCREENSHOT_VIEW);
-            screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
-            screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
-        }
-
         private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
         {
             if (screenshotViewer == null)
-                await InstantiateScreenshotViewer();
+            {
+                screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, SCREENSHOT_VIEW);
+                screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
+                screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
+            }
 
             screenshotViewer.Show(reelResponse);
         }
