@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: CameraReel
   m_EditorClassIdentifier: 
-  m_GroupName: Packed Assets
+  m_GroupName: CameraReel
   m_Data:
     m_SerializedData: []
   m_GUID: 0c25c397835febc4da1b4295af52dd49
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 02c9c3e59ec665748b30c0ca02b0f871
+    m_Address: CameraReelSectionView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
