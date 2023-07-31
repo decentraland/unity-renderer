@@ -15,7 +15,6 @@ namespace CameraReel.Gallery
     {
         private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
-
         private readonly Dictionary<int, GridContainerComponentView> monthContainers = new ();
 
         [SerializeField] internal RectTransform container;

@@ -1,22 +1,15 @@
 using CameraReel.Gallery;
 using CameraReel.ScreenshotViewer;
-using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Providers;
 using DCLServices.CameraReelService;
-using System;
-using TMPro;
+using Features.CameraReel;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CameraReelSectionView : MonoBehaviour
 {
-    private const string ADDRESS = "CameraReelSectionView";
+    [field: SerializeField] public CameraReelGalleryStorageView GalleryStorageView { get; private set;}
+    [field: SerializeField] public CameraReelGalleryView GalleryView { get; private set; }
 
-    [SerializeField] private Slider storageBar;
-    [SerializeField] private TMP_Text storageText;
-
-    [SerializeField] private CameraReelGalleryView galleryView;
     [SerializeField] private ScreenshotViewerHUDView screenshotViewerPrefab;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject loadingSpinner;
@@ -26,27 +19,20 @@ public class CameraReelSectionView : MonoBehaviour
 
     private void Awake()
     {
-        storageBar.gameObject.SetActive(false);
-        storageText.gameObject.SetActive(false);
-
-        galleryCanvas = galleryView.GetComponent<Canvas>();
+        galleryCanvas = GalleryView.GetComponent<Canvas>();
         galleryCanvas.enabled = false;
     }
 
     private void OnEnable()
     {
         DataStore.i.HUDs.cameraReelVisible.OnChange += SwitchVisibility;
-
-        galleryView.ScreenshotsStorageUpdated += UpdateStorageBar;
-        galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
+        GalleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
     }
 
     private void OnDisable()
     {
         DataStore.i.HUDs.cameraReelVisible.OnChange -= SwitchVisibility;
-
-        galleryView.ScreenshotsStorageUpdated -= UpdateStorageBar;
-        galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
+        GalleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
     }
 
     private void OnDestroy()
@@ -58,9 +44,6 @@ public class CameraReelSectionView : MonoBehaviour
         }
     }
 
-    public static async UniTask<CameraReelSectionView> Create(IAddressableResourceProvider assetProvider) =>
-        await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
-
     private bool firstLoad = true;
     private void SwitchVisibility(bool isVisible, bool _)
     {
@@ -68,8 +51,8 @@ public class CameraReelSectionView : MonoBehaviour
 
         if (firstLoad)
         {
-            galleryView.LoadImagesAsync();
-            galleryView.ScreenshotsStorageUpdated += ShowGalleryWhenLoaded;
+            GalleryView.LoadImagesAsync();
+            GalleryView.ScreenshotsStorageUpdated += ShowGalleryWhenLoaded;
             firstLoad = false;
         }
     }
@@ -78,16 +61,6 @@ public class CameraReelSectionView : MonoBehaviour
     {
         galleryCanvas.enabled = true;
         loadingSpinner.SetActive(false);
-    }
-
-    private void UpdateStorageBar((int current, int max) storage)
-    {
-        storageText.text = $"Storage: {storage.current}/{storage.max} photo taken";
-        storageText.gameObject.SetActive(true);
-
-        storageBar.maxValue = storage.max;
-        storageBar.value = storage.current;
-        storageBar.gameObject.SetActive(true);
     }
 
     private void ShowScreenshotWithMetadata(CameraReelResponse reel)
@@ -104,7 +77,7 @@ public class CameraReelSectionView : MonoBehaviour
 
     private void ShowNextScreenshot(CameraReelResponse current)
     {
-        CameraReelResponse next = galleryView.GetNextScreenshot(current);
+        CameraReelResponse next = GalleryView.GetNextScreenshot(current);
 
         if (next != null)
             ShowScreenshotWithMetadata(next);
@@ -112,7 +85,7 @@ public class CameraReelSectionView : MonoBehaviour
 
     private void ShowPrevScreenshot(CameraReelResponse current)
     {
-        CameraReelResponse prev = galleryView.GetPreviousScreenshot(current);
+        CameraReelResponse prev = GalleryView.GetPreviousScreenshot(current);
 
         if (prev != null)
             ShowScreenshotWithMetadata(prev);
