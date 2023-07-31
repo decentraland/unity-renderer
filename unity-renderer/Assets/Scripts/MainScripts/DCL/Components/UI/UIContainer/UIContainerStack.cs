@@ -60,7 +60,7 @@ namespace DCL.Components
             HORIZONTAL
         }
 
-        public Dictionary<string, GameObject> stackContainers = new ();
+        public Dictionary<string, UIReferencesContainer> stackContainers = new ();
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
         private readonly UIShapePool childPool;
@@ -139,7 +139,7 @@ namespace DCL.Components
 #if UNITY_EDITOR
                 stackContainer.name = "UIContainerStackChild - " + childComponent.id;
 #endif
-                stackContainers.Add(childComponent.id, stackContainer.gameObject);
+                stackContainers.Add(childComponent.id, stackContainer);
 
                 int oldSiblingIndex = childComponent.referencesContainer.transform.GetSiblingIndex();
                 childComponent.referencesContainer.transform.SetParent(stackContainer.transform, false);
@@ -177,6 +177,15 @@ namespace DCL.Components
 
             childComponent.OnAppliedChanges -= RefreshContainerForShape;
             RefreshDCLLayout();
+        }
+
+        public override void Dispose()
+        {
+            foreach (var child in stackContainers)
+            {
+                childPool.ReleaseUIShape(child.Value);
+            }
+            base.Dispose();
         }
     }
 }

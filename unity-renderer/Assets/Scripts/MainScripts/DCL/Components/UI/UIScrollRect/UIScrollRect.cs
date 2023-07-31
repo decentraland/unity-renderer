@@ -103,10 +103,10 @@ namespace DCL.Components
 
         void AdjustChildHook()
         {
-            UIScrollRectRefContainer rc = referencesContainer;
-            rc.childHookRectTransform.SetParent(rc.layoutElementRT, false);
-            rc.childHookRectTransform.SetToMaxStretch();
-            rc.childHookRectTransform.SetParent(rc.content, true);
+            UIScrollRectRefContainer refContainer = referencesContainer;
+            refContainer.childHookRectTransform.SetParent(refContainer.layoutElementRT, false);
+            refContainer.childHookRectTransform.SetToMaxStretch();
+            refContainer.childHookRectTransform.SetParent(refContainer.content, true);
             RefreshDCLLayoutRecursively(false, true);
         }
 

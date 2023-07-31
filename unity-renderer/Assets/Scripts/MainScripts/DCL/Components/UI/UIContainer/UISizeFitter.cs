@@ -32,9 +32,9 @@ public class UISizeFitter : MonoBehaviour
 
         EnsureCanvasChildHookRectTransform();
 
-        RectTransform rt = transform as RectTransform;
+        RectTransform thisRectTransform = transform as RectTransform;
 
-        if (rt == null || canvasChildHookRT == null || containers == null || containers.Length == 0)
+        if (thisRectTransform == null || canvasChildHookRT == null || containers == null || containers.Length == 0)
         {
             return;
         }
@@ -60,21 +60,21 @@ public class UISizeFitter : MonoBehaviour
             children[i].SetParent(canvasChildHookRT, true);
         }
 
-        foreach (UIReferencesContainer rc in containers)
+        foreach (UIReferencesContainer refCont in containers)
         {
-            RectTransform r = rc.childHookRectTransform;
+            RectTransform refContainerChildRectTransform = refCont.childHookRectTransform;
 
-            if (r == transform)
+            if (refContainerChildRectTransform == transform)
             {
                 continue;
             }
 
             if (VERBOSE)
             {
-                Debug.Log($"..... container... {r.name} ... w = {r.sizeDelta.x} h = {r.sizeDelta.y}", rc.gameObject);
+                Debug.Log($"..... container... {refContainerChildRectTransform.name} ... w = {refContainerChildRectTransform.sizeDelta.x} h = {refContainerChildRectTransform.sizeDelta.y}", refCont.gameObject);
             }
 
-            r.GetWorldCorners(corners);
+            refContainerChildRectTransform.GetWorldCorners(corners);
 
             //NOTE(Brian): We want the coords in canvas space to solve CanvasScaler issues and world canvas arbitrary transform values.
             corners[0] = canvasChildHookRT.InverseTransformPoint(corners[0]);
@@ -109,12 +109,12 @@ public class UISizeFitter : MonoBehaviour
 
         if (!adjustWidth)
         {
-            finalRect.width = rt.sizeDelta.x;
+            finalRect.width = thisRectTransform.sizeDelta.x;
         }
 
         if (!adjustHeight)
         {
-            finalRect.height = rt.sizeDelta.y;
+            finalRect.height = thisRectTransform.sizeDelta.y;
         }
 
         if (VERBOSE)
@@ -125,8 +125,8 @@ public class UISizeFitter : MonoBehaviour
         //NOTE(Brian): In this last step, we need to transform from canvas space to world space.
         //             We need to use "position" because assumes its pivot in the lower right corner of the rect in world space.
         //             This is exactly what we are looking for as we want an anchor agnostic solution.
-        rt.position = canvasChildHookRT.TransformPoint(finalRect.min + (finalRect.size * rt.pivot));
-        rt.sizeDelta = new Vector2(finalRect.width, finalRect.height);
+        thisRectTransform.position = canvasChildHookRT.TransformPoint(finalRect.min + (finalRect.size * thisRectTransform.pivot));
+        thisRectTransform.sizeDelta = new Vector2(finalRect.width, finalRect.height);
 
         for (int i = 0; i < children.Length; i++)
         {

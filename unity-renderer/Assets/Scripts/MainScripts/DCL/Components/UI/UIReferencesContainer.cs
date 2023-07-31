@@ -21,10 +21,6 @@ namespace DCL.Components
         public LayoutElement layoutElement;
         public RectTransform layoutElementRT;
 
-        [Header("Initial State")]
-        [Tooltip("If true, the UI will be visible when created or loaded from the pool.")]
-        public bool startsVisible = true;
-
         [Tooltip("Children of this UI object will reparent to this rectTransform.")]
         public RectTransform childHookRectTransform;
 
@@ -62,11 +58,6 @@ namespace DCL.Components
             }
         }
 
-        public void Initialize()
-        {
-            SetVisibility(startsVisible);
-        }
-
         public void SetVisibility(bool visible, float opacity = 1f)
         {
             if (canvasGroup == null) return;
@@ -79,6 +70,13 @@ namespace DCL.Components
             if (canvasGroup == null) return;
 
             canvasGroup.blocksRaycasts = isPointerBlocker;
+        }
+
+        public void ResetLayoutElementRTLocalPosition()
+        {
+            if (layoutElementRT == null) return;
+
+            layoutElementRT.localPosition = Vector3.zero;
         }
     }
 }
