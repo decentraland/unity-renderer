@@ -56,6 +56,38 @@ namespace CameraReel.Gallery
             screenshotThumbnails.Remove(reel);
         }
 
+        public void AddScreenshotThumbnail(CameraReelResponse reel)
+        {
+            int month = reel.metadata.GetLocalizedDateTime().Month;
+
+            GridContainerComponentView gridContainer;
+
+            if (!monthContainers.ContainsKey(month))
+            {
+                GameObject separator = Instantiate(monthHeaderPrefab, container);
+                separator.gameObject.SetActive(true);
+                gridContainer = Instantiate(monthGridContainerPrefab, container);
+                gridContainer.gameObject.SetActive(true);
+
+                gridContainer.transform.SetAsFirstSibling();
+                separator.transform.SetAsFirstSibling();
+                showMoreButtonPanel.SetAsLastSibling();
+
+                monthContainers.Add(month, gridContainer);
+            }
+            else
+                gridContainer = monthContainers[month];
+
+            Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
+            image.GetComponent<Button>().onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
+            image.gameObject.SetActive(true);
+            image.transform.SetAsFirstSibling();
+
+            screenshotThumbnails.Add(reel, image.gameObject);
+
+            SetThumbnailFromWebAsync(reel, image);
+        }
+
         public void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
         {
             foreach (CameraReelResponse reel in reelImages)

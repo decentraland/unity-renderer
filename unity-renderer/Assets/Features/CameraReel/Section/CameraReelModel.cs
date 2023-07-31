@@ -11,23 +11,34 @@ namespace Features.CameraReel
         private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
-        private ICameraReelNetworkService cameraReelNetworkServiceLazy;
+        private ICameraReelService cameraReelServiceLazy;
         private int offset;
 
         public bool IsUpdating { get; private set; }
 
-        private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
+        private ICameraReelService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelService>();
 
         public event Action<CameraReelResponses> ScreenshotBatchFetched;
         public event Action<CameraReelResponse> ScreenshotRemovalStarted;
-        public event Action<CameraReelResponse> ScreenshotRemovalFailed;
-        public event Action<CameraReelResponse> ScreenshotRemovalFinished;
+        public event Action<CameraReelResponse> ScreenshotUploaded;
+
+
+        public CameraReelModel()
+        {
+            cameraReelService.ScreenshotUploaded += OnScreenshotUploaded;
+        }
+
+        private void OnScreenshotUploaded(CameraReelResponse screenshot)
+        {
+            reels.AddFirst(screenshot);
+            ScreenshotUploaded?.Invoke(screenshot);
+        }
 
         public async void RequestScreenshotsBatchAsync()
         {
             IsUpdating = true;
 
-            CameraReelResponses reelImages = await cameraReelNetworkService.GetScreenshotGallery(
+            CameraReelResponses reelImages = await cameraReelService.GetScreenshotGallery(
                 DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
 
             offset += LIMIT;
@@ -47,9 +58,10 @@ namespace Features.CameraReel
                 reels.Remove(nodeToRemove);
 
             ScreenshotRemovalStarted?.Invoke(current);
-            try { await cameraReelNetworkService.DeleteScreenshot(current.id); }
-            catch (Exception) { ScreenshotRemovalFailed?.Invoke(current); }
-            finally { ScreenshotRemovalFinished?.Invoke(current); }
+            await cameraReelService.DeleteScreenshot(current.id);
+            // try { await cameraReelService.DeleteScreenshot(current.id); }
+            // catch (Exception) { ScreenshotRemovalFailed?.Invoke(current); }
+            // finally { ScreenshotRemovalFinished?.Invoke(current); }
         }
 
         public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>

@@ -36,7 +36,7 @@ namespace Features.ScreenshotCamera.Scripts
         private ScreenshotHUDView screenshotHUDView;
 
         private Transform characterCameraTransform;
-        private ICameraReelNetworkService cameraReelNetworkServiceLazyValue;
+        private ICameraReelService cameraReelServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
@@ -52,7 +52,7 @@ namespace Features.ScreenshotCamera.Scripts
         private bool externalDependenciesSet;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
-        private ICameraReelNetworkService cameraReelNetworkService => cameraReelNetworkServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelNetworkService>();
+        private ICameraReelService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelService>();
         private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
         private DataStore_Player player => DataStore.i.player;
@@ -166,22 +166,15 @@ namespace Features.ScreenshotCamera.Scripts
             userMovementKeysBlocked.Set(activateScreenshotCamera);
         }
 
-        private async void CaptureScreenshot(DCLAction_Trigger _)
+        private void CaptureScreenshot(DCLAction_Trigger _)
         {
             if (!isScreenshotCameraActive.Get() || isGuest) return;
 
-            CameraReelResponse response = await cameraReelNetworkService.UploadScreenshot
+            cameraReelService.UploadScreenshot
             (
                 image: screenshotCapture.CaptureScreenshot(),
                 metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
             );
-
-            // TODO(Vitaly): Remove this temporal solution when we get a proper UI for the camera reel
-            { // temporal debug part
-                Application.OpenURL($"https://reels.decentraland.org/{response.id}");
-                Application.OpenURL(response.url);
-                Application.OpenURL(response.thumbnailUrl);
-            }
         }
 
         private void EnableScreenshotCamera()

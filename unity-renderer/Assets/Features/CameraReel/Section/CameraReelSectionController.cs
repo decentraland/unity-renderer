@@ -37,6 +37,7 @@ namespace Features.CameraReel
         {
             cameraReelModel.ScreenshotBatchFetched += OnModelScreenshotBatchFetched;
             cameraReelModel.ScreenshotRemovalStarted += galleryView.DeleteScreenshotThumbnail;
+            cameraReelModel.ScreenshotUploaded += galleryView.AddScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
@@ -48,6 +49,7 @@ namespace Features.CameraReel
         {
             cameraReelModel.ScreenshotBatchFetched -= OnModelScreenshotBatchFetched;
             cameraReelModel.ScreenshotRemovalStarted -= galleryView.DeleteScreenshotThumbnail;
+            cameraReelModel.ScreenshotUploaded -= galleryView.AddScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
             galleryView.ShowMoreButtonClicked -= cameraReelModel.RequestScreenshotsBatchAsync;

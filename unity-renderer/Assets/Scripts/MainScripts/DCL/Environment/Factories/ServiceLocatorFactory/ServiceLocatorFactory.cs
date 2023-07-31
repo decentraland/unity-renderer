@@ -195,7 +195,7 @@ namespace DCL
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
-            result.Register<ICameraReelNetworkService>(() => new CameraReelNetworkService(new CameraReelClient(webRequestController)));
+            result.Register<ICameraReelService>(() => new CameraReelService(new CameraReelClient(webRequestController)));
 
             // Analytics
 
