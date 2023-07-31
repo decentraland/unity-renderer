@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL.Social.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;

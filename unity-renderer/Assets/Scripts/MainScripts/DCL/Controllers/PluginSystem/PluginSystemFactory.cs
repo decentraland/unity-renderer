@@ -73,6 +73,7 @@ namespace DCL
             pluginSystem.Register<SignupHUDPlugin>(() => new SignupHUDPlugin());
             pluginSystem.Register<PortableExperiencesTogglePlugin>(() => new PortableExperiencesTogglePlugin());
             pluginSystem.Register<HidePortableExperiencesUiPlugin>(() => new HidePortableExperiencesUiPlugin());
+            pluginSystem.Register<ChatInputContextualMenuPlugin>(() => new ChatInputContextualMenuPlugin());
 
             pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
