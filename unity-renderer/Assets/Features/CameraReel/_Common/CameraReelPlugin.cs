@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
-using System.Threading.Tasks;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -22,21 +21,21 @@ namespace Features.CameraReel
 
         private async UniTaskVoid Initialize()
         {
-            var view = await CreateCameraReelSectionView();
+            var assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
-            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView);
+            var view = await CreateCameraReelSectionView(assetProvider);
+
+            controller = new CameraReelSectionController(assetProvider, view, view.GalleryView, view.GalleryStorageView);
             controller.Initialize();
         }
 
-        private static async UniTask<CameraReelSectionView> CreateCameraReelSectionView()
-        {
-            var assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
-            return await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS,
+        private static async UniTask<CameraReelSectionView> CreateCameraReelSectionView(IAddressableResourceProvider assetProvider) =>
+            await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS,
                 parent: DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
-        }
 
         public void Dispose()
         {
+            controller.Dispose();
         }
     }
 }
