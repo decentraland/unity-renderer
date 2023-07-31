@@ -36,6 +36,14 @@ namespace Features.CameraReel
             Updated?.Invoke(reelImages);
         }
 
+        public async void RemoveScreenshot(CameraReelResponse current)
+        {
+            LinkedListNode<CameraReelResponse> nodeToRemove = reels.Find(current);
+
+            if (nodeToRemove != null)
+                reels.Remove(nodeToRemove);
+        }
+
         public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>
             reels.Find(current)?.Next?.Value;
 
