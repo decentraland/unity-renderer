@@ -21,6 +21,10 @@ MonoBehaviour:
     m_Address: CameraReelSectionView
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 08892dc27f1f1f549a7a2e521aaad444
+    m_Address: ScreenshotView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
