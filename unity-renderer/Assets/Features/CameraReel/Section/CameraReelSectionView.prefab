@@ -77,11 +77,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <GalleryStorageView>k__BackingField: {fileID: 8428949374722732860}
   <GalleryView>k__BackingField: {fileID: 2095025394756811457}
-  typedReference:
-    m_AssetGUID: 
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  <ScreenshotViewerPrefab>k__BackingField: {fileID: 5968333022774604085, guid: 08892dc27f1f1f549a7a2e521aaad444,
+    type: 3}
   canvas: {fileID: 1679649065625505989}
   loadingSpinner: {fileID: 1144671229806250720}
 --- !u!1 &9034640272514066781

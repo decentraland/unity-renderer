@@ -6,14 +6,13 @@ using DCLServices.CameraReelService;
 using Features.CameraReel.ScreenshotViewer;
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Features.CameraReel
 {
     public class CameraReelSectionController : IDisposable
     {
-        private const string SCREENSHOT_VIEW = "ScreenshotView";
-
-        private readonly IAddressableResourceProvider assetProvider;
         private readonly CameraReelModel cameraReelModel;
 
         private readonly CameraReelSectionView sectionView;
@@ -23,10 +22,8 @@ namespace Features.CameraReel
 
         private bool firstLoad = true;
 
-        public CameraReelSectionController(IAddressableResourceProvider assetProvider, CameraReelSectionView sectionView, CameraReelGalleryView galleryView, CameraReelGalleryStorageView galleryStorageView)
+        public CameraReelSectionController(CameraReelSectionView sectionView, CameraReelGalleryView galleryView, CameraReelGalleryStorageView galleryStorageView)
         {
-            this.assetProvider = assetProvider;
-
             // Views
             this.sectionView = sectionView;
             this.galleryView = galleryView;
@@ -84,11 +81,11 @@ namespace Features.CameraReel
                 cameraReelModel.LoadImagesAsync();
         }
 
-        private async void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
+        private void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
         {
             if (screenshotViewer == null)
             {
-                screenshotViewer = await assetProvider.Instantiate<ScreenshotViewerHUDView>(SCREENSHOT_VIEW, SCREENSHOT_VIEW);
+                screenshotViewer = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
                 screenshotViewer.PrevScreenshotClicked += ShowPrevScreenshot;
                 screenshotViewer.NextScreenshotClicked += ShowNextScreenshot;
             }

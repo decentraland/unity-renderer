@@ -25,7 +25,7 @@ namespace Features.CameraReel
 
             var view = await CreateCameraReelSectionView(assetProvider);
 
-            controller = new CameraReelSectionController(assetProvider, view, view.GalleryView, view.GalleryStorageView);
+            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView);
             controller.Initialize();
         }
 
