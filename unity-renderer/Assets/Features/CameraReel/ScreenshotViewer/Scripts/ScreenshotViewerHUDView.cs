@@ -9,6 +9,7 @@ using TMPro;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -46,7 +47,7 @@ namespace Features.CameraReel.ScreenshotViewer
 
         [Header("VISIBLE PEOPLE PANEL")]
         [SerializeField] internal ScreenshotVisiblePersonView profileEntryTemplate;
-        [SerializeField] internal Transform profileGridContrainer;
+        [SerializeField] internal Transform profileGridContainer;
 
         private CameraReelResponse currentScreenshot;
 
@@ -133,7 +134,7 @@ namespace Features.CameraReel.ScreenshotViewer
 
             foreach (VisiblePerson visiblePerson in reel.metadata.visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
             {
-                ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContrainer);
+                ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
 
                 profiles.Add(profileEntry.gameObject);
                 profileEntry.Configure(visiblePerson);
