@@ -63,6 +63,7 @@ namespace DCLServices.CameraReelService
         private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMassage)
         {
             if (result.result != UnityWebRequest.Result.Success)
+                // TODO: throw ScreenshotLimitReachedException in case storage limit error
                 throw new Exception($"{unSuccessResultMassage}:\n{result.error}");
 
             CameraReelResponse response = Utils.SafeFromJson<CameraReelResponse>(result.downloadHandler.text);
