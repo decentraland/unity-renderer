@@ -33,6 +33,7 @@ namespace DCL.ECS7
             DataStore.i.ecs7.isEcs7Enabled = true;
             loadedScenes = DataStore.i.ecs7.scenes;
             CRDTServiceContext crdtContext = DataStore.i.rpc.context.crdt;
+            RestrictedActionsContext rpcRestrictedActionsContext = DataStore.i.rpc.context.restrictedActions;
 
             sceneController = Environment.i.world.sceneController;
             Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>(MAX_EXPECTED_SCENES);
@@ -75,6 +76,7 @@ namespace DCL.ECS7
 
             sceneStateHandler = new SceneStateHandler(
                 crdtContext,
+                rpcRestrictedActionsContext,
                 sceneNumberMapping,
                 internalEcsComponents.EngineInfo,
                 internalEcsComponents.GltfContainerLoadingStateComponent);
