@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CharacterControllerData
   m_EditorClassIdentifier: 
   walkSpeed: 5
-  jogSpeed: 6.5
-  runSpeed: 12
+  jogSpeed: 7
+  runSpeed: 10
   acceleration: 20
   airAcceleration: 70
   stopTimeSec: 0.12
@@ -24,5 +24,9 @@ MonoBehaviour:
   runJumpHeight: 2
   jumpGraceTime: 0.15
   rotationSpeed: 360
-  jumpFakeTime: 0.15
-  jumpFakeCatchupSpeed: 2
+  longJumpTime: 0.5
+  longJumpGravityScale: 0.5
+  groundDrag: 2
+  airDrag: 0.05
+  minImpulse: 1
+  jumpPadForce: 100
