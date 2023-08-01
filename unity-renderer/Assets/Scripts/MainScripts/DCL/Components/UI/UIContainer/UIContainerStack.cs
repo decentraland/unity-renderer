@@ -181,7 +181,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            Object.DestroyImmediate(layoutGroup, false);    
+            Object.DestroyImmediate(layoutGroup, false);
             foreach (var child in stackContainers)
             {
                 childPool.ReleaseUIShape(child.Value);

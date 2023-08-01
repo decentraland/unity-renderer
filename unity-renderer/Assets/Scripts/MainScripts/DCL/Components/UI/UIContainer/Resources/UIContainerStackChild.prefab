@@ -63,7 +63,8 @@ MonoBehaviour:
   canvasGroup: {fileID: 0}
   layoutGroup: {fileID: 0}
   layoutElement: {fileID: 0}
-  layoutElementRT: {fileID: 4878839740631635299}
+  layoutElementRT: {fileID: 0}
+  startsVisible: 0
   childHookRectTransform: {fileID: 4878839740631635299}
 --- !u!114 &5731917051144278616
 MonoBehaviour:
