@@ -38,6 +38,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private float lastGroundedTime;
         private float lastJumpTime;
 
+        private Vector3 externalImpulse;
+        private Vector3 externalVelocity;
+
         // this is used by SmoothDamp to deaccelerate
         private float xDampSpeed;
         private float yDampSpeed;
@@ -105,26 +108,75 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         public void Update(float deltaTime)
         {
-            speedState = isRunning ? SpeedState.RUN : isWalking ? SpeedState.WALK : SpeedState.JOG;
+            UpdateCheatKeys();
+
+            if (isGrounded)
+                speedState = isRunning ? SpeedState.RUN :
+                    isWalking ? SpeedState.WALK : SpeedState.JOG;
 
             float velocityLimit = GetVelocityLimit();
 
             CalculateHorizontalVelocity(deltaTime, velocityLimit);
             CalculateVerticalVelocity(deltaTime);
 
-            isGrounded = view.Move(velocity * deltaTime);
+            Vector3 finalVelocity = velocity;
+            finalVelocity += externalImpulse;
+            finalVelocity += externalVelocity;
+
+            isGrounded = view.Move(finalVelocity * deltaTime);
+
+            ApplyDragOnImpulse();
 
             if (isGrounded)
                 lastGroundedTime = Time.time;
 
             // update the state for the animations
-            characterState.IsLongJump = lastJumpHeight > data.jogJumpHeight;
+            characterState.IsLongJump = velocity.y > data.jogJumpHeight * 3;
             characterState.IsGrounded = isGrounded;
-            characterState.IsJumping = !isGrounded && velocity.y > 1f;
-            characterState.IsFalling = !isGrounded && velocity.y < -5f;
+            characterState.IsJumping = !isGrounded && (finalVelocity.y > 5f || characterState.IsLongJump);
+            characterState.IsFalling = !isGrounded && finalVelocity.y < -10f;
             characterState.TotalVelocity = velocity;
             characterState.SpeedState = speedState;
             characterState.MaxVelocity = velocityLimit;
+            characterState.ExternalImpulse = externalImpulse;
+            characterState.ExternalVelocity = externalVelocity;
+        }
+
+        private void ApplyDragOnImpulse()
+        {
+            if (isGrounded)
+                externalImpulse.y = 0;
+
+            float velocityMagnitude = externalImpulse.magnitude;
+            float drag = (isGrounded ? data.groundDrag : data.airDrag);
+            float dragMagnitude = drag * velocityMagnitude * velocityMagnitude;
+            Vector3 dragDirection = -externalImpulse.normalized;
+            Vector3 dragForce = dragDirection * dragMagnitude;
+            externalImpulse += dragForce * Time.deltaTime;
+
+            if (externalImpulse.magnitude < data.minImpulse)
+                externalImpulse = Vector3.zero;
+        }
+
+        private void UpdateCheatKeys()
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                Vector3 impulse = cameraForward.Get() * data.jumpPadForce;
+                if (impulse.y < 0) impulse.y = 0;
+                ApplyExternalImpulse(impulse);
+                velocity.y = 0;
+            }
+
+            if (Input.GetKey(KeyCode.E))
+                externalVelocity = Vector3.right * 5;
+            else
+                externalVelocity = Vector3.zero;
+        }
+
+        private void ApplyExternalImpulse(Vector3 impulse)
+        {
+            externalImpulse = impulse;
         }
 
         private void CalculateVerticalVelocity(float deltaTime)
@@ -143,6 +195,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             // apply jump impulse
             if (CanJump())
             {
+                Debug.Log("Jump");
                 characterState.Jump();
                 lastJumpHeight = GetJumpHeight();
                 velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * data.gravity);
@@ -165,14 +218,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             CalculateHorizontalInputVelocity(deltaTime, velocityLimit);
 
             // convert axis velocity to directional vectors using the camera
-            var xzPlaneForward = cameraForward.Get();
-            var xzPlaneRight = cameraRight.Get();
-            xzPlaneForward.y = 0;
-            xzPlaneRight.y = 0;
-
             var targetHorizontal = Vector3.zero;
-            targetHorizontal += xzPlaneForward.normalized * zVelocity;
-            targetHorizontal += xzPlaneRight.normalized * xVelocity;
+            targetHorizontal += FlatNormal(cameraForward.Get()) * zVelocity;
+            targetHorizontal += FlatNormal(cameraRight.Get()) * xVelocity;
             targetHorizontal = Vector3.ClampMagnitude(targetHorizontal, velocityLimit);
 
             if (targetHorizontal.normalized.sqrMagnitude > 0.1f)
@@ -189,13 +237,18 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             velocity.x = horizontalVelocity.x;
             velocity.z = horizontalVelocity.z;
-            characterState.FlatVelocity = horizontalVelocity;
+        }
+
+        private Vector3 FlatNormal(Vector3 vector)
+        {
+            vector.y = 0;
+            return vector.normalized;
         }
 
         private bool CanJump()
         {
             bool wasJustGrounded = Time.time - lastGroundedTime < data.jumpGraceTime;
-            return jumpButtonPressed && (isGrounded || wasJustGrounded);
+            return jumpTriggered && (isGrounded || wasJustGrounded);
         }
 
         private void CalculateHorizontalInputVelocity(float deltaTime, float velocityLimit)
@@ -214,7 +267,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             }
             else
                 xVelocity = Mathf.SmoothDamp(xVelocity, targetX, ref xDampSpeed, data.stopTimeSec);
-
 
             if (Mathf.Abs(yAxis) > 0)
             {

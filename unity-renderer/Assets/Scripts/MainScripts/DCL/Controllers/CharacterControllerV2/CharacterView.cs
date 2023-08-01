@@ -12,7 +12,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 {
     public class CharacterView : MonoBehaviour, ICharacterView
     {
-        private const int FIELD_HEIGHT = 32;
+        private const int FIELD_HEIGHT = 30;
         private const int LABEL_SIZE = 200;
         [SerializeField] private UnityEngine.CharacterController characterController;
         [SerializeField] private CharacterAnimationController animationController;
@@ -151,10 +151,16 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             controller.Update(Time.deltaTime);
 
             var tpsCamera = DataStore.i.camera.tpsCamera.Get();
-            bool isFovHigher = characterState.SpeedState == SpeedState.RUN && characterState.FlatVelocity.magnitude >= characterState.MaxVelocity * 0.35f;
+            bool isFovHigher = characterState.SpeedState == SpeedState.RUN && Flat(characterState.TotalVelocity).magnitude >= characterState.MaxVelocity * 0.35f;
             float targetFov = isFovHigher ? originalFOV + 15 : originalFOV;
             float fovSpeed = isFovHigher ? 20 : 50;
             tpsCamera.m_Lens.FieldOfView = Mathf.MoveTowards(tpsCamera.m_Lens.FieldOfView, targetFov, fovSpeed * Time.deltaTime);
+        }
+
+        private Vector3 Flat(Vector3 vector3)
+        {
+            vector3.y = 0;
+            return vector3;
         }
 
         public bool Move(Vector3 delta)
@@ -179,40 +185,51 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
         }
 
+        private bool showDebug = true;
+
         private void OnGUI()
         {
             var coef = Screen.width / 1920f; // values are made for 1920
             var firstColumnPosition = Mathf.RoundToInt(1920 * 0.12f);
             var secondColumnPosition = Mathf.RoundToInt(1920 * 0.6f);
-            var fontSize = Mathf.RoundToInt(24 * coef);
+            var fontSize = Mathf.RoundToInt(22 * coef);
 
             GUI.skin.label.fontSize = fontSize;
             GUI.skin.textField.fontSize = fontSize;
-            var firstColumnYPos = 0;
-            data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
-            data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
-            data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");
-            data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
-            data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
-            data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
-            data.stopTimeSec = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.stopTimeSec, "stopTimeSec");
-            data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
-            data.jogJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogJumpHeight, "jogJumpHeight");
-            data.runJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runJumpHeight, "runJumpHeight");
-            data.jumpGraceTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGraceTime, "jumpGraceTime");
-            data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
-            data.jumpFakeTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpFakeTime, "jumpFakeTime");
-            data.jumpFakeCatchupSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpFakeCatchupSpeed, "jumpFakeCatchupSpeed");
-            data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
-            data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
+            var firstColumnYPos = 25;
 
-            var secondColumnYPos = 0;
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "velocity", characterState.TotalVelocity);
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "hSpeed", characterState.FlatVelocity.magnitude.ToString("F2"));
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ySpeed", characterState.TotalVelocity.y.ToString("F2"));
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isGrounded", characterState.IsGrounded);
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isFalling", characterState.IsJumping);
+            if (Input.GetKeyDown(KeyCode.Period))
+                showDebug = !showDebug;
+
+            if (showDebug)
+            {
+                data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
+                data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
+                data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");
+                data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
+                data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
+                data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
+                data.stopTimeSec = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.stopTimeSec, "stopTimeSec");
+                data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
+                data.jogJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogJumpHeight, "jogJumpHeight");
+                data.runJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runJumpHeight, "runJumpHeight");
+                data.jumpGraceTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGraceTime, "jumpGraceTime");
+                data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
+                data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
+                data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
+                data.groundDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.groundDrag, "ImpulseGroundDrag");
+                data.airDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airDrag, "ImpulseAirDrag");
+                data.minImpulse = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.minImpulse, "minImpulse");
+                data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
+
+                var secondColumnYPos = 0;
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "velocity", characterState.TotalVelocity);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isGrounded", characterState.IsGrounded);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isFalling", characterState.IsJumping);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalImpulse", characterState.ExternalImpulse);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalVelocity", characterState.ExternalVelocity);
+            }
         }
 
         private void DrawObjectValue(int xPos, ref int yPos, string label, object obj)
@@ -233,6 +250,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             DrawLabel(xPos, ref yPos, label);
             string result = GUI.TextField(new Rect(Width(xPos + FIELD_HEIGHT + LABEL_SIZE), Height(FIELD_HEIGHT + yPos), Width(90), Height(FIELD_HEIGHT)), valuesTemp[label]);
+            result = result.Replace(",", ".");
             valuesTemp[label] = result;
             yPos += FIELD_HEIGHT + 2;
             return float.TryParse(result, out float newNumber) ? newNumber : value;

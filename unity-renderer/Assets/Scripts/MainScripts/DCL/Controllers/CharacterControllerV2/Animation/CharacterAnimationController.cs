@@ -34,9 +34,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private Quaternion currentRotation;
         private GameObject viewContainer;
 
-        private bool isFakingJump;
-        private float jumpStartHeight;
-        private float jumpTime;
         private FollowWithDamping cameraFollow;
 
         private void Awake()
@@ -94,9 +91,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void OnJump()
         {
-            isFakingJump = true;
-            jumpTime = Time.time;
-            jumpStartHeight = transform.position.y;
             animator.SetTrigger(JUMP);
         }
 
@@ -108,7 +102,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void UpdateAnimatorState()
         {
-            var velocity = characterState.FlatVelocity;
+            var velocity = characterState.TotalVelocity;
+            velocity.y = 0;
             var maxVelocity = characterState.MaxVelocity;
             var speedState = characterState.SpeedState;
 
@@ -137,33 +132,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             currentRotation = Quaternion.RotateTowards(currentRotation, transform.rotation, data.rotationSpeed * Time.deltaTime * currentBlend);
             viewContainer.transform.rotation = currentRotation;
-
-            if (characterState.IsGrounded)
-                ResetFakeJump();
-
-            if (isFakingJump)
-            {
-                if (Time.time - jumpTime < data.jumpFakeTime)
-                {
-                    float pos = jumpStartHeight - transform.position.y;
-                    viewContainer.transform.localPosition = new Vector3(0, pos, 0);
-                }
-                else
-                {
-                    float pos = viewContainer.transform.localPosition.y;
-                    pos = Mathf.MoveTowards(pos, 0, data.jumpFakeCatchupSpeed * Time.deltaTime);
-                    viewContainer.transform.localPosition = new Vector3(0, pos, 0);
-
-                    if (Mathf.Abs(pos) <= 0)
-                        ResetFakeJump();
-                }
-            }
-        }
-
-        private void ResetFakeJump()
-        {
-            isFakingJump = false;
-            viewContainer.transform.localPosition = Vector3.zero;
         }
 
         private int GetMovementBlendId(Vector3 velocity, SpeedState speedState)
