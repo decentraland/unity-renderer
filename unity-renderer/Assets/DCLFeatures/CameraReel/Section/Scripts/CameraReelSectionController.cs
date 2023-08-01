@@ -3,6 +3,7 @@ using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLServices.CameraReelService;
 using System;
+using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
 namespace DCLFeatures.CameraReel.Section
@@ -15,6 +16,7 @@ namespace DCLFeatures.CameraReel.Section
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
         private readonly DataStore dataStore;
+        private readonly ITeleportController teleportController;
 
         private ScreenshotViewerView screenshotViewerView;
         private ScreenshotViewerController screenshotViewerController;
@@ -24,13 +26,15 @@ namespace DCLFeatures.CameraReel.Section
         public CameraReelSectionController(CameraReelSectionView sectionView,
             CameraReelGalleryView galleryView,
             CameraReelGalleryStorageView galleryStorageView,
-            DataStore dataStore)
+            DataStore dataStore,
+            ITeleportController teleportController)
         {
             // Views
             this.sectionView = sectionView;
 
             this.galleryStorageView = galleryStorageView;
             this.dataStore = dataStore;
+            this.teleportController = teleportController;
             this.galleryView = galleryView;
 
             // Model
@@ -84,8 +88,8 @@ namespace DCLFeatures.CameraReel.Section
             if (screenshotViewerView == null)
             {
                 screenshotViewerView = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
-                screenshotViewerController = new ScreenshotViewerController(screenshotViewerView, cameraReelModel);
-                screenshotViewerController.Initialize();
+                screenshotViewerController = new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
+                    teleportController);
             }
 
             screenshotViewerController.Show(reelResponse);
