@@ -62,7 +62,7 @@
     "@dcl/hashing": "^1.1.3",
     "@dcl/kernel-interface": "^2.0.0-20230512115658.commit-b582e05",
     "@dcl/legacy-ecs": "^6.11.11",
-    "@dcl/protocol": "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-5661960573.commit-0a9d156.tgz",
+    "@dcl/protocol": "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-5730073732.commit-5fca278.tgz",
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "https://sdk-team-cdn.decentraland.org/@dcl/scene-runtime/branch/feat/kernel-api-comms-api/dcl-scene-runtime-7.0.6-20230725213250.commit-3906c65.tgz",
     "@dcl/schemas": "^7.4.1",
