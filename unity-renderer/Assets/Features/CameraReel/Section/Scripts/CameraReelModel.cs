@@ -4,6 +4,7 @@ using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
 using UI.InWorldCamera.Scripts;
+using UnityEngine;
 using Environment = DCL.Environment;
 
 namespace Features.CameraReel.Section
@@ -18,7 +19,7 @@ namespace Features.CameraReel.Section
 
         public bool IsUpdating { get; private set; }
 
-        private ICameraReelGalleryService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelService>();
+        private ICameraReelGalleryService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
 
         public event Action<CameraReelResponses> ScreenshotBatchFetched;
         public event Action<CameraReelResponse, UniTask> ScreenshotRemovalStarted;
@@ -29,10 +30,10 @@ namespace Features.CameraReel.Section
             cameraReelService.ScreenshotUploadStarted += OnScreenshotUploaded;
         }
 
-        private async void OnScreenshotUploaded(byte[] image, ScreenshotMetadata metadata, UniTask<CameraReelResponse> webRequest)
+        private async void OnScreenshotUploaded(Texture2D screenshotImage, ScreenshotMetadata metadata, UniTask<CameraReelResponse> webRequest)
         {
             // TODO: Handle dummy image in the gallery while awaiting for the real one
-            // ScreenshotUploadStarted?.Invoke(image, metadata);
+            // ScreenshotUploadStarted?.Invoke(screenshotImage, metadata);
 
             CameraReelResponse response = await webRequest;
             reels.AddFirst(response);
@@ -64,7 +65,7 @@ namespace Features.CameraReel.Section
 
             UniTask request = cameraReelService.DeleteScreenshot(current.id);
             ScreenshotRemovalStarted?.Invoke(current, request);
-            await cameraReelService.DeleteScreenshot(current.id);
+            await request;
         }
 
         public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>

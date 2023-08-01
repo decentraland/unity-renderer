@@ -2,15 +2,16 @@
 using System;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
+using UnityEngine;
 
 namespace DCLServices.CameraReelService
 {
-    public class CameraReelService : ICameraReelService
+    public class CameraReelService : IScreenshotCameraService, ICameraReelGalleryService
     {
         private readonly ICameraReelClient client;
 
         private IScreenshotCamera screenshotCamera;
-        public event Action<byte[], ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
+        public event Action<Texture2D, ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
 
         public CameraReelService(ICameraReelClient client)
         {
@@ -24,13 +25,11 @@ namespace DCLServices.CameraReelService
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
             await client.GetScreenshotGallery(userAddress, limit, offset, ct);
 
-        public async UniTask UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
+        public async UniTask UploadScreenshot(Texture2D texture, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            UniTask<CameraReelResponse> request = client.UploadScreenshot(image, metadata, ct);
-
-            ScreenshotUploadStarted?.Invoke(image, metadata, request);
-
-            await client.UploadScreenshot(image, metadata, ct);
+            UniTask<CameraReelResponse> request = client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
+            ScreenshotUploadStarted?.Invoke(texture, metadata, request);
+            await request;
         }
 
         public async UniTask DeleteScreenshot(string uuid, CancellationToken ct = default) =>

@@ -23,7 +23,7 @@ namespace ScreenshotCamera
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public virtual byte[] CaptureScreenshot()
+        public virtual Texture2D CaptureScreenshot()
         {
             spriteRect = GetCurrentSpriteResolution(imageRectTransform.rect, sprite.bounds);
 
@@ -53,7 +53,7 @@ namespace ScreenshotCamera
             screenshotCamera.targetTexture = null;
             RenderTexture.ReleaseTemporary(renderTexture);
 
-            return texture.EncodeToJPG();
+            return texture;
         }
 
         private static (float, float) GetCurrentSpriteResolution(Rect imageRect, Bounds spriteBounds)

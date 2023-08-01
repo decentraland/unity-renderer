@@ -3,14 +3,13 @@ using DCL;
 using System;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
+using UnityEngine;
 
 namespace DCLServices.CameraReelService
 {
-    public interface ICameraReelService : IService, IScreenshotCameraService, ICameraReelGalleryService { }
-
-    public interface ICameraReelGalleryService
+    public interface ICameraReelGalleryService : IService
     {
-        event Action<byte[], ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
+        event Action<Texture2D, ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
 
         UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct = default);
 
@@ -19,9 +18,9 @@ namespace DCLServices.CameraReelService
         void EnableScreenshotCamera();
     }
 
-    public interface IScreenshotCameraService
+    public interface IScreenshotCameraService : IService
     {
-        UniTask UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct = default);
+        UniTask UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default);
 
         void SetCamera(IScreenshotCamera screenshotCamera);
     }

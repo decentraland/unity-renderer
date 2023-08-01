@@ -3,10 +3,7 @@ using DCL.Camera;
 using NSubstitute;
 using NUnit.Framework;
 using ScreenshotCamera;
-using System;
 using UnityEngine;
-using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace DCLServices.QuestsService.Tests
 {
@@ -144,8 +141,8 @@ namespace DCLServices.QuestsService.Tests
     {
         public ScreenshotCaptureDummy() : base(null, null, null, null) { }
 
-        public override byte[] CaptureScreenshot() =>
-            Array.Empty<byte>();
+        public override Texture2D CaptureScreenshot() =>
+            new (1, 1);
     }
 
     public class ScreenshotHUDViewDummy : ScreenshotHUDView
