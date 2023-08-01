@@ -160,6 +160,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0822ae34e463d49f49b978299714fd21, type: 3}
   - {fileID: 21300000, guid: 65d50244ec48c4d31b169fe48412f711, type: 3}
   - {fileID: 21300000, guid: b85ea444031cf415f95fa3022c2305dc, type: 3}
+  - {fileID: 21300000, guid: 553df444098fb244bbc6e7162657a1e5, type: 3}
   - {fileID: 21300000, guid: 06ec3644c3f104203b897e53615acd2c, type: 3}
   - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
   - {fileID: 21300000, guid: 19ab9974b241b40c6904521d492b8328, type: 3}
@@ -526,6 +527,7 @@ SpriteAtlas:
   - DialogCornerRight
   - ConnectionStatus
   - Container12Shadow20
+  - LikeSolid_White
   - SpeakerOff
   - Container12Shadow4
   - ChatNotiIcon
