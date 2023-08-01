@@ -6,7 +6,7 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { RootState } from 'shared/store/rootTypes'
 import { RoomConnection } from './interface'
 import { RootCommsState } from './types'
-import RemoteParticipant from 'livekit-client/dist/src/room/participant/RemoteParticipant'
+import { ActiveVideoStreams } from './adapters/types'
 
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
 export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.context
@@ -25,4 +25,4 @@ export function reconnectionState(state: RootState): {
   }
 }
 
-export const getLivekitParticipants = (store: RootCommsState):  Map<string, RemoteParticipant> | undefined => store.comms.livekitAdapter?.getParticipants()
+export const getLivekitActiveVideoStreams = (store: RootCommsState):  Map<string, ActiveVideoStreams> | undefined => store.comms.livekitAdapter?.getActiveVideoStreams()

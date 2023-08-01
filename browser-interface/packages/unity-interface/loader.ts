@@ -1,7 +1,7 @@
 import future from 'fp-future'
-import { RemoteParticipant } from 'livekit-client'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { getLivekitParticipants } from 'shared/comms/selectors'
+import { ActiveVideoStreams } from 'shared/comms/adapters/types'
+import { getLivekitActiveVideoStreams } from 'shared/comms/selectors'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
 
@@ -151,8 +151,8 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
 
           const videoSid = split[split.length - 1]
           const participantSid = split[split.length - 2]
-          const participants: Map<string, RemoteParticipant> | undefined = getLivekitParticipants(store.getState())
-          return participants?.get(participantSid)?.videoTracks.get(videoSid)?.videoTrack?.mediaStream
+          const activeVideoStreams: Map<string, ActiveVideoStreams> | undefined = getLivekitActiveVideoStreams(store.getState())
+          return activeVideoStreams?.get(participantSid)?.videoTracks.get(videoSid)
         }
       }
     }
