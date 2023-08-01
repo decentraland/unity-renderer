@@ -12,8 +12,9 @@ namespace DCL.Controllers.HUD
             IHomeLocationController locationController,
             Environment.Model environment,
             IPlacesAPIService placesAPIService,
-            IPlacesAnalytics placesAnalytics
+            IPlacesAnalytics placesAnalytics,
+            IClipboard clipboard
             )
-            : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics) { }
+            : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics, clipboard) { }
     }
 }

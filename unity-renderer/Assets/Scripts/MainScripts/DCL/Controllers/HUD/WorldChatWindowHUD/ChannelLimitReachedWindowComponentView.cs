@@ -1,7 +1,8 @@
+using DCL.Social.Chat;
 using System;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLimitReachedWindowComponentView : BaseComponentView, IChannelLimitReachedWindowView
     {

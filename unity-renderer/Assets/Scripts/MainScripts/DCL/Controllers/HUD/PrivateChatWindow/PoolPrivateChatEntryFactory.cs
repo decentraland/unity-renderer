@@ -1,17 +1,18 @@
+using DCL.Social.Chat;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [CreateAssetMenu(fileName = "PoolPrivateChatEntryFactory", menuName = "DCL/Social/PoolPrivateChatEntryFactory")]
     public class PoolPrivateChatEntryFactory : ScriptableObject, IChatEntryFactory
     {
         private const string POOL_NAME_PREFIX = "ChatDateSeparators_";
         private const int PRE_INSTANTIATED_ENTRIES = 30;
-        
+
         [SerializeField] private PoolChatEntryFactory factory;
         [SerializeField] private DateSeparatorEntry separatorEntryPrefab;
-        
+
         private readonly Dictionary<ChatEntry, PoolableObject> pooledObjects =
             new Dictionary<ChatEntry, PoolableObject>();
 
@@ -31,9 +32,9 @@ namespace DCL.Chat.HUD
             if (pooledObjects.TryGetValue(entry, out var pooledObj))
             {
                 pooledObj.Release();
-                pooledObjects.Remove(entry);    
+                pooledObjects.Remove(entry);
             }
-            
+
             factory.Destroy(entry);
         }
 
