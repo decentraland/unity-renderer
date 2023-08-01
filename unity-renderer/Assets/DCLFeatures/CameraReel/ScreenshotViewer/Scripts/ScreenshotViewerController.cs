@@ -94,10 +94,10 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void DeleteScreenshot()
         {
-            dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData("Delete screenshot",
-                "Are you sure you want to delete the screenshot?",
-                "Cancel",
-                "Confirm",
+            dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData("Delete picture",
+                "Are you sure you want to delete this picture?",
+                "NO",
+                "YES",
                 () => {},
                 () =>
                 {
