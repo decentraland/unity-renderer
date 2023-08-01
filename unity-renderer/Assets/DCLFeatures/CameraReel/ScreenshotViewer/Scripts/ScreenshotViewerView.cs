@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL.Helpers;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,6 +45,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             closeView.onClick.RemoveAllListeners();
             prevScreenshotButton.onClick.RemoveAllListeners();
             nextScreenshotButton.onClick.RemoveAllListeners();
+        }
+
+        public void Dispose()
+        {
+            Utils.SafeDestroy(gameObject);
         }
 
         public void Hide()
