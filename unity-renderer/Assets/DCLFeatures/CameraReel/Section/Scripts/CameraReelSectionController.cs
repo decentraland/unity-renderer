@@ -1,5 +1,4 @@
 ﻿using DCL;
-using DCL.Helpers;
 using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLServices.CameraReelService;
@@ -15,31 +14,32 @@ namespace DCLFeatures.CameraReel.Section
 
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
+        private readonly DataStore dataStore;
 
         private ScreenshotViewerView screenshotViewerView;
         private ScreenshotViewerController screenshotViewerController;
 
         private bool firstLoad = true;
 
-        public CameraReelSectionController(CameraReelSectionView sectionView, CameraReelGalleryView galleryView, CameraReelGalleryStorageView galleryStorageView)
+        public CameraReelSectionController(CameraReelSectionView sectionView,
+            CameraReelGalleryView galleryView,
+            CameraReelGalleryStorageView galleryStorageView,
+            DataStore dataStore)
         {
             // Views
             this.sectionView = sectionView;
 
             this.galleryStorageView = galleryStorageView;
+            this.dataStore = dataStore;
             this.galleryView = galleryView;
 
             // Model
             cameraReelModel = new CameraReelModel();
-        }
-
-        public void Initialize()
-        {
             cameraReelModel.ScreenshotBatchFetched += OnModelScreenshotBatchFetched;
             cameraReelModel.ScreenshotRemoved += galleryView.DeleteScreenshotThumbnail;
             cameraReelModel.ScreenshotUploaded += galleryView.AddScreenshotThumbnail;
 
-            DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
+            dataStore.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
             galleryView.ShowMoreButtonClicked += cameraReelModel.RequestScreenshotsBatchAsync;
             galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
@@ -51,11 +51,11 @@ namespace DCLFeatures.CameraReel.Section
             cameraReelModel.ScreenshotRemoved -= galleryView.DeleteScreenshotThumbnail;
             cameraReelModel.ScreenshotUploaded -= galleryView.AddScreenshotThumbnail;
 
-            DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
+            dataStore.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
             galleryView.ShowMoreButtonClicked -= cameraReelModel.RequestScreenshotsBatchAsync;
             galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
 
-            Utils.SafeDestroy(screenshotViewerView);
+            screenshotViewerView.Dispose();
         }
 
         private void OnModelScreenshotBatchFetched(CameraReelResponses reelResponses)
