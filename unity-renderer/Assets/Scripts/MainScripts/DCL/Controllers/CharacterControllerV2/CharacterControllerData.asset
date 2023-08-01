@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: CharacterControllerData
   m_EditorClassIdentifier: 
   walkSpeed: 5
-  jogSpeed: 7
-  runSpeed: 10
-  acceleration: 80
-  airAcceleration: 25
-  stopTimeSec: 0.15
-  gravity: -22
-  jogJumpHeight: 2
+  jogSpeed: 6.5
+  runSpeed: 12
+  acceleration: 20
+  airAcceleration: 70
+  stopTimeSec: 0.12
+  gravity: -10
+  jogJumpHeight: 1.5
   walkJumpHeight: 1.5
-  runJumpHeight: 3
+  runJumpHeight: 2
   jumpGraceTime: 0.15
   rotationSpeed: 360
-  jumpFakeTime: 0
-  jumpFakeCatchupSpeed: 25
+  jumpFakeTime: 0.15
+  jumpFakeCatchupSpeed: 2

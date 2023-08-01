@@ -38,6 +38,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
         private bool initialPositionAlreadySet;
         private Vector3 lastPosition;
+        private float originalFOV;
 
         // todo: delete this once the ui thing is done
         private Dictionary<string, string> valuesTemp = new ();
@@ -89,6 +90,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         [UsedImplicitly]
         public void Teleport(string teleportPayload)
         {
+            var tpsCamera = DataStore.i.camera.tpsCamera.Get();
+            originalFOV = tpsCamera.m_Lens.FieldOfView;
+
             var newPosition = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
             dataStorePlayer.lastTeleportPosition.Set(newPosition, notifyEvent: true);
 
@@ -147,8 +151,10 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             controller.Update(Time.deltaTime);
 
             var tpsCamera = DataStore.i.camera.tpsCamera.Get();
-            int targetFov = characterState.SpeedState == SpeedState.RUN && characterState.FlatVelocity.magnitude >= characterState.MaxVelocity * 0.35f ? 75 : 60;
-            tpsCamera.m_Lens.FieldOfView = Mathf.MoveTowards(tpsCamera.m_Lens.FieldOfView, targetFov, 75 * Time.deltaTime);
+            bool isFovHigher = characterState.SpeedState == SpeedState.RUN && characterState.FlatVelocity.magnitude >= characterState.MaxVelocity * 0.35f;
+            float targetFov = isFovHigher ? originalFOV + 15 : originalFOV;
+            float fovSpeed = isFovHigher ? 20 : 50;
+            tpsCamera.m_Lens.FieldOfView = Mathf.MoveTowards(tpsCamera.m_Lens.FieldOfView, targetFov, fovSpeed * Time.deltaTime);
         }
 
         public bool Move(Vector3 delta)
@@ -197,12 +203,14 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
             data.jumpFakeTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpFakeTime, "jumpFakeTime");
             data.jumpFakeCatchupSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpFakeCatchupSpeed, "jumpFakeCatchupSpeed");
+            data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
+            data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
 
             var secondColumnYPos = 0;
             DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
             DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "velocity", characterState.TotalVelocity);
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "hSpeed", characterState.FlatVelocity.magnitude);
-            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ySpeed", characterState.TotalVelocity.y);
+            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "hSpeed", characterState.FlatVelocity.magnitude.ToString("F2"));
+            DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ySpeed", characterState.TotalVelocity.y.ToString("F2"));
             DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isGrounded", characterState.IsGrounded);
             DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isFalling", characterState.IsJumping);
         }

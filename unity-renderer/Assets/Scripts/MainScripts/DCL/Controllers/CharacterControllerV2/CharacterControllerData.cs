@@ -19,5 +19,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float rotationSpeed = 360f;
         public float jumpFakeTime = 0.15f;
         public float jumpFakeCatchupSpeed = 25f;
+        public float longJumpTime = 0.5f;
+        public float longJumpGravityScale = 0.5f;
     }
 }

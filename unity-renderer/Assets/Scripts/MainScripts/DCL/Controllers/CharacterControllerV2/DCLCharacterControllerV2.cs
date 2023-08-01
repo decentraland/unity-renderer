@@ -26,7 +26,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly CharacterState characterState;
 
         private SpeedState speedState;
-        private bool wantsToJump;
+        private bool jumpButtonPressed;
+        private bool jumpTriggered;
         private float xAxis;
         private float yAxis;
         private float xVelocity;
@@ -35,10 +36,13 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private bool isGrounded;
         private float lastJumpHeight;
         private float lastGroundedTime;
+        private float lastJumpTime;
 
         // this is used by SmoothDamp to deaccelerate
         private float xDampSpeed;
         private float yDampSpeed;
+        private bool isRunning;
+        private bool isWalking;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -85,41 +89,99 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void ToggleJump(bool active)
         {
-            wantsToJump = active;
+            jumpTriggered = active;
+            jumpButtonPressed = active;
         }
 
         private void ToggleSprint(bool active)
         {
-            speedState = active ? SpeedState.RUN : SpeedState.JOG;
+            isRunning = active;
         }
 
         private void ToggleWalk(bool active)
         {
-            speedState = active ? SpeedState.WALK : SpeedState.JOG;
+            isWalking = active;
         }
 
         public void Update(float deltaTime)
         {
+            speedState = isRunning ? SpeedState.RUN : isWalking ? SpeedState.WALK : SpeedState.JOG;
+
             float velocityLimit = GetVelocityLimit();
 
+            CalculateHorizontalVelocity(deltaTime, velocityLimit);
+            CalculateVerticalVelocity(deltaTime);
+
+            isGrounded = view.Move(velocity * deltaTime);
+
+            if (isGrounded)
+                lastGroundedTime = Time.time;
+
+            // update the state for the animations
+            characterState.IsLongJump = lastJumpHeight > data.jogJumpHeight;
+            characterState.IsGrounded = isGrounded;
+            characterState.IsJumping = !isGrounded && velocity.y > 1f;
+            characterState.IsFalling = !isGrounded && velocity.y < -5f;
+            characterState.TotalVelocity = velocity;
+            characterState.SpeedState = speedState;
+            characterState.MaxVelocity = velocityLimit;
+        }
+
+        private void CalculateVerticalVelocity(float deltaTime)
+        {
+            float targetGravity = data.gravity;
+
+            // reset vertical velocity on ground
+            if (isGrounded)
+            {
+                velocity.y = targetGravity * deltaTime;
+
+                // reset jump time to avoid low grav fall without jumping
+                lastJumpTime = 0;
+            }
+
+            // apply jump impulse
+            if (CanJump())
+            {
+                characterState.Jump();
+                lastJumpHeight = GetJumpHeight();
+                velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * data.gravity);
+                jumpTriggered = false;
+                lastGroundedTime = 0; // to avoid double jumping
+                lastJumpTime = Time.time;
+            }
+
+            // apply gravity factor if jump button is pressed for a long time (higher jump)
+            if (jumpButtonPressed && Time.time - lastJumpTime < data.longJumpTime)
+                targetGravity = data.gravity * data.longJumpGravityScale;
+
+            // apply gravity
+            if (!isGrounded)
+                velocity.y += targetGravity * deltaTime;
+        }
+
+        private void CalculateHorizontalVelocity(float deltaTime, float velocityLimit)
+        {
             CalculateHorizontalInputVelocity(deltaTime, velocityLimit);
 
-            var horizontalVelocity = velocity;
-            horizontalVelocity.y = 0;
+            // convert axis velocity to directional vectors using the camera
+            var xzPlaneForward = cameraForward.Get();
+            var xzPlaneRight = cameraRight.Get();
+            xzPlaneForward.y = 0;
+            xzPlaneRight.y = 0;
 
             var targetHorizontal = Vector3.zero;
-
-            var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
-            var xzPlaneRight = Vector3.Scale(cameraRight.Get(), new Vector3(1, 0, 1));
-
-            targetHorizontal += xzPlaneForward * zVelocity;
-            targetHorizontal += xzPlaneRight * xVelocity;
-
+            targetHorizontal += xzPlaneForward.normalized * zVelocity;
+            targetHorizontal += xzPlaneRight.normalized * xVelocity;
             targetHorizontal = Vector3.ClampMagnitude(targetHorizontal, velocityLimit);
 
             if (targetHorizontal.normalized.sqrMagnitude > 0.1f)
                 view.SetForward(targetHorizontal.normalized);
 
+            var horizontalVelocity = velocity;
+            horizontalVelocity.y = 0;
+
+            // air control
             if (!isGrounded)
                 horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetHorizontal, data.airAcceleration * deltaTime);
             else
@@ -127,56 +189,40 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             velocity.x = horizontalVelocity.x;
             velocity.z = horizontalVelocity.z;
-
-            if (isGrounded)
-                velocity.y = data.gravity * deltaTime;
-            else
-                velocity.y += data.gravity * deltaTime;
-
-            if (CanJump())
-            {
-                characterState.Jump();
-                lastJumpHeight = GetJumpHeight();
-                velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * data.gravity);
-                wantsToJump = false;
-                lastGroundedTime = 0; // to avoid double jumping
-            }
-
-            isGrounded = view.Move(velocity * deltaTime);
-
-            if (isGrounded)
-                lastGroundedTime = Time.time;
-
-            characterState.IsLongJump = lastJumpHeight > data.jogJumpHeight; // replace this with jumpPad strength or something
-            characterState.IsGrounded = isGrounded;
-            characterState.IsJumping = !isGrounded && velocity.y > 1f;
-            characterState.IsFalling = !isGrounded && velocity.y < -5f;
             characterState.FlatVelocity = horizontalVelocity;
-            characterState.TotalVelocity = velocity;
-            characterState.SpeedState = speedState;
-            characterState.MaxVelocity = velocityLimit;
         }
 
         private bool CanJump()
         {
             bool wasJustGrounded = Time.time - lastGroundedTime < data.jumpGraceTime;
-            return wantsToJump && (isGrounded || wasJustGrounded);
+            return jumpButtonPressed && (isGrounded || wasJustGrounded);
         }
 
         private void CalculateHorizontalInputVelocity(float deltaTime, float velocityLimit)
         {
             // To accelerate we use a lineal acceleration
+            // Before accelerating whe convert the sign of the current velocity to avoid de-accelerating when changing directions (AD-AD-ing), this improves the responsiveness by a lot
             // To de accelerate we damp using times
 
+            float targetX = xAxis * velocityLimit;
+            float targetY = yAxis * velocityLimit;
+
             if (Mathf.Abs(xAxis) > 0)
-                xVelocity = Mathf.MoveTowards(xVelocity, xAxis * velocityLimit, data.acceleration * deltaTime);
+            {
+                xVelocity = Mathf.Sign(targetX) * Mathf.Abs(xVelocity);
+                xVelocity = Mathf.MoveTowards(xVelocity, targetX, data.acceleration * deltaTime);
+            }
             else
-                xVelocity = Mathf.SmoothDamp(xVelocity, xAxis * velocityLimit, ref xDampSpeed, data.stopTimeSec);
+                xVelocity = Mathf.SmoothDamp(xVelocity, targetX, ref xDampSpeed, data.stopTimeSec);
+
 
             if (Mathf.Abs(yAxis) > 0)
-                zVelocity = Mathf.MoveTowards(zVelocity, yAxis * velocityLimit, data.acceleration * deltaTime);
+            {
+                zVelocity = Mathf.Sign(targetY) * Mathf.Abs(zVelocity);
+                zVelocity = Mathf.MoveTowards(zVelocity, targetY, data.acceleration * deltaTime);
+            }
             else
-                zVelocity = Mathf.SmoothDamp(zVelocity, yAxis * velocityLimit, ref yDampSpeed, data.stopTimeSec);
+                zVelocity = Mathf.SmoothDamp(zVelocity, targetY, ref yDampSpeed, data.stopTimeSec);
         }
 
         private float GetVelocityLimit()
