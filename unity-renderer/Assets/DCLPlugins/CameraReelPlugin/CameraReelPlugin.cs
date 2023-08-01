@@ -23,7 +23,6 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-
             controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView);
             controller.Initialize();
         }

@@ -68,7 +68,7 @@ namespace Features.CameraReel.Section
                 firstLoad = false;
             }
 
-            galleryView.DownloadImageAndCreateObject(reelResponses.images);
+            galleryView.AddScreenshotThumbnails(reelResponses.images);
         }
 
         private void SwitchGalleryVisibility(bool isVisible, bool _)

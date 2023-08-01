@@ -12,6 +12,7 @@ namespace Features.CameraReel.Gallery
     public class CameraReelGalleryView : MonoBehaviour
     {
         private readonly Dictionary<int, GridContainerComponentView> monthContainers = new ();
+        private readonly Dictionary<CameraReelResponse, GameObject> screenshotThumbnails = new ();
 
         [SerializeField] private RectTransform container;
         [SerializeField] private Button showMoreButton;
@@ -27,8 +28,6 @@ namespace Features.CameraReel.Gallery
 
         public event Action<CameraReelResponse> ScreenshotThumbnailClicked;
         public event Action ShowMoreButtonClicked;
-
-        private Dictionary<CameraReelResponse, GameObject> screenshotThumbnails = new ();
 
         private void Awake()
         {
@@ -48,15 +47,16 @@ namespace Features.CameraReel.Gallery
         public void SwitchVisibility(bool isVisible) =>
             canvas.enabled = isVisible;
 
-        public void DeleteScreenshotThumbnail(CameraReelResponse reel)
-        {
-            if (!screenshotThumbnails.ContainsKey(reel)) return;
+        public void AddScreenshotThumbnail(CameraReelResponse reel) =>
+            AddScreenshotThumbnail(reel, setAsFirst: true);
 
-            Destroy(screenshotThumbnails[reel]);
-            screenshotThumbnails.Remove(reel);
+        public void AddScreenshotThumbnails(List<CameraReelResponse> reelImages)
+        {
+            foreach (CameraReelResponse reel in reelImages)
+                AddScreenshotThumbnail(reel, setAsFirst: false);
         }
 
-        public void AddScreenshotThumbnail(CameraReelResponse reel)
+        private void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
         {
             int month = reel.metadata.GetLocalizedDateTime().Month;
 
@@ -69,8 +69,12 @@ namespace Features.CameraReel.Gallery
                 gridContainer = Instantiate(monthGridContainerPrefab, container);
                 gridContainer.gameObject.SetActive(true);
 
-                gridContainer.transform.SetAsFirstSibling();
-                separator.transform.SetAsFirstSibling();
+                if (setAsFirst)
+                {
+                    gridContainer.transform.SetAsFirstSibling();
+                    separator.transform.SetAsFirstSibling();
+                }
+
                 showMoreButtonPanel.SetAsLastSibling();
 
                 monthContainers.Add(month, gridContainer);
@@ -81,42 +85,28 @@ namespace Features.CameraReel.Gallery
             Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
             image.GetComponent<Button>().onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
             image.gameObject.SetActive(true);
-            image.transform.SetAsFirstSibling();
+
+            if (setAsFirst)
+                image.transform.SetAsFirstSibling();
 
             screenshotThumbnails.Add(reel, image.gameObject);
 
             SetThumbnailFromWebAsync(reel, image);
         }
 
-        public void DownloadImageAndCreateObject(List<CameraReelResponse> reelImages)
+        public async void DeleteScreenshotThumbnail(CameraReelResponse reel, UniTask request)
         {
-            foreach (CameraReelResponse reel in reelImages)
+            if (!screenshotThumbnails.ContainsKey(reel)) return;
+
+            GameObject thumbnail = screenshotThumbnails[reel];
+            thumbnail.SetActive(false);
+
+            try { await request; }
+            catch (Exception _) { thumbnail.SetActive(true); }
+            finally
             {
-                int month = reel.metadata.GetLocalizedDateTime().Month;
-
-                GridContainerComponentView gridContainer;
-
-                if (!monthContainers.ContainsKey(month))
-                {
-                    GameObject separator = Instantiate(monthHeaderPrefab, container);
-                    separator.gameObject.SetActive(true);
-                    gridContainer = Instantiate(monthGridContainerPrefab, container);
-                    gridContainer.gameObject.SetActive(true);
-
-                    showMoreButtonPanel.SetAsLastSibling();
-
-                    monthContainers.Add(month, gridContainer);
-                }
-                else
-                    gridContainer = monthContainers[month];
-
-                Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
-                image.GetComponent<Button>().onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
-                image.gameObject.SetActive(true);
-
-                screenshotThumbnails.Add(reel, image.gameObject);
-
-                SetThumbnailFromWebAsync(reel, image);
+                Destroy(screenshotThumbnails[reel]);
+                screenshotThumbnails.Remove(reel);
             }
         }
 

@@ -7,9 +7,7 @@ namespace DCLServices.CameraReelService
 {
     public class CameraReelService : ICameraReelService
     {
-        public event Action<byte[], ScreenshotMetadata> ScreenshotUploadStarted;
-        public event Action<string> ScreenshotUploadFailed;
-        public event Action<CameraReelResponse> ScreenshotUploaded;
+        public event Action<byte[], ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
 
         private readonly ICameraReelClient client;
 
@@ -28,19 +26,11 @@ namespace DCLServices.CameraReelService
 
         public async UniTask UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            ScreenshotUploadStarted?.Invoke(image, metadata);
+            UniTask<CameraReelResponse> request = client.UploadScreenshot(image, metadata, ct);
 
-            CameraReelResponse response = null;
+            ScreenshotUploadStarted?.Invoke(image, metadata, request);
 
-            try { response = await client.UploadScreenshot(image, metadata, ct); }
-            catch (Exception e)
-            {
-                ScreenshotUploadFailed?.Invoke(e.Message);
-            }
-            finally
-            {
-                ScreenshotUploaded?.Invoke(response);
-            }
+            await client.UploadScreenshot(image, metadata, ct);
         }
 
         public async UniTask DeleteScreenshot(string uuid, CancellationToken ct = default) =>
