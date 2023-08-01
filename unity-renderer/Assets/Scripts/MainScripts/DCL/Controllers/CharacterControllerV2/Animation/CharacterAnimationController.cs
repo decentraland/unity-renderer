@@ -5,6 +5,7 @@ using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MainScripts.DCL.Controllers.CharacterControllerV2
 {
@@ -19,6 +20,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private static readonly int LONG_JUMP = Animator.StringToHash("IsLongJump");
         private static readonly int JUMP = Animator.StringToHash("Jump");
         private static readonly int EMOTE_REFRESH = Animator.StringToHash("EmoteRefresh");
+        private static readonly int ANGLE = Animator.StringToHash("Angle");
+        private static readonly int ANGLE_DIR = Animator.StringToHash("AngleDir");
 
         [SerializeField] private DefaultLocomotionData[] defaultLocomotion;
         [SerializeField] private CharacterControllerData data;
@@ -129,8 +132,12 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             }
 
             animator.SetFloat(MOVEMENT_BLEND, currentBlend);
+            Quaternion transformRotation = transform.rotation;
 
-            currentRotation = Quaternion.RotateTowards(currentRotation, transform.rotation, data.rotationSpeed * Time.deltaTime * currentBlend);
+            animator.SetFloat(ANGLE, Quaternion.Angle(currentRotation, transformRotation));
+            animator.SetFloat(ANGLE_DIR, Quaternion.Dot(currentRotation, transformRotation));
+
+            currentRotation = Quaternion.RotateTowards(currentRotation, transformRotation, data.rotationSpeed * Time.deltaTime * (1+currentBlend));
             viewContainer.transform.rotation = currentRotation;
         }
 

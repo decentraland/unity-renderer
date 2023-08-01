@@ -165,7 +165,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 Vector3 impulse = cameraForward.Get() * data.jumpPadForce;
                 if (impulse.y < 0) impulse.y = 0;
                 ApplyExternalImpulse(impulse);
-                velocity.y = 0;
             }
 
             if (Input.GetKey(KeyCode.E))
@@ -177,6 +176,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private void ApplyExternalImpulse(Vector3 impulse)
         {
             externalImpulse = impulse;
+            view.SetForward(FlatNormal(externalImpulse));
+            velocity.y = 0;
         }
 
         private void CalculateVerticalVelocity(float deltaTime)
@@ -195,7 +196,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             // apply jump impulse
             if (CanJump())
             {
-                Debug.Log("Jump");
                 characterState.Jump();
                 lastJumpHeight = GetJumpHeight();
                 velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * data.gravity);
@@ -223,7 +223,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             targetHorizontal += FlatNormal(cameraRight.Get()) * xVelocity;
             targetHorizontal = Vector3.ClampMagnitude(targetHorizontal, velocityLimit);
 
-            if (targetHorizontal.normalized.sqrMagnitude > 0.1f)
+            if (targetHorizontal.normalized.sqrMagnitude > 0.1f && (Mathf.Abs(xAxis) > 0 || Mathf.Abs(yAxis) > 0))
                 view.SetForward(targetHorizontal.normalized);
 
             var horizontalVelocity = velocity;
