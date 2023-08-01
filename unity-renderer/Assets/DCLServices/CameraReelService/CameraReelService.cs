@@ -7,9 +7,10 @@ namespace DCLServices.CameraReelService
 {
     public class CameraReelService : ICameraReelService
     {
-        public event Action<byte[], ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
-
         private readonly ICameraReelClient client;
+
+        private IScreenshotCamera screenshotCamera;
+        public event Action<byte[], ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
 
         public CameraReelService(ICameraReelClient client)
         {
@@ -19,7 +20,6 @@ namespace DCLServices.CameraReelService
         public void Initialize() { }
 
         public void Dispose() { }
-
 
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
             await client.GetScreenshotGallery(userAddress, limit, offset, ct);
@@ -35,5 +35,11 @@ namespace DCLServices.CameraReelService
 
         public async UniTask DeleteScreenshot(string uuid, CancellationToken ct = default) =>
             await client.DeleteScreenshot(uuid, ct);
+
+        public void SetCamera(IScreenshotCamera screenshotCamera) =>
+            this.screenshotCamera = screenshotCamera;
+
+        public void EnableScreenshotCamera() =>
+            screenshotCamera?.ToggleVisibility(isVisible: true);
     }
 }

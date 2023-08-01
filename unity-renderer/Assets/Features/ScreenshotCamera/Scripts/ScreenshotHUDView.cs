@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Features.ScreenshotCamera.Scripts
+namespace ScreenshotCamera
 {
     [RequireComponent(typeof(Canvas))] [DisallowMultipleComponent]
     public class ScreenshotHUDView : MonoBehaviour

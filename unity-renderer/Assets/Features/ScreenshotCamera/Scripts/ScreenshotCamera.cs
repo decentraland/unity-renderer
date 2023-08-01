@@ -7,9 +7,9 @@ using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Features.ScreenshotCamera.Scripts
+namespace ScreenshotCamera
 {
-    public class ScreenshotCamera : MonoBehaviour
+    public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
     {
         private const DCLAction_Trigger DUMMY_DCL_ACTION_TRIGGER = new ();
 
@@ -36,7 +36,7 @@ namespace Features.ScreenshotCamera.Scripts
         private ScreenshotHUDView screenshotHUDView;
 
         private Transform characterCameraTransform;
-        private ICameraReelService cameraReelServiceLazyValue;
+        private IScreenshotCameraService cameraReelServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
@@ -52,7 +52,9 @@ namespace Features.ScreenshotCamera.Scripts
         private bool externalDependenciesSet;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
-        private ICameraReelService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelService>();
+
+        private IScreenshotCameraService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelService>();
+
         private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
         private DataStore_Player player => DataStore.i.player;
@@ -70,6 +72,11 @@ namespace Features.ScreenshotCamera.Scripts
 
                 return screenshotCaptureLazyValue;
             }
+        }
+
+        private void Awake()
+        {
+            DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
         }
 
         // TODO(Vitaly): Remove this logic when feature flag will be enalbed
@@ -95,6 +102,18 @@ namespace Features.ScreenshotCamera.Scripts
             cameraInputAction.OnTriggered -= ToggleScreenshotCamera;
             takeScreenshotAction.OnTriggered -= CaptureScreenshot;
         }
+
+        private void OnExploreV2Open(bool current, bool previous)
+        {
+            if (current && cameraReelServiceLazyValue == null)
+            {
+                cameraReelService.SetCamera(this);
+                DataStore.i.exploreV2.isOpen.OnChange -= OnExploreV2Open;
+            }
+        }
+
+        public void ToggleVisibility(bool isVisible) =>
+            ToggleScreenshotCamera(DUMMY_DCL_ACTION_TRIGGER);
 
         internal void ToggleScreenshotCamera(DCLAction_Trigger _)
         {

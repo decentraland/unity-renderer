@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UI.InWorldCamera.Scripts
+namespace ScreenshotCamera
 {
     public class ScreenshotCapture
     {

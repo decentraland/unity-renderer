@@ -39,6 +39,7 @@ namespace DCLServices.CameraReelService
 
             return responseData;
         }
+
         public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
             var formData = new List<IMultipartFormSection>
@@ -47,7 +48,7 @@ namespace DCLServices.CameraReelService
                 new MultipartFormDataSection("metadata", JsonUtility.ToJson(metadata)),
             };
 
-            UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData,  isSigned: true, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, isSigned: true, cancellationToken: ct);
             return ParseScreenshotResponse(result, unSuccessResultMassage: "Error uploading screenshot");
         }
 

@@ -13,12 +13,12 @@ namespace Features.CameraReel.Section
         private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
-        private ICameraReelService cameraReelServiceLazy;
+        private ICameraReelGalleryService cameraReelServiceLazy;
         private int offset;
 
         public bool IsUpdating { get; private set; }
 
-        private ICameraReelService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelService>();
+        private ICameraReelGalleryService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelService>();
 
         public event Action<CameraReelResponses> ScreenshotBatchFetched;
         public event Action<CameraReelResponse, UniTask> ScreenshotRemovalStarted;
