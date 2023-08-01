@@ -159,7 +159,7 @@ namespace DCL.Configuration
         public static KeyCode LeftButtonKeyCodeAlt = KeyCode.LeftArrow;
         public static KeyCode RightButtonKeyCodeAlt = KeyCode.RightArrow;
         public static KeyCode JumpButtonKeyCode = KeyCode.Space;
-        public static KeyCode WalkButtonKeyCode = KeyCode.LeftControl;
+        public static KeyCode WalkButtonKeyCode = KeyCode.LeftAlt;
         public static KeyCode RunButtonKeyCode = KeyCode.LeftShift;
         public static KeyCode PlusKeyCode = KeyCode.KeypadPlus;
         public static KeyCode MinusKeyCode = KeyCode.KeypadMinus;
