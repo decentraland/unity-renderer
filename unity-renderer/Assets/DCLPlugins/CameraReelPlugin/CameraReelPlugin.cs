@@ -23,7 +23,9 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView, DataStore.i);
+            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
+                DataStore.i,
+                Environment.i.world.teleportController);
 
             DataStore.i.HUDs.isCameraReelInitialized.Set(true);
         }

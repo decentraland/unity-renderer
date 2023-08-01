@@ -14,17 +14,19 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
     {
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
+        private readonly DataStore dataStore;
+        private readonly ITeleportController teleportController;
 
         private CameraReelResponse currentScreenshot;
 
-        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model)
+        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
+            DataStore dataStore, ITeleportController teleportController)
         {
             this.view = view;
             this.model = model;
-        }
+            this.dataStore = dataStore;
+            this.teleportController = teleportController;
 
-        public void Initialize()
-        {
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
             view.NextScreenshotClicked += ShowNextScreenshot;
@@ -92,8 +94,16 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void DeleteScreenshot()
         {
-            model.RemoveScreenshot(currentScreenshot);
-            view.Hide();
+            dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData("Delete screenshot",
+                "Are you sure you want to delete the screenshot?",
+                "Cancel",
+                "Confirm",
+                () => {},
+                () =>
+                {
+                    model.RemoveScreenshot(currentScreenshot);
+                    view.Hide();
+                }), true);
         }
 
         private void DownloadScreenshot() =>
@@ -121,9 +131,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
             {
-                Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
+                teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
                 view.Hide();
-                DataStore.i.exploreV2.isOpen.Set(false);
+                dataStore.exploreV2.isOpen.Set(false);
             }
         }
     }
