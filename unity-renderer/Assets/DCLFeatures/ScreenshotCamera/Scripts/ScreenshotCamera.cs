@@ -49,8 +49,6 @@ namespace DCLFeatures.ScreenshotCamera
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
 
-        private bool externalDependenciesSet;
-
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
         private IScreenshotCameraService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<IScreenshotCameraService>();
@@ -77,6 +75,7 @@ namespace DCLFeatures.ScreenshotCamera
         private void Awake()
         {
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreV2Open;
+            SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
         }
 
         // TODO(Vitaly): Remove this logic when feature flag will be enalbed
@@ -123,8 +122,6 @@ namespace DCLFeatures.ScreenshotCamera
 
             Utils.UnlockCursor();
 
-            if (!externalDependenciesSet)
-                SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
 
             ToggleExternalSystems(activateScreenshotCamera);
             ToggleCameraSystems(activateScreenshotCamera);
@@ -143,8 +140,6 @@ namespace DCLFeatures.ScreenshotCamera
             this.userMovementKeysBlocked = userMovementKeysBlocked;
 
             this.isScreenshotCameraActive = isScreenshotCameraActive;
-
-            externalDependenciesSet = true;
         }
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
