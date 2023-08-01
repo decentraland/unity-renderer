@@ -75,12 +75,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e2bcc32e3a55084d959ede1dacda873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 1679649065625505989}
+  loadingSpinner: {fileID: 1144671229806250720}
   <ScreenshotViewerPrefab>k__BackingField: {fileID: 5968333022774604085, guid: 08892dc27f1f1f549a7a2e521aaad444,
     type: 3}
   <GalleryStorageView>k__BackingField: {fileID: 8428949374722732860}
   <GalleryView>k__BackingField: {fileID: 2095025394756811457}
-  canvas: {fileID: 1679649065625505989}
-  loadingSpinner: {fileID: 1144671229806250720}
 --- !u!1 &9034640272514066781
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,12 +342,12 @@ PrefabInstance:
     - target: {fileID: 5294362229236266942, guid: 5f5a44bc61c19d740a33ecc8d5ae1911,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5294362229236266942, guid: 5f5a44bc61c19d740a33ecc8d5ae1911,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5294362229236266942, guid: 5f5a44bc61c19d740a33ecc8d5ae1911,
         type: 3}
@@ -367,7 +367,7 @@ PrefabInstance:
     - target: {fileID: 5294362229236266942, guid: 5f5a44bc61c19d740a33ecc8d5ae1911,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -18
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6878456623671606729, guid: 5f5a44bc61c19d740a33ecc8d5ae1911,
         type: 3}

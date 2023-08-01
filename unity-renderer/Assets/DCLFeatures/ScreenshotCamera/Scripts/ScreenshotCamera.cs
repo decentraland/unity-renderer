@@ -1,11 +1,16 @@
-﻿using DCL;
+﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using DCL.Tasks;
 using DCLServices.CameraReelService;
+using System;
 using System.Collections;
+using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
+using Environment = DCL.Environment;
 
 namespace DCLFeatures.ScreenshotCamera
 {
@@ -34,7 +39,7 @@ namespace DCLFeatures.ScreenshotCamera
 
         private bool isInstantiated;
         private ScreenshotHUDView screenshotHUDView;
-
+        private CancellationTokenSource uploadPictureCancellationToken;
         private Transform characterCameraTransform;
         private IScreenshotCameraService cameraReelServiceLazyValue;
 
@@ -122,7 +127,6 @@ namespace DCLFeatures.ScreenshotCamera
 
             Utils.UnlockCursor();
 
-
             ToggleExternalSystems(activateScreenshotCamera);
             ToggleCameraSystems(activateScreenshotCamera);
 
@@ -186,11 +190,31 @@ namespace DCLFeatures.ScreenshotCamera
 
             AudioScriptableObjects.takeScreenshot.Play();
 
-            cameraReelService.UploadScreenshot
-            (
-                image: screenshotCapture.CaptureScreenshot(),
-                metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera)
-            );
+            async UniTaskVoid UploadScreenshotAsync(CancellationToken cancellationToken)
+            {
+                try
+                {
+                    await cameraReelService.UploadScreenshot(
+                        image: screenshotCapture.CaptureScreenshot(),
+                        metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera), ct: cancellationToken);
+                }
+                catch (OperationCanceledException) { }
+                catch (ScreenshotLimitReachedException)
+                {
+                    DataStore.i.notifications.DefaultErrorNotification.Set(
+                        "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.",
+                        true);
+                }
+                catch (Exception)
+                {
+                    DataStore.i.notifications.DefaultErrorNotification.Set(
+                        "There was an unexpected error when uploading the picture. Try again later.",
+                        true);
+                }
+            }
+
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(uploadPictureCancellationToken.Token).Forget();
         }
 
         private void EnableScreenshotCamera()
