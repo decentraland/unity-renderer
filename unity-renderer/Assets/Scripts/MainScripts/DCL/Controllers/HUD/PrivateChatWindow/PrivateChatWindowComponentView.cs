@@ -1,4 +1,4 @@
-﻿using DCL.Chat.HUD;
+﻿using DCL.Social.Chat;
 using DCL.Social.Chat;
 using DCL.Social.Friends;
 using SocialBar.UserThumbnail;

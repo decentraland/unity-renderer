@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class SearchChannelsWindowComponentViewShould
     {

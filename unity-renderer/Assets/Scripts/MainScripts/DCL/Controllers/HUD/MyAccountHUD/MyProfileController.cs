@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.MyAccount
 {
@@ -344,8 +345,16 @@ namespace DCL.MyAccount
         {
             async UniTaskVoid RemoveAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
             {
+                url = UnityWebRequest.UnEscapeURL(url ?? "");
                 List<UserProfileModel.Link> links = new (ownUserProfile.Links);
-                links.RemoveAll(link => link.title == title && link.url == url);
+                links.RemoveAll(link =>
+                {
+                    string linkTitle = link.title ?? "";
+                    string linkURL = UnityWebRequest.UnEscapeURL(link.url ?? "");
+
+                    return linkTitle.Equals(title, StringComparison.OrdinalIgnoreCase)
+                           && linkURL.Equals(url, StringComparison.OrdinalIgnoreCase);
+                });
 
                 try
                 {

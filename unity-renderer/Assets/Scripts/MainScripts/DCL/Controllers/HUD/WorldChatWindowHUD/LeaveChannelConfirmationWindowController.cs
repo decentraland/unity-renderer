@@ -1,6 +1,6 @@
 using DCL.Chat.Channels;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class LeaveChannelConfirmationWindowController : IHUD
     {
@@ -60,7 +60,7 @@ namespace DCL.Chat.HUD
         {
             joinChannelView.Hide();
         }
-        
+
         private void HandleChannelLeaveError(string channelId, ChannelErrorCode errorCode) =>
             joinChannelView.Hide();
     }
