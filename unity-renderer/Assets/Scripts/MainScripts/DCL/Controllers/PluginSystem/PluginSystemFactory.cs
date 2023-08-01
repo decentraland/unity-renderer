@@ -28,8 +28,6 @@ using DCLPlugins.SentryPlugin;
 using DCLPlugins.SignupHUDPlugin;
 using DCLPlugins.ToSPopupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
-using Features.CameraReel;
-using Features.CameraReel.Section;
 
 namespace DCL
 {

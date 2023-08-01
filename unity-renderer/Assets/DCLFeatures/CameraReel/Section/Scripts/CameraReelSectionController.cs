@@ -1,12 +1,12 @@
 ﻿using DCL;
 using DCL.Helpers;
+using DCLFeatures.CameraReel.Gallery;
+using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLServices.CameraReelService;
-using Features.CameraReel.Gallery;
-using Features.CameraReel.ScreenshotViewer;
 using System;
 using Object = UnityEngine.Object;
 
-namespace Features.CameraReel.Section
+namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelSectionController : IDisposable
     {
@@ -36,7 +36,7 @@ namespace Features.CameraReel.Section
         public void Initialize()
         {
             cameraReelModel.ScreenshotBatchFetched += OnModelScreenshotBatchFetched;
-            cameraReelModel.ScreenshotRemovalStarted += galleryView.DeleteScreenshotThumbnail;
+            cameraReelModel.ScreenshotRemoved += galleryView.DeleteScreenshotThumbnail;
             cameraReelModel.ScreenshotUploaded += galleryView.AddScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
@@ -48,7 +48,7 @@ namespace Features.CameraReel.Section
         public void Dispose()
         {
             cameraReelModel.ScreenshotBatchFetched -= OnModelScreenshotBatchFetched;
-            cameraReelModel.ScreenshotRemovalStarted -= galleryView.DeleteScreenshotThumbnail;
+            cameraReelModel.ScreenshotRemoved -= galleryView.DeleteScreenshotThumbnail;
             cameraReelModel.ScreenshotUploaded -= galleryView.AddScreenshotThumbnail;
 
             DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;

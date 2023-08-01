@@ -1,14 +1,14 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
-using Features.CameraReel.Section;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using Environment = DCL.Environment;
 
-namespace Features.CameraReel.ScreenshotViewer
+namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerController : IDisposable
     {

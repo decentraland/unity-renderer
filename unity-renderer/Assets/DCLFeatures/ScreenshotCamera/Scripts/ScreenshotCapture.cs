@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ScreenshotCamera
+namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCapture
     {

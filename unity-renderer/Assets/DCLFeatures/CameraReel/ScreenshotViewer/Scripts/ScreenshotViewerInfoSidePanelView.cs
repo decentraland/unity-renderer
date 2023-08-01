@@ -6,7 +6,7 @@ using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Features.CameraReel.ScreenshotViewer
+namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerInfoSidePanelView : MonoBehaviour
     {

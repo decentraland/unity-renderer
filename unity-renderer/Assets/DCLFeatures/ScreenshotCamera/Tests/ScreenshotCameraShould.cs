@@ -1,8 +1,8 @@
 using DCL;
 using DCL.Camera;
+using DCLFeatures.ScreenshotCamera;
 using NSubstitute;
 using NUnit.Framework;
-using ScreenshotCamera;
 using UnityEngine;
 
 namespace DCLServices.QuestsService.Tests
@@ -10,7 +10,7 @@ namespace DCLServices.QuestsService.Tests
     [Category("EditModeCI")]
     public class ScreenshotCameraShould
     {
-        private ScreenshotCamera.ScreenshotCamera screenshotCamera;
+        private ScreenshotCamera screenshotCamera;
 
         private InputAction_Trigger cameraInputAction;
         private InputAction_Trigger takeScreenshotAction;
@@ -27,7 +27,7 @@ namespace DCLServices.QuestsService.Tests
         public void SetUp()
         {
             var gameObject = new GameObject();
-            screenshotCamera = gameObject.AddComponent<ScreenshotCamera.ScreenshotCamera>();
+            screenshotCamera = gameObject.AddComponent<ScreenshotCamera>();
 
             // Mock prefab dependencies
             cameraInputAction = ScriptableObject.CreateInstance<InputAction_Trigger>();

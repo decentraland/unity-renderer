@@ -9,7 +9,7 @@ namespace DCLServices.CameraReelService
 {
     public interface ICameraReelGalleryService : IService
     {
-        event Action<Texture2D, ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
+        event Action<CameraReelResponse> ScreenshotUploaded;
 
         UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct = default);
 

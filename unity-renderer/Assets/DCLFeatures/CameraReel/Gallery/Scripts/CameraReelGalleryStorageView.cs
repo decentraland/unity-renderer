@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Features.CameraReel.Gallery
+namespace DCLFeatures.CameraReel.Gallery
 {
     public class CameraReelGalleryStorageView : MonoBehaviour
     {

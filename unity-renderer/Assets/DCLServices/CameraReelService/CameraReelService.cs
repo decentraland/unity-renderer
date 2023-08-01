@@ -11,7 +11,7 @@ namespace DCLServices.CameraReelService
         private readonly ICameraReelClient client;
 
         private IScreenshotCamera screenshotCamera;
-        public event Action<Texture2D, ScreenshotMetadata, UniTask<CameraReelResponse>> ScreenshotUploadStarted;
+        public event Action<CameraReelResponse> ScreenshotUploaded;
 
         public CameraReelService(ICameraReelClient client)
         {
@@ -25,15 +25,14 @@ namespace DCLServices.CameraReelService
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
             await client.GetScreenshotGallery(userAddress, limit, offset, ct);
 
-        public async UniTask UploadScreenshot(Texture2D texture, ScreenshotMetadata metadata, CancellationToken ct)
-        {
-            UniTask<CameraReelResponse> request = client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
-            ScreenshotUploadStarted?.Invoke(texture, metadata, request);
-            await request;
-        }
-
         public async UniTask DeleteScreenshot(string uuid, CancellationToken ct = default) =>
             await client.DeleteScreenshot(uuid, ct);
+
+        public async UniTask UploadScreenshot(Texture2D texture, ScreenshotMetadata metadata, CancellationToken ct)
+        {
+            var response = await client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
+            ScreenshotUploaded?.Invoke(response);
+        }
 
         public void SetCamera(IScreenshotCamera screenshotCamera) =>
             this.screenshotCamera = screenshotCamera;

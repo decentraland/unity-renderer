@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Features.CameraReel.ScreenshotViewer
+namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerView : MonoBehaviour
     {

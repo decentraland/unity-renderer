@@ -2,7 +2,7 @@
 using DCL.Helpers;
 using UnityEngine;
 
-namespace ScreenshotCamera
+namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCameraMovement : MonoBehaviour
     {

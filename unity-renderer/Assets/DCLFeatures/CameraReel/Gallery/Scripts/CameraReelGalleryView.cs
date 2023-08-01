@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace Features.CameraReel.Gallery
+namespace DCLFeatures.CameraReel.Gallery
 {
     public class CameraReelGalleryView : MonoBehaviour
     {
@@ -94,20 +94,12 @@ namespace Features.CameraReel.Gallery
             SetThumbnailFromWebAsync(reel, image);
         }
 
-        public async void DeleteScreenshotThumbnail(CameraReelResponse reel, UniTask request)
+        public async void DeleteScreenshotThumbnail(CameraReelResponse reel)
         {
             if (!screenshotThumbnails.ContainsKey(reel)) return;
 
-            GameObject thumbnail = screenshotThumbnails[reel];
-            thumbnail.SetActive(false);
-
-            try { await request; }
-            catch (Exception _) { thumbnail.SetActive(true); }
-            finally
-            {
-                Destroy(screenshotThumbnails[reel]);
-                screenshotThumbnails.Remove(reel);
-            }
+            Destroy(screenshotThumbnails[reel]);
+            screenshotThumbnails.Remove(reel);
         }
 
         private static async Task SetThumbnailFromWebAsync(CameraReelResponse reel, Image image)

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace Features.CameraReel.ScreenshotViewer
+namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotVisiblePersonView : MonoBehaviour
     {

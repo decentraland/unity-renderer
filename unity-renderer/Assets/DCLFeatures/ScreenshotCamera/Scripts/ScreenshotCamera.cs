@@ -7,7 +7,7 @@ using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ScreenshotCamera
+namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
     {

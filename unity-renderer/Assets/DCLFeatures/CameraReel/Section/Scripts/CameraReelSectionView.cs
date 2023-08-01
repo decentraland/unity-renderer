@@ -1,8 +1,8 @@
-using Features.CameraReel.Gallery;
-using Features.CameraReel.ScreenshotViewer;
+using DCLFeatures.CameraReel.Gallery;
+using DCLFeatures.CameraReel.ScreenshotViewer;
 using UnityEngine;
 
-namespace Features.CameraReel.Section
+namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelSectionView : MonoBehaviour
     {

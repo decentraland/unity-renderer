@@ -1,13 +1,10 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL;
+﻿using DCL;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
-using UI.InWorldCamera.Scripts;
-using UnityEngine;
 using Environment = DCL.Environment;
 
-namespace Features.CameraReel.Section
+namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelModel
     {
@@ -22,22 +19,18 @@ namespace Features.CameraReel.Section
         private ICameraReelGalleryService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
 
         public event Action<CameraReelResponses> ScreenshotBatchFetched;
-        public event Action<CameraReelResponse, UniTask> ScreenshotRemovalStarted;
+        public event Action<CameraReelResponse> ScreenshotRemoved;
         public event Action<CameraReelResponse> ScreenshotUploaded;
 
         public CameraReelModel()
         {
-            cameraReelService.ScreenshotUploadStarted += OnScreenshotUploaded;
+            cameraReelService.ScreenshotUploaded += OnScreenshotUploaded;
         }
 
-        private async void OnScreenshotUploaded(Texture2D screenshotImage, ScreenshotMetadata metadata, UniTask<CameraReelResponse> webRequest)
+        private void OnScreenshotUploaded(CameraReelResponse screenshot)
         {
-            // TODO: Handle dummy image in the gallery while awaiting for the real one
-            // ScreenshotUploadStarted?.Invoke(screenshotImage, metadata);
-
-            CameraReelResponse response = await webRequest;
-            reels.AddFirst(response);
-            ScreenshotUploaded?.Invoke(response);
+            reels.AddFirst(screenshot);
+            ScreenshotUploaded?.Invoke(screenshot);
         }
 
         public async void RequestScreenshotsBatchAsync()
@@ -63,9 +56,8 @@ namespace Features.CameraReel.Section
             if (nodeToRemove != null)
                 reels.Remove(nodeToRemove);
 
-            UniTask request = cameraReelService.DeleteScreenshot(current.id);
-            ScreenshotRemovalStarted?.Invoke(current, request);
-            await request;
+            await cameraReelService.DeleteScreenshot(current.id);
+            ScreenshotRemoved?.Invoke(current);
         }
 
         public CameraReelResponse GetNextScreenshot(CameraReelResponse current) =>
