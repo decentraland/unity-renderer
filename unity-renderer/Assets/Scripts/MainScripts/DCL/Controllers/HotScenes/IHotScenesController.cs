@@ -71,6 +71,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public string disabled_at;
             public string created_at;
             public string updated_at;
+            public string deployed_at;
             public int favorites;
             public int likes;
             public int dislikes;

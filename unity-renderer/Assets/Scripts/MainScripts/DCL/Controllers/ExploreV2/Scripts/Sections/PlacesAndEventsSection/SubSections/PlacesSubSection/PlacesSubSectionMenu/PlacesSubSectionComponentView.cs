@@ -89,7 +89,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         featuredButton.onClick.AddListener(ClickedOnFeatured);
         sortByDropdown.OnOptionSelectionChanged += SortByDropdownValueChanged;
         filter = "";
-        sort = "";
+        sort = MOST_ACTIVE_FILTER_ID;
         OnReady?.Invoke();
     }
 
@@ -164,7 +164,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public override void OnEnable()
     {
         filter = "";
-        sort = "";
+        sort = MOST_ACTIVE_FILTER_ID;
+        sortByDropdown.SetTitle(MOST_ACTIVE_FILTER_TEXT);
+        sortByDropdown.SelectOption(MOST_ACTIVE_FILTER_ID, false);
         OnPlacesSubSectionEnable?.Invoke();
     }
 

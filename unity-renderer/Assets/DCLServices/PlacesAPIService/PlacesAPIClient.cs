@@ -57,8 +57,8 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<IHotScenesController.PlacesAPIResponse> GetMostActivePlaces(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default)
         {
-            const string URL = BASE_URL + "?order_by=most_active&order=desc&with_realms_detail=true&offset={0}&limit={1}&{2}";
-            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize, filter), cancellationToken: ct, isSigned: true);
+            const string URL = BASE_URL + "?order_by={3}&order=desc&with_realms_detail=true&offset={0}&limit={1}&{2}";
+            var result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize, filter, sort), cancellationToken: ct, isSigned: true);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching most active places info:\n{result.error}");

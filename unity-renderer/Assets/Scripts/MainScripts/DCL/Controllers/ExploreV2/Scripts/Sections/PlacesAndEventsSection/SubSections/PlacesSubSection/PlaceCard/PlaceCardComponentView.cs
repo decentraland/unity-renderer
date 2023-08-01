@@ -1,8 +1,8 @@
 using DCL;
 using DCL.Helpers;
-using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,6 +94,38 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
+
+    /// <summary>
+    /// Set the place as favorite or not.
+    /// </summary>
+    /// <param name="isFavorite"></param>
+    /// <param name="placeId"></param>
+    void SetFavoriteButton(bool isFavorite, string placeId);
+
+    /// <summary>
+    /// Vote/Unvote the place.
+    /// </summary>
+    /// <param name="isUpvoted"></param>
+    /// <param name="isDownvoted"></param>
+    void SetVoteButtons(bool isUpvoted, bool isDownvoted);
+
+    /// <summary>
+    /// Set the total amount of votes of the place.
+    /// </summary>
+    /// <param name="totalVotes"></param>
+    void SetTotalVotes(int totalVotes);
+
+    /// <summary>
+    /// Set the amount of favorites set in the place.
+    /// </summary>
+    /// <param name="numberOfFavorites"></param>
+    void SetNumberOfFavorites(int numberOfFavorites);
+
+    /// <summary>
+    /// Set the date of the last update of this place.
+    /// </summary>
+    /// <param name="updatedAt"></param>
+    void SetDeployedAt(string updatedAt);
 }
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig<PlaceCardComponentModel>
@@ -126,6 +158,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject upvoteOn;
     [SerializeField] internal GameObject downvoteOff;
     [SerializeField] internal GameObject downvoteOn;
+    [SerializeField] internal TMP_Text totalVotesText;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
     [SerializeField] internal GameObject imageContainer;
@@ -137,6 +170,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
     [SerializeField] internal FavoriteButtonComponentView favoriteButton;
     [SerializeField] internal GameObject favoriteButtonContainer;
+    [SerializeField] internal TMP_Text numberOfFavoritesText;
+    [SerializeField] internal TMP_Text updatedAtText;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -247,11 +282,17 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         }
 
         SetVoteButtons(model.isUpvote, model.isDownvote);
+        SetTotalVotes(model.totalVotes);
+        SetNumberOfFavorites(model.numberOfFavorites);
+        SetDeployedAt(model.deployedAt);
         RebuildCardLayouts();
     }
 
-    private void SetFavoriteButton(bool isFavorite, string placeId)
+    public void SetFavoriteButton(bool isFavorite, string placeId)
     {
+        model.isFavorite = isFavorite;
+        model.placeInfo.id = placeId;
+
         if (favoriteButton == null)
             return;
         favoriteButton.gameObject.SetActive(true);
@@ -266,8 +307,11 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
     }
 
-    private void SetVoteButtons(bool isUpvoted, bool isDownvoted)
+    public void SetVoteButtons(bool isUpvoted, bool isDownvoted)
     {
+        model.isUpvote = isUpvoted;
+        model.isDownvote = isDownvoted;
+
         if(upvoteOn == null || upvoteOff == null || downvoteOn == null || downvoteOff == null)
             return;
 
@@ -275,6 +319,36 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         upvoteOff.SetActive(!isUpvoted);
         downvoteOn.SetActive(isDownvoted);
         downvoteOff.SetActive(!isDownvoted);
+    }
+
+    public void SetTotalVotes(int totalVotes)
+    {
+        model.totalVotes = totalVotes;
+
+        if (totalVotesText == null)
+            return;
+
+        totalVotesText.text = $"({totalVotes})";
+    }
+
+    public void SetNumberOfFavorites(int numberOfFavorites)
+    {
+        model.numberOfFavorites = numberOfFavorites;
+
+        if (numberOfFavoritesText != null)
+            numberOfFavoritesText.text = FormatNumber(numberOfFavorites);
+    }
+
+    public void SetDeployedAt(string updatedAt)
+    {
+        model.deployedAt = updatedAt;
+
+        if (updatedAtText == null)
+            return;
+
+        updatedAtText.text = DateTime.TryParse(updatedAt, out DateTime updateAtDT) ?
+            updateAtDT.ToString("dd/MM/yyyy") :
+            "-";
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
@@ -445,12 +519,16 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetUserVisits(int userVisits)
     {
+        model.userVisits = userVisits;
+
         if (userVisitsText != null)
-            userVisitsText.text = userVisits.ToString();
+            userVisitsText.text = FormatNumber(userVisits);
     }
 
     public void SetUserRating(float userRating)
     {
+        model.userRating = userRating;
+
         if (userRatingText != null)
             userRatingText.text = $"{(userRating * 100):0}%";
     }
@@ -462,7 +540,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (numberOfUsersText == null)
             return;
 
-        numberOfUsersText.text = newNumberOfUsers.ToString();
+        numberOfUsersText.text = FormatNumber(newNumberOfUsers);
     }
 
     public void SetCoords(Vector2Int newCoords)
@@ -562,7 +640,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         return friendHeadGO;
     }
 
-    internal void RebuildCardLayouts()
+    private void RebuildCardLayouts()
     {
         if (contentVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(contentVerticalLayout.transform as RectTransform);
@@ -574,4 +652,14 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal void CloseModal() { Hide(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
+
+    private static string FormatNumber(int num)
+    {
+        if (num < 1000)
+            return num.ToString();
+
+        float divided = num / 1000.0f;
+        divided = (int)(divided * 100) / 100f;
+        return $"{divided:F2}k";
+    }
 }

@@ -191,6 +191,7 @@ MonoBehaviour:
   upvoteOn: {fileID: 7834977026226164125}
   downvoteOff: {fileID: 7618975926295619131}
   downvoteOn: {fileID: 5103283865768424969}
+  totalVotesText: {fileID: 0}
   jumpinButton: {fileID: 5307741102947407199}
   friendsGrid: {fileID: 3985515287302666467}
   imageContainer: {fileID: 1464577790094710649}
@@ -202,6 +203,8 @@ MonoBehaviour:
   cardAnimator: {fileID: 284769395644908281}
   favoriteButton: {fileID: 7819847799297444610}
   favoriteButtonContainer: {fileID: 6703350761440608187}
+  numberOfFavoritesText: {fileID: 0}
+  updatedAtText: {fileID: 0}
   defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
   model:
     placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
@@ -215,10 +218,13 @@ MonoBehaviour:
     userVisits: 0
     isUpvote: 0
     isDownvote: 0
+    totalVotes: 0
     userRating: 0
     coords: {x: 0, y: 0}
     parcels: []
     isFavorite: 0
+    numberOfFavorites: 0
+    updatedAt: 
     placeInfo:
       id: 
       title: 
@@ -1021,7 +1027,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -32, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4002414990220010880
@@ -2454,7 +2460,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -32, y: 0}
   m_SizeDelta: {x: 20, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9209333071778094469

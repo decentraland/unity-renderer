@@ -95,7 +95,10 @@ public static class PlacesAndEventsCardsFactory
                     isFavorite = place.user_favorite,
                     placeInfo = place,
                     isUpvote = place.user_like,
-                    isDownvote = place.user_dislike
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
                 });
             count++;
             if(count >= amountToTake)
@@ -131,7 +134,10 @@ public static class PlacesAndEventsCardsFactory
                     isFavorite = place.user_favorite,
                     placeInfo = place,
                     isUpvote = place.user_like,
-                    isDownvote = place.user_dislike
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
                 });
         }
 
@@ -158,7 +164,10 @@ public static class PlacesAndEventsCardsFactory
                     isFavorite = place.user_favorite,
                     placeInfo = place,
                     isUpvote = place.user_like,
-                    isDownvote = place.user_dislike
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
                 });
         }
 
