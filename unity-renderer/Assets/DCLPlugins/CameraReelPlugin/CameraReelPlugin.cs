@@ -25,6 +25,8 @@ namespace DCLPlugins.CameraReelPlugin
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
             controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView);
             controller.Initialize();
+
+            DataStore.i.HUDs.isCameraReelInitialized.Set(true);
         }
 
         public void Dispose()
