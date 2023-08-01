@@ -5,6 +5,7 @@ import "decentraland/common/vectors.proto";
 
 message TeleportToRequest {
   decentraland.common.Vector2 world_coordinates = 1;
+  int32 scene_number = 2;
 }
 
 message OpenExternalUrlRequest {
@@ -14,6 +15,7 @@ message OpenExternalUrlRequest {
 
 message OpenNftDialogRequest {
   string urn = 1;
+  int32 scene_number = 2;
 }
 
 message OpenModalResponse {

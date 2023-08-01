@@ -1,5 +1,4 @@
 ﻿using DCL.Configuration;
-using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper;
@@ -14,18 +13,20 @@ using ECSSystems.ECSRaycastSystem;
 using Google.Protobuf.Collections;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
 using System.Collections.Generic;
 using System.Linq;
 using TestUtils;
 using UnityEngine;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
-namespace Tests
+namespace Tests.Systems.Raycast
 {
     public class ECSRaycastSystemShould
     {
-        private struct KeepEntityAliveModel : IInternalComponent { public bool dirty { get; set; } }
+        private struct KeepEntityAliveModel : IInternalComponent
+        {
+            public bool dirty { get; set; }
+        }
 
         private ECSRaycastSystem system;
         private ECS7TestUtilsScenesAndEntities testUtils;
@@ -37,7 +38,6 @@ namespace Tests
         private ECS7TestEntity testEntity_OnPointerCollider;
         private ECS7TestEntity testEntity_CustomCollider2;
         private InternalECSComponents internalComponents;
-        private SceneStateHandler sceneStateHandler;
         private DualKeyValueSet<long, int, WriteData> outgoingMessages;
 
         [SetUp]
@@ -73,15 +73,10 @@ namespace Tests
             var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
                 0, componentsManager, componentsFactory, null,
                 executors, Substitute.For<IComponentDirtySystem>());
+
             keepEntityAliveComponent.PutFor(scene, entityRaycaster, new KeepEntityAliveModel());
 
-            sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
-                new Dictionary<int, IParcelScene>() { { scene.sceneData.sceneNumber, scene } },
-                internalComponents.EngineInfo,
-                internalComponents.GltfContainerLoadingStateComponent);
-
-            sceneStateHandler.InitializeEngineInfoComponent(scene.sceneData.sceneNumber);
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
 
             // Test collider entities in line
             testEntity_PhysicsCollider = CreateColliderEntity(513, new Vector3(8, 1, 2), new[] { ColliderLayer.ClPhysics });
@@ -100,7 +95,6 @@ namespace Tests
         protected void TearDown()
         {
             testUtils.Dispose();
-            sceneStateHandler.Dispose();
         }
 
         [Test]
@@ -877,9 +871,10 @@ namespace Tests
             raycastHandler.OnComponentCreated(scene, entityRaycaster);
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene.sceneData.sceneNumber);
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 3
+            });
 
             system.Update();
 

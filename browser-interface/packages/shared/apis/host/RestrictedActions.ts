@@ -170,7 +170,7 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         return { success: false }
       }
 
-      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn })
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn, sceneNumber: ctx.sceneData.sceneNumber })
       return { success: response?.success ?? false }
     },
     async setCommunicationsAdapter(req: CommsAdapterRequest, ctx: PortContext) {
@@ -197,7 +197,7 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
       if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates)
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
       else
-        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
+        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates, sceneNumber: ctx.sceneData.sceneNumber })
 
       return {}
     },
