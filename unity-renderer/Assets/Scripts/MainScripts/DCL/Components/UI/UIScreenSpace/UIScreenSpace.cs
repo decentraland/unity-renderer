@@ -175,7 +175,7 @@ namespace DCL.Components
             }
 
             // We create a middleman-gameobject to change the size of the parcel-devs accessible canvas, to have its bottom limit at the taskbar height, etc.
-            // FD:: We should probably load from Addressables but would require deeper refactoring
+            // NOTE: We should probably load from Addressables but would require deeper refactoring
             GameObject resizedPanel = new GameObject("ResizeUIArea");
 
             resizedPanel.AddComponent<CanvasRenderer>();

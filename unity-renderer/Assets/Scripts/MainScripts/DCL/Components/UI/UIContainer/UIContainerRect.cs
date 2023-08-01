@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Decentraland.Sdk.Ecs6;
 using MainScripts.DCL.Components;
+using System;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -65,21 +67,25 @@ namespace DCL.Components
             referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
             referencesContainer.image.raycastTarget = model.color.a >= RAYCAST_ALPHA_THRESHOLD;
 
-            // FD:: check if this can be optimized
-            Outline outline = referencesContainer.image.GetComponent<Outline>();
+            if (referencesContainer.optionalOutline == null)
+                referencesContainer.optionalOutline = referencesContainer.image.GetComponent<Outline>();
 
             if (model.thickness > 0f)
             {
-                if (outline == null)
+                if (referencesContainer.optionalOutline == null)
                 {
-                    outline = referencesContainer.image.gameObject.AddComponent<Outline>();
+                    referencesContainer.optionalOutline = referencesContainer.image.gameObject.AddComponent<Outline>();
+                }
+                else
+                {
+                    referencesContainer.optionalOutline.enabled = true;
                 }
 
-                outline.effectDistance = new Vector2(model.thickness, model.thickness);
+                referencesContainer.optionalOutline.effectDistance = new Vector2(model.thickness, model.thickness);
             }
-            else if (outline != null)
+            else if (referencesContainer.optionalOutline != null)
             {
-                Object.DestroyImmediate(outline, false);
+                referencesContainer.optionalOutline.enabled = false;
             }
 
             return null;

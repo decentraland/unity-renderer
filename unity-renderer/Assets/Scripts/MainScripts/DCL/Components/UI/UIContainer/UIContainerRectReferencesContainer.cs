@@ -9,5 +9,8 @@ namespace DCL.Components
         public Image image;
 
         public UISizeFitter sizeFitter;
+
+        [HideInInspector]
+        public Outline optionalOutline;
     }
 }
