@@ -184,6 +184,8 @@ namespace DCLFeatures.ScreenshotCamera
         {
             if (!isScreenshotCameraActive.Get() || isGuest) return;
 
+            AudioScriptableObjects.takeScreenshot.Play();
+
             cameraReelService.UploadScreenshot
             (
                 image: screenshotCapture.CaptureScreenshot(),
