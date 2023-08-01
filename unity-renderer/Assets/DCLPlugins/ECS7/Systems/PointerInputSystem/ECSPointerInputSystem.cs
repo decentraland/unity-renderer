@@ -4,7 +4,6 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +23,6 @@ namespace ECSSystems.PointerInputSystem
         private readonly IWorldState worldState;
         private readonly IECSInteractionHoverCanvas interactionHoverCanvas;
         private readonly bool[] inputActionState;
-        private readonly RestrictedActionsContext restrictedActionsRpcContext;
 
         private class EntityInput
         {
@@ -41,8 +39,7 @@ namespace ECSSystems.PointerInputSystem
             IInternalECSComponent<InternalPointerEvents> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
-            DataStore_ECS7 dataStoreEcs,
-            RestrictedActionsContext restrictedActionsRpcContext)
+            DataStore_ECS7 dataStoreEcs)
         {
             this.pointerColliderComponent = pointerColliderComponent;
             this.inputResultComponent = inputResultComponent;
@@ -52,7 +49,6 @@ namespace ECSSystems.PointerInputSystem
             this.dataStoreEcs7 = dataStoreEcs;
             this.lastHoverFeedback = new EntityInput() { hasValue = false };
             this.inputActionState = new bool[INPUT_ACTION_ENUM.Length];
-            this.restrictedActionsRpcContext = restrictedActionsRpcContext;
         }
 
         public void Update()
@@ -116,13 +112,6 @@ namespace ECSSystems.PointerInputSystem
 
                     // update
                     prevState[i] = curState[i];
-
-                    // set current frame count since input is required to prompt modals
-                    // for externalUrl and Nft
-                    if (curState[i] && IsValidInputForUnlockingUiPrompts(inputAction))
-                    {
-                        restrictedActionsRpcContext.LastFrameWithInput = Time.frameCount;
-                    }
                 }
             }
 
