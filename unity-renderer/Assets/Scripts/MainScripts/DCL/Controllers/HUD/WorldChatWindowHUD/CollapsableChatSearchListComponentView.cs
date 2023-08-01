@@ -1,8 +1,9 @@
+using DCL.Social.Chat;
 using System;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class CollapsableChatSearchListComponentView : CollapsableSortedListComponentView<string, BaseComponentView>
     {

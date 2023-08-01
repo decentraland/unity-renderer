@@ -1,7 +1,7 @@
 using DCL.Helpers;
 using System;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class PromoteChannelsToastComponentController : IDisposable
     {

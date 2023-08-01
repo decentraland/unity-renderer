@@ -153,6 +153,9 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
     },
     async openExternalUrl(req: OpenExternalUrlRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
+      if (ctx.sceneData.isPortableExperience){
+        assertHasPermission(PermissionItem.PI_OPEN_EXTERNAL_LINK, ctx)
+      }
       if (!isPositionValid(lastPlayerPosition, ctx)) {
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }

@@ -1,63 +1,65 @@
-﻿using DCL.Chat.HUD;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-public class PromoteChannelsToastComponentViewShould
+namespace DCL.Social.Chat
 {
-    private PromoteChannelsToastComponentView promoteChannelsToastView;
-
-    [SetUp]
-    public void SetUp()
+    public class PromoteChannelsToastComponentViewShould
     {
-        promoteChannelsToastView = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<PromoteChannelsToastComponentView>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/PromoteChannelsHUD.prefab"));
-    }
+        private PromoteChannelsToastComponentView promoteChannelsToastView;
 
-    [TearDown]
-    public void TearDown()
-    {
-        promoteChannelsToastView.Dispose();
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            promoteChannelsToastView = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PromoteChannelsToastComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/PromoteChannelsHUD.prefab"));
+        }
 
-    [Test]
-    public void ShowToastCorrectly()
-    {
-        // Arrange
-        promoteChannelsToastView.gameObject.SetActive(false);
+        [TearDown]
+        public void TearDown()
+        {
+            promoteChannelsToastView.Dispose();
+        }
 
-        // Act
-        promoteChannelsToastView.Show();
+        [Test]
+        public void ShowToastCorrectly()
+        {
+            // Arrange
+            promoteChannelsToastView.gameObject.SetActive(false);
 
-        // Assert
-        Assert.IsTrue(promoteChannelsToastView.gameObject.activeSelf);
-    }
+            // Act
+            promoteChannelsToastView.Show();
 
-    [Test]
-    public void HideToastCorrectly()
-    {
-        // Arrange
-        promoteChannelsToastView.gameObject.SetActive(true);
+            // Assert
+            Assert.IsTrue(promoteChannelsToastView.gameObject.activeSelf);
+        }
 
-        // Act
-        promoteChannelsToastView.Hide();
+        [Test]
+        public void HideToastCorrectly()
+        {
+            // Arrange
+            promoteChannelsToastView.gameObject.SetActive(true);
 
-        // Assert
-        Assert.IsFalse(promoteChannelsToastView.gameObject.activeSelf);
-    }
+            // Act
+            promoteChannelsToastView.Hide();
 
-    [Test]
-    public void ClickOnCloseCorrectly()
-    {
-        // Arrange
-        bool isClosed = false;
-        promoteChannelsToastView.OnClose += () => isClosed = true;
+            // Assert
+            Assert.IsFalse(promoteChannelsToastView.gameObject.activeSelf);
+        }
 
-        // Act
-        promoteChannelsToastView.closeButton.onClick.Invoke();
+        [Test]
+        public void ClickOnCloseCorrectly()
+        {
+            // Arrange
+            bool isClosed = false;
+            promoteChannelsToastView.OnClose += () => isClosed = true;
 
-        // Assert
-        Assert.IsTrue(isClosed);
+            // Act
+            promoteChannelsToastView.closeButton.onClick.Invoke();
+
+            // Assert
+            Assert.IsTrue(isClosed);
+        }
     }
 }

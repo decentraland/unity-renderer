@@ -12,7 +12,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class DefaultChatEntry : ChatEntry, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -35,9 +35,12 @@ namespace DCL.Chat.HUD
         [SerializeField] internal bool showUserName = true;
         [SerializeField] private RectTransform hoverPanelPositionReference;
         [SerializeField] private RectTransform contextMenuPositionReference;
+        [SerializeField] private RectTransform copyBodyPositionReference;
         [SerializeField] private MentionLinkDetector mentionLinkDetector;
         [SerializeField] private Color autoMentionBackgroundColor;
         [SerializeField] private Image backgroundImage;
+        [SerializeField] private Button copyBodyButton;
+        [SerializeField] private ShowHideAnimator bodyCopiedToast;
 
         private float hoverPanelTimer;
         private float hoverGotoPanelTimer;
@@ -69,10 +72,36 @@ namespace DCL.Chat.HUD
         public override event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
         public override event Action OnCancelHover;
         public override event Action OnCancelGotoHover;
+        public override event Action<ChatEntry> OnCopyClicked;
 
         public void Awake()
         {
             initialEntryColor = backgroundImage.color;
+
+            copyBodyButton.onClick.AddListener(() =>
+            {
+                OnCopyClicked?.Invoke(this);
+                bodyCopiedToast.gameObject.SetActive(true);
+                bodyCopiedToast.ShowDelayHide(3);
+            });
+        }
+
+        private void OnEnable()
+        {
+            copyBodyButton.gameObject.SetActive(false);
+        }
+
+        private void OnDisable()
+        {
+            OnPointerExit(null);
+        }
+
+        private void OnDestroy()
+        {
+            populationTaskCancellationTokenSource.Cancel();
+
+            if (mentionLinkDetector != null)
+                mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
         }
 
         public override void Populate(ChatEntryModel chatEntryModel) =>
@@ -82,12 +111,12 @@ namespace DCL.Chat.HUD
         {
             model = chatEntryModel;
 
-            if(chatEntryModel.subType == ChatEntryModel.SubType.RECEIVED && chatEntryModel.messageType == ChatMessage.Type.PUBLIC)
+            if (chatEntryModel is { subType: ChatEntryModel.SubType.RECEIVED, messageType: ChatMessage.Type.PUBLIC })
                 backgroundImage.color = initialEntryColor;
 
             chatEntryModel.bodyText = body.ReplaceUnsupportedCharacters(chatEntryModel.bodyText, '?');
             chatEntryModel.bodyText = RemoveTabs(chatEntryModel.bodyText);
-            var userString = GetUserString(chatEntryModel);
+            string userString = GetUserString(chatEntryModel);
 
             // Due to a TMPro bug in Unity 2020 LTS we have to wait several frames before setting the body.text to avoid a
             // client crash. More info at https://github.com/decentraland/unity-renderer/pull/2345#issuecomment-1155753538
@@ -228,6 +257,10 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer = timeToHoverPanel;
+            copyBodyButton.gameObject.SetActive(true);
+            var copyBodyButtonTransform = (RectTransform)copyBodyButton.transform;
+            copyBodyButtonTransform.pivot = copyBodyPositionReference.pivot;
+            copyBodyButtonTransform.position = copyBodyPositionReference.position;
         }
 
         public void OnPointerExit(PointerEventData pointerEventData)
@@ -236,6 +269,7 @@ namespace DCL.Chat.HUD
                 return;
 
             hoverPanelTimer = 0f;
+            copyBodyButton.gameObject.SetActive(false);
 
             var linkIndex =
                 TMP_TextUtilities.FindIntersectingLink(body, pointerEventData.position,
@@ -249,19 +283,6 @@ namespace DCL.Chat.HUD
             }
 
             OnCancelHover?.Invoke();
-        }
-
-        private void OnDisable()
-        {
-            OnPointerExit(null);
-        }
-
-        private void OnDestroy()
-        {
-            populationTaskCancellationTokenSource.Cancel();
-
-            if (mentionLinkDetector != null)
-                mentionLinkDetector.OnPlayerMentioned -= OnPlayerMentioned;
         }
 
         public override void SetFadeout(bool enabled)

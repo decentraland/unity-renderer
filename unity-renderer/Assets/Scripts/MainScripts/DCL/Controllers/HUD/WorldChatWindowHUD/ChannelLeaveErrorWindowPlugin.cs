@@ -1,7 +1,8 @@
+using DCL.Social.Chat;
 using DCL.Providers;
 using System.Threading;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLeaveErrorWindowPlugin : IPlugin
     {

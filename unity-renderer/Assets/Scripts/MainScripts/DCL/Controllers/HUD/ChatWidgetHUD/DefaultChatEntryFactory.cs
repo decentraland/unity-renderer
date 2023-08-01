@@ -1,7 +1,7 @@
 ﻿using DCL.Interface;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [CreateAssetMenu(fileName = "DefaultChatEntryFactory", menuName = "DCL/Social/DefaultChatEntryFactory")]
     public class DefaultChatEntryFactory : ScriptableObject, IChatEntryFactory
@@ -12,7 +12,7 @@ namespace DCL.Chat.HUD
         [SerializeField] private DefaultChatEntry privateSentMessagePrefab;
         [SerializeField] private DefaultChatEntry publicReceivedMessagePrefab;
         [SerializeField] private DefaultChatEntry publicSentMessagePrefab;
-    
+
         public ChatEntry Create(ChatEntryModel model)
         {
             if (model.messageType == ChatMessage.Type.SYSTEM)

@@ -1,11 +1,14 @@
 ﻿using DCL.Interface;
 
-public struct PrivateChatModel
+namespace DCL.Social.Chat
 {
-    public string userId;
-    public string userName;
-    public string faceSnapshotUrl;
-    public ChatMessage recentMessage;
-    public bool isBlocked;
-    public bool isOnline;
+    public struct PrivateChatModel
+    {
+        public string userId;
+        public string userName;
+        public string faceSnapshotUrl;
+        public ChatMessage recentMessage;
+        public bool isBlocked;
+        public bool isOnline;
+    }
 }

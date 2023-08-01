@@ -2,24 +2,28 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Chat.Channels;
+using DCL.Social.Chat;
 using DCL.Tasks;
 using System.Collections.Generic;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelMembersHUDController : IDisposable
     {
         private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
+
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore_Channels dataStoreChannels;
-        private IChannelMembersComponentView view;
+        private readonly IChannelMembersComponentView view;
+        private readonly CancellationTokenSource showMembersCancellationToken = new ();
+
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
-        private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource reloadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource showMembersCancellationToken = new ();
+
+        private CancellationTokenSource loadingCancellationToken = new ();
+        private CancellationTokenSource reloadingCancellationToken = new ();
         private string currentChannelId;
         private int lastLimitRequested;
         private bool isSearching;

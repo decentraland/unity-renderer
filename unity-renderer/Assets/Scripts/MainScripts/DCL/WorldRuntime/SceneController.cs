@@ -292,7 +292,16 @@ namespace DCL
                     case MessagingTypes.OPEN_EXTERNAL_URL:
                     {
                         if (msgPayload is Protocol.OpenExternalUrl payload)
+                        {
+                            // SDK6 permission check for PX
+                            if (scene.isPortableExperience && !scene.sceneData.requiredPermissions.Contains(ScenePermissionNames.OPEN_EXTERNAL_LINK))
+                            {
+                                Debug.LogError($"PX requires permission {ScenePermissionNames.OPEN_EXTERNAL_LINK}");
+                                return;
+                            }
+
                             OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
+                        }
 
                         break;
                     }
