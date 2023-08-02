@@ -6,6 +6,8 @@ namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCameraMovement : MonoBehaviour
     {
+        private const float MAX_DISTANCE_FROM_PLAYER = 5f;
+
         [SerializeField] private CharacterController characterController;
 
         [Header("TRANSLATION")]
@@ -33,7 +35,7 @@ namespace DCLFeatures.ScreenshotCamera
 
         private void Update()
         {
-            Translate(newPosition: CalculateNewPosition(Time.deltaTime));
+            Translate(movementVector: InputToMoveVector(Time.deltaTime));
 
             if (rotationIsEnabled)
                 Rotate(Time.deltaTime);
@@ -69,10 +71,32 @@ namespace DCLFeatures.ScreenshotCamera
             rotationIsEnabled = isEnabled;
         }
 
-        private void Translate(Vector3 newPosition) =>
-            characterController.Move(newPosition);
+        private void Translate(Vector3 movementVector) =>
+            characterController.Move(
+                RestrictedMovementBySemiSphere(movementVector));
 
-        private Vector3 CalculateNewPosition(float deltaTime)
+        private Vector3 RestrictedMovementBySemiSphere(Vector3 movementVector)
+        {
+            if (characterController.transform.position.y + movementVector.y <= 0f)
+                movementVector.y = 0f;
+
+            Vector3 playerPosition = DataStore.i.player.playerUnityPosition.Get();
+            Vector3 desiredCameraPosition = characterController.transform.position + movementVector;
+
+            float distanceFromPlayer = Vector3.Distance(desiredCameraPosition, playerPosition);
+
+            if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER)
+            {
+                // If the distance is greater than the allowed radius, correct the movement vector
+                Vector3 directionFromPlayer = (desiredCameraPosition - playerPosition).normalized;
+                desiredCameraPosition = playerPosition + (directionFromPlayer * MAX_DISTANCE_FROM_PLAYER);
+                movementVector = desiredCameraPosition - characterController.transform.position;
+            }
+
+            return movementVector;
+        }
+
+        private Vector3 InputToMoveVector(float deltaTime)
         {
             Vector3 forward = transform.forward.normalized * characterYAxis.GetValue();
             Vector3 horizontal = transform.right.normalized * characterXAxis.GetValue();
