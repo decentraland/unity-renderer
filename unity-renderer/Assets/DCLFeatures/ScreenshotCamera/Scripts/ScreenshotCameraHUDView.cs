@@ -68,7 +68,7 @@ namespace DCLFeatures.ScreenshotCamera
             currentVfxSequence = CaptureVFXSequence(splashDuration, transitionDuration).Play();
         }
 
-        private Sequence CaptureVFXSequence(float splashDuration, float transitionDuration, float afterSplashPause = 0.1f)
+        private Sequence CaptureVFXSequence(float splashDuration, float transitionDuration, float afterSplashPause = 0.25f)
         {
             Sequence sequence = DOTween.Sequence();
 

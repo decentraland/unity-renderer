@@ -48,8 +48,10 @@ MonoBehaviour:
   cameraController: {fileID: 0}
   cameraPrefab: {fileID: 7813136116666180052, guid: dffcf881f8cb36a448628ae8e7331ff2,
     type: 3}
-  screenshotHUDViewPrefab: {fileID: 8664929919244729531, guid: 73f988cecacd42e48920937e996e446d,
+  screenshotCameraHUDViewPrefab: {fileID: 8664929919244729531, guid: 73f988cecacd42e48920937e996e446d,
     type: 3}
-  cameraInputAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815, type: 2}
+  toggleScreenshotCameraAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815,
+    type: 2}
   takeScreenshotAction: {fileID: 11400000, guid: fdfab5e29b7455f45996567365819641,
     type: 2}
+  closeWindowAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
