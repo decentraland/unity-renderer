@@ -194,6 +194,7 @@ namespace DCLFeatures.ScreenshotCamera
             lastScreenshotTime = Time.realtimeSinceStartup;
 
             Texture2D screenshot = screenshotCapture.CaptureScreenshot();
+            ScreenshotMetadata metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
 
             ScreenshotFX(screenshot);
 
@@ -202,12 +203,7 @@ namespace DCLFeatures.ScreenshotCamera
 
             async UniTaskVoid UploadScreenshotAsync(Texture2D image, CancellationToken cancellationToken)
             {
-                try
-                {
-                    await cameraReelService.UploadScreenshot(
-                        image,
-                        metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera), ct: cancellationToken);
-                }
+                try { await cameraReelService.UploadScreenshot(image, metadata, ct: cancellationToken); }
                 catch (OperationCanceledException) { }
                 catch (ScreenshotLimitReachedException)
                 {
