@@ -1,6 +1,6 @@
-using System;
 using DCL;
 using DCLServices.MapRendererV2.ConsumerUtils;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,9 +9,6 @@ public class MinimapHUDView : MonoBehaviour
 {
     public const string VIEW_PATH = "MinimapHUD";
     public const string VIEW_OBJECT_NAME = "_MinimapHUD";
-
-    private int START_MENU_HOVER_BOOL = Animator.StringToHash("hover");
-    private int START_MENU_PRESSED_TRIGGER = Animator.StringToHash("pressed");
 
     public event Action<string, bool> OnFavoriteToggleClicked;
 
@@ -29,6 +26,8 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal ToggleComponentView setHomeScene;
     [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
     [SerializeField] internal Image disableFavorite;
+    [SerializeField] internal Button copyLocationButton;
+    [SerializeField] internal ShowHideAnimator locationCopiedToast;
 
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
@@ -44,12 +43,12 @@ public class MinimapHUDView : MonoBehaviour
 
     public RectTransform mapViewport;
 
-    public static System.Action<MinimapHUDModel> OnUpdateData;
-    public static System.Action OnOpenNavmapClicked;
     public InputAction_Trigger toggleNavMapAction;
     private IMouseCatcher mouseCatcher;
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
     private MinimapHUDController controller;
+
+    public event Action OnCopyLocationRequested;
 
     private void Awake()
     {
@@ -69,6 +68,7 @@ public class MinimapHUDView : MonoBehaviour
         reportSceneButton.onClick.AddListener(ReportScene);
         setHomeScene.OnSelectedChanged += (isOn, id, name) => SetHomeScene(isOn);
         openNavmapButton.onClick.AddListener(toggleNavMapAction.RaiseOnTriggered);
+        copyLocationButton.onClick.AddListener(() => OnCopyLocationRequested?.Invoke());
 
         if (mouseCatcher != null)
             mouseCatcher.OnMouseLock += OnMouseLocked;
@@ -117,7 +117,10 @@ public class MinimapHUDView : MonoBehaviour
         playerPositionText.text = model.playerPosition;
     }
 
-    public void ToggleOptions() { sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf); }
+    public void ToggleOptions()
+    {
+        sceneOptionsPanel.SetActive(!sceneOptionsPanel.activeSelf);
+    }
 
     public void SetVisibility(bool visible)
     {
@@ -142,10 +145,17 @@ public class MinimapHUDView : MonoBehaviour
         disableFavorite.gameObject.SetActive(!isAPlace);
     }
 
+    public void ShowLocationCopiedToast()
+    {
+        locationCopiedToast.gameObject.SetActive(true);
+        locationCopiedToast.ShowDelayHide(3);
+    }
+
     private void OnDestroy()
     {
-        if(mouseCatcher != null)
+        if (mouseCatcher != null)
             mouseCatcher.OnMouseLock -= OnMouseLocked;
+
         hudCanvasCameraModeController?.Dispose();
     }
 }

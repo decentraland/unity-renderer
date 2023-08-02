@@ -12,6 +12,7 @@ namespace DCL.Social.Passports
         event Action OnClickCollectibles;
         event Action<PassportSection> OnClickedViewAll;
         event Action<ParcelCoordinates> OnClickDescriptionCoordinates;
+        event Action OnCopyDescription;
         void InitializeView();
         void SetGuestUser(bool isGuest);
         void SetName(string username);

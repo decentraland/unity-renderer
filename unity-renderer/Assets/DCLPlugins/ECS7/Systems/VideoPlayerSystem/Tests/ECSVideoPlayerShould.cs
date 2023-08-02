@@ -1,27 +1,25 @@
 using DCL;
 using DCL.Components.Video.Plugin;
-using DCL.Controllers;
 using DCL.CRDT;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
-using System;
-using System.Collections.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Models;
 using DCL.Shaders;
 using ECSSystems.VideoPlayerSystem;
-using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using TestUtils;
 using UnityEngine;
 using UnityEngine.TestTools;
 using VideoState = DCL.Components.Video.Plugin.VideoState;
 
-namespace Tests
+namespace Tests.Systems.VideoPlayer
 {
     public class ECSVideoPlayerSystemShould
     {
@@ -33,7 +31,6 @@ namespace Tests
         private WebVideoPlayer videoPlayer;
         private DualKeyValueSet<long, int, WriteData> outgoingMessagesScene0;
         private DualKeyValueSet<long, int, WriteData> outgoingMessagesScene1;
-        private SceneStateHandler sceneStateHandler;
 
         [SetUp]
         public void SetUp()
@@ -42,20 +39,23 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             outgoingMessagesScene0 = new DualKeyValueSet<long, int, WriteData>();
             outgoingMessagesScene1 = new DualKeyValueSet<long, int, WriteData>();
+
             var componentsWriter = new Dictionary<int, ComponentWriter>()
             {
                 { 666, new ComponentWriter(outgoingMessagesScene0) },
                 { 678, new ComponentWriter(outgoingMessagesScene1) }
             };
+
             var executors = new Dictionary<int, ICRDTExecutor>();
 
             internalEcsComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+
             var videoPlayerSystem = new ECSVideoPlayerSystem(
                 internalEcsComponents.videoPlayerComponent,
                 internalEcsComponents.videoMaterialComponent,
                 internalEcsComponents.EngineInfo,
                 componentsWriter,
-                new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(0,()=> new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent())));
+                new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(0, () => new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent())));
 
             systemsUpdate = () =>
             {
@@ -70,17 +70,8 @@ namespace Tests
 
             videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock());
 
-            sceneStateHandler = new SceneStateHandler(
-                Substitute.For<CRDTServiceContext>(),
-                new Dictionary<int, IParcelScene>()
-                {
-                    { scene0.sceneData.sceneNumber, scene0 },
-                    { scene1.sceneData.sceneNumber, scene1 }
-                },
-                internalEcsComponents.EngineInfo,
-                internalEcsComponents.GltfContainerLoadingStateComponent);
-            sceneStateHandler.InitializeEngineInfoComponent(scene0.sceneData.sceneNumber);
-            sceneStateHandler.InitializeEngineInfoComponent(scene1.sceneData.sceneNumber);
+            internalEcsComponents.EngineInfo.PutFor(scene0, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
+            internalEcsComponents.EngineInfo.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
         }
 
         [TearDown]
@@ -90,7 +81,6 @@ namespace Tests
             videoPlayer?.Dispose();
             AssetPromiseKeeper_Material.i.Cleanup();
             AssetPromiseKeeper_Texture.i.Cleanup();
-            sceneStateHandler.Dispose();
         }
 
         [UnityTest]
@@ -116,15 +106,15 @@ namespace Tests
             videoMaterialComponent.PutFor(scene0, entity01, new InternalVideoMaterial(
                 new Material(Shader.Find("DCL/Universal Render Pipeline/Lit")) { mainTexture = new Texture2D(1, 1), },
                 new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(100, ShaderUtils.BaseMap) }
-                ));
+            ));
 
             // Texture should not change on this
             videoMaterialComponent.PutFor(scene1, entity10, new InternalVideoMaterial(
                 new Material(Shader.Find("DCL/Universal Render Pipeline/Lit")) { mainTexture = new Texture2D(1, 1), },
                 new List<InternalVideoMaterial.VideoTextureData>() { new InternalVideoMaterial.VideoTextureData(200, ShaderUtils.BaseMap) }
-                ));
+            ));
 
-            yield return new UnityEngine.WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
             videoPlayer.Update();
             Assert.IsNotNull(videoPlayer.texture);
 
@@ -158,9 +148,9 @@ namespace Tests
                 ComponentID.VIDEO_EVENT,
                 val =>
                     val.State == DCL.ECSComponents.VideoState.VsLoading && val.Timestamp == 1
-                );
+            );
 
-            yield return new UnityEngine.WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
+            yield return new WaitUntil(() => videoPlayer.GetState() == VideoState.READY);
             systemsUpdate();
 
             outgoingMessagesScene0.Append_Called<PBVideoEvent>(
@@ -196,12 +186,13 @@ namespace Tests
             {
                 removed = true
             });
+
             systemsUpdate();
 
             outgoingMessagesScene0.Remove_Called(
                 entity.entityId,
                 ComponentID.VIDEO_EVENT
-                );
+            );
         }
 
         [Test]
@@ -215,9 +206,10 @@ namespace Tests
                 videoPlayer = videoPlayer
             });
 
-            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
-            sceneStateHandler.IncreaseSceneTick(scene0.sceneData.sceneNumber);
+            internalEcsComponents.EngineInfo.PutFor(scene0, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 3
+            });
 
             systemsUpdate();
 
@@ -230,4 +222,3 @@ namespace Tests
         }
     }
 }
-

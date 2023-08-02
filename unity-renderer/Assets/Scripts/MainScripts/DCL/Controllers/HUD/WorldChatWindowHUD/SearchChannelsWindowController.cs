@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Chat;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class SearchChannelsWindowController : IHUD
     {

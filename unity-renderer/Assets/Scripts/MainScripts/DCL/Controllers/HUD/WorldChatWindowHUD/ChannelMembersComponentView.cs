@@ -1,3 +1,4 @@
+using DCL.Social.Chat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelMembersComponentView : BaseComponentView, IChannelMembersComponentView
     {
