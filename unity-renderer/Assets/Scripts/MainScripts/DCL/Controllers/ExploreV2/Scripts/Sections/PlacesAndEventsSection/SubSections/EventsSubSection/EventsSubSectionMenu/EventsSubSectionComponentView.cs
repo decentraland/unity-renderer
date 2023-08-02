@@ -17,6 +17,12 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private const int UPCOMING_EVENT_CARDS_POOL_PREWARM = 9;
     private const string GOING_EVENT_CARDS_POOL_NAME = "Events_FeatureGoingEventCardsPool";
     private const int GOING_EVENT_CARDS_POOL_PREWARM = 9;
+    private const string ALL_FREQUENCY_FILTER_ID = "all";
+    private const string ALL_FREQUENCY_FILTER_TEXT = "All";
+    private const string ONE_TIME_EVENT_FREQUENCY_FILTER_ID = "one_time_event";
+    private const string ONE_TIME_EVENT_FREQUENCY_FILTER_TEXT = "One time event";
+    private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
+    private const string RECURRING_EVENT_FREQUENCY_FILTER_TEXT = "Recurring event";
 
     private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
     private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new Queue<Func<UniTask>>();
@@ -46,6 +52,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ButtonComponentView showMoreGoingEventsButton;
     [SerializeField] internal GameObject guestGoingToPanel;
     [SerializeField] internal ButtonComponentView connectWalletGuest;
+    [SerializeField] internal DropdownComponentView frequencyDropdown;
+    [SerializeField] internal DropdownComponentView categoriesDropdown;
 
     [SerializeField] private Canvas canvas;
 
@@ -76,6 +84,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public int CurrentTilesPerRow => currentUpcomingEventsPerRow;
     public int CurrentGoingTilesPerRow => currentGoingEventsPerRow;
 
+    public string SelectedFrequency { get; private set; }
+    public string SelectedCategory { get; private set; }
+
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
@@ -85,6 +96,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action OnShowMoreGoingEventsClicked;
     public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;
+    public event Action OnFiltersChanged;
 
     public override void Awake()
     {
@@ -97,6 +109,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void Start()
     {
+        LoadFrequencyDropdown();
+
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
@@ -111,17 +125,34 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         connectWalletGuest.onClick.RemoveAllListeners();
         connectWalletGuest.onClick.AddListener(() => OnConnectWallet?.Invoke());
 
+        frequencyDropdown.OnOptionSelectionChanged += OnFrequencyFilterChanged;
+        categoriesDropdown.OnOptionSelectionChanged += OnCategoryFilterChanged;
+
         OnReady?.Invoke();
     }
 
     public override void OnEnable()
     {
+        SelectedFrequency = ALL_FREQUENCY_FILTER_ID;
+        frequencyDropdown.SetTitle(ALL_FREQUENCY_FILTER_TEXT);
+        frequencyDropdown.SelectOption(ALL_FREQUENCY_FILTER_ID, false);
+
         OnEventsSubSectionEnable?.Invoke();
     }
 
     public void SetIsGuestUser(bool isGuestUser)
     {
         isGuest = isGuestUser;
+    }
+
+    public void SetCategories(List<ToggleComponentModel> categories)
+    {
+        if (categories.Count == 0)
+            return;
+
+        SelectedCategory = categories[0].id;
+        categoriesDropdown.SetTitle(categories[0].text);
+        categoriesDropdown.SetOptions(categories);
     }
 
     public override void Dispose()
@@ -131,6 +162,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
         showMoreGoingEventsButton.onClick.RemoveAllListeners();
+
+        frequencyDropdown.OnOptionSelectionChanged -= OnFrequencyFilterChanged;
+        categoriesDropdown.OnOptionSelectionChanged -= OnCategoryFilterChanged;
 
         featuredEvents.Dispose();
         upcomingEvents.Dispose();
@@ -324,5 +358,38 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
             isUpdatingCardsVisual = false;
         }
+    }
+
+    private void LoadFrequencyDropdown()
+    {
+        List<ToggleComponentModel> valuesToAdd = new List<ToggleComponentModel>
+        {
+            new () { id = ALL_FREQUENCY_FILTER_ID, text = ALL_FREQUENCY_FILTER_TEXT, isOn = true, isTextActive = true, changeTextColorOnSelect = true },
+            new () { id = ONE_TIME_EVENT_FREQUENCY_FILTER_ID, text = ONE_TIME_EVENT_FREQUENCY_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+            new () { id = RECURRING_EVENT_FREQUENCY_FILTER_ID, text = RECURRING_EVENT_FREQUENCY_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+        };
+
+        frequencyDropdown.SetTitle(valuesToAdd[0].text);
+        frequencyDropdown.SetOptions(valuesToAdd);
+    }
+
+    private void OnFrequencyFilterChanged(bool isOn, string optionId, string optionName)
+    {
+        if (!isOn)
+            return;
+
+        SelectedFrequency = optionId;
+        frequencyDropdown.SetTitle(optionName);
+        OnFiltersChanged?.Invoke();
+    }
+
+    private void OnCategoryFilterChanged(bool isOn, string optionId, string optionName)
+    {
+        if (!isOn)
+            return;
+
+        SelectedCategory = optionId;
+        categoriesDropdown.SetTitle(optionName);
+        OnFiltersChanged?.Invoke();
     }
 }

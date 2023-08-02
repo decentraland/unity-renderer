@@ -125,6 +125,6 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
 
     void SetShowMoreButtonActive(bool isActive);
     void SetShowMoreGoingButtonActive(bool isActive);
-
     void SetIsGuestUser(bool isGuestUser);
+    void SetCategories(List<ToggleComponentModel> categories);
 }

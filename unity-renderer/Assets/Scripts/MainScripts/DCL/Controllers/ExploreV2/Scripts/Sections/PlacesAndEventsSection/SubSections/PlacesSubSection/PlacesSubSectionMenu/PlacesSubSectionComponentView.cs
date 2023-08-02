@@ -178,6 +178,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
         showMorePlacesButton.onClick.RemoveAllListeners();
 
+        sortByDropdown.OnOptionSelectionChanged -= SortByDropdownValueChanged;
+
         places.Dispose();
 
         if (placeModal != null)

@@ -45,3 +45,19 @@ public class AttendEventMessageModel
     public string @event;
     public bool attend;
 }
+
+[Serializable]
+public class CategoryListFromAPIModel
+{
+    public bool ok;
+    public List<CategoryFromAPIModel> data;
+}
+
+[Serializable]
+public class CategoryFromAPIModel
+{
+    public string name;
+    public bool active;
+    public string created_at;
+    public string updated_at;
+}

@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Interface;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_GOING_ROWS = 1;
     private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
     private const int SHOW_MORE_GOING_ROWS_INCREMENT = 2;
-    private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
@@ -106,6 +104,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
             cardsReloader.RequestAll();
         }
+
+        RequestAndLoadCategories();
     }
 
     public void RequestAllFromAPI()
@@ -234,5 +234,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         else
             Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
+    }
+
+    private void RequestAndLoadCategories()
+    {
+        eventsAPIApiController.GetCategories(
+            OnSuccess: eventList => view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(eventList)),
+            OnFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
     }
 }

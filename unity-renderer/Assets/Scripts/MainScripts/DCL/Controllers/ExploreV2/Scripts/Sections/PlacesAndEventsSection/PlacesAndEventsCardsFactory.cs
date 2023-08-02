@@ -2,9 +2,7 @@ using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using MainScripts.DCL.Controllers.HotScenes;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using Object = UnityEngine.Object;
 
@@ -168,6 +166,37 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = place.likes + place.dislikes,
                     numberOfFavorites = place.favorites,
                     deployedAt = place.deployed_at,
+                });
+        }
+
+        return modelsList;
+    }
+
+    public static List<ToggleComponentModel> ConvertCategoriesResponseToToggleModel(List<CategoryFromAPIModel> categories)
+    {
+        List<ToggleComponentModel> modelsList = new List<ToggleComponentModel>();
+        modelsList.Add(new ToggleComponentModel
+        {
+            id = "all",
+            text = "All",
+            isOn = true,
+            isTextActive = true,
+            changeTextColorOnSelect = true,
+        });
+
+        foreach (var category in categories)
+        {
+            if (!category.active)
+                continue;
+
+            modelsList.Add(
+                new ToggleComponentModel
+                {
+                    id = category.name,
+                    text = category.name,
+                    isOn = false,
+                    isTextActive = true,
+                    changeTextColorOnSelect = true,
                 });
         }
 
