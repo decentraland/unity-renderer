@@ -34,7 +34,7 @@ namespace DCLServices.QuestsService.Tests
             takeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
 
             screenshotCamera.cameraPrefab = gameObject.AddComponent<Camera>();
-            screenshotCamera.screenshotHUDViewPrefab = gameObject.AddComponent<ScreenshotHUDViewDummy>();
+            screenshotCamera.screenshotCameraHUDViewPrefab = gameObject.AddComponent<ScreenshotCameraHUDViewDummy>();
 
             screenshotCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
             screenshotCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
@@ -77,7 +77,7 @@ namespace DCLServices.QuestsService.Tests
             screenshotCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screenshotCamera.ToggleScreenshotCamera(new DCLAction_Trigger());
+            screenshotCamera.ToggleVisibility();
 
             // Assert
             Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
@@ -97,7 +97,7 @@ namespace DCLServices.QuestsService.Tests
             screenshotCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screenshotCamera.ToggleScreenshotCamera(new DCLAction_Trigger());
+            screenshotCamera.ToggleVisibility();
 
             // Assert
             Assert.IsTrue(allUIHidden.Get());
@@ -117,7 +117,7 @@ namespace DCLServices.QuestsService.Tests
             screenshotCamera.screenshotCamera.gameObject.SetActive(true);
 
             // Act
-            screenshotCamera.ToggleScreenshotCamera(new DCLAction_Trigger());
+            screenshotCamera.ToggleVisibility();
 
             // Assert
             Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
@@ -145,7 +145,7 @@ namespace DCLServices.QuestsService.Tests
             new (1, 1);
     }
 
-    public class ScreenshotHUDViewDummy : ScreenshotHUDView
+    public class ScreenshotCameraHUDViewDummy : ScreenshotCameraHUDView
     {
         public override void SwitchVisibility(bool isVisible) { }
     }

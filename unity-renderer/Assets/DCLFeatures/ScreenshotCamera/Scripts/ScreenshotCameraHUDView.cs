@@ -1,19 +1,21 @@
 ﻿using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCLFeatures.ScreenshotCamera
 {
     [RequireComponent(typeof(Canvas))] [DisallowMultipleComponent]
-    public class ScreenshotHUDView : MonoBehaviour
+    public class ScreenshotCameraHUDView : MonoBehaviour
     {
-        [field: SerializeField] public RectTransform RectTransform { get; private set; }
-        [field: SerializeField] public Image RefImage { get; private set; }
-        [field: SerializeField] public Button CloseButton { get; protected set; }
-        [field: SerializeField] public Button TakeScreenshotButton { get; protected set; }
+        [SerializeField] private Canvas rootCanvas;
 
-        [Header("SHORTCUTS PANEL")]
+        [Header("BUTTONS")]
+        [SerializeField] private Button cameraReelButton;
+        [SerializeField] private Button takeScreenshotButton;
         [SerializeField] private Button shortcutButton;
+        [SerializeField] private Button closeButton;
+
         [SerializeField] private GameObject shortcutsHelpPanel;
 
         [Header("CAPTURE VFX")]
@@ -21,18 +23,36 @@ namespace DCLFeatures.ScreenshotCamera
         [SerializeField] private RectTransform cameraReelIcon;
         [SerializeField] private Image animatedImage;
 
-        private Canvas canvas;
+        private Sequence currentVfxSequence;
 
-        private void Awake()
+        [field: SerializeField] public RectTransform RectTransform { get; private set; }
+        [field: SerializeField] public Image RefImage { get; private set; }
+
+        public event Action CloseButtonClicked;
+        public event Action ShortcutButtonClicked;
+        public event Action CameraReelButtonClicked;
+        public event Action TakeScreenshotButtonClicked;
+
+        private void OnEnable()
         {
-            canvas = GetComponent<Canvas>();
-            shortcutButton.onClick.AddListener(ToggleShortcutsHelpPanel);
+            cameraReelButton.onClick.AddListener(() => CameraReelButtonClicked?.Invoke());
+            takeScreenshotButton.onClick.AddListener(() => TakeScreenshotButtonClicked?.Invoke());
+            shortcutButton.onClick.AddListener(() => ShortcutButtonClicked?.Invoke());
+            closeButton.onClick.AddListener(() => CloseButtonClicked?.Invoke());
+        }
+
+        private void OnDisable()
+        {
+            cameraReelButton.onClick.RemoveAllListeners();
+            takeScreenshotButton.onClick.RemoveAllListeners();
+            shortcutButton.onClick.RemoveAllListeners();
+            closeButton.onClick.RemoveAllListeners();
         }
 
         public virtual void SwitchVisibility(bool isVisible) =>
-            canvas.enabled = isVisible;
+            rootCanvas.enabled = isVisible;
 
-        private void ToggleShortcutsHelpPanel() =>
+        public void ToggleShortcutsHelpPanel() =>
             shortcutsHelpPanel.SetActive(!shortcutsHelpPanel.activeSelf);
 
         public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float transitionDuration)
@@ -47,8 +67,6 @@ namespace DCLFeatures.ScreenshotCamera
 
             currentVfxSequence = CaptureVFXSequence(splashDuration, transitionDuration).Play();
         }
-
-        private Sequence currentVfxSequence;
 
         private Sequence CaptureVFXSequence(float splashDuration, float transitionDuration, float afterSplashPause = 0.1f)
         {
