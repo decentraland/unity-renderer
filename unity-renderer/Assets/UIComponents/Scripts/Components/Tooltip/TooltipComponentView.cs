@@ -36,19 +36,25 @@ namespace UIComponents.Scripts.Components
         public override void OnEnable()
         {
             base.OnEnable();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnFocus()
         {
             base.OnFocus();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnLoseFocus()
         {
             base.OnLoseFocus();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnDeselect(BaseEventData eventData)
