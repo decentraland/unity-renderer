@@ -109,6 +109,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
         #define MinNits                 _HDROutputLuminanceParams.x
         #define MaxNits                 _HDROutputLuminanceParams.y
         #define PaperWhite              _HDROutputLuminanceParams.z
+        #define OneOverPaperWhite       _HDROutputLuminanceParams.w
 
         float2 DistortUV(float2 uv)
         {
@@ -236,7 +237,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if _FILM_GRAIN
             {
-                color = ApplyGrain(color, uv, TEXTURE2D_ARGS(_Grain_Texture, sampler_LinearRepeat), GrainIntensity, GrainResponse, GrainScale, GrainOffset);
+                color = ApplyGrain(color, uv, TEXTURE2D_ARGS(_Grain_Texture, sampler_LinearRepeat), GrainIntensity, GrainResponse, GrainScale, GrainOffset, OneOverPaperWhite);
             }
             #endif
 
@@ -254,7 +255,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if _DITHERING
             {
-                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset);
+                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset, OneOverPaperWhite);
                 // Assume color > 0 and prevent 0 - ditherNoise.
                 // Negative colors can cause problems if fed back to the postprocess via render to FP16 texture.
                 color = max(color, 0);
