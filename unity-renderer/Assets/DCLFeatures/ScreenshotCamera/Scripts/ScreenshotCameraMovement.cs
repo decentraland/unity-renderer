@@ -90,6 +90,8 @@ namespace DCLFeatures.ScreenshotCamera
             mouseX += cameraXAxis.GetValue() * rotationSpeed * deltaTime;
             mouseY -= cameraYAxis.GetValue() * rotationSpeed * deltaTime;
 
+            mouseY = Mathf.Clamp(mouseY, -90f, 90f);
+
             transform.rotation = Quaternion.Euler(mouseY, mouseX, 0f);
         }
     }
