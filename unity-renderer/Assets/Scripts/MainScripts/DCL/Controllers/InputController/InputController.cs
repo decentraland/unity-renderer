@@ -175,7 +175,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.U, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.CloseWindow:
-                    if (!allUIHidden && !DataStore.i.common.isSignUpFlow.Get())
+                    if (!DataStore.i.common.isSignUpFlow.Get() && (!allUIHidden || CommonScriptableObjects.isScreenshotCameraActive.Get()))
                         InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:

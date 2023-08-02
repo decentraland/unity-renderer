@@ -38,7 +38,7 @@ namespace DCLServices.QuestsService.Tests
 
             screenshotCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
             screenshotCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
-            screenshotCamera.cameraInputAction = cameraInputAction;
+            screenshotCamera.toggleScreenshotCameraAction = cameraInputAction;
             screenshotCamera.takeScreenshotAction = takeScreenshotAction;
 
             // Mock external dependencies

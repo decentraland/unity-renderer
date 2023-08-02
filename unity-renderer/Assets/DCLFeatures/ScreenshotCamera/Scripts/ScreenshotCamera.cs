@@ -8,7 +8,6 @@ using System.Collections;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -24,11 +23,12 @@ namespace DCLFeatures.ScreenshotCamera
 
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
-        [FormerlySerializedAs("screenshotHUDViewPrefab")] [SerializeField] internal ScreenshotCameraHUDView screenshotCameraHUDViewPrefab;
+        [SerializeField] internal ScreenshotCameraHUDView screenshotCameraHUDViewPrefab;
 
         [Header("INPUT ACTIONS")]
-        [SerializeField] internal InputAction_Trigger cameraInputAction;
+        [SerializeField] internal InputAction_Trigger toggleScreenshotCameraAction;
         [SerializeField] internal InputAction_Trigger takeScreenshotAction;
+        [SerializeField] internal InputAction_Trigger closeWindowAction;
 
         internal ScreenshotCapture screenshotCaptureLazyValue;
         internal bool? isGuestLazyValue;
@@ -101,14 +101,18 @@ namespace DCLFeatures.ScreenshotCamera
 
         internal void OnEnable()
         {
-            cameraInputAction.OnTriggered += ToggleScreenshotCamera;
             takeScreenshotAction.OnTriggered += CaptureScreenshot;
+
+            toggleScreenshotCameraAction.OnTriggered += ToggleToggleScreenshotCamera;
+            closeWindowAction.OnTriggered += ToggleToggleScreenshotCamera;
         }
 
         internal void OnDisable()
         {
-            cameraInputAction.OnTriggered -= ToggleScreenshotCamera;
             takeScreenshotAction.OnTriggered -= CaptureScreenshot;
+
+            toggleScreenshotCameraAction.OnTriggered -= ToggleToggleScreenshotCamera;
+            closeWindowAction.OnTriggered -= ToggleToggleScreenshotCamera;
         }
 
         private void OnExploreV2Open(bool current, bool previous)
@@ -158,7 +162,7 @@ namespace DCLFeatures.ScreenshotCamera
             screenshotCameraHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN / 2, transitionDuration: COOLDOWN / 2);
         }
 
-        private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
+        private void ToggleToggleScreenshotCamera(DCLAction_Trigger _) =>
             ToggleVisibility();
 
         internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
