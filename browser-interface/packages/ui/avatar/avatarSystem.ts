@@ -1,3 +1,4 @@
+// no-changes
 import { AvatarShape, engine, Entity, Transform, EventManager } from '@dcl/legacy-ecs'
 import type {
   AvatarMessage,
