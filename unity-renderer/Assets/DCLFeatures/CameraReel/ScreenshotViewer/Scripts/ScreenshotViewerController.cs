@@ -1,12 +1,13 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using Environment = DCL.Environment;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
@@ -16,16 +17,20 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
         private readonly ITeleportController teleportController;
+        private readonly ICameraReelGalleryService galleryService;
 
+        private CancellationTokenSource deleteScreenshotCancellationToken;
         private CameraReelResponse currentScreenshot;
 
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
-            DataStore dataStore, ITeleportController teleportController)
+            DataStore dataStore, ITeleportController teleportController,
+            ICameraReelGalleryService galleryService)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
             this.teleportController = teleportController;
+            this.galleryService = galleryService;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
@@ -55,6 +60,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             view.InfoSidePanel.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
             view.InfoSidePanel.SceneButtonClicked -= JumpInScene;
+
+            view.Dispose();
         }
 
         public void Show(CameraReelResponse reel)
@@ -94,6 +101,13 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void DeleteScreenshot()
         {
+            async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
+            {
+                await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
+                model.RemoveScreenshot(screenshot);
+                view.Hide();
+            }
+
             dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(
                 "Are you sure you want to delete this picture?",
                 "This picture will be removed and you will no longer be able to access it.",
@@ -102,8 +116,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 () => {},
                 () =>
                 {
-                    model.RemoveScreenshot(currentScreenshot);
-                    view.Hide();
+                    deleteScreenshotCancellationToken = deleteScreenshotCancellationToken.SafeRestart();
+                    DeleteScreenshotAsync(currentScreenshot, deleteScreenshotCancellationToken.Token).Forget();
                 }), true);
         }
 
