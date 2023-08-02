@@ -49,7 +49,7 @@ namespace DCLServices.CameraReelService
             };
 
             UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, isSigned: true, cancellationToken: ct);
-            return ParseScreenshotResponse(result, unSuccessResultMassage: "Error uploading screenshot");
+            return ParseScreenshotResponse(result, unSuccessResultMessage: "Error uploading screenshot");
         }
 
         public async UniTask DeleteScreenshot(string uuid, CancellationToken ct)
@@ -60,11 +60,11 @@ namespace DCLServices.CameraReelService
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
         }
 
-        private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMassage)
+        private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMessage)
         {
             if (result.result != UnityWebRequest.Result.Success)
                 // TODO: throw ScreenshotLimitReachedException in case storage limit error
-                throw new Exception($"{unSuccessResultMassage}:\n{result.error}");
+                throw new Exception($"{unSuccessResultMessage}:\n{result.error}");
 
             CameraReelResponse response = Utils.SafeFromJson<CameraReelResponse>(result.downloadHandler.text);
 
