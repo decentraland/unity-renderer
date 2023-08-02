@@ -17,6 +17,7 @@ namespace DCLFeatures.ScreenshotCamera
     public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
     {
         private const DCLAction_Trigger DUMMY_DCL_ACTION_TRIGGER = new ();
+        private const float COOLDOWN = 3f;
 
         [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] internal DCLCharacterController characterController;
@@ -36,6 +37,7 @@ namespace DCLFeatures.ScreenshotCamera
 
         internal Camera screenshotCamera;
         internal IAvatarsLODController avatarsLODControllerLazyValue;
+        private float lastScreenshotTime = -Mathf.Infinity;
 
         private bool isInstantiated;
         private ScreenshotHUDView screenshotHUDView;
@@ -53,6 +55,7 @@ namespace DCLFeatures.ScreenshotCamera
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
+        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < COOLDOWN;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
@@ -186,16 +189,23 @@ namespace DCLFeatures.ScreenshotCamera
 
         private void CaptureScreenshot(DCLAction_Trigger _)
         {
-            if (!isScreenshotCameraActive.Get() || isGuest) return;
+            if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
 
-            AudioScriptableObjects.takeScreenshot.Play();
+            lastScreenshotTime = Time.realtimeSinceStartup;
 
-            async UniTaskVoid UploadScreenshotAsync(CancellationToken cancellationToken)
+            Texture2D screenshot = screenshotCapture.CaptureScreenshot();
+
+            ScreenshotFX(screenshot);
+
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(screenshot, uploadPictureCancellationToken.Token).Forget();
+
+            async UniTaskVoid UploadScreenshotAsync(Texture2D image, CancellationToken cancellationToken)
             {
                 try
                 {
                     await cameraReelService.UploadScreenshot(
-                        image: screenshotCapture.CaptureScreenshot(),
+                        image,
                         metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera), ct: cancellationToken);
                 }
                 catch (OperationCanceledException) { }
@@ -212,9 +222,12 @@ namespace DCLFeatures.ScreenshotCamera
                         true);
                 }
             }
+        }
 
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(uploadPictureCancellationToken.Token).Forget();
+        private void ScreenshotFX(Texture2D image)
+        {
+            AudioScriptableObjects.takeScreenshot.Play();
+            screenshotHUDView.ScreenshotCaptureAnimation(image);
         }
 
         private void EnableScreenshotCamera()
