@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 1657683350}
+  maxDistanceFromPlayer: 7.5
   movementSpeed: 5
   characterXAxis: {fileID: 11400000, guid: abf07b6aa547cdb4cb90fcab32a79cf1, type: 2}
   characterYAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}

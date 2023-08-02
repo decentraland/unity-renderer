@@ -9,6 +9,7 @@ using System.Collections;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -16,7 +17,7 @@ namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
     {
-        private const DCLAction_Trigger DUMMY_DCL_ACTION_TRIGGER = new ();
+        private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
         private const float COOLDOWN = 3f;
 
         [Header("EXTERNAL DEPENDENCIES")]
@@ -25,7 +26,7 @@ namespace DCLFeatures.ScreenshotCamera
 
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
-        [SerializeField] internal ScreenshotHUDView screenshotHUDViewPrefab;
+        [FormerlySerializedAs("screenshotHUDViewPrefab")] [SerializeField] internal ScreenshotCameraHUDView screenshotCameraHUDViewPrefab;
 
         [Header("INPUT ACTIONS")]
         [SerializeField] internal InputAction_Trigger cameraInputAction;
@@ -40,7 +41,7 @@ namespace DCLFeatures.ScreenshotCamera
         private float lastScreenshotTime = -Mathf.Infinity;
 
         private bool isInstantiated;
-        private ScreenshotHUDView screenshotHUDView;
+        private ScreenshotCameraHUDView screenshotCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
         private Transform characterCameraTransform;
         private IScreenshotCameraService cameraReelServiceLazyValue;
@@ -55,6 +56,8 @@ namespace DCLFeatures.ScreenshotCamera
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
+        private ScreenshotCameraHUDController screenshotCameraHUDController;
+
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < COOLDOWN;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
@@ -119,10 +122,7 @@ namespace DCLFeatures.ScreenshotCamera
             }
         }
 
-        public void ToggleVisibility(bool isVisible) =>
-            ToggleScreenshotCamera(DUMMY_DCL_ACTION_TRIGGER);
-
-        internal void ToggleScreenshotCamera(DCLAction_Trigger _)
+        public void ToggleVisibility(bool _ = true)
         {
             if (isGuest) return;
 
@@ -135,6 +135,46 @@ namespace DCLFeatures.ScreenshotCamera
 
             isScreenshotCameraActive.Set(activateScreenshotCamera);
         }
+
+        public void CaptureScreenshot()
+        {
+            if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
+
+            lastScreenshotTime = Time.realtimeSinceStartup;
+
+            Texture2D screenshot = screenshotCapture.CaptureScreenshot();
+            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+
+            ScreenshotFX(screenshot);
+
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
+
+            async UniTaskVoid UploadScreenshotAsync(Texture2D image, ScreenshotMetadata data, CancellationToken cancellationToken)
+            {
+                try { await cameraReelService.UploadScreenshot(image, data, ct: cancellationToken); }
+                catch (OperationCanceledException) { }
+                catch (ScreenshotLimitReachedException)
+                {
+                    DataStore.i.notifications.DefaultErrorNotification.Set(
+                        "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.",
+                        true);
+                }
+                catch (Exception) { DataStore.i.notifications.DefaultErrorNotification.Set(UPLOADING_ERROR_MESSAGE, true); }
+            }
+        }
+
+        private void CaptureScreenshot(DCLAction_Trigger _) =>
+            CaptureScreenshot();
+
+        private void ScreenshotFX(Texture2D image)
+        {
+            AudioScriptableObjects.takeScreenshot.Play();
+            screenshotCameraHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN / 2, transitionDuration: COOLDOWN / 2);
+        }
+
+        private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
+            ToggleVisibility();
 
         internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
             BooleanVariable cameraBlocked, BooleanVariable featureKeyTriggersBlocked, BooleanVariable userMovementKeysBlocked, BooleanVariable isScreenshotCameraActive)
@@ -158,7 +198,7 @@ namespace DCLFeatures.ScreenshotCamera
                 EnableScreenshotCamera();
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            screenshotHUDView.SwitchVisibility(activateScreenshotCamera);
+            screenshotCameraHUDView.SwitchVisibility(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
         }
 
@@ -187,45 +227,6 @@ namespace DCLFeatures.ScreenshotCamera
             userMovementKeysBlocked.Set(activateScreenshotCamera);
         }
 
-        private void CaptureScreenshot(DCLAction_Trigger _)
-        {
-            if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
-
-            lastScreenshotTime = Time.realtimeSinceStartup;
-
-            Texture2D screenshot = screenshotCapture.CaptureScreenshot();
-            ScreenshotMetadata metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-
-            ScreenshotFX(screenshot);
-
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
-
-            async UniTaskVoid UploadScreenshotAsync(Texture2D image, ScreenshotMetadata data, CancellationToken cancellationToken)
-            {
-                try { await cameraReelService.UploadScreenshot(image, data, ct: cancellationToken); }
-                catch (OperationCanceledException) { }
-                catch (ScreenshotLimitReachedException)
-                {
-                    DataStore.i.notifications.DefaultErrorNotification.Set(
-                        "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.",
-                        true);
-                }
-                catch (Exception)
-                {
-                    DataStore.i.notifications.DefaultErrorNotification.Set(
-                        "There was an unexpected error when uploading the picture. Try again later.",
-                        true);
-                }
-            }
-        }
-
-        private void ScreenshotFX(Texture2D image)
-        {
-            AudioScriptableObjects.takeScreenshot.Play();
-            screenshotHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN/2, transitionDuration: COOLDOWN/2);
-        }
-
         private void EnableScreenshotCamera()
         {
             if (!isInstantiated)
@@ -236,30 +237,24 @@ namespace DCLFeatures.ScreenshotCamera
 
         internal void InstantiateCameraObjects()
         {
+            screenshotCameraHUDView = Instantiate(screenshotCameraHUDViewPrefab);
+            screenshotCameraHUDController = new ScreenshotCameraHUDController(screenshotCameraHUDView, this);
+            screenshotCameraHUDController.Initialize();
+
             characterCameraTransform = cameraController.GetCamera().transform;
-
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
-
-            screenshotHUDView = Instantiate(screenshotHUDViewPrefab);
-
-            if (screenshotHUDView.CloseButton != null)
-                screenshotHUDView.CloseButton.onClick.AddListener(DisableScreenshotCameraMode);
-
-            if (screenshotHUDView.TakeScreenshotButton != null)
-                screenshotHUDView.TakeScreenshotButton.onClick.AddListener(() => CaptureScreenshot(DUMMY_DCL_ACTION_TRIGGER));
-
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
-            Image refBoundariesImage = screenshotHUDView.RefImage;
-            screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screenshotHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
+            Image refBoundariesImage = screenshotCameraHUDView.RefImage;
+            screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screenshotCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
 
             isInstantiated = true;
         }
 
-        private void DisableScreenshotCameraMode()
+        public void DisableScreenshotCameraMode()
         {
             if (isScreenshotCameraActive.Get())
-                ToggleScreenshotCamera(DUMMY_DCL_ACTION_TRIGGER);
+                ToggleVisibility();
         }
     }
 }
