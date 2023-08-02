@@ -17,7 +17,8 @@ public class PlayerPassportPlugin : IPlugin
 
     public PlayerPassportPlugin()
     {
-        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport"))
+                                                                    .GetComponent<PlayerPassportReferenceContainer>();
         referenceContainer.PlayerPreviewView.Initialize(new PreviewCameraRotationController());
 
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
@@ -57,7 +58,8 @@ public class PlayerPassportPlugin : IPlugin
                                 Environment.i.serviceLocator.Get<ILandsService>(),
                                 Environment.i.serviceLocator.Get<INamesService>(),
                                 NotificationsController.i),
-                            referenceContainer.PassportNavigationView),
+                            referenceContainer.PassportNavigationView,
+                            Clipboard.Create()),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(

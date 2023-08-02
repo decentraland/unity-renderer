@@ -2,7 +2,7 @@ using System;
 using DCL.Chat.Channels;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public interface ISearchChannelsWindowView
     {

@@ -8,7 +8,6 @@ using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.PlacesAPIService;
 using System;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -18,17 +17,21 @@ public class MinimapHUDController : IHUD
     private static bool VERBOSE = false;
 
     public MinimapHUDView view;
+
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private IntVariable currentSceneNumber => CommonScriptableObjects.sceneNumber;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
     private Vector2Int currentCoords;
-    private Vector2Int homeCoords = new Vector2Int(0,0);
-    private MinimapMetadataController metadataController;
-    private IHomeLocationController locationController;
-    private DCL.Environment.Model environment;
+    private Vector2Int homeCoords = new Vector2Int(0, 0);
+
+    private readonly MinimapMetadataController metadataController;
+    private readonly IHomeLocationController locationController;
+    private readonly DCL.Environment.Model environment;
     private readonly IPlacesAPIService placesAPIService;
     private readonly IPlacesAnalytics placesAnalytics;
-    private BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
+    private readonly IClipboard clipboard;
+    private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
+    private readonly CancellationTokenSource disposingCts = new ();
 
     private static readonly MapLayer RENDER_LAYERS
         = MapLayer.Atlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest;
@@ -37,17 +40,16 @@ public class MinimapHUDController : IHUD
     private IMapCameraController mapCameraController;
     private MapRendererTrackPlayerPosition mapRendererTrackPlayerPosition;
     private CancellationTokenSource retrievingFavoritesCts;
-    private readonly CancellationTokenSource disposingCts = new CancellationTokenSource();
 
-    public MinimapHUDModel model { get; private set; } = new ();
+    private MinimapHUDModel model { get; set; } = new ();
 
     public MinimapHUDController(
         MinimapMetadataController minimapMetadataController,
         IHomeLocationController locationController,
         DCL.Environment.Model environment,
         IPlacesAPIService placesAPIService,
-        IPlacesAnalytics placesAnalytics
-        )
+        IPlacesAnalytics placesAnalytics,
+        IClipboard clipboard)
     {
         minimapZoom.Set(1f);
         metadataController = minimapMetadataController;
@@ -55,9 +57,11 @@ public class MinimapHUDController : IHUD
         this.environment = environment;
         this.placesAPIService = placesAPIService;
         this.placesAnalytics = placesAnalytics;
+        this.clipboard = clipboard;
 
-        if(metadataController != null)
+        if (metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
+
         minimapVisible.OnChange += SetVisibility;
     }
 
@@ -67,7 +71,8 @@ public class MinimapHUDController : IHUD
     public void Initialize()
     {
         view = CreateView();
-        this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
+        view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
+        view.OnCopyLocationRequested += OnCopyLocationToClipboard;
         InitializeMapRenderer();
 
         OnPlayerCoordsChange(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
@@ -81,6 +86,7 @@ public class MinimapHUDController : IHUD
     public void Dispose()
     {
         disposingCts?.SafeCancelAndDispose();
+
         if (view != null)
         {
             DisposeMapRenderer();
@@ -92,6 +98,7 @@ public class MinimapHUDController : IHUD
 
         if (metadataController != null)
             metadataController.OnHomeChanged -= SetNewHome;
+
         minimapVisible.OnChange -= SetVisibility;
     }
 
@@ -143,7 +150,8 @@ public class MinimapHUDController : IHUD
         if (sceneInfo != null)
         {
             UpdateSceneName(sceneInfo.name);
-            if(sceneInfo.parcels.Count > 0)
+
+            if (sceneInfo.parcels.Count > 0)
                 RetrieveFavoriteState(sceneInfo.parcels[0]);
         }
     }
@@ -188,19 +196,25 @@ public class MinimapHUDController : IHUD
         view.UpdateData(model);
     }
 
-    public void AddZoomDelta(float delta) { minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta)); }
+    public void AddZoomDelta(float delta)
+    {
+        minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta));
+    }
 
-    public void ToggleOptions() { view.ToggleOptions(); }
+    public void ToggleOptions()
+    {
+        view.ToggleOptions();
+    }
 
-    public void ToggleSceneUI(bool isUIOn) { DataStore.i.HUDs.isCurrentSceneUiEnabled.Set(isUIOn); }
+    public void ToggleSceneUI(bool isUIOn)
+    {
+        DataStore.i.HUDs.isCurrentSceneUiEnabled.Set(isUIOn);
+    }
 
     public void AddBookmark()
     {
         //TODO:
-        if (VERBOSE)
-        {
-            Debug.Log("Add bookmark pressed");
-        }
+        if (VERBOSE) { Debug.Log("Add bookmark pressed"); }
     }
 
     public void ReportScene()
@@ -212,15 +226,16 @@ public class MinimapHUDController : IHUD
     public void SetHomeScene(bool isOn)
     {
         var coords = playerCoords.Get();
+
         if (playerCoords == homeCoords)
         {
             if (!isOn)
-                locationController.SetHomeScene(new Vector2(0,0));
+                locationController.SetHomeScene(new Vector2(0, 0));
         }
         else
         {
-            if(isOn)
-                locationController.SetHomeScene(new Vector2(coords.x,coords.y));
+            if (isOn)
+                locationController.SetHomeScene(new Vector2(coords.x, coords.y));
         }
     }
 
@@ -234,7 +249,8 @@ public class MinimapHUDController : IHUD
         if (sceneInfo.parcels.Contains(CommonScriptableObjects.playerCoords.Get()))
         {
             UpdateSceneName(sceneInfo.name);
-            if(sceneInfo.parcels.Count > 0)
+
+            if (sceneInfo.parcels.Count > 0)
                 RetrieveFavoriteState(sceneInfo.parcels[0]);
         }
     }
@@ -256,19 +272,13 @@ public class MinimapHUDController : IHUD
             view.SetIsAPlace(true);
             view.SetCurrentFavoriteStatus(place.id, isFavorite);
         }
-        catch (NotAPlaceException)
-        {
-            view.SetIsAPlace(false);
-        }
-        catch (OperationCanceledException)
-        {
-            view.SetIsAPlace(false);
-        }
+        catch (NotAPlaceException) { view.SetIsAPlace(false); }
+        catch (OperationCanceledException) { view.SetIsAPlace(false); }
     }
 
     private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
     {
-        if(isFavorite)
+        if (isFavorite)
             placesAnalytics.AddFavorite(uuid, IPlacesAnalytics.ActionSource.FromMinimap);
         else
             placesAnalytics.RemoveFavorite(uuid, IPlacesAnalytics.ActionSource.FromMinimap);
@@ -278,4 +288,10 @@ public class MinimapHUDController : IHUD
 
     private void SetVisibility(bool current, bool _) =>
         SetVisibility(current);
+
+    private void OnCopyLocationToClipboard()
+    {
+        clipboard.WriteText($"{model.sceneName}: {model.playerPosition}");
+        view.ShowLocationCopiedToast();
+    }
 }
