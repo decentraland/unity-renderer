@@ -5,7 +5,6 @@ using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace MainScripts.DCL.Controllers.CharacterControllerV2
 {
@@ -22,6 +21,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private static readonly int EMOTE_REFRESH = Animator.StringToHash("EmoteRefresh");
         private static readonly int ANGLE = Animator.StringToHash("Angle");
         private static readonly int ANGLE_DIR = Animator.StringToHash("AngleDir");
+        private static readonly int LONG_FALL = Animator.StringToHash("IsLongFall");
 
         [SerializeField] private DefaultLocomotionData[] defaultLocomotion;
         [SerializeField] private CharacterControllerData data;
@@ -105,6 +105,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void UpdateAnimatorState()
         {
+            animator.speed = data.animationSpeed;
             var velocity = characterState.TotalVelocity;
             velocity.y = 0;
             var maxVelocity = characterState.MaxVelocity;
@@ -114,6 +115,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             animator.SetBool(JUMPING, characterState.IsJumping);
             animator.SetBool(FALLING, characterState.IsFalling);
             animator.SetBool(LONG_JUMP, characterState.IsLongJump);
+            animator.SetBool(LONG_FALL, characterState.IsLongFall);
 
             // state idle ----- walk ----- jog ----- run
             // blend  0  -----   1  -----  2  -----  3
@@ -132,6 +134,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             }
 
             animator.SetFloat(MOVEMENT_BLEND, currentBlend);
+
+            //Quaternion transformRotation = characterState.IsGrounded && velocity.sqrMagnitude > 0.1f ? Quaternion.LookRotation(-velocity.normalized) : transform.rotation;
             Quaternion transformRotation = transform.rotation;
 
             animator.SetFloat(ANGLE, Quaternion.Angle(currentRotation, transformRotation));

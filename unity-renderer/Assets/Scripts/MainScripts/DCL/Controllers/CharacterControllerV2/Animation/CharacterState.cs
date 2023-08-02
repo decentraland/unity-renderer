@@ -12,10 +12,12 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public event Action OnJump = () => { };
         public bool IsJumping;
         public bool IsLongJump;
+        public bool IsLongFall;
         public Vector3 TotalVelocity;
         public bool IsFalling;
         public Vector3 ExternalImpulse;
         public Vector3 ExternalVelocity;
+        public float currentAcceleration;
 
         public void Jump()
         {

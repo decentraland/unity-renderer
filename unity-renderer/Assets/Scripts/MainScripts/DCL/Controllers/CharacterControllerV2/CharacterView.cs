@@ -163,19 +163,20 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             return vector3;
         }
 
-        public bool Move(Vector3 delta)
+        public (bool isGrounded, Vector3 deltaPosition) Move(Vector3 delta)
         {
-            if (!initialPositionAlreadySet) return true;
+            if (!initialPositionAlreadySet) return (true, transform.position);
 
+            var previousPosition = transform.position;
             characterController.Move(delta);
+            Vector3 currentPosition = transform.position;
+            var deltaPosition = previousPosition - currentPosition;
 
-            Vector3 transformPosition = transform.position;
+            if (currentPosition.y < 0) { transform.position = new Vector3(currentPosition.x, 0, currentPosition.z); }
 
-            if (transformPosition.y < 0) { transform.position = new Vector3(transformPosition.x, 0, transformPosition.z); }
+            ReportPosition(PositionUtils.UnityToWorldPosition(currentPosition));
 
-            ReportPosition(PositionUtils.UnityToWorldPosition(transformPosition));
-
-            return characterController.isGrounded;
+            return (characterController.isGrounded, deltaPosition);
         }
 
         public void SetForward(Vector3 forward)
@@ -207,20 +208,26 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
                 data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");
                 data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
+                data.maxAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.maxAcceleration, "maxAcceleration");
+                data.accelerationTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.accelerationTime, "accelerationTime");
+
                 data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
                 data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
-                data.stopTimeSec = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.stopTimeSec, "stopTimeSec");
+                //data.stopTimeSec = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.stopTimeSec, "stopTimeSec");
                 data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
                 data.jogJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogJumpHeight, "jogJumpHeight");
                 data.runJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runJumpHeight, "runJumpHeight");
-                data.jumpGraceTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGraceTime, "jumpGraceTime");
-                data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
-                data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
-                data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
-                data.groundDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.groundDrag, "ImpulseGroundDrag");
-                data.airDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airDrag, "ImpulseAirDrag");
-                data.minImpulse = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.minImpulse, "minImpulse");
+                //data.jumpGraceTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGraceTime, "jumpGraceTime");
+                //data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
+                //data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
+                //data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
+                //data.groundDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.groundDrag, "ImpulseGroundDrag");
+                //data.airDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airDrag, "ImpulseAirDrag");
+                //data.minImpulse = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.minImpulse, "minImpulse");
                 data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
+                data.jumpGravityFactor = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGravityFactor, "jumpGravityFactor");
+                data.longFallStunTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longFallStunTime, "longFallStunTime");
+                //data.animationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.animationSpeed, "animationSpeed");
 
                 var secondColumnYPos = 0;
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
@@ -229,6 +236,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isFalling", characterState.IsJumping);
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalImpulse", characterState.ExternalImpulse);
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalVelocity", characterState.ExternalVelocity);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "currentAcceleration", characterState.currentAcceleration);
             }
         }
 
@@ -269,7 +277,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
     public interface ICharacterView
     {
-        bool Move(Vector3 delta);
+        (bool isGrounded, Vector3 deltaPosition) Move(Vector3 delta);
 
         void SetForward(Vector3 forward);
     }

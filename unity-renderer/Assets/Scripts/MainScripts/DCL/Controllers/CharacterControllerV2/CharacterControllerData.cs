@@ -23,5 +23,11 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float airDrag = 0.25f;
         public float minImpulse = 1f;
         public float jumpPadForce = 50f;
+        public float jumpGravityFactor = 2;
+        public float animationSpeed = 1;
+        public AnimationCurve accelerationCurve;
+        public float maxAcceleration = 25f;
+        public float accelerationTime = 0.5f;
+        public float longFallStunTime = 0.75f;
     }
 }

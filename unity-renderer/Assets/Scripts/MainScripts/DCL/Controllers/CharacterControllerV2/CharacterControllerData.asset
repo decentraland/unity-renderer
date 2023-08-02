@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d11c1f01169f45bc9156e8579855e94d, type: 3}
   m_Name: CharacterControllerData
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  jogSpeed: 7
+  walkSpeed: 4
+  jogSpeed: 8
   runSpeed: 10
   acceleration: 20
-  airAcceleration: 70
+  airAcceleration: 10
   stopTimeSec: 0.12
   gravity: -10
   jogJumpHeight: 1.5
@@ -26,7 +26,54 @@ MonoBehaviour:
   rotationSpeed: 360
   longJumpTime: 0.5
   longJumpGravityScale: 0.5
-  groundDrag: 0.5
+  groundDrag: 0.85
   airDrag: 0.05
   minImpulse: 1
   jumpPadForce: 50
+  jumpGravityFactor: 4
+  animationSpeed: 1
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  maxAcceleration: 25
+  accelerationTime: 0.5
+  longFallStunTime: 0.75
