@@ -1,10 +1,7 @@
-﻿using Cysharp.Threading.Tasks;
-using DCLServices.CameraReelService;
+﻿using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
@@ -22,7 +19,7 @@ namespace DCLFeatures.CameraReel.Gallery
         [Header("RESOURCES")]
         [SerializeField] private GameObject monthHeaderPrefab;
         [SerializeField] private GridContainerComponentView monthGridContainerPrefab;
-        [SerializeField] private Image thumbnailPrefab;
+        [SerializeField] private CameraReelThumbnail thumbnailPrefab;
 
         private GridContainerComponentView currentMonthGridContainer;
 
@@ -50,12 +47,6 @@ namespace DCLFeatures.CameraReel.Gallery
         public void AddScreenshotThumbnail(CameraReelResponse reel) =>
             AddScreenshotThumbnail(reel, setAsFirst: true);
 
-        public void AddScreenshotThumbnails(List<CameraReelResponse> reelImages)
-        {
-            foreach (CameraReelResponse reel in reelImages)
-                AddScreenshotThumbnail(reel, setAsFirst: false);
-        }
-
         private void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
         {
             int month = reel.metadata.GetLocalizedDateTime().Month;
@@ -82,38 +73,23 @@ namespace DCLFeatures.CameraReel.Gallery
             else
                 gridContainer = monthContainers[month];
 
-            Image image = Instantiate(thumbnailPrefab, gridContainer.transform);
-            image.GetComponent<Button>().onClick.AddListener(() => ScreenshotThumbnailClicked?.Invoke(reel));
-            image.gameObject.SetActive(true);
+            CameraReelThumbnail thumbnail = Instantiate(thumbnailPrefab, gridContainer.transform);
+            thumbnail.SetImage(reel.thumbnailUrl);
+            thumbnail.OnClicked += () => ScreenshotThumbnailClicked?.Invoke(reel);
+            thumbnail.gameObject.SetActive(true);
 
             if (setAsFirst)
-                image.transform.SetAsFirstSibling();
+                thumbnail.transform.SetAsFirstSibling();
 
-            screenshotThumbnails.Add(reel, image.gameObject);
-
-            SetThumbnailFromWebAsync(reel, image);
+            screenshotThumbnails.Add(reel, thumbnail.gameObject);
         }
 
-        public async void DeleteScreenshotThumbnail(CameraReelResponse reel)
+        public void DeleteScreenshotThumbnail(CameraReelResponse reel)
         {
             if (!screenshotThumbnails.ContainsKey(reel)) return;
 
             Destroy(screenshotThumbnails[reel]);
             screenshotThumbnails.Remove(reel);
-        }
-
-        private static async Task SetThumbnailFromWebAsync(CameraReelResponse reel, Image image)
-        {
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.thumbnailUrl);
-            await request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-                Debug.Log(request.error);
-            else
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
         }
     }
 }
