@@ -63,8 +63,14 @@ namespace DCLServices.CameraReelService
         private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMessage)
         {
             if (result.result != UnityWebRequest.Result.Success)
-                // TODO: throw ScreenshotLimitReachedException in case storage limit error
+            {
+                CameraReelErrorResponse errorResponse = Utils.SafeFromJson<CameraReelErrorResponse>(result.downloadHandler.text);
+
+                if (errorResponse?.reason?.Equals("maxLimitReached", StringComparison.OrdinalIgnoreCase) ?? false)
+                    throw new ScreenshotLimitReachedException();
+
                 throw new Exception($"{unSuccessResultMessage}:\n{result.error}");
+            }
 
             CameraReelResponse response = Utils.SafeFromJson<CameraReelResponse>(result.downloadHandler.text);
 
@@ -104,5 +110,12 @@ namespace DCLServices.CameraReelService
         public string thumbnailUrl;
 
         public ScreenshotMetadata metadata;
+    }
+
+    [Serializable]
+    public class CameraReelErrorResponse
+    {
+        public string message;
+        public string reason;
     }
 }
