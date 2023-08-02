@@ -199,11 +199,11 @@ namespace DCLFeatures.ScreenshotCamera
             ScreenshotFX(screenshot);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, uploadPictureCancellationToken.Token).Forget();
+            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
 
-            async UniTaskVoid UploadScreenshotAsync(Texture2D image, CancellationToken cancellationToken)
+            async UniTaskVoid UploadScreenshotAsync(Texture2D image, ScreenshotMetadata data, CancellationToken cancellationToken)
             {
-                try { await cameraReelService.UploadScreenshot(image, metadata, ct: cancellationToken); }
+                try { await cameraReelService.UploadScreenshot(image, data, ct: cancellationToken); }
                 catch (OperationCanceledException) { }
                 catch (ScreenshotLimitReachedException)
                 {
@@ -223,7 +223,7 @@ namespace DCLFeatures.ScreenshotCamera
         private void ScreenshotFX(Texture2D image)
         {
             AudioScriptableObjects.takeScreenshot.Play();
-            screenshotHUDView.ScreenshotCaptureAnimation(image);
+            screenshotHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN/2, transitionDuration: COOLDOWN/2);
         }
 
         private void EnableScreenshotCamera()
