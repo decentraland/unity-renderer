@@ -163,6 +163,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public override void OnEnable()
     {
+        SetPoiStatus(false);
+        SetFeaturedStatus(false);
         filter = "";
         sort = MOST_ACTIVE_FILTER_ID;
         sortByDropdown.SetTitle(MOST_ACTIVE_FILTER_TEXT);
