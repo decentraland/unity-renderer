@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,11 +12,26 @@ namespace UIComponents.Scripts.Components
         private const int OFFSET = 16;
 
         [SerializeField] private TMP_Text text;
+        [SerializeField] private BaseComponentView activatorComponent;
 
         private bool mouseIsOver;
 
         private RectTransform rectTransform;
         private RectTransform rect => rectTransform ??= GetComponent<RectTransform>();
+
+        private void Start()
+        {
+            if (activatorComponent == null)
+                return;
+
+            activatorComponent.onFocused += isFocused =>
+            {
+                if (isFocused)
+                    Show();
+                else
+                    Hide();
+            };
+        }
 
         public override void OnEnable()
         {
@@ -50,10 +66,14 @@ namespace UIComponents.Scripts.Components
         public override void RefreshControl()
         {
             SetText(model.message);
+            SetAutoAdaptModeActive(model.autoAdaptContainerSize);
             AdjustTooltipSizeToText();
 
             void AdjustTooltipSizeToText()
             {
+                if (!model.autoAdaptContainerSize)
+                    return;
+
                 rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, text.preferredWidth + (OFFSET * 2));
                 rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, text.preferredHeight + (OFFSET * 2));
             }
@@ -66,5 +86,8 @@ namespace UIComponents.Scripts.Components
             if (text != null)
                 text.text = newText;
         }
+
+        private void SetAutoAdaptModeActive(bool isActive) =>
+            model.autoAdaptContainerSize = isActive;
     }
 }
