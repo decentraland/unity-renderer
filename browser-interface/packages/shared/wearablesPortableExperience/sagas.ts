@@ -19,6 +19,7 @@ import {
   removeDesiredPortableExperience
 } from './actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
+import { KeyAndHash } from '../catalogs/types'
 
 export function* wearablesPortableExperienceSaga(): any {
   yield takeLatest(PROFILE_SUCCESS, handleSelfProfileSuccess)
@@ -74,13 +75,19 @@ function* handleProcessWearables(action: ProcessWearablesAction) {
   }
 }
 
+function isNotUndefined<T>(data: T | undefined): data is T {
+  return !!data
+}
+
 // process all the received wearables and creates portable experiences definitions for them
 function* handleWearablesSuccess(action: WearablesSuccess): any {
   const { wearables } = action.payload
-  const wearablesToProcess = wearables.filter((w) =>
-    w.data.representations.some((r) => r.contents.some((c) => c.key.endsWith('game.js')))
-  )
-
+  const wearablesToProcess = wearables
+    .map(($) => {
+      const hasMainFile = findWearableContent($)
+      if (hasMainFile) return $
+    })
+    .filter(isNotUndefined)
   if (wearablesToProcess.length > 0) {
     const adapter: IRealmAdapter = yield call(waitForRealm)
     const defaultBaseUrl: string = getFetchContentUrlPrefixFromRealmAdapter(adapter)
@@ -96,21 +103,33 @@ function* handleWearablesSuccess(action: WearablesSuccess): any {
   }
 }
 
+/**
+ * Given a Wearable Entity with their content representation,
+ * find if there is some content that has a game.js/index.js file
+ * and return that content representation so we can serve those files.
+ */
+function findWearableContent(wearable: WearableV2): [KeyAndHash[], KeyAndHash] | undefined {
+  for (const representation of wearable.data.representations) {
+    for (const content of representation.contents) {
+      if (content.key.endsWith('.js')) {
+        return [representation.contents, content]
+      }
+    }
+  }
+}
+
 export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl: string): Promise<LoadableScene> {
-  const defaultSceneJson = {
-    main: 'bin/game.js',
+  const [wearableContent, mainFile] = findWearableContent(wearable) ?? []
+  if (!wearableContent) throw new Error('Invalid wearable')
+  const defaultSceneJson: () => Scene = () => ({
+    main: mainFile?.key ? getFile(mainFile?.key) : 'bin/game.js',
     scene: {
       parcels: ['0,0'],
       base: '0,0'
     },
     requiredPermissions: []
-  }
+  })
   const baseUrl = wearable.baseUrl ?? defaultBaseUrl
-
-  // Get the wearable content containing the game.js
-  const wearableContent = wearable.data.representations.filter((representation) =>
-    representation.contents.some((c) => c.key.endsWith('game.js'))
-  )[0].contents
   const sceneJson = wearableContent.find(($) => $.key.endsWith('scene.json'))
 
   // In the deployment the content was replicated when the bodyShape selected was 'both'
@@ -128,7 +147,7 @@ export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl
   }
 
   const content = wearableContent.map(($) => ({ file: getFile($.key), hash: $.hash }))
-  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson
+  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson()
 
   return {
     id: wearable.id,

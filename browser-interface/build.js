@@ -109,7 +109,8 @@ async function buildRendererProtocol() {
     fse.mkdirSync('packages/shared/protocol/')
 
     // Merge renderer-protocol to @dcl/protocol into a single folder
-    fse.copySync('./node_modules/@dcl/protocol', './protocol-temp/', { overwrite: false })
+    // `dereference: true` to avoid error when `@dcl/protocol` is linked
+    fse.copySync('./node_modules/@dcl/protocol', './protocol-temp/', { overwrite: false, dereference: true })
     fse.copySync('../renderer-protocol/', './protocol-temp/', { overwrite: false })
 
     // Generate the protocol files

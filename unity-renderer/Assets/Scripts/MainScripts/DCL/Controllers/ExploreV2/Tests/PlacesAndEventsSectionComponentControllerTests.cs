@@ -21,8 +21,10 @@ public class PlacesAndEventsSectionComponentControllerTests
             exploreV2Analytics,
             DataStore.i,
             Substitute.For<IUserProfileBridge>(),
-            Substitute.For<IFriendsController>()
-            , Substitute.For<IPlacesAPIService>());
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IPlacesAPIService>(),
+            Substitute.For<IPlacesAnalytics>()
+            );
     }
 
     [TearDown]

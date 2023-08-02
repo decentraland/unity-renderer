@@ -2,120 +2,123 @@
 using UnityEditor;
 using UnityEngine;
 
-public class PublicChatWindowComponentViewShould
+namespace DCL.Social.Chat
 {
-    private PublicChatWindowComponentView view;
-
-    [SetUp]
-    public void SetUp()
+    public class PublicChatWindowComponentViewShould
     {
-        view = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<PublicChatWindowComponentView>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/NearbyChatChannelHUD.prefab"));
-    }
+        private PublicChatWindowComponentView view;
 
-    [TearDown]
-    public void TearDown()
-    {
-        view.Dispose();
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatWindowComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Addressables/NearbyChatChannelHUD.prefab"));
+        }
 
-    [Test]
-    public void Show()
-    {
-        view.Show();
+        [TearDown]
+        public void TearDown()
+        {
+            view.Dispose();
+        }
 
-        Assert.IsTrue(view.gameObject.activeSelf);
-    }
+        [Test]
+        public void Show()
+        {
+            view.Show();
 
-    [Test]
-    public void Hide()
-    {
-        view.Hide();
+            Assert.IsTrue(view.gameObject.activeSelf);
+        }
 
-        Assert.IsFalse(view.gameObject.activeSelf);
-    }
+        [Test]
+        public void Hide()
+        {
+            view.Hide();
 
-    [Test]
-    public void Configure()
-    {
-        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false, true));
+            Assert.IsFalse(view.gameObject.activeSelf);
+        }
 
-        Assert.AreEqual("~nearby", view.nameLabel.text);
-        Assert.IsFalse(view.muteToggle.isOn);
-    }
+        [Test]
+        public void Configure()
+        {
+            view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, false, true));
 
-    [Test]
-    public void ConfigureAsMuted()
-    {
-        view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true, true));
+            Assert.AreEqual("~nearby", view.nameLabel.text);
+            Assert.IsFalse(view.muteToggle.isOn);
+        }
 
-        Assert.AreEqual("~nearby", view.nameLabel.text);
-        Assert.IsTrue(view.muteToggle.isOn);
-    }
+        [Test]
+        public void ConfigureAsMuted()
+        {
+            view.Configure(new PublicChatModel("nearby", "nearby", "any description", true, 0, true, true));
 
-    [Test]
-    public void TriggerClose()
-    {
-        var called = false;
-        view.OnClose += () => called = true;
+            Assert.AreEqual("~nearby", view.nameLabel.text);
+            Assert.IsTrue(view.muteToggle.isOn);
+        }
 
-        view.closeButton.onClick.Invoke();
+        [Test]
+        public void TriggerClose()
+        {
+            var called = false;
+            view.OnClose += () => called = true;
 
-        Assert.IsTrue(called);
-    }
+            view.closeButton.onClick.Invoke();
 
-    [Test]
-    public void TriggerBack()
-    {
-        var called = false;
-        view.OnBack += () => called = true;
+            Assert.IsTrue(called);
+        }
 
-        view.backButton.onClick.Invoke();
+        [Test]
+        public void TriggerBack()
+        {
+            var called = false;
+            view.OnBack += () => called = true;
 
-        Assert.IsTrue(called);
-    }
+            view.backButton.onClick.Invoke();
 
-    [Test]
-    public void TriggerFocusWhenWindowIsClicked()
-    {
-        var clicked = false;
-        view.OnClickOverWindow += () => clicked = true;
+            Assert.IsTrue(called);
+        }
 
-        view.OnPointerDown(null);
+        [Test]
+        public void TriggerFocusWhenWindowIsClicked()
+        {
+            var clicked = false;
+            view.OnClickOverWindow += () => clicked = true;
 
-        Assert.IsTrue(clicked);
-    }
+            view.OnPointerDown(null);
 
-    [Test]
-    public void TriggerFocusWhenWindowIsHovered()
-    {
-        var focused = false;
-        view.OnFocused += f => focused = f;
+            Assert.IsTrue(clicked);
+        }
 
-        view.OnPointerEnter(null);
+        [Test]
+        public void TriggerFocusWhenWindowIsHovered()
+        {
+            var focused = false;
+            view.OnFocused += f => focused = f;
 
-        Assert.IsTrue(focused);
-    }
+            view.OnPointerEnter(null);
 
-    [Test]
-    public void TriggerUnfocusWhenPointerExits()
-    {
-        var focused = true;
-        view.OnFocused += f => focused = f;
+            Assert.IsTrue(focused);
+        }
 
-        view.OnPointerExit(null);
+        [Test]
+        public void TriggerUnfocusWhenPointerExits()
+        {
+            var focused = true;
+            view.OnFocused += f => focused = f;
 
-        Assert.IsFalse(focused);
-    }
+            view.OnPointerExit(null);
 
-    [Test]
-    public void UpdateMembersCountCorrectly()
-    {
-        var testMembersCount = 4;
+            Assert.IsFalse(focused);
+        }
 
-        view.UpdateMembersCount(testMembersCount);
+        [Test]
+        public void UpdateMembersCountCorrectly()
+        {
+            var testMembersCount = 4;
 
-        Assert.AreEqual(testMembersCount.ToString(), view.memberCountLabel.text);
+            view.UpdateMembersCount(testMembersCount);
+
+            Assert.AreEqual(testMembersCount.ToString(), view.memberCountLabel.text);
+        }
     }
 }

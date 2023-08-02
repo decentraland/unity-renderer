@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Emotes;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -22,6 +23,8 @@ namespace AvatarSystem
         void AddVisibilityConstraint(string key);
         void RemoveVisibilityConstrain(string key);
         void PlayEmote(string emoteId, long timestamps);
+        void EquipEmote(string emoteId, EmoteClipData emoteClipData);
+        void UnequipEmote(string emoteId);
         void SetLODLevel(int lodIndex);
         void SetAnimationThrottling(int framesBetweenUpdate);
         void SetImpostorTexture(Texture2D impostorTexture);
@@ -29,6 +32,7 @@ namespace AvatarSystem
         Transform[] GetBones();
 
         Renderer GetMainRenderer();
+        IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
 
         event Action<Renderer> OnCombinedRendererUpdate;
     }

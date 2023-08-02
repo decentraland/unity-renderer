@@ -292,7 +292,16 @@ namespace DCL
                     case MessagingTypes.OPEN_EXTERNAL_URL:
                     {
                         if (msgPayload is Protocol.OpenExternalUrl payload)
+                        {
+                            // SDK6 permission check for PX
+                            if (scene.isPortableExperience && !scene.sceneData.requiredPermissions.Contains(ScenePermissionNames.OPEN_EXTERNAL_LINK))
+                            {
+                                Debug.LogError($"PX requires permission {ScenePermissionNames.OPEN_EXTERNAL_LINK}");
+                                return;
+                            }
+
                             OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
+                        }
 
                         break;
                     }
@@ -841,6 +850,16 @@ namespace DCL
                     disablePx = IsPortableExperienceAlreadyConfirmed(pxId)
                                 && !ShouldForceAcceptPortableExperience(pxId)
                                 && !IsPortableExperienceConfirmedAndAccepted(pxId);
+                }
+
+                IWorldState worldState = Environment.i.world.state;
+                IParcelScene scene = worldState.GetScene(worldState.GetCurrentSceneNumber());
+
+                if (scene != null
+                    && scene.sceneData.scenePortableExperienceFeatureToggles == ScenePortableExperienceFeatureToggles.Disable)
+                {
+                    confirmPx = false;
+                    disablePx = true;
                 }
 
                 if (confirmPx)

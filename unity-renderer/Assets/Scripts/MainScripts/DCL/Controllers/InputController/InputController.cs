@@ -49,6 +49,8 @@ public enum DCLAction_Trigger
     ChatNextInHistory = 153,
     ChatMentionNextEntry = 154,
     ChatMentionPreviousEntry = 155,
+    ToggleScreenshotCamera = 156,
+    TakeScreenshot = 157,
 
     Expression_Wave = 201,
     Expression_FistPump = 202,
@@ -72,6 +74,9 @@ public enum DCLAction_Hold
     Jump = 2,
     ZoomIn = 3,
     ZoomOut = 4,
+    ScreenshotCameraUp = 51,
+    ScreenshotCameraDown = 52,
+
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
@@ -92,7 +97,12 @@ public enum DCLAction_Measurable
     CharacterYAxis = 2,
     CameraXAxis = 3,
     CameraYAxis = 4,
-    MouseWheel = 5
+    MouseWheel = 5,
+
+    ScreenshotCameraXTranslationAxis = 11,
+    ScreenshotCameraYTranslationAxis = 12,
+    ScreenshotCameraXRotationAxis = 13,
+    ScreenshotCameraYRotationAxis = 14,
 }
 
 /// <summary>
@@ -136,7 +146,6 @@ public class InputController : MonoBehaviour
             if (action.isTriggerBlocked != null && action.isTriggerBlocked.Get())
                 continue;
 
-
             switch (action.DCLAction)
             {
                 case DCLAction_Trigger.CameraChange:
@@ -170,7 +179,7 @@ public class InputController : MonoBehaviour
                         InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:
-                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleSettings:
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -286,6 +295,12 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleAvatarNamesHud:
                     InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.ToggleScreenshotCamera:
+                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.TakeScreenshot:
+                    InputProcessor.FromKey(action, KeyCode.Space, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -335,6 +350,12 @@ public class InputController : MonoBehaviour
                 case DCLAction_Hold.DefaultCancelAction:
                     InputProcessor.FromKey(action, KeyCode.F);
                     break;
+                case DCLAction_Hold.ScreenshotCameraDown:
+                    InputProcessor.FromKey(action, KeyCode.Q);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraUp:
+                    InputProcessor.FromKey(action, KeyCode.E);
+                    break;
                 case DCLAction_Hold.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, InputProcessor.Modifier.FocusNotInInput);
                     break;
@@ -380,6 +401,20 @@ public class InputController : MonoBehaviour
                 case DCLAction_Measurable.MouseWheel:
                     InputProcessor.FromAxis(action, "Mouse ScrollWheel", modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+
+                case DCLAction_Measurable.ScreenshotCameraXTranslationAxis:
+                    InputProcessor.FromAxis(action, "Horizontal", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraYTranslationAxis:
+                    InputProcessor.FromAxis(action, "Vertical", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraXRotationAxis:
+                    InputProcessor.FromAxis(action, "Mouse X", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Measurable.ScreenshotCameraYRotationAxis:
+                    InputProcessor.FromAxis(action, "Mouse Y", InputProcessor.Modifier.FocusNotInInput);
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -20,7 +20,6 @@ namespace DCLServices.WearablesCatalogService
         private const string OWNED_WEARABLES_CONTEXT = "OwnedWearables";
         private const string BASE_WEARABLES_CONTEXT = "BaseWearables";
         private const string THIRD_PARTY_WEARABLES_CONTEXT = "ThirdPartyWearables";
-        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const float REQUESTS_TIME_OUT_SECONDS = 45;
 
         public static WebInterfaceWearablesCatalogService Instance { get; private set; }
@@ -88,7 +87,7 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask RequestBaseWearablesAsync(CancellationToken ct) =>
-            await RequestWearablesByContextAsync(null, null, new[] { BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
+            await RequestWearablesByContextAsync(null, null, new[] { IWearablesCatalogService.BASE_WEARABLES_COLLECTION_ID }, BASE_WEARABLES_CONTEXT, false, ct);
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestThirdPartyWearablesByCollectionAsync(string userId, string collectionId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {

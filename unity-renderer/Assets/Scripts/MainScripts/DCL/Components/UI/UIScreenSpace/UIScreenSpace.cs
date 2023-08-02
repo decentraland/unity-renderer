@@ -23,9 +23,8 @@ namespace DCL.Components
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
         private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
-        public UIScreenSpace(UIShapePool pool) : base(pool)
+        public UIScreenSpace()
         {
-            this.pool = pool;
             dataStorePlayer.playerGridPosition.OnChange += OnPlayerCoordinatesChanged;
             DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange += OnChangeSceneUI;
             OnChangeSceneUI(isUIEnabled.Get(), true);
@@ -71,9 +70,6 @@ namespace DCL.Components
             {
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
             }
-
-            if (referencesContainer != null)
-                pool.ReleaseUIShape(referencesContainer);
         }
 
         void OnChangeSceneUI(bool current, bool previous)
@@ -109,9 +105,9 @@ namespace DCL.Components
             {
                 DataStore.i.Get<DataStore_World>().currentRaycaster.Set(graphicRaycaster);
             }
-
+            
             bool shouldBeVisible = model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get() && isUIEnabled.Get();
-
+            
             canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
             canvasGroup.blocksRaycasts = shouldBeVisible;
         }

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelContextualMenu : BaseComponentView
     {
@@ -17,21 +17,31 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text headerTiler;
         [SerializeField] internal Button leaveButton;
         [SerializeField] internal Button closeButton;
+        [SerializeField] internal Button copyNameButton;
+        [SerializeField] internal ShowHideAnimator nameCopiedToast;
 
         public event Action OnLeave;
+        public event Action<string> OnNameCopied;
 
         public override void Awake()
         {
             base.Awake();
-            
+
             leaveButton.onClick.AddListener(() =>
             {
                 OnLeave?.Invoke();
                 Hide();
             });
-            
+
             closeButton.onClick.AddListener(() => Hide());
-            
+            copyNameButton.onClick.AddListener(() =>
+            {
+                OnNameCopied?.Invoke(headerTiler.text);
+
+                nameCopiedToast.gameObject.SetActive(true);
+                nameCopiedToast.ShowDelayHide(3);
+            });
+
             RefreshControl();
         }
 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public interface ILeaveChannelConfirmationWindowComponentView
     {

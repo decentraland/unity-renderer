@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -17,7 +18,7 @@ public class AvatarMeshCombinerHelperShould
     private WebRequestController webRequestController;
     private AssetPromise_GLTFast_Instance promise;
     private SkinnedMeshRenderer bonesContainer;
-    private SkinnedMeshRenderer[] renderersToCombine;
+    private List<SkinnedMeshRenderer> renderersToCombine;
     private UnityEngine.Material materialAsset;
 
     [UnitySetUp]
@@ -32,7 +33,7 @@ public class AvatarMeshCombinerHelperShould
 
         yield return keeper.Keep(promise);
 
-        renderersToCombine = promise.asset.container.GetComponentsInChildren<SkinnedMeshRenderer>();
+        renderersToCombine = promise.asset.container.GetComponentsInChildren<SkinnedMeshRenderer>().ToList();
         bonesContainer = renderersToCombine[0];
         materialAsset = Material.CreateOpaque();
     }
@@ -186,7 +187,7 @@ public class AvatarMeshCombinerHelperShould
         var helper = new AvatarMeshCombinerHelper();
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
-        for (int i = 0; i < renderersToCombine.Length; i++)
+        for (int i = 0; i < renderersToCombine.Count; i++)
         {
             var renderer = renderersToCombine[i];
             renderer.enabled = true;
@@ -216,7 +217,7 @@ public class AvatarMeshCombinerHelperShould
         Assert.That(oldMesh != null, Is.True);
         Assert.That(oldMaterial != null, Is.True);
 
-        for (int i = 0; i < renderersToCombine.Length; i++)
+        for (int i = 0; i < renderersToCombine.Count; i++)
         {
             var renderer = renderersToCombine[i];
             renderer.enabled = true;

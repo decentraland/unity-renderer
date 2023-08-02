@@ -45,7 +45,7 @@ namespace DCL
         public enum Network
         {
             MAINNET,
-            GOERLI,
+            SEPOLIA,
         }
 
         [Header("General Settings")] public bool OpenBrowserOnStart;
@@ -195,8 +195,8 @@ namespace DCL
 
             switch (network)
             {
-                case Network.GOERLI:
-                    debugString = "NETWORK=goerli&";
+                case Network.SEPOLIA:
+                    debugString = "NETWORK=sepolia&";
                     break;
                 case Network.MAINNET:
                     debugString = "NETWORK=mainnet&";

@@ -49,7 +49,13 @@ public class HUDDesktopFactory : HUDFactory
                     webInterfaceBrowserBridge);
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i, DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>());
+                hudElement = new MinimapHUDControllerDesktop(
+                    MinimapMetadataController.i,
+                    new WebInterfaceHomeLocationController(),
+                    DCL.Environment.i,
+                    DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                    new PlacesAnalytics(),
+                    Clipboard.Create());
                 break;
 
             default:

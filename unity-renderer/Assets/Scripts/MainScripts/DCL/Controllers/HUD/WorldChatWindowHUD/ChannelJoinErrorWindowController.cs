@@ -1,6 +1,7 @@
+using DCL.Social.Chat;
 using System;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelJoinErrorWindowController : IDisposable
     {
@@ -43,7 +44,7 @@ namespace DCL.Chat.HUD
         }
 
         private void Close() => view.Hide();
-        
+
         private void Retry()
         {
             chatController.JoinOrCreateChannel(currentChannelId);

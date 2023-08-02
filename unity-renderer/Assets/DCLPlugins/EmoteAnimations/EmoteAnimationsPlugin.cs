@@ -10,12 +10,14 @@ namespace DCL.Emotes
         public EmoteAnimationsPlugin()
         {
             var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+            var catalyst = Environment.i.serviceLocator.Get<IServiceProviders>().catalyst;
 
             emotesAnimationTracker = new EmoteAnimationsTracker(
                 DataStore.i.emotes,
                 new EmoteAnimationLoaderFactory(),
                 Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
-                wearablesCatalogService);
+                wearablesCatalogService,
+                catalyst);
         }
 
         public void Dispose() { emotesAnimationTracker?.Dispose(); }

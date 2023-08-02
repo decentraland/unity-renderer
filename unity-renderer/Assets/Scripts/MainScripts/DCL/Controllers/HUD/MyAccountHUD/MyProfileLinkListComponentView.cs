@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount
@@ -16,7 +17,8 @@ namespace DCL.MyAccount
         [SerializeField] private RectTransform linksContainer;
 
         private readonly List<MyProfileLinkComponentView> links = new ();
-        private readonly Regex httpRegex = new ("^((https?:)?\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .%()\\-]*)*\\/?$");
+        private readonly Regex httpRegex = new ("^((https?:)?\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .%@()\\-]*)*\\/?$");
+
         private bool isAddEnabled = true;
 
         public event Action<(string title, string url)> OnAddedNew;
@@ -30,7 +32,9 @@ namespace DCL.MyAccount
                     && !newLinkUrl.text.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                     newLinkUrl.text = $"https://{newLinkUrl.text}";
 
-                OnAddedNew?.Invoke((title: newLinkTitle.text, url: newLinkUrl.text));
+                OnAddedNew?.Invoke((
+                    title: newLinkTitle.text,
+                    url: UnityWebRequest.EscapeURL(newLinkUrl.text)));
             });
 
             newLinkTitle.onValueChanged.AddListener(str => EnableOrDisableAddButton());
@@ -42,7 +46,7 @@ namespace DCL.MyAccount
         public void Add(string title, string url)
         {
             MyProfileLinkComponentView linkComponent = Instantiate(linkPrefab, linksContainer);
-            linkComponent.Set(title, url);
+            linkComponent.Set(title, UnityWebRequest.UnEscapeURL(url));
             linkComponent.OnRemoved += OnRemoved;
             links.Add(linkComponent);
         }

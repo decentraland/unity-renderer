@@ -1,7 +1,7 @@
-using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -31,6 +31,7 @@ namespace DCL.ExperiencesViewer
             DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
         private BaseVariable<string> forcePortableExperience => DataStore.i.world.forcePortableExperience;
+        private BaseDictionary<int, bool> isSceneUiEnabled => DataStore.i.HUDs.isSceneUiEnabled;
 
         internal IExperiencesViewerComponentView view;
 
@@ -38,7 +39,7 @@ namespace DCL.ExperiencesViewer
         {
             view = CreateView();
             view.onCloseButtonPressed += OnCloseButtonPressed;
-            view.onSomeExperienceUIVisibilityChanged += OnSomeExperienceUIVisibilityChanged;
+            view.onSomeExperienceUIVisibilityChanged += OnViewRequestToChangeUiVisibility;
             view.onSomeExperienceExecutionChanged += DisableOrEnablePortableExperience;
 
             isOpen.OnChange += ShowOrHide;
@@ -47,6 +48,8 @@ namespace DCL.ExperiencesViewer
             portableExperienceIds.OnAdded += OnPEXSceneAdded;
             portableExperienceIds.OnRemoved += OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded += OnPEXDisabled;
+            isSceneUiEnabled.OnAdded += OnSomeExperienceUIVisibilityAdded;
+            isSceneUiEnabled.OnSet += OnSomeExperienceUIVisibilitySet;
 
             foreach (var pair in disabledPortableExperiences.Get())
                 OnPEXDisabled(pair.Key, pair.Value);
@@ -63,31 +66,43 @@ namespace DCL.ExperiencesViewer
         public void Dispose()
         {
             view.onCloseButtonPressed -= OnCloseButtonPressed;
-            view.onSomeExperienceUIVisibilityChanged -= OnSomeExperienceUIVisibilityChanged;
+            view.onSomeExperienceUIVisibilityChanged -= OnViewRequestToChangeUiVisibility;
             view.onSomeExperienceExecutionChanged -= DisableOrEnablePortableExperience;
             isOpen.OnChange -= ShowOrHide;
 
             portableExperienceIds.OnAdded -= OnPEXSceneAdded;
             portableExperienceIds.OnRemoved -= OnPEXSceneRemoved;
             disabledPortableExperiences.OnAdded -= OnPEXDisabled;
+            isSceneUiEnabled.OnAdded -= OnSomeExperienceUIVisibilityAdded;
+            isSceneUiEnabled.OnSet -= OnSomeExperienceUIVisibilitySet;
         }
 
         internal void OnCloseButtonPressed() =>
             SetVisibility(false);
 
-        private void OnSomeExperienceUIVisibilityChanged(string pexId, bool isVisible)
+        private void OnSomeExperienceUIVisibilityAdded(int pexNumber, bool isVisible)
+        {
+            IParcelScene scene = GetScene(pexNumber);
+            if (scene == null) return;
+
+            ExperienceRowComponentView experienceToUpdate = view.GetAvailableExperienceById(scene.sceneData.id);
+
+            if (experienceToUpdate != null)
+                experienceToUpdate.SetUIVisibility(isVisible);
+        }
+
+        private void OnSomeExperienceUIVisibilitySet(IEnumerable<KeyValuePair<int, bool>> obj)
+        {
+            foreach ((int sceneNumber, bool visible) in obj)
+                OnSomeExperienceUIVisibilityAdded(sceneNumber, visible);
+        }
+
+        private void OnViewRequestToChangeUiVisibility(string pexId, bool isVisible)
         {
             IParcelScene scene = GetPortableExperienceScene(pexId);
 
             if (scene != null)
-            {
-                UIScreenSpace sceneUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
-
-                if (sceneUIComponent != null)
-                    sceneUIComponent.canvas.enabled = isVisible;
-
                 DataStore.i.HUDs.isSceneUiEnabled.AddOrSet(scene.sceneData.sceneNumber, isVisible);
-            }
 
             if (!isVisible)
                 view.ShowUIHiddenToast();
@@ -147,6 +162,9 @@ namespace DCL.ExperiencesViewer
 
         private IParcelScene GetPortableExperienceScene(string id) =>
             Environment.i.world.state.GetPortableExperienceScene(id);
+
+        private IParcelScene GetScene(int sceneNumber) =>
+            Environment.i.world.state.GetScene(sceneNumber);
 
         private void OnPEXSceneAdded(IParcelScene scene)
         {

@@ -1,0 +1,21 @@
+{
+    "name": "FileBrowserIntegration",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:4ad87ae8afda2df4d897ad1a3527cd1d",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:a9717ba58b1bb3647bc4bdbeb0889736"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FILE_BROWSER_PRESENT"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

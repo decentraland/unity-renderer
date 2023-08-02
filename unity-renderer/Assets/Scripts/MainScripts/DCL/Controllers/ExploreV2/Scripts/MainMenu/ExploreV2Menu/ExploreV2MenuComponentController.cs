@@ -17,6 +17,7 @@ using Environment = DCL.Environment;
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     private readonly IPlacesAPIService placesAPIService;
+    private readonly IPlacesAnalytics placesAnalytics;
 
     // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
 
@@ -67,9 +68,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
-    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService)
+    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
     {
         this.placesAPIService = placesAPIService;
+        this.placesAnalytics = placesAnalytics;
     }
 
     public void Initialize()
@@ -227,7 +229,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(
             view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge(),
-            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService);
+            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService, placesAnalytics);
 
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }

@@ -11,6 +11,9 @@ using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
+using DCLServices.CameraReelService;
+using DCLServices.DCLFileBrowser;
+using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
 using DCLServices.Lambdas;
@@ -192,10 +195,12 @@ namespace DCL
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
+            result.Register<ICameraReelNetworkService>(() => new CameraReelNetworkService(new CameraReelClient(webRequestController)));
 
             // Analytics
 
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
+            result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
             return result;
         }
     }

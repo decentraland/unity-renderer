@@ -8,6 +8,8 @@ namespace DCLServices.WearablesCatalogService
 {
     public interface IWearablesCatalogService : IService
     {
+        const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
+
         BaseDictionary<string, WearableItem> WearablesCatalog { get; }
 
         UniTask<WearableCollectionsAPIData.Collection[]> GetThirdPartyCollectionsAsync(CancellationToken cancellationToken);

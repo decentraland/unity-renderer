@@ -26,6 +26,7 @@ public class FeatureFlagBridge : MonoBehaviour
             return;
 
         config.SetAsInitialized();
+
         DataStore.i.featureFlags.flags.Set(config);
     }
 }

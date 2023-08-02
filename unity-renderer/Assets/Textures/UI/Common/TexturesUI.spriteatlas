@@ -469,6 +469,7 @@ SpriteAtlas:
   - Container12Shadow10
   - RectangleLoadingBar
   - InputFieldBuilderFocus
+  - HandleThick
   - SmartItemIcon
   - Key
   - NamesIcon

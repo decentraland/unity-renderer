@@ -37,11 +37,10 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
         { domain: 'https://peer.kyllian.me' },
         { domain: 'https://peer.melonwave.com' }
       ]
-    } else if (net === ETHEREUM_NETWORK.GOERLI) {
+    } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
       return [
         { domain: 'https://peer.decentraland.zone' },
         { domain: 'https://peer-ap1.decentraland.zone' },
-        { domain: 'https://peer-ue-2.decentraland.zone' },
         { domain: 'https://peer-ue-2.decentraland.zone' }
       ]
     }

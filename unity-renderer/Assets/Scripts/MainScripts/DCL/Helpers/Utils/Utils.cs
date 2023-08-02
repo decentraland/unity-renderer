@@ -698,9 +698,13 @@ namespace DCL.Helpers
 
         public static Vector2Int ConvertStringToVector(string input)
         {
-            Match match = COORDINATES_REGEX.Match(input);
+            Match match = COORDINATES_REGEX.Match(input.Replace(" ",""));
 
-            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y)) { throw new Exception("Coordinates parsing error"); }
+            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y))
+            {
+                Debug.LogError("Coordinates parsing error for coords " + input);
+                return new Vector2Int(0, 0);
+            }
 
             return new Vector2Int(x, y);
         }

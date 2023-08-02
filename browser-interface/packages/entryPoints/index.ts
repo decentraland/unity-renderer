@@ -136,7 +136,7 @@ async function hasStoredSession(address: string, networkId: number) {
 
   const profile = await localProfilesRepo.get(
     address,
-    networkId === 1 ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.GOERLI
+    networkId === 1 ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.SEPOLIA
   )
 
   return { result: !!profile, profile: profile || null } as any
