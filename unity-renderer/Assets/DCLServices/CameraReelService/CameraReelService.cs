@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using System;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
@@ -8,6 +9,9 @@ namespace DCLServices.CameraReelService
 {
     public class CameraReelService : IScreenshotCameraService, ICameraReelGalleryService
     {
+        private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
+        private const string STORAGE_LIMIT_REACHED_MESSAGE = "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.";
+
         private readonly ICameraReelClient client;
 
         private IScreenshotCamera screenshotCamera;
@@ -30,8 +34,13 @@ namespace DCLServices.CameraReelService
 
         public async UniTask UploadScreenshot(Texture2D texture, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            var response = await client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
-            ScreenshotUploaded?.Invoke(response);
+            CameraReelResponse response = null;
+
+            try { response = await client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct); }
+            catch (OperationCanceledException) { }
+            catch (ScreenshotLimitReachedException) { DataStore.i.notifications.DefaultErrorNotification.Set(STORAGE_LIMIT_REACHED_MESSAGE, true); }
+            catch (Exception) { DataStore.i.notifications.DefaultErrorNotification.Set(UPLOADING_ERROR_MESSAGE, true); }
+            finally { ScreenshotUploaded?.Invoke(response); }
         }
 
         public void SetCamera(IScreenshotCamera screenshotCamera) =>

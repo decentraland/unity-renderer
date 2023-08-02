@@ -57,13 +57,13 @@ namespace DCLFeatures.ScreenshotCamera
 
         public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float transitionDuration)
         {
+            currentVfxSequence?.Complete();
+            currentVfxSequence?.Kill();
+
             animatedImage.sprite = Sprite.Create(screenshotImage, new Rect(0, 0, screenshotImage.width, screenshotImage.height), Vector2.zero);
 
             animatedImage.enabled = true;
             whiteSplashImage.enabled = true;
-
-            currentVfxSequence?.Complete();
-            currentVfxSequence?.Kill();
 
             currentVfxSequence = CaptureVFXSequence(splashDuration, transitionDuration).Play();
         }
@@ -76,6 +76,8 @@ namespace DCLFeatures.ScreenshotCamera
             sequence.AppendInterval(afterSplashPause); // Delay between splash and transition
             sequence.Append(AnimateVFXImageTransition(transitionDuration));
             sequence.Join(AnimateVFXImageScale(transitionDuration));
+            sequence.Join(AnimateVFXImageScale(transitionDuration));
+            sequence.OnComplete(() => animatedImage.enabled = false);
 
             return sequence;
         }

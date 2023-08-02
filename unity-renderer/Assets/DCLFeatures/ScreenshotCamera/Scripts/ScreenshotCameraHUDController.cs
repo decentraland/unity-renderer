@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL;
+using System;
 using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreenshotCamera
@@ -18,20 +19,24 @@ namespace DCLFeatures.ScreenshotCamera
         {
             view.CloseButtonClicked += screenshotCamera.DisableScreenshotCameraMode;
             view.TakeScreenshotButtonClicked += screenshotCamera.CaptureScreenshot;
-
-            // view.ShortcutButtonClicked += OnShortcutButtonClicked;
-            // view.CameraReelButtonClicked += OnCameraReelButtonClicked;
+            view.ShortcutButtonClicked += view.ToggleShortcutsHelpPanel;
+            view.CameraReelButtonClicked += OpenCameraReelGallery;
         }
 
         public void Dispose()
         {
             view.CloseButtonClicked -= screenshotCamera.DisableScreenshotCameraMode;
             view.TakeScreenshotButtonClicked -= screenshotCamera.CaptureScreenshot;
-
-            // view.ShortcutButtonClicked -= OnShortcutButtonClicked;
-            // view.CameraReelButtonClicked -= OnCameraReelButtonClicked;
+            view.ShortcutButtonClicked -= view.ToggleShortcutsHelpPanel;
+            view.CameraReelButtonClicked -= OpenCameraReelGallery;
 
             Object.Destroy(view);
+        }
+
+        private void OpenCameraReelGallery()
+        {
+            screenshotCamera.DisableScreenshotCameraMode();
+            DataStore.i.HUDs.cameraReelSectionVisible.Set(true);
         }
     }
 }

@@ -4,7 +4,6 @@ using DCL.Camera;
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.CameraReelService;
-using System;
 using System.Collections;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
@@ -17,7 +16,6 @@ namespace DCLFeatures.ScreenshotCamera
 {
     public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
     {
-        private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
         private const float COOLDOWN = 3f;
 
         [Header("EXTERNAL DEPENDENCIES")]
@@ -148,20 +146,7 @@ namespace DCLFeatures.ScreenshotCamera
             ScreenshotFX(screenshot);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
-
-            async UniTaskVoid UploadScreenshotAsync(Texture2D image, ScreenshotMetadata data, CancellationToken cancellationToken)
-            {
-                try { await cameraReelService.UploadScreenshot(image, data, ct: cancellationToken); }
-                catch (OperationCanceledException) { }
-                catch (ScreenshotLimitReachedException)
-                {
-                    DataStore.i.notifications.DefaultErrorNotification.Set(
-                        "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.",
-                        true);
-                }
-                catch (Exception) { DataStore.i.notifications.DefaultErrorNotification.Set(UPLOADING_ERROR_MESSAGE, true); }
-            }
+            cameraReelService.UploadScreenshot(screenshot, metadata, ct: uploadPictureCancellationToken.Token).Forget();
         }
 
         private void CaptureScreenshot(DCLAction_Trigger _) =>
