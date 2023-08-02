@@ -250,7 +250,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             DrawLabel(xPos, ref yPos, label);
             string result = GUI.TextField(new Rect(Width(xPos + FIELD_HEIGHT + LABEL_SIZE), Height(FIELD_HEIGHT + yPos), Width(90), Height(FIELD_HEIGHT)), valuesTemp[label]);
-            result = result.Replace(",", ".");
             valuesTemp[label] = result;
             yPos += FIELD_HEIGHT + 2;
             return float.TryParse(result, out float newNumber) ? newNumber : value;
