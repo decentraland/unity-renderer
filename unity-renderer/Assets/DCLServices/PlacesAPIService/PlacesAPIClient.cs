@@ -37,7 +37,7 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<IHotScenesController.PlacesAPIResponse> SearchPlaces(string searchString, int pageNumber, int pageSize, CancellationToken ct)
         {
-            const string URL = BASE_URL_ZONE + "?with_realms_detail=true&search={0}&offset={1}&limit={2}";
+            const string URL = BASE_URL + "?with_realms_detail=true&search={0}&offset={1}&limit={2}";
             var result = await webRequestController.GetAsync(string.Format(URL, searchString.Replace(" ", "+"), pageNumber * pageSize, pageSize), cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
