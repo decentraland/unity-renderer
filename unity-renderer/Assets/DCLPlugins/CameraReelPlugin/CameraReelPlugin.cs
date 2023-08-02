@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
+using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLFeatures.CameraReel.Section;
+using DCLServices.CameraReelService;
 using UnityEngine;
 
 namespace DCLPlugins.CameraReelPlugin
@@ -23,11 +25,22 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
-                DataStore.i,
-                Environment.i.world.teleportController);
+            CameraReelModel cameraReelModel = new ();
+            ICameraReelGalleryService galleryService = Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
+            DataStore dataStore = DataStore.i;
 
-            DataStore.i.HUDs.isCameraReelInitialized.Set(true);
+            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
+                dataStore,
+                galleryService,
+                cameraReelModel,
+                () =>
+                {
+                    var screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
+                    return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
+                        Environment.i.world.teleportController, galleryService);
+                });
+
+            dataStore.HUDs.isCameraReelInitialized.Set(true);
         }
 
         public void Dispose()

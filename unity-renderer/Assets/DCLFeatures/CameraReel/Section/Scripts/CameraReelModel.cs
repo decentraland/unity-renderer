@@ -1,62 +1,46 @@
-﻿using DCL;
-using DCLServices.CameraReelService;
+﻿using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
-using Environment = DCL.Environment;
+using System.Linq;
 
 namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelModel
     {
-        private const int LIMIT = 20;
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
-        private ICameraReelGalleryService cameraReelServiceLazy;
-        private int offset;
-
-        public bool IsUpdating { get; private set; }
-
-        private ICameraReelGalleryService cameraReelService => cameraReelServiceLazy ??= Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
-
-        public event Action<CameraReelResponses> ScreenshotBatchFetched;
         public event Action<CameraReelResponse> ScreenshotRemoved;
-        public event Action<CameraReelResponse> ScreenshotUploaded;
+        public event Action<CameraReelResponse> ScreenshotAdded;
 
-        public CameraReelModel()
+        public void AddScreenshotAsFirst(CameraReelResponse screenshot)
         {
-            cameraReelService.ScreenshotUploaded += OnScreenshotUploaded;
-        }
+            CameraReelResponse existingScreenshot = reels.FirstOrDefault(s => s.id == screenshot.id);
 
-        private void OnScreenshotUploaded(CameraReelResponse screenshot)
-        {
+            if (existingScreenshot != null)
+                RemoveScreenshot(existingScreenshot);
+
             reels.AddFirst(screenshot);
-            ScreenshotUploaded?.Invoke(screenshot);
+            ScreenshotAdded?.Invoke(screenshot);
         }
 
-        public async void RequestScreenshotsBatchAsync()
+        public void AddScreenshotAsLast(CameraReelResponse screenshot)
         {
-            IsUpdating = true;
+            CameraReelResponse existingScreenshot = reels.FirstOrDefault(s => s.id == screenshot.id);
 
-            CameraReelResponses reelImages = await cameraReelService.GetScreenshotGallery(
-                DataStore.i.player.ownPlayer.Get().id, LIMIT, offset);
+            if (existingScreenshot != null)
+                RemoveScreenshot(existingScreenshot);
 
-            offset += LIMIT;
-
-            foreach (CameraReelResponse reel in reelImages.images)
-                reels.AddLast(reel);
-
-            IsUpdating = false;
-            ScreenshotBatchFetched?.Invoke(reelImages);
+            reels.AddLast(screenshot);
+            ScreenshotAdded?.Invoke(screenshot);
         }
 
-        public async void RemoveScreenshot(CameraReelResponse current)
+        public void RemoveScreenshot(CameraReelResponse current)
         {
             LinkedListNode<CameraReelResponse> nodeToRemove = reels.Find(current);
 
             if (nodeToRemove != null)
                 reels.Remove(nodeToRemove);
 
-            await cameraReelService.DeleteScreenshot(current.id);
             ScreenshotRemoved?.Invoke(current);
         }
 
