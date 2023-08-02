@@ -255,7 +255,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if _DITHERING
             {
-                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset, OneOverPaperWhite);
+                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset, PaperWhite, OneOverPaperWhite);
                 // Assume color > 0 and prevent 0 - ditherNoise.
                 // Negative colors can cause problems if fed back to the postprocess via render to FP16 texture.
                 color = max(color, 0);
