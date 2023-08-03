@@ -22,6 +22,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private static readonly int ANGLE = Animator.StringToHash("Angle");
         private static readonly int ANGLE_DIR = Animator.StringToHash("AngleDir");
         private static readonly int LONG_FALL = Animator.StringToHash("IsLongFall");
+        private static readonly int STUNNED = Animator.StringToHash("IsStunned");
 
         [SerializeField] private DefaultLocomotionData[] defaultLocomotion;
         [SerializeField] private CharacterControllerData data;
@@ -116,6 +117,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             animator.SetBool(FALLING, characterState.IsFalling);
             animator.SetBool(LONG_JUMP, characterState.IsLongJump);
             animator.SetBool(LONG_FALL, characterState.IsLongFall);
+            animator.SetBool(STUNNED, characterState.IsStunned);
 
             // state idle ----- walk ----- jog ----- run
             // blend  0  -----   1  -----  2  -----  3

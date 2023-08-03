@@ -34,7 +34,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private float zVelocity;
         private Vector3 velocity;
         private bool isGrounded;
-        private float lastJumpHeight;
+        private float lastUngroundPeakHeight;
         private float lastGroundedTime;
         private float lastJumpTime;
         private float accelerationWeight;
@@ -54,6 +54,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly (Vector3 center, float radius, float skinWidth, float height) characterControllerSettings;
         private RaycastHit sphereCastHitInfo;
         private bool isLongFall;
+        private Vector3 lastSlopeDelta;
+        private Vector3 lastFinalVelocity;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -131,37 +133,45 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             ApplyDragToVelocity();
 
-            Vector3 finalVelocity = velocity;
-            finalVelocity += externalImpulse;
+            float finalVelocityMagnitude = GetFinalVelocityMagnitude(targetVelocity);
+            Vector3 finalVelocity = (Flat(externalImpulse) + Flat(velocity)).normalized * finalVelocityMagnitude;
+            finalVelocity.y = externalImpulse.y + velocity.y;
             finalVelocity += externalVelocity;
 
             Vector3 deltaPosition;
+            bool currentGroundStatus;
+            Vector3 velocityDelta = finalVelocity * deltaTime;
+            (currentGroundStatus, deltaPosition) = view.Move(velocityDelta + lastSlopeDelta);
+
+            if (lastFinalVelocity.y >= 0 && finalVelocity.y < 0)
+                lastUngroundPeakHeight = view.GetPosition().y;
+
+            lastFinalVelocity = finalVelocity;
 
             Vector3 slope = GetSlopeModifier();
+            lastSlopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
 
-            Vector3 slopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
-            Vector3 velocityDelta = finalVelocity * deltaTime;
-            (isGrounded, deltaPosition) = view.Move(velocityDelta + slopeDelta);
+            if (!isGrounded && currentGroundStatus)
+            {
+                float deltaHeight = lastUngroundPeakHeight - view.GetPosition().y;
+                if (deltaHeight > data.jumpHeightStun)
+                {
+                    lastStunnedTime = Time.time;
+                    isStunned = true;
+                    isLongFall = false;
+                }
+            }
 
-            ApplyDragToImpulse();
+            isGrounded = currentGroundStatus;
 
             if (isGrounded)
                 lastGroundedTime = Time.time;
 
-            if (!isLongFall)
-                isLongFall = finalVelocity.y < -12;
-
-            if (isGrounded && isLongFall)
-            {
-                lastStunnedTime = Time.time;
-                isStunned = true;
-                isLongFall = false;
-            }
+            ApplyDragToImpulse();
 
             // update the state for the animations
             characterState.IsLongJump = finalVelocity.y > (data.jogJumpHeight * 3 * data.jumpGravityFactor);
-
-            characterState.IsLongFall = isLongFall;
+            characterState.IsLongFall = finalVelocity.y < -12;
             characterState.IsGrounded = isGrounded;
             characterState.IsJumping = !isGrounded && (finalVelocity.y > 5f || characterState.IsLongJump);
             characterState.IsFalling = finalVelocity.y < -7f;
@@ -171,30 +181,60 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.ExternalImpulse = externalImpulse;
             characterState.ExternalVelocity = externalVelocity;
             characterState.currentAcceleration = currentAcceleration;
+            characterState.IsStunned = isStunned;
+        }
+
+        // In order to avoid jumping faster than intended
+        private float GetFinalVelocityMagnitude(float targetVelocity)
+        {
+            float externalImpulseMagnitude = Flat(externalImpulse).magnitude;
+            float sum = (Flat(externalImpulse) + Flat(velocity)).magnitude;
+
+            // ------<xx|> (velocity de-accelerates so magnitude is sum)
+            if (sum < targetVelocity)
+                return sum;
+
+            // ---------|------<xxx (we allow deaccelerating)
+            if (sum > targetVelocity && externalImpulseMagnitude < sum)
+                return sum;
+
+            // ---------|----> xxx> (magnitude is first)
+            if (externalImpulseMagnitude > targetVelocity && sum > externalImpulseMagnitude)
+                return externalImpulseMagnitude;
+
+            // -----> xx|> (magnitude is limit)
+            if (sum > targetVelocity)
+                return targetVelocity;
+
+            // --> xxx> |  (magnitude is sum)
+            return sum;
         }
 
         private Vector3 GetSlopeModifier()
         {
-            var settings = characterControllerSettings;
-
-            Vector3 currentPosition = view.GetPosition();
-
-            if (Physics.SphereCast(currentPosition,
-                    settings.radius, Vector3.down, out sphereCastHitInfo,
-                    1, Physics.AllLayers))
+            if (isGrounded)
             {
-                Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);
-                //Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + (sphereCastHitInfo.normal * 5), Color.red, 0.15f);
+                var settings = characterControllerSettings;
 
-                relativeHitPoint.y = 0;
+                Vector3 currentPosition = view.GetPosition();
 
-                if (relativeHitPoint.magnitude > data.noSlipDistance)
+                if (Physics.SphereCast(currentPosition,
+                        settings.radius, Vector3.down, out sphereCastHitInfo,
+                        1, Physics.AllLayers))
                 {
-                    Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.green, 0.15f);
-                    return -relativeHitPoint;
-                }
+                    Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);
+                    //Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + (sphereCastHitInfo.normal * 5), Color.red, 0.15f);
 
-                Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.red, 0.15f);
+                    relativeHitPoint.y = 0;
+
+                    if (relativeHitPoint.magnitude > data.noSlipDistance)
+                    {
+                        Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.green, 0.15f);
+                        return -relativeHitPoint;
+                    }
+
+                    Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.red, 0.15f);
+                }
             }
 
             return Vector3.zero;
@@ -202,10 +242,13 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void ApplyDragToVelocity()
         {
-            var tempVelocity = Flat(velocity);
-            tempVelocity = ApplyDrag(tempVelocity);
-            tempVelocity.y = velocity.y;
-            velocity = tempVelocity;
+            if (!isGrounded)
+            {
+                var tempVelocity = Flat(velocity);
+                tempVelocity = ApplyDrag(tempVelocity, data.airDrag * data.jumpVelocityDrag);
+                tempVelocity.y = velocity.y;
+                velocity = tempVelocity;
+            }
         }
 
         private void UpdateCheatKeys()
@@ -235,16 +278,15 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (isGrounded)
                 externalImpulse.y = 0;
 
-            externalImpulse = ApplyDrag(externalImpulse);
+            externalImpulse = ApplyDrag(externalImpulse, isGrounded ? data.groundDrag : data.airDrag);
 
             if (externalImpulse.magnitude < data.minImpulse)
                 externalImpulse = Vector3.zero;
         }
 
-        private Vector3 ApplyDrag(Vector3 vector)
+        private Vector3 ApplyDrag(Vector3 vector, float drag)
         {
             float velocityMagnitude = vector.magnitude;
-            float drag = isGrounded ? data.groundDrag : data.airDrag;
             float dragMagnitude = drag * velocityMagnitude * velocityMagnitude;
             Vector3 dragDirection = -vector.normalized;
             Vector3 dragForce = dragDirection * dragMagnitude;
@@ -269,9 +311,13 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (CanJump())
             {
                 characterState.Jump();
-                lastJumpHeight = GetJumpHeight();
-
-                velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * (data.gravity * data.jumpGravityFactor));
+                float jumpHeight = GetJumpHeight();
+                float jumpStr = Mathf.Sqrt(-2 * jumpHeight * (data.gravity * data.jumpGravityFactor));
+                velocity.y += jumpStr;
+                /*var jumpImpulse = new Vector3(velocity.x, jumpStr, velocity.z);
+                ApplyExternalImpulse(jumpImpulse);
+                velocity.x = 0;
+                velocity.z = 0;*/
 
                 jumpTriggered = false;
                 lastGroundedTime = 0; // to avoid double jumping

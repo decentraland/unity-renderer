@@ -26,7 +26,7 @@ MonoBehaviour:
   rotationSpeed: 360
   longJumpTime: 0.5
   longJumpGravityScale: 0.5
-  groundDrag: 0.85
+  groundDrag: 5
   airDrag: 0.05
   minImpulse: 1
   jumpPadForce: 50
@@ -77,3 +77,7 @@ MonoBehaviour:
   maxAcceleration: 25
   accelerationTime: 0.5
   longFallStunTime: 0.75
+  noSlipDistance: 0.08
+  slipSpeedMultiplier: 5
+  jumpHeightStun: 8
+  jumpVelocityDrag: 5

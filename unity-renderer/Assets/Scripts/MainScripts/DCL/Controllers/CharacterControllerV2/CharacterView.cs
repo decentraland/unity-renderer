@@ -223,11 +223,11 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
                 data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
                 data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");
-                data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
+                /*data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
                 data.maxAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.maxAcceleration, "maxAcceleration");
-                data.accelerationTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.accelerationTime, "accelerationTime");
+                data.accelerationTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.accelerationTime, "accelerationTime");*/
 
-                data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
+                //data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
                 data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
 
                 data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
@@ -236,9 +236,10 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
                 data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
                 data.jumpGravityFactor = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGravityFactor, "jumpGravityFactor");
+                data.jumpHeightStun = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpHeightStun, "jumpHeightStun");
                 data.longFallStunTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longFallStunTime, "longFallStunTime");
                 data.noSlipDistance = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.noSlipDistance, "noSlipDistance");
-                data.slipSpeedMultiplier = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.slipSpeedMultiplier, "slipSpeedMultiplier");
+                data.jumpVelocityDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpVelocityDrag, "jumpVelocityDrag");
 
                 var secondColumnYPos = 0;
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);

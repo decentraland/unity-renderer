@@ -31,5 +31,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float longFallStunTime = 0.75f;
         public float noSlipDistance = 0.1f;
         public float slipSpeedMultiplier = 1.2f;
+        public float jumpHeightStun = 10f;
+        public float jumpVelocityDrag = 3f;
     }
 }

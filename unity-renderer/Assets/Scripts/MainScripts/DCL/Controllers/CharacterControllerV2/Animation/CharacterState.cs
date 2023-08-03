@@ -18,6 +18,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public Vector3 ExternalImpulse;
         public Vector3 ExternalVelocity;
         public float currentAcceleration;
+        public bool IsStunned;
 
         public void Jump()
         {
