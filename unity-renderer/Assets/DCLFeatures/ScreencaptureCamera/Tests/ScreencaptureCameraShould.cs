@@ -41,7 +41,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.inputActionsSchema.TakeScreenshotAction = takeScreenshotAction;
 
             // Mock external dependencies
-            screencaptureCamera.isScreenshotCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
+            screencaptureCamera.isScreencaptureCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
 
             allUIHidden = ScriptableObject.CreateInstance<BooleanVariable>();
             cameraModeInputLocked = ScriptableObject.CreateInstance<BooleanVariable>();
@@ -56,7 +56,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.SetExternalDependencies(allUIHidden, cameraModeInputLocked, cameraLeftMouseButtonCursorLock,
                 cameraBlocked, featureKeyTriggersBlocked, userMovementKeysBlocked, isScreenshotCameraActive);
 
-            screencaptureCamera.screenshotCaptureLazyValue = new ScreenshotCaptureDummy();
+            screencaptureCamera.screenRecorderLazyValue = new ScreenRecorderDummy();
             screencaptureCamera.InstantiateCameraObjects();
 
             screencaptureCamera.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
@@ -76,10 +76,10 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screencaptureCamera.SetVisibility();
+            screencaptureCamera.ToggleScreenshotCamera();
 
             // Assert
-            Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(screencaptureCamera.isScreencaptureCameraActive.Get());
             Assert.IsFalse(allUIHidden.Get());
             Assert.IsFalse(cameraModeInputLocked.Get());
             Assert.IsFalse(cameraBlocked.Get());
@@ -96,7 +96,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screencaptureCamera.SetVisibility();
+            screencaptureCamera.ToggleScreenshotCamera();
 
             // Assert
             Assert.IsTrue(allUIHidden.Get());
@@ -104,7 +104,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             Assert.IsTrue(cameraBlocked.Get());
             Assert.IsTrue(featureKeyTriggersBlocked.Get());
             Assert.IsTrue(userMovementKeysBlocked.Get());
-            Assert.IsTrue(screencaptureCamera.isScreenshotCameraActive.Get());
+            Assert.IsTrue(screencaptureCamera.isScreencaptureCameraActive.Get());
             cameraLeftMouseButtonCursorLock.Received().Set(true);
         }
 
@@ -116,10 +116,10 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(true);
 
             // Act
-            screencaptureCamera.SetVisibility();
+            screencaptureCamera.ToggleScreenshotCamera();
 
             // Assert
-            Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(screencaptureCamera.isScreencaptureCameraActive.Get());
             Assert.IsFalse(allUIHidden.Get());
             Assert.IsFalse(cameraBlocked.Get());
             Assert.IsFalse(featureKeyTriggersBlocked.Get());
@@ -136,9 +136,9 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             new GameObject().AddComponent<Camera>();
     }
 
-    public class ScreenshotCaptureDummy : ScreenshotCapture
+    public class ScreenRecorderDummy : ScreenRecorder
     {
-        public ScreenshotCaptureDummy() : base(null, null, null, null) { }
+        public ScreenRecorderDummy() : base(null, null, null, null) { }
 
         public override Texture2D CaptureScreenshot() =>
             new (1, 1);
@@ -146,6 +146,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
 
     public class ScreencaptureCameraHUDViewDummy : ScreencaptureCameraHUDView
     {
-        public override void SwitchVisibility(bool isVisible) { }
+        public override void SetVisibility(bool isVisible) { }
     }
 }

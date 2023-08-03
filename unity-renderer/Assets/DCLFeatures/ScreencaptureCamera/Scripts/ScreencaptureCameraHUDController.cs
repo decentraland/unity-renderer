@@ -20,6 +20,8 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void Initialize()
         {
+            screencaptureCamera.StateSwitched += view.SetVisibility;
+
             view.CloseButtonClicked += DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered += DisableScreenshotCameraMode;
 
@@ -34,6 +36,8 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void Dispose()
         {
+            screencaptureCamera.StateSwitched -= view.SetVisibility;
+
             view.CloseButtonClicked -= DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered -= DisableScreenshotCameraMode;
 
@@ -58,18 +62,21 @@ namespace DCLFeatures.ScreencaptureCamera
             screencaptureCamera.CaptureScreenshot();
 
         private void DisableScreenshotCameraMode() =>
-            screencaptureCamera.SetVisibility( isVisible: false);
+            screencaptureCamera.ToggleScreenshotCamera(isEnabled: false);
 
         private void DisableScreenshotCameraMode(DCLAction_Trigger _) =>
             DisableScreenshotCameraMode();
 
         private void OpenCameraReelGallery()
         {
-            DisableScreenshotCameraMode();
-            DataStore.i.HUDs.cameraReelSectionVisible.Set(true);
+            if (view.IsVisible)
+            {
+                DisableScreenshotCameraMode();
+                DataStore.i.HUDs.cameraReelSectionVisible.Set(true);
+            }
         }
 
-        private void OpenCameraReelGallery(DCLAction_Trigger _)
-            => OpenCameraReelGallery();
+        private void OpenCameraReelGallery(DCLAction_Trigger _) =>
+            OpenCameraReelGallery();
     }
 }

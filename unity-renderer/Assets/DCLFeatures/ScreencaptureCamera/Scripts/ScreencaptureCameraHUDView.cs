@@ -1,7 +1,6 @@
 ﻿using DG.Tweening;
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCLFeatures.ScreencaptureCamera
@@ -29,6 +28,8 @@ namespace DCLFeatures.ScreencaptureCamera
         [field: SerializeField] public RectTransform RectTransform { get; private set; }
         [field: SerializeField] public Image RefImage { get; private set; }
 
+        public bool IsVisible => rootCanvas.enabled;
+
         public event Action CloseButtonClicked;
         public event Action ShortcutsInfoButtonClicked;
         public event Action CameraReelButtonClicked;
@@ -50,8 +51,11 @@ namespace DCLFeatures.ScreencaptureCamera
             closeButton.onClick.RemoveAllListeners();
         }
 
-        public virtual void SwitchVisibility(bool isVisible) =>
-            rootCanvas.enabled = isVisible;
+        public virtual void SetVisibility(bool isVisible)
+        {
+            if (rootCanvas.enabled != isVisible)
+                rootCanvas.enabled = isVisible;
+        }
 
         public void ToggleShortcutsInfosHelpPanel() =>
             shortcutsInfoPanel.SetActive(!shortcutsInfoPanel.activeSelf);
