@@ -29,7 +29,7 @@ namespace DCL
         public readonly BaseVariable<bool> avatarNamesVisible = new (true);
         public readonly BaseVariable<float> avatarNamesOpacity = new (1);
         public readonly BaseVariable<bool> gotoPanelVisible = new (false);
-        public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new (new ParcelCoordinates(0, 0));
+        public readonly BaseVariable<(ParcelCoordinates coordinates, string realm)> gotoPanelCoordinates = new ();
         public readonly BaseVariable<bool> goToPanelConfirmed = new ();
         public readonly BaseVariable<bool> minimapVisible = new (true);
         public readonly BaseVariable<bool> jumpHomeButtonVisible = new (false);
