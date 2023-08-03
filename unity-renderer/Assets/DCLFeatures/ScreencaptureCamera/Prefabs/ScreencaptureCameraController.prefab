@@ -50,6 +50,8 @@ MonoBehaviour:
     type: 3}
   screencaptureCameraHUDViewPrefab: {fileID: 8664929919244729531, guid: 73f988cecacd42e48920937e996e446d,
     type: 3}
+  enableCameraButtonPrefab: {fileID: 2717278584910967307, guid: 0ec15e0bcbdac1a4e89571580222c90b,
+    type: 3}
   inputActionsSchema:
     ToggleScreenshotCameraAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815,
       type: 2}
