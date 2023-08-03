@@ -51,6 +51,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private float velocityLimit;
         private bool isStunned;
         private float lastStunnedTime;
+        private readonly (Vector3 center, float radius, float skinWidth, float height) characterControllerSettings;
+        private RaycastHit sphereCastHitInfo;
+        private bool isLongFall;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -70,6 +73,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             speedState = SpeedState.JOG;
             characterState = new CharacterState();
             velocityLimit = GetVelocityLimit();
+            characterControllerSettings = view.GetCharacterControllerSettings();
         }
 
         private void RegisterInputEvents()
@@ -132,19 +136,26 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             finalVelocity += externalVelocity;
 
             Vector3 deltaPosition;
-            (isGrounded, deltaPosition) = view.Move(finalVelocity * deltaTime);
+
+            Vector3 slope = GetSlopeModifier();
+
+            Vector3 slopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
+            Vector3 velocityDelta = finalVelocity * deltaTime;
+            (isGrounded, deltaPosition) = view.Move(velocityDelta + slopeDelta);
 
             ApplyDragToImpulse();
 
             if (isGrounded)
                 lastGroundedTime = Time.time;
 
-            bool isLongFall = finalVelocity.y < -12;
+            if (!isLongFall)
+                isLongFall = finalVelocity.y < -12;
 
             if (isGrounded && isLongFall)
             {
                 lastStunnedTime = Time.time;
                 isStunned = true;
+                isLongFall = false;
             }
 
             // update the state for the animations
@@ -160,6 +171,33 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.ExternalImpulse = externalImpulse;
             characterState.ExternalVelocity = externalVelocity;
             characterState.currentAcceleration = currentAcceleration;
+        }
+
+        private Vector3 GetSlopeModifier()
+        {
+            var settings = characterControllerSettings;
+
+            Vector3 currentPosition = view.GetPosition();
+
+            if (Physics.SphereCast(currentPosition,
+                    settings.radius, Vector3.down, out sphereCastHitInfo,
+                    1, Physics.AllLayers))
+            {
+                Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);
+                //Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + (sphereCastHitInfo.normal * 5), Color.red, 0.15f);
+
+                relativeHitPoint.y = 0;
+
+                if (relativeHitPoint.magnitude > data.noSlipDistance)
+                {
+                    Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.green, 0.15f);
+                    return -relativeHitPoint;
+                }
+
+                Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.red, 0.15f);
+            }
+
+            return Vector3.zero;
         }
 
         private void ApplyDragToVelocity()
@@ -197,17 +235,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (isGrounded)
                 externalImpulse.y = 0;
 
-            /*var flatImpulse = Flat(externalImpulse);
-            flatImpulse = ApplyDrag(flatImpulse);
-
-            var targetGravity = data.gravity;
-            if (velocity.y > 0)
-                targetGravity *= data.jumpGravityFactor;
-
-            var verticalImpulse = externalImpulse.y;
-            verticalImpulse += targetGravity * Time.deltaTime;
-
-            flatImpulse.y = verticalImpulse;*/
             externalImpulse = ApplyDrag(externalImpulse);
 
             if (externalImpulse.magnitude < data.minImpulse)
@@ -245,15 +272,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 lastJumpHeight = GetJumpHeight();
 
                 velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * (data.gravity * data.jumpGravityFactor));
-
-                // impulse based jump
-                /*
-                velocity.y += Mathf.Sqrt(-2 * lastJumpHeight * (data.gravity * data.jumpGravityFactor));
-                var totalImpulse = new Vector3(velocity.x, verticalImpulse, velocity.z);
-                externalImpulse += totalImpulse;
-                velocity.x = 0;
-                velocity.z = 0;
-                */
 
                 jumpTriggered = false;
                 lastGroundedTime = 0; // to avoid double jumping

@@ -186,6 +186,22 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
         }
 
+        /*private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, characterController.radius);
+            Gizmos.DrawWireSphere(transform.position + Vector3.down, characterController.radius);
+        }*/
+
+        public Vector3 GetSpherecastPosition() =>
+            transform.position;
+
+        public Vector3 GetPosition() =>
+            transform.position;
+
+        public (Vector3 center, float radius, float skinWidth, float height) GetCharacterControllerSettings() =>
+            (characterController.center, characterController.radius, characterController.skinWidth, characterController.height);
+
         private bool showDebug = true;
 
         private void OnGUI()
@@ -199,7 +215,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             GUI.skin.textField.fontSize = fontSize;
             var firstColumnYPos = 25;
 
-            if (Input.GetKeyDown(KeyCode.Period))
+            if (Input.GetKeyDown(KeyCode.N))
                 showDebug = !showDebug;
 
             if (showDebug)
@@ -213,21 +229,16 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
                 data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
                 data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
-                //data.stopTimeSec = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.stopTimeSec, "stopTimeSec");
+
                 data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
                 data.jogJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogJumpHeight, "jogJumpHeight");
                 data.runJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runJumpHeight, "runJumpHeight");
-                //data.jumpGraceTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGraceTime, "jumpGraceTime");
-                //data.rotationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.rotationSpeed, "rotationSpeed");
-                //data.longJumpTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpTime, "longJumpTime");
-                //data.longJumpGravityScale = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longJumpGravityScale, "longJumpGravityScale");
-                //data.groundDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.groundDrag, "ImpulseGroundDrag");
-                //data.airDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airDrag, "ImpulseAirDrag");
-                //data.minImpulse = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.minImpulse, "minImpulse");
+
                 data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
                 data.jumpGravityFactor = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGravityFactor, "jumpGravityFactor");
                 data.longFallStunTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longFallStunTime, "longFallStunTime");
-                //data.animationSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.animationSpeed, "animationSpeed");
+                data.noSlipDistance = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.noSlipDistance, "noSlipDistance");
+                data.slipSpeedMultiplier = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.slipSpeedMultiplier, "slipSpeedMultiplier");
 
                 var secondColumnYPos = 0;
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
@@ -280,5 +291,11 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         (bool isGrounded, Vector3 deltaPosition) Move(Vector3 delta);
 
         void SetForward(Vector3 forward);
+
+        Vector3 GetPosition();
+
+        (Vector3 center, float radius, float skinWidth, float height) GetCharacterControllerSettings();
+
+        Vector3 GetSpherecastPosition();
     }
 }

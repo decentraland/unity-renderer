@@ -29,5 +29,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float maxAcceleration = 25f;
         public float accelerationTime = 0.5f;
         public float longFallStunTime = 0.75f;
+        public float noSlipDistance = 0.1f;
+        public float slipSpeedMultiplier = 1.2f;
     }
 }
