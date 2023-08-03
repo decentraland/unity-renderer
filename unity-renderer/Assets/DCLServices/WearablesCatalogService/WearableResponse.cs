@@ -167,8 +167,6 @@ namespace DCLServices.WearablesCatalogService
             public IndividualDataDto[] individualData;
             public EntityDto entity;
             public string rarity;
-            public string type;
-            public int amount;
 
             public long GetMostRecentTransferTimestamp()
             {
