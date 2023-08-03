@@ -142,10 +142,10 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void CaptureScreenshot()
         {
-            if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
+            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
-            Texture2D screenshot = screenshotCapture.CaptureScreenshot();
+            Texture2D screenshot = screenRecorder.CaptureScreenshot();
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, COOLDOWN/2, COOLDOWN/2);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
