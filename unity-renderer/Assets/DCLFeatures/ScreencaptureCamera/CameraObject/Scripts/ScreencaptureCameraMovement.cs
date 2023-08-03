@@ -6,8 +6,9 @@ namespace DCLFeatures.ScreencaptureCamera
 {
     public class ScreencaptureCameraMovement : MonoBehaviour
     {
+        private const float MAX_DISTANCE_FROM_PLAYER = 16f;
+
         [SerializeField] private CharacterController characterController;
-        [SerializeField] private float maxDistanceFromPlayer = 5f;
 
         [Header("TRANSLATION")]
         [SerializeField] private float movementSpeed = 5f;
@@ -84,11 +85,11 @@ namespace DCLFeatures.ScreencaptureCamera
 
             float distanceFromPlayer = Vector3.Distance(desiredCameraPosition, playerPosition);
 
-            if (distanceFromPlayer > maxDistanceFromPlayer)
+            if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER)
             {
                 // If the distance is greater than the allowed radius, correct the movement vector
                 Vector3 directionFromPlayer = (desiredCameraPosition - playerPosition).normalized;
-                desiredCameraPosition = playerPosition + (directionFromPlayer * maxDistanceFromPlayer);
+                desiredCameraPosition = playerPosition + (directionFromPlayer * MAX_DISTANCE_FROM_PLAYER);
                 movementVector = desiredCameraPosition - characterController.transform.position;
             }
 
