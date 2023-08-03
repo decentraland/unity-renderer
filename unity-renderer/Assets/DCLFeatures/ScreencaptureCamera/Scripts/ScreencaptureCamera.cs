@@ -25,6 +25,7 @@ namespace DCLFeatures.ScreencaptureCamera
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
+        [SerializeField] internal Canvas enableCameraButtonPrefab;
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
@@ -53,6 +54,8 @@ namespace DCLFeatures.ScreencaptureCamera
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
         private ScreencaptureCameraHUDController screencaptureCameraHUDController;
+        private Canvas enableCameraButton;
+
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < COOLDOWN;
 
@@ -96,7 +99,13 @@ namespace DCLFeatures.ScreencaptureCamera
             if (!featureFlags.IsFeatureEnabled("camera_reel"))
                 Destroy(gameObject);
             else
+            {
+                var enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
+                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera());
+                CommonScriptableObjects.allUIHidden.OnChange +=  (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
+
                 enabled = true;
+            }
         }
 
         internal void OnEnable()
