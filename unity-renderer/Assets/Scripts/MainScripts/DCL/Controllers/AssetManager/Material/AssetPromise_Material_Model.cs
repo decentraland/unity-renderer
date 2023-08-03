@@ -47,7 +47,6 @@ namespace DCL
 
         public readonly float metallic;
         public readonly float roughness;
-        public readonly float glossiness;
 
         public readonly float specularIntensity;
         public readonly float emissiveIntensity;
@@ -59,24 +58,24 @@ namespace DCL
             bool defaultShadow = true;
             return new AssetPromise_Material_Model(false, albedoTexture, null, null, null,
                 alphaTest, defaultShadow, defaultColor, diffuseColor, defaultColor, defaultColor, TransparencyMode.Auto,
-                0, 0, 0, 0, 0, 0);
+                0, 0, 0, 0, 0);
         }
 
         public static AssetPromise_Material_Model CreatePBRMaterial(Texture? albedoTexture, Texture? alphaTexture,
             Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color emissiveColor,
-            Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
+            Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
             Color defaultColor = Color.white;
             return new AssetPromise_Material_Model(true, albedoTexture, alphaTexture,
                 emissiveTexture, bumpTexture, alphaTest, castShadows, albedoColor, defaultColor, emissiveColor,
-                reflectivityColor, transparencyMode, metallic, roughness, glossiness,
+                reflectivityColor, transparencyMode, metallic, roughness,
                 specularIntensity, emissiveIntensity, directIntensity);
         }
 
         public AssetPromise_Material_Model(bool isPbrMaterial, Texture? albedoTexture, Texture? alphaTexture,
             Texture? emissiveTexture, Texture? bumpTexture, float alphaTest, bool castShadows, Color albedoColor, Color diffuseColor, Color emissiveColor,
-            Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness, float glossiness,
+            Color reflectivityColor, TransparencyMode transparencyMode, float metallic, float roughness,
             float specularIntensity, float emissiveIntensity, float directIntensity)
         {
             this.isPbrMaterial = isPbrMaterial;
@@ -93,7 +92,6 @@ namespace DCL
             this.transparencyMode = transparencyMode;
             this.metallic = metallic;
             this.roughness = roughness;
-            this.glossiness = glossiness;
             this.specularIntensity = specularIntensity;
             this.emissiveIntensity = emissiveIntensity;
             this.directIntensity = directIntensity;

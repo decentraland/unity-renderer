@@ -35,7 +35,8 @@ import {
   setCommsIsland,
   setRoomConnection,
   SET_COMMS_ISLAND,
-  SET_ROOM_CONNECTION
+  SET_ROOM_CONNECTION,
+  setLiveKitAdapter
 } from './actions'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
@@ -51,6 +52,7 @@ import { getCommsRoom, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 import { getGlobalAudioStream } from './adapters/voice/loopback'
+import { store } from 'shared/store/isolatedStore'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -285,14 +287,17 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       if (!token) {
         throw new Error('No access token')
       }
-      return new Rfc4RoomConnection(
-        new LivekitAdapter({
-          logger: commsLogger,
-          url: theUrl.origin + theUrl.pathname,
-          token,
-          globalAudioStream: await getGlobalAudioStream()
-        })
-      )
+
+      const livekitAdapter = new LivekitAdapter({
+        logger: commsLogger,
+        url: theUrl.origin + theUrl.pathname,
+        token,
+        globalAudioStream: await getGlobalAudioStream(),
+      })
+
+      store.dispatch(setLiveKitAdapter(livekitAdapter))
+
+      return new Rfc4RoomConnection(livekitAdapter)
     }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)

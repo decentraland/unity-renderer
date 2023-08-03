@@ -60,3 +60,8 @@ export type AdapterMessageEvent = {
   address: string
   data: Uint8Array
 }
+
+export type ActiveVideoStreams = {
+  identity: string
+  videoTracks: Map<string, MediaStream>
+}

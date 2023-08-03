@@ -15,7 +15,7 @@ import type { ILogger } from 'lib/logger'
 import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
 import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { commsLogger } from '../logger'
-import type { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
+import type { ActiveVideoStreams, CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
 import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
 import { GlobalAudioStream } from './voice/loopback'
 
@@ -141,5 +141,24 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       address,
       data
     })
+  }
+
+  getActiveVideoStreams(): Map<string, ActiveVideoStreams> {
+    const result = new Map<string, ActiveVideoStreams>()
+    const participants = this.room.participants
+
+    for (const [sid, participant] of participants) {
+      if (participant.videoTracks.size > 0) {
+        const participantTracks = new Map<string, MediaStream>()
+        for (const [videoSid, track] of participant.videoTracks) {
+          if (track.videoTrack?.mediaStream) {
+            participantTracks.set(videoSid, track.videoTrack.mediaStream)
+          }
+        }
+        result.set(sid, { identity: participant.identity, videoTracks: participantTracks })
+      }
+    }
+
+    return result
   }
 }
