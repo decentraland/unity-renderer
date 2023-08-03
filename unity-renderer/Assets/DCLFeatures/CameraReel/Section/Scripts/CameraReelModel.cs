@@ -1,16 +1,31 @@
-﻿using DCLServices.CameraReelService;
+﻿using DCL;
+using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DCLFeatures.CameraReel.Section
 {
-    public class CameraReelModel
+    public class CameraReelModel : Singleton<CameraReelModel>
     {
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
+        public delegate void StorageUpdatedHandler(int totalScreenshots, int maxScreenshots);
+
         public event Action<CameraReelResponse> ScreenshotRemoved;
         public event Action<CameraReelResponse> ScreenshotAdded;
+        public event StorageUpdatedHandler StorageUpdated;
+
+        public int LoadedScreenshotCount => reels.Count;
+        public int TotalScreenshotsInStorage { get; private set; }
+        public int MaxScreenshotsInStorage { get; private set; }
+
+        public void SetStorageStatus(int totalScreenshots, int maxScreenshots)
+        {
+            TotalScreenshotsInStorage = totalScreenshots;
+            MaxScreenshotsInStorage = maxScreenshots;
+            StorageUpdated?.Invoke(totalScreenshots, maxScreenshots);
+        }
 
         public void AddScreenshotAsFirst(CameraReelResponse screenshot)
         {
