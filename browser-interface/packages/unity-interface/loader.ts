@@ -141,19 +141,15 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
 
     RequestFromEngine(request: { type: string, payload: any }) {
       const requestType = request.type as EngineRequestsNames
-      return onRequest(requestType, request.payload)
+      if (requestType === 'livekitVideoTrack') {
+        const split = (request.payload as IEngineRequests['livekitVideoTrack']).videoTrackSrc.split('/')
+        if (split.length < 2)
+          return undefined
 
-      function onRequest<T extends EngineRequestsNames>(type: T, payload: IEngineRequests[T]) {
-        if (type === 'livekitVideoTrack') {
-          const split = (payload as IEngineRequests['livekitVideoTrack']).videoTrackSrc.split('/')
-          if (split.length < 2)
-            return undefined
-
-          const videoSid = split[split.length - 1]
-          const participantSid = split[split.length - 2]
-          const activeVideoStreams: Map<string, ActiveVideoStreams> | undefined = getLivekitActiveVideoStreams(store.getState())
-          return activeVideoStreams?.get(participantSid)?.videoTracks.get(videoSid)
-        }
+        const videoSid = split[split.length - 1]
+        const participantSid = split[split.length - 2]
+        const activeVideoStreams: Map<string, ActiveVideoStreams> | undefined = getLivekitActiveVideoStreams(store.getState())
+        return activeVideoStreams?.get(participantSid)?.videoTracks.get(videoSid)
       }
     }
   }

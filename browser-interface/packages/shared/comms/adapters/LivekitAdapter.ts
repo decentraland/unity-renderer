@@ -34,7 +34,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   private voiceHandler: VoiceHandler
 
   constructor(private config: LivekitConfig) {
-    this.room = new Room();
+    this.room = new Room()
 
     this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
 
@@ -147,10 +147,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     const result = new Map<string, ActiveVideoStreams>()
     const participants = this.room.participants
 
-    for (let [sid, participant] of participants) {
+    for (const [sid, participant] of participants) {
       if (participant.videoTracks.size > 0) {
         const participantTracks = new Map<string, MediaStream>()
-        for (let [videoSid, track] of participant.videoTracks) {
+        for (const [videoSid, track] of participant.videoTracks) {
           if (track.videoTrack?.mediaStream) {
             participantTracks.set(videoSid, track.videoTrack.mediaStream)
           }
