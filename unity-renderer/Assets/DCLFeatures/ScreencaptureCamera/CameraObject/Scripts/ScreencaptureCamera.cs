@@ -3,6 +3,7 @@ using DCL;
 using DCL.Camera;
 using DCL.Helpers;
 using DCL.Tasks;
+using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections;
@@ -127,8 +128,7 @@ namespace DCLFeatures.ScreencaptureCamera
             this.cameraBlocked = cameraBlocked;
             this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
             this.userMovementKeysBlocked = userMovementKeysBlocked;
-
-            isScreencaptureCameraActive = isScreenshotCameraActive;
+            this.isScreencaptureCameraActive = isScreenshotCameraActive;
         }
 
         private void SelfRegisterToCameraReelService(bool current, bool _)
@@ -142,14 +142,24 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void CaptureScreenshot()
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown) return;
+            if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
-            Texture2D screenshot = screenRecorder.CaptureScreenshot();
-            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, COOLDOWN / 2, COOLDOWN / 2);
+            Texture2D screenshot = screenshotCapture.CaptureScreenshot();
+            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, COOLDOWN/2, COOLDOWN/2);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            cameraReelService.UploadScreenshot(screenshot, metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera), ct: uploadPictureCancellationToken.Token).Forget();
+            UploadScreenshotAsync(uploadPictureCancellationToken.Token).Forget();
+
+            async UniTaskVoid UploadScreenshotAsync(CancellationToken cancellationToken)
+            {
+                (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) = await cameraReelService.UploadScreenshot(screenshot,
+                    metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera),
+                    ct: cancellationToken);
+
+                CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
+                CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+            }
         }
 
         public void ToggleScreenshotCamera(bool isEnabled = true)

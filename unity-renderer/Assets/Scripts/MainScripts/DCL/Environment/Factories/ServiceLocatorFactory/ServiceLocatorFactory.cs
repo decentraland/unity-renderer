@@ -196,7 +196,8 @@ namespace DCL
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
 
-            var cameraReelService = new CameraReelService(new CameraReelClient(webRequestController));
+            var cameraReelService = new CameraReelService(new CameraReelClient(webRequestController),
+                DataStore.i, new UserProfileWebInterfaceBridge());
             result.Register<ICameraReelGalleryService>(() => cameraReelService);
             result.Register<IScreenshotCameraService>(() => cameraReelService);
 

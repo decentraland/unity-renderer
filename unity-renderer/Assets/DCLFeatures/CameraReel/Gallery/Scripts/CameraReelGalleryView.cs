@@ -15,6 +15,7 @@ namespace DCLFeatures.CameraReel.Gallery
         [SerializeField] private Button showMoreButton;
         [SerializeField] private RectTransform showMoreButtonPanel;
         [SerializeField] private Canvas canvas;
+        [SerializeField] private GameObject emptyStateContainer;
 
         [Header("RESOURCES")]
         [SerializeField] private GameObject monthHeaderPrefab;
@@ -46,6 +47,24 @@ namespace DCLFeatures.CameraReel.Gallery
 
         public void AddScreenshotThumbnail(CameraReelResponse reel) =>
             AddScreenshotThumbnail(reel, setAsFirst: true);
+
+        public void DeleteScreenshotThumbnail(CameraReelResponse reel)
+        {
+            if (!screenshotThumbnails.ContainsKey(reel)) return;
+
+            Destroy(screenshotThumbnails[reel]);
+            screenshotThumbnails.Remove(reel);
+        }
+
+        public void SwitchEmptyStateVisibility(bool visible)
+        {
+            emptyStateContainer.SetActive(visible);
+        }
+
+        public void SwitchShowMoreVisibility(bool visible)
+        {
+            showMoreButtonPanel.gameObject.SetActive(visible);
+        }
 
         private void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
         {
@@ -81,14 +100,6 @@ namespace DCLFeatures.CameraReel.Gallery
                 thumbnail.transform.SetAsFirstSibling();
 
             screenshotThumbnails.Add(reel, thumbnail.gameObject);
-        }
-
-        public void DeleteScreenshotThumbnail(CameraReelResponse reel)
-        {
-            if (!screenshotThumbnails.ContainsKey(reel)) return;
-
-            Destroy(screenshotThumbnails[reel]);
-            screenshotThumbnails.Remove(reel);
         }
     }
 }

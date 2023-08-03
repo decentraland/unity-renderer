@@ -19,7 +19,6 @@ namespace DCLPlugins.CameraReelPlugin
 
         private Transform sectionParent;
         private CameraReelSectionController controller;
-        private CameraReelModel cameraReelModel;
 
         public CameraReelPlugin()
         {
@@ -31,9 +30,9 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            cameraReelModel = new ();
             ICameraReelGalleryService galleryService = Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
             DataStore dataStore = DataStore.i;
+            CameraReelModel cameraReelModel = CameraReelModel.i;
 
             controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
                 dataStore,
@@ -63,7 +62,7 @@ namespace DCLPlugins.CameraReelPlugin
 
         private void OnThumbnailContextMenuAdded(ThumbnailContextMenuView view)
         {
-            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), cameraReelModel,
+            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), CameraReelModel.i,
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<ICameraReelGalleryService>(),
                 DataStore.i);

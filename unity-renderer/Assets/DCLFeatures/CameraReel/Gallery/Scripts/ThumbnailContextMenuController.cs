@@ -46,8 +46,9 @@ namespace DCLFeatures.CameraReel.Gallery
             {
                 async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
                 {
-                    await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
+                    CameraReelStorageStatus storage = await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
                     cameraReelModel.RemoveScreenshot(screenshot);
+                    cameraReelModel.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
                 }
 
                 dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(

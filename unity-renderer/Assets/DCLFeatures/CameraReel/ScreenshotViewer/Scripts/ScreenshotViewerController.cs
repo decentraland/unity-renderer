@@ -103,8 +103,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
             {
-                await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
+                CameraReelStorageStatus storage = await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
                 model.RemoveScreenshot(screenshot);
+                model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
                 view.Hide();
             }
 
