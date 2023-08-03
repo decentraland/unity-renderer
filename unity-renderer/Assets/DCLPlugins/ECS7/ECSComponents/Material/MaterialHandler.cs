@@ -151,7 +151,7 @@ namespace DCL.ECSComponents
             return AssetPromise_Material_Model.CreatePBRMaterial(albedoTexture, alphaTexture, emissiveTexture, bumpTexture,
                 model.GetAlphaTest(), model.GetCastShadows(), model.GetAlbedoColor().ToUnityColor(), model.GetEmissiveColor().ToUnityColor(),
                 model.GetReflectiveColor().ToUnityColor(), (AssetPromise_Material_Model.TransparencyMode)model.GetTransparencyMode(), model.GetMetallic(),
-                model.GetRoughness(), model.GetGlossiness(), model.GetSpecularIntensity(),
+                model.GetRoughness(), model.GetSpecularIntensity(),
                 model.GetEmissiveIntensity(), model.GetDirectIntensity());
         }
 

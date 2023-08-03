@@ -69,7 +69,7 @@ namespace DCL
             if (model.isPbrMaterial)
             {
                 PBRMaterial.SetUpColors(material, model.albedoColor, model.emissiveColor, model.reflectivityColor, model.emissiveIntensity);
-                PBRMaterial.SetUpProps(material, model.metallic, model.roughness, model.glossiness, model.specularIntensity, model.directIntensity);
+                PBRMaterial.SetUpProps(material, model.metallic, model.roughness, model.specularIntensity, model.directIntensity);
                 PBRMaterial.SetUpTransparency(material, model.transparencyMode, model.alphaTexture, model.albedoColor, model.alphaTest);
             }
             else
