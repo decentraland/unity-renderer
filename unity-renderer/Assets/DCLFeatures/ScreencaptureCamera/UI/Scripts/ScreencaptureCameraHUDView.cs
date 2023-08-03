@@ -13,10 +13,13 @@ namespace DCLFeatures.ScreencaptureCamera
         [Header("BUTTONS")]
         [SerializeField] private Button cameraReelButton;
         [SerializeField] private Button takeScreenshotButton;
-        [SerializeField] private Button shortcutsInfoButton;
         [SerializeField] private Button closeButton;
+        [SerializeField] private Button shortcutsInfoButton;
 
+        [Header("SHORTCUTS INFO PANEL")]
         [SerializeField] private GameObject shortcutsInfoPanel;
+        [SerializeField] private Image openShortcutsIcon;
+        [SerializeField] private Image closeShortcutsIcon;
 
         [Header("CAPTURE VFX")]
         [SerializeField] private Image whiteSplashImage;
@@ -57,8 +60,15 @@ namespace DCLFeatures.ScreencaptureCamera
                 rootCanvas.enabled = isVisible;
         }
 
-        public void ToggleShortcutsInfosHelpPanel() =>
-            shortcutsInfoPanel.SetActive(!shortcutsInfoPanel.activeSelf);
+        public void ToggleShortcutsInfosHelpPanel()
+        {
+            bool setEnabled = shortcutsInfoPanel.activeSelf == false;
+
+            shortcutsInfoPanel.SetActive(setEnabled);
+
+            openShortcutsIcon.enabled = !setEnabled;
+            closeShortcutsIcon.enabled = setEnabled;
+        }
 
         public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float transitionDuration)
         {
