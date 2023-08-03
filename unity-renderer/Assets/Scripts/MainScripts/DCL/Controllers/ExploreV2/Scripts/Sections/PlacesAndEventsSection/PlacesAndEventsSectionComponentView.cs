@@ -1,5 +1,4 @@
 using DCL;
-using System;
 using UnityEngine;
 
 public interface IPlacesAndEventsSectionComponentView

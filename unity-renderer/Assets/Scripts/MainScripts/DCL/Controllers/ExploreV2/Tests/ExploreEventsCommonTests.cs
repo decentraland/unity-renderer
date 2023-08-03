@@ -26,12 +26,8 @@ public class ExploreEventsCommonTests
     {
         eventsSubSectionComponent.featuredEvents.ExtractItems();
         eventsSubSectionComponent.featuredEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.trendingEvents.ExtractItems();
-        eventsSubSectionComponent.trendingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.upcomingEvents.ExtractItems();
-        eventsSubSectionComponent.upcomingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.goingEvents.ExtractItems();
-        eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
+        eventsSubSectionComponent.eventsGrid.ExtractItems();
+        eventsSubSectionComponent.eventCardsPool.ReleaseAll();
         eventsSubSectionComponent.Dispose();
         testEventCard.Dispose();
         GameObject.Destroy(eventsSubSectionComponent.eventModal.gameObject);

@@ -5,28 +5,33 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+
+public enum EventsType
+{
+    None,
+    Featured,
+    Trending,
+    WantToGo,
+}
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
     internal const string FEATURED_EVENT_CARDS_POOL_NAME = "Events_FeaturedEventCardsPool";
     private const int FEATURED_EVENT_CARDS_POOL_PREWARM = 10;
-    private const string TRENDING_EVENT_CARDS_POOL_NAME = "Events_TrendingEventCardsPool";
-    private const int TRENDING_EVENT_CARDS_POOL_PREWARM = 12;
-    private const string UPCOMING_EVENT_CARDS_POOL_NAME = "Events_UpcomingEventCardsPool";
-    private const int UPCOMING_EVENT_CARDS_POOL_PREWARM = 9;
-    private const string GOING_EVENT_CARDS_POOL_NAME = "Events_FeatureGoingEventCardsPool";
-    private const int GOING_EVENT_CARDS_POOL_PREWARM = 9;
-    private const string ALL_FREQUENCY_FILTER_ID = "all";
-    private const string ALL_FREQUENCY_FILTER_TEXT = "All";
+    private const string EVENT_CARDS_POOL_NAME = "Events_EventCardsPool";
+    private const int EVENT_CARDS_POOL_PREWARM = 9;
+    private const string ALL_FILTER_ID = "all";
+    private const string ALL_FILTER_TEXT = "All";
     private const string ONE_TIME_EVENT_FREQUENCY_FILTER_ID = "one_time_event";
     private const string ONE_TIME_EVENT_FREQUENCY_FILTER_TEXT = "One time event";
     private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
     private const string RECURRING_EVENT_FREQUENCY_FILTER_TEXT = "Recurring event";
 
-    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new Queue<Func<UniTask>>();
-    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new Queue<Func<UniTask>>();
-    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new ();
+    private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
+    private readonly CancellationTokenSource cancellationTokenSource = new ();
 
     [Header("Assets References")]
     [SerializeField] internal EventCardComponentView eventCardPrefab;
@@ -37,53 +42,47 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal ScrollRect scrollView;
     [SerializeField] internal CarouselComponentView featuredEvents;
     [SerializeField] internal GameObject featuredEventsLoading;
-    [SerializeField] internal GridContainerComponentView trendingEvents;
-    [SerializeField] internal GameObject trendingEventsLoading;
-    [SerializeField] internal TMP_Text trendingEventsNoDataText;
-    [SerializeField] internal GridContainerComponentView upcomingEvents;
-    [SerializeField] internal GameObject upcomingEventsLoading;
-    [SerializeField] internal TMP_Text upcomingEventsNoDataText;
-    [SerializeField] internal GridContainerComponentView goingEvents;
-    [SerializeField] internal GameObject goingEventsLoading;
-    [SerializeField] internal TMP_Text goingEventsNoDataText;
-    [SerializeField] internal GameObject showMoreUpcomingEventsButtonContainer;
-    [SerializeField] internal ButtonComponentView showMoreUpcomingEventsButton;
-    [SerializeField] internal GameObject showMoreGoingEventsButtonContainer;
-    [SerializeField] internal ButtonComponentView showMoreGoingEventsButton;
+    [SerializeField] internal GridContainerComponentView eventsGrid;
+    [SerializeField] internal GameObject eventsLoading;
+    [SerializeField] internal TMP_Text eventsNoDataText;
+    [SerializeField] internal GameObject showMoreEventsButtonContainer;
+    [SerializeField] internal ButtonComponentView showMoreEventsButton;
     [SerializeField] internal GameObject guestGoingToPanel;
     [SerializeField] internal ButtonComponentView connectWalletGuest;
+
+    [SerializeField] internal Button featuredButton;
+    [SerializeField] internal GameObject featuredDeselected;
+    [SerializeField] internal GameObject featuredSelected;
+    [SerializeField] internal Button trendingButton;
+    [SerializeField] internal GameObject trendingDeselected;
+    [SerializeField] internal GameObject trendingSelected;
+    [SerializeField] internal Button wantToGoButton;
+    [SerializeField] internal GameObject wantToGoDeselected;
+    [SerializeField] internal GameObject wantToGoSelected;
     [SerializeField] internal DropdownComponentView frequencyDropdown;
     [SerializeField] internal DropdownComponentView categoriesDropdown;
 
     [SerializeField] private Canvas canvas;
 
     internal Pool featuredEventCardsPool;
-    internal Pool trendingEventCardsPool;
-    internal Pool upcomingEventCardsPool;
-    internal Pool goingEventCardsPool;
+    internal Pool eventCardsPool;
 
     internal EventCardComponentView eventModal;
 
-    private Canvas trendingEventsCanvas;
-    private Canvas upcomingEventsCanvas;
-    private Canvas goingEventsCanvas;
+    private Canvas eventsCanvas;
 
     private bool isUpdatingCardsVisual;
     private bool isGuest;
 
-    public int currentUpcomingEventsPerRow => upcomingEvents.currentItemsPerRow;
-    public int currentGoingEventsPerRow => goingEvents.currentItemsPerRow;
+    public int currentEventsPerRow => eventsGrid.currentItemsPerRow;
 
     public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
 
-    public void SetShowMoreButtonActive(bool isActive) => SetShowMoreUpcomingEventsButtonActive(isActive);
+    public void SetShowMoreButtonActive(bool isActive) => SetShowMoreEventsButtonActive(isActive);
 
-    public void SetShowMoreGoingButtonActive(bool isActive) =>
-        SetShowMoreGoingEventsButtonActive(isActive);
+    public int CurrentTilesPerRow => currentEventsPerRow;
 
-    public int CurrentTilesPerRow => currentUpcomingEventsPerRow;
-    public int CurrentGoingTilesPerRow => currentGoingEventsPerRow;
-
+    public EventsType SelectedEventType { get; private set; }
     public string SelectedFrequency { get; private set; }
     public string SelectedCategory { get; private set; }
 
@@ -92,8 +91,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action<EventFromAPIModel> OnJumpInClicked;
     public event Action<string> OnSubscribeEventClicked;
     public event Action<string> OnUnsubscribeEventClicked;
-    public event Action OnShowMoreUpcomingEventsClicked;
-    public event Action OnShowMoreGoingEventsClicked;
+    public event Action OnShowMoreEventsClicked;
     public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;
     public event Action OnFiltersChanged;
@@ -101,9 +99,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public override void Awake()
     {
         base.Awake();
-        trendingEventsCanvas = trendingEvents.GetComponent<Canvas>();
-        upcomingEventsCanvas = upcomingEvents.GetComponent<Canvas>();
-        goingEventsCanvas = goingEvents.GetComponent<Canvas>();
+        eventsCanvas = eventsGrid.GetComponent<Canvas>();
         guestGoingToPanel.SetActive(false);
     }
 
@@ -114,17 +110,19 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
 
         featuredEvents.RemoveItems();
-        trendingEvents.RemoveItems();
-        upcomingEvents.RemoveItems();
-        goingEvents.RemoveItems();
+        eventsGrid.RemoveItems();
 
-        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
-        showMoreUpcomingEventsButton.onClick.AddListener(() => OnShowMoreUpcomingEventsClicked?.Invoke());
-        showMoreGoingEventsButton.onClick.RemoveAllListeners();
-        showMoreGoingEventsButton.onClick.AddListener(() => OnShowMoreGoingEventsClicked?.Invoke());
+        showMoreEventsButton.onClick.RemoveAllListeners();
+        showMoreEventsButton.onClick.AddListener(() => OnShowMoreEventsClicked?.Invoke());
         connectWalletGuest.onClick.RemoveAllListeners();
         connectWalletGuest.onClick.AddListener(() => OnConnectWallet?.Invoke());
 
+        featuredButton.onClick.RemoveAllListeners();
+        featuredButton.onClick.AddListener(ClickedOnFeatured);
+        trendingButton.onClick.RemoveAllListeners();
+        trendingButton.onClick.AddListener(ClickedOnTrending);
+        wantToGoButton.onClick.RemoveAllListeners();
+        wantToGoButton.onClick.AddListener(ClickedOnWantToGo);
         frequencyDropdown.OnOptionSelectionChanged += OnFrequencyFilterChanged;
         categoriesDropdown.OnOptionSelectionChanged += OnCategoryFilterChanged;
 
@@ -133,9 +131,14 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void OnEnable()
     {
-        SelectedFrequency = ALL_FREQUENCY_FILTER_ID;
-        frequencyDropdown.SetTitle(ALL_FREQUENCY_FILTER_TEXT);
-        frequencyDropdown.SelectOption(ALL_FREQUENCY_FILTER_ID, false);
+        SelectedEventType = EventsType.None;
+        SetFeaturedStatus(false);
+        SetTrendingStatus(false);
+        SetWantToGoStatus(false);
+        SelectedFrequency = ALL_FILTER_ID;
+        frequencyDropdown.SetTitle(ALL_FILTER_TEXT);
+        frequencyDropdown.SelectOption(ALL_FILTER_ID, false);
+        SelectedCategory = ALL_FILTER_ID;
 
         OnEventsSubSectionEnable?.Invoke();
     }
@@ -160,16 +163,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         base.Dispose();
         cancellationTokenSource.Cancel();
 
-        showMoreUpcomingEventsButton.onClick.RemoveAllListeners();
-        showMoreGoingEventsButton.onClick.RemoveAllListeners();
+        showMoreEventsButton.onClick.RemoveAllListeners();
 
         frequencyDropdown.OnOptionSelectionChanged -= OnFrequencyFilterChanged;
         categoriesDropdown.OnOptionSelectionChanged -= OnCategoryFilterChanged;
 
         featuredEvents.Dispose();
-        upcomingEvents.Dispose();
-        trendingEvents.Dispose();
-        goingEvents.Dispose();
+        eventsGrid.Dispose();
 
         if (eventModal != null)
         {
@@ -191,30 +191,20 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void ConfigurePools()
     {
         featuredEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(FEATURED_EVENT_CARDS_POOL_NAME, eventCardLongPrefab, FEATURED_EVENT_CARDS_POOL_PREWARM);
-        trendingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(TRENDING_EVENT_CARDS_POOL_NAME, eventCardPrefab, TRENDING_EVENT_CARDS_POOL_PREWARM);
-        upcomingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(UPCOMING_EVENT_CARDS_POOL_NAME, eventCardPrefab, UPCOMING_EVENT_CARDS_POOL_PREWARM);
-        goingEventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(GOING_EVENT_CARDS_POOL_NAME, eventCardPrefab, GOING_EVENT_CARDS_POOL_PREWARM);
+        eventCardsPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(EVENT_CARDS_POOL_NAME, eventCardPrefab, EVENT_CARDS_POOL_PREWARM);
     }
 
     public override void RefreshControl()
     {
         featuredEvents.RefreshControl();
-        trendingEvents.RefreshControl();
-        upcomingEvents.RefreshControl();
-        goingEvents.RefreshControl();
+        eventsGrid.RefreshControl();
     }
 
     public void SetAllEventGroupsAsLoading()
     {
         SetFeaturedEventsGroupAsLoading();
-
-        SetEventsGroupAsLoading(isVisible: true, goingEventsCanvas, goingEventsLoading);
-        SetEventsGroupAsLoading(isVisible: true, trendingEventsCanvas, trendingEventsLoading);
-        SetEventsGroupAsLoading(isVisible: true, upcomingEventsCanvas, upcomingEventsLoading);
-
-        goingEventsNoDataText.gameObject.SetActive(false);
-        trendingEventsNoDataText.gameObject.SetActive(false);
-        upcomingEventsNoDataText.gameObject.SetActive(false);
+        SetEventsGroupAsLoading(isVisible: true, eventsCanvas, eventsLoading);
+        eventsNoDataText.gameObject.SetActive(false);
     }
 
     internal void SetFeaturedEventsGroupAsLoading()
@@ -229,11 +219,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         loadingBar.SetActive(isVisible);
     }
 
-    public void SetShowMoreUpcomingEventsButtonActive(bool isActive) =>
-        showMoreUpcomingEventsButtonContainer.gameObject.SetActive(isActive);
-
-    public void SetShowMoreGoingEventsButtonActive(bool isActive) =>
-        showMoreGoingEventsButtonContainer.gameObject.SetActive(isActive);
+    public void SetShowMoreEventsButtonActive(bool isActive) =>
+        showMoreEventsButtonContainer.gameObject.SetActive(isActive);
 
     public void ShowEventModal(EventCardComponentModel eventInfo)
     {
@@ -250,27 +237,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
 
-    public void SetTrendingEvents(List<EventCardComponentModel> events) =>
-        SetEvents(events, trendingEvents, trendingEventsCanvas, trendingEventCardsPool, trendingEventsLoading, trendingEventsNoDataText);
-
-    public void SetGoingEvents(List<EventCardComponentModel> events)
-    {
-        if (isGuest)
-        {
-            goingEventsCanvas.gameObject.SetActive(false);
-            goingEventsLoading.SetActive(false);
-            guestGoingToPanel.SetActive(true);
-        }
-        else
-        {
-            goingEventsCanvas.gameObject.SetActive(true);
-            guestGoingToPanel.SetActive(false);
-            SetEvents(events, goingEvents, goingEventsCanvas, goingEventCardsPool, goingEventsLoading, goingEventsNoDataText);
-        }
-    }
-
-    public void SetUpcomingEvents(List<EventCardComponentModel> events) =>
-        SetEvents(events, upcomingEvents, upcomingEventsCanvas, upcomingEventCardsPool, upcomingEventsLoading, upcomingEventsNoDataText);
+    public void SetEvents(List<EventCardComponentModel> events) =>
+        SetEvents(events, eventsGrid, eventsCanvas, eventCardsPool, eventsLoading, eventsNoDataText);
 
     private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Canvas gridCanvas, Pool eventCardsPool, GameObject loadingBar, TMP_Text eventsNoDataText)
     {
@@ -286,15 +254,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         UpdateCardsVisual();
     }
 
-    public void AddUpcomingEvents(List<EventCardComponentModel> events)
+    public void AddEvents(List<EventCardComponentModel> events)
     {
-        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, upcomingEvents, upcomingEventCardsPool, cancellationTokenSource.Token));
-        UpdateCardsVisual();
-    }
-
-    public void AddGoingEvents(List<EventCardComponentModel> events)
-    {
-        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, goingEvents, goingEventCardsPool, cancellationTokenSource.Token));
+        cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
 
@@ -364,13 +326,85 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         List<ToggleComponentModel> valuesToAdd = new List<ToggleComponentModel>
         {
-            new () { id = ALL_FREQUENCY_FILTER_ID, text = ALL_FREQUENCY_FILTER_TEXT, isOn = true, isTextActive = true, changeTextColorOnSelect = true },
+            new () { id = ALL_FILTER_ID, text = ALL_FILTER_TEXT, isOn = true, isTextActive = true, changeTextColorOnSelect = true },
             new () { id = ONE_TIME_EVENT_FREQUENCY_FILTER_ID, text = ONE_TIME_EVENT_FREQUENCY_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
             new () { id = RECURRING_EVENT_FREQUENCY_FILTER_ID, text = RECURRING_EVENT_FREQUENCY_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
         };
 
         frequencyDropdown.SetTitle(valuesToAdd[0].text);
         frequencyDropdown.SetOptions(valuesToAdd);
+    }
+
+    private void SetFeaturedStatus(bool isSelected)
+    {
+        featuredDeselected.SetActive(!isSelected);
+        featuredSelected.SetActive(isSelected);
+    }
+
+    private void SetTrendingStatus(bool isSelected)
+    {
+        trendingDeselected.SetActive(!isSelected);
+        trendingSelected.SetActive(isSelected);
+    }
+
+    private void SetWantToGoStatus(bool isSelected)
+    {
+        wantToGoDeselected.SetActive(!isSelected);
+        wantToGoSelected.SetActive(isSelected);
+    }
+
+    private void ClickedOnFeatured()
+    {
+        if (SelectedEventType == EventsType.Featured)
+        {
+            SelectedEventType = EventsType.None;
+            SetFeaturedStatus(false);
+        }
+        else
+        {
+            SelectedEventType = EventsType.Featured;
+            SetFeaturedStatus(true);
+            SetTrendingStatus(false);
+            SetWantToGoStatus(false);
+        }
+
+        OnFiltersChanged?.Invoke();
+    }
+
+    private void ClickedOnTrending()
+    {
+        if (SelectedEventType == EventsType.Trending)
+        {
+            SelectedEventType = EventsType.None;
+            SetTrendingStatus(false);
+        }
+        else
+        {
+            SelectedEventType = EventsType.Trending;
+            SetTrendingStatus(true);
+            SetFeaturedStatus(false);
+            SetWantToGoStatus(false);
+        }
+
+        OnFiltersChanged?.Invoke();
+    }
+
+    private void ClickedOnWantToGo()
+    {
+        if (SelectedEventType == EventsType.WantToGo)
+        {
+            SelectedEventType = EventsType.None;
+            SetWantToGoStatus(false);
+        }
+        else
+        {
+            SelectedEventType = EventsType.WantToGo;
+            SetWantToGoStatus(true);
+            SetFeaturedStatus(false);
+            SetTrendingStatus(false);
+        }
+
+        OnFiltersChanged?.Invoke();
     }
 
     private void OnFrequencyFilterChanged(bool isOn, string optionId, string optionName)
