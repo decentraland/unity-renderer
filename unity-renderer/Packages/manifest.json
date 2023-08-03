@@ -30,7 +30,7 @@
     "com.unity.test-framework.performance": "2.8.1-preview",
     "com.unity.testtools.codecoverage": "1.2.4",
     "com.unity.textmeshpro": "3.2.0-pre.3",
-    "com.unity.timeline": "1.7.4",
+    "com.unity.timeline": "1.7.5",
     "com.unity.ugui": "1.0.0",
     "com.unity.xr.legacyinputhelpers": "2.1.10",
     "com.vrmc.gltf": "https://github.com/decentraland/UniVRM.git?path=/Assets/UniGLTF#master",
