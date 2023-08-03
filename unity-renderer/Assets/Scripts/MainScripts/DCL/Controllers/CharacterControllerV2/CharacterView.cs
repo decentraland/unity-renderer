@@ -239,6 +239,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 data.jumpHeightStun = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpHeightStun, "jumpHeightStun");
                 data.longFallStunTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longFallStunTime, "longFallStunTime");
                 data.noSlipDistance = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.noSlipDistance, "noSlipDistance");
+                data.slipSpeedMultiplier = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.slipSpeedMultiplier, "slipSpeedMultiplier");
                 data.jumpVelocityDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpVelocityDrag, "jumpVelocityDrag");
 
                 var secondColumnYPos = 0;
