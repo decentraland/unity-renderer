@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCLFeatures.ScreencaptureCamera
@@ -13,10 +14,10 @@ namespace DCLFeatures.ScreencaptureCamera
         [Header("BUTTONS")]
         [SerializeField] private Button cameraReelButton;
         [SerializeField] private Button takeScreenshotButton;
-        [SerializeField] private Button shortcutButton;
+        [SerializeField] private Button shortcutsInfoButton;
         [SerializeField] private Button closeButton;
 
-        [SerializeField] private GameObject shortcutsHelpPanel;
+        [SerializeField] private GameObject shortcutsInfoPanel;
 
         [Header("CAPTURE VFX")]
         [SerializeField] private Image whiteSplashImage;
@@ -29,7 +30,7 @@ namespace DCLFeatures.ScreencaptureCamera
         [field: SerializeField] public Image RefImage { get; private set; }
 
         public event Action CloseButtonClicked;
-        public event Action ShortcutButtonClicked;
+        public event Action ShortcutsInfoButtonClicked;
         public event Action CameraReelButtonClicked;
         public event Action TakeScreenshotButtonClicked;
 
@@ -37,7 +38,7 @@ namespace DCLFeatures.ScreencaptureCamera
         {
             cameraReelButton.onClick.AddListener(() => CameraReelButtonClicked?.Invoke());
             takeScreenshotButton.onClick.AddListener(() => TakeScreenshotButtonClicked?.Invoke());
-            shortcutButton.onClick.AddListener(() => ShortcutButtonClicked?.Invoke());
+            shortcutsInfoButton.onClick.AddListener(() => ShortcutsInfoButtonClicked?.Invoke());
             closeButton.onClick.AddListener(() => CloseButtonClicked?.Invoke());
         }
 
@@ -45,15 +46,15 @@ namespace DCLFeatures.ScreencaptureCamera
         {
             cameraReelButton.onClick.RemoveAllListeners();
             takeScreenshotButton.onClick.RemoveAllListeners();
-            shortcutButton.onClick.RemoveAllListeners();
+            shortcutsInfoButton.onClick.RemoveAllListeners();
             closeButton.onClick.RemoveAllListeners();
         }
 
         public virtual void SwitchVisibility(bool isVisible) =>
             rootCanvas.enabled = isVisible;
 
-        public void ToggleShortcutsHelpPanel() =>
-            shortcutsHelpPanel.SetActive(!shortcutsHelpPanel.activeSelf);
+        public void ToggleShortcutsInfosHelpPanel() =>
+            shortcutsInfoPanel.SetActive(!shortcutsInfoPanel.activeSelf);
 
         public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float transitionDuration)
         {

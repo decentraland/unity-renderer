@@ -37,8 +37,8 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
 
             screencaptureCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
             screencaptureCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
-            screencaptureCamera.toggleScreenshotCameraAction = cameraInputAction;
-            screencaptureCamera.takeScreenshotAction = takeScreenshotAction;
+            screencaptureCamera.inputActionsSchema.ToggleScreenshotCameraAction = cameraInputAction;
+            screencaptureCamera.inputActionsSchema.TakeScreenshotAction = takeScreenshotAction;
 
             // Mock external dependencies
             screencaptureCamera.isScreenshotCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
@@ -76,7 +76,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screencaptureCamera.ToggleVisibility();
+            screencaptureCamera.SetVisibility();
 
             // Assert
             Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
@@ -96,7 +96,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screencaptureCamera.ToggleVisibility();
+            screencaptureCamera.SetVisibility();
 
             // Assert
             Assert.IsTrue(allUIHidden.Get());
@@ -116,7 +116,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCamera.screenshotCamera.gameObject.SetActive(true);
 
             // Act
-            screencaptureCamera.ToggleVisibility();
+            screencaptureCamera.SetVisibility();
 
             // Assert
             Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
