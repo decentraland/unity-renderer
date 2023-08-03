@@ -42,7 +42,7 @@ namespace DCLPlugins.CameraReelPlugin
                 {
                     var screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
-                        Environment.i.world.teleportController, galleryService);
+                        galleryService);
                 });
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;

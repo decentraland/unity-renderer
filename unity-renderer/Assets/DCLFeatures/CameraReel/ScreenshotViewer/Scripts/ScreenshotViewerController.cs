@@ -16,20 +16,18 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
-        private readonly ITeleportController teleportController;
         private readonly ICameraReelGalleryService galleryService;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
         private CameraReelResponse currentScreenshot;
 
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
-            DataStore dataStore, ITeleportController teleportController,
+            DataStore dataStore,
             ICameraReelGalleryService galleryService)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
-            this.teleportController = teleportController;
             this.galleryService = galleryService;
 
             view.CloseButtonClicked += view.Hide;
@@ -145,12 +143,14 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void JumpInScene()
         {
-            if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
-            {
-                teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
-                view.Hide();
-                dataStore.exploreV2.isOpen.Set(false);
-            }
+            if (!int.TryParse(currentScreenshot.metadata.scene.location.x, out int x)
+                || !int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+                return;
+
+            dataStore.HUDs.gotoPanelVisible.Set(true, true);
+            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm), true);
+            view.Hide();
+            dataStore.exploreV2.isOpen.Set(false);
         }
     }
 }
