@@ -74,9 +74,8 @@ namespace DCLFeatures.CameraReel.Gallery
                 gridContainer = monthContainers[month];
 
             CameraReelThumbnail thumbnail = Instantiate(thumbnailPrefab, gridContainer.transform);
-            thumbnail.SetImage(reel.thumbnailUrl);
+            thumbnail.Show(reel);
             thumbnail.OnClicked += () => ScreenshotThumbnailClicked?.Invoke(reel);
-            thumbnail.gameObject.SetActive(true);
 
             if (setAsFirst)
                 thumbnail.transform.SetAsFirstSibling();
