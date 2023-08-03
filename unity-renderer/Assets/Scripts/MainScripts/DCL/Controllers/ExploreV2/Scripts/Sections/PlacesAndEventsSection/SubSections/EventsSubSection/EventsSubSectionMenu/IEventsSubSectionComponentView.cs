@@ -1,12 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public enum EventsType
+{
+    Upcoming,
+    Featured,
+    Trending,
+    WantToGo,
+}
+
 public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Number of events per row that fit with the current upcoming events grid configuration.
     /// </summary>
     int currentEventsPerRow { get; }
+
+    /// <summary>
+    /// Current event type filter (FEATURED, TRENDING or WANT TO GO) selected.
+    /// </summary>
+    EventsType SelectedEventType { get; }
+
+    /// <summary>
+    /// Current frequency filter (ALL, ONE TIME EVENT or RECURRING EVENT) selected.
+    /// </summary>
+    string SelectedFrequency { get; }
+
+    /// <summary>
+    /// Current category filter (ALL, ART & CULTURE, EDUCATION, etc.) selected.
+    /// </summary>
+    string SelectedCategory { get; }
 
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
@@ -44,6 +67,11 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnEventsSubSectionEnable;
+
+    /// <summary>
+    /// It will be triggered each time any filter is changed.
+    /// </summary>
+    event Action OnFiltersChanged;
 
     /// <summary>
     /// Set the featured events component with a list of events.
@@ -90,7 +118,7 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// </summary>
     void SetAllEventGroupsAsLoading();
 
-    void SetShowMoreButtonActive(bool isActive);
     void SetIsGuestUser(bool isGuestUser);
+
     void SetCategories(List<ToggleComponentModel> categories);
 }
