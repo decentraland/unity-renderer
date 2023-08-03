@@ -60,4 +60,11 @@ public class CategoryFromAPIModel
     public bool active;
     public string created_at;
     public string updated_at;
+    public CategoryNameTranslationFromAPIModel i18n;
+}
+
+[Serializable]
+public class CategoryNameTranslationFromAPIModel
+{
+    public string en;
 }

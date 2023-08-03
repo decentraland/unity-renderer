@@ -193,7 +193,7 @@ public static class PlacesAndEventsCardsFactory
                 new ToggleComponentModel
                 {
                     id = category.name,
-                    text = category.name,
+                    text = category.i18n.en,
                     isOn = false,
                     isTextActive = true,
                     changeTextColorOnSelect = true,
