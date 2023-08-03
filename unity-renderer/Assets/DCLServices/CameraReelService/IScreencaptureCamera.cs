@@ -1,6 +1,6 @@
 ﻿namespace DCLServices.CameraReelService
 {
-    public interface IScreenshotCamera
+    public interface IScreencaptureCamera
     {
         void ToggleVisibility(bool isVisible);
     }

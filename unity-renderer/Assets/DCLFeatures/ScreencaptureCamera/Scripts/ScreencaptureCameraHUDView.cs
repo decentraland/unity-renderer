@@ -3,10 +3,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCLFeatures.ScreenshotCamera
+namespace DCLFeatures.ScreencaptureCamera
 {
     [RequireComponent(typeof(Canvas))] [DisallowMultipleComponent]
-    public class ScreenshotCameraHUDView : MonoBehaviour
+    public class ScreencaptureCameraHUDView : MonoBehaviour
     {
         [SerializeField] private Canvas rootCanvas;
 

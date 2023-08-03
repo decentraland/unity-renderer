@@ -2,9 +2,9 @@
 using DCL.Helpers;
 using UnityEngine;
 
-namespace DCLFeatures.ScreenshotCamera
+namespace DCLFeatures.ScreencaptureCamera
 {
-    public class ScreenshotCameraMovement : MonoBehaviour
+    public class ScreencaptureCameraMovement : MonoBehaviour
     {
         [SerializeField] private CharacterController characterController;
         [SerializeField] private float maxDistanceFromPlayer = 5f;
