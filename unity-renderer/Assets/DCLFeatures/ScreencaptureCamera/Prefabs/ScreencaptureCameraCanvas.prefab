@@ -390,12 +390,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 83.7
   m_DefaultSpriteDPI: 89.5
@@ -433,9 +433,9 @@ MonoBehaviour:
   rootCanvas: {fileID: 405257682719442047}
   cameraReelButton: {fileID: 9206488213697234449}
   takeScreenshotButton: {fileID: 8437372990865423879}
-  shortcutButton: {fileID: 1454213940465043179}
+  shortcutsInfoButton: {fileID: 1454213940465043179}
   closeButton: {fileID: 5883770267591735193}
-  shortcutsHelpPanel: {fileID: 8204676638934216250}
+  shortcutsInfoPanel: {fileID: 8204676638934216250}
   whiteSplashImage: {fileID: 2926745434062198778}
   cameraReelIcon: {fileID: 3915869077042057114}
   animatedImage: {fileID: 4429869035757732807}
@@ -2822,7 +2822,7 @@ GameObject:
   - component: {fileID: 1636545737918671535}
   - component: {fileID: 1964772052622313022}
   m_Layer: 5
-  m_Name: Image
+  m_Name: ShortcutsInfoPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3641,7 +3641,7 @@ PrefabInstance:
     - target: {fileID: 8657174706389299562, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
       propertyPath: m_text
-      value: <b>CAMERA REEL</b> [R]
+      value: <b>CAMERA REEL</b> [K]
       objectReference: {fileID: 0}
     - target: {fileID: 8657174706389299562, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
@@ -4012,7 +4012,7 @@ PrefabInstance:
     - target: {fileID: 2480688633441682048, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 210
+      value: 160.9389
       objectReference: {fileID: 0}
     - target: {fileID: 2480688633441682048, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
@@ -4168,12 +4168,12 @@ PrefabInstance:
     - target: {fileID: 8657174706389299562, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
       propertyPath: m_text
-      value: <b>SHOOT</b> [space]
+      value: <b>SHOOT</b> [E]
       objectReference: {fileID: 0}
     - target: {fileID: 8657174706389299562, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 19.8
       objectReference: {fileID: 0}
     - target: {fileID: 8657174706389299562, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
@@ -6420,7 +6420,7 @@ PrefabInstance:
     - target: {fileID: 5466927874646222343, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}
       propertyPath: m_Name
-      value: Button_Tooltips
+      value: Button_ShortcutsInfo
       objectReference: {fileID: 0}
     - target: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
         type: 3}

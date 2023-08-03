@@ -8,7 +8,6 @@ using System.Collections;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -24,12 +23,9 @@ namespace DCLFeatures.ScreencaptureCamera
 
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
-        [FormerlySerializedAs("screenshotCameraHUDViewPrefab")] [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
+        [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
 
-        [Header("INPUT ACTIONS")]
-        [SerializeField] internal InputAction_Trigger toggleScreenshotCameraAction;
-        [SerializeField] internal InputAction_Trigger takeScreenshotAction;
-        [SerializeField] internal InputAction_Trigger closeWindowAction;
+        [Space, SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
         internal ScreenshotCapture screenshotCaptureLazyValue;
         internal bool? isGuestLazyValue;
@@ -102,18 +98,12 @@ namespace DCLFeatures.ScreencaptureCamera
 
         internal void OnEnable()
         {
-            takeScreenshotAction.OnTriggered += CaptureScreenshot;
-
-            toggleScreenshotCameraAction.OnTriggered += ToggleToggleScreenshotCamera;
-            closeWindowAction.OnTriggered += ToggleToggleScreenshotCamera;
+            inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
         }
 
         internal void OnDisable()
         {
-            takeScreenshotAction.OnTriggered -= CaptureScreenshot;
-
-            toggleScreenshotCameraAction.OnTriggered -= ToggleToggleScreenshotCamera;
-            closeWindowAction.OnTriggered -= ToggleToggleScreenshotCamera;
+            inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
         }
 
         private void OnExploreV2Open(bool current, bool previous)
@@ -125,9 +115,13 @@ namespace DCLFeatures.ScreencaptureCamera
             }
         }
 
-        public void ToggleVisibility(bool _ = true)
+        private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
+            SetVisibility(!isScreenshotCameraActive.Get());
+
+        public void SetVisibility(bool isVisible = true)
         {
             if (isGuest) return;
+            if (isVisible == isScreenshotCameraActive.Get()) return;
 
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
 
@@ -144,27 +138,12 @@ namespace DCLFeatures.ScreencaptureCamera
             if (!isScreenshotCameraActive.Get() || isGuest || isOnCooldown) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
-
             Texture2D screenshot = screenshotCapture.CaptureScreenshot();
-            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-
-            ScreenshotFX(screenshot);
+            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, COOLDOWN/2, COOLDOWN/2);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            cameraReelService.UploadScreenshot(screenshot, metadata, ct: uploadPictureCancellationToken.Token).Forget();
+            cameraReelService.UploadScreenshot(screenshot, metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera), ct: uploadPictureCancellationToken.Token).Forget();
         }
-
-        private void CaptureScreenshot(DCLAction_Trigger _) =>
-            CaptureScreenshot();
-
-        private void ScreenshotFX(Texture2D image)
-        {
-            AudioScriptableObjects.takeScreenshot.Play();
-            screencaptureCameraHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN / 2, transitionDuration: COOLDOWN / 2);
-        }
-
-        private void ToggleToggleScreenshotCamera(DCLAction_Trigger _) =>
-            ToggleVisibility();
 
         internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
             BooleanVariable cameraBlocked, BooleanVariable featureKeyTriggersBlocked, BooleanVariable userMovementKeysBlocked, BooleanVariable isScreenshotCameraActive)
@@ -228,7 +207,7 @@ namespace DCLFeatures.ScreencaptureCamera
         internal void InstantiateCameraObjects()
         {
             screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
-            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, this);
+            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, this, inputActionsSchema);
             screencaptureCameraHUDController.Initialize();
 
             characterCameraTransform = cameraController.GetCamera().transform;
@@ -239,12 +218,6 @@ namespace DCLFeatures.ScreencaptureCamera
             screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screencaptureCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
 
             isInstantiated = true;
-        }
-
-        public void DisableScreenshotCameraMode()
-        {
-            if (isScreenshotCameraActive.Get())
-                ToggleVisibility();
         }
     }
 }
