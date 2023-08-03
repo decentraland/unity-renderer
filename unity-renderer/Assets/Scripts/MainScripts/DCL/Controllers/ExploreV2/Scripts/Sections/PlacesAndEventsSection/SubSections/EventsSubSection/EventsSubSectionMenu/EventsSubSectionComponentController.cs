@@ -73,6 +73,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreEventsClicked -= ShowMoreEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
+        view.OnFiltersChanged -= LoadFilteredEvents;
         view.OnConnectWallet -= ConnectWallet;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
@@ -83,6 +84,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnEventsSubSectionEnable += RequestAllEvents;
+        view.OnFiltersChanged += LoadFilteredEvents;
         cardsReloader.Initialize();
     }
 
@@ -93,7 +95,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
-            view.SetShowMoreButtonActive(false);
+            view.SetShowMoreEventsButtonActive(false);
             cardsReloader.RequestAll();
         }
     }
@@ -114,6 +116,36 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
+    private void LoadFilteredEvents()
+    {
+        List<EventCardComponentModel> filteredEventCards = new ();
+
+        switch (view.SelectedEventType)
+        {
+            case EventsType.Upcoming:
+                availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents());
+                view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
+                break;
+            case EventsType.Featured:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents());
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+            case EventsType.Trending:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents());
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+            case EventsType.WantToGo:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterWantToGoEvents());
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+        }
+
+        view.SetEvents(filteredEventCards);
+    }
+
+    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
+
     internal List<EventFromAPIModel> FilterFeaturedEvents()
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
@@ -126,7 +158,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
 
-    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
+    internal List<EventFromAPIModel> FilterWantToGoEvents() => eventsFromAPI.Where(e => e.attending).ToList();
+
 
     public void ShowMoreEvents()
     {

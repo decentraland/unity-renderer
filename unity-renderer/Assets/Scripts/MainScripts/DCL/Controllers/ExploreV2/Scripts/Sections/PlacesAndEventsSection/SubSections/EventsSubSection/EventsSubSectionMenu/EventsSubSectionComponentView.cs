@@ -7,14 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum EventsType
-{
-    None,
-    Featured,
-    Trending,
-    WantToGo,
-}
-
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
 {
     internal const string FEATURED_EVENT_CARDS_POOL_NAME = "Events_FeaturedEventCardsPool";
@@ -77,8 +69,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
 
-    public void SetShowMoreButtonActive(bool isActive) => SetShowMoreEventsButtonActive(isActive);
-
     public int CurrentTilesPerRow => currentEventsPerRow;
 
     public EventsType SelectedEventType { get; private set; }
@@ -130,7 +120,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     public override void OnEnable()
     {
-        SelectedEventType = EventsType.None;
+        SelectedEventType = EventsType.Upcoming;
         SetFeaturedStatus(false);
         SetTrendingStatus(false);
         SetWantToGoStatus(false);
@@ -246,7 +236,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         eventCardsPool.ReleaseAll();
 
-        eventsGrid.ExtractItems();
+        eventsGrid.ExtractItems(eventCardsPool.container.transform);
         eventsGrid.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
@@ -280,7 +270,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEventCardsPool.ReleaseAll();
 
-        featuredEvents.ExtractItems();
+        featuredEvents.ExtractItems(featuredEventCardsPool.container.transform);
 
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
@@ -356,7 +346,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         if (SelectedEventType == EventsType.Featured)
         {
-            SelectedEventType = EventsType.None;
+            SelectedEventType = EventsType.Upcoming;
             SetFeaturedStatus(false);
         }
         else
@@ -374,7 +364,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         if (SelectedEventType == EventsType.Trending)
         {
-            SelectedEventType = EventsType.None;
+            SelectedEventType = EventsType.Upcoming;
             SetTrendingStatus(false);
         }
         else
@@ -392,7 +382,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         if (SelectedEventType == EventsType.WantToGo)
         {
-            SelectedEventType = EventsType.None;
+            SelectedEventType = EventsType.Upcoming;
             SetWantToGoStatus(false);
         }
         else
