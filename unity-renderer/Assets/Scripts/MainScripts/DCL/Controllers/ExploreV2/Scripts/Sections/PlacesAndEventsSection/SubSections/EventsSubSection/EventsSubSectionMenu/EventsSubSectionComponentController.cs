@@ -11,8 +11,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
 
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
-    internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 4;
-    private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    private const int SHOW_MORE_ROWS_INCREMENT = 2;
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
@@ -44,7 +44,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
 
-        this.view.OnShowMoreEventsClicked += ShowMoreUpcomingEvents;
+        this.view.OnShowMoreEventsClicked += ShowMoreEvents;
         this.view.OnConnectWallet += ConnectWallet;
 
         this.dataStore = dataStore;
@@ -71,7 +71,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnJumpInClicked -= OnJumpInToEvent;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
-        view.OnShowMoreEventsClicked -= ShowMoreUpcomingEvents;
+        view.OnShowMoreEventsClicked -= ShowMoreEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
         view.OnConnectWallet -= ConnectWallet;
 
@@ -92,7 +92,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetIsGuestUser(userProfileBridge.GetOwn().isGuest);
         if (cardsReloader.CanReload())
         {
-            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
+            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
             view.SetShowMoreButtonActive(false);
             cardsReloader.RequestAll();
         }
@@ -123,13 +123,15 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         return eventsFiltered;
     }
+
     internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
+
     internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
 
-    public void ShowMoreUpcomingEvents()
+    public void ShowMoreEvents()
     {
         int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentEventsPerRow) * view.currentEventsPerRow) - availableUISlots;
-        int numberOfItemsToAdd = (view.currentEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+        int numberOfItemsToAdd = (view.currentEventsPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
         List<EventFromAPIModel> eventsFiltered = availableUISlots + numberOfItemsToAdd <= eventsFromAPI.Count
             ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)

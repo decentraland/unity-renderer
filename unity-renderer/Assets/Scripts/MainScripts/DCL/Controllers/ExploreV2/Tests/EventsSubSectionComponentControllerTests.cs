@@ -89,7 +89,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.RequestAllEvents();
 
         // Assert
-        Assert.AreEqual(eventsSubSectionComponentView.currentEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.availableUISlots);
+        Assert.AreEqual(eventsSubSectionComponentView.currentEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_ROWS, eventsSubSectionComponentController.availableUISlots);
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
         eventsSubSectionComponentView.Received().SetAllAsLoading();
         eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
@@ -157,7 +157,7 @@ public class EventsSubSectionComponentControllerTests
     public void LoaShowMoreUpcomingEventsCorrectly(int numberOfPlaces)
     {
         // Act
-        eventsSubSectionComponentController.ShowMoreUpcomingEvents();
+        eventsSubSectionComponentController.ShowMoreEvents();
 
         // Assert
         eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(Arg.Any<bool>());
