@@ -47,6 +47,6 @@ namespace DCLServices.CameraReelService
             this.screencaptureCamera = screencaptureCamera;
 
         public void EnableScreenshotCamera() =>
-            screencaptureCamera?.SetVisibility(isVisible: true);
+            screencaptureCamera?.ToggleScreenshotCamera(isEnabled: true);
     }
 }

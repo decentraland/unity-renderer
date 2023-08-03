@@ -2,6 +2,6 @@
 {
     public interface IScreencaptureCamera
     {
-        void SetVisibility(bool isVisible);
+        void ToggleScreenshotCamera(bool isEnabled);
     }
 }

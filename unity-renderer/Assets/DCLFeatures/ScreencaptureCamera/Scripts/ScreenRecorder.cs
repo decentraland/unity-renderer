@@ -2,7 +2,7 @@
 
 namespace DCLFeatures.ScreencaptureCamera
 {
-    public class ScreenshotCapture
+    public class ScreenRecorder
     {
         private const int DESIRED_WIDTH = 1920;
         private const int DESIRED_HEIGHT = 1080;
@@ -14,7 +14,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private (float width, float height) spriteRect;
 
-        public ScreenshotCapture(Camera screenshotCamera, RectTransform canvasRectTransform, Sprite sprite, RectTransform spriteRectTransform)
+        public ScreenRecorder(Camera screenshotCamera, RectTransform canvasRectTransform, Sprite sprite, RectTransform spriteRectTransform)
         {
             this.sprite = sprite;
             imageRectTransform = spriteRectTransform;
