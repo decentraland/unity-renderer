@@ -22,6 +22,6 @@ namespace DCLServices.CameraReelService
     {
         UniTask UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default);
 
-        void SetCamera(IScreenshotCamera screenshotCamera);
+        void SetCamera(IScreencaptureCamera screencaptureCamera);
     }
 }

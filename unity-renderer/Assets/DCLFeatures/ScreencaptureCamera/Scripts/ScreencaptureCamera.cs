@@ -8,12 +8,13 @@ using System.Collections;
 using System.Threading;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-namespace DCLFeatures.ScreenshotCamera
+namespace DCLFeatures.ScreencaptureCamera
 {
-    public class ScreenshotCamera : MonoBehaviour, IScreenshotCamera
+    public class ScreencaptureCamera : MonoBehaviour, IScreencaptureCamera
     {
         private const float COOLDOWN = 3f;
 
@@ -23,7 +24,7 @@ namespace DCLFeatures.ScreenshotCamera
 
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
-        [SerializeField] internal ScreenshotCameraHUDView screenshotCameraHUDViewPrefab;
+        [FormerlySerializedAs("screenshotCameraHUDViewPrefab")] [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
 
         [Header("INPUT ACTIONS")]
         [SerializeField] internal InputAction_Trigger toggleScreenshotCameraAction;
@@ -39,7 +40,7 @@ namespace DCLFeatures.ScreenshotCamera
         private float lastScreenshotTime = -Mathf.Infinity;
 
         private bool isInstantiated;
-        private ScreenshotCameraHUDView screenshotCameraHUDView;
+        private ScreencaptureCameraHUDView screencaptureCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
         private Transform characterCameraTransform;
         private IScreenshotCameraService cameraReelServiceLazyValue;
@@ -54,7 +55,7 @@ namespace DCLFeatures.ScreenshotCamera
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
-        private ScreenshotCameraHUDController screenshotCameraHUDController;
+        private ScreencaptureCameraHUDController screencaptureCameraHUDController;
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < COOLDOWN;
 
@@ -159,7 +160,7 @@ namespace DCLFeatures.ScreenshotCamera
         private void ScreenshotFX(Texture2D image)
         {
             AudioScriptableObjects.takeScreenshot.Play();
-            screenshotCameraHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN / 2, transitionDuration: COOLDOWN / 2);
+            screencaptureCameraHUDView.ScreenshotCaptureAnimation(image, splashDuration: COOLDOWN / 2, transitionDuration: COOLDOWN / 2);
         }
 
         private void ToggleToggleScreenshotCamera(DCLAction_Trigger _) =>
@@ -187,7 +188,7 @@ namespace DCLFeatures.ScreenshotCamera
                 EnableScreenshotCamera();
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            screenshotCameraHUDView.SwitchVisibility(activateScreenshotCamera);
+            screencaptureCameraHUDView.SwitchVisibility(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
         }
 
@@ -226,16 +227,16 @@ namespace DCLFeatures.ScreenshotCamera
 
         internal void InstantiateCameraObjects()
         {
-            screenshotCameraHUDView = Instantiate(screenshotCameraHUDViewPrefab);
-            screenshotCameraHUDController = new ScreenshotCameraHUDController(screenshotCameraHUDView, this);
-            screenshotCameraHUDController.Initialize();
+            screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
+            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, this);
+            screencaptureCameraHUDController.Initialize();
 
             characterCameraTransform = cameraController.GetCamera().transform;
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
 
-            Image refBoundariesImage = screenshotCameraHUDView.RefImage;
-            screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screenshotCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
+            Image refBoundariesImage = screencaptureCameraHUDView.RefImage;
+            screenshotCaptureLazyValue ??= new ScreenshotCapture(screenshotCamera, screencaptureCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
 
             isInstantiated = true;
         }

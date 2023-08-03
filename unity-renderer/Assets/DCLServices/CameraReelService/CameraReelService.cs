@@ -14,7 +14,7 @@ namespace DCLServices.CameraReelService
 
         private readonly ICameraReelClient client;
 
-        private IScreenshotCamera screenshotCamera;
+        private IScreencaptureCamera screencaptureCamera;
         public event Action<CameraReelResponse> ScreenshotUploaded;
 
         public CameraReelService(ICameraReelClient client)
@@ -43,10 +43,10 @@ namespace DCLServices.CameraReelService
             finally { ScreenshotUploaded?.Invoke(response); }
         }
 
-        public void SetCamera(IScreenshotCamera screenshotCamera) =>
-            this.screenshotCamera = screenshotCamera;
+        public void SetCamera(IScreencaptureCamera screencaptureCamera) =>
+            this.screencaptureCamera = screencaptureCamera;
 
         public void EnableScreenshotCamera() =>
-            screenshotCamera?.ToggleVisibility(isVisible: true);
+            screencaptureCamera?.ToggleVisibility(isVisible: true);
     }
 }

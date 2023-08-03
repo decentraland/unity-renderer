@@ -1,16 +1,15 @@
 using DCL;
 using DCL.Camera;
-using DCLFeatures.ScreenshotCamera;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace DCLServices.QuestsService.Tests
+namespace DCLFeatures.ScreencaptureCamera.Tests
 {
     [Category("EditModeCI")]
-    public class ScreenshotCameraShould
+    public class ScreencaptureCameraShould
     {
-        private ScreenshotCamera screenshotCamera;
+        private ScreencaptureCamera screencaptureCamera;
 
         private InputAction_Trigger cameraInputAction;
         private InputAction_Trigger takeScreenshotAction;
@@ -27,22 +26,22 @@ namespace DCLServices.QuestsService.Tests
         public void SetUp()
         {
             var gameObject = new GameObject();
-            screenshotCamera = gameObject.AddComponent<ScreenshotCamera>();
+            screencaptureCamera = gameObject.AddComponent<ScreencaptureCamera>();
 
             // Mock prefab dependencies
             cameraInputAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
             takeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
 
-            screenshotCamera.cameraPrefab = gameObject.AddComponent<Camera>();
-            screenshotCamera.screenshotCameraHUDViewPrefab = gameObject.AddComponent<ScreenshotCameraHUDViewDummy>();
+            screencaptureCamera.cameraPrefab = gameObject.AddComponent<Camera>();
+            screencaptureCamera.screencaptureCameraHUDViewPrefab = gameObject.AddComponent<ScreencaptureCameraHUDViewDummy>();
 
-            screenshotCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
-            screenshotCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
-            screenshotCamera.toggleScreenshotCameraAction = cameraInputAction;
-            screenshotCamera.takeScreenshotAction = takeScreenshotAction;
+            screencaptureCamera.characterController = gameObject.AddComponent<DCLCharacterController>();
+            screencaptureCamera.cameraController = gameObject.AddComponent<CameraControllerMock>();
+            screencaptureCamera.toggleScreenshotCameraAction = cameraInputAction;
+            screencaptureCamera.takeScreenshotAction = takeScreenshotAction;
 
             // Mock external dependencies
-            screenshotCamera.isScreenshotCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
+            screencaptureCamera.isScreenshotCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
 
             allUIHidden = ScriptableObject.CreateInstance<BooleanVariable>();
             cameraModeInputLocked = ScriptableObject.CreateInstance<BooleanVariable>();
@@ -54,33 +53,33 @@ namespace DCLServices.QuestsService.Tests
             cameraLeftMouseButtonCursorLock = Substitute.For<BaseVariable<bool>>();
 
             // Inject dependencies
-            screenshotCamera.SetExternalDependencies(allUIHidden, cameraModeInputLocked, cameraLeftMouseButtonCursorLock,
+            screencaptureCamera.SetExternalDependencies(allUIHidden, cameraModeInputLocked, cameraLeftMouseButtonCursorLock,
                 cameraBlocked, featureKeyTriggersBlocked, userMovementKeysBlocked, isScreenshotCameraActive);
 
-            screenshotCamera.screenshotCaptureLazyValue = new ScreenshotCaptureDummy();
-            screenshotCamera.InstantiateCameraObjects();
+            screencaptureCamera.screenshotCaptureLazyValue = new ScreenshotCaptureDummy();
+            screencaptureCamera.InstantiateCameraObjects();
 
-            screenshotCamera.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
+            screencaptureCamera.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.DestroyImmediate(screenshotCamera.gameObject);
+            Object.DestroyImmediate(screencaptureCamera.gameObject);
         }
 
         [Test]
         public void ToggleScreenshotCamera_WhenGuest_DoesNothing_ExternalVarsNotToggled()
         {
             // Arrange
-            screenshotCamera.isGuestLazyValue = true;
-            screenshotCamera.screenshotCamera.gameObject.SetActive(false);
+            screencaptureCamera.isGuestLazyValue = true;
+            screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screenshotCamera.ToggleVisibility();
+            screencaptureCamera.ToggleVisibility();
 
             // Assert
-            Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
             Assert.IsFalse(allUIHidden.Get());
             Assert.IsFalse(cameraModeInputLocked.Get());
             Assert.IsFalse(cameraBlocked.Get());
@@ -93,11 +92,11 @@ namespace DCLServices.QuestsService.Tests
         public void ToggleScreenshotCamera_WhenNotGuest_ActivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
-            screenshotCamera.isGuestLazyValue = false;
-            screenshotCamera.screenshotCamera.gameObject.SetActive(false);
+            screencaptureCamera.isGuestLazyValue = false;
+            screencaptureCamera.screenshotCamera.gameObject.SetActive(false);
 
             // Act
-            screenshotCamera.ToggleVisibility();
+            screencaptureCamera.ToggleVisibility();
 
             // Assert
             Assert.IsTrue(allUIHidden.Get());
@@ -105,7 +104,7 @@ namespace DCLServices.QuestsService.Tests
             Assert.IsTrue(cameraBlocked.Get());
             Assert.IsTrue(featureKeyTriggersBlocked.Get());
             Assert.IsTrue(userMovementKeysBlocked.Get());
-            Assert.IsTrue(screenshotCamera.isScreenshotCameraActive.Get());
+            Assert.IsTrue(screencaptureCamera.isScreenshotCameraActive.Get());
             cameraLeftMouseButtonCursorLock.Received().Set(true);
         }
 
@@ -113,14 +112,14 @@ namespace DCLServices.QuestsService.Tests
         public void ToggleScreenshotCamera_WhenNotGuest_DeactivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
-            screenshotCamera.isGuestLazyValue = false;
-            screenshotCamera.screenshotCamera.gameObject.SetActive(true);
+            screencaptureCamera.isGuestLazyValue = false;
+            screencaptureCamera.screenshotCamera.gameObject.SetActive(true);
 
             // Act
-            screenshotCamera.ToggleVisibility();
+            screencaptureCamera.ToggleVisibility();
 
             // Assert
-            Assert.IsFalse(screenshotCamera.isScreenshotCameraActive.Get());
+            Assert.IsFalse(screencaptureCamera.isScreenshotCameraActive.Get());
             Assert.IsFalse(allUIHidden.Get());
             Assert.IsFalse(cameraBlocked.Get());
             Assert.IsFalse(featureKeyTriggersBlocked.Get());
@@ -145,7 +144,7 @@ namespace DCLServices.QuestsService.Tests
             new (1, 1);
     }
 
-    public class ScreenshotCameraHUDViewDummy : ScreenshotCameraHUDView
+    public class ScreencaptureCameraHUDViewDummy : ScreencaptureCameraHUDView
     {
         public override void SwitchVisibility(bool isVisible) { }
     }

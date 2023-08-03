@@ -1,5 +1,5 @@
 {
-    "name": "ScreenshotCamera",
+    "name": "ScreencaptureCamera",
     "rootNamespace": "",
     "references": [
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
