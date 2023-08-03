@@ -29,12 +29,6 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
   defaultLogger.info('about to deploy profile', profile)
-  const wearableIndexToChange = profile.avatar.wearables.findIndex(we => we === 'urn:decentraland:mumbai:collections-v2:0x10cd9f15bb7d58ac0c8f4ec5e1b77c0f5df0b652:0')
-
-  if (wearableIndexToChange) {
-    defaultLogger.info('Changing wearable manually')
-    profile.avatar.wearables[wearableIndexToChange] = 'urn:decentraland:mumbai:collections-v2:0x10cd9f15bb7d58ac0c8f4ec5e1b77c0f5df0b652:0:2'
-  }
   
   try {
     yield call(deployAvatar, {
