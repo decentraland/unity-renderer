@@ -1,9 +1,12 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Providers;
+using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCLPlugins.CameraReelPlugin
@@ -12,8 +15,11 @@ namespace DCLPlugins.CameraReelPlugin
     {
         private const string ADDRESS = "CameraReelSectionView";
 
+        private readonly List<ThumbnailContextMenuController> thumbnailContextMenuControllers = new ();
+
         private Transform sectionParent;
         private CameraReelSectionController controller;
+        private CameraReelModel cameraReelModel;
 
         public CameraReelPlugin()
         {
@@ -25,7 +31,7 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            CameraReelModel cameraReelModel = new ();
+            cameraReelModel = new ();
             ICameraReelGalleryService galleryService = Environment.i.serviceLocator.Get<ICameraReelGalleryService>();
             DataStore dataStore = DataStore.i;
 
@@ -40,12 +46,28 @@ namespace DCLPlugins.CameraReelPlugin
                         Environment.i.world.teleportController, galleryService);
                 });
 
+            ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
+
             dataStore.HUDs.isCameraReelInitialized.Set(true);
         }
 
         public void Dispose()
         {
-            controller.Dispose();
+            ThumbnailContextMenuView.Instances.OnAdded -= OnThumbnailContextMenuAdded;
+
+            foreach (ThumbnailContextMenuController controller in thumbnailContextMenuControllers)
+                controller.Dispose();
+
+            this.controller.Dispose();
+        }
+
+        private void OnThumbnailContextMenuAdded(ThumbnailContextMenuView view)
+        {
+            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), cameraReelModel,
+                new WebInterfaceBrowserBridge(),
+                Environment.i.serviceLocator.Get<ICameraReelGalleryService>(),
+                DataStore.i);
+            thumbnailContextMenuControllers.Add(controller);
         }
 
         private static async UniTask<CameraReelSectionView> CreateCameraReelSectionView(IAddressableResourceProvider assetProvider) =>
