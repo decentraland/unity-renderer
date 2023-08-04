@@ -48,7 +48,7 @@ public static class ExploreEventsTestHelpers
                 total_attendees = 100,
                 trending = false,
                 user_name = "Test User Name",
-                categories = {},
+                categories = new []{ "art" },
                 recurrent = false,
             }
         };
@@ -85,7 +85,7 @@ public static class ExploreEventsTestHelpers
             total_attendees = 100,
             trending = false,
             user_name = "Test User Name",
-            categories = {},
+            categories = new []{ "art" },
             recurrent = false,
         };
     }

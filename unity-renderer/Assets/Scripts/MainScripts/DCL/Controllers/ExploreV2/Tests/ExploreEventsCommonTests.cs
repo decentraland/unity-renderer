@@ -143,7 +143,9 @@ public class ExploreEventsCommonTests
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
-                user_name = "Test User Name"
+                user_name = "Test User Name",
+                categories = new []{ "art" },
+                recurrent = false,
             }
         };
     }
@@ -166,7 +168,9 @@ public class ExploreEventsCommonTests
             scene_name = "Test Scene Name",
             total_attendees = 100,
             trending = false,
-            user_name = "Test User Name"
+            user_name = "Test User Name",
+            categories = new []{ "art" },
+            recurrent = false,
         };
     }
 }
