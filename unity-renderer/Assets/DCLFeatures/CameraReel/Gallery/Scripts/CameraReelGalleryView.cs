@@ -2,6 +2,8 @@
 using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,10 +11,9 @@ namespace DCLFeatures.CameraReel.Gallery
 {
     public class CameraReelGalleryView : MonoBehaviour
     {
-        private readonly Dictionary<int, GridContainerComponentView> monthGridContainers = new ();
-        private readonly Dictionary<int, GameObject> monthHeaderContainers = new ();
+        private readonly SortedDictionary<DateTime, (GridContainerComponentView gridContainer, GameObject headerContainer)> monthContainers = new ();
         private readonly Dictionary<CameraReelResponse, GameObject> screenshotThumbnails = new ();
-        private readonly Dictionary<int, int> thumbnailsByMonth = new ();
+        private readonly Dictionary<DateTime, int> thumbnailsByMonth = new ();
 
         [SerializeField] private RectTransform container;
         [SerializeField] private Button showMoreButton;
@@ -55,12 +56,12 @@ namespace DCLFeatures.CameraReel.Gallery
             Destroy(screenshotThumbnails[reel]);
             screenshotThumbnails.Remove(reel);
 
-            int month = reel.metadata.GetLocalizedDateTime().Month;
+            DateTime date = reel.metadata.GetStartOfTheMonthDate();
 
-            if (thumbnailsByMonth.ContainsKey(month))
-                thumbnailsByMonth[month]--;
+            if (thumbnailsByMonth.ContainsKey(date))
+                thumbnailsByMonth[date]--;
 
-            RemoveEmptyMonthContainer(month);
+            RemoveEmptyMonthContainer(date);
 
             container.ForceUpdateLayout();
         }
@@ -77,9 +78,9 @@ namespace DCLFeatures.CameraReel.Gallery
 
         public void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
         {
-            int month = reel.metadata.GetLocalizedDateTime().Month;
+            DateTime date = reel.metadata.GetStartOfTheMonthDate();
 
-            GridContainerComponentView gridContainer = GetMonthContainer(setAsFirst, month);
+            GridContainerComponentView gridContainer = GetMonthContainer(date);
 
             CameraReelThumbnail thumbnail = Instantiate(thumbnailPrefab, gridContainer.transform);
             thumbnail.Show(reel);
@@ -90,50 +91,62 @@ namespace DCLFeatures.CameraReel.Gallery
 
             screenshotThumbnails.Add(reel, thumbnail.gameObject);
 
-            if (!thumbnailsByMonth.ContainsKey(month))
-                thumbnailsByMonth[month] = 0;
-            thumbnailsByMonth[month]++;
+            if (!thumbnailsByMonth.ContainsKey(date))
+                thumbnailsByMonth[date] = 0;
+            thumbnailsByMonth[date]++;
 
             container.ForceUpdateLayout();
         }
 
-        private GridContainerComponentView GetMonthContainer(bool setAsFirst, int month)
+        private GridContainerComponentView GetMonthContainer(DateTime date)
         {
             GridContainerComponentView gridContainer;
 
-            if (!monthGridContainers.ContainsKey(month))
+            if (!monthContainers.ContainsKey(date))
             {
-                GameObject header = Instantiate(monthHeaderPrefab, container);
-                header.gameObject.SetActive(true);
-                gridContainer = Instantiate(monthGridContainerPrefab, container);
-                gridContainer.gameObject.SetActive(true);
-
-                if (setAsFirst)
-                {
-                    gridContainer.transform.SetAsFirstSibling();
-                    header.transform.SetAsFirstSibling();
-                }
-
+                gridContainer = CreateMonthContainer(date);
                 showMoreButtonPanel.SetAsLastSibling();
-
-                monthGridContainers.Add(month, gridContainer);
-                monthHeaderContainers.Add(month, header);
+                SortAllMonthContainers();
             }
             else
-                gridContainer = monthGridContainers[month];
+                gridContainer = monthContainers[date].gridContainer;
 
             return gridContainer;
         }
 
-        private void RemoveEmptyMonthContainer(int month)
+        private GridContainerComponentView CreateMonthContainer(DateTime date)
         {
-            if (!monthGridContainers.ContainsKey(month)) return;
-            if (thumbnailsByMonth.ContainsKey(month) && thumbnailsByMonth[month] > 0) return;
+            GameObject header = Instantiate(monthHeaderPrefab, container);
+            header.gameObject.SetActive(true);
+            header.GetComponentInChildren<TMP_Text>().SetText(GetMonthName(date));
+            GridContainerComponentView gridContainer = Instantiate(monthGridContainerPrefab, container);
+            gridContainer.gameObject.SetActive(true);
 
-            Destroy(monthHeaderContainers[month]);
-            Destroy(monthGridContainers[month]);
-            monthHeaderContainers.Remove(month);
-            monthGridContainers.Remove(month);
+            monthContainers.Add(date, (gridContainer, header));
+            return gridContainer;
         }
+
+        private void SortAllMonthContainers()
+        {
+            foreach ((DateTime date, (GridContainerComponentView gridContainer, GameObject header)) in monthContainers)
+            {
+                gridContainer.transform.SetAsFirstSibling();
+                header.transform.SetAsFirstSibling();
+            }
+        }
+
+        private void RemoveEmptyMonthContainer(DateTime date)
+        {
+            if (!monthContainers.ContainsKey(date)) return;
+            if (thumbnailsByMonth.ContainsKey(date) && thumbnailsByMonth[date] > 0) return;
+
+            (GridContainerComponentView gridContainer, GameObject headerContainer) containers = monthContainers[date];
+            Destroy(containers.gridContainer);
+            Destroy(containers.headerContainer);
+            monthContainers.Remove(date);
+        }
+
+        private string GetMonthName(DateTime date) =>
+            date.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
     }
 }
