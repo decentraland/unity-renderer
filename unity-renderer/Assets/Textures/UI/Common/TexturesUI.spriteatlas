@@ -160,7 +160,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0822ae34e463d49f49b978299714fd21, type: 3}
   - {fileID: 21300000, guid: 65d50244ec48c4d31b169fe48412f711, type: 3}
   - {fileID: 21300000, guid: b85ea444031cf415f95fa3022c2305dc, type: 3}
-  - {fileID: 21300000, guid: 553df444098fb244bbc6e7162657a1e5, type: 3}
   - {fileID: 21300000, guid: 06ec3644c3f104203b897e53615acd2c, type: 3}
   - {fileID: 21300000, guid: 14d01e642387749e482a6f14133c57b8, type: 3}
   - {fileID: 21300000, guid: 19ab9974b241b40c6904521d492b8328, type: 3}
@@ -182,7 +181,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: baeafb15684bb4604bd26954c2fc9240, type: 3}
   - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
-  - {fileID: 21300000, guid: 0bdc0535d7df44cc8b9af21779e4207b, type: 3}
   - {fileID: 21300000, guid: 17e94f45af7624a0996b2a78cf3009ad, type: 3}
   - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 7ec9c5651d0c04c2db1086ffdad1a3d0, type: 3}
@@ -229,7 +227,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
   - {fileID: 21300000, guid: 5f5d6367f6d5ebc4ab5480df6fb70c5f, type: 3}
-  - {fileID: 21300000, guid: 87a25a674771b42209ef0ae9b6b6bce7, type: 3}
   - {fileID: 21300000, guid: b22119773231a487caa76e1b94ae9af5, type: 3}
   - {fileID: 21300000, guid: f5f102872b9fb41c6a606b3f038538aa, type: 3}
   - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
@@ -381,7 +378,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a0422c4d3e4fd483f98f3bbd16e5ae2e, type: 3}
   - {fileID: 21300000, guid: cf43c05d20914491481a6f7736f2eec6, type: 3}
   - {fileID: 21300000, guid: 59758d5dbedcd0746be3439895558d6a, type: 3}
-  - {fileID: 21300000, guid: 871dd18d15e4c4712985e30bc63a6168, type: 3}
   - {fileID: 21300000, guid: c6cb56bd6fdab4d49879218fffcfc7f7, type: 3}
   - {fileID: 21300000, guid: afc72abd3262c43798a1167db98081d9, type: 3}
   - {fileID: 21300000, guid: 463541cd13ac34ce992618e04bc5dc9f, type: 3}
@@ -527,7 +523,6 @@ SpriteAtlas:
   - DialogCornerRight
   - ConnectionStatus
   - Container12Shadow20
-  - LikeSolid_White
   - SpeakerOff
   - Container12Shadow4
   - ChatNotiIcon
@@ -549,7 +544,6 @@ SpriteAtlas:
   - DiscordIconHD
   - Button14
   - ContainerShadowRadiusSix
-  - LikeSolid
   - LeftClickIcn
   - BubblePeak
   - Frame5
@@ -596,7 +590,6 @@ SpriteAtlas:
   - Switch32
   - ContainerRadius11Shadow
   - WalletConnectLogo
-  - VideoCameraIcnSmall
   - SliderHightlightWhite
   - BuilderIcon
   - VoiceChatDisable
@@ -748,7 +741,6 @@ SpriteAtlas:
   - Div
   - EllipticalShadow
   - rectangle_100
-  - Like
   - EmotesOff
   - OutlineRightRect12
   - Cursor

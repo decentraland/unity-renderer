@@ -392,6 +392,7 @@ namespace DCL.Backpack
                 onFailed: () =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    SaveAvatar(new Texture2D(256,256), new Texture2D(256,256));
                     task.TrySetException(new Exception("Error taking avatar screenshots."));
                 });
 
