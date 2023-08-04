@@ -22,6 +22,9 @@ public class EventsSubSectionComponentControllerTests
         DCL.Environment.Setup(serviceLocator);
 
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
+        eventsSubSectionComponentView.SelectedEventType.Returns(EventsType.Upcoming);
+        eventsSubSectionComponentView.SelectedFrequency.Returns("all");
+        eventsSubSectionComponentView.SelectedCategory.Returns("all");
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
