@@ -50,6 +50,7 @@ public static class ExploreEventsTestHelpers
                 user_name = "Test User Name",
                 categories = new []{ "art" },
                 recurrent = false,
+                duration = 7200000,
             }
         };
     }
@@ -87,6 +88,7 @@ public static class ExploreEventsTestHelpers
             user_name = "Test User Name",
             categories = new []{ "art" },
             recurrent = false,
+            duration = 7200000,
         };
     }
 }

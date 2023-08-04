@@ -29,6 +29,7 @@ public class EventFromAPIModel
     public bool attending;
     public string[] categories;
     public bool recurrent;
+    public double duration;
 }
 
 [Serializable]

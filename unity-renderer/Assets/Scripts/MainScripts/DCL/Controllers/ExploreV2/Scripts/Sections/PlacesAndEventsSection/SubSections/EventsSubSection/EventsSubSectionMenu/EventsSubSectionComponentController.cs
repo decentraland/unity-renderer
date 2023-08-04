@@ -161,7 +161,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         return eventsFromAPI
               .Where(e =>
-                   (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                   (frequencyFilter == ALL_FILTER_ID ||
+                    (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+                        e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+                        e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
                    (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
                          .Take(anyFilterApplied ? eventsFromAPI.Count : availableUISlots)
                          .ToList();
@@ -174,7 +177,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI
                                                 .Where(e => e.highlighted &&
-                                                            (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                                                            (frequencyFilter == ALL_FILTER_ID ||
+                                                             (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+                                                                 e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+                                                                 e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
                                                             (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
                                                 .ToList();
 
@@ -190,7 +196,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         return eventsFromAPI
               .Where(e => e.trending &&
-                          (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                          (frequencyFilter == ALL_FILTER_ID ||
+                           (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+                               e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+                               e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
                           (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
               .ToList();
     }
@@ -201,7 +210,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         return eventsFromAPI
               .Where(e => e.attending &&
-                          (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                          (frequencyFilter == ALL_FILTER_ID ||
+                           (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+                               e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+                               e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
                           (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
               .ToList();
     }

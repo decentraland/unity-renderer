@@ -146,6 +146,7 @@ public class ExploreEventsCommonTests
                 user_name = "Test User Name",
                 categories = new []{ "art" },
                 recurrent = false,
+                duration = 7200000,
             }
         };
     }
@@ -171,6 +172,7 @@ public class ExploreEventsCommonTests
             user_name = "Test User Name",
             categories = new []{ "art" },
             recurrent = false,
+            duration = 7200000,
         };
     }
 }
