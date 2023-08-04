@@ -72,7 +72,7 @@ public interface ISectionToggle
     void SetAsNew(bool isNew);
 }
 
-public class SectionToggle : MonoBehaviour, ISectionToggle
+public class SectionToggle : MonoBehaviour, ISectionToggle, IPointerDownHandler
 {
     [SerializeField] private Toggle toggle;
     [SerializeField] private GameObject newTag;
@@ -96,6 +96,9 @@ public class SectionToggle : MonoBehaviour, ISectionToggle
 
     private void OnEnable() =>
         StartCoroutine(ForceToRefreshToggleState());
+
+    public void OnPointerDown(PointerEventData eventData) =>
+        SelectToggle();
 
     public GameObject GameObject => gameObject;
     public RectTransform pivot => transform as RectTransform;
