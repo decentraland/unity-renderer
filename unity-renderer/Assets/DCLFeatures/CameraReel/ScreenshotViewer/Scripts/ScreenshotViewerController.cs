@@ -13,6 +13,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerController : IDisposable
     {
+        private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
+
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
@@ -101,10 +103,22 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
             {
-                CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
-                model.RemoveScreenshot(screenshot);
-                model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
-                view.Hide();
+                try
+                {
+                    CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
+                    model.RemoveScreenshot(screenshot);
+                    model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    dataStore.notifications.DefaultErrorNotification.Set(DELETE_ERROR_MESSAGE, true);
+                    Debug.LogException(e);
+                }
+                finally
+                {
+                    view.Hide();
+                }
             }
 
             dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(
