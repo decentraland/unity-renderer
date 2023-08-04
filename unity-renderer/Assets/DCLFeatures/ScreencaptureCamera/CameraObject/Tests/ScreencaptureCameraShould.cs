@@ -146,6 +146,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
 
     public class ScreencaptureCameraHUDViewDummy : ScreencaptureCameraHUDView
     {
-        public override void SetVisibility(bool isVisible) { }
+        public override void SetVisibility(bool _, bool __) { }
     }
 }

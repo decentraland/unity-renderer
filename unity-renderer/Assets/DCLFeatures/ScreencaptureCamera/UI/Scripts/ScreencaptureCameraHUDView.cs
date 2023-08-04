@@ -9,6 +9,7 @@ namespace DCLFeatures.ScreencaptureCamera
     public class ScreencaptureCameraHUDView : MonoBehaviour
     {
         [SerializeField] private Canvas rootCanvas;
+        [SerializeField] private GameObject noSpaceInfo;
 
         [Header("BUTTONS")]
         [SerializeField] private Button cameraReelButton;
@@ -54,8 +55,11 @@ namespace DCLFeatures.ScreencaptureCamera
             closeButton.onClick.RemoveAllListeners();
         }
 
-        public virtual void SetVisibility(bool isVisible)
+        public virtual void SetVisibility(bool isVisible, bool hasStorageSpace)
         {
+            takeScreenshotButton.interactable = hasStorageSpace;
+            noSpaceInfo.SetActive(!hasStorageSpace);
+
             if (rootCanvas.enabled != isVisible)
                 rootCanvas.enabled = isVisible;
         }
