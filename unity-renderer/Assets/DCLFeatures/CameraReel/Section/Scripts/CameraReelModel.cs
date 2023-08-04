@@ -16,7 +16,7 @@ namespace DCLFeatures.CameraReel.Section
         public int MaxScreenshotsInStorage { get; private set; }
 
         public event Action<CameraReelResponse> ScreenshotRemoved;
-        public event Action<CameraReelResponse> ScreenshotAdded;
+        public event Action<bool, CameraReelResponse> ScreenshotAdded;
         public event StorageUpdatedHandler StorageUpdated;
 
         public void SetStorageStatus(int totalScreenshots, int maxScreenshots)
@@ -34,7 +34,7 @@ namespace DCLFeatures.CameraReel.Section
                 RemoveScreenshot(existingScreenshot);
 
             reels.AddFirst(screenshot);
-            ScreenshotAdded?.Invoke(screenshot);
+            ScreenshotAdded?.Invoke(true, screenshot);
         }
 
         public void AddScreenshotAsLast(CameraReelResponse screenshot)
@@ -45,7 +45,7 @@ namespace DCLFeatures.CameraReel.Section
                 RemoveScreenshot(existingScreenshot);
 
             reels.AddLast(screenshot);
-            ScreenshotAdded?.Invoke(screenshot);
+            ScreenshotAdded?.Invoke(false, screenshot);
         }
 
         public void RemoveScreenshot(CameraReelResponse current)

@@ -72,9 +72,9 @@ namespace DCLFeatures.CameraReel.Section
                 FetchScreenshots(0);
         }
 
-        private void OnScreenshotAdded(CameraReelResponse screenshot)
+        private void OnScreenshotAdded(bool isFirst, CameraReelResponse screenshot)
         {
-            galleryView.AddScreenshotThumbnail(screenshot);
+            galleryView.AddScreenshotThumbnail(screenshot, isFirst);
             UpdateEmptyStateVisibility();
         }
 

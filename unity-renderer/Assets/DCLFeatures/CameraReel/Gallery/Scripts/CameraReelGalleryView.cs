@@ -48,9 +48,6 @@ namespace DCLFeatures.CameraReel.Gallery
         public void SwitchVisibility(bool isVisible) =>
             canvas.enabled = isVisible;
 
-        public void AddScreenshotThumbnail(CameraReelResponse reel) =>
-            AddScreenshotThumbnail(reel, setAsFirst: true);
-
         public void DeleteScreenshotThumbnail(CameraReelResponse reel)
         {
             if (!screenshotThumbnails.ContainsKey(reel)) return;
@@ -78,7 +75,7 @@ namespace DCLFeatures.CameraReel.Gallery
             showMoreButtonPanel.gameObject.SetActive(visible);
         }
 
-        private void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
+        public void AddScreenshotThumbnail(CameraReelResponse reel, bool setAsFirst)
         {
             int month = reel.metadata.GetLocalizedDateTime().Month;
 
