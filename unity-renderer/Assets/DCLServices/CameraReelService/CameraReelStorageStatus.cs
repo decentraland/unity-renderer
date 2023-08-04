@@ -4,14 +4,14 @@ namespace DCLServices.CameraReelService
     {
         public readonly int CurrentScreenshots;
         public readonly int MaxScreenshots;
-        public readonly bool HasSpace;
+        public readonly bool HasFreeSpace;
 
         public CameraReelStorageStatus(int currentScreenshots, int maxScreenshots)
         {
             this.CurrentScreenshots = currentScreenshots;
             MaxScreenshots = maxScreenshots;
 
-            HasSpace = CurrentScreenshots < MaxScreenshots;
+            HasFreeSpace = CurrentScreenshots < MaxScreenshots;
         }
     }
 }

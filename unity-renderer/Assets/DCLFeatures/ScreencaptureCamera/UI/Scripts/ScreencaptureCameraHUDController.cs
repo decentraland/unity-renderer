@@ -20,8 +20,6 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void Initialize()
         {
-            screencaptureCamera.StateSwitched += view.SetVisibility;
-
             view.CloseButtonClicked += DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered += DisableScreenshotCameraMode;
 
@@ -36,8 +34,6 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void Dispose()
         {
-            screencaptureCamera.StateSwitched -= view.SetVisibility;
-
             view.CloseButtonClicked -= DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered -= DisableScreenshotCameraMode;
 
@@ -51,6 +47,9 @@ namespace DCLFeatures.ScreencaptureCamera
 
             Object.Destroy(view);
         }
+
+        public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
+            view.SetVisibility(isVisible, hasStorageSpace);
 
         public void PlayScreenshotFX(Texture2D image, float splashDuration, float middlePauseDuration, float transitionDuration)
         {

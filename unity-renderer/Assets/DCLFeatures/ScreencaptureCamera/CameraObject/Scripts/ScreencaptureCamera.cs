@@ -63,8 +63,6 @@ namespace DCLFeatures.ScreencaptureCamera
         private string playerId;
         private CameraReelStorageStatus storageStatus;
 
-        public bool HasSpaceInStorage => storageStatus.HasSpace;
-
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
@@ -89,8 +87,6 @@ namespace DCLFeatures.ScreencaptureCamera
                 return screenRecorderLazyValue;
             }
         }
-
-        public event Action<bool> StateSwitched;
 
         private void Awake()
         {
@@ -155,7 +151,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void CaptureScreenshot()
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown) return;
+            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
             Texture2D screenshot = screenRecorder.CaptureScreenshot();
@@ -227,8 +223,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
-
-            StateSwitched?.Invoke(activateScreenshotCamera);
+            screencaptureCameraHUDController.SetVisibility(activateScreenshotCamera, storageStatus.HasFreeSpace);
         }
 
         private void ToggleExternalSystems(bool activateScreenshotCamera)
