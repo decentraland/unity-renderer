@@ -13,6 +13,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int SHOW_MORE_ROWS_INCREMENT = 2;
+    private const string ALL_FILTER_ID = "all";
+    private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
@@ -112,31 +114,38 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventsFromAPI = eventList;
 
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
-        view.SetEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
-        view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
+        LoadFilteredEvents();
     }
 
     private void LoadFilteredEvents()
     {
         List<EventCardComponentModel> filteredEventCards = new ();
+        bool anyFilterApplied =
+            view.SelectedEventType != EventsType.Upcoming ||
+            view.SelectedFrequency != ALL_FILTER_ID ||
+            view.SelectedCategory != ALL_FILTER_ID;
 
         switch (view.SelectedEventType)
         {
             case EventsType.Upcoming:
                 availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
-                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents());
-                view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterUpcomingEvents(view.SelectedFrequency, view.SelectedCategory));
+                view.SetShowMoreEventsButtonActive(!anyFilterApplied && availableUISlots < eventsFromAPI.Count);
                 break;
             case EventsType.Featured:
-                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents());
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterFeaturedEvents(false, view.SelectedFrequency, view.SelectedCategory));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
             case EventsType.Trending:
-                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents());
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterTrendingEvents(view.SelectedFrequency, view.SelectedCategory));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
             case EventsType.WantToGo:
-                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(FilterWantToGoEvents());
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterWantToGoEvents(view.SelectedFrequency, view.SelectedCategory));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
         }
@@ -144,22 +153,58 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetEvents(filteredEventCards);
     }
 
-    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
-
-    internal List<EventFromAPIModel> FilterFeaturedEvents()
+    internal List<EventFromAPIModel> FilterUpcomingEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID)
     {
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        bool anyFilterApplied = categoryFilter != ALL_FILTER_ID;
 
-        if (eventsFiltered.Count == 0)
+        return eventsFromAPI
+              .Where(e =>
+                   (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                   (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+                         .Take(anyFilterApplied ? eventsFromAPI.Count : availableUISlots)
+                         .ToList();
+    }
+
+    internal List<EventFromAPIModel> FilterFeaturedEvents(
+        bool showDefaultsIfNoData = true,
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID)
+    {
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI
+                                                .Where(e => e.highlighted &&
+                                                            (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                                                            (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+                                                .ToList();
+
+        if (eventsFiltered.Count == 0 && showDefaultsIfNoData)
             eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
 
         return eventsFiltered;
     }
 
-    internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
+    internal List<EventFromAPIModel> FilterTrendingEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID)
+    {
+        return eventsFromAPI
+              .Where(e => e.trending &&
+                          (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+              .ToList();
+    }
 
-    internal List<EventFromAPIModel> FilterWantToGoEvents() => eventsFromAPI.Where(e => e.attending).ToList();
-
+    internal List<EventFromAPIModel> FilterWantToGoEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID)
+    {
+        return eventsFromAPI
+              .Where(e => e.attending &&
+                          (frequencyFilter == ALL_FILTER_ID || e.recurrent == (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID)) &&
+                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+              .ToList();
+    }
 
     public void ShowMoreEvents()
     {

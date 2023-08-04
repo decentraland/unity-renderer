@@ -27,6 +27,8 @@ public class EventFromAPIModel
     public bool highlighted;
     public bool trending;
     public bool attending;
+    public string[] categories;
+    public bool recurrent;
 }
 
 [Serializable]
