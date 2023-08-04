@@ -1,4 +1,4 @@
-import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK } from 'config/index'
+import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, SSO_URL } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
 import * as SingleSignOn from '@dcl/single-sign-on-client'
@@ -32,7 +32,7 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-    SingleSignOn.init('https://id.decentraland.org')
+    SingleSignOn.init(SSO_URL)
 
     await setupBaseUrl(options)
 
