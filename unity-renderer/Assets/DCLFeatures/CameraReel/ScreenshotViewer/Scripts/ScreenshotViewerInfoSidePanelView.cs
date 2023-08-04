@@ -1,8 +1,8 @@
-﻿using System;
+﻿using DCLServices.CameraReelService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -4,7 +4,6 @@ using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,7 +12,7 @@ namespace DCLServices.CameraReelService
     public class CameraReelClient : ICameraReelClient
     {
         private const string IMAGE_BASE_URL = "https://camera-reel-service.decentraland.zone/api/images";
-        private const string GALLERY_BASE_URL = "https://camera-reel-service.decentraland.zone/api/users";
+        private const string USER_BASE_URL = "https://camera-reel-service.decentraland.zone/api/users";
 
         private readonly IWebRequestController webRequestController;
 
@@ -22,9 +21,28 @@ namespace DCLServices.CameraReelService
             this.webRequestController = webRequestController;
         }
 
+        public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct)
+        {
+            Debug.Log($"STORAGE REQUESTED via {USER_BASE_URL}/{userAddress}");
+            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}", isSigned: true, cancellationToken: ct);
+            Debug.Log("STORAGE REQUEST FINISHED");
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching user gallery storage info :\n{result.error}");
+
+            Debug.Log($"STORAGE RESULT {result.downloadHandler.text}");
+
+            CameraReelStorageResponse responseData = Utils.SafeFromJson<CameraReelStorageResponse>(result.downloadHandler.text);
+
+            if (responseData == null)
+                throw new Exception($"Error parsing gallery storage info response:\n{result.downloadHandler.text}");
+
+            return responseData;
+        }
+
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync($"{GALLERY_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user screenshots gallery :\n{result.error}");
@@ -60,14 +78,16 @@ namespace DCLServices.CameraReelService
             return response;
         }
 
-        public async UniTask<CameraReelDeleteResponse> DeleteScreenshot(string uuid, CancellationToken ct)
+        public async UniTask<CameraReelStorageResponse> DeleteScreenshot(string uuid, CancellationToken ct)
         {
+            Debug.Log("Delete request");
             UnityWebRequest result = await webRequestController.DeleteAsync($"{IMAGE_BASE_URL}/{uuid}", isSigned: true, cancellationToken: ct);
+            Debug.Log(result.downloadHandler.text);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
 
-            CameraReelDeleteResponse response = Utils.SafeFromJson<CameraReelDeleteResponse>(result.downloadHandler.text);
+            CameraReelStorageResponse response = Utils.SafeFromJson<CameraReelStorageResponse>(result.downloadHandler.text);
 
             if (response == null)
                 throw new Exception($"Error parsing screenshot delete response:\n{result.downloadHandler.text}");
@@ -119,7 +139,7 @@ namespace DCLServices.CameraReelService
     }
 
     [Serializable]
-    public class CameraReelDeleteResponse
+    public class CameraReelStorageResponse
     {
         public int currentImages;
         public int maxImages;
