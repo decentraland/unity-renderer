@@ -1,14 +1,17 @@
 namespace DCLServices.CameraReelService
 {
-    public class CameraReelStorageStatus
+    public readonly struct CameraReelStorageStatus
     {
-        public int CurrentScreenshots { get; }
-        public int MaxScreenshots { get; }
+        public readonly int CurrentScreenshots;
+        public readonly int MaxScreenshots;
+        public readonly bool HasSpace;
 
         public CameraReelStorageStatus(int currentScreenshots, int maxScreenshots)
         {
-            CurrentScreenshots = currentScreenshots;
+            this.CurrentScreenshots = currentScreenshots;
             MaxScreenshots = maxScreenshots;
+
+            HasSpace = CurrentScreenshots < MaxScreenshots;
         }
     }
 }

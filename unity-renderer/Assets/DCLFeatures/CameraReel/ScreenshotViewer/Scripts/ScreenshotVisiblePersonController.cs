@@ -2,10 +2,10 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Tasks;
+using DCLServices.CameraReelService;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Threading;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer

@@ -8,7 +8,6 @@ using DCLServices.CameraReelService;
 using System;
 using System.Collections;
 using System.Threading;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
@@ -61,6 +60,10 @@ namespace DCLFeatures.ScreencaptureCamera
         private ScreencaptureCameraHUDController screencaptureCameraHUDController;
         private Canvas enableCameraButton;
 
+        private string playerId;
+        private CameraReelStorageStatus storageStatus;
+
+        public bool HasSpaceInStorage => storageStatus.HasSpace;
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
@@ -91,6 +94,8 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private void Awake()
         {
+            storageStatus = new CameraReelStorageStatus(0, 0);
+
             DataStore.i.exploreV2.isOpen.OnChange += SelfRegisterToCameraReelService;
             SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
         }
@@ -105,11 +110,15 @@ namespace DCLFeatures.ScreencaptureCamera
                 Destroy(gameObject);
             else
             {
-                var enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
+                Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
                 enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera());
-                CommonScriptableObjects.allUIHidden.OnChange +=  (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
+                CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
 
                 enabled = true;
+
+                yield return new WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id));
+                playerId = player.ownPlayer.Get().id;
+                UpdateStorageInfo();
             }
         }
 
@@ -132,7 +141,7 @@ namespace DCLFeatures.ScreencaptureCamera
             this.cameraBlocked = cameraBlocked;
             this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
             this.userMovementKeysBlocked = userMovementKeysBlocked;
-            this.isScreencaptureCameraActive = isScreenshotCameraActive;
+            isScreencaptureCameraActive = isScreenshotCameraActive;
         }
 
         private void SelfRegisterToCameraReelService(bool current, bool _)
@@ -150,19 +159,22 @@ namespace DCLFeatures.ScreencaptureCamera
 
             lastScreenshotTime = Time.realtimeSinceStartup;
             Texture2D screenshot = screenRecorder.CaptureScreenshot();
+
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(uploadPictureCancellationToken.Token).Forget();
+            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
 
-            async UniTaskVoid UploadScreenshotAsync(CancellationToken cancellationToken)
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
+
+            async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, CancellationToken cancellationToken)
             {
                 try
                 {
-                    (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) = await cameraReelService.UploadScreenshot(screenshot,
-                        metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera),
-                        ct: cancellationToken);
+                    (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) =
+                        await cameraReelService.UploadScreenshot(screenshot, metadata, cancellationToken);
 
+                    storageStatus = cameraReelStorageStatus;
                     CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
                     CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
                 }
@@ -181,6 +193,8 @@ namespace DCLFeatures.ScreencaptureCamera
             if (isGuest) return;
             if (isEnabled == isScreencaptureCameraActive.Get()) return;
 
+            UpdateStorageInfo();
+
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
 
             Utils.UnlockCursor();
@@ -191,11 +205,20 @@ namespace DCLFeatures.ScreencaptureCamera
             isScreencaptureCameraActive.Set(activateScreenshotCamera);
         }
 
+        private async void UpdateStorageInfo()
+        {
+            var responses = await cameraReelService.GetScreenshotGallery(playerId, 0,0);
+            storageStatus = new CameraReelStorageStatus(responses.currentImages, responses.maxImages);
+        }
+
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
             ToggleScreenshotCamera(!isScreencaptureCameraActive.Get());
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
+            playerId = player.ownPlayer.Get().id;
+            UpdateStorageInfo();
+
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
 

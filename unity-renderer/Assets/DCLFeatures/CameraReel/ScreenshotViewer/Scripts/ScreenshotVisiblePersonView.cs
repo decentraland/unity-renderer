@@ -1,6 +1,6 @@
+using DCLServices.CameraReelService;
 using System;
 using TMPro;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
