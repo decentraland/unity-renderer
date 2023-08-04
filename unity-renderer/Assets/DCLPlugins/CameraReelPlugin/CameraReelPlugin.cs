@@ -87,7 +87,8 @@ namespace DCLPlugins.CameraReelPlugin
             visiblePersonControllers.Add(new ScreenshotVisiblePersonController(view,
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 new UserProfileWebInterfaceBridge(),
-                new WebInterfaceBrowserBridge()));
+                new WebInterfaceBrowserBridge(),
+                DataStore.i));
         }
     }
 }

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.WearablesCatalogService;
@@ -15,28 +16,34 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IBrowserBridge browserBridge;
+        private readonly DataStore dataStore;
 
         private CancellationTokenSource updateProfileIconCancellationToken;
         private CancellationTokenSource fetchWearablesCancellationToken;
+        private VisiblePerson person;
 
         public ScreenshotVisiblePersonController(ScreenshotVisiblePersonView view,
             IWearablesCatalogService wearablesCatalogService,
             IUserProfileBridge userProfileBridge,
-            IBrowserBridge browserBridge)
+            IBrowserBridge browserBridge,
+            DataStore dataStore)
         {
             this.view = view;
             this.wearablesCatalogService = wearablesCatalogService;
             this.userProfileBridge = userProfileBridge;
             this.browserBridge = browserBridge;
+            this.dataStore = dataStore;
 
             view.OnConfigureRequested += OnConfigureRequested;
             view.OnOpenWearableMarketplaceRequested += OnOpenWearableMarketplaceRequested;
+            view.OnOpenProfileRequested += OnOpenProfileRequested;
         }
 
         public void Dispose()
         {
             view.OnConfigureRequested -= OnConfigureRequested;
             view.OnOpenWearableMarketplaceRequested -= OnOpenWearableMarketplaceRequested;
+            view.OnOpenProfileRequested -= OnOpenProfileRequested;
         }
 
         private void OnOpenWearableMarketplaceRequested(NFTIconComponentModel nftModel) =>
@@ -44,6 +51,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void OnConfigureRequested(VisiblePerson person)
         {
+            this.person = person;
             view.SetProfileName(person.userName);
             view.SetProfileAddress(person.userAddress);
             updateProfileIconCancellationToken = updateProfileIconCancellationToken.SafeRestart();
@@ -92,6 +100,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             {
                 Debug.LogException(e);
             }
+        }
+
+        private void OnOpenProfileRequested()
+        {
+            dataStore.HUDs.currentPlayerId.Set((person.userAddress, "ReelPictureDetail"));
         }
     }
 }
