@@ -105,8 +105,11 @@ namespace DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle
 
         private async UniTask<Canvas> GivenCanvas(IParcelScene pxScene)
         {
+            var uiPoolsRoot = new GameObject("_SDK6_UIShapes_Pools").transform;
+            var prefabPath = "UIScreenSpace";
+
             pxScene.GetSceneTransform().Returns(new GameObject("PxSceneTransform").transform);
-            UIScreenSpace uiScreenSpace = new UIScreenSpace();
+            UIScreenSpace uiScreenSpace = new UIScreenSpace(new UIShapePool(uiPoolsRoot.transform, prefabPath));
             uiScreenSpace.Initialize(pxScene, pxScene.sceneData.id);
             await uiScreenSpace.ApplyChanges(null).ToUniTask();
             IECSComponentsManagerLegacy ecsComponentsManagerLegacy = Substitute.For<IECSComponentsManagerLegacy>();
