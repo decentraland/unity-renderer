@@ -6,7 +6,7 @@ public static class ExploreEventsTestHelpers
     public static List<EventCardComponentModel> CreateTestEvents(Sprite sprite, int amount = 2)
     {
         List<EventCardComponentModel> testEvents = new List<EventCardComponentModel>();
-        
+
         for (int j = 0; j < amount; j++)
             testEvents.Add(CreateTestEvent($"Test Event {j + 1}", sprite));
 
@@ -47,7 +47,9 @@ public static class ExploreEventsTestHelpers
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
-                user_name = "Test User Name"
+                user_name = "Test User Name",
+                categories = {},
+                recurrent = false,
             }
         };
     }
@@ -82,7 +84,9 @@ public static class ExploreEventsTestHelpers
             scene_name = "Test Scene Name",
             total_attendees = 100,
             trending = false,
-            user_name = "Test User Name"
+            user_name = "Test User Name",
+            categories = {},
+            recurrent = false,
         };
     }
 }
