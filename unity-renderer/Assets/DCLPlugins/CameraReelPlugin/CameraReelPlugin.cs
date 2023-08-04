@@ -6,6 +6,7 @@ using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using DCLServices.WearablesCatalogService;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,9 +17,10 @@ namespace DCLPlugins.CameraReelPlugin
         private const string ADDRESS = "CameraReelSectionView";
 
         private readonly List<ThumbnailContextMenuController> thumbnailContextMenuControllers = new ();
+        private readonly List<ScreenshotVisiblePersonController> visiblePersonControllers = new ();
 
         private Transform sectionParent;
-        private CameraReelSectionController controller;
+        private CameraReelSectionController reelSectionController;
 
         public CameraReelPlugin()
         {
@@ -34,7 +36,7 @@ namespace DCLPlugins.CameraReelPlugin
             DataStore dataStore = DataStore.i;
             CameraReelModel cameraReelModel = CameraReelModel.i;
 
-            controller = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
+            reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
                 dataStore,
                 service,
                 cameraReelModel,
@@ -46,6 +48,7 @@ namespace DCLPlugins.CameraReelPlugin
                 });
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
+            ScreenshotVisiblePersonView.Instances.OnAdded += OnVisiblePersonAdded;
 
             dataStore.HUDs.isCameraReelInitialized.Set(true);
         }
@@ -53,11 +56,17 @@ namespace DCLPlugins.CameraReelPlugin
         public void Dispose()
         {
             ThumbnailContextMenuView.Instances.OnAdded -= OnThumbnailContextMenuAdded;
+            ScreenshotVisiblePersonView.Instances.OnAdded -= OnVisiblePersonAdded;
 
             foreach (ThumbnailContextMenuController controller in thumbnailContextMenuControllers)
                 controller.Dispose();
+            thumbnailContextMenuControllers.Clear();
 
-            this.controller.Dispose();
+            foreach (ScreenshotVisiblePersonController controller in visiblePersonControllers)
+                controller.Dispose();
+            visiblePersonControllers.Clear();
+
+            reelSectionController.Dispose();
         }
 
         private void OnThumbnailContextMenuAdded(ThumbnailContextMenuView view)
@@ -72,5 +81,13 @@ namespace DCLPlugins.CameraReelPlugin
         private static async UniTask<CameraReelSectionView> CreateCameraReelSectionView(IAddressableResourceProvider assetProvider) =>
             await assetProvider.Instantiate<CameraReelSectionView>(ADDRESS, ADDRESS,
                 parent: DataStore.i.exploreV2.configureCameraReelInFullScreenMenu.Get());
+
+        private void OnVisiblePersonAdded(ScreenshotVisiblePersonView view)
+        {
+            visiblePersonControllers.Add(new ScreenshotVisiblePersonController(view,
+                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                new UserProfileWebInterfaceBridge(),
+                new WebInterfaceBrowserBridge()));
+        }
     }
 }

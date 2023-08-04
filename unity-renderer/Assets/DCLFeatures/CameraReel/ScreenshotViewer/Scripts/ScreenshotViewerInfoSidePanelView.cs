@@ -57,7 +57,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             profiles.Clear();
 
-            foreach (VisiblePerson visiblePerson in visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
+            foreach (VisiblePerson visiblePerson in visiblePeople.OrderBy(person => person.isGuest)
+                                                                 .ThenByDescending(person => person.wearables.Length))
             {
                 ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
 
