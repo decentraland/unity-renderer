@@ -198,7 +198,7 @@ namespace DCL
 
             var cameraReelService = new CameraReelService(new CameraReelClient(webRequestController),
                 DataStore.i, new UserProfileWebInterfaceBridge());
-            result.Register<ICameraReelGalleryService>(() => cameraReelService);
+            result.Register<ICameraReelService>(() => cameraReelService);
             result.Register<IScreenshotCameraService>(() => cameraReelService);
 
             // Analytics

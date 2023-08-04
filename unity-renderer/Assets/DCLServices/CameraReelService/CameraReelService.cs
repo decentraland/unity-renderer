@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DCLServices.CameraReelService
 {
-    public class CameraReelService : IScreenshotCameraService, ICameraReelGalleryService
+    public class CameraReelService : ICameraReelService
     {
         private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
         private const string STORAGE_LIMIT_REACHED_MESSAGE = "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.";

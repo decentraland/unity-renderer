@@ -8,17 +8,16 @@ namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelModel : Singleton<CameraReelModel>
     {
-        private readonly LinkedList<CameraReelResponse> reels = new ();
-
         public delegate void StorageUpdatedHandler(int totalScreenshots, int maxScreenshots);
-
-        public event Action<CameraReelResponse> ScreenshotRemoved;
-        public event Action<CameraReelResponse> ScreenshotAdded;
-        public event StorageUpdatedHandler StorageUpdated;
+        private readonly LinkedList<CameraReelResponse> reels = new ();
 
         public int LoadedScreenshotCount => reels.Count;
         public int TotalScreenshotsInStorage { get; private set; }
         public int MaxScreenshotsInStorage { get; private set; }
+
+        public event Action<CameraReelResponse> ScreenshotRemoved;
+        public event Action<CameraReelResponse> ScreenshotAdded;
+        public event StorageUpdatedHandler StorageUpdated;
 
         public void SetStorageStatus(int totalScreenshots, int maxScreenshots)
         {
