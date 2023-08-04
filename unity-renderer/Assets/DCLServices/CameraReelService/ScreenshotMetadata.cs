@@ -15,7 +15,7 @@ namespace UI.InWorldCamera.Scripts
         public string dateTime;
         public string realm;
         public Scene scene;
-        public VisiblePlayers[] visiblePeople;
+        public VisiblePerson[] visiblePeople;
 
         public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
@@ -40,9 +40,9 @@ namespace UI.InWorldCamera.Scripts
             return metadata;
         }
 
-        private static VisiblePlayers[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
+        private static VisiblePerson[] GetVisiblePeoplesMetadata(List<Player> visiblePlayers)
         {
-            var visiblePeople = new VisiblePlayers[visiblePlayers.Count];
+            var visiblePeople = new VisiblePerson[visiblePlayers.Count];
             UserProfileDictionary userProfilesCatalog = UserProfileController.userProfilesCatalog;
 
             UserProfile profile;
@@ -51,7 +51,7 @@ namespace UI.InWorldCamera.Scripts
             {
                 profile = userProfilesCatalog.Get(visiblePlayers[i].id);
 
-                visiblePeople[i] = new VisiblePlayers
+                visiblePeople[i] = new VisiblePerson
                 {
                     userName = profile.userName,
                     userAddress = profile.userId,
@@ -81,6 +81,14 @@ namespace UI.InWorldCamera.Scripts
 
             return list;
         }
+
+        public DateTime GetLocalizedDateTime()
+        {
+            if (!long.TryParse(dateTime, out long unixTimestamp)) return new DateTime();
+
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddSeconds(unixTimestamp).ToLocalTime();
+        }
     }
 
     [Serializable]
@@ -104,7 +112,7 @@ namespace UI.InWorldCamera.Scripts
     }
 
     [Serializable]
-    public class VisiblePlayers
+    public class VisiblePerson
     {
         public string userName;
         public string userAddress;
