@@ -70,7 +70,7 @@ namespace DCLFeatures.ScreencaptureCamera
             closeShortcutsIcon.enabled = setEnabled;
         }
 
-        public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float transitionDuration)
+        public void ScreenshotCaptureAnimation(Texture2D screenshotImage, float splashDuration, float afterSplashPause, float transitionDuration)
         {
             currentVfxSequence?.Complete();
             currentVfxSequence?.Kill();
@@ -80,10 +80,10 @@ namespace DCLFeatures.ScreencaptureCamera
             animatedImage.enabled = true;
             whiteSplashImage.enabled = true;
 
-            currentVfxSequence = CaptureVFXSequence(splashDuration, transitionDuration).Play();
+            currentVfxSequence = CaptureVFXSequence(splashDuration, afterSplashPause, transitionDuration).Play();
         }
 
-        private Sequence CaptureVFXSequence(float splashDuration, float transitionDuration, float afterSplashPause = 0.25f)
+        private Sequence CaptureVFXSequence(float splashDuration, float afterSplashPause, float transitionDuration)
         {
             Sequence sequence = DOTween.Sequence();
 
