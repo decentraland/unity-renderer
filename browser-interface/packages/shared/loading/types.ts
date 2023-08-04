@@ -17,6 +17,7 @@ export const ESTABLISHING_COMMS = '[COMMS] Establishing communication channels..
 export const establishingComms = () => action(ESTABLISHING_COMMS)
 export const COMMS_ESTABLISHED = '[COMMS] Communications established.'
 export const commsEstablished = () => action(COMMS_ESTABLISHED)
+export type CommsEstablished = ReturnType<typeof commsEstablished>
 
 export const EXPERIENCE_STARTED = 'EXPERIENCE_STARTED'
 export const experienceStarted = () => action(EXPERIENCE_STARTED)
