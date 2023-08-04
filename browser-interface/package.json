@@ -66,7 +66,7 @@
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "7.0.6-20230803143954.commit-ad6c961",
     "@dcl/schemas": "^7.4.1",
-    "@dcl/single-sign-on-client": "^0.0.7",
+    "@dcl/single-sign-on-client": "^0.0.8",
     "@dcl/urn-resolver": "^2.2.0",
     "@types/mocha": "^10.0.1",
     "@types/redux-logger": "^3.0.9",
