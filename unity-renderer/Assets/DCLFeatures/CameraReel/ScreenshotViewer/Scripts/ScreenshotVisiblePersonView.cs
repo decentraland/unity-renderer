@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,10 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         [SerializeField] private ProfileCardComponentView profileCard;
         [SerializeField] private GameObject isGuestImage;
         [SerializeField] private Button wearablesListButton;
+        [SerializeField] private Button userNameButton;
         [SerializeField] private Image dropdownArrow;
         [SerializeField] private Sprite arrowUp;
+        [SerializeField] private TMP_Text userNameText;
 
         [Header("WEARABLES")]
         [SerializeField] private NFTIconComponentView wearableTemplate;
@@ -27,10 +30,12 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         public event Action<VisiblePerson> OnConfigureRequested;
         public event Action<NFTIconComponentModel> OnOpenWearableMarketplaceRequested;
+        public event Action OnOpenProfileRequested;
 
         private void Awake()
         {
             wearablesListButton.onClick.AddListener(ShowHideList);
+            userNameButton.onClick.AddListener(() => OnOpenProfileRequested?.Invoke());
             arrowDown = dropdownArrow.sprite;
 
             if (!Instances.Contains(this))
