@@ -35,11 +35,10 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D texture, ScreenshotMetadata metadata, CancellationToken ct)
         {
-            CameraReelResponse response = await client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
-            CameraReelResponses reel = await GetScreenshotGallery(userProfileBridge.GetOwn().userId, 0, 0, ct);
-            CameraReelStorageStatus storage = new CameraReelStorageStatus(reel.currentImages, reel.maxImages);
+            CameraReelUploadResponse response = await client.UploadScreenshot(texture.EncodeToJPG(), metadata, ct);
+            CameraReelStorageStatus storage = new CameraReelStorageStatus(response.currentImages, response.maxImages);
 
-            return (response, storage);
+            return (response.image, storage);
         }
 
         public void SetCamera(IScreencaptureCamera screencaptureCamera) =>
