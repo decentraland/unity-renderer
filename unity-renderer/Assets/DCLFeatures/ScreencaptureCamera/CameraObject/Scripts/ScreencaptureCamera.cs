@@ -17,6 +17,8 @@ namespace DCLFeatures.ScreencaptureCamera
 {
     public class ScreencaptureCamera : MonoBehaviour, IScreencaptureCamera
     {
+        private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
+        private const string STORAGE_LIMIT_REACHED_MESSAGE = "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.";
         private const float SPLASH_FX_DURATION = 1f;
         private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
         private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
@@ -155,12 +157,22 @@ namespace DCLFeatures.ScreencaptureCamera
 
             async UniTaskVoid UploadScreenshotAsync(CancellationToken cancellationToken)
             {
-                (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) = await cameraReelService.UploadScreenshot(screenshot,
-                    metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera),
-                    ct: cancellationToken);
+                try
+                {
+                    (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) = await cameraReelService.UploadScreenshot(screenshot,
+                        metadata: ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera),
+                        ct: cancellationToken);
 
-                CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
-                CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+                    CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
+                    CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+                }
+                catch (OperationCanceledException) { }
+                catch (ScreenshotLimitReachedException) { DataStore.i.notifications.DefaultErrorNotification.Set(STORAGE_LIMIT_REACHED_MESSAGE, true); }
+                catch (Exception e)
+                {
+                    DataStore.i.notifications.DefaultErrorNotification.Set(UPLOADING_ERROR_MESSAGE, true);
+                    Debug.LogException(e);
+                }
             }
         }
 
