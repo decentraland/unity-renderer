@@ -96,13 +96,15 @@ namespace DCL.Components
             }
         }
 
-        public override string referencesContainerPrefabName => "UIInputText";
-
         public TMP_Text tmpText => referencesContainer.text;
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText() { model = new Model(); }
+        public UIInputText(UIShapePool pool) : base(pool)
+        {
+            this.pool = pool;
+            model = new Model();
+        }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_INPUT_TEXT_SHAPE; }
 
