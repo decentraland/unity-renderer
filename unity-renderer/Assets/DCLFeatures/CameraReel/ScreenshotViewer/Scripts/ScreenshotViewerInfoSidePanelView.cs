@@ -17,6 +17,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         [SerializeField] private TMP_Text dataTime;
         [SerializeField] private TMP_Text sceneInfo;
         [SerializeField] private Button sceneInfoButton;
+        [SerializeField] private TMP_Text photoOwnerNameLabel;
+        [SerializeField] private ImageComponentView photoOwnerAvatarPicture;
 
         [Header("VISIBLE PEOPLE PANEL")]
         [SerializeField] private ScreenshotVisiblePersonView profileEntryTemplate;
@@ -66,6 +68,12 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 profileEntry.Configure(visiblePerson);
                 profileEntry.gameObject.SetActive(true);
             }
+        }
+
+        public void SetPictureOwner(string userName, string avatarPictureUrl)
+        {
+            photoOwnerNameLabel.text = userName;
+            photoOwnerAvatarPicture.SetImage(avatarPictureUrl);
         }
     }
 }

@@ -5,9 +5,7 @@ using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
@@ -19,18 +17,22 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
         private readonly ICameraReelService service;
+        private readonly IUserProfileBridge userProfileBridge;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
+        private CancellationTokenSource pictureOwnerCancellationToken;
         private CameraReelResponse currentScreenshot;
 
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
             DataStore dataStore,
-            ICameraReelService service)
+            ICameraReelService service,
+            IUserProfileBridge userProfileBridge)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
             this.service = service;
+            this.userProfileBridge = userProfileBridge;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
@@ -70,13 +72,22 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             currentScreenshot = reel;
 
-            SetScreenshotImage(reel);
-
+            view.SetScreenshotImage(reel.url);
             view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
             view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
             view.InfoSidePanel.ShowVisiblePersons(reel.metadata.visiblePeople);
+            pictureOwnerCancellationToken = pictureOwnerCancellationToken.SafeRestart();
+            UpdatePictureOwnerInfo(reel, pictureOwnerCancellationToken.Token).Forget();
 
             view.Show();
+        }
+
+        private async UniTaskVoid UpdatePictureOwnerInfo(CameraReelResponse reel, CancellationToken cancellationToken)
+        {
+            UserProfile profile = userProfileBridge.Get(reel.metadata.userAddress)
+                                                      ?? await userProfileBridge.RequestFullUserProfileAsync(reel.metadata.userAddress, cancellationToken);
+
+            view.InfoSidePanel.SetPictureOwner(reel.metadata.userName, profile.face256SnapshotURL);
         }
 
         private void ShowPrevScreenshot() =>
@@ -84,20 +95,6 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void ShowNextScreenshot() =>
             Show(model.GetNextScreenshot(currentScreenshot));
-
-        private async Task SetScreenshotImage(CameraReelResponse reel)
-        {
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
-            await request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-                Debug.Log(request.error);
-            else
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                view.SetScreenshotImage(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
-            }
-        }
 
         private void DeleteScreenshot()
         {

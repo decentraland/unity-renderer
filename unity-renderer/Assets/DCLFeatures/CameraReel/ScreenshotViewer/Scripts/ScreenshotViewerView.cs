@@ -9,7 +9,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
     {
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
-        [SerializeField] private Image screenshotImage;
+        [SerializeField] private ImageComponentView screenshotImage;
         [SerializeField] private RectTransform rootContainer;
 
         [Header("NAVIGATION BUTTONS")]
@@ -62,9 +62,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             gameObject.SetActive(true);
         }
 
-        public void SetScreenshotImage(Sprite sprite)
+        public void SetScreenshotImage(string url)
         {
-            screenshotImage.sprite = sprite;
+            screenshotImage.SetImage(url);
         }
 
         public void ToggleInfoSidePanel()
