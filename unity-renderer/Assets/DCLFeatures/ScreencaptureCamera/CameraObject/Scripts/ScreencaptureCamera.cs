@@ -17,7 +17,9 @@ namespace DCLFeatures.ScreencaptureCamera
 {
     public class ScreencaptureCamera : MonoBehaviour, IScreencaptureCamera
     {
-        private const float COOLDOWN = 3f;
+        private const float SPLASH_FX_DURATION = 1f;
+        private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
+        private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
 
         [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] internal DCLCharacterController characterController;
@@ -58,7 +60,7 @@ namespace DCLFeatures.ScreencaptureCamera
         private Canvas enableCameraButton;
 
 
-        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < COOLDOWN;
+        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
@@ -146,7 +148,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
             lastScreenshotTime = Time.realtimeSinceStartup;
             Texture2D screenshot = screenRecorder.CaptureScreenshot();
-            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, COOLDOWN/2, COOLDOWN/2);
+            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
             UploadScreenshotAsync(uploadPictureCancellationToken.Token).Forget();

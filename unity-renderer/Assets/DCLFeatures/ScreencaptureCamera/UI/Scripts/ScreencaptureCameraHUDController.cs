@@ -52,10 +52,10 @@ namespace DCLFeatures.ScreencaptureCamera
             Object.Destroy(view);
         }
 
-        public void PlayScreenshotFX(Texture2D image, float splashDuration, float transitionDuration)
+        public void PlayScreenshotFX(Texture2D image, float splashDuration, float middlePauseDuration, float transitionDuration)
         {
             AudioScriptableObjects.takeScreenshot.Play();
-            view.ScreenshotCaptureAnimation(image, splashDuration, transitionDuration);
+            view.ScreenshotCaptureAnimation(image, splashDuration, middlePauseDuration, transitionDuration);
         }
 
         private void CaptureScreenshot(DCLAction_Trigger _) =>
