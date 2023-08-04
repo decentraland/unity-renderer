@@ -4,12 +4,16 @@ using DCL.Browser;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using System;
 using System.Threading;
+using UnityEngine;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
     public class ThumbnailContextMenuController
     {
+        private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
+
         private readonly ThumbnailContextMenuView view;
         private CameraReelResponse picture;
         private CancellationTokenSource deleteScreenshotCancellationToken;
@@ -46,9 +50,18 @@ namespace DCLFeatures.CameraReel.Gallery
             {
                 async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
                 {
-                    CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
-                    cameraReelModel.RemoveScreenshot(screenshot);
-                    cameraReelModel.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+                    try
+                    {
+                        CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
+                        cameraReelModel.RemoveScreenshot(screenshot);
+                        cameraReelModel.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e)
+                    {
+                        dataStore.notifications.DefaultErrorNotification.Set(DELETE_ERROR_MESSAGE, true);
+                        Debug.LogException(e);
+                    }
                 }
 
                 dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(
