@@ -42,7 +42,7 @@ namespace DCLFeatures.ScreencaptureCamera
         private ScreencaptureCameraHUDView screencaptureCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
         private Transform characterCameraTransform;
-        private IScreenshotCameraService cameraReelServiceLazyValue;
+        private ICameraReelService cameraReelServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
@@ -62,7 +62,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
-        private IScreenshotCameraService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<IScreenshotCameraService>();
+        private ICameraReelService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelService>();
 
         private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
