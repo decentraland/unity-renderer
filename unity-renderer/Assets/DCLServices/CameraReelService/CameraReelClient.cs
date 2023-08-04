@@ -40,7 +40,7 @@ namespace DCLServices.CameraReelService
             return responseData;
         }
 
-        public async UniTask<CameraReelResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
+        public async UniTask<CameraReelUploadResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
             var formData = new List<IMultipartFormSection>
             {
@@ -49,32 +49,29 @@ namespace DCLServices.CameraReelService
             };
 
             UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, isSigned: true, cancellationToken: ct);
-            return ParseScreenshotResponse(result, unSuccessResultMessage: "Error uploading screenshot");
+
+            CameraReelUploadResponse response = Utils.SafeFromJson<CameraReelUploadResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing screenshot response:\n{result.downloadHandler.text}");
+
+            ResponseSanityCheck(response.image, result.downloadHandler.text);
+
+            return response;
         }
 
-        public async UniTask DeleteScreenshot(string uuid, CancellationToken ct)
+        public async UniTask<CameraReelDeleteResponse> DeleteScreenshot(string uuid, CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.DeleteAsync($"{IMAGE_BASE_URL}/{uuid}", isSigned: true, cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
-        }
 
-        private static CameraReelResponse ParseScreenshotResponse(UnityWebRequest result, string unSuccessResultMessage)
-        {
-            if (result.result != UnityWebRequest.Result.Success)
-            {
-                CameraReelErrorResponse errorResponse = Utils.SafeFromJson<CameraReelErrorResponse>(result.downloadHandler.text);
+            CameraReelDeleteResponse response = Utils.SafeFromJson<CameraReelDeleteResponse>(result.downloadHandler.text);
 
-                if (errorResponse?.reason?.Equals("maxLimitReached", StringComparison.OrdinalIgnoreCase) ?? false)
-                    throw new ScreenshotLimitReachedException();
+            if (response == null)
+                throw new Exception($"Error parsing screenshot delete response:\n{result.downloadHandler.text}");
 
-                throw new Exception($"{unSuccessResultMessage}:\n{result.error}");
-            }
-
-            CameraReelResponse response = Utils.SafeFromJson<CameraReelResponse>(result.downloadHandler.text);
-
-            ResponseSanityCheck(response, result.downloadHandler.text);
             return response;
         }
 
@@ -110,6 +107,22 @@ namespace DCLServices.CameraReelService
         public string thumbnailUrl;
 
         public ScreenshotMetadata metadata;
+    }
+
+    [Serializable]
+    public class CameraReelUploadResponse
+    {
+        public int currentImages;
+        public int maxImages;
+
+        public CameraReelResponse image;
+    }
+
+    [Serializable]
+    public class CameraReelDeleteResponse
+    {
+        public int currentImages;
+        public int maxImages;
     }
 
     [Serializable]
