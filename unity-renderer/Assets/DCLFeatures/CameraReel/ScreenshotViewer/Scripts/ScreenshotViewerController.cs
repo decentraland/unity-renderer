@@ -16,19 +16,19 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
-        private readonly ICameraReelGalleryService galleryService;
+        private readonly ICameraReelService service;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
         private CameraReelResponse currentScreenshot;
 
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
             DataStore dataStore,
-            ICameraReelGalleryService galleryService)
+            ICameraReelService service)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
-            this.galleryService = galleryService;
+            this.service = service;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
@@ -101,7 +101,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
             {
-                CameraReelStorageStatus storage = await galleryService.DeleteScreenshot(screenshot.id, cancellationToken);
+                CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
                 model.RemoveScreenshot(screenshot);
                 model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
                 view.Hide();
