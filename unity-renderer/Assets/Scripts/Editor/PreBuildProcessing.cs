@@ -21,7 +21,7 @@ public class PreBuildProcessing : IPreprocessBuildWithReport
 
 #if UNITY_WEBGL
         // Tip: ' --memoryprofiler ' argument can be added to log every memory enlargement in the console but it makes the app super slow
-        PlayerSettings.WebGL.emscriptenArgs += "-s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 ";
+        PlayerSettings.WebGL.emscriptenArgs += "-s ALLOW_MEMORY_GROWTH=1 -s MAXIMUM_MEMORY=4GB -s ERROR_ON_UNDEFINED_SYMBOLS=0 ";
 #endif
     }
 }
