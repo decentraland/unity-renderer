@@ -73,7 +73,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreEventsClicked -= ShowMoreEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
-        //view.OnFiltersChanged -= LoadFilteredEvents;
+        view.OnFiltersChanged -= LoadFilteredEvents;
         view.OnConnectWallet -= ConnectWallet;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
@@ -84,7 +84,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnEventsSubSectionEnable += RequestAllEvents;
-        //view.OnFiltersChanged += LoadFilteredEvents;
+        view.OnFiltersChanged += LoadFilteredEvents;
         cardsReloader.Initialize();
     }
 
@@ -116,7 +116,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
-    /*private void LoadFilteredEvents()
+    private void LoadFilteredEvents()
     {
         List<EventCardComponentModel> filteredEventCards = new ();
 
@@ -142,7 +142,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         }
 
         view.SetEvents(filteredEventCards);
-    }*/
+    }
 
     internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
 
