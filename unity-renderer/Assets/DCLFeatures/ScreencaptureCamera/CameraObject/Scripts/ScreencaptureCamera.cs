@@ -294,6 +294,6 @@ namespace DCLFeatures.ScreencaptureCamera
         }
 
         private void CreateScreenshotRecorder(Image refBoundariesImage) =>
-            screenRecorderLazyValue ??= new ScreenRecorder(screenshotCamera, screencaptureCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
+            screenRecorderLazyValue ??= new ScreenRecorder(screencaptureCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
     }
 }
