@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UIComponents.Scripts.Components
+namespace UIComponents.Scripts.Components.RangeSlider
 {
     /// <summary>
     /// Credit Ben MacKinnon @Dover8
