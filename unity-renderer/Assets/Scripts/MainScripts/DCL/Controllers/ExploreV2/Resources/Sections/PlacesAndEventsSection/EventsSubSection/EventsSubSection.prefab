@@ -817,6 +817,7 @@ MonoBehaviour:
   wantToGoSelected: {fileID: 8373142222742201785}
   frequencyDropdown: {fileID: 8339213145649194238}
   categoriesDropdown: {fileID: 6624795912255528876}
+  timeDropdown: {fileID: 7507706309687051651}
   canvas: {fileID: 4228350710396357658}
 --- !u!223 &4228350710396357658
 Canvas:
@@ -6433,6 +6434,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1923712242891262686, guid: fda04d33ee4140340b61fc6eff039311,
+        type: 3}
+      propertyPath: <model>k__BackingField.wholeNumbers
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2014410197689214835, guid: fda04d33ee4140340b61fc6eff039311,
+        type: 3}
+      propertyPath: m_WholeNumbers
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2983536581911261291, guid: fda04d33ee4140340b61fc6eff039311,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -6442,6 +6453,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5525544352726364303, guid: fda04d33ee4140340b61fc6eff039311,
+        type: 3}
+      propertyPath: <model>k__BackingField.wholeNumbers
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6163824363140927267, guid: fda04d33ee4140340b61fc6eff039311,
         type: 3}
@@ -6470,6 +6486,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fda04d33ee4140340b61fc6eff039311, type: 3}
+--- !u!114 &7507706309687051651 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1923712242891262686, guid: fda04d33ee4140340b61fc6eff039311,
+    type: 3}
+  m_PrefabInstance: {fileID: 8251400509919956829}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a786f7fa44cc4a84be53fce63309dea1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7780513348960630179 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1836116941156793086, guid: fda04d33ee4140340b61fc6eff039311,

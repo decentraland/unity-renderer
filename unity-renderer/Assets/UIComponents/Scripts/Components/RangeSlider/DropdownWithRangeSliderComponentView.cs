@@ -25,6 +25,7 @@ namespace UIComponents.Scripts.Components.RangeSlider
         {
             base.Awake();
 
+            RefreshControl();
             Close();
 
             blocker.OnClicked += Close;
@@ -42,9 +43,9 @@ namespace UIComponents.Scripts.Components.RangeSlider
         public override void RefreshControl()
         {
             SetTitle(model.text);
-            slider.SetLimits(model.minValue, model.maxValue);
-            slider.SetValues(model.lowValue, model.highValue);
-            slider.RefreshControl();
+            SetLimits(model.minValue, model.maxValue);
+            SetWholeNumbers(model.wholeNumbers);
+            SetValues(model.lowValue, model.highValue);
         }
 
         public void Open()
@@ -68,6 +69,30 @@ namespace UIComponents.Scripts.Components.RangeSlider
 
             if (slider != null)
                 slider.SetText(newText);
+        }
+
+        public void SetLimits(float minValue, float maxValue)
+        {
+            if (slider == null)
+                return;
+
+            slider.SetLimits(minValue, maxValue);
+        }
+
+        public void SetWholeNumbers(bool isWholeNumbers)
+        {
+            if (slider == null)
+                return;
+
+            slider.SetWholeNumbers(isWholeNumbers);
+        }
+
+        public void SetValues(float lowValue, float highValue)
+        {
+            if (slider == null)
+                return;
+
+            slider.SetValues(lowValue, highValue);
         }
 
         private void ToggleOptionsList()

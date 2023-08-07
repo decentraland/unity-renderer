@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using TMPro;
+using UIComponents.Scripts.Components.RangeSlider;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,10 +21,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     private const string ONE_TIME_EVENT_FREQUENCY_FILTER_TEXT = "One time event";
     private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
     private const string RECURRING_EVENT_FREQUENCY_FILTER_TEXT = "Recurring event";
+    private const float TIME_MIN_VALUE = 0;
+    private const float TIME_MAX_VALUE = 48;
 
     private readonly Queue<Func<UniTask>> cardsVisualUpdateBuffer = new ();
     private readonly Queue<Func<UniTask>> poolsPrewarmAsyncsBuffer = new ();
-    private readonly CancellationTokenSource cancellationTokenSource = new ();
+    private CancellationTokenSource cancellationTokenSource;
+    private CancellationTokenSource featuredEventsCancellationTokenSource;
 
     [Header("Assets References")]
     [SerializeField] internal EventCardComponentView eventCardPrefab;
@@ -52,6 +57,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal GameObject wantToGoSelected;
     [SerializeField] internal DropdownComponentView frequencyDropdown;
     [SerializeField] internal DropdownComponentView categoriesDropdown;
+    [SerializeField] internal DropdownWithRangeSliderComponentView timeDropdown;
 
     [SerializeField] private Canvas canvas;
 
@@ -74,6 +80,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public EventsType SelectedEventType { get; private set; }
     public string SelectedFrequency { get; private set; }
     public string SelectedCategory { get; private set; }
+    public float SelectedLowTime { get; private set; }
+    public float SelectedHighTime { get; private set; }
 
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
@@ -88,6 +96,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public override void Awake()
     {
         base.Awake();
+        cancellationTokenSource = cancellationTokenSource.SafeRestart();
+        featuredEventsCancellationTokenSource = featuredEventsCancellationTokenSource.SafeRestart();
         eventsCanvas = eventsGrid.GetComponent<Canvas>();
         guestGoingToPanel.SetActive(false);
     }
@@ -114,6 +124,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         wantToGoButton.onClick.AddListener(ClickedOnWantToGo);
         frequencyDropdown.OnOptionSelectionChanged += OnFrequencyFilterChanged;
         categoriesDropdown.OnOptionSelectionChanged += OnCategoryFilterChanged;
+        timeDropdown.OnValueChanged.AddListener(OnTimeFilterChanged);
 
         OnReady?.Invoke();
     }
@@ -128,6 +139,11 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         frequencyDropdown.SetTitle(ALL_FILTER_TEXT);
         frequencyDropdown.SelectOption(ALL_FILTER_ID, false);
         SelectedCategory = ALL_FILTER_ID;
+        SelectedLowTime = TIME_MIN_VALUE;
+        SelectedHighTime = TIME_MAX_VALUE;
+        timeDropdown.SetWholeNumbers(true);
+        timeDropdown.SetValues(TIME_MIN_VALUE, TIME_MAX_VALUE);
+        timeDropdown.SetTitle($"{ConvertToTimeString(TIME_MIN_VALUE)} - {ConvertToTimeString(TIME_MAX_VALUE)} (UTC)");
 
         OnEventsSubSectionEnable?.Invoke();
     }
@@ -150,12 +166,14 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public override void Dispose()
     {
         base.Dispose();
-        cancellationTokenSource.Cancel();
+        cancellationTokenSource.SafeCancelAndDispose();
+        featuredEventsCancellationTokenSource.SafeCancelAndDispose();
 
         showMoreEventsButton.onClick.RemoveAllListeners();
 
         frequencyDropdown.OnOptionSelectionChanged -= OnFrequencyFilterChanged;
         categoriesDropdown.OnOptionSelectionChanged -= OnCategoryFilterChanged;
+        timeDropdown.OnValueChanged.RemoveAllListeners();
 
         featuredEvents.Dispose();
         eventsGrid.Dispose();
@@ -239,6 +257,9 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         eventsGrid.ExtractItems();
         eventsGrid.RemoveItems();
 
+        cancellationTokenSource = cancellationTokenSource.SafeRestart();
+        cardsVisualUpdateBuffer.Clear();
+        isUpdatingCardsVisual = false;
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
         UpdateCardsVisual();
     }
@@ -272,8 +293,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEvents.ExtractItems();
 
-        cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
-        UpdateCardsVisual();
+        featuredEventsCancellationTokenSource = featuredEventsCancellationTokenSource.SafeRestart();
+        SetFeaturedEventsAsync(events, featuredEventsCancellationTokenSource.Token).Forget();
     }
 
     private async UniTask SetFeaturedEventsAsync(List<EventCardComponentModel> events, CancellationToken cancellationToken)
@@ -288,8 +309,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEvents.SetManualControlsActive();
         featuredEvents.GenerateDotsSelector();
-
-        poolsPrewarmAsyncsBuffer.Enqueue(() => featuredEventCardsPool.PrewarmAsync(events.Count, cancellationToken));
     }
 
     private void UpdateCardsVisual()
@@ -415,4 +434,20 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         categoriesDropdown.SetTitle(optionName);
         OnFiltersChanged?.Invoke();
     }
+
+    private void OnTimeFilterChanged(float lowValue, float highValue)
+    {
+        SelectedLowTime = lowValue;
+        SelectedHighTime = highValue;
+        timeDropdown.SetTitle($"{ConvertToTimeString(lowValue)} - {ConvertToTimeString(highValue)} (UTC)");
+        OnFiltersChanged?.Invoke();
+    }
+
+    private static string ConvertToTimeString(float hours)
+    {
+        var wholeHours = (int)(hours / 2);
+        int minutes = (int)(hours % 2) * 30;
+        return $"{wholeHours:D2}:{minutes:D2}";
+    }
+
 }

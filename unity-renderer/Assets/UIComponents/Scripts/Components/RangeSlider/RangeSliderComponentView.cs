@@ -22,6 +22,7 @@ namespace UIComponents.Scripts.Components.RangeSlider
 
             SetText(model.text);
             SetLimits(model.minValue, model.maxValue);
+            SetWholeNumbers(model.wholeNumbers);
             SetValues(model.lowValue, model.highValue);
         }
 
@@ -47,6 +48,16 @@ namespace UIComponents.Scripts.Components.RangeSlider
 
             slider.MinValue = minValue;
             slider.MaxValue = maxValue;
+        }
+
+        public void SetWholeNumbers(bool isWholeNumbers)
+        {
+            model.wholeNumbers = isWholeNumbers;
+
+            if (slider == null)
+                return;
+
+            slider.WholeNumbers = isWholeNumbers;
         }
 
         public void SetValues(float lowValue, float highValue)

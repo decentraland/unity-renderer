@@ -8,6 +8,7 @@ namespace UIComponents.Scripts.Components.RangeSlider
         public string text;
         public float minValue;
         public float maxValue;
+        public bool wholeNumbers;
         public float lowValue;
         public float highValue;
     }
