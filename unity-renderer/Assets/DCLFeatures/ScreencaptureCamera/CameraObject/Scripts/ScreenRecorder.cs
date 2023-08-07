@@ -30,7 +30,33 @@ namespace DCLFeatures.ScreencaptureCamera
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public virtual Texture2D CaptureScreenshot()
+        public virtual Texture2D CaptureScreenshot(int targetScreenWidth, int targetScreenHeight)
+        {
+            //=====---- Final
+            // Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscaleFactor);
+            // TODO(Vit): optimize this by removing intermediate texture creation. Read/Write bilinear of cropped frame
+            // Texture2D rescaledScreenshot = ScaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
+            // Cropping 1920x1080 central part
+            int cornerX = Mathf.RoundToInt((targetScreenWidth - TARGET_FRAME_WIDTH) / 2f);
+            int cornerY = Mathf.RoundToInt((targetScreenHeight - TARGET_FRAME_HEIGHT) / 2f);
+            Debug.Log($"Corners {cornerX}:{cornerY}");
+
+            finalTexture.ReadPixels(new Rect(cornerX, cornerY, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
+            finalTexture.Apply();
+
+            // var path = Application.dataPath + "/_UpscaledScreenshot1.png";
+            // File.WriteAllBytes(path, screenshotTexture.EncodeToJPG());
+            // Debug.Log($"Upscaled res: {Screen.width * upscalingFactor}:{Screen.height * upscalingFactor}");
+            // Debug.Log($"Saved to {path}");
+
+            // var path = Application.dataPath + "/_FinalScreenshot1.jpg";
+            // File.WriteAllBytes(path, finalTexture.EncodeToJPG());
+            // Debug.Log($"Saved to {path}");
+
+            return finalTexture;
+        }
+
+        public void CalculateTargetScreenResolution(out float targetScreenWidth, out float targetScreenHeight)
         {
             Debug.Log($"targetAspectRatio {targetAspectRatio}");
 
@@ -70,9 +96,10 @@ namespace DCLFeatures.ScreencaptureCamera
 
             float calculatedTargetFrameWidth = currentFrameWidth * targetUpscale;
             float calculatedTargetFrameHeight = currentFrameHeight * targetUpscale;
-            float targetScreenWidth = currentScreenWidth * targetUpscale;
-            float targetScreenHeight = currentScreenHeight * targetUpscale;
-            Debug.Log($"target Frame and Screen {calculatedTargetFrameWidth}:{calculatedTargetFrameHeight}, {targetScreenWidth}:{targetScreenHeight}");
+            targetScreenWidth = currentScreenWidth * targetUpscale;
+            targetScreenHeight = currentScreenHeight * targetUpscale;
+            Debug.Log(
+                $"target Frame and Screen {calculatedTargetFrameWidth}:{calculatedTargetFrameHeight}, {targetScreenWidth}:{targetScreenHeight}");
 
             //=====---- Rounded Upscaled
             Debug.Log("UPSCALED");
@@ -85,7 +112,8 @@ namespace DCLFeatures.ScreencaptureCamera
             float upscaledScreenWidth = currentScreenWidth * upscaleFactor;
             float upscaledScreenHeight = currentScreenHeight * upscaleFactor;
 
-            Debug.Log($"Upscaled Frame and Screen {upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
+            Debug.Log(
+                $"Upscaled Frame and Screen {upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
 
             //=====---- Downscaled from Rounded
             Debug.Log("DOWNSCALED");
@@ -102,33 +130,8 @@ namespace DCLFeatures.ScreencaptureCamera
             int downscaledScreenWidth = Mathf.RoundToInt(upscaledScreenWidth * targetDownscale);
             int downscaledScreenHeight = Mathf.RoundToInt(upscaledScreenHeight * targetDownscale);
 
-            Debug.Log($"Downscaled Frame and Screen {downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
-
-            //=====---- Final
-            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscaleFactor);
-
-            // TODO(Vit): optimize this by removing intermediate texture creation. Read/Write bilinear of cropped frame
-            Texture2D rescaledScreenshot = ScaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
-
-            // Cropping 1920x1080 central part
-            int cornerX = Mathf.RoundToInt((downscaledScreenWidth - TARGET_FRAME_WIDTH) / 2f);
-            int cornerY = Mathf.RoundToInt((downscaledScreenHeight - TARGET_FRAME_HEIGHT) / 2f);
-            Debug.Log($"Coreners {cornerX}:{cornerY}");
-
-            Color[] pixels = rescaledScreenshot.GetPixels(cornerX, cornerY, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
-            finalTexture.SetPixels(pixels);
-            finalTexture.Apply();
-
-            // var path = Application.dataPath + "/_UpscaledScreenshot1.png";
-            // File.WriteAllBytes(path, screenshotTexture.EncodeToJPG());
-            // Debug.Log($"Upscaled res: {Screen.width * upscalingFactor}:{Screen.height * upscalingFactor}");
-            // Debug.Log($"Saved to {path}");
-
-            // var path = Application.dataPath + "/_FinalScreenshot1.jpg";
-            // File.WriteAllBytes(path, finalTexture.EncodeToJPG());
-            // Debug.Log($"Saved to {path}");
-
-            return finalTexture;
+            Debug.Log(
+                $"Downscaled Frame and Screen {downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
         }
 
         private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
