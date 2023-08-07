@@ -11,19 +11,20 @@ namespace DCLServices.CameraReelService
 {
     public class CameraReelClient : ICameraReelClient
     {
-        private const string IMAGE_BASE_URL = "https://camera-reel-service.decentraland.zone/api/images";
-        private const string USER_BASE_URL = "https://camera-reel-service.decentraland.zone/api/users";
-
         private readonly IWebRequestController webRequestController;
+        private readonly BaseVariable<FeatureFlag> featureFlags;
+        private string imageBaseURL => $"https://camera-reel-service.decentraland.{(featureFlags.Get().IsFeatureEnabled("camera_reel") ? "zone" : "org")}/api/images";
+        private string userBaseURL => $"https://camera-reel-service.decentraland.{(featureFlags.Get().IsFeatureEnabled("camera_reel") ? "zone" : "org")}/api/users";
 
-        public CameraReelClient(IWebRequestController webRequestController)
+        public CameraReelClient(IWebRequestController webRequestController, BaseVariable<FeatureFlag> flags)
         {
             this.webRequestController = webRequestController;
+            featureFlags = flags;
         }
 
         public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}", isSigned: true, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{userBaseURL}/{userAddress}", isSigned: true, cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user gallery storage info :\n{result.error}");
@@ -38,7 +39,7 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", isSigned: true, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{userBaseURL}/{userAddress}/images?limit={limit}&offset={offset}", isSigned: true, cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user screenshots gallery :\n{result.error}");
@@ -62,7 +63,7 @@ namespace DCLServices.CameraReelService
                 new MultipartFormDataSection("metadata", JsonUtility.ToJson(metadata)),
             };
 
-            UnityWebRequest result = await webRequestController.PostAsync(IMAGE_BASE_URL, formData, isSigned: true, cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.PostAsync(imageBaseURL, formData, isSigned: true, cancellationToken: ct);
 
             CameraReelUploadResponse response = Utils.SafeFromJson<CameraReelUploadResponse>(result.downloadHandler.text);
 
@@ -76,16 +77,12 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelStorageResponse> DeleteScreenshot(string uuid, CancellationToken ct)
         {
-            Debug.Log("Delete request");
-            UnityWebRequest result = await webRequestController.DeleteAsync($"{IMAGE_BASE_URL}/{uuid}", isSigned: true, cancellationToken: ct);
-            Debug.Log(result.downloadHandler.text);
+            UnityWebRequest result = await webRequestController.DeleteAsync($"{imageBaseURL}/{uuid}", isSigned: true, cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
 
-            Debug.Log("Delete response parsing");
             CameraReelStorageResponse response = Utils.SafeFromJson<CameraReelStorageResponse>(result.downloadHandler.text);
-            Debug.Log($"Deleted {response.currentImages}");
 
             if (response == null)
                 throw new Exception($"Error parsing screenshot delete response:\n{result.downloadHandler.text}");
