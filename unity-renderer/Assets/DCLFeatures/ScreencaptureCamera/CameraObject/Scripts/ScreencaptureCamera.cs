@@ -165,7 +165,20 @@ namespace DCLFeatures.ScreencaptureCamera
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
             yield return waitEndOfFrameYield;
 
-            var screenshot = screenRecorder.CaptureScreenshot();
+            screenRecorder.CalculateTargetScreenResolution(out var targetScreenWidth, out var targetScreenHeight);
+
+            var oldResolution = Screen.currentResolution;
+            var mode = Screen.fullScreenMode;
+            Debug.Log($"Old resolution {oldResolution.width}, {oldResolution.height}");
+            Screen.SetResolution(Mathf.RoundToInt(targetScreenWidth), Mathf.RoundToInt(targetScreenHeight), mode);
+
+            for (int i = 0; i < 3; i++)
+                yield return waitEndOfFrameYield;
+
+            Debug.Log($"Current resolution {Screen.currentResolution.width}, {Screen.currentResolution.height}");
+
+            var screenshot = screenRecorder.CaptureScreenshot(Mathf.RoundToInt(targetScreenWidth), Mathf.RoundToInt(targetScreenHeight));
+            Screen.SetResolution(oldResolution.width, oldResolution.height, mode);
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
