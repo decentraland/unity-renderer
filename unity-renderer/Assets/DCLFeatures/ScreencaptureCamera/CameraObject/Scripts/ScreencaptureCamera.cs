@@ -170,9 +170,9 @@ namespace DCLFeatures.ScreencaptureCamera
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-            // var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-            // uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            // UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
+            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
 
             async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, CancellationToken cancellationToken)
             {

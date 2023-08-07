@@ -143,6 +143,7 @@ namespace DCLFeatures.ScreencaptureCamera
             Debug.Log($"targetAspectRatio {targetAspectRatio}");
 
             //=====---- Current
+            Debug.Log("CURRENT");
             float currentScreenWidth = RectTransform.rect.width * RectTransform.lossyScale.x;
             float currentScreenHeight = RectTransform.rect.height * RectTransform.lossyScale.y;
             float currentScreenAspectRatio = currentScreenWidth / currentScreenHeight;
@@ -169,6 +170,8 @@ namespace DCLFeatures.ScreencaptureCamera
             Debug.Log($"currentFrame {currentFrameWidth}, {currentFrameHeight}");
 
             //=====---- Target
+            Debug.Log("TARGET");
+
             float upscaleFrameWidth = targetFrameWidth / currentFrameWidth;
             float upscaleFrameHeight = targetFrameHeight / currentFrameHeight;
             Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
@@ -181,7 +184,9 @@ namespace DCLFeatures.ScreencaptureCamera
             float targetScreenHeight = currentScreenHeight * targetUpscale;
             Debug.Log($"target Frame and Screen {calculatedTargetFrameWidth}:{calculatedTargetFrameHeight}, {targetScreenWidth}:{targetScreenHeight}");
 
-            //=====---- Upscaled
+            //=====---- Rounded Upscaled
+            Debug.Log("UPSCALED");
+
             int upscaleFactor = Mathf.CeilToInt(targetUpscale);
             Debug.Log($"rounded Upscale {upscaleFactor}");
 
@@ -190,15 +195,16 @@ namespace DCLFeatures.ScreencaptureCamera
             float upscaledScreenWidth = currentScreenWidth * upscaleFactor;
             float upscaledScreenHeight = currentScreenHeight * upscaleFactor;
 
-            Debug.Log($"{upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
-            Debug.Log($"Upscaled Frame and Screen {upscaleFactor}");
+            Debug.Log($"Upscaled Frame and Screen {upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
 
-            //=====---- Downscaled
-            float downscaleScreenWidth = targetScreenWidth / upscaledFrameWidth;
-            float downscaleScreenHeight = targetScreenHeight / upscaledFrameHeight;
-            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
+            //=====---- Downscaled from Rounded
+            Debug.Log("DOWNSCALED");
+
+            float downscaleScreenWidth = targetScreenWidth / upscaledScreenWidth;
+            float downscaleScreenHeight = targetScreenHeight / upscaledScreenHeight;
+            Debug.Assert(Math.Abs(downscaleScreenWidth - downscaleScreenHeight) < 0.0001f);
             Debug.Log($"{downscaleScreenWidth}, {downscaleScreenHeight}");
-            float targetDownscale = upscaleFrameWidth;
+            float targetDownscale = downscaleScreenWidth;
             Debug.Log($"{targetDownscale}");
 
             float downscaledFrameWidth = upscaledFrameWidth * targetDownscale;
@@ -206,7 +212,7 @@ namespace DCLFeatures.ScreencaptureCamera
             float downscaledScreenWidth = upscaledScreenWidth * targetDownscale;
             float downscaledScreenHeight = upscaledScreenHeight * targetDownscale;
 
-            Debug.Log($"{downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
+            Debug.Log($"Downscaled Frame and Screen {downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
         }
     }
 }
