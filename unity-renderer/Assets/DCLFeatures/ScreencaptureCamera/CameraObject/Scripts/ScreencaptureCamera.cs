@@ -172,8 +172,10 @@ namespace DCLFeatures.ScreencaptureCamera
             Debug.Log($"Old resolution {oldResolution.width}, {oldResolution.height}");
             Screen.SetResolution(Mathf.RoundToInt(targetScreenWidth), Mathf.RoundToInt(targetScreenHeight), mode);
 
-            for (int i = 0; i < 3; i++)
-                yield return waitEndOfFrameYield;
+            yield return new WaitUntil(() => Screen.width == Mathf.RoundToInt(targetScreenWidth)
+                                             && Screen.height == Mathf.RoundToInt(targetScreenHeight));
+            yield return waitEndOfFrameYield;
+            screenshotCamera.Render();
 
             Debug.Log($"Current resolution {Screen.currentResolution.width}, {Screen.currentResolution.height}");
 
