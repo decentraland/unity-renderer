@@ -1,5 +1,4 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera
 {
@@ -26,42 +25,46 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public virtual Texture2D CaptureScreenshot()
         {
-            Debug.Log($"golden rule rect {imageRectTransform.rect.width}:{imageRectTransform.rect.height}");
-            Debug.Log($"sprite bounds {sprite.bounds.size.x}:{sprite.bounds.size.y}");
+            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(1);
+            return screenshotTexture;
+            // Debug.Log($"golden rule rect {imageRectTransform.rect.width}:{imageRectTransform.rect.height}");
+            // Debug.Log($"sprite bounds {sprite.bounds.size.x}:{sprite.bounds.size.y}");
             spriteRect = GetCurrentSpriteResolution(imageRectTransform.rect, sprite.bounds);
-            Debug.Log($"sprite bounds {spriteRect.width}:{spriteRect.height}");
+            // Debug.Log($"sprite bounds {spriteRect.width}:{spriteRect.height}");
 
             float scaleFactorW = FRAME_WIDTH / spriteRect.width;
             float scaleFactorH = FRAME_HEIGHT / spriteRect.height;
 
             int upscalingFactor = Mathf.CeilToInt(Mathf.Max(scaleFactorW, scaleFactorH));
-            Debug.Log($"Scale factor {scaleFactorW}:{scaleFactorH} = {upscalingFactor}");
+            // Debug.Log($"Scale factor {scaleFactorW}:{scaleFactorH} = {upscalingFactor}");
 
-            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscalingFactor);
-            var path = Application.dataPath + "/_UpscaledScreenshot1.png";
-            File.WriteAllBytes(path, screenshotTexture.EncodeToJPG());
-            Debug.Log($"Upscaled res: {Screen.width * upscalingFactor}:{Screen.height * upscalingFactor}");
-            Debug.Log($"Saved to {path}");
+             screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscalingFactor);
+            return screenshotTexture;
+
+            // var path = Application.dataPath + "/_UpscaledScreenshot1.png";
+            // File.WriteAllBytes(path, screenshotTexture.EncodeToJPG());
+            // Debug.Log($"Upscaled res: {Screen.width * upscalingFactor}:{Screen.height * upscalingFactor}");
+            // Debug.Log($"Saved to {path}");
 
             // TODO(Vit): optimize this by removing intermediate texture creation. Read/Write bilinear of cropped frame
             // Scaling to have 1920x1080 in center
             int imageToCropWidth = Mathf.RoundToInt(canvasRectTransform.rect.width * scaleFactorW);
             int imageToCropHeight = Mathf.RoundToInt(canvasRectTransform.rect.height * scaleFactorH);
             Texture2D rescaledScreenshot = ScaleTexture(screenshotTexture, imageToCropWidth, imageToCropHeight);
-            Debug.Log($"Image to crop {imageToCropWidth}:{imageToCropHeight}");
+            // Debug.Log($"Image to crop {imageToCropWidth}:{imageToCropHeight}");
 
             // Cropping 1920x1080 central part
             int cornerX = Mathf.RoundToInt((imageToCropWidth - FRAME_WIDTH) / 2f);
             int cornerY = Mathf.RoundToInt((imageToCropHeight - FRAME_HEIGHT) / 2f);
-            Debug.Log($"Coreners {cornerX}:{cornerY}");
+            // Debug.Log($"Coreners {cornerX}:{cornerY}");
 
             Color[] pixels = rescaledScreenshot.GetPixels(cornerX, cornerY, Mathf.RoundToInt(FRAME_WIDTH), Mathf.RoundToInt(FRAME_HEIGHT));
             finalTexture.SetPixels(pixels);
             finalTexture.Apply();
 
-             path = Application.dataPath + "/_FinalScreenshot1.png";
-            File.WriteAllBytes(path, finalTexture.EncodeToJPG());
-            Debug.Log($"Saved to {path}");
+            //  path = Application.dataPath + "/_FinalScreenshot1.png";
+            // File.WriteAllBytes(path, finalTexture.EncodeToJPG());
+            // Debug.Log($"Saved to {path}");
 
             return finalTexture;
         }
