@@ -68,8 +68,6 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public int currentEventsPerRow => eventsGrid.currentItemsPerRow;
 
     public void SetAllAsLoading() => SetAllEventGroupsAsLoading();
-	
-	public void SetShowMoreButtonActive(bool isActive) => SetShowMoreEventsButtonActive(isActive);
 
     public int CurrentTilesPerRow => currentEventsPerRow;
 
@@ -238,7 +236,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         eventCardsPool.ReleaseAll();
 
-        eventsGrid.ExtractItems(eventCardsPool.container.transform);
+        eventsGrid.ExtractItems();
         eventsGrid.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
@@ -272,7 +270,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEventCardsPool.ReleaseAll();
 
-        featuredEvents.ExtractItems(featuredEventCardsPool.container.transform);
+        featuredEvents.ExtractItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
