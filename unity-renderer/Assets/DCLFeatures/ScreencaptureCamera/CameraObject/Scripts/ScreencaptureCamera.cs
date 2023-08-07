@@ -214,8 +214,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private async void UpdateStorageInfo()
         {
-            CameraReelResponses responses = await cameraReelService.GetScreenshotGallery(playerId, 0, 0);
-            storageStatus = new CameraReelStorageStatus(responses.currentImages, responses.maxImages);
+            storageStatus = await cameraReelService.GetUserGalleryStorageInfo(playerId);
         }
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>

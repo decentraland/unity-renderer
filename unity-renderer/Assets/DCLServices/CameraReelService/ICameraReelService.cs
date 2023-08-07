@@ -7,7 +7,7 @@ namespace DCLServices.CameraReelService
 {
     public interface ICameraReelService : IService
     {
-        UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct);
+        UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct = default);
 
         UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct = default);
 
