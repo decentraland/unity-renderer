@@ -238,7 +238,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         eventCardsPool.ReleaseAll();
 
-        eventsGrid.ExtractItems();
+        eventsGrid.ExtractItems(eventCardsPool.container.transform);
         eventsGrid.RemoveItems();
 
         cardsVisualUpdateBuffer.Enqueue(() => SetEventsAsync(events, eventsGrid, eventCardsPool, cancellationTokenSource.Token));
@@ -272,7 +272,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
         featuredEventCardsPool.ReleaseAll();
 
-        featuredEvents.ExtractItems();
+        featuredEvents.ExtractItems(featuredEventCardsPool.container.transform);
 
         cardsVisualUpdateBuffer.Enqueue(() => SetFeaturedEventsAsync(events, cancellationTokenSource.Token));
         UpdateCardsVisual();
