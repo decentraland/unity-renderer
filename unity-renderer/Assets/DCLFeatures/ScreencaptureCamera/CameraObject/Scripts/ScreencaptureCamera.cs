@@ -21,6 +21,7 @@ namespace DCLFeatures.ScreencaptureCamera
         private const float SPLASH_FX_DURATION = 1f;
         private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
         private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
+        private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
 
         [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] internal DCLCharacterController characterController;
@@ -151,17 +152,27 @@ namespace DCLFeatures.ScreencaptureCamera
 
         public void CaptureScreenshot()
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return;
+            StopAllCoroutines();
+            StartCoroutine(CaptureScreenshotAtTheFrameEnd());
+        }
+
+        private IEnumerator CaptureScreenshotAtTheFrameEnd()
+        {
+            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) yield break;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
-            Texture2D screenshot = screenRecorder.CaptureScreenshot();
 
+            screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
+            yield return waitEndOfFrameYield;
+
+            var screenshot = screenRecorder.CaptureScreenshot();
+
+            screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
+            // var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+            // uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            // UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
 
             async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, CancellationToken cancellationToken)
             {
@@ -203,7 +214,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private async void UpdateStorageInfo()
         {
-            var responses = await cameraReelService.GetScreenshotGallery(playerId, 0,0);
+            CameraReelResponses responses = await cameraReelService.GetScreenshotGallery(playerId, 0, 0);
             storageStatus = new CameraReelStorageStatus(responses.currentImages, responses.maxImages);
         }
 

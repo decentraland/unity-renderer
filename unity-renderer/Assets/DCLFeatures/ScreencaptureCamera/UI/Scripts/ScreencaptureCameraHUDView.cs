@@ -10,6 +10,7 @@ namespace DCLFeatures.ScreencaptureCamera
     {
         [SerializeField] private Canvas rootCanvas;
         [SerializeField] private GameObject noSpaceInfo;
+        [SerializeField] private Image goldenRuleFrame;
 
         [Header("BUTTONS")]
         [SerializeField] private Button cameraReelButton;
@@ -62,6 +63,12 @@ namespace DCLFeatures.ScreencaptureCamera
 
             if (rootCanvas.enabled != isVisible)
                 rootCanvas.enabled = isVisible;
+        }
+
+        public void ScreenshotCleanView(bool isVisible)
+        {
+            goldenRuleFrame.enabled = isVisible;
+
         }
 
         public void ToggleShortcutsInfosHelpPanel()
