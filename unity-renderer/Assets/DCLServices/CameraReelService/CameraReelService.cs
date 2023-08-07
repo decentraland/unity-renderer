@@ -19,7 +19,7 @@ namespace DCLServices.CameraReelService
 
         public void Dispose() { }
 
-        public async UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct)
+        public async UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct = default)
         {
             CameraReelStorageResponse response = await client.GetUserGalleryStorageInfo(userAddress, ct);
             return new CameraReelStorageStatus(response.currentImages, response.maxImages);

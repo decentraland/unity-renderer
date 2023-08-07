@@ -23,14 +23,10 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct)
         {
-            Debug.Log($"STORAGE REQUESTED via {USER_BASE_URL}/{userAddress}");
             UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}", isSigned: true, cancellationToken: ct);
-            Debug.Log("STORAGE REQUEST FINISHED");
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user gallery storage info :\n{result.error}");
-
-            Debug.Log($"STORAGE RESULT {result.downloadHandler.text}");
 
             CameraReelStorageResponse responseData = Utils.SafeFromJson<CameraReelStorageResponse>(result.downloadHandler.text);
 
@@ -42,7 +38,7 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", cancellationToken: ct);
+            UnityWebRequest result = await webRequestController.GetAsync($"{USER_BASE_URL}/{userAddress}/images?limit={limit}&offset={offset}", isSigned: true, cancellationToken: ct);
 
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching user screenshots gallery :\n{result.error}");
@@ -87,7 +83,9 @@ namespace DCLServices.CameraReelService
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"error during deleting screenshot from the gallery:\n{result.error}");
 
+            Debug.Log("Delete response parsing");
             CameraReelStorageResponse response = Utils.SafeFromJson<CameraReelStorageResponse>(result.downloadHandler.text);
+            Debug.Log($"Deleted {response.currentImages}");
 
             if (response == null)
                 throw new Exception($"Error parsing screenshot delete response:\n{result.downloadHandler.text}");
