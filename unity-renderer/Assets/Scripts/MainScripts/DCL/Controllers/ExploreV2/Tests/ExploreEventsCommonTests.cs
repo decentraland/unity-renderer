@@ -147,6 +147,7 @@ public class ExploreEventsCommonTests
                 categories = new []{ "art" },
                 recurrent = false,
                 duration = 7200000,
+                start_at = "2023-07-18T23:00:00.000Z",
             }
         };
     }
@@ -173,6 +174,7 @@ public class ExploreEventsCommonTests
             categories = new []{ "art" },
             recurrent = false,
             duration = 7200000,
+            start_at = "2023-07-18T23:00:00.000Z",
         };
     }
 }

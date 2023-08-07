@@ -449,5 +449,4 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         int minutes = (int)(hours % 2) * 30;
         return $"{wholeHours:D2}:{minutes:D2}";
     }
-
 }

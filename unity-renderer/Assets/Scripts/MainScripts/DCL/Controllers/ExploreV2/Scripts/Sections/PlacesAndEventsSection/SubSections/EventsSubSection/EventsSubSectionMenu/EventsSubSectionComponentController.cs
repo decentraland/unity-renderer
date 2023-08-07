@@ -15,6 +15,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private const int SHOW_MORE_ROWS_INCREMENT = 2;
     private const string ALL_FILTER_ID = "all";
     private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
+    private const float TIME_MIN_VALUE = 0;
+    private const float TIME_MAX_VALUE = 48;
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
@@ -120,32 +122,35 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void LoadFilteredEvents()
     {
         List<EventCardComponentModel> filteredEventCards = new ();
+
         bool anyFilterApplied =
             view.SelectedEventType != EventsType.Upcoming ||
             view.SelectedFrequency != ALL_FILTER_ID ||
-            view.SelectedCategory != ALL_FILTER_ID;
+            view.SelectedCategory != ALL_FILTER_ID ||
+            view.SelectedLowTime > TIME_MIN_VALUE ||
+            view.SelectedHighTime < TIME_MAX_VALUE;
 
         switch (view.SelectedEventType)
         {
             case EventsType.Upcoming:
                 availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
                 filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
-                    FilterUpcomingEvents(view.SelectedFrequency, view.SelectedCategory));
+                    FilterUpcomingEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime, anyFilterApplied));
                 view.SetShowMoreEventsButtonActive(!anyFilterApplied && availableUISlots < eventsFromAPI.Count);
                 break;
             case EventsType.Featured:
                 filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
-                    FilterFeaturedEvents(false, view.SelectedFrequency, view.SelectedCategory));
+                    FilterFeaturedEvents(false, view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
             case EventsType.Trending:
                 filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
-                    FilterTrendingEvents(view.SelectedFrequency, view.SelectedCategory));
+                    FilterTrendingEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
             case EventsType.WantToGo:
                 filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
-                    FilterWantToGoEvents(view.SelectedFrequency, view.SelectedCategory));
+                    FilterWantToGoEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
                 view.SetShowMoreEventsButtonActive(false);
                 break;
         }
@@ -155,25 +160,29 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal List<EventFromAPIModel> FilterUpcomingEvents(
         string frequencyFilter = ALL_FILTER_ID,
-        string categoryFilter = ALL_FILTER_ID)
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE,
+        bool takeAllResults = false)
     {
-        bool anyFilterApplied = categoryFilter != ALL_FILTER_ID;
-
         return eventsFromAPI
               .Where(e =>
                    (frequencyFilter == ALL_FILTER_ID ||
                     (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
                         e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
                         e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                   (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
-                         .Take(anyFilterApplied ? eventsFromAPI.Count : availableUISlots)
+                   (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
+                   IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
+                         .Take(takeAllResults ? eventsFromAPI.Count : availableUISlots)
                          .ToList();
     }
 
     internal List<EventFromAPIModel> FilterFeaturedEvents(
         bool showDefaultsIfNoData = true,
         string frequencyFilter = ALL_FILTER_ID,
-        string categoryFilter = ALL_FILTER_ID)
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI
                                                 .Where(e => e.highlighted &&
@@ -181,7 +190,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                                                              (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
                                                                  e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
                                                                  e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                                                            (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+                                                            (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
+                                                            IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
                                                 .ToList();
 
         if (eventsFiltered.Count == 0 && showDefaultsIfNoData)
@@ -192,7 +202,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal List<EventFromAPIModel> FilterTrendingEvents(
         string frequencyFilter = ALL_FILTER_ID,
-        string categoryFilter = ALL_FILTER_ID)
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
     {
         return eventsFromAPI
               .Where(e => e.trending &&
@@ -200,13 +212,16 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                            (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
                                e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
                                e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
+                          IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
               .ToList();
     }
 
     internal List<EventFromAPIModel> FilterWantToGoEvents(
         string frequencyFilter = ALL_FILTER_ID,
-        string categoryFilter = ALL_FILTER_ID)
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
     {
         return eventsFromAPI
               .Where(e => e.attending &&
@@ -214,7 +229,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
                            (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
                                e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
                                e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)))
+                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
+                          IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
               .ToList();
     }
 
@@ -299,5 +315,23 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         eventsAPIApiController.GetCategories(
             OnSuccess: eventList => view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(eventList)),
             OnFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
+    }
+
+    private static bool IsTimeInRange(string dateTime, float lowTimeValue, float highTimeValue)
+    {
+        string startTimeString = ConvertToTimeString(lowTimeValue);
+        string endTimeString = ConvertToTimeString(highTimeValue);
+
+        TimeSpan startTime = lowTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(startTimeString) : new TimeSpan(1, 0, 0, 0);
+        TimeSpan endTime = highTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(endTimeString) : new TimeSpan(1, 0, 0, 0);
+        TimeSpan currentTime = Convert.ToDateTime(dateTime).ToUniversalTime().TimeOfDay;
+        return currentTime >= startTime && currentTime <= endTime;
+    }
+
+    private static string ConvertToTimeString(float hours)
+    {
+        var wholeHours = (int)(hours / 2);
+        int minutes = (int)(hours % 2) * 30;
+        return $"{wholeHours:D2}:{minutes:D2}";
     }
 }

@@ -30,6 +30,7 @@ public class EventFromAPIModel
     public string[] categories;
     public bool recurrent;
     public double duration;
+    public string start_at;
 }
 
 [Serializable]

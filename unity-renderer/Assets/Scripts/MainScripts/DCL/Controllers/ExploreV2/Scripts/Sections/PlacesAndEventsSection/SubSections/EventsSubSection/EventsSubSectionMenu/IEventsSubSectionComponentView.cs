@@ -32,6 +32,16 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     string SelectedCategory { get; }
 
     /// <summary>
+    /// Current time (low value) filter (00:00 - 24:00)
+    /// </summary>
+    public float SelectedLowTime { get; }
+
+    /// <summary>
+    /// Current time (high value) filter (00:00 - 24:00)
+    /// </summary>
+    public float SelectedHighTime { get; }
+
+    /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
     /// </summary>
     event Action OnReady;
