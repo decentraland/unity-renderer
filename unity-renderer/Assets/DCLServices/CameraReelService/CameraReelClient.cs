@@ -13,9 +13,10 @@ namespace DCLServices.CameraReelService
     {
         private readonly IWebRequestController webRequestController;
         private readonly BaseVariable<FeatureFlag> featureFlags;
-        private string imageBaseURL => $"https://camera-reel-service.decentraland.{(featureFlags.Get().IsFeatureEnabled("camera_reel") ? "zone" : "org")}/api/images";
-        private string userBaseURL => $"https://camera-reel-service.decentraland.{(featureFlags.Get().IsFeatureEnabled("camera_reel") ? "zone" : "org")}/api/users";
+        private string imageBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/images";
+        private string userBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/users";
 
+        private bool useProd => false;//featureFlags.Get().IsFeatureEnabled("camera_reel");
         public CameraReelClient(IWebRequestController webRequestController, BaseVariable<FeatureFlag> flags)
         {
             this.webRequestController = webRequestController;
