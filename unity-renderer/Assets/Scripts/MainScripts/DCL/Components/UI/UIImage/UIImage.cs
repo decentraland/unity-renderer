@@ -135,7 +135,8 @@ namespace DCL.Components
             referencesContainer.paddingLayoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
             referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
 
-            Utils.ForceRebuildLayoutImmediate(parentRecTransform);
+            MarkLayoutDirty(); // FD::
+            // Utils.ForceRebuildLayoutImmediate(parentRecTransform);
         }
 
         private void ConfigureUVRect(RectTransform parentRecTransform, float resizingFactor)
