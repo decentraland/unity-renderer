@@ -45,8 +45,8 @@ namespace Tests
                 Substitute.For<IHomeLocationController>(),
                 DCL.Environment.i,
                 placesAPIService,
-                Substitute.For<IPlacesAnalytics>()
-                );
+                Substitute.For<IPlacesAnalytics>(),
+                Substitute.For<IClipboard>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }

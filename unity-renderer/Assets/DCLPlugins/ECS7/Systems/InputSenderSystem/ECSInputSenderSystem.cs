@@ -8,37 +8,34 @@ using System.Collections.Generic;
 
 namespace ECSSystems.InputSenderSystem
 {
-    public static class ECSInputSenderSystem
+    public class ECSInputSenderSystem
     {
-        private class State
-        {
-            public IInternalECSComponent<InternalInputEventResults> inputResultComponent;
-            public IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
-            public IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
-            public WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool;
-            public uint lastTimestamp = 0;
-        }
+        private readonly IInternalECSComponent<InternalInputEventResults> inputResultComponent;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+        private readonly WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool;
+        private readonly Func<int> getCurrentSceneNumber;
+        private uint lastTimestamp = 0;
 
-        public static Action CreateSystem(
+        public ECSInputSenderSystem(
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
             IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
             IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
-            WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool)
+            WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> componentPool,
+            Func<int> getCurrentSceneNumber)
         {
-            var state = new State()
-            {
-                inputResultComponent = inputResultComponent,
-                engineInfoComponent = engineInfoComponent,
-                componentsWriter = componentsWriter,
-                componentPool = componentPool,
-            };
-
-            return () => Update(state);
+            this.inputResultComponent = inputResultComponent;
+            this.engineInfoComponent = engineInfoComponent;
+            this.componentsWriter = componentsWriter;
+            this.componentPool = componentPool;
+            this.getCurrentSceneNumber = getCurrentSceneNumber;
         }
 
-        private static void Update(State state)
+        public void Update()
         {
-            var inputResults = state.inputResultComponent.GetForAll();
+            var inputResults = inputResultComponent.GetForAll();
+            int currentSceneNumber = getCurrentSceneNumber();
+            bool restrictedActionEnabled = false;
 
             for (int i = 0; i < inputResults.Count; i++)
             {
@@ -49,8 +46,11 @@ namespace ECSSystems.InputSenderSystem
 
                 var scene = inputResults[i].value.scene;
                 var entity = inputResults[i].value.entity;
+                long entityId = entity.entityId;
+                InternalEngineInfo engineInfoModel = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)!.Value.model;
+                bool checkRestrictedAction = scene.isPersistent || scene.sceneData.sceneNumber == currentSceneNumber;
 
-                if (!state.componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
                     continue;
 
                 int count = model.events.Count;
@@ -59,19 +59,44 @@ namespace ECSSystems.InputSenderSystem
                 {
                     InternalInputEventResults.EventData inputEvent = model.events[j];
 
-                    var componentPooled = state.componentPool.Get();
+                    InputAction actionButton = inputEvent.button;
+                    PointerEventType evtType = inputEvent.type;
+                    RaycastHit hit = inputEvent.hit;
+
+                    if (checkRestrictedAction && !restrictedActionEnabled)
+                    {
+                        if (IsValidInputForRestrictedActions(entityId, actionButton, evtType, hit))
+                        {
+                            restrictedActionEnabled = true;
+                            engineInfoModel.EnableRestrictedActionTick = engineInfoModel.SceneTick;
+                            engineInfoComponent.PutFor(currentSceneNumber, SpecialEntityId.SCENE_ROOT_ENTITY, engineInfoModel);
+                        }
+                    }
+
+                    var componentPooled = componentPool.Get();
                     var componentModel = componentPooled.WrappedComponent.Model;
                     componentModel.Button = inputEvent.button;
                     componentModel.Hit = inputEvent.hit;
                     componentModel.State = inputEvent.type;
-                    componentModel.Timestamp = state.lastTimestamp++;
-                    componentModel.TickNumber = state.engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
+                    componentModel.Timestamp = lastTimestamp++;
+                    componentModel.TickNumber = engineInfoModel.SceneTick;
 
-                    writer.Append(entity.entityId, ComponentID.POINTER_EVENTS_RESULT, componentPooled);
+                    writer.Append(entityId, ComponentID.POINTER_EVENTS_RESULT, componentPooled);
                 }
 
                 model.events.Clear();
             }
+        }
+
+        private static bool IsValidInputForRestrictedActions(long entityId, InputAction actionButton,
+            PointerEventType evtType, RaycastHit hit)
+        {
+            if (entityId == SpecialEntityId.SCENE_ROOT_ENTITY)
+                return false;
+
+            return hit != null
+                   && (evtType == PointerEventType.PetDown || evtType == PointerEventType.PetUp)
+                   && actionButton != InputAction.IaAny;
         }
     }
 }

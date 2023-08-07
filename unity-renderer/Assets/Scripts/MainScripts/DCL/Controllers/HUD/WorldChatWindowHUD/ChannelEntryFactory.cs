@@ -1,9 +1,10 @@
+using DCL.Social.Chat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [CreateAssetMenu(fileName = "ChannelEntryFactory", menuName = "DCL/Social/ChannelEntryFactory")]
     public class ChannelEntryFactory : ScriptableObject
@@ -14,7 +15,7 @@ namespace DCL.Chat.HUD
             public string channelId;
             public PublicChatEntry prefab;
         }
-        
+
         [SerializeField] private PublicChatEntry defaultEntryPrefab;
         [SerializeField] private SpecialEntry[] specialEntryPrefabs;
 

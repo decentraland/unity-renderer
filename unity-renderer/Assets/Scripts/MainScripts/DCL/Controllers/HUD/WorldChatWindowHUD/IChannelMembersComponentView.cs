@@ -1,7 +1,8 @@
+using DCL.Social.Chat;
 using System;
 using System.Collections.Generic;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public interface IChannelMembersComponentView
     {

@@ -133,7 +133,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
     public override void OnFocus()
     {
-        if (!sizeOnHoverComponent.enabled)
+        if (sizeOnHoverComponent == null || !sizeOnHoverComponent.enabled)
             return;
 
         base.OnFocus();

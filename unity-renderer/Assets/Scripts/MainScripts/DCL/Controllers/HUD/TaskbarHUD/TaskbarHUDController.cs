@@ -1,10 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.Interface;
 using DCL.Social.Friends;
 using Analytics;
+using DCL.Social.Chat;
 using System;
 using System.Threading;
 using TMPro;

@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class SearchChannelsWindowComponentView : BaseComponentView, ISearchChannelsWindowView
     {

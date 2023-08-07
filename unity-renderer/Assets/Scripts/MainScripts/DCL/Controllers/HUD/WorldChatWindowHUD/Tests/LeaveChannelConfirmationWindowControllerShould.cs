@@ -2,7 +2,7 @@ using System;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class LeaveChannelConfirmationWindowControllerShould
     {

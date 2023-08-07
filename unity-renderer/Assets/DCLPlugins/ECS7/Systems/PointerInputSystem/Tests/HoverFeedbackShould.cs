@@ -59,8 +59,7 @@ namespace Tests
                 internalComponents.PointerEventsComponent,
                 interactionHoverCanvas,
                 worldState,
-                dataStoreEcs7,
-                new RestrictedActionsContext());
+                dataStoreEcs7);
 
             systemUpdate = system.Update;
 

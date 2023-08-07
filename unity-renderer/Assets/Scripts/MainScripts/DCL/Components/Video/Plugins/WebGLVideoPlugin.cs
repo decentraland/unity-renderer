@@ -7,7 +7,7 @@ namespace DCL.Components.Video.Plugin
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        public static extern void WebVideoPlayerCreate(string id, string url, bool useHls);
+        public static extern void WebVideoPlayerCreate(string id, string url, int videoType);
         [DllImport("__Internal")]
         public static extern void WebVideoPlayerRemove(string id);
         [DllImport("__Internal")]
@@ -39,7 +39,7 @@ namespace DCL.Components.Video.Plugin
         [DllImport("__Internal")]
         public static extern void WebVideoPlayerSetLoop(string id, bool loop);
 #else
-        public static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
+        public static void WebVideoPlayerCreate(string id, string url, int videoType) { }
         public static void WebVideoPlayerRemove(string id) { }
         public static void WebVideoPlayerTextureUpdate(string id) { }
         public static int WebVideoPlayerTextureGet(string id) { return -1; }

@@ -20,6 +20,11 @@ public class VideoPluginWrapper_AVPro : IVideoPluginWrapper
         }
     }
 
+    public void Create(string id, string url, VideoType type)
+    {
+        Create(id, url, type == VideoType.Hls);
+    }
+
     public void Remove(string id)
     {
         videoPlayers[id].Dispose();
@@ -99,5 +104,5 @@ public class VideoPluginWrapper_AVPro : IVideoPluginWrapper
     {
         videoPlayers[id].SetLoop(loop);
     }
-    
+
 }

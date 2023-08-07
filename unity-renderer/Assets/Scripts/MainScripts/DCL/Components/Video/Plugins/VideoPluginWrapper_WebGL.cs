@@ -6,7 +6,8 @@ namespace DCL.Components.Video.Plugin
 {
     public class VideoPluginWrapper_WebGL : IVideoPluginWrapper
     {
-        public void Create(string id, string url, bool useHls) { WebGLVideoPlugin.WebVideoPlayerCreate(id, url, useHls); }
+        public void Create(string id, string url, bool useHls) { Create(id, url, useHls? VideoType.Hls : VideoType.Common); }
+        public void Create(string id, string url, VideoType videoType) { WebGLVideoPlugin.WebVideoPlayerCreate(id, url, (int)videoType); }
         public void Remove(string id) { WebGLVideoPlugin.WebVideoPlayerRemove(id); }
         public void TextureUpdate(string id) { WebGLVideoPlugin.WebVideoPlayerTextureUpdate(id); }
 

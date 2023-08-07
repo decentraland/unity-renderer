@@ -3,9 +3,17 @@ using UnityEngine;
 
 namespace DCL.Components.Video.Plugin
 {
+    public enum VideoType
+    {
+        Common = 0,
+        Hls,
+        LiveKit
+    }
+
     public interface IVideoPluginWrapper
     {
         void Create(string id, string url, bool useHls);
+        void Create(string id, string url, VideoType videoType);
         void Remove(string id);
         void TextureUpdate(string id);
         Texture2D PrepareTexture(string id);

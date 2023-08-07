@@ -1,4 +1,6 @@
-namespace DCL.Chat.HUD
+using DCL.Social.Chat;
+
+namespace DCL.Social.Chat
 {
     public class ChannelLeaveErrorWindowController
     {
@@ -41,7 +43,7 @@ namespace DCL.Chat.HUD
         }
 
         private void Close() => view.Hide();
-        
+
         private void Retry()
         {
             chatController.LeaveChannel(currentChannelId);

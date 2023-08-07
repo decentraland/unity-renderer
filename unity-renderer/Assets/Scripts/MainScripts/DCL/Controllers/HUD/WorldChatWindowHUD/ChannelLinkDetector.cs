@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Chat;
 using DCL.Chat.Channels;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
