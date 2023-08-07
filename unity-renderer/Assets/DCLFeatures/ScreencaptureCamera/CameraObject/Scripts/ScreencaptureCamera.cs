@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Camera;
 using DCL.Helpers;
+using DCL.Skybox;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
@@ -63,6 +64,7 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private string playerId;
         private CameraReelStorageStatus storageStatus;
+        private Camera prevSkyboxCamera;
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
@@ -234,6 +236,17 @@ namespace DCLFeatures.ScreencaptureCamera
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
             screencaptureCameraHUDController.SetVisibility(activateScreenshotCamera, storageStatus.HasFreeSpace);
+
+
+            if(activateScreenshotCamera)
+            {
+                prevSkyboxCamera = SkyboxController.i.SkyboxCamera.CurrentCamera;
+                SkyboxController.i.AssignMainOverlayCamera(screenshotCamera.transform);
+            }
+            else
+            {
+                SkyboxController.i.AssignMainOverlayCamera(prevSkyboxCamera.transform);
+            }
         }
 
         private void ToggleExternalSystems(bool activateScreenshotCamera)
@@ -273,7 +286,7 @@ namespace DCLFeatures.ScreencaptureCamera
         {
             CreateHUD();
             CreateScreencaptureCamera(cameraController.GetCamera().transform);
-            CreateScreenshotRecorder(screencaptureCameraHUDView.RefImage);
+            CreateScreenshotRecorder();
 
             isInstantiated = true;
         }
@@ -292,7 +305,7 @@ namespace DCLFeatures.ScreencaptureCamera
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
         }
 
-        private void CreateScreenshotRecorder(Image refBoundariesImage) =>
-            screenRecorderLazyValue ??= new ScreenRecorder(screencaptureCameraHUDView.RectTransform, refBoundariesImage.sprite, refBoundariesImage.rectTransform);
+        private void CreateScreenshotRecorder() =>
+            screenRecorderLazyValue ??= new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
     }
 }

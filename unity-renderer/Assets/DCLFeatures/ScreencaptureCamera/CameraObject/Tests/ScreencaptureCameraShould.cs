@@ -138,7 +138,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
 
     public class ScreenRecorderDummy : ScreenRecorder
     {
-        public ScreenRecorderDummy() : base(null, null, null) { }
+        public ScreenRecorderDummy() : base(null) { }
 
         public override Texture2D CaptureScreenshot() =>
             new (1, 1);

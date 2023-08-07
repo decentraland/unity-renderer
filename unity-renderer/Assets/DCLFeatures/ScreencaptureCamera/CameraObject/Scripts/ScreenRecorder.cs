@@ -11,21 +11,16 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private readonly float targetAspectRatio;
 
-        private readonly Sprite sprite;
-        private readonly RectTransform imageRectTransform;
         private readonly RectTransform canvasRectTransform;
 
         private readonly Texture2D finalTexture = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
 
         private (float width, float height) spriteRect;
 
-        public ScreenRecorder(RectTransform canvasRectTransform, Sprite sprite, RectTransform spriteRectTransform)
+        public ScreenRecorder(RectTransform canvasRectTransform)
         {
             targetAspectRatio = (float) TARGET_FRAME_WIDTH / TARGET_FRAME_HEIGHT;
             Debug.Assert(targetAspectRatio != 0, "Target aspect ratio cannot be null");
-
-            this.sprite = sprite;
-            imageRectTransform = spriteRectTransform;
 
             this.canvasRectTransform = canvasRectTransform;
         }
