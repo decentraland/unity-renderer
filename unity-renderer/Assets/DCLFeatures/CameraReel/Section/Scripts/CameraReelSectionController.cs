@@ -11,7 +11,7 @@ namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelSectionController : IDisposable
     {
-        private const int LIMIT = 20;
+        private const int LIMIT = 30;
 
         private readonly CameraReelModel cameraReelModel;
         private readonly CameraReelSectionView sectionView;
