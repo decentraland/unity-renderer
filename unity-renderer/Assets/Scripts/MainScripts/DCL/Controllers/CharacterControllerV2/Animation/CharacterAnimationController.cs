@@ -29,7 +29,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private readonly Dictionary<string, AnimatorOverrideController> locomotion = new ();
         private readonly Dictionary<string, EmoteClipData> externalClips = new ();
-        private readonly List<KeyValuePair<AnimationClip,AnimationClip>> currentOverrides = new();
+        private readonly List<KeyValuePair<AnimationClip, AnimationClip>> currentOverrides = new ();
 
         private AnimatorOverrideController animatorOverrideController;
         private Animator animator;
@@ -37,6 +37,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private bool isPlayingEmote;
         private Quaternion currentRotation;
         private GameObject viewContainer;
+        private float currentMovementBlend;
 
         private FollowWithDamping cameraFollow;
 
@@ -54,10 +55,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             animator = viewContainer.gameObject.GetOrCreateComponent<Animator>();
             viewContainer.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
-            if (!locomotion.ContainsKey(bodyshapeId))
-            {
-                Debug.LogError("Body shape " + bodyshapeId + " has no default animations");
-            }
+            if (!locomotion.ContainsKey(bodyshapeId)) { Debug.LogError("Body shape " + bodyshapeId + " has no default animations"); }
             else
             {
                 animatorOverrideController = new AnimatorOverrideController(locomotion[bodyshapeId]);
@@ -124,26 +122,30 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             int movementBlendId = GetMovementBlendId(velocity, speedState);
 
-            var currentBlend = 0f;
+            var targetBlend = 0f;
 
             if (maxVelocity > 0)
             {
                 float velocityMagnitude = velocity.magnitude;
-                currentBlend = velocityMagnitude / maxVelocity * movementBlendId;
+                targetBlend = velocityMagnitude / maxVelocity * movementBlendId;
 
                 if (velocityMagnitude > 0)
                     StopEmote();
             }
 
-            animator.SetFloat(MOVEMENT_BLEND, currentBlend);
+            currentMovementBlend = Mathf.MoveTowards(currentMovementBlend, targetBlend, Time.deltaTime * data.movAnimBlendSpeed);
 
-            //Quaternion transformRotation = characterState.IsGrounded && velocity.sqrMagnitude > 0.1f ? Quaternion.LookRotation(-velocity.normalized) : transform.rotation;
+            if (currentMovementBlend > 0.1f)
+                StopEmote();
+
+            animator.SetFloat(MOVEMENT_BLEND, currentMovementBlend);
+
             Quaternion transformRotation = transform.rotation;
 
             animator.SetFloat(ANGLE, Quaternion.Angle(currentRotation, transformRotation));
             animator.SetFloat(ANGLE_DIR, Quaternion.Dot(currentRotation, transformRotation));
 
-            currentRotation = Quaternion.RotateTowards(currentRotation, transformRotation, data.rotationSpeed * Time.deltaTime * (1+currentBlend));
+            currentRotation = Quaternion.RotateTowards(currentRotation, transformRotation, data.rotationSpeed * Time.deltaTime * (1 + (currentMovementBlend / 2f)));
             viewContainer.transform.rotation = currentRotation;
         }
 
@@ -167,6 +169,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 return;
 
             if (isPlayingEmote)
+
                 // This trigger enforces the emote loop flip to flop so the animation re-starts
                 animator.SetTrigger(EMOTE_REFRESH);
 

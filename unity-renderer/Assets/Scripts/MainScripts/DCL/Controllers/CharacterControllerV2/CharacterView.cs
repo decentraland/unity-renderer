@@ -230,17 +230,17 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 //data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
                 data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
 
-                data.walkJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkJumpHeight, "walkJumpHeight");
                 data.jogJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogJumpHeight, "jogJumpHeight");
                 data.runJumpHeight = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runJumpHeight, "runJumpHeight");
-
-                data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
                 data.jumpGravityFactor = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpGravityFactor, "jumpGravityFactor");
+
+                //data.jumpPadForce = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpPadForce, "jumpPadForce");
                 data.jumpHeightStun = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpHeightStun, "jumpHeightStun");
                 data.longFallStunTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.longFallStunTime, "longFallStunTime");
                 data.noSlipDistance = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.noSlipDistance, "noSlipDistance");
                 data.slipSpeedMultiplier = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.slipSpeedMultiplier, "slipSpeedMultiplier");
                 data.jumpVelocityDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpVelocityDrag, "jumpVelocityDrag");
+                data.movAnimBlendSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.movAnimBlendSpeed, "movAnimBlendSpeed");
 
                 var secondColumnYPos = 0;
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);

@@ -13,7 +13,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float stopTimeSec = 0.12f;
         public float gravity = -9.8f;
         public float jogJumpHeight = 3f;
-        public float walkJumpHeight = 1.5f;
         public float runJumpHeight = 5f;
         public float jumpGraceTime = 0.15f;
         public float rotationSpeed = 360f;
@@ -33,5 +32,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float slipSpeedMultiplier = 1.2f;
         public float jumpHeightStun = 10f;
         public float jumpVelocityDrag = 3f;
+        public float movAnimBlendSpeed = 3f;
     }
 }

@@ -56,6 +56,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private bool isLongFall;
         private Vector3 lastSlopeDelta;
         private Vector3 lastFinalVelocity;
+        private int groundLayers;
+        private Ray groundRay;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -76,6 +78,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState = new CharacterState();
             velocityLimit = GetVelocityLimit();
             characterControllerSettings = view.GetCharacterControllerSettings();
+            groundLayers = LayerMask.GetMask("Default", "Ground", "CharacterOnly");
+            groundRay = new Ray(Vector3.zero, Vector3.down);
         }
 
         private void RegisterInputEvents()
@@ -141,7 +145,10 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             Vector3 deltaPosition;
             bool currentGroundStatus;
             Vector3 velocityDelta = finalVelocity * deltaTime;
-            (currentGroundStatus, deltaPosition) = view.Move(velocityDelta + lastSlopeDelta);
+
+            Vector3 downwardsSlopeModifier = GetDownwardsSlopeBasedOnVelocity(velocityDelta);
+
+            (currentGroundStatus, deltaPosition) = view.Move(velocityDelta + lastSlopeDelta + downwardsSlopeModifier);
 
             if (lastFinalVelocity.y >= 0 && finalVelocity.y < 0)
                 lastUngroundPeakHeight = view.GetPosition().y;
@@ -154,6 +161,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (!isGrounded && currentGroundStatus)
             {
                 float deltaHeight = lastUngroundPeakHeight - view.GetPosition().y;
+
                 if (deltaHeight > data.jumpHeightStun)
                 {
                     lastStunnedTime = Time.time;
@@ -174,7 +182,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.IsLongFall = finalVelocity.y < -12;
             characterState.IsGrounded = isGrounded;
             characterState.IsJumping = !isGrounded && (finalVelocity.y > 5f || characterState.IsLongJump);
-            characterState.IsFalling = finalVelocity.y < -7f;
+            characterState.IsFalling = finalVelocity.y < -5f;
             characterState.TotalVelocity = deltaPosition / deltaTime;
             characterState.SpeedState = speedState;
             characterState.MaxVelocity = velocityLimit;
@@ -182,6 +190,27 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.ExternalVelocity = externalVelocity;
             characterState.currentAcceleration = currentAcceleration;
             characterState.IsStunned = isStunned;
+        }
+
+        private Vector3 GetDownwardsSlopeBasedOnVelocity(Vector3 velocityDelta)
+        {
+            if (!isGrounded || jumpButtonPressed) return Vector3.zero;
+
+            Vector3 position = view.GetPosition();
+            float feet = position.y - (characterControllerSettings.height * 0.5f);
+            position.y = feet;
+
+            groundRay.origin = position + velocityDelta;
+
+            float downwardsSlopeDistance = speedState == SpeedState.RUN ? 0.55f : 0.45f;
+            Debug.DrawLine(groundRay.origin, groundRay.origin + (groundRay.direction * downwardsSlopeDistance), Color.magenta, 0.15f);
+
+            if (!Physics.Raycast(groundRay, out var hit, downwardsSlopeDistance, groundLayers))
+                return Vector3.zero;
+
+            float diff = feet - hit.point.y;
+
+            return Vector3.down * diff;
         }
 
         // In order to avoid jumping faster than intended
@@ -218,23 +247,22 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
                 Vector3 currentPosition = view.GetPosition();
 
-                if (Physics.SphereCast(currentPosition,
+                // spherecast downwards to check slopes
+                if (!Physics.SphereCast(currentPosition,
                         settings.radius, Vector3.down, out sphereCastHitInfo,
-                        1, Physics.AllLayers))
-                {
-                    Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);
-                    //Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + (sphereCastHitInfo.normal * 5), Color.red, 0.15f);
+                        1, groundLayers)) return Vector3.zero;
 
-                    relativeHitPoint.y = 0;
+                Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);
+                relativeHitPoint.y = 0;
 
-                    if (relativeHitPoint.magnitude > data.noSlipDistance)
-                    {
-                        Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.green, 0.15f);
-                        return -relativeHitPoint;
-                    }
+                // raycast downwards to check if there's nothing, to avoid sliding on slopes
+                groundRay.origin = currentPosition;
 
-                    Debug.DrawLine(sphereCastHitInfo.point, sphereCastHitInfo.point + relativeHitPoint , Color.red, 0.15f);
-                }
+                if (Physics.Raycast(groundRay, 1f, groundLayers))
+                    return Vector3.zero;
+
+                if (relativeHitPoint.magnitude > data.noSlipDistance)
+                    return -relativeHitPoint;
             }
 
             return Vector3.zero;
@@ -442,7 +470,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         {
             return speedState switch
                    {
-                       SpeedState.WALK => data.walkJumpHeight,
+                       SpeedState.WALK => data.jogJumpHeight,
                        SpeedState.JOG => data.jogJumpHeight,
                        SpeedState.RUN => data.runJumpHeight,
                        _ => throw new ArgumentOutOfRangeException(),
