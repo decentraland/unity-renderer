@@ -290,6 +290,7 @@ namespace DCL.Backpack
                 UnEquipAllowed = CanWearableBeUnEquipped(wearable),
                 IsCompatibleWithBodyShape = IsCompatibleWithBodyShape(currentBodyShapeId, wearable),
                 IsSmartWearable = wearable.IsSmart(),
+                Amount = wearable.amount > 1 ? $"x{wearable.amount.ToString()}" : "",
             };
         }
 

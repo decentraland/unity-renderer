@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks.Triggers;
 using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,7 @@ namespace DCLServices.WearablesCatalogService
                     return null;
                 }
 
-                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
+                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl, int amount)
                 {
                     WearableItem wearable = new WearableItem
                     {
@@ -129,6 +130,7 @@ namespace DCLServices.WearablesCatalogService
                         id = metadata.id,
                         entityId = id,
                         rarity = metadata.rarity,
+                        amount = amount,
                         thumbnail = GetContentHashByFileName(metadata.thumbnail),
                     };
 
@@ -166,6 +168,7 @@ namespace DCLServices.WearablesCatalogService
             public string urn;
             public IndividualDataDto[] individualData;
             public EntityDto entity;
+            public int amount;
             public string rarity;
 
             public long GetMostRecentTransferTimestamp()
@@ -188,7 +191,7 @@ namespace DCLServices.WearablesCatalogService
 
             public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
             {
-                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl);
+                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount);
                 wearable.rarity ??= rarity;
                 wearable.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp()).DateTime;
                 return wearable;

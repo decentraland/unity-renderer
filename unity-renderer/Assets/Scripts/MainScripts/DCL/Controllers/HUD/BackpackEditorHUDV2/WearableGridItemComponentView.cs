@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,7 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject incompatibleContainer;
         [SerializeField] internal GameObject incompatibleTooltip;
         [SerializeField] internal GameObject smartWearableFlag;
+        [SerializeField] internal TMP_Text amountText;
 
         private IButtonDoubleClick interactDoubleClick;
         private string lastThumbnailUrl;
@@ -96,6 +98,7 @@ namespace DCL.Backpack
             nftBackground.sprite = rarityNftBackgrounds.GetRarityImage(nftRarity);
             categoryBackground.color = nftTypesIcons.GetColor(nftRarity);
             categoryImage.sprite = nftTypesIcons.GetTypeImage(model.Category);
+            amountText.text = model.Amount;
 
             if (model.IsCompatibleWithBodyShape)
                 image.ImageComponent.material = null;
