@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using System.Threading;
 using UnityEngine;
 
@@ -7,12 +8,17 @@ namespace DCLServices.CameraReelService
     public class CameraReelService : ICameraReelService
     {
         private readonly ICameraReelClient client;
+        private readonly ServiceLocator serviceLocator;
 
         private IScreencaptureCamera screencaptureCamera;
 
-        public CameraReelService(ICameraReelClient client)
+        private ICameraReelAnalyticsService analyticsServiceLazy;
+        private ICameraReelAnalyticsService analyticsService => analyticsServiceLazy ??= serviceLocator.Get<ICameraReelAnalyticsService>();
+
+        public CameraReelService(ICameraReelClient client, ServiceLocator serviceLocator)
         {
             this.client = client;
+            this.serviceLocator = serviceLocator;
         }
 
         public void Initialize() { }
@@ -37,6 +43,7 @@ namespace DCLServices.CameraReelService
         public async UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
         {
             CameraReelUploadResponse response = await client.UploadScreenshot(image.EncodeToJPG(), metadata, ct);
+            analyticsService.SendScreenshotUploaded(metadata.userAddress, metadata.realm, metadata.scene.name, metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy"), metadata.visiblePeople.Length);
             return (response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages));
         }
 
