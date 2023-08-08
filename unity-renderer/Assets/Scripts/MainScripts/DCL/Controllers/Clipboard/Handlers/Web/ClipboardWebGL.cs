@@ -15,7 +15,7 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
 
     private delegate void OnCopyInputCallback();
 
-    [DllImport("__Internal")]
+    /*[DllImport("__Internal")]
     private static extern void initialize(Action<IntPtr, int> readTextCallback, Action<IntPtr> pasteCallback,
         Action copyCallback);
 
@@ -30,7 +30,7 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
     /// External call to request the string value stored at browser's clipboard
     /// </summary>
     [DllImport("__Internal")]
-    private static extern void readText();
+    private static extern void readText();*/
 
     /// <summary>
     /// This static function is called from the browser. It will receive a pointer to the string value
@@ -77,12 +77,18 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
     void IClipboardHandler.Initialize(Action<string, bool> onRead)
     {
         this.OnRead = onRead;
-        initialize(OnReceiveReadText, OnReceivePasteInput, OnReceiveCopyInput);
+        // initialize(OnReceiveReadText, OnReceivePasteInput, OnReceiveCopyInput);
     }
 
-    void IClipboardHandler.RequestWriteText(string text) { writeText(text); }
+    void IClipboardHandler.RequestWriteText(string text)
+    {
+        // writeText(text);
+    }
 
-    void IClipboardHandler.RequestGetText() { readText(); }
+    void IClipboardHandler.RequestGetText()
+    {
+        // readText();
+    }
 
     void OnBeforeRender()
     {
@@ -93,7 +99,7 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
         if (copyInput)
         {
             copyInput = false;
-            writeText(GUIUtility.systemCopyBuffer);
+            // writeText(GUIUtility.systemCopyBuffer);
         }
     }
 }

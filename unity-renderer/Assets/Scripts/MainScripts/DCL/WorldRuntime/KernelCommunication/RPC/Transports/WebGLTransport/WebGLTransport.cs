@@ -53,8 +53,8 @@ namespace RPC.Transports
 
         private static event Action<byte[]> OnWebGLMessage;
 
-        [DllImport("__Internal")]
-        private static extern void SetCallback_BinaryMessage(JS_Delegate_VII callback);
+        // [DllImport("__Internal")]
+        // private static extern void SetCallback_BinaryMessage(JS_Delegate_VII callback);
 
         [MonoPInvokeCallback(typeof(JS_Delegate_VII))]
         internal static void BinaryMessage(int intPtr, int length)

@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 public class WebGLFileSaver
 {
 
-    [DllImport("__Internal")]
+    /*[DllImport("__Internal")]
     private static extern void UNITY_SAVE(string content, string name, string MIMEType);
-    
+
     [DllImport ("__Internal")]
     private static extern void UNITY_SAVE_BYTEARRAY(byte[] array, int byteLength, string name, string MIMEType);
 
@@ -16,7 +16,7 @@ public class WebGLFileSaver
     private static extern void init();
 
     [DllImport("__Internal")]
-    private static extern bool UNITY_IS_SUPPORTED();
+    private static extern bool UNITY_IS_SUPPORTED();*/
 
     static bool hasinit = false;
 
@@ -24,9 +24,9 @@ public class WebGLFileSaver
     {
        if (!CheckSupportAndInit()) return;
 
-        UNITY_SAVE (content, fileName, MIMEType);
+        // UNITY_SAVE (content, fileName, MIMEType);
     }
-    
+
     public static void SaveFile(byte[] content, string fileName, string MIMEType = "text/plain;charset=utf-8")
     {
         if (content == null)
@@ -36,7 +36,7 @@ public class WebGLFileSaver
         }
         if (!CheckSupportAndInit()) return;
 
-        UNITY_SAVE_BYTEARRAY (content, content.Length, fileName, MIMEType);
+        // UNITY_SAVE_BYTEARRAY (content, content.Length, fileName, MIMEType);
     }
 
     static bool CheckSupportAndInit()
@@ -55,7 +55,7 @@ public class WebGLFileSaver
         CheckInit();
 
         if (!IsSavingSupported())
-        { 
+        {
             Debug.LogWarning("Saving is not supported on this device.");
             return false;
         }
@@ -66,13 +66,15 @@ public class WebGLFileSaver
     {
         if (!hasinit)
         {
-            init();
+            // init();
             hasinit = true;
         }
     }
 
     public static bool IsSavingSupported()
     {
+        return false;
+
         if (Application.isEditor)
         {
             Debug.Log("Saving will not work in editor.");
@@ -84,6 +86,6 @@ public class WebGLFileSaver
             return false;
         }
         CheckInit();
-        return UNITY_IS_SUPPORTED();
+        // return UNITY_IS_SUPPORTED();
     }
 }
