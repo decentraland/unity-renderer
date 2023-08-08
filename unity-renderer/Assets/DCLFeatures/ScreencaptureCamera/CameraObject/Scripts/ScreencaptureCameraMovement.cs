@@ -41,8 +41,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void OnEnable()
         {
-            // mouseX = transform.rotation.eulerAngles.y;
-            // mouseY = transform.rotation.eulerAngles.x;
+            rotationIsEnabled = false;
+            mouseX = transform.rotation.eulerAngles.y;
+            mouseY = transform.rotation.eulerAngles.x;
 
             mouseFirstClick.OnStarted += EnableRotation;
             mouseFirstClick.OnFinished += DisableRotation;
@@ -50,6 +51,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void OnDisable()
         {
+            rotationIsEnabled = false;
+            mouseX = transform.rotation.eulerAngles.y;
+            mouseY = transform.rotation.eulerAngles.x;
+
             mouseFirstClick.OnStarted -= EnableRotation;
             mouseFirstClick.OnFinished -= DisableRotation;
         }
@@ -67,9 +72,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             DataStore.i.camera.panning.Set(false);
             rotationIsEnabled = isEnabled;
-
-            // mouseX = transform.rotation.eulerAngles.y;
-            // mouseY = transform.rotation.eulerAngles.x;
         }
 
         private void Rotate(float deltaTime)
@@ -77,7 +79,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             mouseX += cameraXAxis.GetValue() * rotationSpeed * deltaTime;
             mouseY -= cameraYAxis.GetValue() * rotationSpeed * deltaTime;
 
-            mouseY = Mathf.Clamp(mouseY, -90f, 90f);
+            // mouseY = Mathf.Clamp(mouseY, -90f, 90f);
 
             transform.rotation = Quaternion.Euler(mouseY, mouseX, 0f);
         }
