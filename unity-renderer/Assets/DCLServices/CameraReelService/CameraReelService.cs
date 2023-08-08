@@ -10,8 +10,6 @@ namespace DCLServices.CameraReelService
         private readonly ICameraReelClient client;
         private readonly ServiceLocator serviceLocator;
 
-        private IScreencaptureCamera screencaptureCamera;
-
         private ICameraReelAnalyticsService analyticsServiceLazy;
         private ICameraReelAnalyticsService analyticsService => analyticsServiceLazy ??= serviceLocator.Get<ICameraReelAnalyticsService>();
 
@@ -46,11 +44,5 @@ namespace DCLServices.CameraReelService
             analyticsService.SendScreenshotUploaded(metadata.userAddress, metadata.realm, metadata.scene.name, metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy"), metadata.visiblePeople.Length);
             return (response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages));
         }
-
-        public void SetCamera(IScreencaptureCamera screencaptureCamera) =>
-            this.screencaptureCamera = screencaptureCamera;
-
-        public void EnableScreenshotCamera() =>
-            screencaptureCamera?.ToggleScreenshotCamera(isEnabled: true);
     }
 }

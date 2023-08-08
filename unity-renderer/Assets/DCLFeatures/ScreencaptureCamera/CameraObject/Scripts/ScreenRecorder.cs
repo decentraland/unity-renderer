@@ -149,38 +149,5 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             return downscaledTexture;
         }
-
-        // bilinear interpolation
-        private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
-        {
-            var result = new Texture2D(targetWidth, targetHeight, source.format, true);
-
-            Color[] rpixels = result.GetPixels(0);
-
-            float incX = 1.0f / targetWidth;
-            float incY = 1.0f / targetHeight;
-
-            for (var px = 0; px < rpixels.Length; px++)
-                rpixels[px] = source.GetPixelBilinear(incX * ((float)px % targetWidth), incY * Mathf.Floor(px / targetWidth));
-
-            result.SetPixels(rpixels, 0);
-            result.Apply();
-            return result;
-        }
-
-        private static (float, float) GetCurrentSpriteResolution(Rect imageRect, Bounds spriteBounds)
-        {
-            float imageWidth = imageRect.width;
-            float imageHeight = imageRect.height;
-
-            float imageAspect = imageWidth / imageHeight;
-            float spriteAspect = spriteBounds.size.x / spriteBounds.size.y;
-
-            // Depending on which dimension is the limiting one (width or height),
-            // calculate the actual size of the sprite on screen (sing the sprite's aspect ratio.)
-            return imageAspect > spriteAspect
-                ? (imageHeight * spriteAspect, imageHeight) // Height is the limiting dimension, so scaling width based on it
-                : (imageWidth, imageWidth / spriteAspect); // Width is the limiting dimension, so scaling height based on it
-        }
     }
 }

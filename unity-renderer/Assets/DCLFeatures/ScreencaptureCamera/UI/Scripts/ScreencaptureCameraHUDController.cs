@@ -78,10 +78,5 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
             OpenCameraReelGallery();
-
-        public void ScreenshotCleanView(bool isEnabled)
-        {
-            view.ScreenshotCleanView(isEnabled);
-        }
     }
 }

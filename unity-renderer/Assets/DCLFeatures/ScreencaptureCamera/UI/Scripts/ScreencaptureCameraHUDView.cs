@@ -10,7 +10,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
     {
         [SerializeField] private Canvas rootCanvas;
         [SerializeField] private GameObject noSpaceInfo;
-        [SerializeField] private Image goldenRuleFrame;
 
         [Header("BUTTONS")]
         [SerializeField] private Button cameraReelButton;
@@ -31,7 +30,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private Sequence currentVfxSequence;
 
         [field: SerializeField] public RectTransform RectTransform { get; private set; }
-        [field: SerializeField] public Image RefImage { get; private set; }
 
         public bool IsVisible => rootCanvas.enabled;
 
@@ -63,11 +61,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
             if (rootCanvas.enabled != isVisible)
                 rootCanvas.enabled = isVisible;
-        }
-
-        public void ScreenshotCleanView(bool isVisible)
-        {
-            goldenRuleFrame.enabled = isVisible;
         }
 
         public void ToggleShortcutsInfosHelpPanel()
@@ -130,89 +123,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
                                         whiteSplashImage.enabled = false;
                                         whiteSplashImage.color = Color.white;
                                     });
-        }
-
-        [ContextMenu(nameof(ScaleCheck))]
-        private void ScaleCheck()
-        {
-            //=====---- Settings
-            float targetFrameHeight = 1080;
-            float targetFrameWidth = 1920;
-            float targetAspectRatio = targetFrameWidth / targetFrameHeight;
-            var frameScale = 0.87f;
-            Debug.Log($"targetAspectRatio {targetAspectRatio}");
-
-            //=====---- Current
-            Debug.Log("CURRENT");
-            float currentScreenWidth = RectTransform.rect.width * RectTransform.lossyScale.x;
-            float currentScreenHeight = RectTransform.rect.height * RectTransform.lossyScale.y;
-            float currentScreenAspectRatio = currentScreenWidth / currentScreenHeight;
-            Debug.Log($"currentScreen {currentScreenWidth}, {currentScreenHeight}");
-            Debug.Log($"currentScreenAspectRatio {currentScreenAspectRatio}");
-
-            float currentFrameWidth;
-            float currentFrameHeight;
-
-            Debug.Log($"fame simple scale {currentScreenWidth * frameScale}, {currentScreenHeight * frameScale}");
-
-            // Adjust current by smallest side
-            if (currentScreenAspectRatio > targetAspectRatio) // Height is the limiting dimension, so scaling width based on it
-            {
-                currentFrameHeight = currentScreenHeight * frameScale;
-                currentFrameWidth = currentFrameHeight * targetAspectRatio;
-            }
-            else // Width is the limiting dimension, so scaling height based on it
-            {
-                currentFrameWidth = currentScreenWidth * frameScale;
-                currentFrameHeight = currentFrameWidth / targetAspectRatio;
-            }
-
-            Debug.Log($"currentFrame {currentFrameWidth}, {currentFrameHeight}");
-
-            //=====---- Target
-            Debug.Log("TARGET");
-
-            float upscaleFrameWidth = targetFrameWidth / currentFrameWidth;
-            float upscaleFrameHeight = targetFrameHeight / currentFrameHeight;
-            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
-            Debug.Log($"targetUpscale {upscaleFrameWidth}, {upscaleFrameHeight}");
-            float targetUpscale = upscaleFrameWidth;
-
-            float calculatedTargetFrameWidth = currentFrameWidth * targetUpscale;
-            float calculatedTargetFrameHeight = currentFrameHeight * targetUpscale;
-            float targetScreenWidth = currentScreenWidth * targetUpscale;
-            float targetScreenHeight = currentScreenHeight * targetUpscale;
-            Debug.Log($"target Frame and Screen {calculatedTargetFrameWidth}:{calculatedTargetFrameHeight}, {targetScreenWidth}:{targetScreenHeight}");
-
-            //=====---- Rounded Upscaled
-            Debug.Log("UPSCALED");
-
-            int upscaleFactor = Mathf.CeilToInt(targetUpscale);
-            Debug.Log($"rounded Upscale {upscaleFactor}");
-
-            float upscaledFrameWidth = currentFrameWidth * upscaleFactor;
-            float upscaledFrameHeight = currentFrameHeight * upscaleFactor;
-            float upscaledScreenWidth = currentScreenWidth * upscaleFactor;
-            float upscaledScreenHeight = currentScreenHeight * upscaleFactor;
-
-            Debug.Log($"Upscaled Frame and Screen {upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
-
-            //=====---- Downscaled from Rounded
-            Debug.Log("DOWNSCALED");
-
-            float downscaleScreenWidth = targetScreenWidth / upscaledScreenWidth;
-            float downscaleScreenHeight = targetScreenHeight / upscaledScreenHeight;
-            Debug.Assert(Math.Abs(downscaleScreenWidth - downscaleScreenHeight) < 0.0001f);
-            Debug.Log($"{downscaleScreenWidth}, {downscaleScreenHeight}");
-            float targetDownscale = downscaleScreenWidth;
-            Debug.Log($"{targetDownscale}");
-
-            float downscaledFrameWidth = upscaledFrameWidth * targetDownscale;
-            float downscaledFrameHeight = upscaledFrameHeight * targetDownscale;
-            float downscaledScreenWidth = upscaledScreenWidth * targetDownscale;
-            float downscaledScreenHeight = upscaledScreenHeight * targetDownscale;
-
-            Debug.Log($"Downscaled Frame and Screen {downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
         }
     }
 }

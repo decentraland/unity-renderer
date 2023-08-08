@@ -6,6 +6,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     public class ScreencaptureCameraRotation
     {
+        private const DCLAction_Hold DUMMY_ACTION = new ();
+
         private readonly Transform target;
         private readonly RotationInputSchema input;
 
@@ -25,21 +27,18 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void Rotate(float deltaTime, float rotationSpeed, float rollSpeed, float damping)
         {
-            // Extract the current yaw and pitch
-            float currentYaw = target.eulerAngles.y;
-            float currentPitch = target.eulerAngles.x;
-            float currentRoll = target.eulerAngles.z;
+            Vector3 currentEulerAngles = target.eulerAngles;
 
-            currentRoll += SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime;
+            currentEulerAngles.z += SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime;
 
             if (mouseControlIsEnabled)
             {
                 smoothedMouseDelta = CalculateSmoothedMouseDelta(deltaTime, rotationSpeed, damping);
-                currentYaw += smoothedMouseDelta.x * deltaTime;
-                currentPitch -= smoothedMouseDelta.y * deltaTime;
+                currentEulerAngles.y += smoothedMouseDelta.x * deltaTime; // Yaw
+                currentEulerAngles.x -= smoothedMouseDelta.y * deltaTime; // Pitch
             }
 
-            target.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
+            target.rotation = Quaternion.Euler(currentEulerAngles);
         }
 
         private Vector2 CalculateSmoothedMouseDelta(float deltaTime, float rotationSpeed, float damping)
@@ -66,7 +65,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         public void Activate()
         {
             if (Utils.IsCursorLocked)
-                EnableRotation();
+                EnableRotation(DUMMY_ACTION);
 
             input.mouseFirstClick.OnStarted += EnableRotation;
             input.mouseFirstClick.OnFinished += DisableRotation;
@@ -74,22 +73,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void Deactivate()
         {
-            DisableRotation();
+            DisableRotation(DUMMY_ACTION);
 
             input.mouseFirstClick.OnStarted -= EnableRotation;
             input.mouseFirstClick.OnFinished -= DisableRotation;
         }
 
-        private void EnableRotation(DCLAction_Hold action) =>
-            EnableRotation();
-
-        private void DisableRotation(DCLAction_Hold action) =>
-            DisableRotation();
-
-        private void EnableRotation() =>
+        private void EnableRotation(DCLAction_Hold _) =>
             SwitchRotation(isEnabled: true);
 
-        private void DisableRotation()
+        private void DisableRotation(DCLAction_Hold _)
         {
             SwitchRotation(isEnabled: false);
             smoothedRollRate = 0f;

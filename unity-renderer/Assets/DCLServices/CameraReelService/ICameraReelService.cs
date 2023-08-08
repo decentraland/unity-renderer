@@ -14,9 +14,5 @@ namespace DCLServices.CameraReelService
         UniTask<CameraReelStorageStatus> DeleteScreenshot(string uuid, CancellationToken ct = default);
 
         UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default);
-
-        void SetCamera(IScreencaptureCamera screencaptureCamera);
-
-        void EnableScreenshotCamera();
     }
 }

@@ -95,7 +95,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void Awake()
         {
             storageStatus = new CameraReelStorageStatus(0, 0);
-            DataStore.i.exploreV2.isOpen.OnChange += SelfRegisterToCameraReelService;
             SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
         }
 
@@ -141,15 +140,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
             this.userMovementKeysBlocked = userMovementKeysBlocked;
             isScreencaptureCameraActive = isScreenshotCameraActive;
-        }
-
-        private void SelfRegisterToCameraReelService(bool current, bool _)
-        {
-            if (current && cameraReelServiceLazyValue == null)
-            {
-                cameraReelService.SetCamera(this);
-                DataStore.i.exploreV2.isOpen.OnChange -= SelfRegisterToCameraReelService;
-            }
         }
 
         public void CaptureScreenshot()

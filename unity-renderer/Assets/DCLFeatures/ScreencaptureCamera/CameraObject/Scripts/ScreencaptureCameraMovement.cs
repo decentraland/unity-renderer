@@ -1,5 +1,4 @@
-﻿using DCL.Helpers;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
