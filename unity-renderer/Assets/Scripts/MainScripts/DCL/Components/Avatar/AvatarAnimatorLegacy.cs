@@ -465,7 +465,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             animation.RemoveClip(emoteId);
 
         emoteClipDataMap[emoteId] = emoteClipData;
-
         animation.AddClip(emoteClipData.clip, emoteId);
     }
 

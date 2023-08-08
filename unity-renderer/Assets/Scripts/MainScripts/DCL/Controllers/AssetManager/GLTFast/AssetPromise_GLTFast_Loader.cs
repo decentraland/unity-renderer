@@ -112,7 +112,7 @@ namespace DCL
                     GenerateMipMaps = false,
                     AnisotropicFilterLevel = 3,
                     NodeNameMethod = NameImportMethod.OriginalUnique,
-                    AnimationMethod = AnimationMethod.Mecanim
+                    AnimationMethod = AnimationMethod.Legacy
                 };
 
                 bool success = await gltfImport.Load(url, gltFastSettings, cancellationSourceToken);

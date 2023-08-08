@@ -40,6 +40,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private float currentMovementBlend;
 
         private FollowWithDamping cameraFollow;
+        private Animation legacyAnimator;
 
         private void Awake()
         {
@@ -53,6 +54,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         {
             viewContainer = container;
             animator = viewContainer.gameObject.GetOrCreateComponent<Animator>();
+            legacyAnimator = viewContainer.gameObject.GetOrCreateComponent<Animation>();
+            legacyAnimator.enabled = false;
+
             viewContainer.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
             if (!locomotion.ContainsKey(bodyshapeId)) { Debug.LogError("Body shape " + bodyshapeId + " has no default animations"); }
@@ -129,7 +133,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 float velocityMagnitude = velocity.magnitude;
                 targetBlend = velocityMagnitude / maxVelocity * movementBlendId;
 
-                if (velocityMagnitude > 0)
+                if (velocityMagnitude > 0.05f)
                     StopEmote();
             }
 
@@ -175,17 +179,37 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             if (externalClips.TryGetValue(emoteId, out EmoteClipData data))
             {
-                animatorOverrideController["Emote"] = data.clip;
-                animator.SetBool(EMOTE_LOOP, data.loop);
-                animator.SetBool(EMOTE, true);
-                isPlayingEmote = true;
+                if (!data.clip.legacy)
+                    StartNonLegacyEmote(data);
+                else
+                    StartLegacyEmote(data);
             }
             else
                 StopEmote();
         }
 
+        private void StartLegacyEmote(EmoteClipData value)
+        {
+            animator.enabled = false;
+            legacyAnimator.enabled = true;
+            legacyAnimator.AddClip(value.clip, "emote");
+            legacyAnimator.Play("emote");
+            isPlayingEmote = true;
+        }
+
+        private void StartNonLegacyEmote(EmoteClipData data)
+        {
+            animatorOverrideController["Emote"] = data.clip;
+            animator.SetBool(EMOTE_LOOP, data.loop);
+            animator.SetBool(EMOTE, true);
+            isPlayingEmote = true;
+        }
+
         private void StopEmote()
         {
+            if (!isPlayingEmote) return;
+            legacyAnimator.enabled = false;
+            animator.enabled = true;
             animator.SetBool(EMOTE, false);
             isPlayingEmote = false;
         }
@@ -197,11 +221,11 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         public void EquipEmote(string emoteId, EmoteClipData emoteClipData)
         {
-            if (emoteClipData.clip.legacy)
+            /*if (emoteClipData.clip.legacy)
             {
                 Debug.LogWarning($"Watch out, {emoteClipData.clip.name} is legacy", emoteClipData.clip);
                 return;
-            }
+            }*/
 
             externalClips[emoteId] = emoteClipData;
         }
