@@ -1,6 +1,5 @@
 using DCL;
 using DCL.Helpers;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -127,9 +126,12 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal ImageComponentView eventImage;
     [SerializeField] internal TagComponentView liveTag;
     [SerializeField] internal TMP_Text eventDateText;
+    [SerializeField] internal TMP_Text eventDateTextOnFocus;
     [SerializeField] internal TMP_Text eventNameText;
+    [SerializeField] internal TMP_Text eventNameTextOnFocus;
     [SerializeField] internal TMP_Text eventDescText;
     [SerializeField] internal TMP_Text eventStartedInTitleForLive;
+    [SerializeField] internal TMP_Text eventStartedInTitleForLiveOnFocus;
     [SerializeField] internal TMP_Text eventStartedInTitleForNotLive;
     [SerializeField] internal TMP_Text eventStartedInText;
     [SerializeField] internal TMP_Text eventStartsInFromToText;
@@ -149,6 +151,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal GameObject cardSelectionFrame;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
@@ -166,6 +169,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public void Start()
     {
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
+
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
 
@@ -232,12 +238,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         base.OnFocus();
 
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(true);
+
         cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
+
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
 
         cardAnimator?.Idle();
     }
@@ -337,6 +349,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (eventDateText != null)
             eventDateText.gameObject.SetActive(!isLive);
 
+        if (eventDateTextOnFocus != null)
+            eventDateTextOnFocus.gameObject.SetActive(!isLive);
+
         if (jumpinButton != null)
             jumpinButton.gameObject.SetActive(isEventCardModal || isLive);
 
@@ -348,6 +363,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (eventStartedInTitleForLive)
             eventStartedInTitleForLive.gameObject.SetActive(isLive);
+
+        if (eventStartedInTitleForLiveOnFocus)
+            eventStartedInTitleForLiveOnFocus.gameObject.SetActive(isLive);
 
         if (eventStartedInTitleForNotLive)
             eventStartedInTitleForNotLive.gameObject.SetActive(!isLive);
@@ -376,20 +394,22 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         model.eventDateText = newDate;
 
-        if (eventDateText == null)
-            return;
+        if (eventDateText != null)
+            eventDateText.text = newDate;
 
-        eventDateText.text = newDate;
+        if (eventDateTextOnFocus != null)
+            eventDateTextOnFocus.text = newDate;
     }
 
     public void SetEventName(string newText)
     {
         model.eventName = newText;
 
-        if (eventNameText == null)
-            return;
+        if (eventNameText != null)
+            eventNameText.text = newText;
 
-        eventNameText.text = newText;
+        if (eventNameTextOnFocus != null)
+            eventNameTextOnFocus.text = newText;
     }
 
     public void SetEventDescription(string newText)
