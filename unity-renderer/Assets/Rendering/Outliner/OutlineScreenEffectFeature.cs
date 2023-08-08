@@ -66,7 +66,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
             using (new ProfilingScope(cmd, new ProfilingSampler(PROFILER_TAG)))
             {
                 RenderTextureDescriptor mainDescriptor = renderingData.cameraData.cameraTargetDescriptor;
-                mainDescriptor.depthBufferBits = 0;
+                // mainDescriptor.depthBufferBits = 0;
                 RenderTextureDescriptor lowResDescriptor = renderingData.cameraData.cameraTargetDescriptor;
 
                 // For high resolutions we dont need so much quality and the blur effect gets exponentially expensive so we lower the resolution to full-hd (1920x1080) but maintaining the aspect ratio
