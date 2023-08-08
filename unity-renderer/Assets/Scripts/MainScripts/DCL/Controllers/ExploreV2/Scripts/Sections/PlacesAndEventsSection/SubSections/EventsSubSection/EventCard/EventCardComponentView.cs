@@ -51,6 +51,12 @@ public interface IEventCardComponentView
     void SetEventAsLive(bool isLive);
 
     /// <summary>
+    /// Set the the number of users in the event.
+    /// </summary>
+    /// <param name="newNumberOfUsers">Number of users.</param>
+    void SetNumberOfUsers(int newNumberOfUsers);
+
+    /// <summary>
     /// Set the live tag text.
     /// </summary>
     /// <param name="newText">New text.</param>
@@ -124,6 +130,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
+    [SerializeField] internal GameObject numberOfUsersContainer;
+    [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TagComponentView liveTag;
     [SerializeField] internal TMP_Text eventDateText;
     [SerializeField] internal TMP_Text eventDateTextOnFocus;
@@ -220,6 +228,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             SetEventPicture(sprite: null);
 
         SetEventAsLive(model.isLive);
+        SetNumberOfUsers(model.numberOfUsers);
         SetLiveTagText(model.liveTagText);
         SetEventDate(model.eventDateText);
         SetEventName(model.eventName);
@@ -380,14 +389,23 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             goingUsersGameObject.SetActive(!isLive);
     }
 
+    public void SetNumberOfUsers(int newNumberOfUsers)
+    {
+        model.numberOfUsers = newNumberOfUsers;
+
+        if (numberOfUsersText == null)
+            return;
+
+        numberOfUsersText.text = FormatNumber(newNumberOfUsers);
+        numberOfUsersContainer.SetActive(model.isLive && newNumberOfUsers > 0);
+    }
+
     public void SetLiveTagText(string newText)
     {
         model.liveTagText = newText;
 
-        if (liveTag == null)
-            return;
-
-        liveTag.SetText(newText);
+        if (liveTag != null)
+            liveTag.SetText(newText);
     }
 
     public void SetEventDate(string newDate)
@@ -510,4 +528,14 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     internal void CloseModal() { Hide(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
+
+    private static string FormatNumber(int num)
+    {
+        if (num < 1000)
+            return num.ToString();
+
+        float divided = num / 1000.0f;
+        divided = (int)(divided * 100) / 100f;
+        return $"{divided:F2}k";
+    }
 }

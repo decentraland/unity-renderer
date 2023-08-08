@@ -9,7 +9,8 @@ namespace MainScripts.DCL.Controllers.HotScenes
         public enum UpdateMode
         {
             FOREGROUND,
-            BACKGROUND
+            BACKGROUND,
+            IMMEDIATELY,
         }
 
         IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> ScenesInfo { get; }

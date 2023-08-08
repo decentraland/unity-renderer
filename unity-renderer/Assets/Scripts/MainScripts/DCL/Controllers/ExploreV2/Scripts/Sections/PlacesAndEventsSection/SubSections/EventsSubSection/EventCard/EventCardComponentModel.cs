@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 [Serializable]
 public class EventCardComponentModel : BaseComponentModel
@@ -10,6 +9,7 @@ public class EventCardComponentModel : BaseComponentModel
     public Texture2D eventPictureTexture;
     public string eventPictureUri;
     public bool isLive;
+    public int numberOfUsers;
     public string liveTagText;
     public string eventDateText;
     public string eventName;

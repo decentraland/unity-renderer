@@ -3,6 +3,7 @@ using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using Environment = DCL.Environment;
 
 public interface IPlacesAndEventsSectionComponentController : IDisposable
@@ -25,6 +26,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
     internal ISearchSubSectionComponentController searchSubSectionComponentController;
     private DataStore dataStore;
+    private static Service<IHotScenesFetcher> hotScenesFetcher;
 
     internal BaseVariable<bool> placesAndEventsVisible => dataStore.exploreV2.placesAndEventsVisible;
 
@@ -106,6 +108,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     internal void PlacesAndEventsVisibleChanged(bool current, bool _)
     {
+        if (current && hotScenesFetcher.Ref != null)
+            hotScenesFetcher.Ref.SetUpdateMode(IHotScenesFetcher.UpdateMode.IMMEDIATELY);
+
         view.EnableSearchBar(dataStore.featureFlags.flags.Get().IsFeatureEnabled("search_in_places"));
         view.SetActive(current);
     }

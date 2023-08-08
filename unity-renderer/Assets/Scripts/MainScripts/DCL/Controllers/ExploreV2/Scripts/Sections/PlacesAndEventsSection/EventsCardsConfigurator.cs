@@ -1,3 +1,5 @@
+using DCL;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Globalization;
 using UnityEngine;
@@ -9,6 +11,7 @@ using Environment = DCL.Environment;
 public static class EventsCardsConfigurator
 {
     internal const string LIVE_TAG_TEXT = "LIVE";
+    private static Service<IHotScenesFetcher> hotScenesFetcher;
 
     /// <summary>
     /// Configure a event card with the given model.
@@ -51,6 +54,27 @@ public static class EventsCardsConfigurator
         cardModel.isSubscribed = false;
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
+
+        cardModel.numberOfUsers = 0;
+        if (hotScenesFetcher.Ref.ScenesInfo != null)
+        {
+            bool sceneFound = false;
+            foreach (var hotSceneInfo in hotScenesFetcher.Ref.ScenesInfo.Value)
+            {
+                foreach (Vector2Int hotSceneParcel in hotSceneInfo.parcels)
+                {
+                    if (hotSceneParcel == cardModel.coords)
+                    {
+                        cardModel.numberOfUsers = hotSceneInfo.usersTotalCount;
+                        sceneFound = true;
+                        break;
+                    }
+                }
+
+                if (sceneFound)
+                    break;
+            }
+        }
 
         return cardModel;
     }
