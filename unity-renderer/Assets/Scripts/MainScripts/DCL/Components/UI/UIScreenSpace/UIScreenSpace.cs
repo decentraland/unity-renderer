@@ -81,7 +81,6 @@ namespace DCL.Components
             if (!initialized)
             {
                 InitializeCanvas();
-                // InitializeCanvasOriginal();
                 initialized = true;
             }
             else

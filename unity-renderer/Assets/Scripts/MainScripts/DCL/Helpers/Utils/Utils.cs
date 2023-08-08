@@ -6,7 +6,6 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using DCL.Configuration;
 using DG.Tweening;
@@ -252,31 +251,26 @@ namespace DCL.Helpers
             if (rectTransformRoot == null)
                 return;
 
-            var componentsInChildren = rectTransformRoot.GetComponentsInChildren<Component>(true);
+            Component[] componentsInChildren = rectTransformRoot.GetComponentsInChildren<Component>(true);
 
-            var layoutElementsList = componentsInChildren
-                                    .OfType<ILayoutElement>()
-                                    .Where(e => !(e is Behaviour behaviour) || behaviour.isActiveAndEnabled)
-                                    .Where(e => !(e is TextMeshProUGUI))
-                                    .ToList();
-
-            var layoutControllersList = componentsInChildren
-                                       .OfType<ILayoutController>()
-                                       .Where(e => !(e is Behaviour behaviour) || behaviour.isActiveAndEnabled)
-                                       .ToList();
-
-            foreach (var layoutElem in layoutElementsList)
+            foreach (var component in componentsInChildren)
             {
-                layoutElem.CalculateLayoutInputHorizontal();
-                layoutElem.CalculateLayoutInputVertical();
-            }
+                if (component is ILayoutElement layoutElement &&
+                    (layoutElement is not Behaviour behaviourElem || behaviourElem.isActiveAndEnabled) &&
+                    layoutElement is not TextMeshProUGUI)
+                {
+                    layoutElement.CalculateLayoutInputHorizontal();
+                    layoutElement.CalculateLayoutInputVertical();
+                }
 
-            foreach (var layoutCtrl in layoutControllersList)
-            {
-                layoutCtrl.SetLayoutHorizontal();
-                layoutCtrl.SetLayoutVertical();
+                if (component is not ILayoutController layoutController ||
+                    (layoutController is Behaviour behaviourCtrl && !behaviourCtrl.isActiveAndEnabled)) continue;
+
+                layoutController.SetLayoutHorizontal();
+                layoutController.SetLayoutVertical();
             }
         }
+
 
         private static IEnumerator ForceUpdateLayoutRoutine(RectTransform rt)
         {
@@ -288,17 +282,23 @@ namespace DCL.Helpers
         }
 
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
-            where TComponent: Component
+            where TComponent : Component
         {
             if (startTransform == null)
                 return;
 
-            foreach (Transform t in startTransform) { InverseTransformChildTraversal(action, t); }
+            int childCount = startTransform.childCount;
+
+            // Using a for loop instead of foreach for performance
+            for (int i = 0; i < childCount; i++)
+            {
+                InverseTransformChildTraversal(action, startTransform.GetChild(i));
+            }
 
             var component = startTransform.GetComponent<TComponent>();
-
-            if (component != null) { action.Invoke(component); }
+            if (component != null) action(component);
         }
+
 
         public static void ForwardTransformChildTraversal<TComponent>(Func<TComponent, bool> action, Transform startTransform)
             where TComponent: Component
@@ -386,8 +386,9 @@ namespace DCL.Helpers
             var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
 
             placeholderRenderer.material = Resources.Load<Material>("Materials/AssetLoading");
-            placeholderRenderer.transform.SetParent(targetTransform);
-            placeholderRenderer.transform.localPosition = Vector3.zero;
+            Transform transform;
+            (transform = placeholderRenderer.transform).SetParent(targetTransform);
+            transform.localPosition = Vector3.zero;
             placeholderRenderer.name = "PlaceholderRenderer";
 
             return placeholderRenderer.gameObject;

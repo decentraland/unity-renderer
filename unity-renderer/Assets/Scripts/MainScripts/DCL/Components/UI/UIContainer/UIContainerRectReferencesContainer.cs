@@ -5,7 +5,7 @@ namespace DCL.Components
 {
     public class UIContainerRectReferencesContainer : UIReferencesContainer
     {
-        [Header("UI Container Rect Fields")]
+        [Header("UI SCREEN SPACE FIELDS")]
         public Image image;
 
         public UISizeFitter sizeFitter;

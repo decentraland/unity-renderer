@@ -31,11 +31,11 @@ namespace DCL.Components
 
         public RectTransform GetParentRectTransform()
         {
-            if (!hasParentRectTransform)
-            {
-                parentRectTransform = GetComponentInParent<RectTransform>();
-                hasParentRectTransform = true;
-            }
+            if (hasParentRectTransform)
+                return parentRectTransform;
+
+            parentRectTransform = GetComponentInParent<RectTransform>();
+            hasParentRectTransform = true;
             return parentRectTransform;
         }
 
@@ -60,23 +60,20 @@ namespace DCL.Components
 
         public void SetVisibility(bool visible, float opacity = 1f)
         {
-            if (canvasGroup == null) return;
-
-            canvasGroup.alpha = visible ? opacity : 0;
+            if (canvasGroup != null)
+                canvasGroup.alpha = visible ? opacity : 0;
         }
 
         public void SetBlockRaycast(bool isPointerBlocker)
         {
-            if (canvasGroup == null) return;
-
-            canvasGroup.blocksRaycasts = isPointerBlocker;
+            if (canvasGroup != null)
+                canvasGroup.blocksRaycasts = isPointerBlocker;
         }
 
         public void ResetLayoutElementRTLocalPosition()
         {
-            if (layoutElementRT == null) return;
-
-            layoutElementRT.localPosition = Vector3.zero;
+            if (layoutElementRT != null)
+                layoutElementRT.localPosition = Vector3.zero;
         }
     }
 }
