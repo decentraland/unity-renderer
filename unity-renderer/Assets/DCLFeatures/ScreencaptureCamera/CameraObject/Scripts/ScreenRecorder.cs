@@ -103,7 +103,7 @@ namespace DCLFeatures.ScreencaptureCamera
             Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscaleFactor);
 
             // TODO(Vit): optimize this by removing intermediate texture creation. Read/Write bilinear of cropped frame
-            Texture2D rescaledScreenshot = ScaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
+            Texture2D rescaledScreenshot = DownscaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
 
             // Cropping 1920x1080 central part
             int cornerX = Mathf.RoundToInt((downscaledScreenWidth - TARGET_FRAME_WIDTH) / 2f);
@@ -126,6 +126,31 @@ namespace DCLFeatures.ScreencaptureCamera
             return finalTexture;
         }
 
+        // nearest-neighbor interpolation
+        public static Texture2D DownscaleTexture(Texture2D original, int newWidth, int newHeight)
+        {
+            Texture2D downscaledTexture = new Texture2D(newWidth, newHeight, original.format, false);
+
+            Color32[] originalPixels = original.GetPixels32();
+            Color32[] newPixels = new Color32[newWidth * newHeight];
+
+            float ratioX = ((float)original.width) / newWidth;
+            float ratioY = ((float)original.height) / newHeight;
+
+            for (int i = 0; i < newPixels.Length; i++)
+            {
+                int x = Mathf.FloorToInt((i % newWidth) * ratioX);
+                int y = Mathf.FloorToInt((i / newWidth) * ratioY);
+                newPixels[i] = originalPixels[x + y * original.width];
+            }
+
+            downscaledTexture.SetPixels32(newPixels);
+            downscaledTexture.Apply();
+
+            return downscaledTexture;
+        }
+
+        // bilinear interpolation
         private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
         {
             var result = new Texture2D(targetWidth, targetHeight, source.format, true);
