@@ -6,35 +6,31 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     public class ScreencaptureCameraTranslation
     {
         private readonly CharacterController characterController;
-        private readonly float moveSpeed;
-        private readonly float maxDistanceFromPlayer;
         private readonly Transform transform;
         private readonly TranslationInputSchema input;
 
         private Vector3 currentMoveVector = Vector3.zero;
         private Vector3 smoothedMoveVector = Vector3.zero;
 
-        public ScreencaptureCameraTranslation(CharacterController characterController, float moveSpeed, float maxDistanceFromPlayer, TranslationInputSchema input)
+        public ScreencaptureCameraTranslation(CharacterController characterController, TranslationInputSchema input)
         {
             this.characterController = characterController;
-            this.moveSpeed = moveSpeed;
-            this.maxDistanceFromPlayer = maxDistanceFromPlayer;
             this.input = input;
 
             transform = characterController.transform;
         }
 
-        public void Translate(float deltaTime, float damping, float max)
+        public void Translate(float deltaTime, float moveSpeed, float damping, float maxPerFrame, float maxDistanceFromPlayer)
         {
-            currentMoveVector = InputToMoveVector(deltaTime);
+            currentMoveVector = GetMoveVectorFromInput(deltaTime, moveSpeed);
             smoothedMoveVector = Vector3.Lerp(smoothedMoveVector, currentMoveVector, deltaTime * damping);
-            smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, max * deltaTime);
+            smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, maxPerFrame * deltaTime);
 
             characterController.Move(
-                RestrictedMovementBySemiSphere(smoothedMoveVector));
+                RestrictedMovementBySemiSphere(smoothedMoveVector, maxDistanceFromPlayer));
         }
 
-        private Vector3 InputToMoveVector(float deltaTime)
+        private Vector3 GetMoveVectorFromInput(float deltaTime, float moveSpeed)
         {
             Vector3 forward = transform.forward.normalized * input.yAxis.GetValue();
             Vector3 horizontal = transform.right.normalized * input.xAxis.GetValue();
@@ -47,7 +43,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return (forward + horizontal + vertical) * (moveSpeed * deltaTime);
         }
 
-        private Vector3 RestrictedMovementBySemiSphere(Vector3 movementVector)
+        private Vector3 RestrictedMovementBySemiSphere(Vector3 movementVector, float maxDistanceFromPlayer)
         {
             if (characterController.transform.position.y + movementVector.y <= 0f)
                 movementVector.y = 0f;
@@ -57,9 +53,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             float distanceFromPlayer = Vector3.Distance(desiredCameraPosition, playerPosition);
 
+            // If the distance is greater than the allowed radius, correct the movement vector
             if (distanceFromPlayer > maxDistanceFromPlayer)
             {
-                // If the distance is greater than the allowed radius, correct the movement vector
                 Vector3 directionFromPlayer = (desiredCameraPosition - playerPosition).normalized;
                 desiredCameraPosition = playerPosition + (directionFromPlayer * maxDistanceFromPlayer);
                 movementVector = desiredCameraPosition - characterController.transform.position;
