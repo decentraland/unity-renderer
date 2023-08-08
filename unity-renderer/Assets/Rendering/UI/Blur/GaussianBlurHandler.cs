@@ -20,7 +20,7 @@ public class GaussianBlurHandler : ScriptableRendererFeature
 
         public string targetName = "_blurTexture";
     }
-    
+
     [SerializeField]
     public GaussianBlurSettings settings = new GaussianBlurSettings();
     public class GaussianBlurPass : ScriptableRenderPass
@@ -37,11 +37,11 @@ public class GaussianBlurHandler : ScriptableRendererFeature
         RenderTargetIdentifier tmpRT1;
         RenderTargetIdentifier tmpRT2;
 
-        private RenderTargetIdentifier source {get; set;}
+        private ScriptableRenderer renderer { get; set; }
 
-        public void Setup(RenderTargetIdentifier source)
+        public void Setup(ScriptableRenderer renderer)
         {
-            this.source = source;
+            this.renderer = renderer;
         }
 
         public GaussianBlurPass(string profilerTag)
@@ -77,7 +77,7 @@ public class GaussianBlurHandler : ScriptableRendererFeature
 
             //first pass
             cmd.SetGlobalFloat("_offset", 1.5f);
-            cmd.Blit(source, tmpRT1, blurMat);
+            cmd.Blit(renderer.cameraColorTargetHandle, tmpRT1, blurMat);
 
             for (int i = 1; i < passes - 1; i++)
             {
@@ -118,8 +118,7 @@ public class GaussianBlurHandler : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        var src = renderer.cameraColorTarget;
-        scriptablePass.Setup(src);
+        scriptablePass.Setup(renderer);
         renderer.EnqueuePass(scriptablePass);
     }
 }
