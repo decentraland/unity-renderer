@@ -1,5 +1,6 @@
 ﻿using DCL;
 using DCL.Helpers;
+using System;
 using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
@@ -17,15 +18,15 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         [Header("ROTATION")]
         [SerializeField] private float rotationSpeed = 100f;
-        [SerializeField] private float maxRotationChangePerFrame = 5f;
         [SerializeField] private float rotationDamping = 7;
+        [SerializeField] private float rollSpeed = 50f;
 
         [SerializeField] private InputAction_Measurable cameraXAxis;
         [SerializeField] private InputAction_Measurable cameraYAxis;
         [SerializeField] private InputAction_Hold mouseFirstClick;
+        [SerializeField] private InputAction_Hold cameraRollPlus;
+        [SerializeField] private InputAction_Hold cameraRollMinus;
 
-        private float mouseX;
-        private float mouseY;
         private bool rotationIsEnabled;
 
         private ScreencaptureCameraTranslation translation;
@@ -38,17 +39,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 characterController = GetComponent<CharacterController>();
 
             translation = new ScreencaptureCameraTranslation(characterController, translationSpeed, MAX_DISTANCE_FROM_PLAYER, translationInputSchema);
-
-            mouseX = transform.rotation.eulerAngles.y;
-            mouseY = transform.rotation.eulerAngles.x;
         }
 
         private void Update()
         {
             translation.Translate(Time.deltaTime, translationDamping, maxTranslationChangePerFrame);
-
-            if (rotationIsEnabled)
-                Rotate(Time.deltaTime, rotationDamping, maxRotationChangePerFrame);
+            Rotate(Time.deltaTime, rotationDamping);
         }
 
         private void OnEnable()
@@ -79,6 +75,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void DisableRotation()
         {
+            smoothedRollRate = 0f;
             SwitchRotation(isEnabled: false);
             Utils.UnlockCursor();
         }
@@ -86,26 +83,46 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void SwitchRotation(bool isEnabled)
         {
             DataStore.i.camera.panning.Set(false);
-
-            mouseX = transform.rotation.eulerAngles.y;
-            mouseY = transform.rotation.eulerAngles.x;
-
             rotationIsEnabled = isEnabled;
         }
 
-        private void Rotate(float deltaTime, float damping, float max)
+        private float currentRollRate = 0f; // The current change in roll per frame
+        private float smoothedRollRate = 0f; // The smoothed change in roll per frame
+
+        private void Rotate(float deltaTime, float damping)
         {
-            currentMouseDelta.x = cameraXAxis.GetValue() * rotationSpeed;
-            currentMouseDelta.y = cameraYAxis.GetValue() * rotationSpeed;
-            smoothedMouseDelta = Vector2.Lerp(smoothedMouseDelta, currentMouseDelta, deltaTime * rotationDamping);
-            smoothedMouseDelta = Vector2.ClampMagnitude(smoothedMouseDelta, max);
+            // Extract the current yaw and pitch
+            float currentYaw = transform.eulerAngles.y;
+            float currentPitch = transform.eulerAngles.x;
+            float currentRoll = transform.eulerAngles.z;
 
-            mouseX += smoothedMouseDelta.x * deltaTime;
-            mouseY -= smoothedMouseDelta.y * deltaTime;
-            mouseY = Mathf.Clamp(mouseY, -90f, 90f);
+            // Apply the mouse's delta rotations to yaw and pitch
+            if (rotationIsEnabled)
+            {
+                currentMouseDelta.x = cameraXAxis.GetValue() * rotationSpeed;
+                currentMouseDelta.y = cameraYAxis.GetValue() * rotationSpeed;
+                // Smooth the mouse delta using damping
+                smoothedMouseDelta = Vector2.Lerp(smoothedMouseDelta, currentMouseDelta, deltaTime * damping);
 
-            var targetRotation = Quaternion.Euler(mouseY, mouseX, 0f);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * damping);
+                currentYaw += smoothedMouseDelta.x * deltaTime;
+                currentPitch -= smoothedMouseDelta.y * deltaTime;
+            }
+
+            // Determine the desired roll rate based on user input
+            if (cameraRollPlus.isOn)
+                currentRollRate = rollSpeed;
+            else if (cameraRollMinus.isOn)
+                currentRollRate = -rollSpeed;
+            else
+                currentRollRate = 0f;
+
+            // Smooth the roll rate
+            smoothedRollRate = Mathf.Lerp(smoothedRollRate, currentRollRate, deltaTime * damping);
+
+            // Apply the smoothed roll rate to the current roll
+            currentRoll += smoothedRollRate * deltaTime;
+
+            transform.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
         }
     }
 }

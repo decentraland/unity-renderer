@@ -76,6 +76,8 @@ public enum DCLAction_Hold
     ZoomOut = 4,
     ScreenshotCameraUp = 51,
     ScreenshotCameraDown = 52,
+    ScreenshotCameraRollLeft = 53,
+    ScreenshotCameraRollRight = 54,
 
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
@@ -358,6 +360,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Hold.ScreenshotCameraUp:
                     InputProcessor.FromKey(action, KeyCode.R);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraRollLeft:
+                    InputProcessor.FromKey(action, KeyCode.Z);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraRollRight:
+                    InputProcessor.FromKey(action, KeyCode.X);
                     break;
                 case DCLAction_Hold.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, InputProcessor.Modifier.FocusNotInInput);
