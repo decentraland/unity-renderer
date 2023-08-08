@@ -109,7 +109,7 @@ namespace DCLServices.WearablesCatalogService
                     return null;
                 }
 
-                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl, int amount)
+                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl, int amount, string firstIndividualId)
                 {
                     WearableItem wearable = new WearableItem
                     {
@@ -127,7 +127,7 @@ namespace DCLServices.WearablesCatalogService
                         emoteDataV0 = null,
                         description = metadata.description,
                         i18n = metadata.i18n,
-                        id = metadata.id,
+                        id = string.IsNullOrEmpty(firstIndividualId) ? metadata.id : firstIndividualId,
                         entityId = id,
                         rarity = metadata.rarity,
                         amount = amount,
@@ -191,7 +191,7 @@ namespace DCLServices.WearablesCatalogService
 
             public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
             {
-                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount);
+                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount, individualData[0].id);
                 wearable.rarity ??= rarity;
                 wearable.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp()).DateTime;
                 return wearable;
