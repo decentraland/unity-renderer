@@ -11,6 +11,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly Transform transform;
         private readonly TranslationInputSchema input;
 
+        private Vector3 currentMoveVector = Vector3.zero;
+        private Vector3 smoothedMoveVector = Vector3.zero;
+
         public ScreencaptureCameraTranslation(CharacterController characterController, float moveSpeed, float maxDistanceFromPlayer, TranslationInputSchema input)
         {
             this.characterController = characterController;
@@ -21,11 +24,14 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             transform = characterController.transform;
         }
 
-        public void Translate(float deltaTime)
+        public void Translate(float deltaTime, float damping, float max)
         {
+            currentMoveVector = InputToMoveVector(deltaTime);
+            smoothedMoveVector = Vector3.Lerp(smoothedMoveVector, currentMoveVector, deltaTime * damping);
+            smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, max * deltaTime);
+
             characterController.Move(
-                RestrictedMovementBySemiSphere(
-                    InputToMoveVector(deltaTime)));
+                RestrictedMovementBySemiSphere(smoothedMoveVector));
         }
 
         private Vector3 InputToMoveVector(float deltaTime)

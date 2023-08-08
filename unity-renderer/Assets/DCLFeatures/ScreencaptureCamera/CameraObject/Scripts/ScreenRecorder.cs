@@ -19,7 +19,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public ScreenRecorder(RectTransform canvasRectTransform)
         {
-            targetAspectRatio = (float) TARGET_FRAME_WIDTH / TARGET_FRAME_HEIGHT;
+            targetAspectRatio = (float)TARGET_FRAME_WIDTH / TARGET_FRAME_HEIGHT;
             Debug.Assert(targetAspectRatio != 0, "Target aspect ratio cannot be null");
 
             this.canvasRectTransform = canvasRectTransform;
@@ -129,19 +129,19 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         // nearest-neighbor interpolation
         public static Texture2D DownscaleTexture(Texture2D original, int newWidth, int newHeight)
         {
-            Texture2D downscaledTexture = new Texture2D(newWidth, newHeight, original.format, false);
+            var downscaledTexture = new Texture2D(newWidth, newHeight, original.format, false);
 
             Color32[] originalPixels = original.GetPixels32();
-            Color32[] newPixels = new Color32[newWidth * newHeight];
+            var newPixels = new Color32[newWidth * newHeight];
 
-            float ratioX = ((float)original.width) / newWidth;
-            float ratioY = ((float)original.height) / newHeight;
+            float ratioX = (float)original.width / newWidth;
+            float ratioY = (float)original.height / newHeight;
 
-            for (int i = 0; i < newPixels.Length; i++)
+            for (var i = 0; i < newPixels.Length; i++)
             {
-                int x = Mathf.FloorToInt((i % newWidth) * ratioX);
-                int y = Mathf.FloorToInt((i / newWidth) * ratioY);
-                newPixels[i] = originalPixels[x + y * original.width];
+                int x = Mathf.FloorToInt(i % newWidth * ratioX);
+                int y = Mathf.FloorToInt(i / newWidth * ratioY);
+                newPixels[i] = originalPixels[x + (y * original.width)];
             }
 
             downscaledTexture.SetPixels32(newPixels);

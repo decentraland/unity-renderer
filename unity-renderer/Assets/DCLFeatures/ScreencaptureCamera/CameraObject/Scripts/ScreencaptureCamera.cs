@@ -168,7 +168,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
             yield return waitEndOfFrameYield;
 
-            var screenshot = screenRecorder.CaptureScreenshot();
+            Texture2D screenshot = screenRecorder.CaptureScreenshot();
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
@@ -238,16 +238,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
             screencaptureCameraHUDController.SetVisibility(activateScreenshotCamera, storageStatus.HasFreeSpace);
 
-
-            if(activateScreenshotCamera)
+            if (activateScreenshotCamera)
             {
                 prevSkyboxCamera = SkyboxController.i.SkyboxCamera.CurrentCamera;
                 SkyboxController.i.AssignMainOverlayCamera(screenshotCamera.transform);
             }
-            else
-            {
-                SkyboxController.i.AssignMainOverlayCamera(prevSkyboxCamera.transform);
-            }
+            else { SkyboxController.i.AssignMainOverlayCamera(prevSkyboxCamera.transform); }
         }
 
         private void ToggleExternalSystems(bool activateScreenshotCamera)

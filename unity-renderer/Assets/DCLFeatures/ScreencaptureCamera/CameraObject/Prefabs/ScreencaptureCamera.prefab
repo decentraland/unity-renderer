@@ -147,7 +147,12 @@ MonoBehaviour:
     yAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}
     upAction: {fileID: 11400000, guid: 0315b943c1d516449bfdb07463c3a3d4, type: 2}
     downAction: {fileID: 11400000, guid: 9da538e6dbdadbd4db8e3fd1c339706f, type: 2}
+  translationSpeed: 5
+  maxTranslationChangePerFrame: 5
+  translationDamping: 5
   rotationSpeed: 100
+  maxRotationChangePerFrame: 50
+  rotationDamping: 7
   cameraXAxis: {fileID: 11400000, guid: 2ae727ffde932b04d8b4180993b81f3d, type: 2}
   cameraYAxis: {fileID: 11400000, guid: 485f3af6b1a262e48890cf2c75da6b1e, type: 2}
   mouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}

@@ -178,7 +178,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             Debug.Log($"targetUpscale {upscaleFrameWidth}, {upscaleFrameHeight}");
             float targetUpscale = upscaleFrameWidth;
 
-            float calculatedTargetFrameWidth = currentFrameWidth *targetUpscale;
+            float calculatedTargetFrameWidth = currentFrameWidth * targetUpscale;
             float calculatedTargetFrameHeight = currentFrameHeight * targetUpscale;
             float targetScreenWidth = currentScreenWidth * targetUpscale;
             float targetScreenHeight = currentScreenHeight * targetUpscale;

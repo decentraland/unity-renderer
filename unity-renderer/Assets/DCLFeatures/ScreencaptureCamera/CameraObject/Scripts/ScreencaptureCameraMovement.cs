@@ -7,13 +7,19 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     public class ScreencaptureCameraMovement : MonoBehaviour
     {
         private const float MAX_DISTANCE_FROM_PLAYER = 16f;
-        private const float MOVEMENT_SPEED = 5f;
 
         [SerializeField] private CharacterController characterController;
         [SerializeField] private TranslationInputSchema translationInputSchema;
 
+        [SerializeField] private float translationSpeed = 5f;
+        [SerializeField] private float maxTranslationChangePerFrame = 0.5f;
+        [SerializeField] private float translationDamping = 5f;
+
         [Header("ROTATION")]
         [SerializeField] private float rotationSpeed = 100f;
+        [SerializeField] private float maxRotationChangePerFrame = 5f;
+        [SerializeField] private float rotationDamping = 7;
+
         [SerializeField] private InputAction_Measurable cameraXAxis;
         [SerializeField] private InputAction_Measurable cameraYAxis;
         [SerializeField] private InputAction_Hold mouseFirstClick;
@@ -23,27 +29,32 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private bool rotationIsEnabled;
 
         private ScreencaptureCameraTranslation translation;
+        private Vector2 currentMouseDelta;
+        private Vector2 smoothedMouseDelta;
+
         private void Awake()
         {
             if (characterController == null)
                 characterController = GetComponent<CharacterController>();
 
-            translation = new ScreencaptureCameraTranslation(characterController, MOVEMENT_SPEED, MAX_DISTANCE_FROM_PLAYER, translationInputSchema);
+            translation = new ScreencaptureCameraTranslation(characterController, translationSpeed, MAX_DISTANCE_FROM_PLAYER, translationInputSchema);
+
+            mouseX = transform.rotation.eulerAngles.y;
+            mouseY = transform.rotation.eulerAngles.x;
         }
 
         private void Update()
         {
-            translation.Translate(Time.deltaTime);
+            translation.Translate(Time.deltaTime, translationDamping, maxTranslationChangePerFrame);
 
             if (rotationIsEnabled)
-                Rotate(Time.deltaTime);
+                Rotate(Time.deltaTime, rotationDamping, maxRotationChangePerFrame);
         }
 
         private void OnEnable()
         {
-            rotationIsEnabled = false;
-            mouseX = transform.rotation.eulerAngles.y;
-            mouseY = transform.rotation.eulerAngles.x;
+            if (Utils.IsCursorLocked)
+                EnableRotation();
 
             mouseFirstClick.OnStarted += EnableRotation;
             mouseFirstClick.OnFinished += DisableRotation;
@@ -51,18 +62,22 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void OnDisable()
         {
-            rotationIsEnabled = false;
-            mouseX = transform.rotation.eulerAngles.y;
-            mouseY = transform.rotation.eulerAngles.x;
+            DisableRotation();
 
             mouseFirstClick.OnStarted -= EnableRotation;
             mouseFirstClick.OnFinished -= DisableRotation;
         }
 
         private void EnableRotation(DCLAction_Hold action) =>
+            EnableRotation();
+
+        private void EnableRotation() =>
             SwitchRotation(isEnabled: true);
 
-        private void DisableRotation(DCLAction_Hold action)
+        private void DisableRotation(DCLAction_Hold action) =>
+            DisableRotation();
+
+        private void DisableRotation()
         {
             SwitchRotation(isEnabled: false);
             Utils.UnlockCursor();
@@ -71,17 +86,26 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void SwitchRotation(bool isEnabled)
         {
             DataStore.i.camera.panning.Set(false);
+
+            mouseX = transform.rotation.eulerAngles.y;
+            mouseY = transform.rotation.eulerAngles.x;
+
             rotationIsEnabled = isEnabled;
         }
 
-        private void Rotate(float deltaTime)
+        private void Rotate(float deltaTime, float damping, float max)
         {
-            mouseX += cameraXAxis.GetValue() * rotationSpeed * deltaTime;
-            mouseY -= cameraYAxis.GetValue() * rotationSpeed * deltaTime;
+            currentMouseDelta.x = cameraXAxis.GetValue() * rotationSpeed;
+            currentMouseDelta.y = cameraYAxis.GetValue() * rotationSpeed;
+            smoothedMouseDelta = Vector2.Lerp(smoothedMouseDelta, currentMouseDelta, deltaTime * rotationDamping);
+            smoothedMouseDelta = Vector2.ClampMagnitude(smoothedMouseDelta, max);
 
-            // mouseY = Mathf.Clamp(mouseY, -90f, 90f);
+            mouseX += smoothedMouseDelta.x * deltaTime;
+            mouseY -= smoothedMouseDelta.y * deltaTime;
+            mouseY = Mathf.Clamp(mouseY, -90f, 90f);
 
-            transform.rotation = Quaternion.Euler(mouseY, mouseX, 0f);
+            var targetRotation = Quaternion.Euler(mouseY, mouseX, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * damping);
         }
     }
 }
