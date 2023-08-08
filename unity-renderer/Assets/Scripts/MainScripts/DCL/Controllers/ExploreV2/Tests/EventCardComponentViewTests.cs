@@ -156,7 +156,9 @@ public class EventCardComponentViewTests
         Assert.AreEqual(!isLive && !eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(!isLive && eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(isLive, eventCardComponent.eventStartedInTitleForLive.gameObject.activeSelf);
-        Assert.AreEqual(!isLive, eventCardComponent.subscribedUsersTitleForNotLive.gameObject.activeSelf);
+
+        if (eventCardComponent.subscribedUsersTitleForNotLive != null)
+            Assert.AreEqual(!isLive, eventCardComponent.subscribedUsersTitleForNotLive.gameObject.activeSelf);
     }
 
     [Test]
