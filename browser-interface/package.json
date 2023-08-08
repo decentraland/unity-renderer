@@ -64,7 +64,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "^1.0.0-5752058730.commit-921fc5d",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "7.0.6-20230803143954.commit-ad6c961",
+    "@dcl/scene-runtime": "7.0.6-20230804185922.commit-ed6e003",
     "@dcl/schemas": "^7.4.1",
     "@dcl/urn-resolver": "^2.2.0",
     "@types/mocha": "^10.0.1",
