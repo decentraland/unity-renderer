@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.UI
 {
     [RequireComponent(typeof(Canvas))] [DisallowMultipleComponent]
     public class ScreencaptureCameraHUDView : MonoBehaviour

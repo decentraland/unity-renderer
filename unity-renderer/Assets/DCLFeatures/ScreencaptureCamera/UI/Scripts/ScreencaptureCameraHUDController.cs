@@ -1,17 +1,18 @@
 ﻿using DCL;
+using DCLFeatures.ScreencaptureCamera.CameraObject;
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.UI
 {
     public class ScreencaptureCameraHUDController : IDisposable
     {
         private readonly ScreencaptureCameraHUDView view;
-        private readonly ScreencaptureCamera screencaptureCamera;
+        private readonly CameraObject.ScreencaptureCamera screencaptureCamera;
         private readonly ScreencaptureCameraInputSchema input;
 
-        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCamera screencaptureCamera, ScreencaptureCameraInputSchema input)
+        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, CameraObject.ScreencaptureCamera screencaptureCamera, ScreencaptureCameraInputSchema input)
         {
             this.view = view;
             this.screencaptureCamera = screencaptureCamera;

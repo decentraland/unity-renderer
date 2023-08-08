@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     public class ScreenRecorder
     {

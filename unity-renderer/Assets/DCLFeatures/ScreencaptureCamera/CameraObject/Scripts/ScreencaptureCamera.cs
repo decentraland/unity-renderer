@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
+using DCLFeatures.ScreencaptureCamera.UI;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections;
@@ -13,7 +14,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     public class ScreencaptureCamera : MonoBehaviour, IScreencaptureCamera
     {

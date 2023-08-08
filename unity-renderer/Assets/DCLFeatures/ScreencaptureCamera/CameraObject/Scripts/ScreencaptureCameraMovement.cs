@@ -2,20 +2,15 @@
 using DCL.Helpers;
 using UnityEngine;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     public class ScreencaptureCameraMovement : MonoBehaviour
     {
         private const float MAX_DISTANCE_FROM_PLAYER = 16f;
+        private const float MOVEMENT_SPEED = 5f;
 
         [SerializeField] private CharacterController characterController;
-
-        [Header("TRANSLATION")]
-        [SerializeField] private float movementSpeed = 5f;
-        [SerializeField] private InputAction_Measurable characterXAxis;
-        [SerializeField] private InputAction_Measurable characterYAxis;
-        [SerializeField] private InputAction_Hold cameraUpAction;
-        [SerializeField] private InputAction_Hold cameraDownAction;
+        [SerializeField] private TranslationInputSchema translationInputSchema;
 
         [Header("ROTATION")]
         [SerializeField] private float rotationSpeed = 100f;
@@ -27,15 +22,18 @@ namespace DCLFeatures.ScreencaptureCamera
         private float mouseY;
         private bool rotationIsEnabled;
 
+        private ScreencaptureCameraTranslation translation;
         private void Awake()
         {
             if (characterController == null)
                 characterController = GetComponent<CharacterController>();
+
+            translation = new ScreencaptureCameraTranslation(characterController, MOVEMENT_SPEED, MAX_DISTANCE_FROM_PLAYER, translationInputSchema);
         }
 
         private void Update()
         {
-            Translate(movementVector: InputToMoveVector(Time.deltaTime));
+            translation.Translate(Time.deltaTime);
 
             if (rotationIsEnabled)
                 Rotate(Time.deltaTime);
@@ -43,8 +41,8 @@ namespace DCLFeatures.ScreencaptureCamera
 
         private void OnEnable()
         {
-            mouseX = transform.rotation.eulerAngles.y;
-            mouseY = transform.rotation.eulerAngles.x;
+            // mouseX = transform.rotation.eulerAngles.y;
+            // mouseY = transform.rotation.eulerAngles.x;
 
             mouseFirstClick.OnStarted += EnableRotation;
             mouseFirstClick.OnFinished += DisableRotation;
@@ -69,44 +67,9 @@ namespace DCLFeatures.ScreencaptureCamera
         {
             DataStore.i.camera.panning.Set(false);
             rotationIsEnabled = isEnabled;
-        }
 
-        private void Translate(Vector3 movementVector) =>
-            characterController.Move(
-                RestrictedMovementBySemiSphere(movementVector));
-
-        private Vector3 RestrictedMovementBySemiSphere(Vector3 movementVector)
-        {
-            if (characterController.transform.position.y + movementVector.y <= 0f)
-                movementVector.y = 0f;
-
-            Vector3 playerPosition = DataStore.i.player.playerUnityPosition.Get();
-            Vector3 desiredCameraPosition = characterController.transform.position + movementVector;
-
-            float distanceFromPlayer = Vector3.Distance(desiredCameraPosition, playerPosition);
-
-            if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER)
-            {
-                // If the distance is greater than the allowed radius, correct the movement vector
-                Vector3 directionFromPlayer = (desiredCameraPosition - playerPosition).normalized;
-                desiredCameraPosition = playerPosition + (directionFromPlayer * MAX_DISTANCE_FROM_PLAYER);
-                movementVector = desiredCameraPosition - characterController.transform.position;
-            }
-
-            return movementVector;
-        }
-
-        private Vector3 InputToMoveVector(float deltaTime)
-        {
-            Vector3 forward = transform.forward.normalized * characterYAxis.GetValue();
-            Vector3 horizontal = transform.right.normalized * characterXAxis.GetValue();
-
-            float verticalDirection = cameraUpAction.isOn ? 1 :
-                cameraDownAction.isOn ? -1 : 0f;
-
-            Vector3 vertical = transform.up.normalized * verticalDirection;
-
-            return (forward + horizontal + vertical) * (movementSpeed * deltaTime);
+            // mouseX = transform.rotation.eulerAngles.y;
+            // mouseY = transform.rotation.eulerAngles.x;
         }
 
         private void Rotate(float deltaTime)

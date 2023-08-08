@@ -1,5 +1,7 @@
 using DCL;
 using DCL.Camera;
+using DCLFeatures.ScreencaptureCamera.CameraObject;
+using DCLFeatures.ScreencaptureCamera.UI;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -9,7 +11,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
     [Category("EditModeCI")]
     public class ScreencaptureCameraShould
     {
-        private ScreencaptureCamera screencaptureCamera;
+        private CameraObject.ScreencaptureCamera screencaptureCamera;
 
         private InputAction_Trigger cameraInputAction;
         private InputAction_Trigger takeScreenshotAction;
@@ -26,7 +28,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public void SetUp()
         {
             var gameObject = new GameObject();
-            screencaptureCamera = gameObject.AddComponent<ScreencaptureCamera>();
+            screencaptureCamera = gameObject.AddComponent<CameraObject.ScreencaptureCamera>();
 
             // Mock prefab dependencies
             cameraInputAction = ScriptableObject.CreateInstance<InputAction_Trigger>();

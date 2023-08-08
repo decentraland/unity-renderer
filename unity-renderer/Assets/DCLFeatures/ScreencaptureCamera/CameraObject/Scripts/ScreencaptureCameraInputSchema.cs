@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DCLFeatures.ScreencaptureCamera
+namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     [Serializable]
     public class ScreencaptureCameraInputSchema
