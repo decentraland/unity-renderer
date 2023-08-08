@@ -18,6 +18,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private static readonly int FALLING = Animator.StringToHash("IsFalling");
         private static readonly int LONG_JUMP = Animator.StringToHash("IsLongJump");
         private static readonly int JUMP = Animator.StringToHash("Jump");
+        private static readonly int WALL_HIT = Animator.StringToHash("WallHit");
         private static readonly int EMOTE_REFRESH = Animator.StringToHash("EmoteRefresh");
         private static readonly int ANGLE = Animator.StringToHash("Angle");
         private static readonly int ANGLE_DIR = Animator.StringToHash("AngleDir");
@@ -76,9 +77,12 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         {
             this.characterState = characterState;
             characterState.OnJump += OnJump;
+            characterState.OnWallHit += OnWallHit;
+            characterState.OnWallHitReset += OnWallHitReset;
         }
 
         // todo: move this elsewhere
+
         private void InitializeAvatarAudioAndParticleHandlers(GameObject container)
         {
             AvatarAnimationEventHandler animationEventHandler = container.GetOrCreateComponent<AvatarAnimationEventHandler>();
@@ -98,6 +102,16 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private void OnJump()
         {
             animator.SetTrigger(JUMP);
+        }
+
+        private void OnWallHit()
+        {
+            animator.SetTrigger(WALL_HIT);
+        }
+
+        private void OnWallHitReset()
+        {
+            animator.ResetTrigger(WALL_HIT);
         }
 
         private void LateUpdate()

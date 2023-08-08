@@ -10,6 +10,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public SpeedState SpeedState;
         public bool IsGrounded;
         public event Action OnJump = () => { };
+        public event Action OnWallHit = () => { };
+        public event Action OnWallHitReset = () => { };
         public bool IsJumping;
         public bool IsLongJump;
         public bool IsLongFall;
@@ -23,6 +25,16 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public void Jump()
         {
             OnJump.Invoke();
+        }
+
+        public void WallHit()
+        {
+            OnWallHit.Invoke();
+        }
+
+        public void ResetWallHit()
+        {
+            OnWallHitReset.Invoke();
         }
     }
 }

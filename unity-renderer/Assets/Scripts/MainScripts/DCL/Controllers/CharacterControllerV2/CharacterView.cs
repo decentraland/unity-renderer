@@ -171,12 +171,12 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             return vector3;
         }
 
-        public (bool isGrounded, Vector3 deltaPosition) Move(Vector3 delta)
+        public (bool isGrounded, Vector3 deltaPosition, bool wallHit) Move(Vector3 delta)
         {
-            if (!initialPositionAlreadySet) return (true, transform.position);
+            if (!initialPositionAlreadySet) return (true, transform.position, false);
 
             var previousPosition = transform.position;
-            characterController.Move(delta);
+            var collisionFlags = characterController.Move(delta);
             Vector3 currentPosition = transform.position;
             var deltaPosition = previousPosition - currentPosition;
 
@@ -184,7 +184,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             ReportPosition(PositionUtils.UnityToWorldPosition(currentPosition));
 
-            return (characterController.isGrounded, deltaPosition);
+            return (characterController.isGrounded, deltaPosition, collisionFlags.HasFlag(CollisionFlags.Sides));
         }
 
         public void SetForward(Vector3 forward)
@@ -295,7 +295,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
     public interface ICharacterView
     {
-        (bool isGrounded, Vector3 deltaPosition) Move(Vector3 delta);
+        (bool isGrounded, Vector3 deltaPosition, bool wallHit) Move(Vector3 delta);
 
         void SetForward(Vector3 forward);
 

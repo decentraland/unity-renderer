@@ -58,13 +58,14 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private RaycastHit sphereCastHitInfo;
         private bool isLongFall;
         private Vector3 lastSlopeDelta;
-        private Vector3 lastFinalVelocity;
+        private Vector3 lastTargetVelocity; // this is the velocity that we want to move, it always has a value if you are pressing a key to move
+        private Vector3 lastActualVelocity; // this is the actual velocity that moved the character, its 0 if you are moving against a wall
+        private float lastImpactMagnitude; // this is 0 if you are at a wall running at it, it gets higher if you run at high velocities and impact the wall
         private int groundLayers;
         private Ray groundRay;
 
         private CameraMode.ModeId[] tpsCameraModes = new[] { CameraMode.ModeId.ThirdPersonRight, CameraMode.ModeId.ThirdPersonLeft, CameraMode.ModeId.ThirdPersonCenter };
         private int currentCameraMode = 0;
-        private Vector3 lastFinalVelocityBasedOnActualMovement;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -154,17 +155,29 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             Vector3 deltaPosition;
             bool currentGroundStatus;
+            bool wallHit;
             Vector3 velocityDelta = finalVelocity * deltaTime;
 
             Vector3 downwardsSlopeModifier = GetDownwardsSlopeBasedOnVelocity(velocityDelta);
 
-            (currentGroundStatus, deltaPosition) = view.Move(velocityDelta + lastSlopeDelta + downwardsSlopeModifier);
+            (currentGroundStatus, deltaPosition, wallHit) = view.Move(velocityDelta + lastSlopeDelta + downwardsSlopeModifier);
 
-            if (lastFinalVelocity.y >= 0 && finalVelocity.y < 0)
+            Vector3 currentActualVelocity = lastTargetVelocity.normalized * (Flat(deltaPosition).magnitude / Time.deltaTime);
+
+            var currentWallImpactMagnitude = (lastActualVelocity - currentActualVelocity).magnitude;
+            if (wallHit && currentWallImpactMagnitude < 0.1f && lastImpactMagnitude > 1)
+                characterState.WallHit();
+
+            if (!wallHit)
+                characterState.ResetWallHit();
+
+            lastImpactMagnitude = currentWallImpactMagnitude;
+
+            if (lastTargetVelocity.y >= 0 && finalVelocity.y < 0)
                 lastUngroundPeakHeight = view.GetPosition().y;
 
-            lastFinalVelocity = finalVelocity;
-            lastFinalVelocityBasedOnActualMovement = lastFinalVelocity.normalized * (Flat(deltaPosition).magnitude / Time.deltaTime);
+            lastTargetVelocity = finalVelocity;
+            lastActualVelocity = currentActualVelocity;
 
             Vector3 slope = GetSlopeModifier();
             lastSlopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
@@ -198,6 +211,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void OnJustGrounded()
         {
+            characterState.ResetWallHit();
             accelerationWeight = 0;
 
             float deltaHeight = lastUngroundPeakHeight - view.GetPosition().y;
@@ -398,7 +412,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (CanJump())
             {
                 characterState.Jump();
-                float jumpHeight = GetJumpHeight(Flat(lastFinalVelocityBasedOnActualMovement));
+                float jumpHeight = GetJumpHeight(Flat(lastActualVelocity));
                 float jumpStr = Mathf.Sqrt(-2 * jumpHeight * (data.gravity * data.jumpGravityFactor));
                 velocity.y += jumpStr;
                 /*var jumpImpulse = new Vector3(velocity.x, jumpStr, velocity.z);
