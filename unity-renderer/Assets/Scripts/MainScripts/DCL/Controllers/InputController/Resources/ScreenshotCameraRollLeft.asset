@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04a2c4195d3d4e4b8b47838d135c129, type: 3}
   m_Name: ScreenshotCameraRollLeft
   m_EditorClassIdentifier: 
-  dclAction: 52
+  dclAction: 53
   holdBlocked: {fileID: 0}
