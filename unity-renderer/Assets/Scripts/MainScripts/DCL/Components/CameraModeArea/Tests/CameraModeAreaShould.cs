@@ -216,7 +216,7 @@ namespace Tests
 
             Vector3 smallAreaSize = new Vector3(1, 1, 1);
             Vector3 smallAreaPos = (bigAreaPos + Vector3.right * bigAreaSize.x * 0.5f) + Vector3.left * smallAreaSize.x * 0.5f;
-            const CameraMode.ModeId smallAreaMode = CameraMode.ModeId.ThirdPerson;
+            const CameraMode.ModeId smallAreaMode = CameraMode.ModeId.ThirdPersonRight;
 
             CameraModeArea bigArea = CreateArea(bigAreaPos, bigAreaSize, bigAreaMode);
             CameraModeArea mediumArea = CreateArea(mediumAreaPos, mediumAreaSize, mediumAreaMode);

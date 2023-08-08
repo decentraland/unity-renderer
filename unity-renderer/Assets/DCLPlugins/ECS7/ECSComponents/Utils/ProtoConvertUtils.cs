@@ -72,7 +72,7 @@ namespace DCL.ECSComponents
                 case CameraType.CtFirstPerson:
                     return CameraMode.ModeId.FirstPerson;
                 case CameraType.CtThirdPerson:
-                    return CameraMode.ModeId.ThirdPerson;
+                    return CameraMode.ModeId.ThirdPersonRight;
                 default:
                     return CommonScriptableObjects.cameraMode.Get();
             }
@@ -84,7 +84,7 @@ namespace DCL.ECSComponents
             {
                 case CameraMode.ModeId.FirstPerson:
                     return CameraType.CtFirstPerson;
-                case CameraMode.ModeId.ThirdPerson:
+                case CameraMode.ModeId.ThirdPersonRight:
                 default:
                     return CameraType.CtThirdPerson;
             }

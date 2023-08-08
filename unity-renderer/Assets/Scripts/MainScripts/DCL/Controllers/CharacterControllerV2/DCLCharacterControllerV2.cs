@@ -1,4 +1,5 @@
 ﻿using DCL;
+using DCL.CameraTool;
 using System;
 using UnityEngine;
 
@@ -22,6 +23,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly IInputActionMeasurable characterYAxis;
         private readonly Vector3Variable cameraForward;
         private readonly Vector3Variable cameraRight;
+        private readonly CameraMode cameraMode;
 
         private readonly CharacterState characterState;
 
@@ -59,9 +61,12 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private int groundLayers;
         private Ray groundRay;
 
+        private CameraMode.ModeId[] tpsCameraModes = new[] { CameraMode.ModeId.ThirdPersonRight, CameraMode.ModeId.ThirdPersonLeft, CameraMode.ModeId.ThirdPersonCenter };
+        private int currentCameraMode = 0;
+
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
-            IInputActionMeasurable characterYAxis, Vector3Variable cameraForward, Vector3Variable cameraRight)
+            IInputActionMeasurable characterYAxis, Vector3Variable cameraForward, Vector3Variable cameraRight, CameraMode cameraMode)
         {
             this.view = view;
             this.data = data; // for testing purposes we are using the raw data
@@ -72,6 +77,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             this.characterYAxis = characterYAxis;
             this.cameraForward = cameraForward;
             this.cameraRight = cameraRight;
+            this.cameraMode = cameraMode;
 
             RegisterInputEvents();
             speedState = SpeedState.JOG;
@@ -292,6 +298,19 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 externalVelocity = Vector3.right * 5;
             else
                 externalVelocity = Vector3.zero;
+
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                ChangeCameraMode();
+            }
+        }
+
+        private void ChangeCameraMode()
+        {
+            currentCameraMode = (currentCameraMode + 1) % tpsCameraModes.Length;
+            CameraMode.ModeId tpsCameraMode = tpsCameraModes[currentCameraMode];
+            DataStore.i.Get<DataStore_Cursor>().cursorVisibleByCamera.Set(tpsCameraMode != CameraMode.ModeId.ThirdPersonCenter);
+            cameraMode.Set(tpsCameraMode);
         }
 
         private void ApplyExternalImpulse(Vector3 impulse)

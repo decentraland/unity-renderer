@@ -57,7 +57,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         }
         else
         {
-            if (newMode == CameraMode.ModeId.ThirdPerson)
+            if (newMode == CameraMode.ModeId.ThirdPersonRight)
                 transform.forward = initialParent.forward;
 
             nextParent = initialParent;

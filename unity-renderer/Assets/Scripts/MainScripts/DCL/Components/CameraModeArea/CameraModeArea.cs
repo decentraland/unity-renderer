@@ -23,7 +23,7 @@ namespace DCL.Components
             }
 
             public Area area = new ();
-            public CameraMode.ModeId cameraMode = CameraMode.ModeId.ThirdPerson;
+            public CameraMode.ModeId cameraMode = CameraMode.ModeId.ThirdPersonRight;
 
             public override BaseModel GetDataFromJSON(string json) =>
                 Utils.SafeFromJson<Model>(json);
@@ -48,7 +48,7 @@ namespace DCL.Components
 
         private Collider playerCollider;
         internal IUpdateEventHandler updateEventHandler;
-        internal int validCameraModes = 1 << (int)CameraMode.ModeId.FirstPerson | 1 << (int)CameraMode.ModeId.ThirdPerson;
+        internal int validCameraModes = 1 << (int)CameraMode.ModeId.FirstPerson | 1 << (int)CameraMode.ModeId.ThirdPersonRight;
 
         internal bool isPlayerInside = false;
 

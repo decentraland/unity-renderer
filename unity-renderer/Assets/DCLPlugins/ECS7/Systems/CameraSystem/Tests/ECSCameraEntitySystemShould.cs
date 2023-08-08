@@ -169,7 +169,7 @@ namespace Tests
 
             outgoingMessages.Clear_Calls();
 
-            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.ThirdPerson);
+            CommonScriptableObjects.cameraMode.Set(CameraMode.ModeId.ThirdPersonRight);
 
             system.Update();
 

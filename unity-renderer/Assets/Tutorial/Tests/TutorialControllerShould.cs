@@ -398,7 +398,7 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(3, () =>
             {
                 TutorialStep_Camera step = (TutorialStep_Camera)tutorialController.runningStep;
-                step.CameraMode_OnChange(CameraMode.ModeId.FirstPerson, CameraMode.ModeId.ThirdPerson);
+                step.CameraMode_OnChange(CameraMode.ModeId.FirstPerson, CameraMode.ModeId.ThirdPersonRight);
             });
         }
 

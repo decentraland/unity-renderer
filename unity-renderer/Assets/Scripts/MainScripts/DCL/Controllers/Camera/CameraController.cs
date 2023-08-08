@@ -149,9 +149,9 @@ namespace DCL.Camera
                 return;
 
             if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.FirstPerson && value < -mouseWheelThreshold)
-                SetCameraMode(CameraMode.ModeId.ThirdPerson);
+                SetCameraMode(CameraMode.ModeId.ThirdPersonRight);
 
-            if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.ThirdPerson && value > mouseWheelThreshold)
+            if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.ThirdPersonRight && value > mouseWheelThreshold)
                 SetCameraMode(CameraMode.ModeId.FirstPerson);
         }
 
@@ -159,7 +159,7 @@ namespace DCL.Camera
         {
             if (CommonScriptableObjects.cameraMode == CameraMode.ModeId.FirstPerson)
             {
-                SetCameraMode(CameraMode.ModeId.ThirdPerson);
+                SetCameraMode(CameraMode.ModeId.ThirdPersonRight);
             }
             else
             {

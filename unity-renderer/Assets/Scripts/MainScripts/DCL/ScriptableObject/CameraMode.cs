@@ -13,7 +13,9 @@ namespace DCL.CameraTool
         public enum ModeId
         {
             FirstPerson,
-            ThirdPerson,
+            ThirdPersonRight,
+            ThirdPersonLeft,
+            ThirdPersonCenter,
             BuildingToolGodMode
         }
 

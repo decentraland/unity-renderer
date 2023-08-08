@@ -22,7 +22,7 @@ namespace DCL.Camera
                 case CameraMode.ModeId.FirstPerson:
                     eventCameraFadeIn.Play(true);
                     break;
-                case CameraMode.ModeId.ThirdPerson:
+                case CameraMode.ModeId.ThirdPersonRight:
                     eventCameraFadeOut.Play(true);
                     break;
                 default:

@@ -406,6 +406,7 @@ MonoBehaviour:
   characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
   cameraForward: {fileID: 11400000, guid: 4148c1b844a23af4b8436b890de533a6, type: 2}
   cameraRight: {fileID: 11400000, guid: 2b7301f5f6e00ee4c8bf04eaaaffa001, type: 2}
+  CameraMode: {fileID: 11400000, guid: 15ed1855036be4d90ab6aa2a50ef1a49, type: 2}
   avatarGameObject: {fileID: 2919647573854067668}
   firstPersonCameraGameObject: {fileID: 5713059157034656006}
 --- !u!114 &9061226439687306306

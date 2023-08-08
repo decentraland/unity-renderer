@@ -19,6 +19,7 @@ MonoBehaviour:
     m_StyleName: Black
     m_PointSize: 30
     m_Scale: 1
+    m_UnitsPerEM: 2048
     m_LineHeight: 35.88068
     m_AscentLine: 28.849432
     m_CapLine: 22
@@ -55,6 +56,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 3
     m_Metrics:
       m_Width: 0
@@ -69,6 +71,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 4
     m_Metrics:
       m_Width: 0
@@ -83,6 +86,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 5
     m_Metrics:
       m_Width: 0
@@ -97,6 +101,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 6
     m_Metrics:
       m_Width: 22.5
@@ -111,6 +116,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 7
     m_Metrics:
       m_Width: 22.5
@@ -125,6 +131,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 8
     m_Metrics:
       m_Width: 22.5
@@ -139,6 +146,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 9
     m_Metrics:
       m_Width: 22.5
@@ -153,6 +161,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 10
     m_Metrics:
       m_Width: 22.5
@@ -167,6 +176,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 11
     m_Metrics:
       m_Width: 22.5
@@ -181,6 +191,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 12
     m_Metrics:
       m_Width: 22.5
@@ -195,6 +206,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 64
     m_Metrics:
       m_Width: 29.484375
@@ -209,6 +221,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 68
     m_Metrics:
       m_Width: 17.9375
@@ -223,6 +236,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 76
     m_Metrics:
       m_Width: 20.453125
@@ -237,6 +251,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 78
     m_Metrics:
       m_Width: 20.453125
@@ -251,6 +266,7 @@ MonoBehaviour:
       m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 87
     m_Metrics:
       m_Width: 19.265625
@@ -265,6 +281,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 98
     m_Metrics:
       m_Width: 15.71875
@@ -279,6 +296,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 99
     m_Metrics:
       m_Width: 15.71875
@@ -293,6 +311,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 100
     m_Metrics:
       m_Width: 15.71875
@@ -307,6 +326,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 101
     m_Metrics:
       m_Width: 15.71875
@@ -321,6 +341,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 102
     m_Metrics:
       m_Width: 15.71875
@@ -335,6 +356,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 140
     m_Metrics:
       m_Width: 15.34375
@@ -349,6 +371,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 144
     m_Metrics:
       m_Width: 20.484375
@@ -363,6 +386,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 154
     m_Metrics:
       m_Width: 19.6875
@@ -377,6 +401,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 190
     m_Metrics:
       m_Width: 5.921875
@@ -391,6 +416,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 191
     m_Metrics:
       m_Width: 11.9375
@@ -405,6 +431,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 195
     m_Metrics:
       m_Width: 9.15625
@@ -419,6 +446,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 196
     m_Metrics:
       m_Width: 9.546875
@@ -433,6 +461,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 197
     m_Metrics:
       m_Width: 13.9375
@@ -447,6 +476,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 257
     m_Metrics:
       m_Width: 15.921875
@@ -461,6 +491,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 262
     m_Metrics:
       m_Width: 19.859375
@@ -475,6 +506,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 272
     m_Metrics:
       m_Width: 14.75
@@ -489,6 +521,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 283
     m_Metrics:
       m_Width: 25.140625
@@ -503,6 +536,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 291
     m_Metrics:
       m_Width: 18.875
@@ -517,6 +551,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 292
     m_Metrics:
       m_Width: 18.875
@@ -531,6 +566,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 312
     m_Metrics:
       m_Width: 21.21875
@@ -545,6 +581,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 313
     m_Metrics:
       m_Width: 21.21875
@@ -559,6 +596,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 314
     m_Metrics:
       m_Width: 21.21875
@@ -573,6 +611,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 315
     m_Metrics:
       m_Width: 21.21875
@@ -587,6 +626,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 317
     m_Metrics:
       m_Width: 21.21875
@@ -601,6 +641,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 318
     m_Metrics:
       m_Width: 21.21875
@@ -615,6 +656,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 319
     m_Metrics:
       m_Width: 21.21875
@@ -629,6 +671,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 366
     m_Metrics:
       m_Width: 17.53125
@@ -643,6 +686,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 373
     m_Metrics:
       m_Width: 21.25
@@ -657,6 +701,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 374
     m_Metrics:
       m_Width: 18.53125
@@ -671,6 +716,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 387
     m_Metrics:
       m_Width: 18.28125
@@ -685,6 +731,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 401
     m_Metrics:
       m_Width: 18.953125
@@ -699,6 +746,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 413
     m_Metrics:
       m_Width: 18.828125
@@ -713,6 +761,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 415
     m_Metrics:
       m_Width: 18.828125
@@ -727,6 +776,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 416
     m_Metrics:
       m_Width: 18.828125
@@ -741,6 +791,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 417
     m_Metrics:
       m_Width: 18.828125
@@ -755,6 +806,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 418
     m_Metrics:
       m_Width: 18.828125
@@ -769,6 +821,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 445
     m_Metrics:
       m_Width: 22.5
@@ -783,6 +836,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 448
     m_Metrics:
       m_Width: 31.78125
@@ -797,6 +851,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 455
     m_Metrics:
       m_Width: 21.09375
@@ -811,6 +866,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 461
     m_Metrics:
       m_Width: 21.90625
@@ -825,6 +881,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 463
     m_Metrics:
       m_Width: 21.90625
@@ -839,6 +896,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 484
     m_Metrics:
       m_Width: 17.859375
@@ -853,6 +911,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 495
     m_Metrics:
       m_Width: 15.6875
@@ -867,6 +926,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 496
     m_Metrics:
       m_Width: 15.6875
@@ -881,6 +941,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 497
     m_Metrics:
       m_Width: 15.6875
@@ -895,6 +956,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 499
     m_Metrics:
       m_Width: 15.6875
@@ -909,6 +971,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 500
     m_Metrics:
       m_Width: 15.6875
@@ -923,6 +986,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 501
     m_Metrics:
       m_Width: 15.6875
@@ -937,6 +1001,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 502
     m_Metrics:
       m_Width: 15.6875
@@ -951,6 +1016,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 530
     m_Metrics:
       m_Width: 25.578125
@@ -965,6 +1031,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 534
     m_Metrics:
       m_Width: 16.96875
@@ -979,6 +1046,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 541
     m_Metrics:
       m_Width: 16.375
@@ -993,6 +1061,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 545
     m_Metrics:
       m_Width: 16.375
@@ -1007,6 +1076,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 553
     m_Metrics:
       m_Width: 16.953125
@@ -1021,6 +1091,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 570
     m_Metrics:
       m_Width: 16.453125
@@ -1035,6 +1106,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 571
     m_Metrics:
       m_Width: 16.453125
@@ -1049,6 +1121,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 573
     m_Metrics:
       m_Width: 16.453125
@@ -1063,6 +1136,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 574
     m_Metrics:
       m_Width: 16.453125
@@ -1077,6 +1151,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 575
     m_Metrics:
       m_Width: 16.453125
@@ -1091,6 +1166,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 602
     m_Metrics:
       m_Width: 11.71875
@@ -1105,6 +1181,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 607
     m_Metrics:
       m_Width: 17
@@ -1119,6 +1196,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 617
     m_Metrics:
       m_Width: 16.515625
@@ -1133,6 +1211,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 636
     m_Metrics:
       m_Width: 5.890625
@@ -1147,6 +1226,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 638
     m_Metrics:
       m_Width: 11.921875
@@ -1161,6 +1241,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 644
     m_Metrics:
       m_Width: 9.171875
@@ -1175,6 +1256,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 645
     m_Metrics:
       m_Width: 9.515625
@@ -1189,6 +1271,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 646
     m_Metrics:
       m_Width: 13.9375
@@ -1203,6 +1286,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 664
     m_Metrics:
       m_Width: 8.390625
@@ -1217,6 +1301,7 @@ MonoBehaviour:
       m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 672
     m_Metrics:
       m_Width: 16.84375
@@ -1231,6 +1316,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 680
     m_Metrics:
       m_Width: 5.890625
@@ -1245,6 +1331,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 709
     m_Metrics:
       m_Width: 25.3125
@@ -1259,6 +1346,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 716
     m_Metrics:
       m_Width: 16.515625
@@ -1273,6 +1361,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 717
     m_Metrics:
       m_Width: 16.515625
@@ -1287,6 +1376,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 732
     m_Metrics:
       m_Width: 16.96875
@@ -1301,6 +1391,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 733
     m_Metrics:
       m_Width: 16.96875
@@ -1315,6 +1406,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 734
     m_Metrics:
       m_Width: 16.953125
@@ -1329,6 +1421,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 735
     m_Metrics:
       m_Width: 16.96875
@@ -1343,6 +1436,7 @@ MonoBehaviour:
       m_Height: 20
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 737
     m_Metrics:
       m_Width: 16.96875
@@ -1357,6 +1451,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 738
     m_Metrics:
       m_Width: 16.96875
@@ -1371,6 +1466,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 739
     m_Metrics:
       m_Width: 16.96875
@@ -1385,6 +1481,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 784
     m_Metrics:
       m_Width: 16.984375
@@ -1399,6 +1496,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 790
     m_Metrics:
       m_Width: 16.96875
@@ -1413,6 +1511,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 794
     m_Metrics:
       m_Width: 11.9375
@@ -1427,6 +1526,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 824
     m_Metrics:
       m_Width: 16.109375
@@ -1441,6 +1541,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 839
     m_Metrics:
       m_Width: 18.6875
@@ -1455,6 +1556,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 841
     m_Metrics:
       m_Width: 11.078125
@@ -1469,6 +1571,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 856
     m_Metrics:
       m_Width: 16.5
@@ -1483,6 +1586,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 857
     m_Metrics:
       m_Width: 16.5
@@ -1497,6 +1601,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 860
     m_Metrics:
       m_Width: 17.90625
@@ -1511,6 +1616,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 862
     m_Metrics:
       m_Width: 16.5
@@ -1525,6 +1631,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 863
     m_Metrics:
       m_Width: 16.5
@@ -1539,6 +1646,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 864
     m_Metrics:
       m_Width: 16.5
@@ -1553,6 +1661,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 889
     m_Metrics:
       m_Width: 17.8125
@@ -1567,6 +1676,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 893
     m_Metrics:
       m_Width: 25.65625
@@ -1581,6 +1691,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 902
     m_Metrics:
       m_Width: 17.125
@@ -1595,6 +1706,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 906
     m_Metrics:
       m_Width: 17.8125
@@ -1609,6 +1721,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 907
     m_Metrics:
       m_Width: 17.8125
@@ -1623,6 +1736,7 @@ MonoBehaviour:
       m_Height: 30
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 910
     m_Metrics:
       m_Width: 17.8125
@@ -1637,6 +1751,7 @@ MonoBehaviour:
       m_Height: 30
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 925
     m_Metrics:
       m_Width: 14.359375
@@ -1651,6 +1766,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 937
     m_Metrics:
       m_Width: 17.21875
@@ -1665,6 +1781,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1013
     m_Metrics:
       m_Width: 15.03125
@@ -1679,6 +1796,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1014
     m_Metrics:
       m_Width: 16
@@ -1693,6 +1811,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1214
     m_Metrics:
       m_Width: 18.28125
@@ -1707,6 +1826,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1215
     m_Metrics:
       m_Width: 16.375
@@ -1721,6 +1841,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1216
     m_Metrics:
       m_Width: 16.796875
@@ -1735,6 +1856,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1217
     m_Metrics:
       m_Width: 16.828125
@@ -1749,6 +1871,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1221
     m_Metrics:
       m_Width: 18.53125
@@ -1763,6 +1886,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1244
     m_Metrics:
       m_Width: 19.296875
@@ -1777,6 +1901,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1245
     m_Metrics:
       m_Width: 10.4375
@@ -1791,6 +1916,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1246
     m_Metrics:
       m_Width: 17.359375
@@ -1805,6 +1931,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1248
     m_Metrics:
       m_Width: 17.953125
@@ -1819,6 +1946,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1249
     m_Metrics:
       m_Width: 18.796875
@@ -1833,6 +1961,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1250
     m_Metrics:
       m_Width: 17.4375
@@ -1847,6 +1976,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1252
     m_Metrics:
       m_Width: 18.21875
@@ -1861,6 +1991,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1253
     m_Metrics:
       m_Width: 16.1875
@@ -1875,6 +2006,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1254
     m_Metrics:
       m_Width: 18.328125
@@ -1889,6 +2021,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1255
     m_Metrics:
       m_Width: 18.21875
@@ -1903,6 +2036,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1278
     m_Metrics:
       m_Width: 20.109375
@@ -1917,6 +2051,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1279
     m_Metrics:
       m_Width: 5.96875
@@ -1931,6 +2066,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1280
     m_Metrics:
       m_Width: 16.625
@@ -1945,6 +2081,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1281
     m_Metrics:
       m_Width: 5.96875
@@ -1959,6 +2096,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1282
     m_Metrics:
       m_Width: 24.96875
@@ -1973,6 +2111,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1283
     m_Metrics:
       m_Width: 15.546875
@@ -1987,6 +2126,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1284
     m_Metrics:
       m_Width: 33.53125
@@ -2001,6 +2141,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1285
     m_Metrics:
       m_Width: 25.1875
@@ -2015,6 +2156,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1286
     m_Metrics:
       m_Width: 15.5625
@@ -2029,6 +2171,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1287
     m_Metrics:
       m_Width: 15.578125
@@ -2043,6 +2186,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1289
     m_Metrics:
       m_Width: 10.21875
@@ -2057,6 +2201,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1290
     m_Metrics:
       m_Width: 10.234375
@@ -2071,6 +2216,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1291
     m_Metrics:
       m_Width: 9.796875
@@ -2085,6 +2231,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1292
     m_Metrics:
       m_Width: 9.796875
@@ -2099,6 +2246,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1293
     m_Metrics:
       m_Width: 9.796875
@@ -2113,6 +2261,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1294
     m_Metrics:
       m_Width: 9.796875
@@ -2127,6 +2276,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1295
     m_Metrics:
       m_Width: 11.921875
@@ -2141,6 +2291,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1296
     m_Metrics:
       m_Width: 11.9375
@@ -2155,6 +2306,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1297
     m_Metrics:
       m_Width: 29.71875
@@ -2169,6 +2321,7 @@ MonoBehaviour:
       m_Height: 30
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1305
     m_Metrics:
       m_Width: 17.34375
@@ -2183,6 +2336,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1306
     m_Metrics:
       m_Width: 19.5625
@@ -2197,6 +2351,7 @@ MonoBehaviour:
       m_Height: 20
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1307
     m_Metrics:
       m_Width: 12.015625
@@ -2211,6 +2366,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1308
     m_Metrics:
       m_Width: 5.75
@@ -2225,6 +2381,7 @@ MonoBehaviour:
       m_Height: 37
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1309
     m_Metrics:
       m_Width: 5.203125
@@ -2239,6 +2396,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1310
     m_Metrics:
       m_Width: 11.640625
@@ -2253,6 +2411,7 @@ MonoBehaviour:
       m_Height: 26
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1311
     m_Metrics:
       m_Width: 10.90625
@@ -2267,6 +2426,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1312
     m_Metrics:
       m_Width: 11.890625
@@ -2281,6 +2441,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1313
     m_Metrics:
       m_Width: 11.890625
@@ -2295,6 +2456,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1314
     m_Metrics:
       m_Width: 15
@@ -2309,6 +2471,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1315
     m_Metrics:
       m_Width: 20.03125
@@ -2323,6 +2486,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1316
     m_Metrics:
       m_Width: 30
@@ -2337,6 +2501,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1317
     m_Metrics:
       m_Width: 30
@@ -2351,6 +2516,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1318
     m_Metrics:
       m_Width: 8.78125
@@ -2365,6 +2531,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1326
     m_Metrics:
       m_Width: 5.25
@@ -2379,6 +2546,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1327
     m_Metrics:
       m_Width: 5.25
@@ -2393,6 +2561,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1329
     m_Metrics:
       m_Width: 3.84375
@@ -2407,6 +2576,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1330
     m_Metrics:
       m_Width: 9.375
@@ -2421,6 +2591,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1331
     m_Metrics:
       m_Width: 10.578125
@@ -2435,6 +2606,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1332
     m_Metrics:
       m_Width: 10.515625
@@ -2449,6 +2621,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1333
     m_Metrics:
       m_Width: 10.53125
@@ -2463,6 +2636,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1334
     m_Metrics:
       m_Width: 5.25
@@ -2477,6 +2651,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1335
     m_Metrics:
       m_Width: 5.703125
@@ -2491,6 +2666,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1336
     m_Metrics:
       m_Width: 12.53125
@@ -2505,6 +2681,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1337
     m_Metrics:
       m_Width: 19.34375
@@ -2519,6 +2696,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1338
     m_Metrics:
       m_Width: 26.15625
@@ -2533,6 +2711,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1339
     m_Metrics:
       m_Width: 5.703125
@@ -2547,6 +2726,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1340
     m_Metrics:
       m_Width: 12.53125
@@ -2561,6 +2741,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1341
     m_Metrics:
       m_Width: 19.34375
@@ -2575,6 +2756,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1344
     m_Metrics:
       m_Width: 5.75
@@ -2589,6 +2771,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1345
     m_Metrics:
       m_Width: 6.03125
@@ -2603,6 +2786,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1346
     m_Metrics:
       m_Width: 20.171875
@@ -2617,6 +2801,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1347
     m_Metrics:
       m_Width: 13.09375
@@ -2631,6 +2816,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1348
     m_Metrics:
       m_Width: 6.03125
@@ -2645,6 +2831,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1350
     m_Metrics:
       m_Width: 6.640625
@@ -2659,6 +2846,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1355
     m_Metrics:
       m_Width: 7.421875
@@ -2673,6 +2861,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1356
     m_Metrics:
       m_Width: 7.421875
@@ -2687,6 +2876,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1357
     m_Metrics:
       m_Width: 12.921875
@@ -2701,6 +2891,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1358
     m_Metrics:
       m_Width: 12.5625
@@ -2715,6 +2906,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1359
     m_Metrics:
       m_Width: 15.859375
@@ -2729,6 +2921,7 @@ MonoBehaviour:
       m_Height: 19
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1360
     m_Metrics:
       m_Width: 15.859375
@@ -2743,6 +2936,7 @@ MonoBehaviour:
       m_Height: 19
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1363
     m_Metrics:
       m_Width: 15.765625
@@ -2757,6 +2951,7 @@ MonoBehaviour:
       m_Height: 14
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1365
     m_Metrics:
       m_Width: 15.765625
@@ -2771,6 +2966,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1367
     m_Metrics:
       m_Width: 16.796875
@@ -2785,6 +2981,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1368
     m_Metrics:
       m_Width: 15.765625
@@ -2799,6 +2996,7 @@ MonoBehaviour:
       m_Height: 20
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1369
     m_Metrics:
       m_Width: 15.859375
@@ -2813,6 +3011,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1371
     m_Metrics:
       m_Width: 16.8125
@@ -2827,6 +3026,7 @@ MonoBehaviour:
       m_Height: 8
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1385
     m_Metrics:
       m_Width: 12.8125
@@ -2841,6 +3041,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1386
     m_Metrics:
       m_Width: 6.03125
@@ -2855,6 +3056,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1389
     m_Metrics:
       m_Width: 14.78125
@@ -2869,6 +3071,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1390
     m_Metrics:
       m_Width: 15.21875
@@ -2883,6 +3086,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1391
     m_Metrics:
       m_Width: 15.21875
@@ -2897,6 +3101,7 @@ MonoBehaviour:
       m_Height: 29
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1392
     m_Metrics:
       m_Width: 13.296875
@@ -2911,6 +3116,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1393
     m_Metrics:
       m_Width: 12.359375
@@ -2925,6 +3131,7 @@ MonoBehaviour:
       m_Height: 13
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1395
     m_Metrics:
       m_Width: 21.84375
@@ -2939,6 +3146,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1396
     m_Metrics:
       m_Width: 16.453125
@@ -2953,6 +3161,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1398
     m_Metrics:
       m_Width: 9.09375
@@ -2967,6 +3176,7 @@ MonoBehaviour:
       m_Height: 10
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1399
     m_Metrics:
       m_Width: 9.890625
@@ -2981,6 +3191,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1400
     m_Metrics:
       m_Width: 10.65625
@@ -2995,6 +3206,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1403
     m_Metrics:
       m_Width: 15.734375
@@ -3009,6 +3221,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1404
     m_Metrics:
       m_Width: 15.90625
@@ -3023,6 +3236,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1405
     m_Metrics:
       m_Width: 21.84375
@@ -3037,6 +3251,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1441
     m_Metrics:
       m_Width: 6.5625
@@ -3051,6 +3266,7 @@ MonoBehaviour:
       m_Height: 14
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1442
     m_Metrics:
       m_Width: 11.5625
@@ -3065,6 +3281,7 @@ MonoBehaviour:
       m_Height: 15
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1443
     m_Metrics:
       m_Width: 11.984375
@@ -3079,6 +3296,7 @@ MonoBehaviour:
       m_Height: 15
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1506
     m_Metrics:
       m_Width: 18.015625
@@ -3093,6 +3311,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1547
     m_Metrics:
       m_Width: 25.78125
@@ -3107,6 +3326,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1548
     m_Metrics:
       m_Width: 24.640625
@@ -3121,6 +3341,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1549
     m_Metrics:
       m_Width: 27.828125
@@ -3135,6 +3356,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1556
     m_Metrics:
       m_Width: 21.796875
@@ -3149,6 +3371,7 @@ MonoBehaviour:
       m_Height: 25
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1557
     m_Metrics:
       m_Width: 28.53125
@@ -3163,6 +3386,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1558
     m_Metrics:
       m_Width: 36.03125
@@ -3177,6 +3401,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1565
     m_Metrics:
       m_Width: 9.15625
@@ -3191,6 +3416,7 @@ MonoBehaviour:
       m_Height: 6
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1567
     m_Metrics:
       m_Width: 8.78125
@@ -3205,6 +3431,7 @@ MonoBehaviour:
       m_Height: 6
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1569
     m_Metrics:
       m_Width: 11.9375
@@ -3219,6 +3446,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1572
     m_Metrics:
       m_Width: 10.703125
@@ -3233,6 +3461,7 @@ MonoBehaviour:
       m_Height: 4
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1579
     m_Metrics:
       m_Width: 6.421875
@@ -3247,6 +3476,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1607
     m_Metrics:
       m_Width: 0
@@ -3261,6 +3491,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1608
     m_Metrics:
       m_Width: 0
@@ -3275,6 +3506,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1609
     m_Metrics:
       m_Width: 0
@@ -3289,6 +3521,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1610
     m_Metrics:
       m_Width: 0
@@ -3303,6 +3536,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1611
     m_Metrics:
       m_Width: 0
@@ -3317,6 +3551,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1612
     m_Metrics:
       m_Width: 0
@@ -3331,6 +3566,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1613
     m_Metrics:
       m_Width: 0
@@ -3345,6 +3581,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1614
     m_Metrics:
       m_Width: 0
@@ -3359,6 +3596,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1615
     m_Metrics:
       m_Width: 0
@@ -3373,6 +3611,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1616
     m_Metrics:
       m_Width: 0
@@ -3387,6 +3626,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1617
     m_Metrics:
       m_Width: 0
@@ -3401,6 +3641,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1618
     m_Metrics:
       m_Width: 0
@@ -3415,6 +3656,7 @@ MonoBehaviour:
       m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1649
     m_Metrics:
       m_Width: 13.84375
@@ -3429,6 +3671,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1691
     m_Metrics:
       m_Width: 12.1875
@@ -3443,6 +3686,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1697
     m_Metrics:
       m_Width: 8.265625
@@ -3457,6 +3701,7 @@ MonoBehaviour:
       m_Height: 11
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1709
     m_Metrics:
       m_Width: 25.28125
@@ -3471,6 +3716,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1726
     m_Metrics:
       m_Width: 6.28125
@@ -3485,6 +3731,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1727
     m_Metrics:
       m_Width: 12.359375
@@ -3499,6 +3746,7 @@ MonoBehaviour:
       m_Height: 13
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1728
     m_Metrics:
       m_Width: 16.484375
@@ -3513,6 +3761,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1729
     m_Metrics:
       m_Width: 16.5
@@ -3527,6 +3776,7 @@ MonoBehaviour:
       m_Height: 12
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1730
     m_Metrics:
       m_Width: 14.40625
@@ -3541,6 +3791,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1731
     m_Metrics:
       m_Width: 13.328125
@@ -3555,6 +3806,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1779
     m_Metrics:
       m_Width: 5.796875
@@ -3569,6 +3821,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1780
     m_Metrics:
       m_Width: 5.796875
@@ -3583,6 +3836,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1781
     m_Metrics:
       m_Width: 16.203125
@@ -3597,6 +3851,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1782
     m_Metrics:
       m_Width: 18.203125
@@ -3611,6 +3866,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1793
     m_Metrics:
       m_Width: 15.390625
@@ -3625,6 +3881,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1794
     m_Metrics:
       m_Width: 16.328125
@@ -3639,6 +3896,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1795
     m_Metrics:
       m_Width: 25.28125
@@ -3653,6 +3911,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1796
     m_Metrics:
       m_Width: 18.375
@@ -3667,6 +3926,7 @@ MonoBehaviour:
       m_Height: 19
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1797
     m_Metrics:
       m_Width: 12.78125
@@ -3681,6 +3941,7 @@ MonoBehaviour:
       m_Height: 18
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1798
     m_Metrics:
       m_Width: 25.3125
@@ -3695,6 +3956,7 @@ MonoBehaviour:
       m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1799
     m_Metrics:
       m_Width: 12.453125
@@ -3709,6 +3971,7 @@ MonoBehaviour:
       m_Height: 28
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1800
     m_Metrics:
       m_Width: 14.453125
@@ -3723,6 +3986,7 @@ MonoBehaviour:
       m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1801
     m_Metrics:
       m_Width: 20.5
@@ -3737,6 +4001,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1804
     m_Metrics:
       m_Width: 18.578125
@@ -3751,6 +4016,7 @@ MonoBehaviour:
       m_Height: 19
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1843
     m_Metrics:
       m_Width: 10.53125
@@ -3765,6 +4031,7 @@ MonoBehaviour:
       m_Height: 37
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1853
     m_Metrics:
       m_Width: 6.859375
@@ -3779,6 +4046,7 @@ MonoBehaviour:
       m_Height: 23
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1875
     m_Metrics:
       m_Width: 4
@@ -3793,6 +4061,7 @@ MonoBehaviour:
       m_Height: 20
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1881
     m_Metrics:
       m_Width: 21.875
@@ -3807,6 +4076,7 @@ MonoBehaviour:
       m_Height: 21
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1884
     m_Metrics:
       m_Width: 11.890625
@@ -3821,6 +4091,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1887
     m_Metrics:
       m_Width: 12.1875
@@ -3835,6 +4106,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1888
     m_Metrics:
       m_Width: 10.859375
@@ -3849,6 +4121,7 @@ MonoBehaviour:
       m_Height: 27
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1893
     m_Metrics:
       m_Width: 14.75
@@ -3863,6 +4136,7 @@ MonoBehaviour:
       m_Height: 8
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1894
     m_Metrics:
       m_Width: 12.828125
@@ -3877,6 +4151,7 @@ MonoBehaviour:
       m_Height: 17
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1945
     m_Metrics:
       m_Width: 11.890625
@@ -3891,6 +4166,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 1950
     m_Metrics:
       m_Width: 6.03125
@@ -3905,6 +4181,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2012
     m_Metrics:
       m_Width: 10.703125
@@ -3919,6 +4196,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2033
     m_Metrics:
       m_Width: 14.78125
@@ -3933,6 +4211,7 @@ MonoBehaviour:
       m_Height: 5
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2043
     m_Metrics:
       m_Width: 25.28125
@@ -3947,6 +4226,7 @@ MonoBehaviour:
       m_Height: 6
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2109
     m_Metrics:
       m_Width: 5.25
@@ -3961,6 +4241,7 @@ MonoBehaviour:
       m_Height: 9
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2138
     m_Metrics:
       m_Width: 6.0625
@@ -3975,6 +4256,7 @@ MonoBehaviour:
       m_Height: 7
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   - m_Index: 2164
     m_Metrics:
       m_Width: 22.078125
@@ -3989,6 +4271,7 @@ MonoBehaviour:
       m_Height: 22
     m_Scale: 1
     m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
   m_CharacterTable:
   - m_ElementType: 1
     m_Unicode: 32

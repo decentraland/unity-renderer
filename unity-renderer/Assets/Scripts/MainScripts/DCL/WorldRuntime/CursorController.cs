@@ -13,11 +13,16 @@ public class CursorController : MonoBehaviour
     private bool isAllUIHidden;
 
     [SerializeField] private ShowHideAnimator animator;
+    private BaseVariable<bool> visible;
+    private BaseVariable<bool> visibleByCamera;
 
     private void Awake()
     {
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
-        data.cursorVisible.OnChange += ChangeCursorVisible;
+        visible = data.cursorVisible;
+        visible.OnChange += ChangeVisible;
+        visibleByCamera = data.cursorVisibleByCamera;
+        visibleByCamera.OnChange += ChangeVisible;
         data.cursorType.OnChange += OnChangeType;
         CommonScriptableObjects.allUIHidden.OnChange += AllUIVisible_OnChange;
     }
@@ -25,8 +30,10 @@ public class CursorController : MonoBehaviour
     private void OnDestroy()
     {
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
-        data.cursorVisible.OnChange -= ChangeCursorVisible;
+        visible.OnChange -= ChangeVisible;
+        visibleByCamera.OnChange -= ChangeVisible;
         data.cursorType.OnChange -= OnChangeType;
+
         CommonScriptableObjects.allUIHidden.OnChange -= AllUIVisible_OnChange;
     }
 
@@ -44,12 +51,15 @@ public class CursorController : MonoBehaviour
         isAllUIHidden = current;
 
         DataStore_Cursor data = DataStore.i.Get<DataStore_Cursor>();
-        ChangeCursorVisible(data.cursorVisible.Get());
+        ChangeVisible(IsVisible());
     }
 
-    private void ChangeCursorVisible(bool current, bool _ = false)
+    private bool IsVisible() =>
+        visible.Get() && visibleByCamera.Get();
+
+    private void ChangeVisible(bool current, bool _ = false)
     {
-        if (current && !isAllUIHidden)
+        if (IsVisible() && !isAllUIHidden)
             animator.Show();
         else
             animator.Hide();

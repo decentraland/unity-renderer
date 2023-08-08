@@ -22,7 +22,7 @@ namespace Tests
             {
                 CameraMode.ModeId.FirstPerson,
                 CameraMode.ModeId.BuildingToolGodMode,
-                CameraMode.ModeId.ThirdPerson
+                CameraMode.ModeId.ThirdPersonRight
             };
 
             ICameraModeArea[] areas = new ICameraModeArea[modes.Length];
@@ -85,9 +85,9 @@ namespace Tests
             Assert.AreEqual(CameraMode.ModeId.FirstPerson, CommonScriptableObjects.cameraMode.Get());
             Assert.IsTrue(CommonScriptableObjects.cameraModeInputLocked.Get());
 
-            areas[1].cameraMode.Returns( CameraMode.ModeId.ThirdPerson);
+            areas[1].cameraMode.Returns( CameraMode.ModeId.ThirdPersonRight);
             controller.ChangeAreaMode(areas[1]);
-            Assert.AreEqual(CameraMode.ModeId.ThirdPerson, CommonScriptableObjects.cameraMode.Get());
+            Assert.AreEqual(CameraMode.ModeId.ThirdPersonRight, CommonScriptableObjects.cameraMode.Get());
             Assert.IsTrue(CommonScriptableObjects.cameraModeInputLocked.Get());
             areas[1].cameraMode.Returns(CameraMode.ModeId.FirstPerson);
             

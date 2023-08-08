@@ -1,4 +1,5 @@
 ﻿using DCL;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Interface;
 using JetBrains.Annotations;
@@ -30,6 +31,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         [SerializeField] private Vector3Variable cameraForward;
         [SerializeField] private Vector3Variable cameraRight;
 
+        [Header("Camera")]
+        public CameraMode CameraMode;
+
         [Header("Old References")]
         public GameObject avatarGameObject;
         public GameObject firstPersonCameraGameObject;
@@ -48,7 +52,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void Awake()
         {
-            controller = new DCLCharacterControllerV2(this, data, jumpAction, sprintAction, walkAction, characterXAxis, characterYAxis, cameraForward, cameraRight);
+            controller = new DCLCharacterControllerV2(this, data, jumpAction, sprintAction, walkAction, characterXAxis, characterYAxis, cameraForward, cameraRight, CameraMode);
 
             characterState = controller.GetCharacterState();
             animationController.SetupCharacterState(characterState);
@@ -148,6 +152,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.N))
+                showDebug = !showDebug;
+
             controller.Update(Time.deltaTime);
 
             var tpsCamera = DataStore.i.camera.tpsCamera.Get();
@@ -206,20 +213,17 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void OnGUI()
         {
-            var coef = Screen.width / 1920f; // values are made for 1920
-            var firstColumnPosition = Mathf.RoundToInt(1920 * 0.12f);
-            var secondColumnPosition = Mathf.RoundToInt(1920 * 0.6f);
-            var fontSize = Mathf.RoundToInt(22 * coef);
-
-            GUI.skin.label.fontSize = fontSize;
-            GUI.skin.textField.fontSize = fontSize;
-            var firstColumnYPos = 25;
-
-            if (Input.GetKeyDown(KeyCode.N))
-                showDebug = !showDebug;
-
             if (showDebug)
             {
+                var coef = Screen.width / 1920f; // values are made for 1920
+                var firstColumnPosition = Mathf.RoundToInt(1920 * 0.12f);
+                var secondColumnPosition = Mathf.RoundToInt(1920 * 0.6f);
+                var fontSize = Mathf.RoundToInt(22 * coef);
+
+                GUI.skin.label.fontSize = fontSize;
+                GUI.skin.textField.fontSize = fontSize;
+                var firstColumnYPos = 25;
+
                 data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
                 data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
                 data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");

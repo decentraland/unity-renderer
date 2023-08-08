@@ -350,7 +350,7 @@ Material:
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
     - _horizonPlaneColor: {r: 0.38893938, g: 0.4288591, b: 0.2993215, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 51.19924, g: 134.9999, b: 90.00013, a: 0}
+    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
     - _lightTint: {r: 0.8318454, g: 0.6150512, b: 0.31468695, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}

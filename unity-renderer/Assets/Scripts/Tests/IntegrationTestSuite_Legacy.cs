@@ -179,7 +179,7 @@ public class IntegrationTestSuite_Legacy
         if ( cameraController == null )
             yield break;
 
-        var tpsMode = cameraController.GetCameraMode(CameraMode.ModeId.ThirdPerson) as CameraStateTPS;
+        var tpsMode = cameraController.GetCameraMode(CameraMode.ModeId.ThirdPersonRight) as CameraStateTPS;
 
         if ( tpsMode != null )
         {
