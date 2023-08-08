@@ -16,7 +16,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
-        private readonly ICameraReelService service;
+        private readonly ICameraReelStorageService storageService;
         private readonly IUserProfileBridge userProfileBridge;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
@@ -25,13 +25,13 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
             DataStore dataStore,
-            ICameraReelService service,
+            ICameraReelStorageService storageService,
             IUserProfileBridge userProfileBridge)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
-            this.service = service;
+            this.storageService = storageService;
             this.userProfileBridge = userProfileBridge;
 
             view.CloseButtonClicked += view.Hide;
@@ -102,7 +102,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             {
                 try
                 {
-                    CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
+                    CameraReelStorageStatus storage = await storageService.DeleteScreenshot(screenshot.id, cancellationToken);
                     model.RemoveScreenshot(screenshot);
                     model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
                 }

@@ -5,17 +5,17 @@ using UnityEngine;
 
 namespace DCLServices.CameraReelService
 {
-    public class CameraReelService : ICameraReelService
+    public class CameraReelNetworkStorageService : ICameraReelStorageService
     {
-        private readonly ICameraReelClient client;
+        private readonly ICameraReelNetworkClient networkClient;
         private readonly ServiceLocator serviceLocator;
 
         private ICameraReelAnalyticsService analyticsServiceLazy;
         private ICameraReelAnalyticsService analyticsService => analyticsServiceLazy ??= serviceLocator.Get<ICameraReelAnalyticsService>();
 
-        public CameraReelService(ICameraReelClient client, ServiceLocator serviceLocator)
+        public CameraReelNetworkStorageService(ICameraReelNetworkClient networkClient, ServiceLocator serviceLocator)
         {
-            this.client = client;
+            this.networkClient = networkClient;
             this.serviceLocator = serviceLocator;
         }
 
@@ -25,22 +25,22 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct = default)
         {
-            CameraReelStorageResponse response = await client.GetUserGalleryStorageInfo(userAddress, ct);
+            CameraReelStorageResponse response = await networkClient.GetUserGalleryStorageInfoRequest(userAddress, ct);
             return new CameraReelStorageStatus(response.currentImages, response.maxImages);
         }
 
         public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct) =>
-            await client.GetScreenshotGallery(userAddress, limit, offset, ct);
+            await networkClient.GetScreenshotGalleryRequest(userAddress, limit, offset, ct);
 
         public async UniTask<CameraReelStorageStatus> DeleteScreenshot(string uuid, CancellationToken ct = default)
         {
-            CameraReelStorageResponse response = await client.DeleteScreenshot(uuid, ct);
+            CameraReelStorageResponse response = await networkClient.DeleteScreenshotRequest(uuid, ct);
             return new CameraReelStorageStatus(response.currentImages, response.maxImages);
         }
 
         public async UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
         {
-            CameraReelUploadResponse response = await client.UploadScreenshot(image.EncodeToJPG(), metadata, ct);
+            CameraReelUploadResponse response = await networkClient.UploadScreenshotRequest(image.EncodeToJPG(), metadata, ct);
             analyticsService.SendScreenshotUploaded(metadata.userAddress, metadata.realm, metadata.scene.name, metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy"), metadata.visiblePeople.Length);
             return (response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages));
         }

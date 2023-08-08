@@ -16,13 +16,14 @@ using Environment = DCL.Environment;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
-    public class ScreencaptureCamera : MonoBehaviour, IScreencaptureCamera
+    public class ScreencaptureCameraBehaviour : MonoBehaviour
     {
         private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
         private const string STORAGE_LIMIT_REACHED_MESSAGE = "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.";
         private const float SPLASH_FX_DURATION = 1f;
         private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
         private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
+
         private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
 
         [Header("EXTERNAL DEPENDENCIES")]
@@ -48,7 +49,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private ScreencaptureCameraHUDView screencaptureCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
         private Transform characterCameraTransform;
-        private ICameraReelService cameraReelServiceLazyValue;
+        private ICameraReelStorageService cameraReelStorageServiceLazyValue;
 
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
@@ -71,7 +72,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
-        private ICameraReelService cameraReelService => cameraReelServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelService>();
+        private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
 
         private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
@@ -171,7 +172,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 try
                 {
                     (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) =
-                        await cameraReelService.UploadScreenshot(screenshot, metadata, cancellationToken);
+                        await cameraReelStorageService.UploadScreenshot(screenshot, metadata, cancellationToken);
 
                     storageStatus = cameraReelStorageStatus;
                     CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
@@ -206,7 +207,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private async void UpdateStorageInfo()
         {
-            storageStatus = await cameraReelService.GetUserGalleryStorageInfo(playerId);
+            storageStatus = await cameraReelStorageService.GetUserGalleryStorageInfo(playerId);
         }
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
@@ -280,7 +281,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void CreateHUD()
         {
             screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
-            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, screencaptureCamera: this, inputActionsSchema);
+            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, screencaptureCameraBehaviour: this, inputActionsSchema);
             screencaptureCameraHUDController.Initialize();
         }
 

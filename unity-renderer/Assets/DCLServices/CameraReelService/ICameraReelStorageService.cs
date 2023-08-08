@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCLServices.CameraReelService
 {
-    public interface ICameraReelService : IService
+    public interface ICameraReelStorageService : IService
     {
         UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct = default);
 

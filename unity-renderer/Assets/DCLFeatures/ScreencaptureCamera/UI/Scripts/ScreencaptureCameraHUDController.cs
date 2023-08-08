@@ -9,13 +9,13 @@ namespace DCLFeatures.ScreencaptureCamera.UI
     public class ScreencaptureCameraHUDController : IDisposable
     {
         private readonly ScreencaptureCameraHUDView view;
-        private readonly CameraObject.ScreencaptureCamera screencaptureCamera;
+        private readonly CameraObject.ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
         private readonly ScreencaptureCameraInputSchema input;
 
-        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, CameraObject.ScreencaptureCamera screencaptureCamera, ScreencaptureCameraInputSchema input)
+        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, CameraObject.ScreencaptureCameraBehaviour screencaptureCameraBehaviour, ScreencaptureCameraInputSchema input)
         {
             this.view = view;
-            this.screencaptureCamera = screencaptureCamera;
+            this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
             this.input = input;
         }
 
@@ -24,7 +24,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CloseButtonClicked += DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered += DisableScreenshotCameraMode;
 
-            view.TakeScreenshotButtonClicked += screencaptureCamera.CaptureScreenshot;
+            view.TakeScreenshotButtonClicked += screencaptureCameraBehaviour.CaptureScreenshot;
             input.TakeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
@@ -38,7 +38,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CloseButtonClicked -= DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered -= DisableScreenshotCameraMode;
 
-            view.TakeScreenshotButtonClicked -= screencaptureCamera.CaptureScreenshot;
+            view.TakeScreenshotButtonClicked -= screencaptureCameraBehaviour.CaptureScreenshot;
             input.TakeScreenshotAction.OnTriggered -= CaptureScreenshot;
 
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
@@ -59,10 +59,10 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         }
 
         private void CaptureScreenshot(DCLAction_Trigger _) =>
-            screencaptureCamera.CaptureScreenshot();
+            screencaptureCameraBehaviour.CaptureScreenshot();
 
         private void DisableScreenshotCameraMode() =>
-            screencaptureCamera.ToggleScreenshotCamera(isEnabled: false);
+            screencaptureCameraBehaviour.ToggleScreenshotCamera(isEnabled: false);
 
         private void DisableScreenshotCameraMode(DCLAction_Trigger _) =>
             DisableScreenshotCameraMode();

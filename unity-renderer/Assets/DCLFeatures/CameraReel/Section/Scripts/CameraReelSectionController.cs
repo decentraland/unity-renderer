@@ -18,7 +18,7 @@ namespace DCLFeatures.CameraReel.Section
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
         private readonly DataStore dataStore;
-        private readonly ICameraReelService service;
+        private readonly ICameraReelStorageService storageService;
         private readonly Func<ScreenshotViewerController> screenshotViewerControllerFactory;
 
         private ScreenshotViewerController screenshotViewerController;
@@ -30,14 +30,14 @@ namespace DCLFeatures.CameraReel.Section
             CameraReelGalleryView galleryView,
             CameraReelGalleryStorageView galleryStorageView,
             DataStore dataStore,
-            ICameraReelService service,
+            ICameraReelStorageService storageService,
             CameraReelModel cameraReelModel,
             Func<ScreenshotViewerController> screenshotViewerControllerFactory)
         {
             this.sectionView = sectionView;
             this.galleryStorageView = galleryStorageView;
             this.dataStore = dataStore;
-            this.service = service;
+            this.storageService = storageService;
             this.screenshotViewerControllerFactory = screenshotViewerControllerFactory;
             this.galleryView = galleryView;
             this.cameraReelModel = cameraReelModel;
@@ -97,7 +97,7 @@ namespace DCLFeatures.CameraReel.Section
                 this.offset = offset;
                 isUpdating = true;
 
-                CameraReelResponses screenshots = await service.GetScreenshotGallery(
+                CameraReelResponses screenshots = await storageService.GetScreenshotGallery(
                     dataStore.player.ownPlayer.Get().id, LIMIT, offset, cancellationToken);
 
                 isUpdating = false;

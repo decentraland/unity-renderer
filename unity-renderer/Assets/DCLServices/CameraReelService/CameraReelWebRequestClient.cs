@@ -9,21 +9,20 @@ using UnityEngine.Networking;
 
 namespace DCLServices.CameraReelService
 {
-    public class CameraReelClient : ICameraReelClient
+    public class CameraReelWebRequestClient : ICameraReelNetworkClient
     {
         private readonly IWebRequestController webRequestController;
-        private readonly BaseVariable<FeatureFlag> featureFlags;
         private string imageBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/images";
         private string userBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/users";
 
         private bool useProd => false;//featureFlags.Get().IsFeatureEnabled("camera_reel");
-        public CameraReelClient(IWebRequestController webRequestController, BaseVariable<FeatureFlag> flags)
+
+        public CameraReelWebRequestClient(IWebRequestController webRequestController)
         {
             this.webRequestController = webRequestController;
-            featureFlags = flags;
         }
 
-        public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct)
+        public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfoRequest(string userAddress, CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.GetAsync($"{userBaseURL}/{userAddress}", isSigned: true, cancellationToken: ct);
 
@@ -38,7 +37,7 @@ namespace DCLServices.CameraReelService
             return responseData;
         }
 
-        public async UniTask<CameraReelResponses> GetScreenshotGallery(string userAddress, int limit, int offset, CancellationToken ct)
+        public async UniTask<CameraReelResponses> GetScreenshotGalleryRequest(string userAddress, int limit, int offset, CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.GetAsync($"{userBaseURL}/{userAddress}/images?limit={limit}&offset={offset}", isSigned: true, cancellationToken: ct);
 
@@ -56,7 +55,7 @@ namespace DCLServices.CameraReelService
             return responseData;
         }
 
-        public async UniTask<CameraReelUploadResponse> UploadScreenshot(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
+        public async UniTask<CameraReelUploadResponse> UploadScreenshotRequest(byte[] image, ScreenshotMetadata metadata, CancellationToken ct)
         {
             var formData = new List<IMultipartFormSection>
             {
@@ -76,7 +75,7 @@ namespace DCLServices.CameraReelService
             return response;
         }
 
-        public async UniTask<CameraReelStorageResponse> DeleteScreenshot(string uuid, CancellationToken ct)
+        public async UniTask<CameraReelStorageResponse> DeleteScreenshotRequest(string uuid, CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.DeleteAsync($"{imageBaseURL}/{uuid}", isSigned: true, cancellationToken: ct);
 

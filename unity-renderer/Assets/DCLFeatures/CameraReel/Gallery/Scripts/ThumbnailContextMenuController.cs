@@ -22,7 +22,7 @@ namespace DCLFeatures.CameraReel.Gallery
             IClipboard clipboard,
             CameraReelModel cameraReelModel,
             IBrowserBridge browser,
-            ICameraReelService service,
+            ICameraReelStorageService storageService,
             DataStore dataStore)
         {
             this.view = view;
@@ -52,7 +52,7 @@ namespace DCLFeatures.CameraReel.Gallery
                 {
                     try
                     {
-                        CameraReelStorageStatus storage = await service.DeleteScreenshot(screenshot.id, cancellationToken);
+                        CameraReelStorageStatus storage = await storageService.DeleteScreenshot(screenshot.id, cancellationToken);
                         cameraReelModel.RemoveScreenshot(screenshot);
                         cameraReelModel.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
                     }

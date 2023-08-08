@@ -32,19 +32,19 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            ICameraReelService service = Environment.i.serviceLocator.Get<ICameraReelService>();
+            ICameraReelStorageService storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
             DataStore dataStore = DataStore.i;
             CameraReelModel cameraReelModel = CameraReelModel.i;
 
             reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
                 dataStore,
-                service,
+                storageService,
                 cameraReelModel,
                 () =>
                 {
                     var screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
-                        service, new UserProfileWebInterfaceBridge());
+                        storageService, new UserProfileWebInterfaceBridge());
                 });
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
@@ -73,7 +73,7 @@ namespace DCLPlugins.CameraReelPlugin
         {
             ThumbnailContextMenuController controller = new (view, Clipboard.Create(), CameraReelModel.i,
                 new WebInterfaceBrowserBridge(),
-                Environment.i.serviceLocator.Get<ICameraReelService>(),
+                Environment.i.serviceLocator.Get<ICameraReelStorageService>(),
                 DataStore.i);
             thumbnailContextMenuControllers.Add(controller);
         }
