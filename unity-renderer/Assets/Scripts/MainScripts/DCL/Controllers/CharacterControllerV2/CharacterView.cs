@@ -20,6 +20,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         [Header("Data")]
         [SerializeField] private CharacterControllerData data;
+        [SerializeField] private GameObject shadowBlob;
 
         [Header("InputActions")]
         [SerializeField] private InputAction_Hold jumpAction;
@@ -52,7 +53,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void Awake()
         {
-            controller = new DCLCharacterControllerV2(this, data, jumpAction, sprintAction, walkAction, characterXAxis, characterYAxis, cameraForward, cameraRight, CameraMode);
+            controller = new DCLCharacterControllerV2(this, data, jumpAction, sprintAction, walkAction, characterXAxis, characterYAxis, cameraForward, cameraRight, CameraMode, shadowBlob);
 
             characterState = controller.GetCharacterState();
             animationController.SetupCharacterState(characterState);

@@ -16,6 +16,7 @@ namespace DCL.CameraTool
             ThirdPersonRight,
             ThirdPersonLeft,
             ThirdPersonCenter,
+            Feet,
             BuildingToolGodMode
         }
 

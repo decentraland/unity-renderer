@@ -24,6 +24,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private readonly Vector3Variable cameraForward;
         private readonly Vector3Variable cameraRight;
         private readonly CameraMode cameraMode;
+        private readonly GameObject shadowBlob;
 
         private readonly CharacterState characterState;
 
@@ -66,7 +67,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
-            IInputActionMeasurable characterYAxis, Vector3Variable cameraForward, Vector3Variable cameraRight, CameraMode cameraMode)
+            IInputActionMeasurable characterYAxis, Vector3Variable cameraForward, Vector3Variable cameraRight, CameraMode cameraMode,
+            GameObject shadowBlob)
         {
             this.view = view;
             this.data = data; // for testing purposes we are using the raw data
@@ -78,6 +80,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             this.cameraForward = cameraForward;
             this.cameraRight = cameraRight;
             this.cameraMode = cameraMode;
+            this.shadowBlob = shadowBlob;
 
             RegisterInputEvents();
             speedState = SpeedState.JOG;
@@ -183,6 +186,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             ApplyDragToImpulse();
 
+            UpdateShadowBlob();
+
             // update the state for the animations
             characterState.IsLongJump = finalVelocity.y > (data.jogJumpHeight * 3 * data.jumpGravityFactor);
             characterState.IsLongFall = finalVelocity.y < -12;
@@ -196,6 +201,25 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.ExternalVelocity = externalVelocity;
             characterState.currentAcceleration = currentAcceleration;
             characterState.IsStunned = isStunned;
+        }
+
+        private void UpdateShadowBlob()
+        {
+            if (isGrounded)
+            {
+                shadowBlob.SetActive(false);
+                return;
+            }
+
+            shadowBlob.SetActive(true);
+            groundRay.origin = view.GetPosition();
+
+            if (Physics.Raycast(groundRay, out var hit, 50f, groundLayers))
+            {
+                shadowBlob.transform.position = hit.point;
+                shadowBlob.transform.up = hit.normal;
+            }
+
         }
 
         private Vector3 GetDownwardsSlopeBasedOnVelocity(Vector3 velocityDelta)
@@ -301,11 +325,21 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             if (Input.GetKeyDown(KeyCode.J))
             {
-                ChangeCameraMode();
+                ChangeThirdPersonCameraMode();
+            }
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                ChangeCameraToFeet();
             }
         }
 
-        private void ChangeCameraMode()
+        private void ChangeCameraToFeet()
+        {
+            cameraMode.Set(cameraMode.Get() == CameraMode.ModeId.Feet ? tpsCameraModes[currentCameraMode] : CameraMode.ModeId.Feet);
+        }
+
+        private void ChangeThirdPersonCameraMode()
         {
             currentCameraMode = (currentCameraMode + 1) % tpsCameraModes.Length;
             CameraMode.ModeId tpsCameraMode = tpsCameraModes[currentCameraMode];
