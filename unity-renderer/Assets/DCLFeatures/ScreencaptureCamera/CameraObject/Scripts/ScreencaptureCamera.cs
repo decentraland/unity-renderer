@@ -95,7 +95,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void Awake()
         {
             storageStatus = new CameraReelStorageStatus(0, 0);
-
             DataStore.i.exploreV2.isOpen.OnChange += SelfRegisterToCameraReelService;
             SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
         }
@@ -254,7 +253,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 allUIHidden.Set(true);
 
                 prevMouseLockState = cameraModeInputLocked.Get();
-                cameraModeInputLocked.Set(false);
+                cameraModeInputLocked.Set(true);
 
                 prevMouseButtonCursorLockMode = cameraLeftMouseButtonCursorLock.Get();
                 cameraLeftMouseButtonCursorLock.Set(true);
