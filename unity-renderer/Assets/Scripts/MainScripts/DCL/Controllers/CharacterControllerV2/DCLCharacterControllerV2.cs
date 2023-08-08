@@ -64,6 +64,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private CameraMode.ModeId[] tpsCameraModes = new[] { CameraMode.ModeId.ThirdPersonRight, CameraMode.ModeId.ThirdPersonLeft, CameraMode.ModeId.ThirdPersonCenter };
         private int currentCameraMode = 0;
+        private Vector3 lastFinalVelocityBasedOnActualMovement;
 
         public DCLCharacterControllerV2(ICharacterView view, CharacterControllerData data, IInputActionHold jumpAction, IInputActionHold sprintAction, InputAction_Hold walkAction,
             IInputActionMeasurable characterXAxis,
@@ -163,6 +164,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 lastUngroundPeakHeight = view.GetPosition().y;
 
             lastFinalVelocity = finalVelocity;
+            lastFinalVelocityBasedOnActualMovement = lastFinalVelocity.normalized * (Flat(deltaPosition).magnitude / Time.deltaTime);
 
             Vector3 slope = GetSlopeModifier();
             lastSlopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
@@ -396,7 +398,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (CanJump())
             {
                 characterState.Jump();
-                float jumpHeight = GetJumpHeight(Flat(lastFinalVelocity));
+                float jumpHeight = GetJumpHeight(Flat(lastFinalVelocityBasedOnActualMovement));
                 float jumpStr = Mathf.Sqrt(-2 * jumpHeight * (data.gravity * data.jumpGravityFactor));
                 velocity.y += jumpStr;
                 /*var jumpImpulse = new Vector3(velocity.x, jumpStr, velocity.z);
@@ -536,7 +538,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
             float currentSpeed = flatHorizontalVelocity.magnitude;
             float jumpHeight = Mathf.Lerp(data.jogJumpHeight, maxJumpHeight, currentSpeed / data.runSpeed);
-            return jumpHeight;
+             return jumpHeight;
         }
 
         public CharacterState GetCharacterState() =>
