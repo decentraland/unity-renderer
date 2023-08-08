@@ -25,6 +25,8 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.SelectedEventType.Returns(EventsType.Upcoming);
         eventsSubSectionComponentView.SelectedFrequency.Returns("all");
         eventsSubSectionComponentView.SelectedCategory.Returns("all");
+        eventsSubSectionComponentView.SelectedLowTime.Returns(0);
+        eventsSubSectionComponentView.SelectedHighTime.Returns(48);
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
