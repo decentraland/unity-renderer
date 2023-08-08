@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -32,7 +31,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         private readonly Material material;
         private readonly Material gpuSkinningMaterial;
 
-        private RenderTargetHandle outlineTextureHandle;
+        private RTHandle outlineTextureHandle;
+        private int outlineTextureHandlerShaderNameID = -1;
         private RenderTextureDescriptor descriptor;
 
         private readonly List<Material> toDispose = new List<Material>();
@@ -44,9 +44,10 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             this.outlineRenderersSo = outlineRenderersSo;
         }
 
-        public void Setup(RenderTextureDescriptor descriptor, RenderTargetHandle outlineTextureHandle)
+        public void Setup(RenderTextureDescriptor descriptor, RTHandle outlineTextureHandle)
         {
             this.outlineTextureHandle = outlineTextureHandle;
+            outlineTextureHandlerShaderNameID = Shader.PropertyToID(outlineTextureHandle.name);
             descriptor.colorFormat = RenderTextureFormat.ARGB32;
             descriptor.depthBufferBits = DEPTH_BUFFER_BITS;
             this.descriptor = descriptor;
@@ -55,8 +56,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             //Configure CommandBuffer to output the mask result in the provided texture
-            cmd.GetTemporaryRT(outlineTextureHandle.id, descriptor, FilterMode.Point);
-            ConfigureTarget(outlineTextureHandle.Identifier());
+            cmd.GetTemporaryRT(outlineTextureHandlerShaderNameID, descriptor, FilterMode.Point);
+            ConfigureTarget(outlineTextureHandle);
             ConfigureClear(ClearFlag.All, Color.black);
         }
 
@@ -73,7 +74,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
                     DrawAvatar(outlineRenderersSo.avatar, renderingData.cameraData.camera.cullingMask, cmd);
                 }
 
-                cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandle.id);
+                cmd.SetGlobalTexture("_OutlineTexture", outlineTextureHandlerShaderNameID);
             }
 
             context.ExecuteCommandBuffer(cmd);
@@ -186,7 +187,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
 
         public override void FrameCleanup(CommandBuffer cmd)
         {
-            cmd.ReleaseTemporaryRT(outlineTextureHandle.id);
+            cmd.ReleaseTemporaryRT(outlineTextureHandlerShaderNameID);
 
             for (var index = 0; index < toDispose.Count; index++) { Object.Destroy(toDispose[index]); }
 
@@ -197,7 +198,8 @@ public class OutlineMaskFeature : ScriptableRendererFeature
     public OutlineRenderersSO renderers;
     private OutlinerRenderPass scriptablePass;
 
-    private RenderTargetHandle outlineTexture;
+    private RTHandle outlineTexture;
+    private const string RENDER_TARGET_PROP_NAME = "_OutlineTexture";
 
     public override void Create()
     {
@@ -206,7 +208,7 @@ public class OutlineMaskFeature : ScriptableRendererFeature
             renderPassEvent = RenderPassEvent.AfterRenderingTransparents,
         };
 
-        outlineTexture.Init("_OutlineTexture");
+        outlineTexture = RTHandles.Alloc(RENDER_TARGET_PROP_NAME, name: RENDER_TARGET_PROP_NAME);
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
