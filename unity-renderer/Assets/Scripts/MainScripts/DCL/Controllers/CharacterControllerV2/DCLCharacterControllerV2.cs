@@ -168,16 +168,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             lastSlopeDelta = slope * (data.slipSpeedMultiplier * Time.deltaTime);
 
             if (!isGrounded && currentGroundStatus)
-            {
-                float deltaHeight = lastUngroundPeakHeight - view.GetPosition().y;
-
-                if (deltaHeight > data.jumpHeightStun)
-                {
-                    lastStunnedTime = Time.time;
-                    isStunned = true;
-                    isLongFall = false;
-                }
-            }
+                OnJustGrounded();
 
             isGrounded = currentGroundStatus;
 
@@ -201,6 +192,19 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.ExternalVelocity = externalVelocity;
             characterState.currentAcceleration = currentAcceleration;
             characterState.IsStunned = isStunned;
+        }
+
+        private void OnJustGrounded()
+        {
+            accelerationWeight = 0;
+
+            float deltaHeight = lastUngroundPeakHeight - view.GetPosition().y;
+            if (deltaHeight > data.jumpHeightStun)
+            {
+                lastStunnedTime = Time.time;
+                isStunned = true;
+                isLongFall = false;
+            }
         }
 
         private void UpdateShadowBlob()
@@ -392,7 +396,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (CanJump())
             {
                 characterState.Jump();
-                float jumpHeight = GetJumpHeight();
+                float jumpHeight = GetJumpHeight(Flat(lastFinalVelocity));
                 float jumpStr = Mathf.Sqrt(-2 * jumpHeight * (data.gravity * data.jumpGravityFactor));
                 velocity.y += jumpStr;
                 /*var jumpImpulse = new Vector3(velocity.x, jumpStr, velocity.z);
@@ -481,6 +485,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             currentAcceleration = data.acceleration;
 
             int targetAccelerationWeight = Mathf.Abs(xAxis) > 0 || Mathf.Abs(yAxis) > 0 ? 1 : 0;
+
             accelerationWeight = Mathf.MoveTowards(accelerationWeight, targetAccelerationWeight, Time.deltaTime / data.accelerationTime);
             currentAcceleration = Mathf.Lerp(data.acceleration, data.maxAcceleration, data.accelerationCurve.Evaluate(accelerationWeight));
 
@@ -519,15 +524,19 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                    };
         }
 
-        private float GetJumpHeight()
+        private float GetJumpHeight(Vector3 flatHorizontalVelocity)
         {
-            return speedState switch
-                   {
-                       SpeedState.WALK => data.jogJumpHeight,
-                       SpeedState.JOG => data.jogJumpHeight,
-                       SpeedState.RUN => data.runJumpHeight,
-                       _ => throw new ArgumentOutOfRangeException(),
-                   };
+            float maxJumpHeight = speedState switch
+                                      {
+                                          SpeedState.WALK => data.jogJumpHeight,
+                                          SpeedState.JOG => data.jogJumpHeight,
+                                          SpeedState.RUN => data.runJumpHeight,
+                                          _ => throw new ArgumentOutOfRangeException(),
+                                      };
+
+            float currentSpeed = flatHorizontalVelocity.magnitude;
+            float jumpHeight = Mathf.Lerp(data.jogJumpHeight, maxJumpHeight, currentSpeed / data.runSpeed);
+            return jumpHeight;
         }
 
         public CharacterState GetCharacterState() =>
