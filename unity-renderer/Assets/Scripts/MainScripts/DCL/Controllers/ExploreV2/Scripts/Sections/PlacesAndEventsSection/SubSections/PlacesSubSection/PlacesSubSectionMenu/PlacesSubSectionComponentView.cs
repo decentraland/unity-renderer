@@ -24,6 +24,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
+    [SerializeField] internal MinimapMetadata minimapMetadata;
 
     [Header("Prefab References")]
     [SerializeField] internal ScrollRect scrollView;
@@ -124,7 +125,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private void ClickedOnPOI()
     {
-        if (filter == "only_pois=true")
+        if (filter.Contains("only_pois=true"))
         {
             filter = "";
             SetPoiStatus(false);
@@ -132,11 +133,31 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         }
         else
         {
-            filter = "only_pois=true";
+            filter = BuildPointOfInterestFilter();
             SetPoiStatus(true);
             SetFeaturedStatus(false);
         }
         OnFilterSorterChanged?.Invoke();
+    }
+
+    private string BuildPointOfInterestFilter()
+    {
+        var resultFilter = "only_pois=true";
+
+        if (minimapMetadata == null)
+            return resultFilter;
+
+        var sceneInfos = minimapMetadata.SceneInfos;
+        foreach (MinimapMetadata.MinimapSceneInfo scene in sceneInfos)
+        {
+            if (!scene.isPOI)
+                continue;
+
+            if (scene.parcels.Count > 0)
+                resultFilter = string.Concat(resultFilter, $"&positions={scene.parcels[0].x},{scene.parcels[0].y}");
+        }
+
+        return resultFilter;
     }
 
     private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
