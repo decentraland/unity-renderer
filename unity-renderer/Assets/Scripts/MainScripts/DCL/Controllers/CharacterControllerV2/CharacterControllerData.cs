@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MainScripts.DCL.Controllers.CharacterControllerV2
 {
@@ -33,5 +34,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         public float jumpHeightStun = 10f;
         public float jumpVelocityDrag = 3f;
         public float movAnimBlendSpeed = 3f;
+        [FormerlySerializedAs("characterControllerWidth")] public float characterControllerRadius = 0.5f;
     }
 }

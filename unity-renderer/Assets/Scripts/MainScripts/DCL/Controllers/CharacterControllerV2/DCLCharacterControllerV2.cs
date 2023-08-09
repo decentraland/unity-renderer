@@ -234,7 +234,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             shadowBlob.SetActive(true);
             groundRay.origin = view.GetPosition();
 
-            if (Physics.Raycast(groundRay, out var hit, 50f, groundLayers))
+            if (Physics.SphereCast(groundRay, data.characterControllerRadius , out var hit, 50f, groundLayers))
             {
                 shadowBlob.transform.position = hit.point;
                 shadowBlob.transform.up = hit.normal;
@@ -299,7 +299,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
                 // spherecast downwards to check slopes
                 if (!Physics.SphereCast(currentPosition,
-                        settings.radius, Vector3.down, out sphereCastHitInfo,
+                        data.characterControllerRadius, Vector3.down, out sphereCastHitInfo,
                         1, groundLayers)) return Vector3.zero;
 
                 Vector3 relativeHitPoint = sphereCastHitInfo.point - (currentPosition + settings.center);

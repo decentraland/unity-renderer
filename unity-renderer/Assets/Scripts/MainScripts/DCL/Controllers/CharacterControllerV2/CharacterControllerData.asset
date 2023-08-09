@@ -76,8 +76,9 @@ MonoBehaviour:
   maxAcceleration: 25
   accelerationTime: 0.5
   longFallStunTime: 0.75
-  noSlipDistance: 0.1
+  noSlipDistance: 0.15
   slipSpeedMultiplier: 7
   jumpHeightStun: 10
   jumpVelocityDrag: 5
   movAnimBlendSpeed: 5
+  characterControllerRadius: 0.4

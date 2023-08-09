@@ -156,6 +156,8 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (Input.GetKeyDown(KeyCode.N))
                 showDebug = !showDebug;
 
+            characterController.radius = data.characterControllerRadius;
+            characterController.skinWidth = characterController.radius * 0.1f; // its recommended that its 10% of the radius
             controller.Update(Time.deltaTime);
 
             var tpsCamera = DataStore.i.camera.tpsCamera.Get();
@@ -246,6 +248,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 data.slipSpeedMultiplier = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.slipSpeedMultiplier, "slipSpeedMultiplier");
                 data.jumpVelocityDrag = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jumpVelocityDrag, "jumpVelocityDrag");
                 data.movAnimBlendSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.movAnimBlendSpeed, "movAnimBlendSpeed");
+                data.characterControllerRadius = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.characterControllerRadius, "characterRadius");
 
                 var secondColumnYPos = 0;
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "State", characterState.SpeedState);
