@@ -29,7 +29,7 @@ export function registerCommsApiServiceServerImplementation(port: RpcServerPort<
 
             for (const [sid, videoStreamData] of activeVideoStreams) {
                 if (videoStreamData.videoTracks.size > 0) {
-                    for (let [videoSid, trackData] of videoStreamData.videoTracks) {
+                    for (const [videoSid, trackData] of videoStreamData.videoTracks) {
                         if (!!trackData.source) {
                             streams.push({
                                 identity: videoStreamData.identity,
