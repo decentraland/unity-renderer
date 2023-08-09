@@ -72,10 +72,9 @@ public class GaussianBlurHandler : ScriptableRendererFeature
             RenderTextureDescriptor opaqueDesc = renderingData.cameraData.cameraTargetDescriptor;
             opaqueDesc.depthBufferBits = 0;
 
-
             //first pass
             cmd.SetGlobalFloat("_offset", 1.5f);
-            cmd.Blit(renderer.cameraColorTargetHandle, tmpRT1, blurMat);
+            cmd.Blit(renderer.cameraColorTarget, tmpRT1, blurMat);
 
             for (int i = 1; i < passes - 1; i++)
             {
