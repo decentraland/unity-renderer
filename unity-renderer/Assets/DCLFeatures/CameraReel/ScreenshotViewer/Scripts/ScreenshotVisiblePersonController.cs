@@ -12,11 +12,14 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotVisiblePersonController
     {
+        private const string SCREEN_SOURCE = "ReelPictureDetail";
+
         private readonly ScreenshotVisiblePersonView view;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IBrowserBridge browserBridge;
         private readonly DataStore dataStore;
+        private readonly ICameraReelAnalyticsService analytics;
 
         private CancellationTokenSource updateProfileIconCancellationToken;
         private CancellationTokenSource fetchWearablesCancellationToken;
@@ -26,13 +29,15 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             IWearablesCatalogService wearablesCatalogService,
             IUserProfileBridge userProfileBridge,
             IBrowserBridge browserBridge,
-            DataStore dataStore)
+            DataStore dataStore,
+            ICameraReelAnalyticsService analytics)
         {
             this.view = view;
             this.wearablesCatalogService = wearablesCatalogService;
             this.userProfileBridge = userProfileBridge;
             this.browserBridge = browserBridge;
             this.dataStore = dataStore;
+            this.analytics = analytics;
 
             view.OnConfigureRequested += OnConfigureRequested;
             view.OnOpenWearableMarketplaceRequested += OnOpenWearableMarketplaceRequested;
@@ -46,8 +51,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             view.OnOpenProfileRequested -= OnOpenProfileRequested;
         }
 
-        private void OnOpenWearableMarketplaceRequested(NFTIconComponentModel nftModel) =>
+        private void OnOpenWearableMarketplaceRequested(NFTIconComponentModel nftModel)
+        {
+            analytics.OpenWearableInMarketplace(SCREEN_SOURCE);
             browserBridge.OpenUrl(nftModel.marketplaceURI);
+        }
 
         private void OnConfigureRequested(VisiblePerson person)
         {
@@ -104,7 +112,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void OnOpenProfileRequested()
         {
-            dataStore.HUDs.currentPlayerId.Set((person.userAddress, "ReelPictureDetail"));
+            dataStore.HUDs.currentPlayerId.Set((person.userAddress, SCREEN_SOURCE));
         }
     }
 }

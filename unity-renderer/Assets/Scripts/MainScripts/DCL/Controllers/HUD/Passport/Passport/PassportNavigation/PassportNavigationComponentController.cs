@@ -400,7 +400,7 @@ namespace DCL.Social.Passports
         private void OpenGoToPanel(ParcelCoordinates coordinates)
         {
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
-            dataStore.HUDs.gotoPanelCoordinates.Set((coordinates, null), true);
+            dataStore.HUDs.gotoPanelCoordinates.Set((coordinates, null, null), true);
 
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.HUDs.goToPanelConfirmed.OnChange += CloseUIFromGoToPanel;

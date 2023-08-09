@@ -104,7 +104,7 @@ public class TeleportPromptHUDController : IHUD
                 break;
             default:
                 cancellationToken = cancellationToken.SafeRestart();
-                SetCoordinatesAsync(CoordinateUtils.ParseCoordinatesString(teleportData.destination), null, cancellationToken.Token).Forget();
+                SetCoordinatesAsync(CoordinateUtils.ParseCoordinatesString(teleportData.destination), null, null, cancellationToken.Token).Forget();
                 break;
         }
     }
@@ -122,17 +122,18 @@ public class TeleportPromptHUDController : IHUD
         RequestJSONTeleport(current);
     }
 
-    private void SetCoordinates((ParcelCoordinates coordinates, string realm) current,
-        (ParcelCoordinates coordinates, string realm) previous)
+    private void SetCoordinates((ParcelCoordinates coordinates, string realm, Action onAcceptedCallback) current,
+        (ParcelCoordinates coordinates, string realm, Action onAcceptedCallback) previous)
     {
         if (current == previous) return;
 
         view.Reset();
         cancellationToken = cancellationToken.SafeRestart();
-        SetCoordinatesAsync(current.coordinates, current.realm, cancellationToken.Token).Forget();
+        SetCoordinatesAsync(current.coordinates, current.realm, current.onAcceptedCallback, cancellationToken.Token).Forget();
     }
 
-    private async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, string realm, CancellationToken cancellationToken)
+    private async UniTaskVoid SetCoordinatesAsync(ParcelCoordinates coordinates, string realm,
+        Action onAcceptedCallback, CancellationToken cancellationToken)
     {
         try
         {
@@ -147,6 +148,7 @@ public class TeleportPromptHUDController : IHUD
                 sceneData = sceneInfo,
                 sceneEvent = currentEvent,
                 realm = realm,
+                onAcceptedCallback = onAcceptedCallback,
             };
 
             SetSceneEvent(teleportData.sceneEvent);
@@ -182,7 +184,7 @@ public class TeleportPromptHUDController : IHUD
 
         SetVisibility(true);
         cancellationToken = cancellationToken.SafeRestart();
-        SetCoordinatesAsync(coordinates, null, cancellationToken.Token).Forget();
+        SetCoordinatesAsync(coordinates, null, null, cancellationToken.Token).Forget();
         return true;
     }
 
@@ -228,6 +230,9 @@ public class TeleportPromptHUDController : IHUD
                     teleportController.Teleport(teleportData.GetCoordinates().x, teleportData.GetCoordinates().y);
                 break;
         }
+
+        teleportData?.onAcceptedCallback?.Invoke();
+
         CloseView();
     }
 
@@ -244,6 +249,7 @@ public class TeleportPromptHUDController : IHUD
         public MinimapMetadata.MinimapSceneInfo sceneData;
         public EventData sceneEvent;
         public string realm;
+        public Action onAcceptedCallback;
     }
 
     [Serializable]

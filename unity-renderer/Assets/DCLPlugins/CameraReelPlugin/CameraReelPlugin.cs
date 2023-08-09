@@ -44,7 +44,9 @@ namespace DCLPlugins.CameraReelPlugin
                 {
                     var screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
-                        storageService, new UserProfileWebInterfaceBridge());
+                        storageService, new UserProfileWebInterfaceBridge(),
+                        Clipboard.Create(), new WebInterfaceBrowserBridge(),
+                        Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>());
                 });
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
@@ -74,7 +76,8 @@ namespace DCLPlugins.CameraReelPlugin
             ThumbnailContextMenuController controller = new (view, Clipboard.Create(), CameraReelModel.i,
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<ICameraReelStorageService>(),
-                DataStore.i);
+                DataStore.i,
+                Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>());
             thumbnailContextMenuControllers.Add(controller);
         }
 
@@ -88,7 +91,8 @@ namespace DCLPlugins.CameraReelPlugin
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
                 new UserProfileWebInterfaceBridge(),
                 new WebInterfaceBrowserBridge(),
-                DataStore.i));
+                DataStore.i,
+                Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>()));
         }
     }
 }

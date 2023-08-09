@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
@@ -18,6 +19,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly DataStore dataStore;
         private readonly ICameraReelStorageService storageService;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IClipboard clipboard;
+        private readonly IBrowserBridge browserBridge;
+        private readonly ICameraReelAnalyticsService analytics;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
         private CancellationTokenSource pictureOwnerCancellationToken;
@@ -26,13 +30,19 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
             DataStore dataStore,
             ICameraReelStorageService storageService,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            IClipboard clipboard,
+            IBrowserBridge browserBridge,
+            ICameraReelAnalyticsService analytics)
         {
             this.view = view;
             this.model = model;
             this.dataStore = dataStore;
             this.storageService = storageService;
             this.userProfileBridge = userProfileBridge;
+            this.clipboard = clipboard;
+            this.browserBridge = browserBridge;
+            this.analytics = analytics;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
@@ -132,14 +142,14 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         }
 
         private void DownloadScreenshot() =>
-            Application.OpenURL(currentScreenshot.url);
+            browserBridge.OpenUrl(currentScreenshot.url);
 
         private void CopyScreenshotLink()
         {
             var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
 
-            GUIUtility.systemCopyBuffer = url;
-            Application.OpenURL(url);
+            clipboard.WriteText(url);
+            browserBridge.OpenUrl(url);
         }
 
         private void ShareOnTwitter()
@@ -148,8 +158,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
             var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
-            GUIUtility.systemCopyBuffer = twitterUrl;
-            Application.OpenURL(twitterUrl);
+            analytics.ShareOnTwitter();
+            clipboard.WriteText(twitterUrl);
+            browserBridge.OpenUrl(twitterUrl);
         }
 
         private void JumpInScene()
@@ -158,8 +169,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 || !int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
                 return;
 
+            void TrackToAnalytics() =>
+                analytics.JumpIn("ReelPictureDetail");
+
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
-            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm), true);
+            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm, TrackToAnalytics), true);
             view.Hide();
             dataStore.exploreV2.isOpen.Set(false);
         }

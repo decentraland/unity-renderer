@@ -23,7 +23,8 @@ namespace DCLFeatures.CameraReel.Gallery
             CameraReelModel cameraReelModel,
             IBrowserBridge browser,
             ICameraReelStorageService storageService,
-            DataStore dataStore)
+            DataStore dataStore,
+            ICameraReelAnalyticsService analytics)
         {
             this.view = view;
 
@@ -42,6 +43,8 @@ namespace DCLFeatures.CameraReel.Gallery
                 var description = "Check out what I'm doing in Decentraland right now and join me!";
                 var url = $"https://dcl.gg/reels?image={picture.id}";
                 var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
+
+                analytics.ShareOnTwitter();
                 clipboard.WriteText(twitterUrl);
                 browser.OpenUrl(twitterUrl);
             };
