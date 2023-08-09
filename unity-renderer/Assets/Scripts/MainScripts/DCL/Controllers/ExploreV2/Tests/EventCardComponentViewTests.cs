@@ -151,7 +151,8 @@ public class EventCardComponentViewTests
         // Assert
         Assert.AreEqual(isLive, eventCardComponent.model.isLive, "The event card isLive does not match in the model.");
         Assert.AreEqual(isLive, eventCardComponent.liveTag.gameObject.activeSelf);
-        Assert.AreEqual(!isLive, eventCardComponent.eventDateText.gameObject.activeSelf);
+        if (!isEventCardModal)
+            Assert.AreEqual(!isLive, eventCardComponent.eventDateText.gameObject.activeSelf);
         Assert.AreEqual(isEventCardModal || isLive, eventCardComponent.jumpinButton.gameObject.activeSelf);
         Assert.AreEqual(!isLive && !eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.subscribeEventButton.gameObject.activeSelf);
         Assert.AreEqual(!isLive && eventCardComponent.model.eventFromAPIInfo.attending, eventCardComponent.unsubscribeEventButton.gameObject.activeSelf);
@@ -312,7 +313,6 @@ public class EventCardComponentViewTests
 
         // Assert
         Assert.AreEqual(testCoords, eventCardModalComponent.model.coords, "The event card coords does not match in the model.");
-        Assert.AreEqual($"{testCoords.x},{testCoords.y}", eventCardModalComponent.jumpinButton.model.text);
     }
 
     [Test]

@@ -125,7 +125,7 @@ public interface IEventCardComponentView
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig<EventCardComponentModel>
 {
-    internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
+    internal const string USERS_CONFIRMED_MESSAGE = "{0} going";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
 
     [Header("Prefab References")]
@@ -355,7 +355,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (liveTag != null)
             liveTag.gameObject.SetActive(isLive);
 
-        if (eventDateText != null)
+        if (eventDateText != null && !isEventCardModal)
             eventDateText.gameObject.SetActive(!isLive);
 
         if (eventDateTextOnFocus != null)
@@ -499,11 +499,6 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public void SetCoords(Vector2Int newCoords)
     {
         model.coords = newCoords;
-
-        if (jumpinButton == null || !isEventCardModal)
-            return;
-
-        jumpinButton.SetText($"{newCoords.x},{newCoords.y}");
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
