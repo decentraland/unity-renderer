@@ -149,7 +149,7 @@ async function initializeWebRenderer(options: RendererOptions): Promise<Decentra
         const videoSid = split[split.length - 1]
         const participantSid = split[split.length - 2]
         const activeVideoStreams: Map<string, ActiveVideoStreams> | undefined = getLivekitActiveVideoStreams(store.getState())
-        return activeVideoStreams?.get(participantSid)?.videoTracks.get(videoSid)
+        return activeVideoStreams?.get(participantSid)?.videoTracks.get(videoSid)?.mediaStream
       }
     }
   }
