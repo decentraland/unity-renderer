@@ -90,7 +90,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         featuredButton.onClick.AddListener(ClickedOnFeatured);
         sortByDropdown.OnOptionSelectionChanged += SortByDropdownValueChanged;
         filter = "";
-        sort = MOST_ACTIVE_FILTER_ID;
+        SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         OnReady?.Invoke();
     }
 
@@ -113,12 +113,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             filter = "";
             SetPoiStatus(false);
             SetFeaturedStatus(false);
+            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         }
         else
         {
             filter = "only_featured=true";
             SetPoiStatus(false);
             SetFeaturedStatus(true);
+            SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
         OnFilterSorterChanged?.Invoke();
     }
@@ -130,12 +132,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             filter = "";
             SetPoiStatus(false);
             SetFeaturedStatus(false);
+            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         }
         else
         {
             filter = BuildPointOfInterestFilter();
             SetPoiStatus(true);
             SetFeaturedStatus(false);
+            SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
         OnFilterSorterChanged?.Invoke();
     }
@@ -165,8 +169,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         if (!isOn)
             return;
 
-        sort = optionId;
-        sortByDropdown.SetTitle(optionName);
+        SetSortDropdownValue(optionId, optionName, false);
         OnFilterSorterChanged?.Invoke();
     }
 
@@ -187,9 +190,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         SetPoiStatus(false);
         SetFeaturedStatus(false);
         filter = "";
-        sort = MOST_ACTIVE_FILTER_ID;
-        sortByDropdown.SetTitle(MOST_ACTIVE_FILTER_TEXT);
-        sortByDropdown.SelectOption(MOST_ACTIVE_FILTER_ID, false);
+        SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         OnPlacesSubSectionEnable?.Invoke();
     }
 
@@ -291,4 +292,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void RestartScrollViewPosition() =>
         scrollView.verticalNormalizedPosition = 1;
+
+    private void SetSortDropdownValue(string id, string title, bool notify)
+    {
+        sort = id;
+        sortByDropdown.SetTitle(title);
+        sortByDropdown.SelectOption(id, notify);
+    }
 }
