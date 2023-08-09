@@ -52,6 +52,8 @@ MonoBehaviour:
     type: 3}
   enableCameraButtonPrefab: {fileID: 2717278584910967307, guid: 0ec15e0bcbdac1a4e89571580222c90b,
     type: 3}
+  playerNamePrefab: {fileID: 3574357807223115553, guid: c53ec74589327644bba45b4054fb78dc,
+    type: 3}
   inputActionsSchema:
     ToggleScreenshotCameraAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815,
       type: 2}

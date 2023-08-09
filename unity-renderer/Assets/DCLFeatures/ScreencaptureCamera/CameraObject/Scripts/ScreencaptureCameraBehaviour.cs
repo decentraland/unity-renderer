@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCL.Helpers;
@@ -23,6 +24,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private const float SPLASH_FX_DURATION = 1f;
         private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
         private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
+        private const float MIN_PLAYERNAME_HEIGHT = 1.14f;
 
         private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
 
@@ -34,6 +36,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [SerializeField] internal Camera cameraPrefab;
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
         [SerializeField] internal Canvas enableCameraButtonPrefab;
+        [SerializeField] private PlayerName playerNamePrefab;
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
@@ -67,6 +70,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private string playerId;
         private CameraReelStorageStatus storageStatus;
         private Camera prevSkyboxCamera;
+        private PlayerName playerName;
         private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
         private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
         private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
@@ -233,7 +237,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             characterController.SetEnabled(!activateScreenshotCamera);
 
             if (activateScreenshotCamera)
+            {
                 EnableScreenshotCamera();
+                playerName.Show();
+            }
+            else playerName.Hide();
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
@@ -284,11 +292,23 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             CreateHUD();
             screenRecorderValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
-
             characterCameraTransform = cameraController.GetCamera().transform;
             CreateScreencaptureCamera();
+            CreatePlayerNameUI();
 
             isInstantiated = true;
+        }
+
+        private void CreatePlayerNameUI()
+        {
+            playerName = Instantiate(playerNamePrefab, characterController.transform);
+
+            UserProfile userProfile = UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id);
+            playerName.SetName(userProfile.userName, userProfile.hasClaimedName, userProfile.isGuest);
+
+            PlayerAvatarController playerAvatar = characterController.GetComponent<PlayerAvatarController>();
+            float height = playerAvatar.Avatar.extents.y - 0.85f;
+            playerName.SetYOffset(Mathf.Max(MIN_PLAYERNAME_HEIGHT, height));
         }
 
         private void CreateHUD()

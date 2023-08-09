@@ -12,14 +12,17 @@ namespace DCLServices.CameraReelService
     public class CameraReelWebRequestClient : ICameraReelNetworkClient
     {
         private readonly IWebRequestController webRequestController;
+        private readonly KernelConfig kernelConfig;
+
         private string imageBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/images";
         private string userBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/users";
 
-        private bool useProd => false;//featureFlags.Get().IsFeatureEnabled("camera_reel");
+        private bool useProd => !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
 
-        public CameraReelWebRequestClient(IWebRequestController webRequestController)
+        public CameraReelWebRequestClient(IWebRequestController webRequestController, KernelConfig kernelConfig)
         {
             this.webRequestController = webRequestController;
+            this.kernelConfig = kernelConfig;
         }
 
         public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfoRequest(string userAddress, CancellationToken ct)

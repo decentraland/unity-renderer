@@ -5,8 +5,6 @@ using DCL.Components;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
-using DCLServices.WearablesCatalogService;
-using GPUSkinning;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -47,6 +45,8 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private ISocialAnalytics socialAnalytics;
     private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
+
+    public IAvatar Avatar => avatar;
 
     private void Start()
     {
