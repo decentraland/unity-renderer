@@ -135,10 +135,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         SetFeaturedStatus(false);
         SetTrendingStatus(false);
         SetWantToGoStatus(false);
-        SelectedFrequency = ALL_FILTER_ID;
-        frequencyDropdown.SetTitle(ALL_FILTER_TEXT);
-        frequencyDropdown.SelectOption(ALL_FILTER_ID, false);
-        SelectedCategory = ALL_FILTER_ID;
+        SetFrequencyDropdownValue(ALL_FILTER_ID, ALL_FILTER_TEXT, false);
+        SetCategoryDropdownValue(ALL_FILTER_ID, ALL_FILTER_TEXT, false);
         SelectedLowTime = TIME_MIN_VALUE;
         SelectedHighTime = TIME_MAX_VALUE;
         timeDropdown.SetWholeNumbers(true);
@@ -158,9 +156,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         if (categories.Count == 0)
             return;
 
-        SelectedCategory = categories[0].id;
-        categoriesDropdown.SetTitle(categories[0].text);
         categoriesDropdown.SetOptions(categories);
+        SetCategoryDropdownValue(categories[0].id, categories[0].text, false);
     }
 
     public override void Dispose()
@@ -420,8 +417,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         if (!isOn)
             return;
 
-        SelectedFrequency = optionId;
-        frequencyDropdown.SetTitle(optionName);
+        SetFrequencyDropdownValue(optionId, optionName, false);
         OnFiltersChanged?.Invoke();
     }
 
@@ -430,8 +426,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         if (!isOn)
             return;
 
-        SelectedCategory = optionId;
-        categoriesDropdown.SetTitle(optionName);
+        SetCategoryDropdownValue(optionId, optionName, false);
         OnFiltersChanged?.Invoke();
     }
 
@@ -448,5 +443,19 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         var wholeHours = (int)(hours / 2);
         int minutes = (int)(hours % 2) * 30;
         return $"{wholeHours:D2}:{minutes:D2}";
+    }
+
+    private void SetFrequencyDropdownValue(string id, string title, bool notify)
+    {
+        SelectedFrequency = id;
+        frequencyDropdown.SetTitle(title);
+        frequencyDropdown.SelectOption(id, notify);
+    }
+
+    private void SetCategoryDropdownValue(string id, string title, bool notify)
+    {
+        SelectedCategory = id;
+        categoriesDropdown.SetTitle(title);
+        categoriesDropdown.SelectOption(id, notify);
     }
 }
