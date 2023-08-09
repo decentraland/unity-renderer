@@ -21,9 +21,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     {
         private const string UPLOADING_ERROR_MESSAGE = "There was an unexpected error when uploading the picture. Try again later.";
         private const string STORAGE_LIMIT_REACHED_MESSAGE = "You can't take more pictures because you have reached the storage limit of the camera reel.\nTo make room we recommend you to download your photos and then delete them.";
-        private const float SPLASH_FX_DURATION = 1f;
+
+        private const float SPLASH_FX_DURATION = 0.5f;
         private const float MIDDLE_PAUSE_FX_DURATION = 0.1f;
         private const float IMAGE_TRANSITION_FX_DURATION = 0.5f;
+
         private const float MIN_PLAYERNAME_HEIGHT = 1.14f;
 
         private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();

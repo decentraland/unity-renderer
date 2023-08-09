@@ -9,10 +9,10 @@ namespace DCLFeatures.ScreencaptureCamera.UI
     public class ScreencaptureCameraHUDController : IDisposable
     {
         private readonly ScreencaptureCameraHUDView view;
-        private readonly CameraObject.ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
+        private readonly ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
         private readonly ScreencaptureCameraInputSchema input;
 
-        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, CameraObject.ScreencaptureCameraBehaviour screencaptureCameraBehaviour, ScreencaptureCameraInputSchema input)
+        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCameraBehaviour screencaptureCameraBehaviour, ScreencaptureCameraInputSchema input)
         {
             this.view = view;
             this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
