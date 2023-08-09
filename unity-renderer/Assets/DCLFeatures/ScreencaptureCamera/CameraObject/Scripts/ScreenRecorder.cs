@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
@@ -13,7 +14,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private readonly RectTransform canvasRectTransform;
 
-        private readonly Texture2D finalTexture = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
+        // private readonly Texture2D finalTexture = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
 
         private (float width, float height) spriteRect;
 
@@ -106,24 +107,51 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Texture2D rescaledScreenshot = DownscaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
 
             // Cropping 1920x1080 central part
-            int cornerX = Mathf.RoundToInt((downscaledScreenWidth - TARGET_FRAME_WIDTH) / 2f);
-            int cornerY = Mathf.RoundToInt((downscaledScreenHeight - TARGET_FRAME_HEIGHT) / 2f);
+            int cornerX = Mathf.RoundToInt((upscaledScreenWidth - upscaledFrameWidth) / 2f);
+            int cornerY = Mathf.RoundToInt((upscaledScreenHeight - upscaledFrameHeight) / 2f);
             Debug.Log($"Coreners {cornerX}:{cornerY}");
 
-            Color[] pixels = rescaledScreenshot.GetPixels(cornerX, cornerY, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
-            finalTexture.SetPixels(pixels);
-            finalTexture.Apply();
+            var upscaledFrameTexture = new Texture2D(Mathf.RoundToInt(upscaledFrameWidth), Mathf.RoundToInt(upscaledFrameHeight), TextureFormat.RGB24, false);
+            Color[] pixels = screenshotTexture.GetPixels(cornerX, cornerY, Mathf.RoundToInt(upscaledFrameWidth), Mathf.RoundToInt(upscaledFrameHeight));
+            upscaledFrameTexture.SetPixels(pixels);
+            upscaledFrameTexture.Apply();
 
-            // var path = Application.dataPath + "/_UpscaledScreenshot1.png";
-            // File.WriteAllBytes(path, screenshotTexture.EncodeToJPG());
-            // Debug.Log($"Upscaled res: {Screen.width * upscalingFactor}:{Screen.height * upscalingFactor}");
+            // string path = Application.dataPath + "/_upscaledFrameTexture1.jpg";
+            // File.WriteAllBytes(path, upscaledFrameTexture.EncodeToJPG());
             // Debug.Log($"Saved to {path}");
 
-            // var path = Application.dataPath + "/_FinalScreenshot1.jpg";
+            Texture2D finalTexture = ResizeTo2K(upscaledFrameTexture);
+            //
+            // path = Application.dataPath + "/_FinalScreenshot1.jpg";
             // File.WriteAllBytes(path, finalTexture.EncodeToJPG());
             // Debug.Log($"Saved to {path}");
 
             return finalTexture;
+        }
+
+        private static Texture2D ResizeTo2K(Texture originalTexture)
+        {
+            // Create a 2K RenderTexture
+            var rt = new RenderTexture(1920, 1080, 24);
+
+            // Set the active render texture to rt
+            RenderTexture.active = rt;
+
+            // Copy and scale the original texture into the RenderTexture
+            Graphics.Blit(originalTexture, rt);
+
+            // Create a new Texture2D to hold the resized texture data
+            var resizedTexture = new Texture2D(1920, 1080);
+
+            // Read the pixel data from the RenderTexture into the Texture2D
+            resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            resizedTexture.Apply();
+
+            // Clean up by releasing the RenderTexture
+            RenderTexture.active = null;
+            rt.Release();
+
+            return resizedTexture;
         }
 
         // nearest-neighbor interpolation
