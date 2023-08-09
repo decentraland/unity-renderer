@@ -67,6 +67,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private string playerId;
         private CameraReelStorageStatus storageStatus;
         private Camera prevSkyboxCamera;
+        private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
+        private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
+        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+        private BaseVariable<Quaternion> cameraRotation => DataStore.i.camera.rotation;
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
@@ -119,6 +123,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerId = player.ownPlayer.Get().id;
                 UpdateStorageInfo();
             }
+        }
+
+        private void Update()
+        {
+            if (!isScreencaptureCameraActive.Get()) return;
+
+            cameraForward.Set(screenshotCamera.transform.forward);
+            cameraRight.Set(screenshotCamera.transform.right);
+            cameraRotation.Set(screenshotCamera.transform.rotation);
+            cameraPosition.Set(screenshotCamera.transform.position);
         }
 
         internal void OnEnable()
