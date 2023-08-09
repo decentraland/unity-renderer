@@ -29,7 +29,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             Vector3 currentEulerAngles = target.eulerAngles;
 
-            currentEulerAngles.z += Mathf.Clamp(SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
+            // currentEulerAngles.z += Mathf.Clamp(SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
 
             if (mouseControlIsEnabled)
             {
