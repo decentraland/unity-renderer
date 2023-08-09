@@ -125,6 +125,12 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="updatedAt"></param>
     void SetDeployedAt(string updatedAt);
+
+    /// <summary>
+    /// Set the place card as point of interest.
+    /// </summary>
+    /// <param name="isPOI">Tru for set it as POI.</param>
+    void SetIsPOI(bool isPOI);
 }
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig<PlaceCardComponentModel>
@@ -137,6 +143,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
 
     [Header("Prefab References")]
+    [SerializeField] internal GameObject poiMark;
     [SerializeField] internal ImageComponentView placeImage;
     [SerializeField] internal TMP_Text placeNameOnIdleText;
     [SerializeField] internal TMP_Text placeNameOnFocusText;
@@ -284,6 +291,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetTotalVotes(model.totalVotes);
         SetNumberOfFavorites(model.numberOfFavorites);
         SetDeployedAt(model.deployedAt);
+        SetIsPOI(model.isPOI);
         RebuildCardLayouts();
     }
 
@@ -348,6 +356,17 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         updatedAtText.text = DateTime.TryParse(updatedAt, out DateTime updateAtDT) ?
             updateAtDT.ToString("dd/MM/yyyy") :
             "-";
+    }
+
+    public void SetIsPOI(bool isPOI)
+    {
+        model.isPOI = isPOI;
+
+        if (poiMark == null)
+            return;
+
+        poiMark.SetActive(isPOI);
+
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)

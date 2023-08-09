@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using DCLServices.Lambdas;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
@@ -23,12 +22,14 @@ namespace DCLServices.PlacesAPIService
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
         UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
+        UniTask<List<string>> GetPointOfInterests(CancellationToken ct);
     }
 
     public class PlacesAPIClient: IPlacesAPIClient
     {
         private const string BASE_URL = "https://places.decentraland.org/api/places";
         private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
+        private const string POI_URL = "https://dcl-name-stats.decentraland.org/pois";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)
@@ -156,6 +157,20 @@ namespace DCLServices.PlacesAPIService
             var result = await webRequestController.PatchAsync(string.Format(URL, placeUUID), payload, isSigned: true, cancellationToken: ct);
             if (result.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error fetching place info:\n{result.error}");
+        }
+
+        public async UniTask<List<string>> GetPointOfInterests(CancellationToken ct)
+        {
+            UnityWebRequest result = await webRequestController.PostAsync(POI_URL, "", isSigned: false, cancellationToken: ct);
+            var response = Utils.SafeFromJson<PointOfInterestAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing get POIs response:\n{result.downloadHandler.text}");
+
+            if (response.data == null)
+                throw new Exception($"No POIs info retrieved:\n{result.downloadHandler.text}");
+
+            return response.data;
         }
     }
 }

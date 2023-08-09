@@ -23,6 +23,7 @@ public class PlaceCardComponentModel : BaseComponentModel
     public bool isFavorite;
     public int numberOfFavorites;
     public string deployedAt;
+    public bool isPOI;
 
     [HideInInspector]
     public IHotScenesController.PlaceInfo placeInfo;

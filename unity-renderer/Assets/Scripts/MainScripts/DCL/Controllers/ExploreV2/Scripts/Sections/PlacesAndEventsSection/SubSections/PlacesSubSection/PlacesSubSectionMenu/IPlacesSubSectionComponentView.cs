@@ -97,4 +97,6 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     void ConfigurePools();
 
     void SetShowMoreButtonActive(bool isActive);
+
+    void SetPOICoords(List<string> poiList);
 }

@@ -26,6 +26,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
+    private IReadOnlyList<string> allPointOfInterest;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
@@ -135,13 +136,20 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         try
         {
-            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, view.filter, view.sort, ct);
+            allPointOfInterest = await placesAPIService.GetPointOfInterests(ct);
+            view.SetPOICoords(allPointOfInterest.ToList());
+
+            string filter = view.filter;
+            if (filter == "only_pois=true")
+                filter = BuildPointOfInterestFilter();
+
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, filter, view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             placesFromAPI.Clear();
             placesFromAPI.AddRange(firstPage.places);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, view.filter, view.sort, ct);
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, filter, view.sort, ct);
                 placesFromAPI.AddRange(secondPage.places);
             }
 
@@ -160,7 +168,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, view.filter, view.sort, showMoreCts.Token);
+        string filter = view.filter;
+        if (filter == "only_pois=true")
+            filter = BuildPointOfInterestFilter();
+
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, filter, view.sort, showMoreCts.Token);
 
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
@@ -224,5 +236,22 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             Environment.i.world.teleportController.Teleport(position.x, position.y);
         else
             Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
+    }
+
+    private string BuildPointOfInterestFilter()
+    {
+        string resultFilter = string.Empty;
+
+        if (allPointOfInterest == null)
+            return resultFilter;
+
+        foreach (string poi in allPointOfInterest)
+        {
+            string x = poi.Split(",")[0];
+            string y = poi.Split(",")[1];
+            resultFilter = string.Concat(resultFilter, $"&positions={x},{y}");
+        }
+
+        return resultFilter;
     }
 }

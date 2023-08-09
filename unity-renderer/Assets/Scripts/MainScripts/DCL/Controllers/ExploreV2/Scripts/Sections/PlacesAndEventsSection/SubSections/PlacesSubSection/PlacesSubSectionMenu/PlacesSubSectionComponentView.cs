@@ -21,10 +21,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setPlacesCts = new ();
 
+    private List<string> poiCoords;
+
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
-    [SerializeField] internal MinimapMetadata minimapMetadata;
 
     [Header("Prefab References")]
     [SerializeField] internal ScrollRect scrollView;
@@ -54,6 +55,10 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     public void SetAllAsLoading() => SetPlacesAsLoading(true);
     public void SetShowMoreButtonActive(bool isActive) => SetShowMorePlacesButtonActive(isActive);
+
+    public void SetPOICoords(List<string> poiList) =>
+        poiCoords = poiList;
+
     public int CurrentTilesPerRow => currentPlacesPerRow;
     public int CurrentGoingTilesPerRow { get; }
     public string filter { get; private set; }
@@ -127,7 +132,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private void ClickedOnPOI()
     {
-        if (filter.Contains("only_pois=true"))
+        if (filter == "only_pois=true")
         {
             filter = "";
             SetPoiStatus(false);
@@ -136,32 +141,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         }
         else
         {
-            filter = BuildPointOfInterestFilter();
+            filter = "only_pois=true";
             SetPoiStatus(true);
             SetFeaturedStatus(false);
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
         OnFilterSorterChanged?.Invoke();
-    }
-
-    private string BuildPointOfInterestFilter()
-    {
-        var resultFilter = "only_pois=true";
-
-        if (minimapMetadata == null)
-            return resultFilter;
-
-        var sceneInfos = minimapMetadata.SceneInfos;
-        foreach (MinimapMetadata.MinimapSceneInfo scene in sceneInfos)
-        {
-            if (!scene.isPOI)
-                continue;
-
-            if (scene.parcels.Count > 0)
-                resultFilter = string.Concat(resultFilter, $"&positions={scene.parcels[0].x},{scene.parcels[0].y}");
-        }
-
-        return resultFilter;
     }
 
     private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
@@ -252,6 +237,18 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         foreach (PlaceCardComponentModel place in places)
         {
             PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
+
+            var isPoi = false;
+            foreach (Vector2Int placeParcel in place.parcels)
+            {
+                if (!poiCoords.Contains($"{placeParcel.x},{placeParcel.y}"))
+                    continue;
+
+                isPoi = true;
+                break;
+            }
+            placeCard.SetIsPOI(isPoi);
+
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
             this.places.AddItem(placeCard);
