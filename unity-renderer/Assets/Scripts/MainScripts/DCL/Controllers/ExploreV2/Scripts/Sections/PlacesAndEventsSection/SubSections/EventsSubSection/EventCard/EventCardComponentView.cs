@@ -127,6 +127,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 {
     internal const string USERS_CONFIRMED_MESSAGE = "{0} going";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
+    private const string NO_DESCRIPTION_TEXT = "No description.";
 
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
@@ -437,7 +438,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (eventDescText == null)
             return;
 
-        eventDescText.text = newText;
+        eventDescText.text = string.IsNullOrEmpty(newText) ? NO_DESCRIPTION_TEXT : newText;
     }
 
     public void SetEventStartedIn(string newText)
@@ -489,11 +490,10 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (!isEventCardModal)
         {
             subscribedUsersText.text = $"{newNumberOfUsers.ToString()} going";
+            subscribedUsersText.gameObject.SetActive(!model.isLive);
         }
         else
-        {
             subscribedUsersText.text = newNumberOfUsers > 0 ? string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers) : NOBODY_CONFIRMED_MESSAGE;
-        }
     }
 
     public void SetCoords(Vector2Int newCoords)
@@ -518,6 +518,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (timeAndPlayersHorizontalLayout != null)
             Utils.ForceRebuildLayoutImmediate(timeAndPlayersHorizontalLayout.transform as RectTransform);
+
+        if (numberOfUsersContainer != null)
+            Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer.transform as RectTransform);
     }
 
     internal void CloseModal() { Hide(); }

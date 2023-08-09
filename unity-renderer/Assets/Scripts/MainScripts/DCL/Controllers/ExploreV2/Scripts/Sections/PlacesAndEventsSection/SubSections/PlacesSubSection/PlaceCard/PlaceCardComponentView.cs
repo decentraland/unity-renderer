@@ -138,6 +138,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal const int THMBL_MARKETPLACE_WIDTH = 196;
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
     internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+    private const string NO_DESCRIPTION_TEXT = "No description.";
 
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
@@ -152,6 +153,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeAuthorOnFocusText;
     [SerializeField] internal TMP_Text userVisitsText;
     [SerializeField] internal TMP_Text userRatingText;
+    [SerializeField] internal RectTransform numberOfUsersContainer;
     [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal Button modalBackgroundButton;
@@ -521,7 +523,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (placeDescText == null)
             return;
 
-        placeDescText.text = newText;
+        placeDescText.text = string.IsNullOrEmpty(newText) ? NO_DESCRIPTION_TEXT : newText;
     }
 
     public void SetPlaceAuthor(string newText)
@@ -665,6 +667,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (infoVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
+
+        if (numberOfUsersContainer != null)
+            Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer);
     }
 
     internal void CloseModal() { Hide(); }
