@@ -137,7 +137,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         try
         {
             allPointOfInterest = await placesAPIService.GetPointOfInterests(ct);
-            view.SetPOICoords(allPointOfInterest.ToList());
+            if (allPointOfInterest != null)
+                view.SetPOICoords(allPointOfInterest.ToList());
 
             string filter = view.filter;
             if (filter == "only_pois=true")

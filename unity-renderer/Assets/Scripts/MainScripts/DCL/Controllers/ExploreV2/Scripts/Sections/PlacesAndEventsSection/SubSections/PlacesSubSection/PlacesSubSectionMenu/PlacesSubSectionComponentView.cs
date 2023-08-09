@@ -239,14 +239,19 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(placeCardsPool, place, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
 
             var isPoi = false;
-            foreach (Vector2Int placeParcel in place.parcels)
-            {
-                if (!poiCoords.Contains($"{placeParcel.x},{placeParcel.y}"))
-                    continue;
 
-                isPoi = true;
-                break;
+            if (poiCoords != null)
+            {
+                foreach (Vector2Int placeParcel in place.parcels)
+                {
+                    if (!poiCoords.Contains($"{placeParcel.x},{placeParcel.y}"))
+                        continue;
+
+                    isPoi = true;
+                    break;
+                }
             }
+
             placeCard.SetIsPOI(isPoi);
 
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
