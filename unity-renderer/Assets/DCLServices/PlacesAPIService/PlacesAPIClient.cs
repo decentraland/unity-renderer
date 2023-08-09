@@ -29,7 +29,7 @@ namespace DCLServices.PlacesAPIService
     {
         private const string BASE_URL = "https://places.decentraland.org/api/places";
         private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
-        private const string POI_URL = "https://dcl-name-stats.decentraland.org/pois";
+        private const string POI_URL = "https://dcl-lists.decentraland.org/pois";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)
