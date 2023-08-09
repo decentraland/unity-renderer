@@ -12,6 +12,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerController : IDisposable
     {
+        private const string SCREEN_SOURCE = "ReelPictureDetail";
         private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
 
         private readonly ScreenshotViewerView view;
@@ -56,6 +57,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             view.InfoSidePanel.SidePanelButtonClicked += view.ToggleInfoSidePanel;
             view.InfoSidePanel.SceneButtonClicked += JumpInScene;
+            view.InfoSidePanel.OnOpenPictureOwnerProfile += OpenPictureOwnerProfile;
         }
 
         public void Dispose()
@@ -72,6 +74,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             view.InfoSidePanel.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
             view.InfoSidePanel.SceneButtonClicked -= JumpInScene;
+            view.InfoSidePanel.OnOpenPictureOwnerProfile -= OpenPictureOwnerProfile;
 
             view.Dispose();
         }
@@ -171,13 +174,18 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             void TrackToAnalyticsThenCloseView()
             {
-                analytics.JumpIn("ReelPictureDetail");
+                analytics.JumpIn(SCREEN_SOURCE);
                 view.Hide();
                 dataStore.exploreV2.isOpen.Set(false);
             }
 
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
             dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm, TrackToAnalyticsThenCloseView), true);
+        }
+
+        private void OpenPictureOwnerProfile()
+        {
+            dataStore.HUDs.currentPlayerId.Set((currentScreenshot.metadata.userAddress, SCREEN_SOURCE));
         }
     }
 }

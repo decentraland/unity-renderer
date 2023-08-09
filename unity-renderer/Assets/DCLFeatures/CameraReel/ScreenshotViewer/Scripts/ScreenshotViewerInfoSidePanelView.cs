@@ -19,6 +19,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         [SerializeField] private Button sceneInfoButton;
         [SerializeField] private TMP_Text photoOwnerNameLabel;
         [SerializeField] private ImageComponentView photoOwnerAvatarPicture;
+        [SerializeField] private Button pictureOwnerProfileButton;
 
         [Header("VISIBLE PEOPLE PANEL")]
         [SerializeField] private ScreenshotVisiblePersonView profileEntryTemplate;
@@ -28,6 +29,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         public event Action SceneButtonClicked;
         public event Action SidePanelButtonClicked;
+        public event Action OnOpenPictureOwnerProfile;
 
         private void Awake()
         {
@@ -38,12 +40,14 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             infoPanelTextButton.onClick.AddListener(() => SidePanelButtonClicked?.Invoke());
             sceneInfoButton.onClick.AddListener(() => SceneButtonClicked?.Invoke());
+            pictureOwnerProfileButton.onClick.AddListener(() => OnOpenPictureOwnerProfile?.Invoke());
         }
 
         private void OnDisable()
         {
             infoPanelTextButton.onClick.RemoveAllListeners();
             sceneInfoButton.onClick.RemoveAllListeners();
+            pictureOwnerProfileButton.onClick.RemoveAllListeners();
         }
 
         public void SetSceneInfoText(Scene scene) =>
