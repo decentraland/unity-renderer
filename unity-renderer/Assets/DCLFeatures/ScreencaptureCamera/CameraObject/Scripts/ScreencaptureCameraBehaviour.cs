@@ -1,7 +1,8 @@
-﻿using AvatarSystem;
+﻿using Cinemachine;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tasks;
@@ -39,6 +40,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
         [SerializeField] internal Canvas enableCameraButtonPrefab;
         [SerializeField] private PlayerName playerNamePrefab;
+        [SerializeField] private Transform cameraTarget;
+        [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
@@ -236,14 +239,30 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
+
             characterController.SetEnabled(!activateScreenshotCamera);
+
+            cameraController.GetCamera().GetComponent<CinemachineBrain>().enabled = !activateScreenshotCamera;
 
             if (activateScreenshotCamera)
             {
                 EnableScreenshotCamera();
                 playerName.Show();
+
+                virtualCamera.transform.position = characterCameraTransform.position;
+                virtualCamera.transform.rotation = characterCameraTransform.rotation;
+                cameraTarget.position = characterCameraTransform.position;
+                cameraTarget.rotation = characterCameraTransform.rotation;
             }
-            else playerName.Hide();
+            else
+            {
+                playerName.Hide();
+
+                cameraTarget.position = characterCameraTransform.position;
+                cameraTarget.rotation = characterCameraTransform.rotation;
+                virtualCamera.transform.position = characterCameraTransform.position;
+                virtualCamera.transform.rotation = characterCameraTransform.rotation;
+            }
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
@@ -324,6 +343,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
+            screenshotCamera.GetComponent<ScreencaptureCameraMovement>().SetTarget(cameraTarget);
         }
     }
 }

@@ -20,14 +20,15 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             transform = characterController.transform;
         }
 
-        public void Translate(float deltaTime, float moveSpeed, float damping, float maxPerFrame, float maxDistanceFromPlayer)
+        public void Translate(Transform target, float deltaTime, float moveSpeed, float damping, float maxPerFrame, float maxDistanceFromPlayer)
         {
             currentMoveVector = GetMoveVectorFromInput(deltaTime, moveSpeed);
-            smoothedMoveVector = Vector3.Lerp(smoothedMoveVector, currentMoveVector, deltaTime * damping);
-            smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, maxPerFrame * deltaTime);
+            // smoothedMoveVector = Vector3.Lerp(smoothedMoveVector, currentMoveVector, deltaTime * damping);
+            // smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, maxPerFrame * deltaTime);
 
-            characterController.Move(
-                RestrictedMovementBySemiSphere(smoothedMoveVector, maxDistanceFromPlayer));
+            target.position += currentMoveVector;
+            // characterController.Move(
+            //     RestrictedMovementBySemiSphere(smoothedMoveVector, maxDistanceFromPlayer));
         }
 
         private Vector3 GetMoveVectorFromInput(float deltaTime, float moveSpeed)

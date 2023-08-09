@@ -23,6 +23,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private ScreencaptureCameraTranslation translation;
         private ScreencaptureCameraRotation rotation;
+        private Transform target;
+
+        public void SetTarget(Transform target)
+        {
+            this.target = target;
+        }
 
         private void Awake()
         {
@@ -35,8 +41,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void Update()
         {
-            rotation.Rotate(Time.deltaTime, rotationSpeed, rollSpeed, rotationDamping, maxRotationPerFrame);
-            translation.Translate(Time.deltaTime, translationSpeed,  translationDamping, maxTranslationPerFrame, MAX_DISTANCE_FROM_PLAYER);
+            rotation.Rotate(target, Time.deltaTime, rotationSpeed, rollSpeed, rotationDamping, maxRotationPerFrame);
+            translation.Translate(target, Time.deltaTime, translationSpeed,  translationDamping, maxTranslationPerFrame, MAX_DISTANCE_FROM_PLAYER);
         }
 
         private void OnEnable()

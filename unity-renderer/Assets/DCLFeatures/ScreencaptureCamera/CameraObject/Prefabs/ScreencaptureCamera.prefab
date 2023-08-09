@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7273578283925040404}
   - component: {fileID: 1657683350}
   - component: {fileID: 4413685261682811347}
+  - component: {fileID: 6585314960302842260}
   m_Layer: 16
   m_Name: ScreencaptureCamera
   m_TagString: Untagged
@@ -160,3 +161,37 @@ MonoBehaviour:
     mouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
     cameraRollLeft: {fileID: 11400000, guid: 2ba41cc842288904eaf1868d86a23ecc, type: 2}
     cameraRollRight: {fileID: 11400000, guid: 6ac03361c8a1a0c4ea36ef9e59cc2034, type: 2}
+--- !u!114 &6585314960302842260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192833813443749521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowDebugText: 0
+  m_ShowCameraFrustum: 1
+  m_IgnoreTimeScale: 0
+  m_WorldUpOverride: {fileID: 0}
+  m_UpdateMethod: 2
+  m_BlendUpdateMethod: 1
+  m_DefaultBlend:
+    m_Style: 1
+    m_Time: 2
+    m_CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_CustomBlends: {fileID: 0}
+  m_CameraCutEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_CameraActivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []

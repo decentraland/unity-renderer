@@ -8,7 +8,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     {
         private const DCLAction_Hold DUMMY_ACTION = new ();
 
-        private readonly Transform target;
+        private readonly Transform transform;
         private readonly RotationInputSchema input;
 
         private bool mouseControlIsEnabled;
@@ -19,35 +19,29 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private float currentRollRate;
         private float smoothedRollRate;
 
-        public ScreencaptureCameraRotation(Transform target, RotationInputSchema inputSchema)
+        public ScreencaptureCameraRotation(Transform transform, RotationInputSchema inputSchema)
         {
-            this.target = target;
+            this.transform = transform;
             input = inputSchema;
         }
 
-        public void Rotate(float deltaTime, float rotationSpeed, float rollSpeed, float damping, float maxRotationPerFrame)
+        public void Rotate(Transform target, float deltaTime, float rotationSpeed, float rollSpeed, float damping, float maxRotationPerFrame)
         {
-            Vector3 currentEulerAngles = target.eulerAngles;
-
-            // currentEulerAngles.z += Mathf.Clamp(SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
+            // Extract the current yaw and pitch
+            float currentYaw = target.eulerAngles.y;
+            float currentPitch = target.eulerAngles.x;
+            float currentRoll = target.eulerAngles.z;
 
             if (mouseControlIsEnabled)
             {
-                smoothedMouseDelta = CalculateSmoothedMouseDelta(deltaTime, rotationSpeed, damping);
-                currentEulerAngles.y += Mathf.Clamp(smoothedMouseDelta.x * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Yaw
-                currentEulerAngles.x -= Mathf.Clamp(smoothedMouseDelta.y * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Pitch
+                currentYaw += input.cameraXAxis.GetValue() * rotationSpeed * deltaTime;
+                currentPitch -= input.cameraYAxis.GetValue() * rotationSpeed * deltaTime;
             }
 
-            target.rotation = Quaternion.Euler(currentEulerAngles);
+            target.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
         }
 
-        private Vector2 CalculateSmoothedMouseDelta(float deltaTime, float rotationSpeed, float damping)
-        {
-            currentMouseDelta.x = input.cameraXAxis.GetValue() * rotationSpeed;
-            currentMouseDelta.y = input.cameraYAxis.GetValue() * rotationSpeed;
 
-            return Vector2.Lerp(smoothedMouseDelta, currentMouseDelta, deltaTime * damping);
-        }
 
         private float SmoothedRollRate(float deltaTime, float rollSpeed, float damping)
         {
