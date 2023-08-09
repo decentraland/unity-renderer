@@ -169,13 +169,15 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 || !int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
                 return;
 
-            void TrackToAnalytics() =>
+            void TrackToAnalyticsThenCloseView()
+            {
                 analytics.JumpIn("ReelPictureDetail");
+                view.Hide();
+                dataStore.exploreV2.isOpen.Set(false);
+            }
 
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
-            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm, TrackToAnalytics), true);
-            view.Hide();
-            dataStore.exploreV2.isOpen.Set(false);
+            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm, TrackToAnalyticsThenCloseView), true);
         }
     }
 }
