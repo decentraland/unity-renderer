@@ -34,7 +34,7 @@ namespace DCL.MyAccount
 
                 OnAddedNew?.Invoke((
                     title: newLinkTitle.text,
-                    url: UnityWebRequest.EscapeURL(newLinkUrl.text)));
+                    url: newLinkUrl.text));
             });
 
             newLinkTitle.onValueChanged.AddListener(str => EnableOrDisableAddButton());
