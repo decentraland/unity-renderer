@@ -37,7 +37,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
-        internal ScreenRecorder screenRecorderLazyValue;
+        internal ScreenRecorder screenRecorderValue;
         internal bool? isGuestLazyValue;
         internal BooleanVariable isScreencaptureCameraActive;
 
@@ -85,11 +85,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             get
             {
                 if (isInstantiated)
-                    return screenRecorderLazyValue;
+                    return screenRecorderValue;
 
                 InstantiateCameraObjects();
 
-                return screenRecorderLazyValue;
+                return screenRecorderValue;
             }
         }
 
@@ -215,9 +215,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
-            playerId = player.ownPlayer.Get().id;
-            UpdateStorageInfo();
-
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
             characterController.SetEnabled(!activateScreenshotCamera);
 
@@ -272,8 +269,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void InstantiateCameraObjects()
         {
             CreateHUD();
-            CreateScreencaptureCamera(cameraController.GetCamera().transform);
-            CreateScreenshotRecorder();
+            screenRecorderValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
+
+            characterCameraTransform = cameraController.GetCamera().transform;
+            CreateScreencaptureCamera();
 
             isInstantiated = true;
         }
@@ -285,14 +284,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             screencaptureCameraHUDController.Initialize();
         }
 
-        private void CreateScreencaptureCamera(Transform playerCameraTransform)
+        private void CreateScreencaptureCamera()
         {
-            characterCameraTransform = playerCameraTransform;
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
         }
-
-        private void CreateScreenshotRecorder() =>
-            screenRecorderLazyValue ??= new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
     }
 }

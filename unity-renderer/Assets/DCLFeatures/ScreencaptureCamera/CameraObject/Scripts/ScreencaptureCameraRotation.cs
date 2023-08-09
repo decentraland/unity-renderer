@@ -25,17 +25,17 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             input = inputSchema;
         }
 
-        public void Rotate(float deltaTime, float rotationSpeed, float rollSpeed, float damping)
+        public void Rotate(float deltaTime, float rotationSpeed, float rollSpeed, float damping, float maxRotationPerFrame)
         {
             Vector3 currentEulerAngles = target.eulerAngles;
 
-            currentEulerAngles.z += SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime;
+            currentEulerAngles.z += Mathf.Clamp(SmoothedRollRate(deltaTime, rollSpeed, damping) * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
 
             if (mouseControlIsEnabled)
             {
                 smoothedMouseDelta = CalculateSmoothedMouseDelta(deltaTime, rotationSpeed, damping);
-                currentEulerAngles.y += smoothedMouseDelta.x * deltaTime; // Yaw
-                currentEulerAngles.x -= smoothedMouseDelta.y * deltaTime; // Pitch
+                currentEulerAngles.y += Mathf.Clamp(smoothedMouseDelta.x * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Yaw
+                currentEulerAngles.x -= Mathf.Clamp(smoothedMouseDelta.y * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Pitch
             }
 
             target.rotation = Quaternion.Euler(currentEulerAngles);
