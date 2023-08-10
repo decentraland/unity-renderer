@@ -2,7 +2,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace DCLFeatures.ScreencaptureCamera.UI
 {
@@ -27,7 +26,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         [SerializeField] private Image whiteSplashImage;
         [SerializeField] private RectTransform cameraReelIcon;
         [SerializeField] private Image animatedImage;
-        [SerializeField] internal TMP_Text url;
 
         private Sequence currentVfxSequence;
 
@@ -46,9 +44,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             takeScreenshotButton.onClick.AddListener(() => TakeScreenshotButtonClicked?.Invoke());
             shortcutsInfoButton.onClick.AddListener(() => ShortcutsInfoButtonClicked?.Invoke());
             closeButton.onClick.AddListener(() => CloseButtonClicked?.Invoke());
-
-
-                url.text = Application.absoluteURL;
         }
 
         private void OnDisable()
@@ -61,8 +56,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
         public virtual void SetVisibility(bool isVisible, bool hasStorageSpace)
         {
-            url.text = Application.absoluteURL;
-
             takeScreenshotButton.interactable = hasStorageSpace;
             noSpaceInfo.SetActive(!hasStorageSpace);
 
