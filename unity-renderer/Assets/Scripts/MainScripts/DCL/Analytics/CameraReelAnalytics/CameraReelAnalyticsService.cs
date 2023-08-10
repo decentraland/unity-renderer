@@ -5,8 +5,6 @@ namespace DCLServices.CameraReelService
 {
     public class CameraReelAnalyticsService : ICameraReelAnalyticsService
     {
-        private const string TAKE_PHOTO = "take_photo";
-
         private readonly IAnalytics analytics;
 
         public CameraReelAnalyticsService(IAnalytics analytics)
@@ -24,7 +22,7 @@ namespace DCLServices.CameraReelService
                 { "source", source },
             };
 
-            analytics.SendAnalytic(TAKE_PHOTO, data);
+            analytics.SendAnalytic("take_photo", data);
         }
 
         public void Share(string source, string to)
@@ -86,6 +84,16 @@ namespace DCLServices.CameraReelService
             analytics.SendAnalytic("camera_reel_open", data);
         }
 
+        public void OpenCamera(string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                { "source", source },
+            };
+
+            analytics.SendAnalytic("camera_open", data);
+        }
+
         public void Dispose() { }
 
         public void Initialize() { }
@@ -108,5 +116,7 @@ namespace DCLServices.CameraReelService
         void DeletePhoto();
 
         void OpenCameraReel(string source);
+
+        void OpenCamera(string source);
     }
 }

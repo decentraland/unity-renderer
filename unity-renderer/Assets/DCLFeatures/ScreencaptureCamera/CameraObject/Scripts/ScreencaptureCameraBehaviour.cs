@@ -125,7 +125,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             else
             {
                 Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
-                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera());
+                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
                 CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
 
                 enabled = true;
@@ -221,7 +221,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
         }
 
-        public void ToggleScreenshotCamera(bool isEnabled = true)
+        public void ToggleScreenshotCamera(string source = null, bool isEnabled = true)
         {
             if (isGuest) return;
             if (isEnabled == isScreencaptureCameraActive.Get()) return;
@@ -236,6 +236,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             ToggleCameraSystems(activateScreenshotCamera);
 
             isScreencaptureCameraActive.Set(activateScreenshotCamera);
+
+            if (isEnabled && !string.IsNullOrEmpty(source))
+                analytics.OpenCamera(source);
         }
 
         private async void UpdateStorageInfo()
@@ -244,7 +247,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         }
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
-            ToggleScreenshotCamera(!isScreencaptureCameraActive.Get());
+            ToggleScreenshotCamera("Shortcut", !isScreencaptureCameraActive.Get());
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
