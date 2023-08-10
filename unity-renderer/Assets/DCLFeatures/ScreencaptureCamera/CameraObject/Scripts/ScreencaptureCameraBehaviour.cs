@@ -378,7 +378,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void CreateHUD()
         {
             screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
-            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, screencaptureCameraBehaviour: this, inputActionsSchema);
+            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(
+                screencaptureCameraHUDView,
+                screencaptureCameraBehaviour: this,
+                inputActionsSchema,
+                DataStore.i);
             screencaptureCameraHUDController.Initialize();
         }
 

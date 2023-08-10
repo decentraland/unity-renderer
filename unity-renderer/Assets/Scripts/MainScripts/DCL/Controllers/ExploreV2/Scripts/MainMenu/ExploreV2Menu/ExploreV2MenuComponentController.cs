@@ -18,6 +18,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 {
     private readonly IPlacesAPIService placesAPIService;
     private readonly IPlacesAnalytics placesAnalytics;
+    private readonly BaseVariable<bool> cameraReelSectionVisible = new ();
 
     // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
 
@@ -44,7 +45,6 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
     internal BaseVariable<bool> isCameraReelInitialized => DataStore.i.HUDs.isCameraReelInitialized;
-    internal BaseVariable<bool> cameraReelSectionVisible => DataStore.i.HUDs.cameraReelSectionVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
@@ -77,6 +77,8 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
     public void Initialize()
     {
+        cameraReelSectionVisible.OnChange += (current, _) => DataStore.i.HUDs.cameraReelSectionVisible.Set((current, "Menu"));
+
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },

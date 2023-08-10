@@ -11,12 +11,17 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private readonly ScreencaptureCameraHUDView view;
         private readonly ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
         private readonly ScreencaptureCameraInputSchema input;
+        private readonly DataStore dataStore;
 
-        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCameraBehaviour screencaptureCameraBehaviour, ScreencaptureCameraInputSchema input)
+        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view,
+            ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
+            ScreencaptureCameraInputSchema input,
+            DataStore dataStore)
         {
             this.view = view;
             this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
             this.input = input;
+            this.dataStore = dataStore;
         }
 
         public void Initialize()
@@ -70,16 +75,17 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private void DisableScreenshotCameraMode(DCLAction_Trigger _) =>
             DisableScreenshotCameraMode();
 
-        private void OpenCameraReelGallery()
-        {
-            if (view.IsVisible)
-            {
-                DisableScreenshotCameraMode();
-                DataStore.i.HUDs.cameraReelSectionVisible.Set(true);
-            }
-        }
+        private void OpenCameraReelGallery() =>
+            OpenCameraReelGallery("Camera");
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
-            OpenCameraReelGallery();
+            OpenCameraReelGallery("Shortcut");
+
+        private void OpenCameraReelGallery(string source)
+        {
+            if (!view.IsVisible) return;
+            DisableScreenshotCameraMode();
+            dataStore.HUDs.cameraReelSectionVisible.Set((true, source));
+        }
     }
 }
