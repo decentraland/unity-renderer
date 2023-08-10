@@ -120,6 +120,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             // Debug.Log($"Saved to {path}");
 
             Texture2D finalTexture = ResizeTo2K(upscaledFrameTexture);
+
             //
             // path = Application.dataPath + "/_FinalScreenshot1.jpg";
             // File.WriteAllBytes(path, finalTexture.EncodeToJPG());

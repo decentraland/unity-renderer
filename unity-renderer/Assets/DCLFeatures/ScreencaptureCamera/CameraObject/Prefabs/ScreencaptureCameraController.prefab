@@ -250,7 +250,7 @@ MonoBehaviour:
     type: 3}
   playerNamePrefab: {fileID: 3574357807223115553, guid: c53ec74589327644bba45b4054fb78dc,
     type: 3}
-  cameraTarget: {fileID: 5594725319748734033}
+  cameraTarget: {fileID: 3582248969414585223}
   virtualCamera: {fileID: 7308663692020878939}
   inputActionsSchema:
     ToggleScreenshotCameraAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815,

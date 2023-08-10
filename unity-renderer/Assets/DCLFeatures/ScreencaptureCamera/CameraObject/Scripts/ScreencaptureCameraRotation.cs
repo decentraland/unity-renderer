@@ -10,63 +10,39 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     {
         private const DCLAction_Hold DUMMY_ACTION = new ();
 
-        private readonly Transform transform;
         private readonly RotationInputSchema input;
+        private readonly InputSpikeFixer[] inputSpikeFixer;
 
         private bool mouseControlIsEnabled;
 
-        private Vector2 currentMouseDelta;
-        private Vector2 smoothedMouseDelta;
+        private Vector3 axis;
+        private Vector3 axisTarget;
 
-        private float currentRollRate;
-        private float smoothedRollRate;
-        private InputSpikeFixer[] inputSpikeFixer;
-
-        public ScreencaptureCameraRotation(Transform transform, RotationInputSchema inputSchema)
+        public ScreencaptureCameraRotation(RotationInputSchema inputSchema)
         {
-            this.transform = transform;
             input = inputSchema;
 
-            inputSpikeFixer = new []
+            inputSpikeFixer = new[]
             {
                 new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None),
-                new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None)
+                new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None),
             };
         }
-        private Vector3 axis = new Vector3();
-        private Vector3 axisTarget = new Vector3();
-        public void Rotate(Transform target, float deltaTime, float rotationSpeed, float rollSpeed, float dampTime, float maxRotationPerFrame)
+
+        public void Rotate(Transform target, float deltaTime, float rotationSpeed, float dampTime, float maxRotationPerFrame)
         {
-            // Extract the current yaw and pitch
-            float currentYaw = target.eulerAngles.y;
-            float currentPitch = target.eulerAngles.x;
-            float currentRoll = target.eulerAngles.z;
+            if (!mouseControlIsEnabled) return;
 
-            if (mouseControlIsEnabled)
-            {
-                axisTarget[0] = input.cameraXAxis.GetValue();
-                axisTarget[1] = input.cameraYAxis.GetValue();
-                axis += Damper.Damp(axisTarget - axis, dampTime, Time.deltaTime);
+            Vector3 currentAngles = target.eulerAngles;
 
-                currentYaw += Mathf.Clamp(inputSpikeFixer[0].GetValue(this.axis[0]) * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
-                currentPitch -= Mathf.Clamp(inputSpikeFixer[1].GetValue(this.axis[1])  * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
-            }
-            
-            target.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
-        }
+            axisTarget[0] = input.cameraXAxis.GetValue();
+            axisTarget[1] = input.cameraYAxis.GetValue();
+            axis += Damper.Damp(axisTarget - axis, dampTime, deltaTime);
 
+            currentAngles.y += Mathf.Clamp(inputSpikeFixer[0].GetValue(axis[0]) * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Yaw
+            currentAngles.x -= Mathf.Clamp(inputSpikeFixer[1].GetValue(axis[1]) * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Pitch
 
-        private float SmoothedRollRate(float deltaTime, float rollSpeed, float damping)
-        {
-            if (input.cameraRollLeft.isOn)
-                currentRollRate = rollSpeed;
-            else if (input.cameraRollRight.isOn)
-                currentRollRate = -rollSpeed;
-            else
-                currentRollRate = 0f;
-
-            smoothedRollRate = Mathf.Lerp(smoothedRollRate, currentRollRate, deltaTime * damping);
-            return smoothedRollRate;
+            target.rotation = Quaternion.Euler(currentAngles);
         }
 
         public void Activate()
@@ -92,7 +68,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void DisableRotation(DCLAction_Hold _)
         {
             SwitchRotation(isEnabled: false);
-            smoothedRollRate = 0f;
             Utils.UnlockCursor();
         }
 
