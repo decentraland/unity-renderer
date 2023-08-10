@@ -71,7 +71,7 @@ namespace DCLFeatures.CameraReel.Section
             sectionView.SwitchVisibility(isVisible);
             UpdateEmptyStateVisibility();
 
-            if (!isUpdating)
+            if (!isUpdating && isVisible)
                 FetchScreenshots(0);
 
             string source = dataStore.HUDs.cameraReelOpenSource.Get();

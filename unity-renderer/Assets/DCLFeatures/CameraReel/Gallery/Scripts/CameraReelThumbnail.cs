@@ -28,5 +28,8 @@ namespace DCLFeatures.CameraReel.Gallery
             image.SetImage(picture.thumbnailUrl);
             gameObject.SetActive(true);
         }
+
+        public int CompareTo(CameraReelThumbnail thumbnail) =>
+            picture.metadata.GetLocalizedDateTime().CompareTo(thumbnail.picture.metadata.GetLocalizedDateTime());
     }
 }
