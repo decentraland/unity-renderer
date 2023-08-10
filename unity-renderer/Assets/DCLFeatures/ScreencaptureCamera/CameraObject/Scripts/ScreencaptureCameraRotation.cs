@@ -48,10 +48,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 axisTarget[1] = input.cameraYAxis.GetValue();
                 axis += Damper.Damp(axisTarget - axis, dampTime, Time.deltaTime);
 
-                currentYaw += inputSpikeFixer[0].GetValue(this.axis[0]) * rotationSpeed * deltaTime;
-                currentPitch -= inputSpikeFixer[1].GetValue(this.axis[1])  * rotationSpeed * deltaTime;
+                currentYaw += Mathf.Clamp(inputSpikeFixer[0].GetValue(this.axis[0]) * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
+                currentPitch -= Mathf.Clamp(inputSpikeFixer[1].GetValue(this.axis[1])  * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame);
             }
-
+            
             target.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
         }
 

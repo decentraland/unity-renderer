@@ -56,7 +56,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private bool isInstantiated;
         private ScreencaptureCameraHUDView screencaptureCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
-        private Transform characterCameraTransform;
+        private Transform characterCameraTransform => cameraController.GetCamera().transform;
         private ICameraReelStorageService cameraReelStorageServiceLazyValue;
 
         private bool prevUiHiddenState;
@@ -313,7 +313,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             CreateHUD();
             screenRecorderValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
-            characterCameraTransform = cameraController.GetCamera().transform;
             CreateScreencaptureCamera();
             CreatePlayerNameUI();
 
