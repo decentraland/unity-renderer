@@ -94,7 +94,6 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     internal void RequestAllEvents()
     {
-        RequestAndLoadCategories();
         view.SetIsGuestUser(userProfileBridge.GetOwn().isGuest);
         if (cardsReloader.CanReload())
         {
@@ -117,6 +116,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
         LoadFilteredEvents();
+        RequestAndLoadCategories();
     }
 
     private void LoadFilteredEvents()
@@ -313,7 +313,23 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void RequestAndLoadCategories()
     {
         eventsAPIApiController.GetCategories(
-            OnSuccess: eventList => view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(eventList)),
+            OnSuccess: categoryList =>
+            {
+                List<CategoryFromAPIModel> categoriesInUse = new ();
+                foreach (CategoryFromAPIModel category in categoryList)
+                {
+                    foreach (EventFromAPIModel loadedEvent in eventsFromAPI)
+                    {
+                        if (!loadedEvent.categories.Contains(category.name))
+                            continue;
+
+                        categoriesInUse.Add(category);
+                        break;
+                    }
+                }
+
+                view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(categoriesInUse));
+            },
             OnFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
     }
 
