@@ -1,4 +1,6 @@
-﻿using DCL;
+﻿using Cinemachine.Utility;
+using DCL;
+using DCL.Camera;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -18,14 +20,22 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private float currentRollRate;
         private float smoothedRollRate;
+        private InputSpikeFixer[] inputSpikeFixer;
 
         public ScreencaptureCameraRotation(Transform transform, RotationInputSchema inputSchema)
         {
             this.transform = transform;
             input = inputSchema;
-        }
 
-        public void Rotate(Transform target, float deltaTime, float rotationSpeed, float rollSpeed, float damping, float maxRotationPerFrame)
+            inputSpikeFixer = new []
+            {
+                new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None),
+                new InputSpikeFixer(() => Utils.IsCursorLocked ? CursorLockMode.Locked : CursorLockMode.None)
+            };
+        }
+        private Vector3 axis = new Vector3();
+        private Vector3 axisTarget = new Vector3();
+        public void Rotate(Transform target, float deltaTime, float rotationSpeed, float rollSpeed, float dampTime, float maxRotationPerFrame)
         {
             // Extract the current yaw and pitch
             float currentYaw = target.eulerAngles.y;
@@ -34,13 +44,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             if (mouseControlIsEnabled)
             {
-                currentYaw += input.cameraXAxis.GetValue() * rotationSpeed * deltaTime;
-                currentPitch -= input.cameraYAxis.GetValue() * rotationSpeed * deltaTime;
+                axisTarget[0] = input.cameraXAxis.GetValue();
+                axisTarget[1] = input.cameraYAxis.GetValue();
+                axis += Damper.Damp(axisTarget - axis, dampTime, Time.deltaTime);
+
+                currentYaw += inputSpikeFixer[0].GetValue(this.axis[0]) * rotationSpeed * deltaTime;
+                currentPitch -= inputSpikeFixer[1].GetValue(this.axis[1])  * rotationSpeed * deltaTime;
             }
 
             target.rotation = Quaternion.Euler(currentPitch, currentYaw, currentRoll);
         }
-
 
 
         private float SmoothedRollRate(float deltaTime, float rollSpeed, float damping)

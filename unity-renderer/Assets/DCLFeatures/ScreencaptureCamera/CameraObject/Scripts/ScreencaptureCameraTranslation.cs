@@ -25,10 +25,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             currentMoveVector = GetMoveVectorFromInput(deltaTime, moveSpeed);
             // smoothedMoveVector = Vector3.Lerp(smoothedMoveVector, currentMoveVector, deltaTime * damping);
             // smoothedMoveVector = Vector3.ClampMagnitude(smoothedMoveVector, maxPerFrame * deltaTime);
-
-            target.position += currentMoveVector;
-            // characterController.Move(
-            //     RestrictedMovementBySemiSphere(smoothedMoveVector, maxDistanceFromPlayer));
+            // target.position += currentMoveVector;
+            target.GetComponent<CharacterController>().Move(
+                RestrictedMovementBySemiSphere(currentMoveVector, maxDistanceFromPlayer));
         }
 
         private Vector3 GetMoveVectorFromInput(float deltaTime, float moveSpeed)
