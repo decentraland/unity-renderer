@@ -1,6 +1,7 @@
 Shader "DCL/Universal Render Pipeline/UberPost"
-{
+{   
     HLSLINCLUDE
+        #pragma exclude_renderers gles
         #pragma multi_compile_local_fragment _ _DISTORTION
         #pragma multi_compile_local_fragment _ _CHROMATIC_ABERRATION
         #pragma multi_compile_local_fragment _ _BLOOM_LQ _BLOOM_HQ _BLOOM_LQ_DIRT _BLOOM_HQ_DIRT
@@ -14,7 +15,11 @@ Shader "DCL/Universal Render Pipeline/UberPost"
         #pragma never_use_dxc metal
         #pragma multi_compile_fragment _ DEBUG_DISPLAY
         #pragma multi_compile_fragment _ SCREEN_COORD_OVERRIDE
-        #pragma multi_compile_local_fragment _ HDR_ENCODING
+        #pragma multi_compile_local_fragment _ HDR_INPUT HDR_ENCODING
+
+        #ifdef HDR_ENCODING
+        #define HDR_INPUT 1 // this should be defined when HDR_ENCODING is defined
+        #endif
 
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
@@ -37,7 +42,6 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             #endif
         #endif
 
-        TEXTURE2D_X(_SourceTex);
         TEXTURE2D_X(_Bloom_Texture);
         TEXTURE2D(_LensDirt_Texture);
         TEXTURE2D(_Grain_Texture);
@@ -178,10 +182,10 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             {
                 float2 uvBloom = uvDistorted;
                 #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-                    uvBloom = RemapFoveatedRenderingNonUniformToLinear(uvBloom);
+                    uvBloom = RemapFoveatedRenderingDistort(uvBloom);
                 #endif
 
-                #if _BLOOM_HQ
+                #if _BLOOM_HQ && !defined(SHADER_API_GLES)
                 half4 bloom = SampleTexture2DBicubic(TEXTURE2D_X_ARGS(_Bloom_Texture, sampler_LinearClamp), SCREEN_COORD_REMOVE_SCALEBIAS(uvBloom), _Bloom_Texture_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex);
                 #else
                 half4 bloom = SAMPLE_TEXTURE2D_X(_Bloom_Texture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(uvBloom));
@@ -279,7 +283,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             }
             #endif
 
-            half alpha = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uvDistorted).w;
+            half alpha = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uvDistorted).w;
             return half4(color, alpha);
         }
 
@@ -287,7 +291,10 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"
+        }
         LOD 100
         ZTest Always ZWrite Off Cull Off
 
@@ -301,4 +308,6 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             ENDHLSL
         }
     }
+    
+    
 }
