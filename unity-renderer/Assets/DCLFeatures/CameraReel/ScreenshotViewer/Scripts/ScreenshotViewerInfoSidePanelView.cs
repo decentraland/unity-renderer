@@ -1,6 +1,7 @@
 ﻿using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -54,7 +55,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             sceneInfo.text = $"{scene.name}, {scene.location.x}, {scene.location.y}";
 
         public void SetDateText(DateTime dateTime) =>
-            dataTime.text = dateTime.ToString("MMMM dd, yyyy");
+            dataTime.text = dateTime.ToString("MMMM dd, yyyy", CultureInfo.InvariantCulture);
 
         public void ShowVisiblePersons(VisiblePerson[] visiblePeople)
         {
