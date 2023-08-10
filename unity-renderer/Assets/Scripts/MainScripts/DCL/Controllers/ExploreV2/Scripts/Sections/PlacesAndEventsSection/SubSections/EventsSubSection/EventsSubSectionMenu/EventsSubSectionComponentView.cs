@@ -7,6 +7,7 @@ using DCL.Tasks;
 using TMPro;
 using UIComponents.Scripts.Components.RangeSlider;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -48,13 +49,19 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     [SerializeField] internal Button featuredButton;
     [SerializeField] internal GameObject featuredDeselected;
+    [SerializeField] internal Image featuredDeselectedImage;
     [SerializeField] internal GameObject featuredSelected;
+    [SerializeField] internal Image featuredSelectedImage;
     [SerializeField] internal Button trendingButton;
     [SerializeField] internal GameObject trendingDeselected;
+    [SerializeField] internal Image trendingDeselectedImage;
     [SerializeField] internal GameObject trendingSelected;
+    [SerializeField] internal Image trendingSelectedImage;
     [SerializeField] internal Button wantToGoButton;
     [SerializeField] internal GameObject wantToGoDeselected;
+    [SerializeField] internal Image wantToGoDeselectedImage;
     [SerializeField] internal GameObject wantToGoSelected;
+    [SerializeField] internal Image wantToGoSelectedImage;
     [SerializeField] internal DropdownComponentView frequencyDropdown;
     [SerializeField] internal DropdownComponentView categoriesDropdown;
     [SerializeField] internal DropdownWithRangeSliderComponentView timeDropdown;
@@ -342,24 +349,29 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     private void SetFeaturedStatus(bool isSelected)
     {
+        featuredButton.targetGraphic = isSelected ? featuredSelectedImage : featuredDeselectedImage;
         featuredDeselected.SetActive(!isSelected);
         featuredSelected.SetActive(isSelected);
     }
 
     private void SetTrendingStatus(bool isSelected)
     {
+        trendingButton.targetGraphic = isSelected ? trendingSelectedImage : trendingDeselectedImage;
         trendingDeselected.SetActive(!isSelected);
         trendingSelected.SetActive(isSelected);
     }
 
     private void SetWantToGoStatus(bool isSelected)
     {
+        wantToGoButton.targetGraphic = isSelected ? wantToGoSelectedImage : wantToGoDeselectedImage;
         wantToGoDeselected.SetActive(!isSelected);
         wantToGoSelected.SetActive(isSelected);
     }
 
     private void ClickedOnFeatured()
     {
+        DeselectButtons();
+
         if (SelectedEventType == EventsType.Featured)
         {
             SelectedEventType = EventsType.Upcoming;
@@ -378,6 +390,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     private void ClickedOnTrending()
     {
+        DeselectButtons();
+
         if (SelectedEventType == EventsType.Trending)
         {
             SelectedEventType = EventsType.Upcoming;
@@ -396,6 +410,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
 
     private void ClickedOnWantToGo()
     {
+        DeselectButtons();
+
         if (SelectedEventType == EventsType.WantToGo)
         {
             SelectedEventType = EventsType.Upcoming;
@@ -457,5 +473,13 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         SelectedCategory = id;
         categoriesDropdown.SetTitle(title);
         categoriesDropdown.SelectOption(id, notify);
+    }
+
+    private static void DeselectButtons()
+    {
+        if (EventSystem.current == null)
+            return;
+
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }

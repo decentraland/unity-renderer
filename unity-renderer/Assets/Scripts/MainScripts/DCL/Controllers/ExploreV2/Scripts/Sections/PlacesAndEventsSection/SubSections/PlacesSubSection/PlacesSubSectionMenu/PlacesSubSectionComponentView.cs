@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
+using UnityEngine.EventSystems;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
@@ -37,10 +38,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
     [SerializeField] internal Button poiButton;
     [SerializeField] internal GameObject poiDeselected;
+    [SerializeField] internal Image poiDeselectedImage;
     [SerializeField] internal GameObject poiSelected;
+    [SerializeField] internal Image poiSelectedImage;
     [SerializeField] internal Button featuredButton;
     [SerializeField] internal GameObject featuredDeselected;
+    [SerializeField] internal Image featuredDeselectedImage;
     [SerializeField] internal GameObject featuredSelected;
+    [SerializeField] internal Image featuredSelectedImage;
     [SerializeField] internal DropdownComponentView sortByDropdown;
 
     [SerializeField] private Canvas canvas;
@@ -113,6 +118,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private void ClickedOnFeatured()
     {
+        DeselectButtons();
+
         if (filter == "only_featured=true")
         {
             filter = "";
@@ -127,11 +134,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             SetFeaturedStatus(true);
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
+
         OnFilterSorterChanged?.Invoke();
     }
 
     private void ClickedOnPOI()
     {
+        DeselectButtons();
+
         if (filter == "only_pois=true")
         {
             filter = "";
@@ -146,6 +156,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             SetFeaturedStatus(false);
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
+
         OnFilterSorterChanged?.Invoke();
     }
 
@@ -160,12 +171,14 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
     private void SetPoiStatus(bool isSelected)
     {
+        poiButton.targetGraphic = isSelected ? poiSelectedImage : poiDeselectedImage;
         poiDeselected.SetActive(!isSelected);
         poiSelected.SetActive(isSelected);
     }
 
     private void SetFeaturedStatus(bool isSelected)
     {
+        featuredButton.targetGraphic = isSelected ? featuredSelectedImage : featuredDeselectedImage;
         featuredDeselected.SetActive(!isSelected);
         featuredSelected.SetActive(isSelected);
     }
@@ -300,5 +313,13 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         sort = id;
         sortByDropdown.SetTitle(title);
         sortByDropdown.SelectOption(id, notify);
+    }
+
+    private static void DeselectButtons()
+    {
+        if (EventSystem.current == null)
+            return;
+
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
