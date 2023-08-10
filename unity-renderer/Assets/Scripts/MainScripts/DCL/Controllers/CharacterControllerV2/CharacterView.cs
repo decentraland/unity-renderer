@@ -151,10 +151,21 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             //lastMovementReportTime = DCLTime.realtimeSinceStartup;
         }
 
+        private bool isRagdoll = false;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.N))
                 showDebug = !showDebug;
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (!isRagdoll)
+                    Ragdollize();
+                else
+                    DeRagdollize();
+            }
+
+            if (isRagdoll) return;
 
             characterController.radius = data.characterControllerRadius;
             characterController.skinWidth = characterController.radius * 0.1f; // its recommended that its 10% of the radius
@@ -167,6 +178,48 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             tpsCamera.m_Lens.FieldOfView = Mathf.MoveTowards(tpsCamera.m_Lens.FieldOfView, targetFov, fovSpeed * Time.deltaTime);
         }
 
+        private void DeRagdollize()
+        {
+            Physics.autoSimulation = false;
+            var cameraTarget = GameObject.Find("CharacterCameraTarget ");
+            var damp = cameraTarget.GetComponent<FollowWithDamping>();
+            damp.target = transform;
+
+            isRagdoll = false;
+            GetComponentInChildren<RagdollController>().DeRagdollize();
+            GetComponentInChildren<Animator>().enabled = true;
+            characterController.enabled = true;
+        }
+
+        private void Ragdollize()
+        {
+            Physics.autoSimulation = true;
+            var cameraTarget = GameObject.Find("CharacterCameraTarget ");
+            var damp = cameraTarget.GetComponent<FollowWithDamping>();
+            damp.target = RecursiveFindChild(transform, "Avatar_Neck");
+
+            isRagdoll = true;
+            GetComponentInChildren<Animator>().enabled = false;
+            characterController.enabled = false;
+            GetComponentInChildren<RagdollController>().Ragdollize();
+        }
+
+
+        Transform RecursiveFindChild(Transform parent, string childName)
+        {
+            foreach (Transform child in parent)
+            {
+                if(child.name == childName)
+                {
+                    return child;
+                }
+
+                Transform found = RecursiveFindChild(child, childName);
+                if (found != null)
+                    return found;
+            }
+            return null;
+        }
         private Vector3 Flat(Vector3 vector3)
         {
             vector3.y = 0;
