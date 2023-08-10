@@ -62,7 +62,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void OnEnable()
         {
             rotation.Activate();
-            ResetVirtualCameraToCharacter();
+            ResetVirtualCameraToPlayerCamera();
         }
 
         private void OnDisable()
@@ -78,7 +78,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             cameraPosition.Set(transform.position);
         }
 
-        private void ResetVirtualCameraToCharacter()
+        private void ResetVirtualCameraToPlayerCamera()
         {
             CinemachineHardLockToTarget body = virtualCamera.GetCinemachineComponent<CinemachineHardLockToTarget>();
             CinemachineSameAsFollowTarget composer = virtualCamera.GetCinemachineComponent<CinemachineSameAsFollowTarget>();

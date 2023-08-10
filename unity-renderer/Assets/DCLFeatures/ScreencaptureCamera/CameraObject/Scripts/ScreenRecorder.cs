@@ -10,12 +10,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private const float FRAME_SCALE = 0.87f;
 
         private readonly float targetAspectRatio;
-
         private readonly RectTransform canvasRectTransform;
-
-        // private readonly Texture2D finalTexture = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
-
-        private (float width, float height) spriteRect;
 
         public ScreenRecorder(RectTransform canvasRectTransform)
         {
@@ -102,9 +97,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             //=====---- Final
             Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscaleFactor);
 
-            // TODO(Vit): optimize this by removing intermediate texture creation. Read/Write bilinear of cropped frame
-            Texture2D rescaledScreenshot = DownscaleTexture(screenshotTexture, downscaledScreenWidth, downscaledScreenHeight);
-
             // Cropping 1920x1080 central part
             int cornerX = Mathf.RoundToInt((upscaledScreenWidth - upscaledFrameWidth) / 2f);
             int cornerY = Mathf.RoundToInt((upscaledScreenHeight - upscaledFrameHeight) / 2f);
@@ -115,33 +107,21 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             upscaledFrameTexture.SetPixels(pixels);
             upscaledFrameTexture.Apply();
 
-            // string path = Application.dataPath + "/_upscaledFrameTexture1.jpg";
-            // File.WriteAllBytes(path, upscaledFrameTexture.EncodeToJPG());
-            // Debug.Log($"Saved to {path}");
-
             Texture2D finalTexture = ResizeTo2K(upscaledFrameTexture);
-
-            //
-            // path = Application.dataPath + "/_FinalScreenshot1.jpg";
-            // File.WriteAllBytes(path, finalTexture.EncodeToJPG());
-            // Debug.Log($"Saved to {path}");
 
             return finalTexture;
         }
 
         private static Texture2D ResizeTo2K(Texture originalTexture)
         {
-            // Create a 2K RenderTexture
-            var rt = new RenderTexture(1920, 1080, 24);
-
-            // Set the active render texture to rt
+            var rt = new RenderTexture(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, 24);
             RenderTexture.active = rt;
 
             // Copy and scale the original texture into the RenderTexture
             Graphics.Blit(originalTexture, rt);
 
             // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(1920, 1080);
+            var resizedTexture = new Texture2D(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
 
             // Read the pixel data from the RenderTexture into the Texture2D
             resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
@@ -152,30 +132,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             rt.Release();
 
             return resizedTexture;
-        }
-
-        // nearest-neighbor interpolation
-        public static Texture2D DownscaleTexture(Texture2D original, int newWidth, int newHeight)
-        {
-            var downscaledTexture = new Texture2D(newWidth, newHeight, original.format, false);
-
-            Color32[] originalPixels = original.GetPixels32();
-            var newPixels = new Color32[newWidth * newHeight];
-
-            float ratioX = (float)original.width / newWidth;
-            float ratioY = (float)original.height / newHeight;
-
-            for (var i = 0; i < newPixels.Length; i++)
-            {
-                int x = Mathf.FloorToInt(i % newWidth * ratioX);
-                int y = Mathf.FloorToInt(i / newWidth * ratioY);
-                newPixels[i] = originalPixels[x + (y * original.width)];
-            }
-
-            downscaledTexture.SetPixels32(newPixels);
-            downscaledTexture.Apply();
-
-            return downscaledTexture;
         }
     }
 }
