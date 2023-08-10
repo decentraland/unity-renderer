@@ -5,6 +5,7 @@ using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace MainScripts.DCL.Controllers.CharacterControllerV2
 {
@@ -24,6 +25,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private static readonly int ANGLE_DIR = Animator.StringToHash("AngleDir");
         private static readonly int LONG_FALL = Animator.StringToHash("IsLongFall");
         private static readonly int STUNNED = Animator.StringToHash("IsStunned");
+        private static readonly int AFK = Animator.StringToHash("AFK");
 
         [SerializeField] private DefaultLocomotionData[] defaultLocomotion;
         [SerializeField] private CharacterControllerData data;
@@ -42,6 +44,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private FollowWithDamping cameraFollow;
         private Animation legacyAnimator;
+        private float lastAfkTime = 0;
+        private bool isAfk;
+        private float randomAFKTime;
 
         private void Awake()
         {
@@ -152,19 +157,40 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             }
 
             currentMovementBlend = Mathf.MoveTowards(currentMovementBlend, targetBlend, Time.deltaTime * data.movAnimBlendSpeed);
-
-            if (currentMovementBlend > 0.1f)
-                StopEmote();
-
             animator.SetFloat(MOVEMENT_BLEND, currentMovementBlend);
 
-            Quaternion transformRotation = transform.rotation;
+            if (currentMovementBlend > 0.1f)
+            {
+                StopEmote();
+                isAfk = false;
+                animator.ResetTrigger(AFK);
+            }
+            else
+            {
+                if (!isAfk)
+                    ResetAfkTimer();
 
+                isAfk = true;
+
+                if (Time.time - lastAfkTime > randomAFKTime)
+                {
+                    animator.SetTrigger(AFK);
+                    ResetAfkTimer();
+                }
+            }
+
+            Quaternion transformRotation = transform.rotation;
             animator.SetFloat(ANGLE, Quaternion.Angle(currentRotation, transformRotation));
             animator.SetFloat(ANGLE_DIR, Quaternion.Dot(currentRotation, transformRotation));
 
             currentRotation = Quaternion.RotateTowards(currentRotation, transformRotation, data.rotationSpeed * Time.deltaTime * (1 + (currentMovementBlend / 2f)));
             viewContainer.transform.rotation = currentRotation;
+        }
+
+        private void ResetAfkTimer()
+        {
+            lastAfkTime = Time.time;
+            randomAFKTime = Random.Range(8f, 12f);
         }
 
         private int GetMovementBlendId(Vector3 velocity, SpeedState speedState)
