@@ -253,7 +253,18 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 if (!isInstantiated)
                     InstantiateCameraObjects();
 
+                var body = virtualCamera.GetCinemachineComponent<CinemachineHardLockToTarget>();
+                body.m_Damping = 0;
+
+                var composer = virtualCamera.GetCinemachineComponent<CinemachineSameAsFollowTarget>();
+                composer.m_Damping = 0;
+
+                virtualCamera.Follow = null;
+                virtualCamera.LookAt = null;
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
                 virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+
                 cameraTarget.GetComponent<CharacterController>().enabled = false;
                 cameraTarget.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
                 cameraTarget.GetComponent<CharacterController>().enabled = true;
@@ -262,15 +273,27 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 virtualCamera.Follow = cameraTarget;
                 virtualCamera.LookAt = cameraTarget;
                 virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
-
+                screenshotCamera.GetComponent<CinemachineBrain>().ManualUpdate();
+                body.m_Damping = 1;
+                composer.m_Damping = 1;
                 playerName.Show();
             }
             else
             {
                 playerName.Hide();
                 // screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+                var body = virtualCamera.GetCinemachineComponent<CinemachineHardLockToTarget>();
+                body.m_Damping = 0;
 
+                var composer = virtualCamera.GetCinemachineComponent<CinemachineSameAsFollowTarget>();
+                composer.m_Damping = 0;
+
+                virtualCamera.Follow = null;
+                virtualCamera.LookAt = null;
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
                 virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+
                 cameraTarget.GetComponent<CharacterController>().enabled = false;
                 cameraTarget.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
                 cameraTarget.GetComponent<CharacterController>().enabled = true;
@@ -279,6 +302,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 virtualCamera.Follow = cameraTarget;
                 virtualCamera.LookAt = cameraTarget;
                 virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+
+                body.m_Damping = 1;
+                composer.m_Damping = 1;
+
+                screenshotCamera.GetComponent<CinemachineBrain>().ManualUpdate();
             }
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);

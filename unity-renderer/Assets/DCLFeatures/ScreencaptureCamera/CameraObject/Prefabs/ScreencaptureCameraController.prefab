@@ -50,7 +50,7 @@ MonoBehaviour:
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
   m_Priority: 0
-  m_StandbyUpdate: 2
+  m_StandbyUpdate: 0
   m_LookAt: {fileID: 5594725319748734033}
   m_Follow: {fileID: 5594725319748734033}
   m_Lens:
@@ -239,6 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a8fdd7fe1745beac581373ec12db95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
   characterController: {fileID: 0}
   cameraController: {fileID: 0}
   cameraPrefab: {fileID: 7813136116666180052, guid: dffcf881f8cb36a448628ae8e7331ff2,
