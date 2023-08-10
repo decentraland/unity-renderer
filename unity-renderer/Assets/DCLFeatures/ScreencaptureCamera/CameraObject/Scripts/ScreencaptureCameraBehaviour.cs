@@ -32,6 +32,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
 
         [Header("EXTERNAL DEPENDENCIES")]
+        [SerializeField] private Camera mainCamera;
         [SerializeField] internal DCLCharacterController characterController;
         [SerializeField] internal CameraController cameraController;
 
@@ -56,7 +57,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private bool isInstantiated;
         private ScreencaptureCameraHUDView screencaptureCameraHUDView;
         private CancellationTokenSource uploadPictureCancellationToken;
-        private Transform characterCameraTransform => cameraController.GetCamera().transform;
+        private Transform characterCameraTransform => mainCamera.transform; //cameraController.GetCamera().transform;
         private ICameraReelStorageService cameraReelStorageServiceLazyValue;
 
         private bool prevUiHiddenState;
@@ -132,6 +133,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerId = player.ownPlayer.Get().id;
                 UpdateStorageInfo();
             }
+
+            cameraTarget.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+            virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
         private void Update()
@@ -246,22 +250,35 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             if (activateScreenshotCamera)
             {
-                EnableScreenshotCamera();
-                playerName.Show();
+                if (!isInstantiated)
+                    InstantiateCameraObjects();
 
-                virtualCamera.transform.position = characterCameraTransform.position;
-                virtualCamera.transform.rotation = characterCameraTransform.rotation;
-                cameraTarget.position = characterCameraTransform.position;
-                cameraTarget.rotation = characterCameraTransform.rotation;
+                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+                cameraTarget.GetComponent<CharacterController>().enabled = false;
+                cameraTarget.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+                cameraTarget.GetComponent<CharacterController>().enabled = true;
+
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+                virtualCamera.Follow = cameraTarget;
+                virtualCamera.LookAt = cameraTarget;
+                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+
+                playerName.Show();
             }
             else
             {
                 playerName.Hide();
+                // screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
 
-                cameraTarget.position = characterCameraTransform.position;
-                cameraTarget.rotation = characterCameraTransform.rotation;
-                virtualCamera.transform.position = characterCameraTransform.position;
-                virtualCamera.transform.rotation = characterCameraTransform.rotation;
+                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
+                cameraTarget.GetComponent<CharacterController>().enabled = false;
+                cameraTarget.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+                cameraTarget.GetComponent<CharacterController>().enabled = true;
+
+                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
+                virtualCamera.Follow = cameraTarget;
+                virtualCamera.LookAt = cameraTarget;
+                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
             }
 
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
@@ -301,14 +318,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             userMovementKeysBlocked.Set(activateScreenshotCamera);
         }
 
-        private void EnableScreenshotCamera()
-        {
-            if (!isInstantiated)
-                InstantiateCameraObjects();
-            else
-                screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-        }
-
         internal void InstantiateCameraObjects()
         {
             CreateHUD();
@@ -340,7 +349,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void CreateScreencaptureCamera()
         {
-            screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation);
+            screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, this.transform);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
             screenshotCamera.GetComponent<ScreencaptureCameraMovement>().SetTarget(cameraTarget);
         }
