@@ -8,15 +8,12 @@ namespace DCLServices.CameraReelService
     public class CameraReelNetworkStorageService : ICameraReelStorageService
     {
         private readonly ICameraReelNetworkClient networkClient;
-        private readonly ServiceLocator serviceLocator;
 
         private ICameraReelAnalyticsService analyticsServiceLazy;
-        private ICameraReelAnalyticsService analyticsService => analyticsServiceLazy ??= serviceLocator.Get<ICameraReelAnalyticsService>();
 
-        public CameraReelNetworkStorageService(ICameraReelNetworkClient networkClient, ServiceLocator serviceLocator)
+        public CameraReelNetworkStorageService(ICameraReelNetworkClient networkClient)
         {
             this.networkClient = networkClient;
-            this.serviceLocator = serviceLocator;
         }
 
         public void Initialize() { }
@@ -41,7 +38,6 @@ namespace DCLServices.CameraReelService
         public async UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
         {
             CameraReelUploadResponse response = await networkClient.UploadScreenshotRequest(image.EncodeToJPG(), metadata, ct);
-            analyticsService.SendScreenshotUploaded(metadata.userAddress, metadata.realm, metadata.scene.name, metadata.GetLocalizedDateTime().ToString("MMMM dd, yyyy"), metadata.visiblePeople.Length);
             return (response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages));
         }
     }

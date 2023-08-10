@@ -2,7 +2,6 @@
 using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

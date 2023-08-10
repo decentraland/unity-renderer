@@ -1,12 +1,11 @@
 ﻿using DCL;
-using System;
 using System.Collections.Generic;
 
 namespace DCLServices.CameraReelService
 {
     public class CameraReelAnalyticsService : ICameraReelAnalyticsService
     {
-        private const string PLAYER_UPLOAD_SCREENSHOT = "player_upload_screenshot";
+        private const string TAKE_PHOTO = "player_take_photo";
         private const string TWITTER_SHARE = "player_share_twitter";
         private const string OPEN_WEARABLE_MARKETPLACE = "open_wearable_in_marketplace";
         private const string JUMP_IN = "player_jump_in";
@@ -18,18 +17,17 @@ namespace DCLServices.CameraReelService
             this.analytics = analytics;
         }
 
-        public void SendScreenshotUploaded(string metadataUserAddress, string metadataRealm, string metadataScene, string metadataDateTime, int visiblePeopleLength)
+        public void TakePhoto(string userId, string location, int visiblePeopleLength, string source)
         {
             var data = new Dictionary<string, string>
             {
-                { "userAddress", metadataUserAddress },
-                { "realm", metadataRealm },
-                { "scene", metadataScene },
-                { "localDateTime", metadataDateTime },
+                { "player", userId },
+                { "location", location },
                 { "visiblePeopleAmount", visiblePeopleLength.ToString() },
+                { "source", source },
             };
 
-            analytics.SendAnalytic(PLAYER_UPLOAD_SCREENSHOT, data);
+            analytics.SendAnalytic(TAKE_PHOTO, data);
         }
 
         public void ShareOnTwitter()
@@ -66,7 +64,7 @@ namespace DCLServices.CameraReelService
 
     public interface ICameraReelAnalyticsService : IService
     {
-        void SendScreenshotUploaded(string metadataUserAddress, string metadataRealm, string metadataScene, string metadataDateTime, int visiblePeopleLength);
+        void TakePhoto(string userId, string location, int visiblePeopleLength, string source);
 
         void ShareOnTwitter();
 

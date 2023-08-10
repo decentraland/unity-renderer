@@ -24,7 +24,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CloseButtonClicked += DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered += DisableScreenshotCameraMode;
 
-            view.TakeScreenshotButtonClicked += screencaptureCameraBehaviour.CaptureScreenshot;
+            view.TakeScreenshotButtonClicked += CaptureScreenshot;
             input.TakeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
@@ -38,7 +38,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CloseButtonClicked -= DisableScreenshotCameraMode;
             input.CloseWindowAction.OnTriggered -= DisableScreenshotCameraMode;
 
-            view.TakeScreenshotButtonClicked -= screencaptureCameraBehaviour.CaptureScreenshot;
+            view.TakeScreenshotButtonClicked -= CaptureScreenshot;
             input.TakeScreenshotAction.OnTriggered -= CaptureScreenshot;
 
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
@@ -59,7 +59,10 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         }
 
         private void CaptureScreenshot(DCLAction_Trigger _) =>
-            screencaptureCameraBehaviour.CaptureScreenshot();
+            screencaptureCameraBehaviour.CaptureScreenshot("Shortcut");
+
+        private void CaptureScreenshot() =>
+            screencaptureCameraBehaviour.CaptureScreenshot("Button");
 
         private void DisableScreenshotCameraMode() =>
             screencaptureCameraBehaviour.ToggleScreenshotCamera(isEnabled: false);

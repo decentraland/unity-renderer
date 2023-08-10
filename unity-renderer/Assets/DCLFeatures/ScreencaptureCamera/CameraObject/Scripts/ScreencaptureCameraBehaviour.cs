@@ -89,6 +89,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
+        private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
+
         private DataStore_Player player => DataStore.i.player;
 
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
@@ -169,13 +171,13 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             isScreencaptureCameraActive = isScreenshotCameraActive;
         }
 
-        public void CaptureScreenshot()
+        public void CaptureScreenshot(string source)
         {
             StopAllCoroutines();
-            StartCoroutine(CaptureScreenshotAtTheFrameEnd());
+            StartCoroutine(CaptureScreenshotAtTheFrameEnd(source));
         }
 
-        private IEnumerator CaptureScreenshotAtTheFrameEnd()
+        private IEnumerator CaptureScreenshotAtTheFrameEnd(string source)
         {
             if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) yield break;
 
@@ -191,9 +193,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
             uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, uploadPictureCancellationToken.Token).Forget();
+            UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
 
-            async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, CancellationToken cancellationToken)
+            async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, string source, CancellationToken cancellationToken)
             {
                 try
                 {
@@ -203,6 +205,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                     storageStatus = cameraReelStorageStatus;
                     CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
                     CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+
+                    analytics.TakePhoto(metadata.userAddress,
+                        $"{metadata.scene.location.x},{metadata.scene.location.y}",
+                        metadata.visiblePeople.Length,
+                        source);
                 }
                 catch (OperationCanceledException) { }
                 catch (ScreenshotLimitReachedException) { DataStore.i.notifications.DefaultErrorNotification.Set(STORAGE_LIMIT_REACHED_MESSAGE, true); }
