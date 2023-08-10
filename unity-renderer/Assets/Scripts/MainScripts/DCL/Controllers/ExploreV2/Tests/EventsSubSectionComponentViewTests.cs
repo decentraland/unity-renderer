@@ -88,7 +88,7 @@ public class EventsSubSectionComponentViewTests
     [TestCase(true)]
     [TestCase(false)]
     public void SetUpcomingEventsAsLoadingCorrectly(bool isVisible) =>
-        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.eventsGrid.gameObject, eventsSubSectionComponent.eventsLoading, eventsSubSectionComponent.eventsNoDataText.gameObject);
+        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.eventsGrid.gameObject, eventsSubSectionComponent.eventsLoading, eventsSubSectionComponent.eventsNoDataContainer.gameObject);
 
     private void SetEventsAsLoadingCorrectly(bool isVisible, GameObject events, GameObject loadingBar, GameObject NoDataText = null)
     {
@@ -160,6 +160,6 @@ public class EventsSubSectionComponentViewTests
         Assert.AreEqual(2, eventsSubSectionComponent.eventsGrid.instantiatedItems.Count, "The number of set events does not match.");
         Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[0]), "The event 1 is not contained in the places grid");
         Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[1]), "The event 2 is not contained in the places grid");
-        Assert.IsFalse(eventsSubSectionComponent.eventsNoDataText.gameObject.activeSelf, "The upcomingEventsNoDataText should be visible.");
+        Assert.IsFalse(eventsSubSectionComponent.eventsNoDataContainer.activeSelf, "The upcomingEventsNoDataText should be visible.");
     }
 }

@@ -8,6 +8,7 @@ using TMPro;
 using UIComponents.Scripts.Components.RangeSlider;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectionComponentView
@@ -41,7 +42,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     [SerializeField] internal GameObject featuredEventsLoading;
     [SerializeField] internal GridContainerComponentView eventsGrid;
     [SerializeField] internal GameObject eventsLoading;
-    [SerializeField] internal TMP_Text eventsNoDataText;
+    [SerializeField] internal GameObject eventsNoDataContainer;
     [SerializeField] internal GameObject showMoreEventsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreEventsButton;
     [SerializeField] internal GameObject guestGoingToPanel;
@@ -215,7 +216,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     {
         SetFeaturedEventsGroupAsLoading();
         SetEventsGroupAsLoading(isVisible: true, eventsCanvas, eventsLoading);
-        eventsNoDataText.gameObject.SetActive(false);
+        eventsNoDataContainer.SetActive(false);
     }
 
     internal void SetFeaturedEventsGroupAsLoading()
@@ -249,12 +250,14 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         scrollView.verticalNormalizedPosition = 1;
 
     public void SetEvents(List<EventCardComponentModel> events) =>
-        SetEvents(events, eventsGrid, eventsCanvas, eventCardsPool, eventsLoading, eventsNoDataText);
+        SetEvents(events, eventsGrid, eventsCanvas, eventCardsPool, eventsLoading);
 
-    private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Canvas gridCanvas, Pool eventCardsPool, GameObject loadingBar, TMP_Text eventsNoDataText)
+    private void SetEvents(List<EventCardComponentModel> events, GridContainerComponentView eventsGrid, Canvas gridCanvas, Pool eventCardsPool, GameObject loadingBar)
     {
         SetEventsGroupAsLoading(false, gridCanvas, loadingBar);
-        eventsNoDataText.gameObject.SetActive(events.Count == 0);
+        eventsNoDataContainer.gameObject.SetActive(events.Count == 0);
+        eventsNoDataContainer.gameObject.SetActive(events.Count == 0 && !(SelectedEventType == EventsType.WantToGo && isGuest));
+        guestGoingToPanel.SetActive(SelectedEventType == EventsType.WantToGo && isGuest);
 
         eventCardsPool.ReleaseAll();
 

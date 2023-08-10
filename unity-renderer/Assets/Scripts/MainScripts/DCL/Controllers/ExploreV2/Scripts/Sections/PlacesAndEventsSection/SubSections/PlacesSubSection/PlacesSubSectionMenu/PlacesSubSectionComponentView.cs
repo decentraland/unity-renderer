@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
@@ -32,7 +33,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal ScrollRect scrollView;
     [SerializeField] internal GridContainerComponentView places;
     [SerializeField] internal GameObject placesLoading;
-    [SerializeField] internal TMP_Text placesNoDataText;
+    [SerializeField] internal GameObject placesNoDataContainer;
     [SerializeField] internal Color[] friendColors = null;
     [SerializeField] internal GameObject showMorePlacesButtonContainer;
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
@@ -220,7 +221,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public void SetPlaces(List<PlaceCardComponentModel> places)
     {
         SetPlacesAsLoading(false);
-        placesNoDataText.gameObject.SetActive(places.Count == 0);
+        placesNoDataContainer.SetActive(places.Count == 0);
 
         placeCardsPool.ReleaseAll();
 
@@ -239,7 +240,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         placesLoading.SetActive(isVisible);
 
         if (isVisible)
-            placesNoDataText.gameObject.SetActive(false);
+            placesNoDataContainer.SetActive(false);
     }
 
     public void AddPlaces(List<PlaceCardComponentModel> places) =>
