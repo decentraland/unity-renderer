@@ -17,7 +17,7 @@ namespace DCLServices.CameraReelService
         private string imageBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/images";
         private string userBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/users";
 
-        private bool useProd => !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
+        private bool useProd => false;//!Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
 
         public CameraReelWebRequestClient(IWebRequestController webRequestController, KernelConfig kernelConfig)
         {
