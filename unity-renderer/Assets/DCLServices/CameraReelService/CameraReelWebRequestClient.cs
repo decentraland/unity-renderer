@@ -1,9 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
+using DCLServices.EnvironmentProvider;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -13,35 +13,23 @@ namespace DCLServices.CameraReelService
     public class CameraReelWebRequestClient : ICameraReelNetworkClient
     {
         private readonly IWebRequestController webRequestController;
-        private readonly KernelConfig kernelConfig;
+        private readonly IEnvironmentProviderService environmentProviderService;
 
         private readonly string imageBaseURL;
         private readonly string userBaseURL;
 
-        public CameraReelWebRequestClient(IWebRequestController webRequestController, KernelConfig kernelConfig)
+        public CameraReelWebRequestClient(IWebRequestController webRequestController,
+            IEnvironmentProviderService environmentProviderService)
         {
             this.webRequestController = webRequestController;
-            this.kernelConfig = kernelConfig;
+            this.environmentProviderService = environmentProviderService;
 
             imageBaseURL = $"https://camera-reel-service.decentraland.{(IsProdEnv() ? "org" : "zone")}/api/images";
             userBaseURL = $"https://camera-reel-service.decentraland.{(IsProdEnv() ? "org" : "zone")}/api/users";
         }
 
-        private bool IsProdEnv()
-        {
-            string url = Application.absoluteURL;
-
-            if (string.IsNullOrEmpty(url))
-                return !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
-
-            const string PATTERN = @"play\.decentraland\.([a-z0-9]+)\/";
-            Match match = Regex.Match(url, PATTERN);
-
-            if (match.Success)
-                return match.Groups[1].Value.Equals("org");
-
-            return !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
-        }
+        private bool IsProdEnv() =>
+            environmentProviderService.IsProd();
 
         public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfoRequest(string userAddress, CancellationToken ct)
         {

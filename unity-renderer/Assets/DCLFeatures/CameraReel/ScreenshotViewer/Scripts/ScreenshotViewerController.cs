@@ -4,6 +4,7 @@ using DCL.Browser;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using DCLServices.EnvironmentProvider;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly IClipboard clipboard;
         private readonly IBrowserBridge browserBridge;
         private readonly ICameraReelAnalyticsService analytics;
+        private readonly IEnvironmentProviderService environmentProviderService;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
         private CancellationTokenSource pictureOwnerCancellationToken;
@@ -34,7 +36,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             IUserProfileBridge userProfileBridge,
             IClipboard clipboard,
             IBrowserBridge browserBridge,
-            ICameraReelAnalyticsService analytics)
+            ICameraReelAnalyticsService analytics,
+            IEnvironmentProviderService environmentProviderService)
         {
             this.view = view;
             this.model = model;
@@ -44,6 +47,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             this.clipboard = clipboard;
             this.browserBridge = browserBridge;
             this.analytics = analytics;
+            this.environmentProviderService = environmentProviderService;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
@@ -153,7 +157,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void CopyScreenshotLink()
         {
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+            var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{currentScreenshot.id}";
 
             clipboard.WriteText(url);
             browserBridge.OpenUrl(url);
@@ -163,7 +167,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private void ShareOnTwitter()
         {
             var description = "Check out what I'm doing in Decentraland right now and join me!";
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+            var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{currentScreenshot.id}";
             var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
             clipboard.WriteText(twitterUrl);

@@ -6,6 +6,7 @@ using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using DCLServices.EnvironmentProvider;
 using DCLServices.WearablesCatalogService;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,7 +48,7 @@ namespace DCLPlugins.CameraReelPlugin
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
                         storageService, new UserProfileWebInterfaceBridge(),
                         Clipboard.Create(), new WebInterfaceBrowserBridge(),
-                        analytics);
+                        analytics, Environment.i.serviceLocator.Get<IEnvironmentProviderService>());
                 }, analytics);
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
@@ -78,7 +79,8 @@ namespace DCLPlugins.CameraReelPlugin
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<ICameraReelStorageService>(),
                 DataStore.i,
-                Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>());
+                Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>(),
+                Environment.i.serviceLocator.Get<IEnvironmentProviderService>());
             thumbnailContextMenuControllers.Add(controller);
         }
 

@@ -4,6 +4,7 @@ using DCL.Browser;
 using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using DCLServices.EnvironmentProvider;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -24,7 +25,8 @@ namespace DCLFeatures.CameraReel.Gallery
             IBrowserBridge browser,
             ICameraReelStorageService storageService,
             DataStore dataStore,
-            ICameraReelAnalyticsService analytics)
+            ICameraReelAnalyticsService analytics,
+            IEnvironmentProviderService environmentProviderService)
         {
             this.view = view;
 
@@ -32,7 +34,7 @@ namespace DCLFeatures.CameraReel.Gallery
 
             view.OnCopyPictureLinkRequested += () =>
             {
-                var url = $"https://dcl.gg/reels?image={picture.id}";
+                var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{picture.id}";
                 clipboard.WriteText(url);
                 analytics.Share("Explorer", "Copy");
             };
@@ -46,7 +48,7 @@ namespace DCLFeatures.CameraReel.Gallery
             view.OnShareToTwitterRequested += () =>
             {
                 var description = "Check out what I'm doing in Decentraland right now and join me!";
-                var url = $"https://dcl.gg/reels?image={picture.id}";
+                var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{picture.id}";
                 var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
                 clipboard.WriteText(twitterUrl);
