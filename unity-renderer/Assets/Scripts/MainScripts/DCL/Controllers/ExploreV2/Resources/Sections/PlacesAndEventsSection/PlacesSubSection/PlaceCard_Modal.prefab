@@ -1957,6 +1957,7 @@ MonoBehaviour:
   placeAuthorOnIdleText: {fileID: 5973660104893763518}
   placeAuthorOnFocusText: {fileID: 0}
   userVisitsText: {fileID: 266788373866334767}
+  userRatingIcon: {fileID: 0}
   userRatingText: {fileID: 7346527876232315114}
   numberOfUsersContainer: {fileID: 0}
   numberOfUsersText: {fileID: 5062491981139491547}
@@ -1964,6 +1965,7 @@ MonoBehaviour:
   modalBackgroundButton: {fileID: 9072824849294888897}
   closeCardButton: {fileID: 3161639932052748500}
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
+  backgroundButton: {fileID: 0}
   infoButton: {fileID: 0}
   upvoteButton: {fileID: 5269386997293387104}
   downvoteButton: {fileID: 8908485774956192950}
@@ -1986,6 +1988,7 @@ MonoBehaviour:
   numberOfFavoritesText: {fileID: 1529301503537620030}
   updatedAtText: {fileID: 108838746798031366}
   defaultPicture: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61, type: 3}
+  isPlaceCardModal: 1
   model:
     placePictureSprite: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
       type: 3}
@@ -1995,14 +1998,14 @@ MonoBehaviour:
     placeDescription: This is a test description...
     placeAuthor: Author Name
     numberOfUsers: 152
+    coords: {x: 0, y: 0}
+    parcels: []
+    isFavorite: 1
     userVisits: 1090
     isUpvote: 0
     isDownvote: 0
     totalVotes: 66
     userRating: 0.3
-    coords: {x: 0, y: 0}
-    parcels: []
-    isFavorite: 1
     numberOfFavorites: 1585
     deployedAt: 
     isPOI: 0
@@ -4610,7 +4613,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 800332875265169508}
   m_HandleRect: {fileID: 8293180069293189189}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6360,6 +6363,11 @@ PrefabInstance:
         type: 3}
       propertyPath: model.placeUUID
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2649852299917316514, guid: 633e570ad7b45486690b28e43c776f5e,
+        type: 3}
+      propertyPath: noFavoriteFillColor.a
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2718410100305772495, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}

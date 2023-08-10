@@ -174,7 +174,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
-    [SerializeField] internal bool isEventCardModal = false;
+    [SerializeField] internal bool isEventCardModal;
     [SerializeField] internal EventCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;

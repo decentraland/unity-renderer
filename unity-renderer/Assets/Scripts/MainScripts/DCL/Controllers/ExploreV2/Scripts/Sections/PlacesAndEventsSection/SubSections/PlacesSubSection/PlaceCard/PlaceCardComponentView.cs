@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
@@ -157,6 +158,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeAuthorOnIdleText;
     [SerializeField] internal TMP_Text placeAuthorOnFocusText;
     [SerializeField] internal TMP_Text userVisitsText;
+    [SerializeField] internal GameObject userRatingIcon;
     [SerializeField] internal TMP_Text userRatingText;
     [SerializeField] internal RectTransform numberOfUsersContainer;
     [SerializeField] internal TMP_Text numberOfUsersText;
@@ -189,6 +191,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
+    [SerializeField] internal bool isPlaceCardModal;
     [SerializeField] internal PlaceCardComponentModel model;
 
     public FriendsHandler friendsHandler { get; set; }
@@ -557,17 +560,24 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         model.userRating = userRating;
 
         if (userRatingText != null)
-            userRatingText.text = $"{(userRating * 100):0}%";
+        {
+            userRatingText.text = userRating > 0 ? $"{(userRating * 100):0}%" : "-%";
+            userRatingText.gameObject.SetActive(isPlaceCardModal || (!isPlaceCardModal && userRating > 0));
+        }
+
+        if (userRatingIcon != null)
+            userRatingIcon.SetActive(isPlaceCardModal || (!isPlaceCardModal && userRating > 0));
     }
 
     public void SetNumberOfUsers(int newNumberOfUsers)
     {
         model.numberOfUsers = newNumberOfUsers;
 
-        if (numberOfUsersText == null)
-            return;
+        if (numberOfUsersText != null)
+            numberOfUsersText.text = FormatNumber(newNumberOfUsers);
 
-        numberOfUsersText.text = FormatNumber(newNumberOfUsers);
+        if (numberOfUsersContainer != null)
+            numberOfUsersContainer.gameObject.SetActive(newNumberOfUsers > 0);
     }
 
     public void SetCoords(Vector2Int newCoords)
