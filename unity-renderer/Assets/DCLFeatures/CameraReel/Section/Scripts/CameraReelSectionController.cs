@@ -74,8 +74,10 @@ namespace DCLFeatures.CameraReel.Section
             if (!isUpdating)
                 FetchScreenshots(0);
 
-            if (isVisible)
-                analytics.OpenCameraReel(dataStore.HUDs.cameraReelOpenSource.Get());
+            string source = dataStore.HUDs.cameraReelOpenSource.Get();
+
+            if (isVisible && !string.IsNullOrEmpty(source))
+                analytics.OpenCameraReel(source);
         }
 
         private void OnScreenshotAdded(bool isFirst, CameraReelResponse screenshot)
