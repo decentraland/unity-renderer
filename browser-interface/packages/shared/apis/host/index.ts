@@ -18,6 +18,7 @@ import { registerPlayersServiceServerImplementation } from './Players'
 import { registerPortableExperiencesServiceServerImplementation } from './PortableExperiences'
 import { registerSignedFetchServiceServerImplementation } from './SignedFetch'
 import { registerSceneServiceServerImplementation } from './Scene'
+import { registerCommsApiServiceServerImplementation } from './CommsAPI'
 
 export async function registerServices(serverPort: RpcServerPort<PortContext>) {
   registerDevToolsServiceServerImplementation(serverPort)
@@ -37,4 +38,5 @@ export async function registerServices(serverPort: RpcServerPort<PortContext>) {
   registerPortableExperiencesServiceServerImplementation(serverPort)
   registerSignedFetchServiceServerImplementation(serverPort)
   registerSceneServiceServerImplementation(serverPort)
+  registerCommsApiServiceServerImplementation(serverPort)
 }

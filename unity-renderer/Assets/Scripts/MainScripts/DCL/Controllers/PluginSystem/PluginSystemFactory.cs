@@ -3,7 +3,6 @@ using DCL.Backpack;
 using DCL.Social.Chat;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
-using DCL.Controllers.LoadingScreenV2;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -20,6 +19,7 @@ using DCL.Social.Chat;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
+using DCLPlugins.CameraReelPlugin;
 using DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
@@ -104,6 +104,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<BackpackEditorV2Plugin>(() => new BackpackEditorV2Plugin(), "backpack_editor_v2");
             // TODO: remove the v1 backpack editor when v2 is confirmed to be completely functional
             pluginSystem.RegisterWithFlag<AvatarEditorHUDPlugin>(() => new AvatarEditorHUDPlugin(), "backpack_editor_v1");
+            pluginSystem.RegisterWithFlag<CameraReelPlugin>(() => new CameraReelPlugin(), "camera_reel");
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
             pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");

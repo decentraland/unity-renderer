@@ -454,7 +454,7 @@ namespace DCL.Helpers
 
             public static T GetFromJsonArray(string jsonArray)
             {
-                string newJson = $"{{ \"value\": {jsonArray}}}";
+                var newJson = $"{{ \"value\": {jsonArray}}}";
                 return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
@@ -684,7 +684,7 @@ namespace DCL.Helpers
         {
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
-            return $"{dtDateTime.Hour}:{dtDateTime.Minute.ToString("D2")}";
+            return $"{dtDateTime.Hour}:{dtDateTime.Minute:D2}";
         }
 
         public static DateTime UnixToDateTimeWithTime(ulong unixTimeStampMilliseconds)
