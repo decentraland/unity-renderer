@@ -46,71 +46,69 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
 
-        internal ScreenRecorder screenRecorderValue;
-        internal bool? isGuestLazyValue;
+        internal Camera screenshotCamera;
         internal BooleanVariable isScreencaptureCameraActive;
 
-        internal Camera screenshotCamera;
+        internal ScreenRecorder screenRecorderLazyValue;
+        internal bool? isGuestLazyValue;
         internal IAvatarsLODController avatarsLODControllerLazyValue;
-        private float lastScreenshotTime = -Mathf.Infinity;
 
         private bool isInstantiated;
-        private ScreencaptureCameraHUDView screencaptureCameraHUDView;
+        private float lastScreenshotTime = -Mathf.Infinity;
+        private CameraReelStorageStatus storageStatus;
+        private string playerId;
+        private PlayerName playerName;
         private CancellationTokenSource uploadPictureCancellationToken;
+
+        // UI
+        private Canvas enableCameraButton;
+        private ScreencaptureCameraHUDView screencaptureCameraHUDView;
+        private ScreencaptureCameraHUDController screencaptureCameraHUDController;
+
+        // Lazy Values
+        private CinemachineBrain characterCinemachineBrainLazyValue;
         private ICameraReelStorageService cameraReelStorageServiceLazyValue;
 
+        // Cached states
         private bool prevUiHiddenState;
         private bool prevMouseLockState;
         private bool prevMouseButtonCursorLockMode;
+        private Camera prevSkyboxCamera;
 
+        // DataStore Variables
         private BooleanVariable allUIHidden;
         private BooleanVariable cameraModeInputLocked;
         private BaseVariable<bool> cameraLeftMouseButtonCursorLock;
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
-        private ScreencaptureCameraHUDController screencaptureCameraHUDController;
-        private Canvas enableCameraButton;
-
-        private string playerId;
-        private CameraReelStorageStatus storageStatus;
-        private Camera prevSkyboxCamera;
-        private PlayerName playerName;
-        private CinemachineBrain characterCinemachineBrainLazyValue;
-        private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
-
-        private Transform characterCameraTransform => mainCamera.transform; //cameraController.GetCamera().transform;
-        private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
-        private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
-        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-        private BaseVariable<Quaternion> cameraRotation => DataStore.i.camera.rotation;
-
-        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
-
-        private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
-
-        private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
-
-        private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
-
-        private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
-
-        private DataStore_Player player => DataStore.i.player;
 
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
-        private ScreenRecorder screenRecorder
+        private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
+        private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
+
+        private Transform characterCameraTransform => mainCamera.transform;
+        private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
+        private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
+
+        private DataStore_Player player => DataStore.i.player;
+        private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
+
+        private ScreenRecorder screenRecorderLazy
         {
             get
             {
                 if (isInstantiated)
-                    return screenRecorderValue;
+                    return screenRecorderLazyValue;
 
                 InstantiateCameraObjects();
 
-                return screenRecorderValue;
+                return screenRecorderLazyValue;
             }
         }
+
+        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
         private void Awake()
         {
@@ -138,16 +136,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerId = player.ownPlayer.Get().id;
                 UpdateStorageInfo();
             }
-        }
-
-        private void Update()
-        {
-            if (!isScreencaptureCameraActive.Get()) return;
-
-            cameraForward.Set(screenshotCamera.transform.forward);
-            cameraRight.Set(screenshotCamera.transform.right);
-            cameraRotation.Set(screenshotCamera.transform.rotation);
-            cameraPosition.Set(screenshotCamera.transform.position);
         }
 
         internal void OnEnable()
@@ -187,7 +175,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
             yield return waitEndOfFrameYield;
 
-            Texture2D screenshot = screenRecorder.CaptureScreenshot();
+            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot();
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
@@ -247,30 +235,37 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
-            cameraController.SetCameraEnabledState(!activateScreenshotCamera);
-            characterController.SetEnabled(!activateScreenshotCamera);
-            characterCinemachineBrain.enabled = !activateScreenshotCamera;
-
             if (activateScreenshotCamera)
             {
                 if (!isInstantiated)
                     InstantiateCameraObjects();
 
+                prevSkyboxCamera = SkyboxController.i.SkyboxCamera.CurrentCamera;
+                SkyboxController.i.AssignMainOverlayCamera(screenshotCamera.transform);
                 playerName.Show();
             }
             else
-                playerName.Hide();
-
-            screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : mainCamera);
-            screencaptureCameraHUDController.SetVisibility(activateScreenshotCamera, storageStatus.HasFreeSpace);
-
-            if (activateScreenshotCamera)
             {
-                prevSkyboxCamera = SkyboxController.i.SkyboxCamera.CurrentCamera;
-                SkyboxController.i.AssignMainOverlayCamera(screenshotCamera.transform);
+                SkyboxController.i.AssignMainOverlayCamera(prevSkyboxCamera.transform);
+                playerName.Hide();
             }
-            else { SkyboxController.i.AssignMainOverlayCamera(prevSkyboxCamera.transform); }
+
+            SetActivePlayerCamera(isActive: !activateScreenshotCamera);
+            SetActiveScreenshotCamera(isActive: activateScreenshotCamera);
+            avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : mainCamera);
+        }
+
+        private void SetActiveScreenshotCamera(bool isActive)
+        {
+            screenshotCamera.gameObject.SetActive(isActive);
+            screencaptureCameraHUDController.SetVisibility(isActive, storageStatus.HasFreeSpace);
+        }
+
+        private void SetActivePlayerCamera(bool isActive)
+        {
+            cameraController.SetCameraEnabledState(isActive);
+            characterController.SetEnabled(isActive);
+            characterCinemachineBrain.enabled = isActive;
         }
 
         private void ToggleExternalSystems(bool activateScreenshotCamera)
@@ -304,7 +299,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void InstantiateCameraObjects()
         {
             CreateHUD();
-            screenRecorderValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
+            screenRecorderLazyValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
             CreateScreencaptureCamera();
             CreatePlayerNameUI();
 
@@ -337,7 +332,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, transform);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
-            var cameraMovement = screenshotCamera.GetComponent<ScreencaptureCameraMovement>();
+            ScreencaptureCameraMovement cameraMovement = screenshotCamera.GetComponent<ScreencaptureCameraMovement>();
             cameraMovement.Initialize(cameraTarget, virtualCamera, characterCameraTransform);
             cameraMovement.enabled = true;
         }

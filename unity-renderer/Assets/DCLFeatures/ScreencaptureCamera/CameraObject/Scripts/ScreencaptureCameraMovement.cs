@@ -1,4 +1,5 @@
 ﻿using Cinemachine;
+using DCL;
 using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
@@ -26,6 +27,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private CinemachineBrain cinemachineBrain;
         private Transform characterCamera;
 
+        private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
+        private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
+        private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+        private BaseVariable<Quaternion> cameraRotation => DataStore.i.camera.rotation;
+
         public void Initialize(CharacterController cameraTarget, CinemachineVirtualCamera virtualCamera, Transform characterCameraTransform)
         {
             target = cameraTarget;
@@ -49,6 +55,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             rotation.Rotate(target.transform, Time.deltaTime, rotationSpeed, rotationDamping, maxRotationPerFrame);
             translation.Translate(target, translationSpeed, MAX_DISTANCE_FROM_PLAYER, Time.deltaTime);
+
+            UpdateDataStore();
         }
 
         private void OnEnable()
@@ -60,6 +68,14 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void OnDisable()
         {
             rotation.Deactivate();
+        }
+
+        private void UpdateDataStore()
+        {
+            cameraForward.Set(transform.forward);
+            cameraRight.Set(transform.right);
+            cameraRotation.Set(transform.rotation);
+            cameraPosition.Set(transform.position);
         }
 
         private void ResetVirtualCameraToCharacter()

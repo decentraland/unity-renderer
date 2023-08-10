@@ -58,7 +58,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             screencaptureCameraBehaviour.SetExternalDependencies(allUIHidden, cameraModeInputLocked, cameraLeftMouseButtonCursorLock,
                 cameraBlocked, featureKeyTriggersBlocked, userMovementKeysBlocked, isScreenshotCameraActive);
 
-            screencaptureCameraBehaviour.screenRecorderValue = new ScreenRecorderDummy();
+            screencaptureCameraBehaviour.screenRecorderLazyValue = new ScreenRecorderDummy();
             screencaptureCameraBehaviour.InstantiateCameraObjects();
 
             screencaptureCameraBehaviour.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
