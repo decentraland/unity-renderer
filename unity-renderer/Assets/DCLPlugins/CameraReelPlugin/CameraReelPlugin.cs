@@ -35,6 +35,7 @@ namespace DCLPlugins.CameraReelPlugin
             ICameraReelStorageService storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
             DataStore dataStore = DataStore.i;
             CameraReelModel cameraReelModel = CameraReelModel.i;
+            ICameraReelAnalyticsService analytics = Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
             reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
                 dataStore,
@@ -46,8 +47,8 @@ namespace DCLPlugins.CameraReelPlugin
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
                         storageService, new UserProfileWebInterfaceBridge(),
                         Clipboard.Create(), new WebInterfaceBrowserBridge(),
-                        Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>());
-                });
+                        analytics);
+                }, analytics);
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
             ScreenshotVisiblePersonView.Instances.OnAdded += OnVisiblePersonAdded;

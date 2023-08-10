@@ -20,6 +20,7 @@ namespace DCLFeatures.CameraReel.Section
         private readonly DataStore dataStore;
         private readonly ICameraReelStorageService storageService;
         private readonly Func<ScreenshotViewerController> screenshotViewerControllerFactory;
+        private readonly ICameraReelAnalyticsService analytics;
 
         private ScreenshotViewerController screenshotViewerController;
         private bool isUpdating;
@@ -32,13 +33,15 @@ namespace DCLFeatures.CameraReel.Section
             DataStore dataStore,
             ICameraReelStorageService storageService,
             CameraReelModel cameraReelModel,
-            Func<ScreenshotViewerController> screenshotViewerControllerFactory)
+            Func<ScreenshotViewerController> screenshotViewerControllerFactory,
+            ICameraReelAnalyticsService analytics)
         {
             this.sectionView = sectionView;
             this.galleryStorageView = galleryStorageView;
             this.dataStore = dataStore;
             this.storageService = storageService;
             this.screenshotViewerControllerFactory = screenshotViewerControllerFactory;
+            this.analytics = analytics;
             this.galleryView = galleryView;
             this.cameraReelModel = cameraReelModel;
 
@@ -70,6 +73,9 @@ namespace DCLFeatures.CameraReel.Section
 
             if (!isUpdating)
                 FetchScreenshots(0);
+
+            if (isVisible)
+                analytics.OpenCameraReel(dataStore.HUDs.cameraReelOpenSource.Get());
         }
 
         private void OnScreenshotAdded(bool isFirst, CameraReelResponse screenshot)

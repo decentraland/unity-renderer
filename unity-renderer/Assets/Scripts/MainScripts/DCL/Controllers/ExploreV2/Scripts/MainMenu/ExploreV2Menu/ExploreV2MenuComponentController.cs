@@ -346,8 +346,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        if(currentOpenSection == ExploreSection.Quest)
+        if (currentOpenSection == ExploreSection.Quest)
             view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        if (currentOpenSection == ExploreSection.CameraReel)
+            DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
         ChangeVisibilityVarForSwitchedSections();
 
