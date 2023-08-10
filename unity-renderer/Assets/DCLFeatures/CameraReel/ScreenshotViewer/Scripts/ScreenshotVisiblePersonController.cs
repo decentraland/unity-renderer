@@ -53,7 +53,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private void OnOpenWearableMarketplaceRequested(NFTIconComponentModel nftModel)
         {
-            analytics.OpenWearableInMarketplace(SCREEN_SOURCE);
+            analytics.OpenWearableInMarketplace("Explorer");
             browserBridge.OpenUrl(nftModel.marketplaceURI);
         }
 

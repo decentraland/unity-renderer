@@ -6,7 +6,6 @@ namespace DCLServices.CameraReelService
     public class CameraReelAnalyticsService : ICameraReelAnalyticsService
     {
         private const string TAKE_PHOTO = "take_photo";
-        private const string OPEN_WEARABLE_MARKETPLACE = "open_wearable_in_marketplace";
 
         private readonly IAnalytics analytics;
 
@@ -39,17 +38,18 @@ namespace DCLServices.CameraReelService
         {
             var data = new Dictionary<string, string>
             {
-                {"source", source},
+                { "source", source },
+                { "type", "Wearable" },
             };
 
-            analytics.SendAnalytic(OPEN_WEARABLE_MARKETPLACE, data);
+            analytics.SendAnalytic("photo_to_marketplace", data);
         }
 
         public void JumpIn(string source)
         {
             var data = new Dictionary<string, string>
             {
-                {"source", source},
+                { "source", source },
             };
 
             analytics.SendAnalytic("photo_jump_to", data);
@@ -59,7 +59,7 @@ namespace DCLServices.CameraReelService
         {
             var data = new Dictionary<string, string>
             {
-                {"source", source},
+                { "source", source },
             };
 
             analytics.SendAnalytic("photo_download", data);
