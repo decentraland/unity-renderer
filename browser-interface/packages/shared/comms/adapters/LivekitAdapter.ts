@@ -7,7 +7,8 @@ import {
   Participant,
   RemoteParticipant,
   Room,
-  RoomEvent
+  RoomEvent,
+  Track
 } from 'livekit-client'
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -149,10 +150,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
     for (const [sid, participant] of participants) {
       if (participant.videoTracks.size > 0) {
-        const participantTracks = new Map<string, MediaStream>()
+        const participantTracks = new Map<string, Track>()
         for (const [videoSid, track] of participant.videoTracks) {
           if (track.videoTrack?.mediaStream) {
-            participantTracks.set(videoSid, track.videoTrack.mediaStream)
+            participantTracks.set(videoSid, track.videoTrack)
           }
         }
         result.set(sid, { identity: participant.identity, videoTracks: participantTracks })
