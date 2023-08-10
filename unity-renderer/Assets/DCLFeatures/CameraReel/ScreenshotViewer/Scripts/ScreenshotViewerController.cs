@@ -179,7 +179,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             void TrackToAnalyticsThenCloseView()
             {
-                analytics.JumpIn(SCREEN_SOURCE);
+                analytics.JumpIn("Explorer");
                 view.Hide();
                 dataStore.exploreV2.isOpen.Set(false);
             }

@@ -7,7 +7,6 @@ namespace DCLServices.CameraReelService
     {
         private const string TAKE_PHOTO = "take_photo";
         private const string OPEN_WEARABLE_MARKETPLACE = "open_wearable_in_marketplace";
-        private const string JUMP_IN = "jump_in";
 
         private readonly IAnalytics analytics;
 
@@ -53,7 +52,7 @@ namespace DCLServices.CameraReelService
                 {"source", source},
             };
 
-            analytics.SendAnalytic(JUMP_IN, data);
+            analytics.SendAnalytic("photo_jump_to", data);
         }
 
         public void DownloadPhoto(string source)
