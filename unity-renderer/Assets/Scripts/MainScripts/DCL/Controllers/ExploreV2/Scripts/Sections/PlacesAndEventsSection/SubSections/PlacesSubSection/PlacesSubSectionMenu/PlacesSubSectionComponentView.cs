@@ -4,12 +4,10 @@ using DCL.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
 {
