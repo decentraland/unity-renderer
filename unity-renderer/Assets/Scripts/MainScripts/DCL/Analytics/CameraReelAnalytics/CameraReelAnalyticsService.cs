@@ -66,6 +66,13 @@ namespace DCLServices.CameraReelService
             analytics.SendAnalytic("photo_download", data);
         }
 
+        public void DeletePhoto()
+        {
+            var data = new Dictionary<string, string>();
+
+            analytics.SendAnalytic("photo_delete", data);
+        }
+
         public void Dispose() { }
 
         public void Initialize() { }
@@ -84,5 +91,7 @@ namespace DCLServices.CameraReelService
         void JumpIn(string source);
 
         void DownloadPhoto(string source);
+
+        void DeletePhoto();
     }
 }

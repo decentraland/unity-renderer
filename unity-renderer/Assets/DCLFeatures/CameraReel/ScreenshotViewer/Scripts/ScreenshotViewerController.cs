@@ -118,6 +118,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                     CameraReelStorageStatus storage = await storageService.DeleteScreenshot(screenshot.id, cancellationToken);
                     model.RemoveScreenshot(screenshot);
                     model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+                    analytics.DeletePhoto();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
