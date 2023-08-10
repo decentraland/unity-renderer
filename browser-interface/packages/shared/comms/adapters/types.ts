@@ -1,5 +1,6 @@
 import { Emitter } from 'mitt'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { Track } from 'livekit-client'
 
 export interface MinimumCommunicationsAdapter {
   /**
@@ -63,5 +64,5 @@ export type AdapterMessageEvent = {
 
 export type ActiveVideoStreams = {
   identity: string
-  videoTracks: Map<string, MediaStream>
+  videoTracks: Map<string, Track>
 }
