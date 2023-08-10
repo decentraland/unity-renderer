@@ -118,15 +118,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1192833813443749521}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5a3be416a59462192832802690df404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterController: {fileID: 0}
   translationSpeed: 5
-  maxTranslationPerFrame: 7
-  translationDamping: 5
   translationInputSchema:
     xAxis: {fileID: 11400000, guid: abf07b6aa547cdb4cb90fcab32a79cf1, type: 2}
     yAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}
@@ -135,7 +132,6 @@ MonoBehaviour:
   rotationSpeed: 50
   maxRotationPerFrame: 10
   rotationDamping: 0
-  rollSpeed: 50
   rotationInputSchema:
     cameraXAxis: {fileID: 11400000, guid: 2ae727ffde932b04d8b4180993b81f3d, type: 2}
     cameraYAxis: {fileID: 11400000, guid: 485f3af6b1a262e48890cf2c75da6b1e, type: 2}

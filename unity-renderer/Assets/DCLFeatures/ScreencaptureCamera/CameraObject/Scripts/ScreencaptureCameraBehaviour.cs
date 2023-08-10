@@ -40,6 +40,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
         [SerializeField] internal Canvas enableCameraButtonPrefab;
         [SerializeField] private PlayerName playerNamePrefab;
+
         [SerializeField] private CharacterController cameraTarget;
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
@@ -75,6 +76,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private CameraReelStorageStatus storageStatus;
         private Camera prevSkyboxCamera;
         private PlayerName playerName;
+        private CinemachineBrain characterCinemachineBrainLazyValue;
+        private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
+
         private Transform characterCameraTransform => mainCamera.transform; //cameraController.GetCamera().transform;
         private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
         private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
@@ -114,7 +118,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
         }
 
-        // TODO(Vitaly): Remove this logic when feature flag will be enalbed
+        // TODO(Vitaly): Remove this logic when feature flag will be enabled
         private IEnumerator Start()
         {
             enabled = false;
@@ -134,9 +138,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerId = player.ownPlayer.Get().id;
                 UpdateStorageInfo();
             }
-
-            cameraTarget.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-            virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
         }
 
         private void Update()
@@ -241,86 +242,27 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 analytics.OpenCamera(source);
         }
 
-        private async void UpdateStorageInfo()
-        {
-            storageStatus = await cameraReelStorageService.GetUserGalleryStorageInfo(playerId);
-        }
-
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
             ToggleScreenshotCamera("Shortcut", !isScreencaptureCameraActive.Get());
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
             cameraController.SetCameraEnabledState(!activateScreenshotCamera);
-
             characterController.SetEnabled(!activateScreenshotCamera);
-
-            cameraController.GetCamera().GetComponent<CinemachineBrain>().enabled = !activateScreenshotCamera;
+            characterCinemachineBrain.enabled = !activateScreenshotCamera;
 
             if (activateScreenshotCamera)
             {
                 if (!isInstantiated)
                     InstantiateCameraObjects();
 
-                CinemachineHardLockToTarget body = virtualCamera.GetCinemachineComponent<CinemachineHardLockToTarget>();
-                body.m_Damping = 0;
-
-                CinemachineSameAsFollowTarget composer = virtualCamera.GetCinemachineComponent<CinemachineSameAsFollowTarget>();
-                composer.m_Damping = 0;
-
-                virtualCamera.Follow = null;
-                virtualCamera.LookAt = null;
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-
-                cameraTarget.GetComponent<CharacterController>().enabled = false;
-                cameraTarget.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                cameraTarget.GetComponent<CharacterController>().enabled = true;
-
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                virtualCamera.Follow = cameraTarget.transform;
-                virtualCamera.LookAt = cameraTarget.transform;
-                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
-                screenshotCamera.GetComponent<CinemachineBrain>().ManualUpdate();
-                body.m_Damping = 1;
-                composer.m_Damping = 1;
                 playerName.Show();
             }
             else
-            {
                 playerName.Hide();
 
-                // screenshotCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                CinemachineHardLockToTarget body = virtualCamera.GetCinemachineComponent<CinemachineHardLockToTarget>();
-                body.m_Damping = 0;
-
-                CinemachineSameAsFollowTarget composer = virtualCamera.GetCinemachineComponent<CinemachineSameAsFollowTarget>();
-                composer.m_Damping = 0;
-
-                virtualCamera.Follow = null;
-                virtualCamera.LookAt = null;
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-
-                cameraTarget.GetComponent<CharacterController>().enabled = false;
-                cameraTarget.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                cameraTarget.GetComponent<CharacterController>().enabled = true;
-
-                virtualCamera.transform.SetPositionAndRotation(characterCameraTransform.position, characterCameraTransform.rotation);
-                virtualCamera.Follow = cameraTarget.transform;
-                virtualCamera.LookAt = cameraTarget.transform;
-                virtualCamera.PreviousStateIsValid = false; // This forces the next camera update to snap
-
-                body.m_Damping = 1;
-                composer.m_Damping = 1;
-
-                screenshotCamera.GetComponent<CinemachineBrain>().ManualUpdate();
-            }
-
             screenshotCamera.gameObject.SetActive(activateScreenshotCamera);
-            avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : cameraController.GetCamera());
+            avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : mainCamera);
             screencaptureCameraHUDController.SetVisibility(activateScreenshotCamera, storageStatus.HasFreeSpace);
 
             if (activateScreenshotCamera)
@@ -356,6 +298,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             userMovementKeysBlocked.Set(activateScreenshotCamera);
         }
 
+        private async void UpdateStorageInfo() =>
+            storageStatus = await cameraReelStorageService.GetUserGalleryStorageInfo(playerId);
+
         internal void InstantiateCameraObjects()
         {
             CreateHUD();
@@ -381,8 +326,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void CreateHUD()
         {
             screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
+
             screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
                 screencaptureCameraBehaviour: this, inputActionsSchema, DataStore.i);
+
             screencaptureCameraHUDController.Initialize();
         }
 
@@ -390,7 +337,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, transform);
             screenshotCamera.gameObject.layer = characterController.gameObject.layer;
-            screenshotCamera.GetComponent<ScreencaptureCameraMovement>().SetTarget(cameraTarget);
+            var cameraMovement = screenshotCamera.GetComponent<ScreencaptureCameraMovement>();
+            cameraMovement.Initialize(cameraTarget, virtualCamera, characterCameraTransform);
+            cameraMovement.enabled = true;
         }
     }
 }
