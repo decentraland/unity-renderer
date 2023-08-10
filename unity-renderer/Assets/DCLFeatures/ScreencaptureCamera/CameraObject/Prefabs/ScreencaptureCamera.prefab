@@ -132,8 +132,8 @@ MonoBehaviour:
     yAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}
     upAction: {fileID: 11400000, guid: 0315b943c1d516449bfdb07463c3a3d4, type: 2}
     downAction: {fileID: 11400000, guid: 9da538e6dbdadbd4db8e3fd1c339706f, type: 2}
-  rotationSpeed: 50
-  maxRotationPerFrame: 5
+  rotationSpeed: 100
+  maxRotationPerFrame: 10
   rotationDamping: 0
   rollSpeed: 50
   rotationInputSchema:
