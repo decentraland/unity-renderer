@@ -23,6 +23,11 @@ public interface IPlaceCardComponentView
     Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
+    /// Event that will be triggered when the background button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onBackgroundClick { get; }
+
+    /// <summary>
     /// Set the place picture directly from a sprite.
     /// </summary>
     /// <param name="sprite">Place picture (sprite).</param>
@@ -159,6 +164,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField] internal ButtonComponentView backgroundButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView upvoteButton;
     [SerializeField] internal ButtonComponentView downvoteButton;
@@ -192,6 +198,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
     public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
+    public Button.ButtonClickedEvent onBackgroundClick => backgroundButton != null ? backgroundButton.onClick : new Button.ButtonClickedEvent();
 
     public event Action<string, bool> OnFavoriteChanged;
 

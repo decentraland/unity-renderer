@@ -24,6 +24,8 @@ public static class PlacesCardsConfigurator
 
         placeCard.onInfoClick.RemoveAllListeners();
         placeCard.onInfoClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
+        placeCard.onBackgroundClick.RemoveAllListeners();
+        placeCard.onBackgroundClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
         placeCard.onJumpInClick.RemoveAllListeners();
         placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.placeInfo));
         placeCard.OnVoteChanged -= OnVoteChanged;

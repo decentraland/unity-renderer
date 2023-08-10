@@ -17,6 +17,11 @@ public interface IEventCardComponentView
     Button.ButtonClickedEvent onInfoClick { get; }
 
     /// <summary>
+    /// Event that will be triggered when the background button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onBackgroundClick { get; }
+
+    /// <summary>
     /// Event that will be triggered when the subscribe event button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onSubscribeClick { get; }
@@ -153,6 +158,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField] internal ButtonComponentView backgroundButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
@@ -173,6 +179,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onBackgroundClick => backgroundButton?.onClick;
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 

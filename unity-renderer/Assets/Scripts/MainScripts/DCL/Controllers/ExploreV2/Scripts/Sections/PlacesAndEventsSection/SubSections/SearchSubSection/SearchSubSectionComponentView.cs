@@ -227,10 +227,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
     {
         view.onInfoClick.RemoveAllListeners();
+        view.onBackgroundClick.RemoveAllListeners();
         view.onSubscribeClick.RemoveAllListeners();
         view.onUnsubscribeClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
         view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onBackgroundClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
         view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
         view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
@@ -239,10 +241,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     private void ConfigurePlaceCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
     {
         view.onInfoClick.RemoveAllListeners();
+        view.onBackgroundClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
         view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
         view.OnVoteChanged -= ViewOnVoteChanged;
         view.onInfoClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onBackgroundClick.AddListener(()=>OnPlaceInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
         view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
         view.OnVoteChanged += ViewOnVoteChanged;
