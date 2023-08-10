@@ -25,7 +25,7 @@ public interface IEventsAPIController
 
     UniTask RemoveParticipation(string eventId);
 
-    UniTask GetCategories(Action<List<CategoryFromAPIModel>> OnSuccess, Action<string> OnFail);
+    UniTask GetCategories(Action<List<CategoryFromAPIModel>> onSuccess, Action<string> onFail);
 }
 
 [ExcludeFromCodeCoverage]
@@ -82,10 +82,10 @@ public class EventsAPIController : IEventsAPIController
         await DCL.Environment.i.platform.webRequest.DeleteAsync(URL_PARTICIPATE_EVENT.Replace("{event_id}", eventId), isSigned: true);
     }
 
-    public async UniTask GetCategories(Action<List<CategoryFromAPIModel>> OnSuccess, Action<string> OnFail)
+    public async UniTask GetCategories(Action<List<CategoryFromAPIModel>> onSuccess, Action<string> onFail)
     {
         UnityWebRequest result = await DCL.Environment.i.platform.webRequest.GetAsync(URL_GET_CATEGORIES);
         CategoryListFromAPIModel categoriesListFromAPIModel = Utils.SafeFromJson<CategoryListFromAPIModel>(result.downloadHandler.text);
-        OnSuccess?.Invoke(categoriesListFromAPIModel.data);
+        onSuccess?.Invoke(categoriesListFromAPIModel.data);
     }
 }

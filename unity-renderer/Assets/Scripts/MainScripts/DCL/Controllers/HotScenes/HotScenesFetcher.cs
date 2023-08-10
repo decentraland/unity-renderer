@@ -51,10 +51,10 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
         public void SetUpdateMode(IHotScenesFetcher.UpdateMode mode)
         {
-            if (mode is IHotScenesFetcher.UpdateMode.BACKGROUND or IHotScenesFetcher.UpdateMode.FOREGROUND)
-                updateInterval = mode == IHotScenesFetcher.UpdateMode.BACKGROUND ? backgroundUpdateInterval : foregroundUpdateInterval;
-            else
+            if (mode is IHotScenesFetcher.UpdateMode.IMMEDIATELY_ONCE)
                 updateInterval = 0;
+            else
+                updateInterval = mode == IHotScenesFetcher.UpdateMode.BACKGROUND ? backgroundUpdateInterval : foregroundUpdateInterval;
         }
 
         private async UniTaskVoid UpdateLoop(CancellationToken ct)
@@ -71,6 +71,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
                     scenes.Value = await hotScenesController.Ref.GetHotScenesListAsync(ct);
 
+                    // We set back `updateInterval` to BACKGROUND after IMMEDIATELY_ONCE
                     if (updateInterval == 0)
                         updateInterval = backgroundUpdateInterval;
                 }

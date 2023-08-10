@@ -22,7 +22,7 @@ namespace DCLServices.PlacesAPIService
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
         UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
-        UniTask<List<string>> GetPointOfInterests(CancellationToken ct);
+        UniTask<List<string>> GetPointsOfInterestCoords(CancellationToken ct);
     }
 
     public class PlacesAPIClient: IPlacesAPIClient
@@ -159,10 +159,10 @@ namespace DCLServices.PlacesAPIService
                 throw new Exception($"Error fetching place info:\n{result.error}");
         }
 
-        public async UniTask<List<string>> GetPointOfInterests(CancellationToken ct)
+        public async UniTask<List<string>> GetPointsOfInterestCoords(CancellationToken ct)
         {
             UnityWebRequest result = await webRequestController.PostAsync(POI_URL, "", isSigned: false, cancellationToken: ct);
-            var response = Utils.SafeFromJson<PointOfInterestAPIResponse>(result.downloadHandler.text);
+            var response = Utils.SafeFromJson<PointsOfInterestCoordsAPIResponse>(result.downloadHandler.text);
 
             if (response == null)
                 throw new Exception($"Error parsing get POIs response:\n{result.downloadHandler.text}");

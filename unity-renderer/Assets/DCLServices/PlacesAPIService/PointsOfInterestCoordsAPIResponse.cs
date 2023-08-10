@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DCLServices.PlacesAPIService
 {
     [Serializable]
-    public class PointOfInterestAPIResponse
+    public class PointsOfInterestCoordsAPIResponse
     {
         public List<string> data;
     }

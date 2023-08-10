@@ -80,7 +80,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
-        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
+        view.OnFavoriteClicked -= View_OnFavoritesClicked;
+        this.view.OnVoteChanged -= View_OnVoteChanged;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
         view.OnFilterSorterChanged -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
@@ -136,7 +137,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         try
         {
-            allPointOfInterest = await placesAPIService.GetPointOfInterests(ct);
+            allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(ct);
             if (allPointOfInterest != null)
                 view.SetPOICoords(allPointOfInterest.ToList());
 

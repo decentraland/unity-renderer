@@ -109,7 +109,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal void PlacesAndEventsVisibleChanged(bool current, bool _)
     {
         if (current && hotScenesFetcher.Ref != null)
-            hotScenesFetcher.Ref.SetUpdateMode(IHotScenesFetcher.UpdateMode.IMMEDIATELY);
+            hotScenesFetcher.Ref.SetUpdateMode(IHotScenesFetcher.UpdateMode.IMMEDIATELY_ONCE);
 
         view.EnableSearchBar(dataStore.featureFlags.flags.Get().IsFeatureEnabled("search_in_places"));
         view.SetActive(current);

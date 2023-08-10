@@ -167,14 +167,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         return eventsFromAPI
               .Where(e =>
-                   (frequencyFilter == ALL_FILTER_ID ||
-                    (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
-                        e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
-                        e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                   (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
-                   IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
-                         .Take(takeAllResults ? eventsFromAPI.Count : availableUISlots)
-                         .ToList();
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
+              .Take(takeAllResults ? eventsFromAPI.Count : availableUISlots)
+              .ToList();
     }
 
     internal List<EventFromAPIModel> FilterFeaturedEvents(
@@ -185,13 +182,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         float highTimeFilter = TIME_MAX_VALUE)
     {
         List<EventFromAPIModel> eventsFiltered = eventsFromAPI
-                                                .Where(e => e.highlighted &&
-                                                            (frequencyFilter == ALL_FILTER_ID ||
-                                                             (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
-                                                                 e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
-                                                                 e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                                                            (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
-                                                            IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
+                                                .Where(e =>
+                                                     e.highlighted &&
+                                                     FrequencyFilterQuery(e, frequencyFilter) &&
+                                                     CategoryFilterQuery(e, categoryFilter) &&
+                                                     TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
                                                 .ToList();
 
         if (eventsFiltered.Count == 0 && showDefaultsIfNoData)
@@ -207,13 +202,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         float highTimeFilter = TIME_MAX_VALUE)
     {
         return eventsFromAPI
-              .Where(e => e.trending &&
-                          (frequencyFilter == ALL_FILTER_ID ||
-                           (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
-                               e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
-                               e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
-                          IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
+              .Where(e =>
+                   e.trending &&
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
               .ToList();
     }
 
@@ -224,15 +217,25 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         float highTimeFilter = TIME_MAX_VALUE)
     {
         return eventsFromAPI
-              .Where(e => e.attending &&
-                          (frequencyFilter == ALL_FILTER_ID ||
-                           (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
-                               e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
-                               e.duration <= TimeSpan.FromDays(1).TotalMilliseconds)) &&
-                          (categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter)) &&
-                          IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter))
+              .Where(e =>
+                   e.attending &&
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
               .ToList();
     }
+
+    private static bool FrequencyFilterQuery(EventFromAPIModel e, string frequencyFilter) =>
+        frequencyFilter == ALL_FILTER_ID ||
+        (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+            e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+            e.duration <= TimeSpan.FromDays(1).TotalMilliseconds);
+
+    private static bool CategoryFilterQuery(EventFromAPIModel e, string categoryFilter) =>
+        categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter);
+
+    private static bool TimeFilterQuery(EventFromAPIModel e, float lowTimeFilter, float highTimeFilter) =>
+        IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter);
 
     public void ShowMoreEvents()
     {
@@ -313,7 +316,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void RequestAndLoadCategories()
     {
         eventsAPIApiController.GetCategories(
-            OnSuccess: categoryList =>
+            onSuccess: categoryList =>
             {
                 List<CategoryFromAPIModel> categoriesInUse = new ();
                 foreach (CategoryFromAPIModel category in categoryList)
@@ -330,7 +333,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
                 view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(categoriesInUse));
             },
-            OnFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
+            onFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
     }
 
     private static bool IsTimeInRange(string dateTime, float lowTimeValue, float highTimeValue)

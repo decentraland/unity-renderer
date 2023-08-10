@@ -56,29 +56,36 @@ public static class EventsCardsConfigurator
         cardModel.isSubscribed = false;
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
-
-        cardModel.numberOfUsers = 0;
-        if (hotScenesFetcher.Ref.ScenesInfo != null)
-        {
-            bool sceneFound = false;
-            foreach (var hotSceneInfo in hotScenesFetcher.Ref.ScenesInfo.Value)
-            {
-                foreach (Vector2Int hotSceneParcel in hotSceneInfo.parcels)
-                {
-                    if (hotSceneParcel == cardModel.coords)
-                    {
-                        cardModel.numberOfUsers = hotSceneInfo.usersTotalCount;
-                        sceneFound = true;
-                        break;
-                    }
-                }
-
-                if (sceneFound)
-                    break;
-            }
-        }
+        cardModel.numberOfUsers = GetNumberOfUsersInCoords(cardModel.coords);
 
         return cardModel;
+    }
+
+    private static int GetNumberOfUsersInCoords(Vector2Int coords)
+    {
+        var numberOfUsers = 0;
+
+        if (hotScenesFetcher.Ref.ScenesInfo == null)
+            return numberOfUsers;
+
+        var sceneFound = false;
+        foreach (var hotSceneInfo in hotScenesFetcher.Ref.ScenesInfo.Value)
+        {
+            foreach (Vector2Int hotSceneParcel in hotSceneInfo.parcels)
+            {
+                if (hotSceneParcel != coords)
+                    continue;
+
+                numberOfUsers = hotSceneInfo.usersTotalCount;
+                sceneFound = true;
+                break;
+            }
+
+            if (sceneFound)
+                break;
+        }
+
+        return numberOfUsers;
     }
 
     internal static string FormatEventDate(EventFromAPIModel eventFromAPI)

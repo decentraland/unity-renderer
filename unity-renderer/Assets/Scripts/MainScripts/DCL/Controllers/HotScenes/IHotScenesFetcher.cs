@@ -10,7 +10,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
         {
             FOREGROUND,
             BACKGROUND,
-            IMMEDIATELY,
+            IMMEDIATELY_ONCE,
         }
 
         IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> ScenesInfo { get; }

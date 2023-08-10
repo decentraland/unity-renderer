@@ -30,7 +30,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<bool> IsFavoritePlace(Vector2Int coords, CancellationToken ct, bool renewCache = false);
         UniTask<bool> IsFavoritePlace(string placeUUID, CancellationToken ct, bool renewCache = false);
 
-        UniTask<IReadOnlyList<string>> GetPointOfInterests(CancellationToken ct, bool renewCache = false);
+        UniTask<IReadOnlyList<string>> GetPointsOfInterestCoords(CancellationToken ct, bool renewCache = false);
     }
 
     public class PlacesAPIService : IPlacesAPIService, ILambdaServiceConsumer<IHotScenesController.PlacesAPIResponse>
@@ -40,7 +40,7 @@ namespace DCLServices.PlacesAPIService
         internal readonly Dictionary<string, LambdaResponsePagePointer<IHotScenesController.PlacesAPIResponse>> activePlacesPagePointers = new ();
         internal readonly Dictionary<string, IHotScenesController.PlaceInfo> placesById = new ();
         internal readonly Dictionary<Vector2Int, IHotScenesController.PlaceInfo> placesByCoords = new ();
-        private List<string> allPointOfInterest;
+        private List<string> pointsOfInterestCoords;
 
         //Favorites
         internal bool composedFavoritesDirty = true;
@@ -241,12 +241,12 @@ namespace DCLServices.PlacesAPIService
             return (response, true);
         }
 
-        public async UniTask<IReadOnlyList<string>> GetPointOfInterests(CancellationToken ct, bool renewCache = false)
+        public async UniTask<IReadOnlyList<string>> GetPointsOfInterestCoords(CancellationToken ct, bool renewCache = false)
         {
-            if (renewCache || allPointOfInterest == null)
-                allPointOfInterest = await client.GetPointOfInterests(ct);
+            if (renewCache || pointsOfInterestCoords == null)
+                pointsOfInterestCoords = await client.GetPointsOfInterestCoords(ct);
 
-            return allPointOfInterest;
+            return pointsOfInterestCoords;
         }
 
         public void Dispose()

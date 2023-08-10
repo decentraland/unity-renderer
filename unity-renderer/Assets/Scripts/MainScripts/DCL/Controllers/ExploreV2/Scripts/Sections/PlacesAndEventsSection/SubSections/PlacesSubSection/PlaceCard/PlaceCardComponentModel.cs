@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
-using UnityEngine.Serialization;
 
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
@@ -13,14 +12,14 @@ public class PlaceCardComponentModel : BaseComponentModel
     public string placeDescription;
     public string placeAuthor;
     public int numberOfUsers;
+    public Vector2Int coords;
+    public Vector2Int[] parcels;
+    public bool isFavorite;
     public int userVisits;
     public bool isUpvote;
     public bool isDownvote;
     public int totalVotes;
     public float userRating;
-    public Vector2Int coords;
-    public Vector2Int[] parcels;
-    public bool isFavorite;
     public int numberOfFavorites;
     public string deployedAt;
     public bool isPOI;

@@ -10,6 +10,8 @@ public static class PlacesAndEventsCardsFactory
 {
     internal const string EVENT_CARD_MODAL_ID = "EventCard_Modal";
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
+    internal const string ALL_ID = "all";
+    internal const string ALL_TEXT = "All";
 
     /// <summary>
     /// Creates and configures a pool for cards.
@@ -88,9 +90,9 @@ public static class PlacesAndEventsCardsFactory
                     numberOfUsers = place.user_count,
                     coords = Utils.ConvertStringToVector(place.base_position),
                     parcels = place.Positions,
+                    isFavorite = place.user_favorite,
                     userVisits = place.user_visits,
                     userRating = place.like_rate,
-                    isFavorite = place.user_favorite,
                     placeInfo = place,
                     isUpvote = place.user_like,
                     isDownvote = place.user_dislike,
@@ -126,10 +128,10 @@ public static class PlacesAndEventsCardsFactory
                     placeAuthor = place.contact_name,
                     numberOfUsers = place.user_count,
                     coords = Utils.ConvertStringToVector(place.base_position),
-                    userVisits = place.user_visits,
-                    userRating = place.like_rate,
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
+                    userVisits = place.user_visits,
+                    userRating = place.like_rate,
                     placeInfo = place,
                     isUpvote = place.user_like,
                     isDownvote = place.user_dislike,
@@ -156,10 +158,10 @@ public static class PlacesAndEventsCardsFactory
                     placeAuthor = place.contact_name,
                     numberOfUsers = place.user_count,
                     coords = Utils.ConvertStringToVector(place.base_position),
-                    userVisits = place.user_visits,
-                    userRating = place.like_rate,
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
+                    userVisits = place.user_visits,
+                    userRating = place.like_rate,
                     placeInfo = place,
                     isUpvote = place.user_like,
                     isDownvote = place.user_dislike,
@@ -174,15 +176,17 @@ public static class PlacesAndEventsCardsFactory
 
     public static List<ToggleComponentModel> ConvertCategoriesResponseToToggleModel(List<CategoryFromAPIModel> categories)
     {
-        List<ToggleComponentModel> modelsList = new List<ToggleComponentModel>();
-        modelsList.Add(new ToggleComponentModel
+        List<ToggleComponentModel> modelsList = new List<ToggleComponentModel>
         {
-            id = "all",
-            text = "All",
-            isOn = true,
-            isTextActive = true,
-            changeTextColorOnSelect = true,
-        });
+            new()
+            {
+                id = ALL_ID,
+                text = ALL_TEXT,
+                isOn = true,
+                isTextActive = true,
+                changeTextColorOnSelect = true,
+            },
+        };
 
         foreach (var category in categories)
         {

@@ -83,9 +83,8 @@ public interface ICarouselComponentView
     /// <summary>
     /// Extract all items out of the carousel.
     /// </summary>
-    /// <param name="intoParent">Put the extracted items under a specific parent.</param>
     /// <returns>The list of extracted items.</returns>
-    List<BaseComponentView> ExtractItems(Transform intoParent = null);
+    List<BaseComponentView> ExtractItems();
 
     /// <summary>
     /// Remove all existing items from the carousel.
@@ -333,13 +332,13 @@ public class CarouselComponentView : BaseComponentView, ICarouselComponentView, 
 
     public List<BaseComponentView> GetItems() { return instantiatedItems; }
 
-    public List<BaseComponentView> ExtractItems(Transform intoParent = null)
+    public List<BaseComponentView> ExtractItems()
     {
         List<BaseComponentView> extractedItems = new List<BaseComponentView>();
         foreach (BaseComponentView item in instantiatedItems)
         {
             if (item != null)
-                item.transform.SetParent(intoParent);
+                item.transform.SetParent(null);
 
             extractedItems.Add(item);
         }
