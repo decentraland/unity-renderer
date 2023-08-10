@@ -3,6 +3,7 @@ using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -14,15 +15,32 @@ namespace DCLServices.CameraReelService
         private readonly IWebRequestController webRequestController;
         private readonly KernelConfig kernelConfig;
 
-        private string imageBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/images";
-        private string userBaseURL => $"https://camera-reel-service.decentraland.{(useProd ? "org" : "zone")}/api/users";
-
-        private bool useProd => false;//!Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
+        private readonly string imageBaseURL;
+        private readonly string userBaseURL;
 
         public CameraReelWebRequestClient(IWebRequestController webRequestController, KernelConfig kernelConfig)
         {
             this.webRequestController = webRequestController;
             this.kernelConfig = kernelConfig;
+
+            imageBaseURL = $"https://camera-reel-service.decentraland.{(IsProdEnv() ? "org" : "zone")}/api/images";
+            userBaseURL = $"https://camera-reel-service.decentraland.{(IsProdEnv() ? "org" : "zone")}/api/users";
+        }
+
+        private bool IsProdEnv()
+        {
+            string url = Application.absoluteURL;
+
+            if (string.IsNullOrEmpty(url))
+                return !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
+
+            const string PATTERN = @"play\.decentraland\.([a-z0-9]+)\/";
+            Match match = Regex.Match(url, PATTERN);
+
+            if (match.Success)
+                return match.Groups[1].Value.Equals("org");
+
+            return !Application.isEditor && !Debug.isDebugBuild && kernelConfig.Get().network == "mainnet";
         }
 
         public async UniTask<CameraReelStorageResponse> GetUserGalleryStorageInfoRequest(string userAddress, CancellationToken ct)
