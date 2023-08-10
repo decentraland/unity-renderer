@@ -36,7 +36,11 @@ namespace DCLFeatures.CameraReel.Gallery
                 clipboard.WriteText(url);
             };
 
-            view.OnDownloadRequested += () => browser.OpenUrl(picture.url);
+            view.OnDownloadRequested += () =>
+            {
+                browser.OpenUrl(picture.url);
+                analytics.DownloadPhoto("Explorer");
+            };
 
             view.OnShareToTwitterRequested += () =>
             {

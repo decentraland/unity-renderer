@@ -1,14 +1,15 @@
 ﻿using DCL;
+using System;
 using System.Collections.Generic;
 
 namespace DCLServices.CameraReelService
 {
     public class CameraReelAnalyticsService : ICameraReelAnalyticsService
     {
-        private const string TAKE_PHOTO = "player_take_photo";
-        private const string TWITTER_SHARE = "player_share_twitter";
+        private const string TAKE_PHOTO = "take_photo";
+        private const string TWITTER_SHARE = "share_twitter";
         private const string OPEN_WEARABLE_MARKETPLACE = "open_wearable_in_marketplace";
-        private const string JUMP_IN = "player_jump_in";
+        private const string JUMP_IN = "jump_in";
 
         private readonly IAnalytics analytics;
 
@@ -57,6 +58,16 @@ namespace DCLServices.CameraReelService
             analytics.SendAnalytic(JUMP_IN, data);
         }
 
+        public void DownloadPhoto(string source)
+        {
+            var data = new Dictionary<string, string>
+            {
+                {"source", source},
+            };
+
+            analytics.SendAnalytic("photo_download", data);
+        }
+
         public void Dispose() { }
 
         public void Initialize() { }
@@ -71,5 +82,7 @@ namespace DCLServices.CameraReelService
         void OpenWearableInMarketplace(string source);
 
         void JumpIn(string source);
+
+        void DownloadPhoto(string source);
     }
 }

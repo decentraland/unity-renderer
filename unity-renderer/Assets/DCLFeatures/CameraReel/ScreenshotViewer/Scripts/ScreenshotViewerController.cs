@@ -144,8 +144,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 }), true);
         }
 
-        private void DownloadScreenshot() =>
+        private void DownloadScreenshot()
+        {
             browserBridge.OpenUrl(currentScreenshot.url);
+            analytics.DownloadPhoto("Explorer");
+        }
 
         private void CopyScreenshotLink()
         {
