@@ -156,6 +156,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             clipboard.WriteText(url);
             browserBridge.OpenUrl(url);
+            analytics.Share("Explorer", "Copy");
         }
 
         private void ShareOnTwitter()
@@ -164,9 +165,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
             var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
-            analytics.ShareOnTwitter();
             clipboard.WriteText(twitterUrl);
             browserBridge.OpenUrl(twitterUrl);
+            analytics.Share("Explorer", "Twitter");
         }
 
         private void JumpInScene()

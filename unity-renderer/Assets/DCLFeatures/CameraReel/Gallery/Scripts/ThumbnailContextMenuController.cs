@@ -34,6 +34,7 @@ namespace DCLFeatures.CameraReel.Gallery
             {
                 var url = $"https://dcl.gg/reels?image={picture.id}";
                 clipboard.WriteText(url);
+                analytics.Share("Explorer", "Copy");
             };
 
             view.OnDownloadRequested += () =>
@@ -48,9 +49,9 @@ namespace DCLFeatures.CameraReel.Gallery
                 var url = $"https://dcl.gg/reels?image={picture.id}";
                 var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
-                analytics.ShareOnTwitter();
                 clipboard.WriteText(twitterUrl);
                 browser.OpenUrl(twitterUrl);
+                analytics.Share("Explorer", "Twitter");
             };
 
             view.OnDeletePictureRequested += () =>
