@@ -31,7 +31,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
 
         [Header("EXTERNAL DEPENDENCIES")]
-        [SerializeField] private Camera mainCamera;
+        [SerializeField] internal Camera mainCamera;
         [SerializeField] internal DCLCharacterController characterController;
         [SerializeField] internal CameraController cameraController;
 
@@ -109,6 +109,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         }
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
+
+        internal ScreencaptureCameraFactory factory = new ();
 
         private void Awake()
         {
@@ -298,43 +300,21 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void InstantiateCameraObjects()
         {
-            CreateHUD();
+            (screencaptureCameraHUDController, screencaptureCameraHUDView) = factory.CreateHUD(this, screencaptureCameraHUDViewPrefab, inputActionsSchema);
+
             screenRecorderLazyValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
-            CreateScreencaptureCamera();
-            CreatePlayerNameUI();
+
+            screenshotCamera = factory.CreateScreencaptureCamera(cameraPrefab, characterCameraTransform, transform, characterController.gameObject.layer, cameraTarget, virtualCamera);
+
+            playerName = factory.CreatePlayerNameUI(
+                playerNamePrefab,
+                MIN_PLAYERNAME_HEIGHT,
+                userProfile: UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id),
+                playerAvatar: characterController.GetComponent<PlayerAvatarController>()
+            );
 
             isInstantiated = true;
         }
 
-        private void CreatePlayerNameUI()
-        {
-            playerName = Instantiate(playerNamePrefab, characterController.transform);
-
-            UserProfile userProfile = UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id);
-            playerName.SetName(userProfile.userName, userProfile.hasClaimedName, userProfile.isGuest);
-
-            PlayerAvatarController playerAvatar = characterController.GetComponent<PlayerAvatarController>();
-            float height = playerAvatar.Avatar.extents.y - 0.85f;
-            playerName.SetYOffset(Mathf.Max(MIN_PLAYERNAME_HEIGHT, height));
-        }
-
-        private void CreateHUD()
-        {
-            screencaptureCameraHUDView = Instantiate(screencaptureCameraHUDViewPrefab);
-
-            screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
-                screencaptureCameraBehaviour: this, inputActionsSchema, DataStore.i);
-
-            screencaptureCameraHUDController.Initialize();
-        }
-
-        private void CreateScreencaptureCamera()
-        {
-            screenshotCamera = Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, transform);
-            screenshotCamera.gameObject.layer = characterController.gameObject.layer;
-            ScreencaptureCameraMovement cameraMovement = screenshotCamera.GetComponent<ScreencaptureCameraMovement>();
-            cameraMovement.Initialize(cameraTarget, virtualCamera, characterCameraTransform);
-            cameraMovement.enabled = true;
-        }
     }
 }

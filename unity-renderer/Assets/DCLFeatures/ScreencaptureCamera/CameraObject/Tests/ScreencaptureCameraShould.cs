@@ -11,10 +11,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
     [Category("EditModeCI")]
     public class ScreencaptureCameraShould
     {
-        private CameraObject.ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
-
-        private InputAction_Trigger cameraInputAction;
-        private InputAction_Trigger takeScreenshotAction;
+        private ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
 
         private BooleanVariable allUIHidden;
         private BooleanVariable cameraModeInputLocked;
@@ -28,22 +25,25 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public void SetUp()
         {
             var gameObject = new GameObject();
-            screencaptureCameraBehaviour = gameObject.AddComponent<CameraObject.ScreencaptureCameraBehaviour>();
+            screencaptureCameraBehaviour = gameObject.AddComponent<ScreencaptureCameraBehaviour>();
+            screencaptureCameraBehaviour.inputActionsSchema = new ScreencaptureCameraInputSchema();
 
             // Mock prefab dependencies
-            cameraInputAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
-            takeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
-
             screencaptureCameraBehaviour.cameraPrefab = gameObject.AddComponent<Camera>();
             screencaptureCameraBehaviour.screencaptureCameraHUDViewPrefab = gameObject.AddComponent<ScreencaptureCameraHUDViewDummy>();
 
             screencaptureCameraBehaviour.characterController = gameObject.AddComponent<DCLCharacterController>();
             screencaptureCameraBehaviour.cameraController = gameObject.AddComponent<CameraControllerMock>();
-            screencaptureCameraBehaviour.inputActionsSchema.ToggleScreenshotCameraAction = cameraInputAction;
-            screencaptureCameraBehaviour.inputActionsSchema.TakeScreenshotAction = takeScreenshotAction;
+
+            screencaptureCameraBehaviour.inputActionsSchema.ToggleScreenshotCameraAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
+            screencaptureCameraBehaviour.inputActionsSchema.TakeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
+            screencaptureCameraBehaviour.inputActionsSchema.CloseWindowAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
+            screencaptureCameraBehaviour.inputActionsSchema.ToggleCameraReelAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
 
             // Mock external dependencies
             screencaptureCameraBehaviour.isScreencaptureCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
+            var cameraObject = new GameObject().AddComponent<Camera>();
+            screencaptureCameraBehaviour.mainCamera = cameraObject;
 
             allUIHidden = ScriptableObject.CreateInstance<BooleanVariable>();
             cameraModeInputLocked = ScriptableObject.CreateInstance<BooleanVariable>();
@@ -67,6 +67,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         [TearDown]
         public void TearDown()
         {
+            Object.DestroyImmediate(screencaptureCameraBehaviour.mainCamera.gameObject);
             Object.DestroyImmediate(screencaptureCameraBehaviour.gameObject);
         }
 
