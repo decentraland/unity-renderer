@@ -126,6 +126,9 @@ public static class AudioScriptableObjects
     private static AudioEvent friendRequestEvent;
     public static AudioEvent FriendRequestEvent => CommonScriptableObjects.GetOrLoad(ref friendRequestEvent, "ScriptableObjects/AudioEvents/HUDCommon/FriendRequest");
 
+    private static AudioEvent takeScreenshotEvent;
+    public static AudioEvent takeScreenshot => CommonScriptableObjects.GetOrLoad(ref takeScreenshotEvent, "ScriptableObjects/AudioEvents/HUDCommon/TakeScreenshot");
+
     public static void UnloadAll()
     {
         Resources.UnloadAsset(cameraFadeInEvent);

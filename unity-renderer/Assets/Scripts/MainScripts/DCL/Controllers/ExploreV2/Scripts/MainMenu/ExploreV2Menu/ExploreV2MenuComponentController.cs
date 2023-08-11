@@ -289,7 +289,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
-                view.SetSectionAsNew(ExploreSection.Backpack, true);
+                view.SetSectionAsNew(ExploreSection.Backpack, false);
 
             view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
 
@@ -346,8 +346,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        if(currentOpenSection == ExploreSection.Quest)
+        if (currentOpenSection == ExploreSection.Quest)
             view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        if (currentOpenSection == ExploreSection.CameraReel)
+            DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
         ChangeVisibilityVarForSwitchedSections();
 
