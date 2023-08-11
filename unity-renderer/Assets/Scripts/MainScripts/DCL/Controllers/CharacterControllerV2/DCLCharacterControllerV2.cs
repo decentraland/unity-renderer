@@ -334,7 +334,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 Vector3 impulse = cameraForward.Get() * data.jumpPadForce;
-                if (impulse.y < 0) impulse.y = 0;
+                impulse.y += Mathf.Sqrt(-2 * GetJumpHeight(impulse) * (data.gravity * data.jumpGravityFactor));
                 ApplyExternalImpulse(impulse);
             }
 

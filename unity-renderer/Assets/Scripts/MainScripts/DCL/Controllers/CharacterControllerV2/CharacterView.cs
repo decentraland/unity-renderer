@@ -14,7 +14,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
     public class CharacterView : MonoBehaviour, ICharacterView
     {
         private const int FIELD_HEIGHT = 30;
-        private const int LABEL_SIZE = 200;
+        private const int LABEL_SIZE = 500;
         [SerializeField] private UnityEngine.CharacterController characterController;
         [SerializeField] private CharacterAnimationController animationController;
 
@@ -180,15 +180,18 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         private void DeRagdollize()
         {
+            Animator animator = GetComponentInChildren<Animator>();
+
             Physics.autoSimulation = false;
             var cameraTarget = GameObject.Find("CharacterCameraTarget ");
             var damp = cameraTarget.GetComponent<FollowWithDamping>();
-            damp.target = transform;
+            damp.target = animator.transform;
 
             isRagdoll = false;
             GetComponentInChildren<RagdollController>().DeRagdollize();
-            GetComponentInChildren<Animator>().enabled = true;
+            animator.enabled = true;
             characterController.enabled = true;
+            damp.additionalHeight = 0.835f;
         }
 
         private void Ragdollize()
@@ -202,6 +205,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             GetComponentInChildren<Animator>().enabled = false;
             characterController.enabled = false;
             GetComponentInChildren<RagdollController>().Ragdollize();
+            damp.additionalHeight = 0;
         }
 
 
@@ -280,12 +284,23 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 GUI.skin.textField.fontSize = fontSize;
                 var firstColumnYPos = 25;
 
-                data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"Z\" to walk");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"Shift\" to run");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "Keep pressing spacebar for higher jumps");
+
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"Q\" to launch towards camera");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"E\" to apply a constant force");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"L\" to change camera");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"K\" for feet camera");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"R\" for Ragdoll");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"N\" to toggle this panel");
+
+                /*data.walkSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.walkSpeed, "walkSpeed");
                 data.jogSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.jogSpeed, "jogSpeed");
                 data.runSpeed = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.runSpeed, "runSpeed");
                 /*data.acceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.acceleration, "acceleration");
                 data.maxAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.maxAcceleration, "maxAcceleration");
-                data.accelerationTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.accelerationTime, "accelerationTime");*/
+                data.accelerationTime = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.accelerationTime, "accelerationTime");
 
                 //data.airAcceleration = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.airAcceleration, "airAcceleration");
                 data.gravity = DrawFloatField(firstColumnPosition, ref firstColumnYPos, data.gravity, "gravity");
@@ -310,7 +325,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "isFalling", characterState.IsJumping);
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalImpulse", characterState.ExternalImpulse);
                 DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "ExternalVelocity", characterState.ExternalVelocity);
-                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "currentAcceleration", characterState.currentAcceleration);
+                DrawObjectValue(secondColumnPosition, ref secondColumnYPos, "currentAcceleration", characterState.currentAcceleration);*/
             }
         }
 
@@ -340,6 +355,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
         private void DrawLabel(int xPos, ref int yPos, string label)
         {
             GUI.Label(new Rect(Width(xPos + FIELD_HEIGHT), Height(FIELD_HEIGHT + yPos), Width(LABEL_SIZE), Height(FIELD_HEIGHT)), label);
+            yPos += FIELD_HEIGHT + 2;
         }
 
         private float Width(float value) =>
