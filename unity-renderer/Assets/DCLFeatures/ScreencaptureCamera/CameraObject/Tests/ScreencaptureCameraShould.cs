@@ -1,3 +1,4 @@
+using Cinemachine;
 using DCL;
 using DCL.Camera;
 using DCLFeatures.ScreencaptureCamera.CameraObject;
@@ -8,7 +9,29 @@ using UnityEngine;
 
 namespace DCLFeatures.ScreencaptureCamera.Tests
 {
-    [Category("EditModeCI")]
+    public class ScreencaptureCameraFactoryMock : ScreencaptureCameraFactory
+    {
+        public override PlayerName CreatePlayerNameUI(PlayerName playerNamePrefab, float minPlayerNameHeight, DataStore_Player player, PlayerAvatarController playerAvatar) =>
+            Substitute.For<PlayerName>();
+
+        public override (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab, ScreencaptureCameraInputSchema inputActionsSchema)
+        {
+            ScreencaptureCameraHUDView screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
+
+            var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
+                mainBehaviour, inputActionsSchema, DataStore.i);
+
+            return (screencaptureCameraHUDController, screencaptureCameraHUDView);
+        }
+
+        public override Camera CreateScreencaptureCamera(Camera cameraPrefab, Transform characterCameraTransform, Transform parent, int layer, CharacterController cameraTarget,
+            CinemachineVirtualCamera virtualCamera)
+        {
+            Camera screenshotCamera = Object.Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, parent);
+            return screenshotCamera;
+        }
+    }
+
     public class ScreencaptureCameraShould
     {
         private ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
@@ -31,7 +54,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             // Mock prefab dependencies
             screencaptureCameraBehaviour.cameraPrefab = gameObject.AddComponent<Camera>();
             screencaptureCameraBehaviour.screencaptureCameraHUDViewPrefab = gameObject.AddComponent<ScreencaptureCameraHUDViewDummy>();
-
             screencaptureCameraBehaviour.characterController = gameObject.AddComponent<DCLCharacterController>();
             screencaptureCameraBehaviour.cameraController = gameObject.AddComponent<CameraControllerMock>();
 
@@ -42,7 +64,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
 
             // Mock external dependencies
             screencaptureCameraBehaviour.isScreencaptureCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();
-            var cameraObject = new GameObject().AddComponent<Camera>();
+            Camera cameraObject = new GameObject().AddComponent<Camera>();
             screencaptureCameraBehaviour.mainCamera = cameraObject;
 
             allUIHidden = ScriptableObject.CreateInstance<BooleanVariable>();
@@ -59,6 +81,8 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
                 cameraBlocked, featureKeyTriggersBlocked, userMovementKeysBlocked, isScreenshotCameraActive);
 
             screencaptureCameraBehaviour.screenRecorderLazyValue = new ScreenRecorderDummy();
+
+            screencaptureCameraBehaviour.factory = new ScreencaptureCameraFactoryMock();
             screencaptureCameraBehaviour.InstantiateCameraObjects();
 
             screencaptureCameraBehaviour.avatarsLODControllerLazyValue = Substitute.For<IAvatarsLODController>();
@@ -71,7 +95,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             Object.DestroyImmediate(screencaptureCameraBehaviour.gameObject);
         }
 
-        [Test]
+        [Test] [Category("EditModeCI")]
         public void ToggleScreenshotCamera_WhenGuest_DoesNothing_ExternalVarsNotToggled()
         {
             // Arrange

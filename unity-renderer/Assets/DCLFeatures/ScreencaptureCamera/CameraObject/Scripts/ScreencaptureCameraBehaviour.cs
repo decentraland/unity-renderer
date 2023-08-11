@@ -309,12 +309,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             playerName = factory.CreatePlayerNameUI(
                 playerNamePrefab,
                 MIN_PLAYERNAME_HEIGHT,
-                userProfile: UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id),
+                player,
                 playerAvatar: characterController.GetComponent<PlayerAvatarController>()
             );
 
             isInstantiated = true;
         }
-
     }
 }
