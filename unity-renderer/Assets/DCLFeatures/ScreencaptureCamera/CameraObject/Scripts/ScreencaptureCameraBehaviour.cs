@@ -84,6 +84,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
+        private bool isPerformingScreenGrab;
 
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
@@ -144,12 +145,31 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
+
+            Camera.onPostRender += OnPostRenderCallback;
         }
 
         internal void OnDisable()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
+
+            Camera.onPostRender -= OnPostRenderCallback;
+        }
+
+        private void OnPostRenderCallback(Camera cam)
+        {
+            if (isPerformingScreenGrab)
+            {
+                // Check whether the Camera that just finished rendering is the one you want to take a screen grab from
+                if (cam == screenshotCamera)
+                {
+                    CaptureScreenshotNew("Shortcut");
+
+                    // Reset the isPerformingScreenGrab state
+                    isPerformingScreenGrab = false;
+                }
+            }
         }
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
@@ -182,8 +202,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
-            StopAllCoroutines();
-            StartCoroutine(CaptureScreenshotAtTheFrameEnd(source));
+            isPerformingScreenGrab = true;
+
+            // StopAllCoroutines();
+            // StartCoroutine(CaptureScreenshotAtTheFrameEnd(source));
         }
 
         private IEnumerator CaptureScreenshotAtTheFrameEnd(string source)
@@ -228,6 +250,54 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                     Debug.LogException(e);
                 }
             }
+        }
+
+        private bool isUploading;
+        private void CaptureScreenshotNew(string source)
+        {
+              if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace || isUploading) return;
+
+            lastScreenshotTime = Time.realtimeSinceStartup;
+
+            screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
+
+            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot();
+
+            screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
+            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
+
+            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
+
+            async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, string source, CancellationToken cancellationToken)
+            {
+                try
+                {
+                    isUploading = true;
+                    (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) =
+                        await cameraReelStorageService.UploadScreenshot(screenshot, metadata, cancellationToken);
+
+                    isUploading = false;
+
+                    storageStatus = cameraReelStorageStatus;
+                    CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
+                    CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+
+                    analytics.TakePhoto(metadata.userAddress,
+                        $"{metadata.scene.location.x},{metadata.scene.location.y}",
+                        metadata.visiblePeople.Length,
+                        source);
+                }
+                catch (OperationCanceledException) { }
+                catch (ScreenshotLimitReachedException) { DataStore.i.notifications.DefaultErrorNotification.Set(STORAGE_LIMIT_REACHED_MESSAGE, true); }
+                catch (Exception e)
+                {
+                    DataStore.i.notifications.DefaultErrorNotification.Set(UPLOADING_ERROR_MESSAGE, true);
+                    Debug.LogException(e);
+                }
+            }
+
         }
 
         public void ToggleScreenshotCamera(string source = null, bool isEnabled = true)
