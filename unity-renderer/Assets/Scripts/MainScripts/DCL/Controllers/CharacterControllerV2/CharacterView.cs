@@ -290,7 +290,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
                 DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"Q\" to launch towards camera");
                 DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"E\" to apply a constant force");
-                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"L\" to change camera");
+                DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"J\" to change camera");
                 DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"K\" for feet camera");
                 DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"R\" for Ragdoll");
                 DrawLabel(firstColumnPosition, ref firstColumnYPos, "\"N\" to toggle this panel");
