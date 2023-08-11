@@ -7,7 +7,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     {
         private const int TARGET_FRAME_WIDTH = 1920;
         private const int TARGET_FRAME_HEIGHT = 1080;
-        private const float FRAME_SCALE = 0.87f;
+        private const float FRAME_SCALE = 0.87f; // Defines the scale of the frame in relation to the screen
 
         private readonly float targetAspectRatio;
         private readonly RectTransform canvasRectTransform;
@@ -22,116 +22,125 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public virtual Texture2D CaptureScreenshot()
         {
-            Debug.Log($"targetAspectRatio {targetAspectRatio}");
+            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
+            (_, float targetRescale) = CalculateTargetScreenFrame(currentScreenFrame);
+            int roundedUpscale = Mathf.CeilToInt(targetRescale);
+            ScreenFrameData rescaledScreenFrame = CalculateRoundRescaledScreenFrame(currentScreenFrame, roundedUpscale);
 
-            float currentScreenWidth = canvasRectTransform.rect.width * canvasRectTransform.lossyScale.x;
-            float currentScreenHeight = canvasRectTransform.rect.height * canvasRectTransform.lossyScale.y;
-            float currentScreenAspectRatio = currentScreenWidth / currentScreenHeight;
-            Debug.Log($"currentScreen {currentScreenWidth}, {currentScreenHeight}");
-            Debug.Log($"currentScreenAspectRatio {currentScreenAspectRatio}");
-
-            float currentFrameWidth;
-            float currentFrameHeight;
-
-            Debug.Log($"fame simple scale {currentScreenWidth * FRAME_SCALE}, {currentScreenHeight * FRAME_SCALE}");
-
-            // Adjust current by smallest side
-            if (currentScreenAspectRatio > targetAspectRatio) // Height is the limiting dimension, so scaling width based on it
-            {
-                currentFrameHeight = currentScreenHeight * FRAME_SCALE;
-                currentFrameWidth = currentFrameHeight * targetAspectRatio;
-            }
-            else // Width is the limiting dimension, so scaling height based on it
-            {
-                currentFrameWidth = currentScreenWidth * FRAME_SCALE;
-                currentFrameHeight = currentFrameWidth / targetAspectRatio;
-            }
-
-            Debug.Log($"currentFrame {currentFrameWidth}, {currentFrameHeight}");
-
-            //=====---- Target
-            Debug.Log("TARGET");
-
-            float upscaleFrameWidth = TARGET_FRAME_WIDTH / currentFrameWidth;
-            float upscaleFrameHeight = TARGET_FRAME_HEIGHT / currentFrameHeight;
-            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
-            Debug.Log($"targetUpscale {upscaleFrameWidth}, {upscaleFrameHeight}");
-            float targetUpscale = upscaleFrameWidth;
-
-            float calculatedTargetFrameWidth = currentFrameWidth * targetUpscale;
-            float calculatedTargetFrameHeight = currentFrameHeight * targetUpscale;
-            float targetScreenWidth = currentScreenWidth * targetUpscale;
-            float targetScreenHeight = currentScreenHeight * targetUpscale;
-            Debug.Log($"target Frame and Screen {calculatedTargetFrameWidth}:{calculatedTargetFrameHeight}, {targetScreenWidth}:{targetScreenHeight}");
-
-            //=====---- Rounded Upscaled
-            Debug.Log("UPSCALED");
-
-            int upscaleFactor = Mathf.CeilToInt(targetUpscale);
-            Debug.Log($"rounded Upscale {upscaleFactor}");
-
-            float upscaledFrameWidth = currentFrameWidth * upscaleFactor;
-            float upscaledFrameHeight = currentFrameHeight * upscaleFactor;
-            float upscaledScreenWidth = currentScreenWidth * upscaleFactor;
-            float upscaledScreenHeight = currentScreenHeight * upscaleFactor;
-
-            Debug.Log($"Upscaled Frame and Screen {upscaledFrameWidth}:{upscaledFrameHeight}, {upscaledScreenWidth}:{upscaledScreenHeight}");
-
-            //=====---- Downscaled from Rounded
-            Debug.Log("DOWNSCALED");
-
-            float downscaleScreenWidth = targetScreenWidth / upscaledScreenWidth;
-            float downscaleScreenHeight = targetScreenHeight / upscaledScreenHeight;
-            Debug.Assert(Math.Abs(downscaleScreenWidth - downscaleScreenHeight) < 0.0001f);
-            Debug.Log($"{downscaleScreenWidth}, {downscaleScreenHeight}");
-            float targetDownscale = downscaleScreenWidth;
-            Debug.Log($"{targetDownscale}");
-
-            float downscaledFrameWidth = upscaledFrameWidth * targetDownscale;
-            float downscaledFrameHeight = upscaledFrameHeight * targetDownscale;
-            int downscaledScreenWidth = Mathf.RoundToInt(upscaledScreenWidth * targetDownscale);
-            int downscaledScreenHeight = Mathf.RoundToInt(upscaledScreenHeight * targetDownscale);
-
-            Debug.Log($"Downscaled Frame and Screen {downscaledFrameWidth}:{downscaledFrameHeight}, {downscaledScreenWidth}:{downscaledScreenHeight}");
-
-            //=====---- Final
-            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(upscaleFactor);
-
-            // Cropping 1920x1080 central part
-            int cornerX = Mathf.RoundToInt((upscaledScreenWidth - upscaledFrameWidth) / 2f);
-            int cornerY = Mathf.RoundToInt((upscaledScreenHeight - upscaledFrameHeight) / 2f);
-            Debug.Log($"Coreners {cornerX}:{cornerY}");
-
-            var upscaledFrameTexture = new Texture2D(Mathf.RoundToInt(upscaledFrameWidth), Mathf.RoundToInt(upscaledFrameHeight), TextureFormat.RGB24, false);
-            Color[] pixels = screenshotTexture.GetPixels(cornerX, cornerY, Mathf.RoundToInt(upscaledFrameWidth), Mathf.RoundToInt(upscaledFrameHeight));
-            upscaledFrameTexture.SetPixels(pixels);
-            upscaledFrameTexture.Apply();
-
-            Texture2D finalTexture = ResizeTo2K(upscaledFrameTexture);
+            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
+            Texture2D upscaledFrameTexture = CropTexture2D(screenshotTexture, rescaledScreenFrame.CalculateFrameCorners(), rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
+            Texture2D finalTexture = ResizeTexture2D(upscaledFrameTexture, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
 
             return finalTexture;
         }
 
-        private static Texture2D ResizeTo2K(Texture originalTexture)
+        private static Texture2D CropTexture2D(Texture2D texture, Vector2Int startCorner, int width, int height)
         {
-            var rt = new RenderTexture(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, 24);
+            Color[] pixels = texture.GetPixels(startCorner.x, startCorner.y, width, height);
+
+            var result = new Texture2D(width, height, TextureFormat.RGB24, false);
+            result.SetPixels(pixels);
+            result.Apply();
+
+            return result;
+        }
+
+        private static Texture2D ResizeTexture2D(Texture originalTexture, int width, int height)
+        {
+            var rt = new RenderTexture(width, height, 24);
             RenderTexture.active = rt;
 
             // Copy and scale the original texture into the RenderTexture
             Graphics.Blit(originalTexture, rt);
 
             // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
+            var resizedTexture = new Texture2D(width, height);
 
             // Read the pixel data from the RenderTexture into the Texture2D
             resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
             resizedTexture.Apply();
 
-            // Clean up by releasing the RenderTexture
             RenderTexture.active = null;
             rt.Release();
 
             return resizedTexture;
+        }
+
+        private ScreenFrameData CalculateCurrentScreenFrame()
+        {
+            var screenFrameData = new ScreenFrameData
+            {
+                ScreenWidth = canvasRectTransform.rect.width * canvasRectTransform.lossyScale.x,
+                ScreenHeight = canvasRectTransform.rect.height * canvasRectTransform.lossyScale.y,
+            };
+
+            // Adjust current by smallest side
+            if (screenFrameData.ScreenAspectRatio > targetAspectRatio) // Height is the limiting dimension, so scaling width based on it
+            {
+                screenFrameData.FrameHeight = screenFrameData.ScreenHeight * FRAME_SCALE;
+                screenFrameData.FrameWidth = screenFrameData.FrameHeight * targetAspectRatio;
+            }
+            else // Width is the limiting dimension, so scaling height based on it
+            {
+                screenFrameData.FrameWidth = screenFrameData.ScreenWidth * FRAME_SCALE;
+                screenFrameData.FrameHeight = screenFrameData.FrameWidth / targetAspectRatio;
+            }
+
+            return screenFrameData;
+        }
+
+        private static (ScreenFrameData data, float targetRescale) CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
+        {
+            var screenFrameData = new ScreenFrameData();
+
+            float upscaleFrameWidth = TARGET_FRAME_WIDTH / currentScreenFrameData.FrameWidth;
+            float upscaleFrameHeight = TARGET_FRAME_HEIGHT / currentScreenFrameData.FrameHeight;
+            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
+
+            float targetRescale = upscaleFrameWidth;
+
+            screenFrameData.ScreenWidth = currentScreenFrameData.ScreenWidth * targetRescale;
+            screenFrameData.ScreenHeight = currentScreenFrameData.ScreenHeight * targetRescale;
+            screenFrameData.FrameWidth = currentScreenFrameData.FrameWidth * targetRescale;
+            screenFrameData.FrameHeight = currentScreenFrameData.FrameHeight * targetRescale;
+            Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.0001f);
+            Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.0001f);
+
+            return (screenFrameData, targetRescale);
+        }
+
+        private static ScreenFrameData CalculateRoundRescaledScreenFrame(ScreenFrameData rescalingScreenFrame, int roundedRescaleFactor) =>
+            new ()
+            {
+                FrameWidth = rescalingScreenFrame.FrameWidth * roundedRescaleFactor,
+                FrameHeight = rescalingScreenFrame.FrameHeight * roundedRescaleFactor,
+                ScreenWidth = rescalingScreenFrame.ScreenWidth * roundedRescaleFactor,
+                ScreenHeight = rescalingScreenFrame.ScreenHeight * roundedRescaleFactor,
+            };
+
+        private struct ScreenFrameData
+        {
+            public float ScreenWidth;
+            public float ScreenHeight;
+
+            public float FrameWidth;
+            public float FrameHeight;
+
+            public int ScreenWidthInt => Mathf.RoundToInt(ScreenWidth);
+            public int ScreenHeightInt => Mathf.RoundToInt(ScreenHeight);
+
+            public int FrameWidthInt => Mathf.RoundToInt(FrameWidth);
+            public int FrameHeightInt => Mathf.RoundToInt(FrameHeight);
+
+            public float ScreenAspectRatio => ScreenWidth / ScreenHeight;
+            public float FrameAspectRatio => FrameWidth / FrameHeight;
+
+            public Vector2Int CalculateFrameCorners() =>
+                new ()
+                {
+                    x = Mathf.RoundToInt((ScreenWidth - FrameWidth) / 2f),
+                    y = Mathf.RoundToInt((ScreenHeight - FrameHeight) / 2f),
+                };
         }
     }
 }
