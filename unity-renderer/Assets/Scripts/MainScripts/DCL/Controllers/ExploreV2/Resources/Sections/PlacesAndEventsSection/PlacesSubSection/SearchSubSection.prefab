@@ -172,7 +172,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 942.35, y: -30}
+  m_AnchoredPosition: {x: 942.35, y: -60}
   m_SizeDelta: {x: 1884.7, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1253535217294247377
@@ -195,10 +195,10 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 285, y: 246}
-  m_Spacing: {x: 29.1, y: 10}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_CellSize: {x: 285, y: 275}
+  m_Spacing: {x: 30, y: 30}
+  m_Constraint: 1
+  m_ConstraintCount: 6
 --- !u!114 &5342045521876049543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,7 +384,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 942.35, y: -136}
+  m_AnchoredPosition: {x: 942.35, y: -166}
   m_SizeDelta: {x: 1884.7, y: 1}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3103658402809281720
@@ -588,10 +588,10 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 283, y: 246}
-  m_Spacing: {x: 30, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_CellSize: {x: 285, y: 275}
+  m_Spacing: {x: 30, y: 30}
+  m_Constraint: 1
+  m_ConstraintCount: 6
 --- !u!1 &1864113167580633870
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,9 +796,9 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 285, y: 275}
-  m_Spacing: {x: 30, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Spacing: {x: 30, y: 30}
+  m_Constraint: 1
+  m_ConstraintCount: 6
 --- !u!1 &2655746348220018560
 GameObject:
   m_ObjectHideFlags: 0
@@ -1632,7 +1632,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 942.35, y: -60}
+  m_AnchoredPosition: {x: 942.35, y: -90}
   m_SizeDelta: {x: 1884.7, y: 46}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1281545129429338374
@@ -1655,6 +1655,7 @@ GameObject:
   - component: {fileID: 6814964620466231675}
   - component: {fileID: 2421798077830222280}
   - component: {fileID: 30150260179679671}
+  - component: {fileID: 1412363749207479761}
   m_Layer: 5
   m_Name: EventsButton
   m_TagString: Untagged
@@ -1766,6 +1767,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1412363749207479761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4053337755403092206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4458739024538960772
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,7 +1917,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -423, y: 0}
-  m_SizeDelta: {x: 884.7, y: 137}
+  m_SizeDelta: {x: 884.7, y: 167}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &915112489107794535
 MonoBehaviour:
@@ -2001,9 +2018,9 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 285, y: 275}
-  m_Spacing: {x: 29.1, y: 15}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Spacing: {x: 30, y: 30}
+  m_Constraint: 1
+  m_ConstraintCount: 6
 --- !u!114 &4931087006836667406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2528,6 +2545,7 @@ GameObject:
   - component: {fileID: 1091899801835567788}
   - component: {fileID: 7935126025341267324}
   - component: {fileID: 4815862552011672725}
+  - component: {fileID: 5139708934087426398}
   m_Layer: 5
   m_Name: PlacesButton
   m_TagString: Untagged
@@ -2639,6 +2657,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5139708934087426398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7188761885704531499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &7284533766172642067
 GameObject:
   m_ObjectHideFlags: 0
