@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DCLServices.CameraReelService;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TMPro;
-using UI.InWorldCamera.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         [SerializeField] private TMP_Text dataTime;
         [SerializeField] private TMP_Text sceneInfo;
         [SerializeField] private Button sceneInfoButton;
+        [SerializeField] private TMP_Text photoOwnerNameLabel;
+        [SerializeField] private ImageComponentView photoOwnerAvatarPicture;
+        [SerializeField] private Button pictureOwnerProfileButton;
 
         [Header("VISIBLE PEOPLE PANEL")]
         [SerializeField] private ScreenshotVisiblePersonView profileEntryTemplate;
@@ -26,6 +30,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         public event Action SceneButtonClicked;
         public event Action SidePanelButtonClicked;
+        public event Action OnOpenPictureOwnerProfile;
 
         private void Awake()
         {
@@ -36,19 +41,21 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             infoPanelTextButton.onClick.AddListener(() => SidePanelButtonClicked?.Invoke());
             sceneInfoButton.onClick.AddListener(() => SceneButtonClicked?.Invoke());
+            pictureOwnerProfileButton.onClick.AddListener(() => OnOpenPictureOwnerProfile?.Invoke());
         }
 
         private void OnDisable()
         {
             infoPanelTextButton.onClick.RemoveAllListeners();
             sceneInfoButton.onClick.RemoveAllListeners();
+            pictureOwnerProfileButton.onClick.RemoveAllListeners();
         }
 
         public void SetSceneInfoText(Scene scene) =>
             sceneInfo.text = $"{scene.name}, {scene.location.x}, {scene.location.y}";
 
         public void SetDateText(DateTime dateTime) =>
-            dataTime.text = dateTime.ToString("MMMM dd, yyyy");
+            dataTime.text = dateTime.ToString("MMMM dd, yyyy", CultureInfo.InvariantCulture);
 
         public void ShowVisiblePersons(VisiblePerson[] visiblePeople)
         {
@@ -57,7 +64,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             profiles.Clear();
 
-            foreach (VisiblePerson visiblePerson in visiblePeople.OrderBy(person => person.isGuest).ThenByDescending(person => person.wearables.Length))
+            foreach (VisiblePerson visiblePerson in visiblePeople.OrderBy(person => person.isGuest)
+                                                                 .ThenByDescending(person => person.wearables.Length))
             {
                 ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
 
@@ -65,6 +73,12 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 profileEntry.Configure(visiblePerson);
                 profileEntry.gameObject.SetActive(true);
             }
+        }
+
+        public void SetPictureOwner(string userName, string avatarPictureUrl)
+        {
+            photoOwnerNameLabel.text = userName;
+            photoOwnerAvatarPicture.SetImage(avatarPictureUrl);
         }
     }
 }

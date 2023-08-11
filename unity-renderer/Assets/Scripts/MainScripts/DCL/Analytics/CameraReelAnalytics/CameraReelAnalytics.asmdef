@@ -1,0 +1,14 @@
+{
+    "name": "CameraReelAnalytics",
+    "rootNamespace": "",
+    "references": ["GUID:3b80b0b562b1cbc489513f09fc1b8f69","GUID:0663fad624d836944b40ae27c3414652"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
