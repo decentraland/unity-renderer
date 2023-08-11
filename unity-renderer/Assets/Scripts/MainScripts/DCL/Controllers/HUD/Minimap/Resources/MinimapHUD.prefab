@@ -743,7 +743,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 14.5, y: -13.400024}
+  m_AnchoredPosition: {x: 10, y: -13.400024}
   m_SizeDelta: {x: 0, y: 34.984}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &7846452379652048497
@@ -971,7 +971,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 209.59998, y: -13.400024}
+  m_AnchoredPosition: {x: 198, y: -13.400024}
   m_SizeDelta: {x: 0, y: 34.984}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6177224164179140932
@@ -1020,7 +1020,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 6.199951, y: -4.699951}
+  m_AnchoredPosition: {x: -2, y: 2}
   m_SizeDelta: {x: 191.38, y: 227.3}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1110629050973134691
@@ -1656,7 +1656,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 14.299927, y: -236.45166}
+  m_AnchoredPosition: {x: 6.0999756, y: -229.75165}
   m_SizeDelta: {x: 184, y: 138}
   m_Pivot: {x: 0, y: 1}
 --- !u!223 &8095371277934579712
@@ -2343,8 +2343,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 10
@@ -2696,7 +2696,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 209.59998, y: -13.400024}
+  m_AnchoredPosition: {x: 198, y: -13.400024}
   m_SizeDelta: {x: 0, y: 34.984}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3015280126010520157
@@ -3025,8 +3025,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 46.079987, y: -7.15}
-  m_SizeDelta: {x: 18, y: 18}
+  m_AnchoredPosition: {x: 46.079987, y: -7.9199715}
+  m_SizeDelta: {x: 16, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3714597375162625211
 CanvasRenderer:
@@ -3161,8 +3161,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 70.08, y: -7.15}
-  m_SizeDelta: {x: 19, y: 17.5}
+  m_AnchoredPosition: {x: 70.0678, y: -7.9078026}
+  m_SizeDelta: {x: 16.9756, y: 16.976}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1194968960946825143
 CanvasRenderer:
@@ -3718,8 +3718,20 @@ PrefabInstance:
     - target: {fileID: 6305135970340749138, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_text
-      value: Location copied
+      value: Location copied!
       objectReference: {fileID: 0}
+    - target: {fileID: 6305135970340749138, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a,
+        type: 2}
+    - target: {fileID: 6305135970340749138, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
+        type: 2}
     - target: {fileID: 7841483112454866825, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_Name
@@ -3763,12 +3775,12 @@ PrefabInstance:
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 126
+      value: 134
       objectReference: {fileID: 0}
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 40
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
@@ -3808,12 +3820,12 @@ PrefabInstance:
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 157.1
+      value: 164
       objectReference: {fileID: 0}
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -7.1500034
+      value: -7.9199753
       objectReference: {fileID: 0}
     - target: {fileID: 9104126690634640699, guid: 69d18becfc9ef4b7f92abaeae62a2ece,
         type: 3}
@@ -4187,12 +4199,12 @@ PrefabInstance:
     - target: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 26.5
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 26.5
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}
@@ -4237,7 +4249,7 @@ PrefabInstance:
     - target: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -7.83
+      value: -8.6
       objectReference: {fileID: 0}
     - target: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,
         type: 3}
@@ -4293,6 +4305,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.1800003
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185923757866191454, guid: 633e570ad7b45486690b28e43c776f5e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 633e570ad7b45486690b28e43c776f5e, type: 3}

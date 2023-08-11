@@ -1,30 +1,54 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
+using DCL.Tasks;
 using DCLFeatures.CameraReel.Section;
 using DCLServices.CameraReelService;
+using DCLServices.EnvironmentProvider;
 using System;
-using System.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
-using Environment = DCL.Environment;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerController : IDisposable
     {
+        private const string SCREEN_SOURCE = "ReelPictureDetail";
+        private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
+
         private readonly ScreenshotViewerView view;
         private readonly CameraReelModel model;
+        private readonly DataStore dataStore;
+        private readonly ICameraReelStorageService storageService;
+        private readonly IUserProfileBridge userProfileBridge;
+        private readonly IClipboard clipboard;
+        private readonly IBrowserBridge browserBridge;
+        private readonly ICameraReelAnalyticsService analytics;
+        private readonly IEnvironmentProviderService environmentProviderService;
 
+        private CancellationTokenSource deleteScreenshotCancellationToken;
+        private CancellationTokenSource pictureOwnerCancellationToken;
         private CameraReelResponse currentScreenshot;
 
-        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model)
+        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
+            DataStore dataStore,
+            ICameraReelStorageService storageService,
+            IUserProfileBridge userProfileBridge,
+            IClipboard clipboard,
+            IBrowserBridge browserBridge,
+            ICameraReelAnalyticsService analytics,
+            IEnvironmentProviderService environmentProviderService)
         {
             this.view = view;
             this.model = model;
-        }
+            this.dataStore = dataStore;
+            this.storageService = storageService;
+            this.userProfileBridge = userProfileBridge;
+            this.clipboard = clipboard;
+            this.browserBridge = browserBridge;
+            this.analytics = analytics;
+            this.environmentProviderService = environmentProviderService;
 
-        public void Initialize()
-        {
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
             view.NextScreenshotClicked += ShowNextScreenshot;
@@ -37,6 +61,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             view.InfoSidePanel.SidePanelButtonClicked += view.ToggleInfoSidePanel;
             view.InfoSidePanel.SceneButtonClicked += JumpInScene;
+            view.InfoSidePanel.OnOpenPictureOwnerProfile += OpenPictureOwnerProfile;
         }
 
         public void Dispose()
@@ -53,6 +78,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             view.InfoSidePanel.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
             view.InfoSidePanel.SceneButtonClicked -= JumpInScene;
+            view.InfoSidePanel.OnOpenPictureOwnerProfile -= OpenPictureOwnerProfile;
+
+            view.Dispose();
         }
 
         public void Show(CameraReelResponse reel)
@@ -61,13 +89,22 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
             currentScreenshot = reel;
 
-            SetScreenshotImage(reel);
-
+            view.SetScreenshotImage(reel.url);
             view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
             view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
             view.InfoSidePanel.ShowVisiblePersons(reel.metadata.visiblePeople);
+            pictureOwnerCancellationToken = pictureOwnerCancellationToken.SafeRestart();
+            UpdatePictureOwnerInfo(reel, pictureOwnerCancellationToken.Token).Forget();
 
             view.Show();
+        }
+
+        private async UniTaskVoid UpdatePictureOwnerInfo(CameraReelResponse reel, CancellationToken cancellationToken)
+        {
+            UserProfile profile = userProfileBridge.Get(reel.metadata.userAddress)
+                                                      ?? await userProfileBridge.RequestFullUserProfileAsync(reel.metadata.userAddress, cancellationToken);
+
+            view.InfoSidePanel.SetPictureOwner(reel.metadata.userName, profile.face256SnapshotURL);
         }
 
         private void ShowPrevScreenshot() =>
@@ -76,55 +113,88 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private void ShowNextScreenshot() =>
             Show(model.GetNextScreenshot(currentScreenshot));
 
-        private async Task SetScreenshotImage(CameraReelResponse reel)
-        {
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(reel.url);
-            await request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-                Debug.Log(request.error);
-            else
-            {
-                Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                view.SetScreenshotImage(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)));
-            }
-        }
-
         private void DeleteScreenshot()
         {
-            model.RemoveScreenshot(currentScreenshot);
-            view.Hide();
+            async UniTaskVoid DeleteScreenshotAsync(CameraReelResponse screenshot, CancellationToken cancellationToken)
+            {
+                try
+                {
+                    CameraReelStorageStatus storage = await storageService.DeleteScreenshot(screenshot.id, cancellationToken);
+                    model.RemoveScreenshot(screenshot);
+                    model.SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+                    analytics.DeletePhoto();
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    dataStore.notifications.DefaultErrorNotification.Set(DELETE_ERROR_MESSAGE, true);
+                    Debug.LogException(e);
+                }
+                finally
+                {
+                    view.Hide();
+                }
+            }
+
+            dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(
+                "Are you sure you want to delete this picture?",
+                "This picture will be removed and you will no longer be able to access it.",
+                "NO",
+                "YES",
+                () => {},
+                () =>
+                {
+                    deleteScreenshotCancellationToken = deleteScreenshotCancellationToken.SafeRestart();
+                    DeleteScreenshotAsync(currentScreenshot, deleteScreenshotCancellationToken.Token).Forget();
+                }), true);
         }
 
-        private void DownloadScreenshot() =>
-            Application.OpenURL(currentScreenshot.url);
+        private void DownloadScreenshot()
+        {
+            browserBridge.OpenUrl(currentScreenshot.url);
+            analytics.DownloadPhoto("Explorer");
+        }
 
         private void CopyScreenshotLink()
         {
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+            var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{currentScreenshot.id}";
 
-            GUIUtility.systemCopyBuffer = url;
-            Application.OpenURL(url);
+            clipboard.WriteText(url);
+            browserBridge.OpenUrl(url);
+            analytics.Share("Explorer", "Copy");
         }
 
         private void ShareOnTwitter()
         {
             var description = "Check out what I'm doing in Decentraland right now and join me!";
-            var url = $"https://dcl.gg/reels?image={currentScreenshot.id}";
+            var url = $"https://reels.decentraland.{(environmentProviderService.IsProd() ? "org" : "zone")}/{currentScreenshot.id}";
             var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLCamera&url={url}";
 
-            GUIUtility.systemCopyBuffer = twitterUrl;
-            Application.OpenURL(twitterUrl);
+            clipboard.WriteText(twitterUrl);
+            browserBridge.OpenUrl(twitterUrl);
+            analytics.Share("Explorer", "Twitter");
         }
 
         private void JumpInScene()
         {
-            if (int.TryParse(currentScreenshot.metadata.scene.location.x, out int x) && int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+            if (!int.TryParse(currentScreenshot.metadata.scene.location.x, out int x)
+                || !int.TryParse(currentScreenshot.metadata.scene.location.y, out int y))
+                return;
+
+            void TrackToAnalyticsThenCloseView()
             {
-                Environment.i.world.teleportController.JumpIn(x, y, currentScreenshot.metadata.realm, string.Empty);
+                analytics.JumpIn("Explorer");
                 view.Hide();
-                DataStore.i.exploreV2.isOpen.Set(false);
+                dataStore.exploreV2.isOpen.Set(false);
             }
+
+            dataStore.HUDs.gotoPanelVisible.Set(true, true);
+            dataStore.HUDs.gotoPanelCoordinates.Set((new ParcelCoordinates(x, y), currentScreenshot.metadata.realm, TrackToAnalyticsThenCloseView), true);
+        }
+
+        private void OpenPictureOwnerProfile()
+        {
+            dataStore.HUDs.currentPlayerId.Set((currentScreenshot.metadata.userAddress, SCREEN_SOURCE));
         }
     }
 }

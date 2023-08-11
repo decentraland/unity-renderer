@@ -7,7 +7,10 @@ public class TeleportHUDPlugin : IPlugin
 
     public TeleportHUDPlugin()
     {
-        teleportPromptHUDController = new TeleportPromptHUDController(DataStore.i, WebInterfaceMinimapApiBridge.i, DataStore.i.rpc.context.restrictedActions);
+        teleportPromptHUDController = new TeleportPromptHUDController(DataStore.i,
+            WebInterfaceMinimapApiBridge.i,
+            DataStore.i.rpc.context.restrictedActions,
+            Environment.i.world.teleportController);
     }
 
     public void Dispose()

@@ -245,7 +245,7 @@ namespace DCL.Social.Chat
             {
                 DataStore.i.HUDs.gotoPanelVisible.Set(true, true);
                 var parcelCoordinate = CoordinateUtils.ParseCoordinatesString(link);
-                DataStore.i.HUDs.gotoPanelCoordinates.Set(parcelCoordinate);
+                DataStore.i.HUDs.gotoPanelCoordinates.Set((parcelCoordinate, null, null));
             }
             else if (link.StartsWith("username://"))
                 OnUserNameClicked?.Invoke(this);

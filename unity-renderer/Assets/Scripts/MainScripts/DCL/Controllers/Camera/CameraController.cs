@@ -188,6 +188,8 @@ namespace DCL.Camera
 
         private void Update()
         {
+            if (!camera.enabled) return;
+
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
