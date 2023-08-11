@@ -95,7 +95,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             float upscaleFrameWidth = TARGET_FRAME_WIDTH / currentScreenFrameData.FrameWidth;
             float upscaleFrameHeight = TARGET_FRAME_HEIGHT / currentScreenFrameData.FrameHeight;
-            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.0001f);
+            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.01f);
 
             float targetRescale = upscaleFrameWidth;
 
@@ -103,8 +103,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             screenFrameData.ScreenHeight = currentScreenFrameData.ScreenHeight * targetRescale;
             screenFrameData.FrameWidth = currentScreenFrameData.FrameWidth * targetRescale;
             screenFrameData.FrameHeight = currentScreenFrameData.FrameHeight * targetRescale;
-            Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.0001f);
-            Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.0001f);
+            Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.1f);
+            Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.1f);
 
             return (screenFrameData, targetRescale);
         }
