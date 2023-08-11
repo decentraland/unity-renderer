@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -84,7 +85,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private BooleanVariable cameraBlocked;
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
-        private bool isPerformingScreenGrab;
+        public bool isPerformingScreenGrab;
 
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
@@ -139,6 +140,20 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerId = player.ownPlayer.Get().id;
                 UpdateStorageInfo();
             }
+
+        }
+
+        private void OnEndFrameRendering(ScriptableRenderContext arg1, Camera arg2)
+        {
+            Debug.Log("Performing screenshot!");
+
+            if (isPerformingScreenGrab && arg2 == screenshotCamera)
+            {
+                isPerformingScreenGrab = false;
+
+                Debug.Log("Performing screenshot!");
+                CaptureScreenshotNew("Shortcut");
+            }
         }
 
         internal void OnEnable()
@@ -146,30 +161,24 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
 
-            Camera.onPostRender += OnPostRenderCallback;
+            RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
+
+
         }
+
+
 
         internal void OnDisable()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
 
-            Camera.onPostRender -= OnPostRenderCallback;
+            RenderPipelineManager.endCameraRendering -= OnEndFrameRendering;
         }
 
         private void OnPostRenderCallback(Camera cam)
         {
-            if (isPerformingScreenGrab)
-            {
-                // Check whether the Camera that just finished rendering is the one you want to take a screen grab from
-                if (cam == screenshotCamera)
-                {
-                    CaptureScreenshotNew("Shortcut");
-
-                    // Reset the isPerformingScreenGrab state
-                    isPerformingScreenGrab = false;
-                }
-            }
+            Debug.Log("Post render for camera: " + cam.name);
         }
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
@@ -202,6 +211,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
+            Debug.Log("Start taking screenshot!");
+
             isPerformingScreenGrab = true;
 
             // StopAllCoroutines();
@@ -255,6 +266,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private bool isUploading;
         private void CaptureScreenshotNew(string source)
         {
+            Debug.Log("Taking screenshot!");
               if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace || isUploading) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
