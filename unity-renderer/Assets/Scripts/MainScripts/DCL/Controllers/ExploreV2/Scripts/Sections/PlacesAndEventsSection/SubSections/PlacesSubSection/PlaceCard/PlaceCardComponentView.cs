@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
@@ -384,6 +383,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
         OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
+        model.isFavorite = true;
+        model.placeInfo.id = placeUUID;
     }
 
     public override void OnFocus()
