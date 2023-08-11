@@ -65,7 +65,7 @@
     "@dcl/protocol": "^1.0.0-5812097343.commit-8025576",
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "7.0.6-20230809174058.commit-2408927",
-    "@dcl/schemas": "^7.4.1",
+    "@dcl/schemas": "^9.1.1",
     "@dcl/single-sign-on-client": "^0.0.12",
     "@dcl/urn-resolver": "^2.2.0",
     "@types/mocha": "^10.0.1",

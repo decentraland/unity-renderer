@@ -1,4 +1,5 @@
 using DCL.Components.Interfaces;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace DCL
         public readonly BaseVariable<bool> controlsVisible = new (false);
         public readonly BaseVariable<bool> isCameraReelInitialized = new (false);
         public readonly BaseVariable<bool> cameraReelSectionVisible = new (false);
+        public readonly BaseVariable<string> cameraReelOpenSource = new ();
         public readonly BaseVariable<bool> isAvatarEditorInitialized = new (false);
         public readonly BaseVariable<bool> avatarEditorVisible = new (false);
         public readonly BaseVariable<bool> emotesVisible = new (false);
@@ -29,7 +31,7 @@ namespace DCL
         public readonly BaseVariable<bool> avatarNamesVisible = new (true);
         public readonly BaseVariable<float> avatarNamesOpacity = new (1);
         public readonly BaseVariable<bool> gotoPanelVisible = new (false);
-        public readonly BaseVariable<ParcelCoordinates> gotoPanelCoordinates = new (new ParcelCoordinates(0, 0));
+        public readonly BaseVariable<(ParcelCoordinates coordinates, string realm, Action onAcceptedCallback)> gotoPanelCoordinates = new ();
         public readonly BaseVariable<bool> goToPanelConfirmed = new ();
         public readonly BaseVariable<bool> minimapVisible = new (true);
         public readonly BaseVariable<bool> jumpHomeButtonVisible = new (false);

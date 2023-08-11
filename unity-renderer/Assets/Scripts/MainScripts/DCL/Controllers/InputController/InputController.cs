@@ -51,7 +51,7 @@ public enum DCLAction_Trigger
     ChatMentionPreviousEntry = 155,
     ToggleScreenshotCamera = 156,
     TakeScreenshot = 157,
-
+    ToggleCameraReelSection = 158,
     Expression_Wave = 201,
     Expression_FistPump = 202,
     Expression_Robot = 203,
@@ -76,6 +76,8 @@ public enum DCLAction_Hold
     ZoomOut = 4,
     ScreenshotCameraUp = 51,
     ScreenshotCameraDown = 52,
+    ScreenshotCameraRollLeft = 53,
+    ScreenshotCameraRollRight = 54,
 
     FreeCameraMode = 101,
     VoiceChatRecording = 102,
@@ -175,7 +177,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.U, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.CloseWindow:
-                    if (!allUIHidden && !DataStore.i.common.isSignUpFlow.Get())
+                    if (!DataStore.i.common.isSignUpFlow.Get() && (!allUIHidden || CommonScriptableObjects.isScreenshotCameraActive.Get()))
                         InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleControlsHud:
@@ -295,11 +297,14 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleAvatarNamesHud:
                     InputProcessor.FromKey(action, KeyCode.N, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.ToggleCameraReelSection:
+                    InputProcessor.FromKey(action, KeyCode.K, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
                 case DCLAction_Trigger.ToggleScreenshotCamera:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.TakeScreenshot:
-                    InputProcessor.FromKey(action, KeyCode.Space, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.E, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -351,10 +356,16 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.F);
                     break;
                 case DCLAction_Hold.ScreenshotCameraDown:
-                    InputProcessor.FromKey(action, KeyCode.Q);
+                    InputProcessor.FromKey(action, KeyCode.F);
                     break;
                 case DCLAction_Hold.ScreenshotCameraUp:
-                    InputProcessor.FromKey(action, KeyCode.E);
+                    InputProcessor.FromKey(action, KeyCode.R);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraRollLeft:
+                    InputProcessor.FromKey(action, KeyCode.Z);
+                    break;
+                case DCLAction_Hold.ScreenshotCameraRollRight:
+                    InputProcessor.FromKey(action, KeyCode.X);
                     break;
                 case DCLAction_Hold.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, InputProcessor.Modifier.FocusNotInInput);

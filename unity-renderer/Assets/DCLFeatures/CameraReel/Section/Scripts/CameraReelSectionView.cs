@@ -1,5 +1,6 @@
 using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
+using System;
 using UnityEngine;
 
 namespace DCLFeatures.CameraReel.Section
@@ -16,9 +17,8 @@ namespace DCLFeatures.CameraReel.Section
         public void SwitchVisibility(bool isVisible) =>
             canvas.enabled = isVisible;
 
-        public void ShowGalleryWhenLoaded()
+        public void HideLoading()
         {
-            GalleryView.SwitchVisibility(isVisible: true);
             loadingSpinner.SetActive(false);
         }
     }

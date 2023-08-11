@@ -8,6 +8,7 @@ namespace DCLFeatures.CameraReel.Gallery
     {
         [SerializeField] private Slider storageBar;
         [SerializeField] private TMP_Text storageText;
+        [SerializeField] private GameObject storageFullMessage;
 
         private void Awake()
         {
@@ -19,6 +20,7 @@ namespace DCLFeatures.CameraReel.Gallery
         {
             storageText.text = $"Storage: {current}/{max} photo taken";
             storageText.gameObject.SetActive(true);
+            storageFullMessage.SetActive(current >= max);
 
             storageBar.maxValue = max;
             storageBar.value = current;
