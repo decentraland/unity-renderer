@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DCL.Interface;
+using System.Runtime.CompilerServices;
 using UnityEngine.Serialization;
 
 namespace DCL.Components
@@ -70,6 +71,7 @@ namespace DCL.Components
                 canvasGroup.blocksRaycasts = isPointerBlocker;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ResetLayoutElementRTLocalPosition()
         {
             if (layoutElementRT != null)

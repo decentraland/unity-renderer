@@ -90,9 +90,10 @@ namespace DCL.Components
             }
         }
 
-        public UIText(UIShapePool pool) : base(pool)
+        public UIText(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
         {
             this.pool = pool;
+            this.scheduler = scheduler;
             model = new Model();
         }
 

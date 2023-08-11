@@ -101,10 +101,12 @@ namespace DCL.Components
         private BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         protected UIShape parentUIComponent { get; private set; }
         protected UIShapePool pool;
+        protected UIShapeScheduler scheduler;
 
-        protected UIShape(UIShapePool pool)
+        protected UIShape(UIShapePool pool, UIShapeScheduler scheduler)
         {
             this.pool = pool;
+            this.scheduler = scheduler;
             screenSize.OnChange += OnScreenResize;
             model = new Model();
         }
@@ -154,6 +156,12 @@ namespace DCL.Components
             referencesContainer.owner = this;
 
             return referencesContainer as T;
+        }
+
+        internal void ScheduleAlphaChange(UIReferencesContainer container, float targetAlpha, bool instant = false)
+        {
+            if (container.canvasGroup != null)
+                scheduler.ScheduleAlphaChange(container.canvasGroup, targetAlpha);
         }
 
         private void RequestRefresh()

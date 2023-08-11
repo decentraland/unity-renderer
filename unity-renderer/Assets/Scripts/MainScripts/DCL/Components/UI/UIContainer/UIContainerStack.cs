@@ -65,9 +65,10 @@ namespace DCL.Components
         HorizontalOrVerticalLayoutGroup layoutGroup;
         private readonly UIShapePool childPool;
 
-        public UIContainerStack(UIShapePool containerStackPool, UIShapePool containerStackChildPool) : base(containerStackPool)
+        public UIContainerStack(UIShapePool containerStackPool, UIShapePool containerStackChildPool, UIShapeScheduler scheduler) : base(containerStackPool, scheduler)
         {
             this.pool = containerStackPool;
+            this.scheduler = scheduler;
             this.childPool = containerStackChildPool;
             model = new Model();
         }

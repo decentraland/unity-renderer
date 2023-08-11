@@ -62,9 +62,10 @@ namespace DCL.Components
             }
         }
 
-        public UIScrollRect(UIShapePool pool) : base(pool)
+        public UIScrollRect(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
         {
             this.pool = pool;
+            this.scheduler = scheduler;
             model = new Model();
         }
 

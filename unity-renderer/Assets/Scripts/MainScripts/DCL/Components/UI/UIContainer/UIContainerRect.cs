@@ -46,9 +46,10 @@ namespace DCL.Components
             }
         }
 
-        public UIContainerRect(UIShapePool pool) : base(pool)
+        public UIContainerRect(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
         {
             this.pool = pool;
+            this.scheduler = scheduler;
             model = new Model();
         }
 

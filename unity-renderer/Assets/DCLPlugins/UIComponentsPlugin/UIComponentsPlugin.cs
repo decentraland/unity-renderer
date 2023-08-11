@@ -17,6 +17,8 @@ public class UIComponentsPlugin : IPlugin
 
     private readonly Transform uiPoolsRoot;
 
+    private UIShapeScheduler uiShapeScheduler;
+
     public UIComponentsPlugin()
     {
         uiPoolsRoot = new GameObject("_SDK6_UIShapes_Pools").transform;
@@ -35,16 +37,17 @@ public class UIComponentsPlugin : IPlugin
         screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
+        uiShapeScheduler = new UIShapeScheduler(batchSize: 50, framesBetweenBatches: 2);
 
         // UI
-        factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool));
-        factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, () => new UIScreenSpace(fullScreenPool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_SLIDER_SHAPE, () => new UIScrollRect(scrollRectPool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool, containerStackChildPool) );
-        factory.RegisterBuilder((int) CLASS_ID.UI_IMAGE_SHAPE, () => new UIImage(imagePool));
-        factory.RegisterBuilder((int) CLASS_ID.UI_TEXT_SHAPE, () => new UIText(textPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, () => new UIScreenSpace(fullScreenPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_SLIDER_SHAPE, () => new UIScrollRect(scrollRectPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool, containerStackChildPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_IMAGE_SHAPE, () => new UIImage(imagePool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_TEXT_SHAPE, () => new UIText(textPool, uiShapeScheduler));
 
         factory.createConditions.Add((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, CanCreateScreenShape);
         factory.createConditions.Add((int) CLASS_ID.UI_FULLSCREEN_SHAPE, CanCreateScreenShape);

@@ -100,9 +100,10 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText(UIShapePool pool) : base(pool)
+        public UIInputText(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
         {
             this.pool = pool;
+            this.scheduler = scheduler;
             model = new Model();
         }
 
