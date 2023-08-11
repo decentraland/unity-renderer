@@ -53,6 +53,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal bool? isGuestLazyValue;
         internal IAvatarsLODController avatarsLODControllerLazyValue;
 
+        internal ScreencaptureCameraFactory factory = new ();
+
         private bool isInstantiated;
         private float lastScreenshotTime = -Mathf.Infinity;
         private CameraReelStorageStatus storageStatus;
@@ -110,8 +112,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
-        internal ScreencaptureCameraFactory factory = new ();
-
         private void Awake()
         {
             storageStatus = new CameraReelStorageStatus(0, 0);
@@ -143,11 +143,29 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void OnEnable()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
+            inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
         }
 
         internal void OnDisable()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
+            inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
+        }
+
+        private void OpenCameraReelGallery(DCLAction_Trigger _) =>
+            OpenCameraReelGallery("Shortcut");
+
+        private void OpenCameraReelGallery(string source)
+        {
+            if (isScreencaptureCameraActive.Get())
+                ToggleScreenshotCamera(isEnabled: false);
+
+            bool cameraReelWasOpen = DataStore.i.HUDs.cameraReelSectionVisible.Get();
+
+            if (!cameraReelWasOpen)
+                DataStore.i.HUDs.cameraReelOpenSource.Set(source);
+
+            DataStore.i.HUDs.cameraReelSectionVisible.Set(!cameraReelWasOpen);
         }
 
         internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,

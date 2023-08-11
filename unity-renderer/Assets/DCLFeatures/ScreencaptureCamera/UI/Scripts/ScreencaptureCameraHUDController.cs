@@ -33,7 +33,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             input.TakeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
-            input.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
         }
@@ -47,11 +46,10 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             input.TakeScreenshotAction.OnTriggered -= CaptureScreenshot;
 
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
-            input.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked -= view.ToggleShortcutsInfosHelpPanel;
 
-            Object.Destroy(view);
+            Object.Destroy(view.gameObject);
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
@@ -77,9 +75,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
         private void OpenCameraReelGallery() =>
             OpenCameraReelGallery("Camera");
-
-        private void OpenCameraReelGallery(DCLAction_Trigger _) =>
-            OpenCameraReelGallery("Shortcut");
 
         private void OpenCameraReelGallery(string source)
         {
