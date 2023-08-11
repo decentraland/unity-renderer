@@ -153,7 +153,7 @@ namespace DCL.MyAccount
             };
             linkListView.OnRemoved += tuple =>
             {
-                OnLinkRemoved?.Invoke((tuple.title, UnityWebRequest.EscapeURL(tuple.url)));
+                OnLinkRemoved?.Invoke((tuple.title, tuple.url));
                 Utils.ForceRebuildLayoutImmediate(linksContainerTransform);
             };
 
