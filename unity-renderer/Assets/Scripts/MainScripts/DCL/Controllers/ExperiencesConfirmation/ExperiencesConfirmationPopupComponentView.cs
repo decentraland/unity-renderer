@@ -1,5 +1,7 @@
 using DCL.Helpers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -10,13 +12,19 @@ namespace DCL.PortableExperiences.Confirmation
     public class ExperiencesConfirmationPopupComponentView : BaseComponentView<ExperiencesConfirmationViewModel>,
         IExperiencesConfirmationPopupView
     {
+        [Serializable]
+        private struct PermissionContainer
+        {
+            public string permission;
+            public GameObject container;
+        }
+
         [SerializeField] private Button acceptButton;
         [SerializeField] private Button rejectButton;
         [SerializeField] private Button[] cancelButtons;
         [SerializeField] private InputAction_Trigger cancelTrigger;
         [SerializeField] private GameObject permissionsContainer;
         [SerializeField] private GameObject descriptionContainer;
-        [SerializeField] private TMP_Text permissionsLabel;
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text descriptionLabel;
         [SerializeField] private TMP_Text allowButtonLabel;
@@ -27,6 +35,11 @@ namespace DCL.PortableExperiences.Confirmation
         [SerializeField] private RectTransform root;
         [SerializeField] private GameObject smartWearableTitle;
         [SerializeField] private GameObject scenePxTitle;
+        [SerializeField] private List<PermissionContainer> permissionsConfig;
+        [SerializeField] private Button useWeb3ApiInfoButton;
+        [SerializeField] private ShowHideAnimator useWeb3ApiInfoToast;
+
+        private Dictionary<string, GameObject> permissionContainers;
 
         public event Action OnAccepted;
         public event Action OnRejected;
@@ -37,6 +50,8 @@ namespace DCL.PortableExperiences.Confirmation
         public override void Awake()
         {
             base.Awake();
+
+            permissionContainers = permissionsConfig.ToDictionary(container => container.permission, container => container.container);
 
             acceptButton.onClick.AddListener(() => OnAccepted?.Invoke());
             rejectButton.onClick.AddListener(() => OnRejected?.Invoke());
@@ -50,6 +65,17 @@ namespace DCL.PortableExperiences.Confirmation
                     OnDontShowAnymore?.Invoke();
                 else
                     OnKeepShowing?.Invoke();
+            });
+
+            useWeb3ApiInfoButton.onClick.AddListener(() =>
+            {
+                if (useWeb3ApiInfoToast.gameObject.activeSelf)
+                    useWeb3ApiInfoToast.Hide();
+                else
+                {
+                    useWeb3ApiInfoToast.gameObject.SetActive(true);
+                    useWeb3ApiInfoToast.ShowDelayHide(10f);
+                }
             });
         }
 
@@ -75,9 +101,11 @@ namespace DCL.PortableExperiences.Confirmation
             permissionsContainer.SetActive(isPermissionsEnabled);
             descriptionContainer.SetActive(isDescriptionEnabled);
 
-            permissionsLabel.text = "";
+            foreach ((string _, GameObject container) in permissionContainers)
+                container.SetActive(false);
+
             foreach (string permission in model.Permissions)
-                permissionsLabel.text += $"- {permission}\n";
+                permissionContainers[permission].SetActive(true);
 
             descriptionLabel.text = model.Description;
             nameLabel.text = model.Name;

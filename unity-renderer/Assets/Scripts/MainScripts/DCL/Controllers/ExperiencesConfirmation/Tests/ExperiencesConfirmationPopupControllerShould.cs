@@ -151,13 +151,13 @@ namespace DCL.PortableExperiences.Confirmation
 
             view.Received(1)
                 .SetModel(Arg.Is<ExperiencesConfirmationViewModel>(e =>
-                     e.Permissions[0] == "Communicate with 3rd party servers."
-                     && e.Permissions[1] == "Exchange data with other servers."
-                     && e.Permissions[2] == "Open external links."
-                     && e.Permissions[3] == "Interact with your wallet."
-                     && e.Permissions[4] == "Trigger emotes."
-                     && e.Permissions[5] == "Move your position."
-                     && e.Permissions[6] == "Play media content (video, audio, etc)."));
+                     e.Permissions[0] == "USE_FETCH"
+                     && e.Permissions[1] == "USE_WEBSOCKET"
+                     && e.Permissions[2] == "OPEN_EXTERNAL_LINK"
+                     && e.Permissions[3] == "USE_WEB3_API"
+                     && e.Permissions[4] == "ALLOW_TO_TRIGGER_AVATAR_EMOTE"
+                     && e.Permissions[5] == "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE"
+                     && e.Permissions[6] == "ALLOW_MEDIA_HOSTNAMES"));
         }
 
         [Test]
