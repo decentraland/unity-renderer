@@ -231,13 +231,13 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onSubscribeClick.RemoveAllListeners();
         view.onUnsubscribeClick.RemoveAllListeners();
         view.onJumpInClick.RemoveAllListeners();
-        view.onSecondaryJumpInClick.RemoveAllListeners();
+        view.onSecondaryJumpInClick?.RemoveAllListeners();
         view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onBackgroundClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
         view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
         view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
-        view.onSecondaryJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
+        view.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
     }
 
     private void ConfigurePlaceCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
