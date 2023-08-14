@@ -272,6 +272,7 @@ namespace Tests
             {
                 components = { 1 }
             };
+            uiDocumentInstance.rootVisualElement.Add(internalUiComponent.rootElement);
 
             internalComponents.uiContainerComponent.PutFor(scene, entity, internalUiComponent);
 
