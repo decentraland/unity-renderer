@@ -64,6 +64,16 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     private void VoteChanegd(string placeId, bool? isUpvote)
     {
+        if (isUpvote != null)
+        {
+            if (isUpvote.Value)
+                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+        }
+        else
+            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+
         placesAPIService.SetPlaceVote(isUpvote, placeId, default);
     }
 

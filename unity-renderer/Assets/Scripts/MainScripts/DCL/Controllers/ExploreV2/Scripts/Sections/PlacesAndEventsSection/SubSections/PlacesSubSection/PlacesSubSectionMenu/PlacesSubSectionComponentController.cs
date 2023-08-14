@@ -95,6 +95,16 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private void View_OnVoteChanged(string placeId, bool? isUpvote)
     {
+        if (isUpvote != null)
+        {
+            if (isUpvote.Value)
+                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+        }
+        else
+            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+
         placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
     }
 

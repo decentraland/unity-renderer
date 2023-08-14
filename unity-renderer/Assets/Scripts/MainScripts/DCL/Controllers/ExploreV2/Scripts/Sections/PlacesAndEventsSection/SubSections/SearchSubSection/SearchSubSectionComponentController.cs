@@ -63,6 +63,16 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private void ChangeVote(string placeId, bool? isUpvote)
     {
+        if (isUpvote != null)
+        {
+            if (isUpvote.Value)
+                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+            else
+                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+        }
+        else
+            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+
         placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
     }
 
