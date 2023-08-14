@@ -30,6 +30,7 @@ namespace DCL.PortableExperiences.Confirmation
             ownUserProfile.UpdateData(new UserProfileModel
             {
                 userId = "ownId",
+                avatar = new AvatarModel(),
             });
 
             userProfileBridge.GetOwn().Returns(ownUserProfile);
