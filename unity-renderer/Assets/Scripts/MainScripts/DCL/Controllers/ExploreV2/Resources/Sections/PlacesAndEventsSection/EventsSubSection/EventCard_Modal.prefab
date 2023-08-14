@@ -779,6 +779,7 @@ MonoBehaviour:
   infoVerticalLayout: {fileID: 827576619283239686}
   timeAndPlayersHorizontalLayout: {fileID: 0}
   cardAnimator: {fileID: 0}
+  scroll: {fileID: 9079314871328503333}
   defaultPicture: {fileID: 21300000, guid: 6e529494754e8224da77f0acd64e6dea, type: 3}
   isEventCardModal: 1
   model:
@@ -942,7 +943,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6232622639415160054}
   m_HandleRect: {fileID: 1504550743164451638}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

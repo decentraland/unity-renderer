@@ -178,6 +178,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
     [SerializeField] internal EventCardAnimator cardAnimator;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -261,7 +262,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
         SetCoords(model.coords);
-
+        ResetScrollPosition();
         RebuildCardLayouts();
     }
 
@@ -566,5 +567,13 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         float divided = num / 1000.0f;
         divided = (int)(divided * 100) / 100f;
         return $"{divided:F2}k";
+    }
+
+    private void ResetScrollPosition()
+    {
+        if (scroll == null)
+            return;
+
+        scroll.verticalNormalizedPosition = 1;
     }
 }

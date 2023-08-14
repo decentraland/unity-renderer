@@ -188,6 +188,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal GameObject favoriteButtonContainer;
     [SerializeField] internal TMP_Text numberOfFavoritesText;
     [SerializeField] internal TMP_Text updatedAtText;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -312,6 +313,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetNumberOfFavorites(model.numberOfFavorites);
         SetDeployedAt(model.deployedAt);
         SetIsPOI(model.isPOI);
+        ResetScrollPosition();
         RebuildCardLayouts();
     }
 
@@ -722,5 +724,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         float divided = num / 1000.0f;
         divided = (int)(divided * 100) / 100f;
         return $"{divided:F2}k";
+    }
+
+    private void ResetScrollPosition()
+    {
+        if (scroll == null)
+            return;
+
+        scroll.verticalNormalizedPosition = 1;
     }
 }
