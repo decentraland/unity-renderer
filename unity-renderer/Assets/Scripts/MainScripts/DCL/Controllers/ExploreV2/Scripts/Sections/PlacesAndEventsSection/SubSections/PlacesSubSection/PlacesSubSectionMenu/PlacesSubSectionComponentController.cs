@@ -100,7 +100,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private void View_OnVoteChanged(string placeId, bool? isUpvote)
     {
         if (userProfileBridge.GetOwn().isGuest)
-            ConnectWallet();
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
             if (isUpvote != null)
@@ -120,7 +120,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
         if (userProfileBridge.GetOwn().isGuest)
-            ConnectWallet();
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
             if (isFavorite)
@@ -280,10 +280,5 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         return resultFilter;
-    }
-
-    private void ConnectWallet()
-    {
-        dataStore.HUDs.connectWalletModalVisible.Set(true);
     }
 }

@@ -63,27 +63,37 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private void ChangeVote(string placeId, bool? isUpvote)
     {
-        if (isUpvote != null)
-        {
-            if (isUpvote.Value)
-                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromSearch);
-            else
-                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromSearch);
-        }
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
-            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+        {
+            if (isUpvote != null)
+            {
+                if (isUpvote.Value)
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                else
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+            }
+            else
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromSearch);
 
-        placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
+            placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
+        }
     }
 
     private void ChangePlaceFavorite(string placeId, bool isFavorite)
     {
-        if(isFavorite)
-            placesAnalytics.AddFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
-            placesAnalytics.RemoveFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+        {
+            if(isFavorite)
+                placesAnalytics.AddFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+            else
+                placesAnalytics.RemoveFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
 
-        placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
+            placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
+        }
     }
 
     private void CloseSearchPanel()
