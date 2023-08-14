@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Helpers;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -134,6 +135,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     internal const string USERS_CONFIRMED_MESSAGE = "{0} going";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
     private const string NO_DESCRIPTION_TEXT = "No description.";
+    private const int EVENT_TITLE_LENGTH_LIMIT = 65;
 
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
@@ -437,11 +439,13 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         model.eventName = newText;
 
+        string wrappedText = newText.Substring(0, Math.Min(EVENT_TITLE_LENGTH_LIMIT, newText.Length));
+
         if (eventNameText != null)
-            eventNameText.text = newText;
+            eventNameText.text = wrappedText;
 
         if (eventNameTextOnFocus != null)
-            eventNameTextOnFocus.text = newText;
+            eventNameTextOnFocus.text = wrappedText;
     }
 
     public void SetEventDescription(string newText)
