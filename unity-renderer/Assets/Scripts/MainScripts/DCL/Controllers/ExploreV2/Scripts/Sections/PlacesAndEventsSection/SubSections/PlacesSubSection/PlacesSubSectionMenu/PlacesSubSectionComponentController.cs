@@ -19,6 +19,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
+    private const string ONLY_POI_FILTER = "only_pois=true";
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
@@ -142,7 +143,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
                 view.SetPOICoords(allPointOfInterest.ToList());
 
             string filter = view.filter;
-            if (filter == "only_pois=true")
+            if (filter == ONLY_POI_FILTER)
                 filter = BuildPointOfInterestFilter();
 
             (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, filter, view.sort, ct);
@@ -171,7 +172,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
         string filter = view.filter;
-        if (filter == "only_pois=true")
+        if (filter == ONLY_POI_FILTER)
             filter = BuildPointOfInterestFilter();
 
         (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, filter, view.sort, showMoreCts.Token);

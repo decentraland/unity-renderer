@@ -17,6 +17,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
     private const string HIGHEST_RATED_FILTER_ID = "like_rate";
     private const string HIGHEST_RATED_FILTER_TEXT = "Highest rated";
+    private const string ONLY_FEATURED_FILTER = "only_featured=true";
+    private const string ONLY_POI_FILTER = "only_pois=true";
 
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setPlacesCts = new ();
@@ -119,7 +121,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         DeselectButtons();
 
-        if (filter == "only_featured=true")
+        if (filter == ONLY_FEATURED_FILTER)
         {
             filter = "";
             SetPoiStatus(false);
@@ -128,7 +130,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         }
         else
         {
-            filter = "only_featured=true";
+            filter = ONLY_FEATURED_FILTER;
             SetPoiStatus(false);
             SetFeaturedStatus(true);
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
@@ -141,7 +143,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     {
         DeselectButtons();
 
-        if (filter == "only_pois=true")
+        if (filter == ONLY_POI_FILTER)
         {
             filter = "";
             SetPoiStatus(false);
@@ -150,7 +152,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         }
         else
         {
-            filter = "only_pois=true";
+            filter = ONLY_POI_FILTER;
             SetPoiStatus(true);
             SetFeaturedStatus(false);
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);

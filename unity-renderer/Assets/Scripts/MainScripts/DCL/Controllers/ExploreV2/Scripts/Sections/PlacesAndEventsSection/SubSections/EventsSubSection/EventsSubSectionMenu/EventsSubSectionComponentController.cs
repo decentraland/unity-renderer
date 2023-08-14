@@ -341,8 +341,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         string startTimeString = ConvertToTimeString(lowTimeValue);
         string endTimeString = ConvertToTimeString(highTimeValue);
 
-        TimeSpan startTime = lowTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(startTimeString) : new TimeSpan(1, 0, 0, 0);
-        TimeSpan endTime = highTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(endTimeString) : new TimeSpan(1, 0, 0, 0);
+        TimeSpan startTime = lowTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(startTimeString) : TimeSpan.FromDays(1);
+        TimeSpan endTime = highTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(endTimeString) : TimeSpan.FromDays(1);
         TimeSpan currentTime = Convert.ToDateTime(dateTime).ToUniversalTime().TimeOfDay;
         return currentTime >= startTime && currentTime <= endTime;
     }
