@@ -137,6 +137,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     private const string NO_DESCRIPTION_TEXT = "No description.";
     private const int EVENT_TITLE_LENGTH_LIMIT = 65;
 
+    [Header("Assets References")]
+    [SerializeField] internal UserProfile ownUserProfile;
+
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
     [SerializeField] internal GameObject numberOfUsersContainer;
@@ -208,6 +211,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     private void PressedSubscribe()
     {
+        if (ownUserProfile.isGuest)
+            return;
+
         model.isSubscribed = true;
         model.eventFromAPIInfo.attending = true;
         RefreshControl();
@@ -215,6 +221,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     private void PressedUnsubscribe()
     {
+        if (ownUserProfile.isGuest)
+            return;
+
         model.isSubscribed = false;
         model.eventFromAPIInfo.attending = false;
         RefreshControl();

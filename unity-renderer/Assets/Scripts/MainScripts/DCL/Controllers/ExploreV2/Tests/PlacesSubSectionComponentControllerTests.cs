@@ -34,7 +34,8 @@ public class PlacesSubSectionComponentControllerTests
             friendsController,
             exploreV2Analytics,
             Substitute.For<IPlacesAnalytics>(),
-            DataStore.i);
+            DataStore.i,
+            Substitute.For<IUserProfileBridge>());
     }
 
     [TearDown]

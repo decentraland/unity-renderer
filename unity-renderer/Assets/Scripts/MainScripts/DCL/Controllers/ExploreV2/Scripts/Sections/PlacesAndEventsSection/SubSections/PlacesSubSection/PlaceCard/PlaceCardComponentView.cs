@@ -147,6 +147,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
+    [SerializeField] internal UserProfile ownUserProfile;
 
     [Header("Prefab References")]
     [SerializeField] internal GameObject poiMark;
@@ -240,12 +241,20 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (upvote)
         {
             OnVoteChanged?.Invoke(model.placeInfo.id, model.isUpvote ? (bool?)null : true);
+
+            if (ownUserProfile != null && ownUserProfile.isGuest)
+                return;
+
             model.isUpvote = !model.isUpvote;
             model.isDownvote = false;
         }
         else
         {
             OnVoteChanged?.Invoke(model.placeInfo.id, model.isDownvote ? (bool?)null : false);
+
+            if (ownUserProfile != null && ownUserProfile.isGuest)
+                return;
+
             model.isDownvote = !model.isDownvote;
             model.isUpvote = false;
         }
@@ -383,6 +392,17 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
         OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
+
+        if (ownUserProfile != null && ownUserProfile.isGuest)
+        {
+            favoriteButton.Configure(new FavoriteButtonComponentModel
+            {
+                placeUUID = placeUUID,
+                isFavorite = false,
+            });
+            return;
+        }
+
         model.isFavorite = true;
         model.placeInfo.id = placeUUID;
     }

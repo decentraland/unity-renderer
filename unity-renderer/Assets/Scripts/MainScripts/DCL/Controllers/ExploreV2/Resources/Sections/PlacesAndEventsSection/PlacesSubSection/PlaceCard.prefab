@@ -323,6 +323,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   friendHeadPrefab: {fileID: 897261817415313073, guid: b681cffe9673cf64482a6cb83368424d,
     type: 3}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
   poiMark: {fileID: 0}
   placeImage: {fileID: 2794385792905576523}
   placeNameOnIdleText: {fileID: 2362079030941012164}

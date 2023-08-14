@@ -27,6 +27,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
     private IReadOnlyList<string> allPointOfInterest;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
@@ -43,7 +44,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
         IPlacesAnalytics placesAnalytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        IUserProfileBridge userProfileBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -68,6 +70,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
         this.exploreV2Analytics = exploreV2Analytics;
         this.placesAnalytics = placesAnalytics;
+
+        this.userProfileBridge = userProfileBridge;
 
         view.ConfigurePools();
     }
@@ -95,27 +99,37 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private void View_OnVoteChanged(string placeId, bool? isUpvote)
     {
-        if (isUpvote != null)
-        {
-            if (isUpvote.Value)
-                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
-            else
-                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
-        }
+        if (userProfileBridge.GetOwn().isGuest)
+            ConnectWallet();
         else
-            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+        {
+            if (isUpvote != null)
+            {
+                if (isUpvote.Value)
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                else
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            }
+            else
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
 
-        placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
+            placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
+        }
     }
 
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
-        if(isFavorite)
-            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+        if (userProfileBridge.GetOwn().isGuest)
+            ConnectWallet();
         else
-            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+        {
+            if (isFavorite)
+                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
 
-        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+            placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+        }
     }
 
     private void FirstLoading()
@@ -266,5 +280,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         }
 
         return resultFilter;
+    }
+
+    private void ConnectWallet()
+    {
+        dataStore.HUDs.connectWalletModalVisible.Set(true);
     }
 }

@@ -1949,6 +1949,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   friendHeadPrefab: {fileID: 0}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
   poiMark: {fileID: 1341033634086760397}
   placeImage: {fileID: 4716220135208809830}
   placeNameOnIdleText: {fileID: 4235491116293760012}
@@ -4613,7 +4614,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 800332875265169508}
   m_HandleRect: {fileID: 8293180069293189189}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

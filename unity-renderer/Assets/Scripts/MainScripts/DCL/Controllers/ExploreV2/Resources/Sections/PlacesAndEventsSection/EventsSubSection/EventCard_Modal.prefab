@@ -741,6 +741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
   eventImage: {fileID: 3393787774281996490}
   numberOfUsersContainer: {fileID: 0}
   numberOfUsersText: {fileID: 0}

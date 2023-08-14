@@ -1529,6 +1529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
   eventImage: {fileID: 1747534983213595130}
   numberOfUsersContainer: {fileID: 3535310281810328146}
   numberOfUsersText: {fileID: 1638730290497456972}
@@ -1555,6 +1556,7 @@ MonoBehaviour:
   backgroundButton: {fileID: 4024975090467840161}
   infoButton: {fileID: 3943046758750737686}
   jumpinButton: {fileID: 6759147769794526785}
+  secondaryJumpinButton: {fileID: 0}
   subscribeEventButton: {fileID: 9006856045368665380}
   unsubscribeEventButton: {fileID: 1370087865557025792}
   imageContainer: {fileID: 8216777136951531091}
@@ -1574,7 +1576,6 @@ MonoBehaviour:
     eventPictureTexture: {fileID: 0}
     eventPictureUri: 
     isLive: 1
-    numberOfUsers: 0
     liveTagText: LIVE
     eventDateText: JULY 5
     eventName: Event's name
@@ -1586,6 +1587,7 @@ MonoBehaviour:
     subscribedUsers: 153
     isSubscribed: 0
     coords: {x: 0, y: 0}
+    numberOfUsers: 0
     eventFromAPIInfo:
       id: 
       name: 

@@ -51,7 +51,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             friendsController,
             exploreV2Analytics,
             placesAnalytics,
-            dataStore);
+            dataStore,
+            userProfileBridge);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(

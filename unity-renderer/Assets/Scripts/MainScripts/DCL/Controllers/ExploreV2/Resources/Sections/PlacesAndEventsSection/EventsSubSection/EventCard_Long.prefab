@@ -1505,6 +1505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
+  ownUserProfile: {fileID: 11400000, guid: 25aec1357b37f3146b4dc1588cd4d1ca, type: 2}
   eventImage: {fileID: 7636396302017607210}
   numberOfUsersContainer: {fileID: 0}
   numberOfUsersText: {fileID: 0}
@@ -1531,6 +1532,7 @@ MonoBehaviour:
   backgroundButton: {fileID: 2989748378266581734}
   infoButton: {fileID: 519152962217719091}
   jumpinButton: {fileID: 2992462245682427114}
+  secondaryJumpinButton: {fileID: 0}
   subscribeEventButton: {fileID: 2693598315388401221}
   unsubscribeEventButton: {fileID: 7248259833769649542}
   imageContainer: {fileID: 6036380039347540516}
