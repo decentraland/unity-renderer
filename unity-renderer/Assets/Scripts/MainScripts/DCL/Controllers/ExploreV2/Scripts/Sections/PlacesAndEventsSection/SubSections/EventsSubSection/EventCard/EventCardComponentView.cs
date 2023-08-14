@@ -10,6 +10,7 @@ public interface IEventCardComponentView
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onJumpInClick { get; }
+    Button.ButtonClickedEvent onSecondaryJumpInClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the info button is clicked.
@@ -161,6 +162,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal ButtonComponentView backgroundButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
+    [SerializeField] internal ButtonComponentView secondaryJumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
     [SerializeField] internal ButtonComponentView unsubscribeEventButton;
     [SerializeField] internal GameObject imageContainer;
@@ -178,6 +180,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal EventCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onSecondaryJumpInClick => secondaryJumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
     public Button.ButtonClickedEvent onBackgroundClick => backgroundButton?.onClick;
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
@@ -372,6 +375,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (jumpinButton != null)
             jumpinButton.gameObject.SetActive(isEventCardModal || isLive);
 
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.gameObject.SetActive(isEventCardModal || isLive);
+
         if (subscribeEventButton != null)
             subscribeEventButton.gameObject.SetActive(!isLive && !model.eventFromAPIInfo.attending);
 
@@ -506,6 +512,11 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     public void SetCoords(Vector2Int newCoords)
     {
         model.coords = newCoords;
+
+        if (secondaryJumpinButton == null || !isEventCardModal)
+            return;
+
+        secondaryJumpinButton.SetText($"{newCoords.x},{newCoords.y}");
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)

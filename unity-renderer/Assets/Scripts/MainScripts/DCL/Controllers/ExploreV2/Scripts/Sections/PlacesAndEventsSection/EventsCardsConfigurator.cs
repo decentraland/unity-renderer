@@ -33,6 +33,8 @@ public static class EventsCardsConfigurator
         eventCard.onBackgroundClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
         eventCard.onJumpInClick?.RemoveAllListeners();
         eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
+        eventCard.onSecondaryJumpInClick?.RemoveAllListeners();
+        eventCard.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
         eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
         eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
 
