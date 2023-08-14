@@ -30,6 +30,11 @@ namespace DCLPlugins.CameraReelPlugin
 
         private async UniTaskVoid Initialize()
         {
+            await UniTask.WaitUntil(() => DataStore.i.player.ownPlayer.Get() != null && !string.IsNullOrEmpty(DataStore.i.player.ownPlayer.Get().id));
+
+            if (UserProfileController.userProfilesCatalog.Get(DataStore.i.player.ownPlayer.Get().id).isGuest)
+                return;
+
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
@@ -44,7 +49,8 @@ namespace DCLPlugins.CameraReelPlugin
                 cameraReelModel,
                 () =>
                 {
-                    var screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
+                    ScreenshotViewerView screenshotViewerView = Object.Instantiate(view.ScreenshotViewerPrefab);
+
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
                         storageService, new UserProfileWebInterfaceBridge(),
                         Clipboard.Create(), new WebInterfaceBrowserBridge(),
@@ -64,10 +70,12 @@ namespace DCLPlugins.CameraReelPlugin
 
             foreach (ThumbnailContextMenuController controller in thumbnailContextMenuControllers)
                 controller.Dispose();
+
             thumbnailContextMenuControllers.Clear();
 
             foreach (ScreenshotVisiblePersonController controller in visiblePersonControllers)
                 controller.Dispose();
+
             visiblePersonControllers.Clear();
 
             reelSectionController.Dispose();
@@ -81,6 +89,7 @@ namespace DCLPlugins.CameraReelPlugin
                 DataStore.i,
                 Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>(),
                 Environment.i.serviceLocator.Get<IEnvironmentProviderService>());
+
             thumbnailContextMenuControllers.Add(controller);
         }
 

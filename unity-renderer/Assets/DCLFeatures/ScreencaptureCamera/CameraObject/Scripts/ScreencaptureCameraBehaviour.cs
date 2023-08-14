@@ -128,15 +128,23 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 Destroy(gameObject);
             else
             {
-                Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
-                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
-                CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
-
-                enabled = true;
-
                 yield return new WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id));
-                playerId = player.ownPlayer.Get().id;
-                UpdateStorageInfo();
+
+                if(isGuest)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
+                    enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
+                    CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
+
+                    enabled = true;
+
+                    playerId = player.ownPlayer.Get().id;
+                    UpdateStorageInfo();
+                }
             }
         }
 
