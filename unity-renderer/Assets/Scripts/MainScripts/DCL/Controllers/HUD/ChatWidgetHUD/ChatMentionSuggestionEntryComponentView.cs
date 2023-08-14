@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatMentionSuggestionEntryComponentView : BaseComponentView<ChatMentionSuggestionModel>,
         ISelectHandler, IDeselectHandler, ISubmitHandler

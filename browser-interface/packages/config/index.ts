@@ -75,6 +75,8 @@ export const QS_MAX_VISIBLE_PEERS =
 export const BUILDER_SERVER_URL =
   ensureSingleString(qs.get('BUILDER_SERVER_URL')) ?? 'https://builder-api.decentraland.org/v1'
 
+export const SSO_URL = ensureSingleString(qs.get('SSO_URL')) ?? 'https://id.decentraland.org'
+
 /**
  * Get the root URL and ensure not to end with slash
  * @returns Root URL with pathname where the index.html is served.
@@ -110,7 +112,6 @@ export const commConfigurations = {
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 'mainnet',
-  GOERLI = 'goerli',
   SEPOLIA = 'sepolia'
 }
 
@@ -194,18 +195,6 @@ export namespace ethereumConfigurations {
     EstateProxy: assertValue(contractInfo.mainnet.EstateProxy),
     CatalystProxy: assertValue(contractInfo.mainnet.CatalystProxy),
     MANAToken: assertValue(contractInfo.mainnet.MANAToken)
-  }
-  export const goerli = {
-    wss: 'wss://rpc.decentraland.org/goerli',
-    http: 'https://rpc.decentraland.org/goerli',
-    etherscan: 'https://goerli.etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-goerli',
-
-    // contracts
-    LANDProxy: assertValue(contractInfo.goerli.LANDProxy),
-    EstateProxy: assertValue(contractInfo.goerli.EstateProxy),
-    CatalystProxy: assertValue(contractInfo.goerli.CatalystProxy || contractInfo.goerli.Catalyst),
-    MANAToken: assertValue(contractInfo.goerli.MANAToken)
   }
   export const sepolia = {
     wss: 'wss://rpc.decentraland.org/sepolia',

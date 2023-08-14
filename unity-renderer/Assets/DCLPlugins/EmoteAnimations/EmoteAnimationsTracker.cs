@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AvatarSystem;
+using Cysharp.Threading.Tasks;
+using DCL.Configuration;
+using DCLServices.WearablesCatalogService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using AvatarSystem;
-using Cysharp.Threading.Tasks;
-using DCL.Configuration;
-using DCLServices.WearablesCatalogService;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,6 +18,7 @@ namespace DCL.Emotes
         internal readonly EmoteAnimationLoaderFactory emoteAnimationLoaderFactory;
         private readonly IEmotesCatalogService emotesCatalogService;
         private readonly IWearablesCatalogService wearablesCatalogService;
+        private readonly ICatalyst catalyst;
 
         internal Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader> loaders = new Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader>();
 
@@ -29,7 +30,8 @@ namespace DCL.Emotes
             DataStore_Emotes dataStore,
             EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
             IEmotesCatalogService emotesCatalogService,
-            IWearablesCatalogService wearablesCatalogService)
+            IWearablesCatalogService wearablesCatalogService,
+            ICatalyst catalyst)
         {
             animationsModelsContainer = new GameObject("_EmoteAnimationsHolder");
             animationsModelsContainer.transform.position = EnvironmentSettings.MORDOR;
@@ -38,6 +40,7 @@ namespace DCL.Emotes
             this.emotesCatalogService = emotesCatalogService;
             this.wearablesCatalogService = wearablesCatalogService;
             this.dataStore.animations.Clear();
+            this.catalyst = catalyst;
 
             AsyncInitialization();
         }
@@ -58,7 +61,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.maleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((MALE,  embeddedEmote.id), 5000);
+                    dataStore.emotesOnUse.SetRefCount((MALE, embeddedEmote.id), 5000);
                     var clipData = new EmoteClipData(embeddedEmote.maleAnimation, embeddedEmote.emoteDataV0);
                     dataStore.animations.Add((MALE, embeddedEmote.id), clipData);
                     loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
@@ -69,7 +72,7 @@ namespace DCL.Emotes
                     //We match the animation id with its name due to performance reasons
                     //Unity's Animation uses the name to play the clips.
                     embeddedEmote.femaleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((FEMALE,  embeddedEmote.id), 5000);
+                    dataStore.emotesOnUse.SetRefCount((FEMALE, embeddedEmote.id), 5000);
                     var emoteClipData = new EmoteClipData(embeddedEmote.femaleAnimation, embeddedEmote.emoteDataV0);
                     dataStore.animations.Add((FEMALE, embeddedEmote.id), emoteClipData);
                     loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
@@ -107,14 +110,18 @@ namespace DCL.Emotes
             try
             {
                 loaders.Add((bodyShapeId, emoteId), null);
-                var emote = await(emotesCatalogService.RequestEmoteAsync(emoteId, ct));
+                var emote = await RequestEmote(bodyShapeId, emoteId, ct);
+
+                if (emote == null)
+                    return;
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
                 loaders[(bodyShapeId, emoteId)] = animationLoader;
                 await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, ct);
 
                 EmoteClipData emoteClipData;
-                if(emote is EmoteItem newEmoteItem)
+
+                if (emote is EmoteItem newEmoteItem)
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, newEmoteItem.data.loop);
                 else
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, emote.emoteDataV0);
@@ -138,6 +145,7 @@ namespace DCL.Emotes
         private void UnloadEmote(string bodyShapeId, string emoteId)
         {
             dataStore.animations.Remove((bodyShapeId, emoteId));
+
             if (!loaders.TryGetValue((bodyShapeId, emoteId), out IEmoteAnimationLoader loader))
                 return;
 
@@ -149,13 +157,59 @@ namespace DCL.Emotes
         {
             dataStore.emotesOnUse.OnRefCountUpdated -= OnRefCountUpdated;
             (string bodyshapeId, string emoteId)[] keys = loaders.Keys.ToArray();
+
             foreach ((string bodyshapeId, string emoteId) in keys)
             {
                 UnloadEmote(bodyshapeId, emoteId);
             }
+
             loaders.Clear();
             cts.Cancel();
             Object.Destroy(animationsModelsContainer);
+        }
+
+        private UniTask<WearableItem> RequestEmote(string bodyShapeId, string emoteId, CancellationToken ct)
+        {
+            if (SceneEmoteHelper.IsSceneEmote(emoteId))
+            {
+                return new UniTask<WearableItem>(GenerateSceneEmoteItem(bodyShapeId, emoteId, catalyst.contentUrl));
+            }
+
+            return emotesCatalogService.RequestEmoteAsync(emoteId, ct);
+        }
+
+        private static WearableItem GenerateSceneEmoteItem(string bodyShapeId, string emoteId, string contentLambdaUrl)
+        {
+            if (!SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop))
+            {
+                return null;
+            }
+
+            return new EmoteItem()
+            {
+                data = new WearableItem.Data()
+                {
+                    representations = new[]
+                    {
+                        new WearableItem.Representation()
+                        {
+                            bodyShapes = new[] { bodyShapeId },
+                            contents = new[]
+                            {
+                                new WearableItem.MappingPair()
+                                {
+                                    hash = emoteHash, key = emoteHash
+                                }
+                            },
+                            mainFile = emoteHash,
+                        }
+                    },
+                    loop = loop
+                },
+                emoteDataV0 = new EmoteDataV0() { loop = loop },
+                id = emoteId,
+                baseUrl = $"{contentLambdaUrl}contents/"
+            };
         }
     }
 }

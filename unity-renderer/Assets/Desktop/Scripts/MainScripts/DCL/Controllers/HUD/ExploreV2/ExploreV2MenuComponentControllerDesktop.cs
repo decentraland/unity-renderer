@@ -8,5 +8,5 @@ public class ExploreV2MenuComponentControllerDesktop : ExploreV2MenuComponentCon
     protected override IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentViewDesktop.Create();
 
-    public ExploreV2MenuComponentControllerDesktop(IPlacesAPIService placesAPIService) : base(placesAPIService) {}
+    public ExploreV2MenuComponentControllerDesktop(IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics) : base(placesAPIService, placesAnalytics) {}
 }

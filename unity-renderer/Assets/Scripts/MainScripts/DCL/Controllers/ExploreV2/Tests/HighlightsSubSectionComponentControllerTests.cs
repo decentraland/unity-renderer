@@ -37,6 +37,7 @@ public class HighlightsSubSectionComponentControllerTests
             eventsAPIController,
             friendsController,
             exploreV2Analytics,
+            Substitute.For<IPlacesAnalytics>(),
             DataStore.i);
     }
 

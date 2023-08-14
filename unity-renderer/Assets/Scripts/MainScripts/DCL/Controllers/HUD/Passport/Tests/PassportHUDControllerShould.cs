@@ -71,7 +71,8 @@ namespace DCL.Social.Passports
                                     Substitute.For<ILandsService>(),
                                     Substitute.For<INamesService>(),
                                     NotificationsController.i),
-                                Substitute.For<IAdditionalInfoFieldIconProvider>());
+                                Substitute.For<IAdditionalInfoFieldIconProvider>(),
+                                Substitute.For<IClipboard>());
 
             controller = new PlayerPassportHUDController(
                 view,

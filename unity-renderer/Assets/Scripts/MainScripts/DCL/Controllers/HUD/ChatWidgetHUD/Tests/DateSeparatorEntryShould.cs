@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL.Social.Chat;
+using System;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

@@ -28,7 +28,13 @@ public class PlacesSubSectionComponentControllerTests
         placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)>((new List<IHotScenesController.PlaceInfo>(), 0)));
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIService, friendsController, exploreV2Analytics, DataStore.i);
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(
+            placesSubSectionComponentView,
+            placesAPIService,
+            friendsController,
+            exploreV2Analytics,
+            Substitute.For<IPlacesAnalytics>(),
+            DataStore.i);
     }
 
     [TearDown]

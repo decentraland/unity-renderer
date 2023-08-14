@@ -127,6 +127,23 @@ namespace DCL
                 timeout, cancellationToken, headers, isSigned);
         }
 
+        public async UniTask<UnityWebRequest> PostAsync(
+            string url,
+            List<IMultipartFormSection> postData,
+            DownloadHandler downloadHandler = null,
+            Action<UnityWebRequest> onSuccess = null,
+            Action<UnityWebRequest> onfail = null,
+            int requestAttemps = 3,
+            int timeout = 0,
+            CancellationToken cancellationToken = default,
+            Dictionary<string, string> headers = null,
+            bool isSigned = false)
+        {
+            postWebRequestFactory.SetBody(postData);
+            return await SendWebRequest(postWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
+                timeout, cancellationToken, headers, isSigned);
+        }
+
         public async UniTask<UnityWebRequest> DeleteAsync(
             string url,
             DownloadHandler downloadHandler = null,

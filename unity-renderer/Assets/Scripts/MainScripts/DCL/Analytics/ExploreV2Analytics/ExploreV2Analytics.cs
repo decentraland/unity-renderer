@@ -14,8 +14,6 @@ namespace ExploreV2Analytics
         void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
         void SendRemoveParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
-        void AddFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
-        void RemoveFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
@@ -33,8 +31,6 @@ namespace ExploreV2Analytics
         private const string EXPLORE_REMOVE_PARTICIPATE_EVENT = "explore_remove_participate_event";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
-        private const string ADD_FAVORITE_PLACE = "player_add_favorite_place";
-        private const string REMOVE_FAVORITE_PLACE = "player_remove_favorite_place";
         private const string TELEPORT_FAVORITE_PLACE = "player_teleport_to_favorite_place";
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
@@ -136,26 +132,6 @@ namespace ExploreV2Analytics
             data.Add("source", source.ToString());
             data.Add("result_position", resultPosition.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_PLACE_INFO, data);
-        }
-
-        public void AddFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore)
-        {
-            var data = new Dictionary<string, string>
-            {
-                ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
-            };
-            GenericAnalytics.SendAnalytic(ADD_FAVORITE_PLACE, data);
-        }
-
-        public void RemoveFavorite(string placeUUID, ActionSource source = ActionSource.FromExplore)
-        {
-            var data = new Dictionary<string, string>
-            {
-                ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
-            };
-            GenericAnalytics.SendAnalytic(REMOVE_FAVORITE_PLACE, data);
         }
 
         public void TeleportToPlaceFromFavorite(string placeUUID, string placeName)

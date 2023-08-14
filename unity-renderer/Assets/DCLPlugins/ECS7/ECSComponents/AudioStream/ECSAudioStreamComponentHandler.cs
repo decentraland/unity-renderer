@@ -29,8 +29,10 @@ namespace DCL.ECSComponents
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
+
             if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
+
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
@@ -41,6 +43,7 @@ namespace DCL.ECSComponents
 
             // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
             hadUserInteraction = Utils.IsCursorLocked;
+
             if (!hadUserInteraction)
             {
                 Utils.OnCursorLockChanged += OnCursorLockChanged;
@@ -70,14 +73,17 @@ namespace DCL.ECSComponents
             isValidUrl = UtilsScene.TryGetMediaUrl(model.Url, scene.contentProvider,
                 scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string newUrl);
 
+            url = newUrl;
+
             if (!isValidUrl)
+            {
+                url = string.Empty;
                 StopStreaming();
+            }
 
             // In case that the audio stream can't be played we do an early return
             if (!CanAudioStreamBePlayed() || !isValidUrl)
                 return;
-
-            url = newUrl;
 
             // If everything went ok, we update the state
             SendUpdateAudioStreamEvent(model.Playing);

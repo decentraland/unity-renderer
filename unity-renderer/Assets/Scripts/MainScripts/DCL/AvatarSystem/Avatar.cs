@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using GPUSkinning;
 using UnityEngine;
 
@@ -174,6 +175,12 @@ namespace AvatarSystem
 
         public void PlayEmote(string emoteId, long timestamps) =>
             animator?.PlayEmote(emoteId, timestamps);
+
+        public void EquipEmote(string emoteId, EmoteClipData emoteClipData) =>
+            animator?.EquipEmote(emoteId, emoteClipData);
+
+        public void UnequipEmote(string emoteId) =>
+            animator?.UnequipEmote(emoteId);
 
         public void SetLODLevel(int lodIndex) =>
             lod.SetLodIndex(lodIndex);

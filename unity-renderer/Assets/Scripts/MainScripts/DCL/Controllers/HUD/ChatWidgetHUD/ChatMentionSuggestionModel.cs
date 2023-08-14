@@ -1,4 +1,4 @@
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public record ChatMentionSuggestionModel
     {

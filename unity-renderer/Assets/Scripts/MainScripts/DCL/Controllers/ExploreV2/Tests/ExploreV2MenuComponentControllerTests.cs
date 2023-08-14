@@ -19,7 +19,7 @@ public class ExploreV2MenuComponentControllerTests
     {
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>(Substitute.For<IPlacesAPIService>());
+        exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>(Substitute.For<IPlacesAPIService>(), Substitute.For<IPlacesAnalytics>());
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
         exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
         exploreV2MenuController.Initialize();

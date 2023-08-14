@@ -25,7 +25,7 @@ namespace DCL
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
         private void Start()
         {
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoom, toastView, navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>());
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoom, toastView, navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
