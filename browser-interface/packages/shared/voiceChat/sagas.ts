@@ -10,7 +10,6 @@ import {
   JOIN_VOICE_CHAT,
   leaveVoiceChat,
   LEAVE_VOICE_CHAT,
-  REQUEST_TOGGLE_VOICE_CHAT_RECORDING,
   REQUEST_VOICE_CHAT_RECORDING,
   SetAudioDevice,
   setVoiceChatError,
@@ -55,7 +54,6 @@ export function* voiceChatSaga() {
   yield fork(reactToNewVoiceChatHandler)
 
   yield takeLatest(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
-  yield takeLatest(REQUEST_TOGGLE_VOICE_CHAT_RECORDING, handleRecordingRequest)
 
   yield takeEvery(VOICE_PLAYING_UPDATE, handleUserVoicePlaying)
 
