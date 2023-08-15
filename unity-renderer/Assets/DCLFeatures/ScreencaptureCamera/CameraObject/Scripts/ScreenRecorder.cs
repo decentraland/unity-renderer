@@ -1,5 +1,10 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
@@ -18,6 +23,55 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Debug.Assert(targetAspectRatio != 0, "Target aspect ratio cannot be null");
 
             this.canvasRectTransform = canvasRectTransform;
+        }
+
+        public Texture2D CaptureScreenshotWithRenderTexture(Camera baseCamera, RenderTexture rTexture, int width = TARGET_FRAME_WIDTH, int height = TARGET_FRAME_HEIGHT)
+        {
+            UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
+
+            // Set the base camera's target texture
+            RenderTexture originalTargetTexture = baseCamera.targetTexture;
+            baseCamera.targetTexture = rTexture;
+
+            Debug.Log("base camera", baseCamera.gameObject);
+            // Iterate through all overlay cameras and set their target textures
+            var overlayCameras = baseCameraData.cameraStack;
+            var originalOverlayTargetTextures = new List<RenderTexture>();
+
+            if (overlayCameras != null)
+            {
+                foreach (Camera overlayCamera in overlayCameras)
+                {
+                    originalOverlayTargetTextures.Add(overlayCamera.targetTexture);
+                    overlayCamera.targetTexture = rTexture;
+                }
+            }
+
+            // Render the cameras to the RenderTexture
+            baseCamera.Render();
+
+            baseCamera.targetTexture = originalTargetTexture;
+
+            if (overlayCameras != null)
+            {
+                // Revert the target textures of the base and overlay cameras
+                for (var i = 0; i < overlayCameras.Count; i++)
+                    overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
+            }
+
+            // Read the pixels from the RenderTexture
+            RenderTexture.active = rTexture;
+            Texture2D screenshot = new Texture2D(width, height, TextureFormat.RGB24, false);
+            screenshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            screenshot.Apply();
+            RenderTexture.active = null;
+
+            // Save the screenshot as a JPG file
+            File.WriteAllBytes(Application.dataPath + "_screenshot1.jpg", screenshot.EncodeToJPG());
+
+            // Clean up
+
+            return screenshot;
         }
 
         public virtual Texture2D CaptureScreenshot()

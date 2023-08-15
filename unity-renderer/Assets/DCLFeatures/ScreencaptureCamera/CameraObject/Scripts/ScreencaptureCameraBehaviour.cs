@@ -191,27 +191,28 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
-            StopAllCoroutines();
-            StartCoroutine(CaptureScreenshotAtTheFrameEnd(source));
+            CaptureScreenshotAtTheFrameEnd(source);
         }
 
-        private IEnumerator CaptureScreenshotAtTheFrameEnd(string source)
+        public RenderTexture targetTexture;
+
+        private void CaptureScreenshotAtTheFrameEnd(string source)
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) yield break;
+            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return ;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
 
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
-            yield return waitEndOfFrameYield;
 
-            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot();
+            Debug.Log(SkyboxController.i.SkyboxCamera.CurrentCamera.name, SkyboxController.i.SkyboxCamera.BaseCamera);
+            Texture2D screenshot = screenRecorderLazy.CaptureScreenshotWithRenderTexture(SkyboxController.i.SkyboxCamera.BaseCamera, targetTexture);
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
+            // var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+            // uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+            // UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
 
             async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, string source, CancellationToken cancellationToken)
             {
