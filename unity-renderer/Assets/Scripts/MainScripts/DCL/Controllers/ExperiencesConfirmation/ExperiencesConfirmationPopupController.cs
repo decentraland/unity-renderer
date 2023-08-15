@@ -74,7 +74,7 @@ namespace DCL.PortableExperiences.Confirmation
                 if (metadata.Permissions != null)
                 {
                     foreach (string permission in metadata.Permissions)
-                        descriptionBuffer.Add(ConvertPermissionIdToDescription(permission));
+                        descriptionBuffer.Add(permission);
                 }
 
                 view.Show();
@@ -122,29 +122,6 @@ namespace DCL.PortableExperiences.Confirmation
             userInputTask.TrySetCanceled();
             userInputTask = new UniTaskCompletionSource<InputType>();
             ShowAndWaitForUserInputThenHide(current, openProcessCancellationToken.Token).Forget();
-        }
-
-        private string ConvertPermissionIdToDescription(string permissionId)
-        {
-            switch (permissionId)
-            {
-                case "USE_FETCH":
-                    return "Communicate with 3rd party servers.";
-                case "USE_WEBSOCKET":
-                    return "Exchange data with other servers.";
-                case "OPEN_EXTERNAL_LINK":
-                    return "Open external links.";
-                case "USE_WEB3_API":
-                    return "Interact with your wallet.";
-                case "ALLOW_TO_TRIGGER_AVATAR_EMOTE":
-                    return "Trigger emotes.";
-                case "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE":
-                    return "Move your position.";
-                case "ALLOW_MEDIA_HOSTNAMES":
-                    return "Play media content (video, audio, etc).";
-            }
-
-            return permissionId;
         }
     }
 }
