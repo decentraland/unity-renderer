@@ -11,17 +11,16 @@ namespace DCL
     {
         [Header("InputActions")]
         public InputAction_Hold voiceChatAction;
-        public InputAction_Trigger voiceChatToggleAction;
 
         private InputAction_Hold.Started voiceChatStartedDelegate;
         private InputAction_Hold.Finished voiceChatFinishedDelegate;
-        private InputAction_Trigger.Triggered voiceChatToggleDelegate;
 
         private bool firstTimeVoiceRecorded = true;
         private ISocialAnalytics socialAnalytics;
         private UserProfileWebInterfaceBridge userProfileWebInterfaceBridge;
         private double voiceMessageStartTime = 0;
-        private bool isVoiceChatToggledOn = false;
+
+        private bool isRecording;
 
         void Awake()
         {
@@ -29,10 +28,8 @@ namespace DCL
 
             voiceChatStartedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true));
             voiceChatFinishedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
-            voiceChatToggleDelegate = (action) => ToggleVoiceChatRecording();
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
             voiceChatAction.OnFinished += voiceChatFinishedDelegate;
-            voiceChatToggleAction.OnTriggered += voiceChatToggleDelegate;
 
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
@@ -43,8 +40,7 @@ namespace DCL
 
         private void OnApplicationFocusLost()
         {
-            isVoiceChatToggledOn = false;
-            StopRecording();
+            StopRecording(true);
             DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
 
@@ -71,50 +67,43 @@ namespace DCL
             if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
                 return;
 
-            if (isVoiceChatToggledOn) return;
-
             if (current.Key)
                 StartRecording();
             else
-                StopRecording();
+                StopRecording(current.Value);
         }
 
         private void StartRecording()
         {
-            if (isVoiceChatToggledOn) return;
+            if (isRecording) return;
 
             Debug.LogError("STARTED RECORDING");
-            CreateSocialAnalyticsIfNeeded();
+
             WebInterface.SendSetVoiceChatRecording(true);
+
+            CreateSocialAnalyticsIfNeeded();
             SendFirstTimeMetricIfNeeded();
             voiceMessageStartTime = Time.realtimeSinceStartup;
+
+            isRecording = true;
         }
 
-        private void StopRecording()
+        private void StopRecording(bool usedShortcut)
         {
+            if (!isRecording) return;
+
             Debug.LogError("STOPPED RECORDING");
-            CreateSocialAnalyticsIfNeeded();
+
             WebInterface.SendSetVoiceChatRecording(false);
 
+            CreateSocialAnalyticsIfNeeded();
             //TODO: Pressing T is considered as shortcut as well?
             socialAnalytics.SendVoiceMessage(
                 Time.realtimeSinceStartup - voiceMessageStartTime,
-                VoiceMessageSource.Shortcut,
+                usedShortcut ? VoiceMessageSource.Shortcut : VoiceMessageSource.Button,
                 userProfileWebInterfaceBridge.GetOwn().userId);
-        }
 
-        private void ToggleVoiceChatRecording()
-        {
-            if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get()) return;
-
-            isVoiceChatToggledOn = !isVoiceChatToggledOn;
-
-            Debug.LogError("USING THE TOGGLE BUTTON " + isVoiceChatToggledOn);
-
-            if (isVoiceChatToggledOn)
-                StartRecording();
-            else
-                StopRecording();
+            isRecording = false;
         }
 
         private void CreateSocialAnalyticsIfNeeded()
