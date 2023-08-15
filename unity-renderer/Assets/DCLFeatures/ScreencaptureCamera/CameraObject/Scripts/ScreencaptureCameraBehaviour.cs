@@ -292,21 +292,21 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerName.Hide();
             }
 
-            SetActivePlayerCamera(isActive: !activateScreenshotCamera);
-            SetActiveScreenshotCamera(isActive: activateScreenshotCamera);
+            SetPlayerCameraActive(isActive: !activateScreenshotCamera);
+            SetScreenshotCameraActive(isActive: activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : mainCamera);
         }
 
-        private void SetActiveScreenshotCamera(bool isActive)
+        private void SetScreenshotCameraActive(bool isActive)
         {
             screenshotCamera.gameObject.SetActive(isActive);
             screencaptureCameraHUDController.SetVisibility(isActive, storageStatus.HasFreeSpace);
         }
 
-        private void SetActivePlayerCamera(bool isActive)
+        private void SetPlayerCameraActive(bool isActive)
         {
             cameraController.SetCameraEnabledState(isActive);
-            characterController.SetEnabled(isActive);
+            characterController.SetMovementInputToZero();
             characterCinemachineBrain.enabled = isActive;
         }
 

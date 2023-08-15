@@ -435,6 +435,6 @@ public class InputController : MonoBehaviour
     private static void Stop_Measurable(InputAction_Measurable[] measurableActions)
     {
         foreach (var action in measurableActions)
-            action.RaiseOnValueChanged(0);
+            action.SetValue(0);
     }
 }
