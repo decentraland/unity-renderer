@@ -38,6 +38,17 @@ namespace DCL
             Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
         }
 
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            Debug.LogError("APPLICATION HAS FOCUS " + hasFocus);
+
+            if (!hasFocus)
+            {
+                StopRecording(true);
+                DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
+            }
+        }
+
         private void OnApplicationFocusLost()
         {
             StopRecording(true);
