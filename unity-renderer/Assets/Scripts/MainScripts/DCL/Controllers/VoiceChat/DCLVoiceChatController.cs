@@ -51,6 +51,9 @@ namespace DCL
 
         private void OnApplicationFocusLost()
         {
+            Debug.LogError("APPLICATION LOST FOCUS ");
+
+
             StopRecording(true);
             DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
