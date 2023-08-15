@@ -114,7 +114,7 @@ namespace DCL.PortableExperiences.Confirmation
             {
                 iconImage.UseLoadingIndicator = false;
                 iconImage.SetImage(defaultIconSprite);
-                iconImage.ImageComponent.color = new Color(0.44f, 0.41f, 0.48f, 1f);
+                iconImage.ImageComponent.color = new Color(0.08627451f, 0.08235294f, 0.09411765f, 1f);
             }
             else
             {
