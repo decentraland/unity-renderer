@@ -45,6 +45,7 @@ public class EventsSubSectionComponentViewTests
     public void ShowEventModalCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         EventCardComponentModel testEventInfo = ExploreEventsTestHelpers.CreateTestEvent("1", testSprite);
 
         // Act

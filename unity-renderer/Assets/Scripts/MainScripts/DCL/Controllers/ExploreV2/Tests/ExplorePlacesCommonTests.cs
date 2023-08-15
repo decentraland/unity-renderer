@@ -2,6 +2,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ExplorePlacesCommonTests
 {
@@ -71,6 +72,7 @@ public class ExplorePlacesCommonTests
     public void ConfigurePlaceCardCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         PlaceCardComponentModel testPlaceInfo = CreateTestPlace("Test Place");
 
         // Act

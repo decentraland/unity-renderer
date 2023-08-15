@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ExploreEventsCommonTests
 {
@@ -71,6 +72,7 @@ public class ExploreEventsCommonTests
     public void ConfigureEventCardCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
