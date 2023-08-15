@@ -36,6 +36,17 @@ namespace DCL
             DataStore.i.voiceChat.isRecording.OnChange += IsVoiceChatRecordingChanged;
 
             Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
+            Environment.i.serviceLocator.Get<IIdleChecker>().Subscribe(CheckIdle);
+        }
+
+        private void CheckIdle(bool isidle)
+        {
+            if (isidle)
+            {
+                Debug.LogError("APPLICATION IS IDLE ");
+                StopRecording(true);
+                DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
+            }
         }
 
         private void OnApplicationFocus(bool hasFocus)
@@ -53,7 +64,6 @@ namespace DCL
         {
             Debug.LogError("APPLICATION LOST FOCUS ");
 
-
             StopRecording(true);
             DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
@@ -64,6 +74,8 @@ namespace DCL
             voiceChatAction.OnFinished -= voiceChatFinishedDelegate;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange -= IsVoiceChatRecordingChanged;
+            Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost -= OnApplicationFocusLost;
+            Environment.i.serviceLocator.Get<IIdleChecker>().Unsubscribe(CheckIdle);
         }
 
         void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
