@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UI.InWorldCamera.Scripts
+namespace DCLServices.CameraReelService
 {
     [Serializable]
     public class ScreenshotMetadata
@@ -85,9 +85,13 @@ namespace UI.InWorldCamera.Scripts
         public DateTime GetLocalizedDateTime()
         {
             if (!long.TryParse(dateTime, out long unixTimestamp)) return new DateTime();
+            return DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).ToLocalTime().DateTime;
+        }
 
-            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            return epoch.AddSeconds(unixTimestamp).ToLocalTime();
+        public DateTime GetStartOfTheMonthDate()
+        {
+            DateTime localizedDateTime = GetLocalizedDateTime();
+            return new DateTime(localizedDateTime.Year, localizedDateTime.Month, 1);
         }
     }
 

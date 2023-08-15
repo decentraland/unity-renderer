@@ -1,0 +1,14 @@
+{
+    "name": "EnvironmentProvider",
+    "rootNamespace": "",
+    "references": ["GUID:3b80b0b562b1cbc489513f09fc1b8f69","GUID:c44f6fd10d3d94432a107d581e0096b5"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

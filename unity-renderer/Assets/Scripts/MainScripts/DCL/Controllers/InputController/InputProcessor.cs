@@ -192,11 +192,11 @@ public static class InputProcessor
     {
         if (!PassModifiers(modifiers))
         {
-            action.RaiseOnValueChanged(0);
+            action.SetValue(0);
             return;
         }
 
-        action.RaiseOnValueChanged(Input.GetAxis(axisName));
+        action.SetValue(Input.GetAxis(axisName));
     }
 
     /// <summary>
