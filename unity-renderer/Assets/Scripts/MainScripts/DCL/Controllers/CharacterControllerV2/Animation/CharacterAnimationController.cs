@@ -86,7 +86,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             characterState.OnWallHitReset += OnWallHitReset;
         }
 
-        // todo: move this elsewhere
+        // todo: move this elsewhere, also they are not properly hooked up so we neither sounds or particles
 
         private void InitializeAvatarAudioAndParticleHandlers(GameObject container)
         {
@@ -140,9 +140,9 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             animator.SetBool(LONG_FALL, characterState.IsLongFall);
             animator.SetBool(STUNNED, characterState.IsStunned);
 
+            // The animation state is completely decoupled from the actual velocity, it feels much nicer and has no weird fluctuations
             // state idle ----- walk ----- jog ----- run
             // blend  0  -----   1  -----  2  -----  3
-
             int movementBlendId = GetMovementBlendId(velocity, speedState);
 
             var targetBlend = 0f;
@@ -159,6 +159,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             currentMovementBlend = Mathf.MoveTowards(currentMovementBlend, targetBlend, Time.deltaTime * data.movAnimBlendSpeed);
             animator.SetFloat(MOVEMENT_BLEND, currentMovementBlend);
 
+            // emote and afk timer handling
             if (currentMovementBlend > 0.1f)
             {
                 StopEmote();
@@ -179,6 +180,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 }
             }
 
+            // The view rotation is also decoupled from the real character controller, so we slowly slerp it towards the target rotation
             Quaternion transformRotation = transform.rotation;
             animator.SetFloat(ANGLE, Quaternion.Angle(currentRotation, transformRotation));
             animator.SetFloat(ANGLE_DIR, Quaternion.Dot(currentRotation, transformRotation));
@@ -220,7 +222,7 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
             if (externalClips.TryGetValue(emoteId, out EmoteClipData data))
             {
                 if (!data.clip.legacy)
-                    StartNonLegacyEmote(data);
+                    StartEmote(data);
                 else
                     StartLegacyEmote(data);
             }
@@ -228,20 +230,21 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
                 StopEmote();
         }
 
-        private void StartLegacyEmote(EmoteClipData value)
-        {
-            animator.enabled = false;
-            legacyAnimator.enabled = true;
-            legacyAnimator.AddClip(value.clip, "emote");
-            legacyAnimator.Play("emote");
-            isPlayingEmote = true;
-        }
-
-        private void StartNonLegacyEmote(EmoteClipData data)
+        private void StartEmote(EmoteClipData data)
         {
             animatorOverrideController["Emote"] = data.clip;
             animator.SetBool(EMOTE_LOOP, data.loop);
             animator.SetBool(EMOTE, true);
+            isPlayingEmote = true;
+        }
+
+        private void StartLegacyEmote(EmoteClipData value)
+        {
+            // TODO: triggering a legacy emote has no transition, maybe we can trigger the idle pose and transition towards the emote for a smoother experience
+            animator.enabled = false;
+            legacyAnimator.enabled = true;
+            legacyAnimator.AddClip(value.clip, "emote");
+            legacyAnimator.Play("emote");
             isPlayingEmote = true;
         }
 
@@ -261,12 +264,6 @@ namespace MainScripts.DCL.Controllers.CharacterControllerV2
 
         public void EquipEmote(string emoteId, EmoteClipData emoteClipData)
         {
-            /*if (emoteClipData.clip.legacy)
-            {
-                Debug.LogWarning($"Watch out, {emoteClipData.clip.name} is legacy", emoteClipData.clip);
-                return;
-            }*/
-
             externalClips[emoteId] = emoteClipData;
         }
 

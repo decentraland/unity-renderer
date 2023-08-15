@@ -15,22 +15,15 @@ MonoBehaviour:
   walkSpeed: 1.5
   jogSpeed: 8
   runSpeed: 10
-  acceleration: 20
   airAcceleration: 10
-  stopTimeSec: 0.05
   gravity: -10
   jogJumpHeight: 1
   runJumpHeight: 1.5
-  jumpGraceTime: 0.15
-  rotationSpeed: 360
-  longJumpTime: 0.5
-  longJumpGravityScale: 0.5
+  characterControllerRadius: 0.4
   groundDrag: 5
   airDrag: 0.05
   minImpulse: 1
-  jumpPadForce: 50
-  jumpGravityFactor: 4
-  animationSpeed: 1
+  jumpVelocityDrag: 5
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -73,12 +66,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  acceleration: 20
   maxAcceleration: 25
   accelerationTime: 0.5
+  stopTimeSec: 0.05
+  longJumpTime: 0.5
+  longJumpGravityScale: 0.5
+  jumpGravityFactor: 4
+  jumpGraceTime: 0.15
+  jumpHeightStun: 10
   longFallStunTime: 0.75
   noSlipDistance: 0.15
-  slipSpeedMultiplier: 7
-  jumpHeightStun: 10
-  jumpVelocityDrag: 5
+  edgeSlipSpeed: 7
+  rotationSpeed: 360
   movAnimBlendSpeed: 5
-  characterControllerRadius: 0.4
+  jumpPadForce: 50
+  animationSpeed: 1
