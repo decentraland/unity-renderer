@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using System.Reflection;
 using Cinemachine;
+using DCL.Camera;
 using DCL.Rendering;
 using DCL.SettingsCommon.SettingsControllers.BaseControllers;
 using DCL.SettingsCommon.SettingsControllers.SpecificControllers;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using DCL.Camera;
+using ShadowResolution = UnityEngine.Rendering.Universal.ShadowResolution;
 
 namespace DCL.SettingsCommon.SettingsControllers.Tests
 {
@@ -31,6 +32,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorFactory.CreateDefault());
             SetupReferences();
         }
 
@@ -335,7 +337,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             settingController.UpdateSetting(newValue);
 
             // Assert
-            UnityEngine.Rendering.Universal.ShadowResolution newValueFormatted = (UnityEngine.Rendering.Universal.ShadowResolution)(256 << newValue);
+            ShadowResolution newValueFormatted = (ShadowResolution)(256 << newValue);
             Assert.AreEqual(
                 (int)Mathf.Log((int)newValueFormatted, 2) - 8,
                 settingController.GetStoredValue(),

@@ -73,8 +73,6 @@ namespace DCL
 
             if (isVoiceChatToggledOn) return;
 
-            CreateSocialAnalyticsIfNeeded();
-
             if (current.Key)
                 StartRecording();
             else
@@ -86,6 +84,7 @@ namespace DCL
             if (isVoiceChatToggledOn) return;
 
             Debug.LogError("STARTED RECORDING");
+            CreateSocialAnalyticsIfNeeded();
             WebInterface.SendSetVoiceChatRecording(true);
             SendFirstTimeMetricIfNeeded();
             voiceMessageStartTime = Time.realtimeSinceStartup;
@@ -94,6 +93,7 @@ namespace DCL
         private void StopRecording()
         {
             Debug.LogError("STOPPED RECORDING");
+            CreateSocialAnalyticsIfNeeded();
             WebInterface.SendSetVoiceChatRecording(false);
 
             //TODO: Pressing T is considered as shortcut as well?
@@ -131,7 +131,6 @@ namespace DCL
         {
             if (firstTimeVoiceRecorded)
             {
-                CreateSocialAnalyticsIfNeeded();
                 socialAnalytics.SendVoiceMessageStartedByFirstTime();
                 firstTimeVoiceRecorded = false;
             }
