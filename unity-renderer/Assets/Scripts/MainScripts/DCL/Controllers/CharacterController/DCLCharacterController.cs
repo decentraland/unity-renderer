@@ -104,6 +104,12 @@ public class DCLCharacterController : MonoBehaviour
     public event System.Action OnHitGround;
     public event System.Action<float> OnMoved;
 
+    public void SetMovementInputToZero()
+    {
+        characterXAxis.SetValue(0);
+        characterYAxis.SetValue(0);
+    }
+
     void Awake()
     {
         if (i != null)

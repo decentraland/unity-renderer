@@ -132,7 +132,7 @@ namespace InputController_Tests
         [TestCase(0.5f)]
         public void UpdateValueProperly(float newValue)
         {
-            action.RaiseOnValueChanged(newValue);
+            action.SetValue(newValue);
             Assert.AreEqual(newValue, action.GetValue());
         }
 
@@ -147,7 +147,7 @@ namespace InputController_Tests
                 called = true;
                 calledValue = value;
             };
-            action.RaiseOnValueChanged(18f);
+            action.SetValue(18f);
 
             Assert.IsTrue(called);
             Assert.AreEqual(18f, calledValue);
