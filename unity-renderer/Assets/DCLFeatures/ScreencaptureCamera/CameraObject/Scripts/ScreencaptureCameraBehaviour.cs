@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tasks;
@@ -243,19 +244,32 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             if (isGuest) return;
             if (isEnabled == isScreencaptureCameraActive.Get()) return;
 
+            if (isEnabled && !string.IsNullOrEmpty(source))
+                analytics.OpenCamera(source);
+
             UpdateStorageInfo();
 
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
-
             Utils.UnlockCursor();
 
-            ToggleExternalSystems(activateScreenshotCamera);
-            ToggleCameraSystems(activateScreenshotCamera);
+            if (activateScreenshotCamera)
+                OpenCameraAsync();
+            else
+            {
+                ToggleExternalSystems(activateScreenshotCamera: false);
+                ToggleCameraSystems(activateScreenshotCamera: false);
+                isScreencaptureCameraActive.Set(false);
+            }
+        }
 
-            isScreencaptureCameraActive.Set(activateScreenshotCamera);
+        private async void OpenCameraAsync()
+        {
+            cameraController.SetCameraMode(CameraMode.ModeId.ThirdPerson);
+            await UniTask.WaitWhile(() => cameraController.CameraIsBlending);
 
-            if (isEnabled && !string.IsNullOrEmpty(source))
-                analytics.OpenCamera(source);
+            ToggleExternalSystems(activateScreenshotCamera: true);
+            ToggleCameraSystems(activateScreenshotCamera: true);
+            isScreencaptureCameraActive.Set(true);
         }
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
