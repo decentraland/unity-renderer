@@ -3512,9 +3512,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
+      propertyPath: m_fontSizeBase
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 9d9df32282a3c40299019c36b2157d37, type: 2}
+    - target: {fileID: 7321520544753107672, guid: b53f82112c401e94eb453570ac440340,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7506358819125735409, guid: b53f82112c401e94eb453570ac440340,
         type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
