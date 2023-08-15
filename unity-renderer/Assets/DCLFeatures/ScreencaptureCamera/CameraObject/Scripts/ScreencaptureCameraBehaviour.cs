@@ -86,6 +86,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
 
+        private bool isInTransition;
+
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
@@ -131,10 +133,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             {
                 yield return new WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id));
 
-                if(isGuest)
-                {
+                if (isGuest)
                     Destroy(gameObject);
-                }
                 else
                 {
                     Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
@@ -241,7 +241,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void ToggleScreenshotCamera(string source = null, bool isEnabled = true)
         {
-            if (isGuest) return;
+            if (isGuest || isInTransition) return;
             if (isEnabled == isScreencaptureCameraActive.Get()) return;
 
             if (isEnabled && !string.IsNullOrEmpty(source))
@@ -264,8 +264,13 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private async void OpenCameraAsync()
         {
+            isInTransition = true;
+
+            cameraModeInputLocked.Set(true);
             cameraController.SetCameraMode(CameraMode.ModeId.ThirdPerson);
+
             await UniTask.WaitWhile(() => cameraController.CameraIsBlending);
+            isInTransition = false;
 
             ToggleExternalSystems(activateScreenshotCamera: true);
             ToggleCameraSystems(activateScreenshotCamera: true);
@@ -317,7 +322,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 prevUiHiddenState = allUIHidden.Get();
                 allUIHidden.Set(true);
 
-                prevMouseLockState = cameraModeInputLocked.Get();
                 cameraModeInputLocked.Set(true);
 
                 prevMouseButtonCursorLockMode = cameraLeftMouseButtonCursorLock.Get();
@@ -326,7 +330,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             else
             {
                 allUIHidden.Set(prevUiHiddenState);
-                cameraModeInputLocked.Set(prevMouseLockState);
+                cameraModeInputLocked.Set(false);
                 cameraLeftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
             }
 
