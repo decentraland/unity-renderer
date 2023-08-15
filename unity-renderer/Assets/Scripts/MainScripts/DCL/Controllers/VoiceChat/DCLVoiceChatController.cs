@@ -1,8 +1,9 @@
-using UnityEngine;
-using SocialFeaturesAnalytics;
-using System.Collections.Generic;
-using System;
+using DCL.Interface;
 using Newtonsoft.Json;
+using SocialFeaturesAnalytics;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL
 {
@@ -36,6 +37,15 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange += IsVoiceChatRecordingChanged;
+
+            Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
+        }
+
+        private void OnApplicationFocusLost()
+        {
+            isVoiceChatToggledOn = false;
+            StopRecording();
+            DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
 
         void OnDestroy()
@@ -61,50 +71,50 @@ namespace DCL
             if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
                 return;
 
+            if (isVoiceChatToggledOn) return;
+
             CreateSocialAnalyticsIfNeeded();
 
             if (current.Key)
-            {
-                if (!isVoiceChatToggledOn)
-                {
-                    Interface.WebInterface.SendSetVoiceChatRecording(true);
-                    SendFirstTimeMetricIfNeeded();
-                    voiceMessageStartTime = Time.realtimeSinceStartup;
-                }
-            }
+                StartRecording();
             else
-            {
-                Interface.WebInterface.SendSetVoiceChatRecording(false);
+                StopRecording();
+        }
 
-                socialAnalytics.SendVoiceMessage(
-                    Time.realtimeSinceStartup - voiceMessageStartTime, 
-                    (current.Value || isVoiceChatToggledOn) ? VoiceMessageSource.Shortcut : VoiceMessageSource.Button, 
-                    userProfileWebInterfaceBridge.GetOwn().userId);
+        private void StartRecording()
+        {
+            if (isVoiceChatToggledOn) return;
 
-                isVoiceChatToggledOn = false;
-            }
+            Debug.LogError("STARTED RECORDING");
+            WebInterface.SendSetVoiceChatRecording(true);
+            SendFirstTimeMetricIfNeeded();
+            voiceMessageStartTime = Time.realtimeSinceStartup;
+        }
+
+        private void StopRecording()
+        {
+            Debug.LogError("STOPPED RECORDING");
+            WebInterface.SendSetVoiceChatRecording(false);
+
+            //TODO: Pressing T is considered as shortcut as well?
+            socialAnalytics.SendVoiceMessage(
+                Time.realtimeSinceStartup - voiceMessageStartTime,
+                VoiceMessageSource.Shortcut,
+                userProfileWebInterfaceBridge.GetOwn().userId);
         }
 
         private void ToggleVoiceChatRecording()
         {
-            if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
-                return;
+            if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get()) return;
 
-            Interface.WebInterface.ToggleVoiceChatRecording();
             isVoiceChatToggledOn = !isVoiceChatToggledOn;
 
+            Debug.LogError("USING THE TOGGLE BUTTON " + isVoiceChatToggledOn);
+
             if (isVoiceChatToggledOn)
-            {
-                SendFirstTimeMetricIfNeeded();
-                voiceMessageStartTime = Time.realtimeSinceStartup;
-            }
+                StartRecording();
             else
-            {
-                socialAnalytics.SendVoiceMessage(
-                    Time.realtimeSinceStartup - voiceMessageStartTime,
-                    VoiceMessageSource.Shortcut,
-                    userProfileWebInterfaceBridge.GetOwn().userId);
-            }
+                StopRecording();
         }
 
         private void CreateSocialAnalyticsIfNeeded()
