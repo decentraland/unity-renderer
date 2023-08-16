@@ -28,7 +28,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public Texture2D CaptureScreenshotWithRenderTexture(Camera baseCamera)
+        public virtual Texture2D CaptureScreenshot(Camera baseCamera)
         {
             ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(currentScreenFrameData: CalculateCurrentScreenFrame());
 
