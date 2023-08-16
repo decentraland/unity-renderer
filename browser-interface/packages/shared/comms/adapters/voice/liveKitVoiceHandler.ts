@@ -148,6 +148,9 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         }
       } catch(err) {
         logger.error('Error: ', err, ', recording=', recording)
+        if (recordingListener) {
+          recordingListener(false)
+        }
       }
     },
     onUserTalking(cb) {
