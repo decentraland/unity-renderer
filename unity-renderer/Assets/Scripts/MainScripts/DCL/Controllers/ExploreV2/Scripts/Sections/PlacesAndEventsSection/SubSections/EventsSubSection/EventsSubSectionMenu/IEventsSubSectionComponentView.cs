@@ -79,9 +79,24 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     event Action OnEventsSubSectionEnable;
 
     /// <summary>
-    /// It will be triggered each time any filter is changed.
+    /// It will be triggered each time any event type filter is changed.
     /// </summary>
-    event Action OnFiltersChanged;
+    event Action OnEventTypeFiltersChanged;
+
+    /// <summary>
+    /// It will be triggered each time the frequency filter is changed.
+    /// </summary>
+    event Action OnEventFrequencyFilterChanged;
+
+    /// <summary>
+    /// It will be triggered each time the category filter is changed.
+    /// </summary>
+    event Action OnEventCategoryFilterChanged;
+
+    /// <summary>
+    /// It will be triggered each time the time filter is changed.
+    /// </summary>
+    event Action OnEventTimeFilterChanged;
 
     /// <summary>
     /// Set the featured events component with a list of events.

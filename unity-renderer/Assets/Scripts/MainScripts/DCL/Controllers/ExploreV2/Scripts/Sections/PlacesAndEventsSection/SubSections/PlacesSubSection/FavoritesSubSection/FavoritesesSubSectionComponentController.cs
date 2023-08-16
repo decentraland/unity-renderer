@@ -115,6 +115,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal void RequestAllFavorites()
     {
+        exploreV2Analytics.SendFavoritesTabOpen();
+
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;

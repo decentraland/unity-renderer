@@ -99,7 +99,10 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action OnShowMoreEventsClicked;
     public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;
-    public event Action OnFiltersChanged;
+    public event Action OnEventTypeFiltersChanged;
+    public event Action OnEventFrequencyFilterChanged;
+    public event Action OnEventCategoryFilterChanged;
+    public event Action OnEventTimeFilterChanged;
 
     public override void Awake()
     {
@@ -388,7 +391,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             SetWantToGoStatus(false);
         }
 
-        OnFiltersChanged?.Invoke();
+        OnEventTypeFiltersChanged?.Invoke();
     }
 
     private void ClickedOnTrending()
@@ -408,7 +411,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             SetWantToGoStatus(false);
         }
 
-        OnFiltersChanged?.Invoke();
+        OnEventTypeFiltersChanged?.Invoke();
     }
 
     private void ClickedOnWantToGo()
@@ -428,7 +431,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             SetTrendingStatus(false);
         }
 
-        OnFiltersChanged?.Invoke();
+        OnEventTypeFiltersChanged?.Invoke();
     }
 
     private void OnFrequencyFilterChanged(bool isOn, string optionId, string optionName)
@@ -437,7 +440,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             return;
 
         SetFrequencyDropdownValue(optionId, optionName, false);
-        OnFiltersChanged?.Invoke();
+        OnEventFrequencyFilterChanged?.Invoke();
     }
 
     private void OnCategoryFilterChanged(bool isOn, string optionId, string optionName)
@@ -446,7 +449,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
             return;
 
         SetCategoryDropdownValue(optionId, optionName, false);
-        OnFiltersChanged?.Invoke();
+        OnEventCategoryFilterChanged?.Invoke();
     }
 
     private void OnTimeFilterChanged(float lowValue, float highValue)
@@ -454,7 +457,7 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
         SelectedLowTime = lowValue;
         SelectedHighTime = highValue;
         timeDropdown.SetTitle($"{ConvertToTimeString(lowValue)} - {ConvertToTimeString(highValue)} (UTC)");
-        OnFiltersChanged?.Invoke();
+        OnEventTimeFilterChanged?.Invoke();
     }
 
     private static string ConvertToTimeString(float hours)
