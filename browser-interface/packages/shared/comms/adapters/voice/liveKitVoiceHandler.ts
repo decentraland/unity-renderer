@@ -141,7 +141,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
 
   return {
     setRecording(recording) {
-      logger.log('[KURUK] setRecording', recording) // DEBUG
       room.localParticipant
         .setMicrophoneEnabled(recording)
         .then(() => {
