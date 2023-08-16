@@ -17,9 +17,13 @@ namespace DCL.Skybox
         public SkyboxCamera()
         {
             // Make a new camera
-            skyboxCameraGO = new GameObject("Skybox Camera");
-            skyboxCameraGO.transform.position = Vector3.zero;
-            skyboxCameraGO.transform.rotation = Quaternion.identity;
+            skyboxCameraGO = new GameObject("Skybox Camera")
+                {
+                    transform = {
+                        position = Vector3.zero,
+                        rotation = Quaternion.identity,
+                    },
+                };
 
             // Attach camera component
             BaseCamera = skyboxCameraGO.AddComponent<Camera>();
@@ -46,7 +50,8 @@ namespace DCL.Skybox
 
             CurrentCamera = mainCam.GetComponent<Camera>();
             UniversalAdditionalCameraData mainCameraData = CurrentCamera.GetUniversalAdditionalCameraData();
-            List<Camera> cameraStack = mainCameraData.cameraStack;
+
+            List<Camera> cameraStack = mainCameraData.renderType != CameraRenderType.Overlay ? mainCameraData.cameraStack : new List<Camera>();
 
             mainCameraData.renderType = CameraRenderType.Overlay;
 
