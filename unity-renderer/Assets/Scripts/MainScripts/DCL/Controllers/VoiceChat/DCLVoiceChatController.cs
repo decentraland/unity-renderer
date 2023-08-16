@@ -49,6 +49,11 @@ namespace DCL
             }
         }
 
+        private void Update()
+        {
+            if (!Application.isFocused) { Debug.Log("APPLICATION IS NOT FOCUS IN UPDATE"); }
+        }
+
         private void OnApplicationFocus(bool hasFocus)
         {
             Debug.LogError("APPLICATION HAS FOCUS " + hasFocus);
