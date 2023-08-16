@@ -41,7 +41,6 @@ namespace DCL.Skybox
         private bool probeParented = false;
         private float reflectionUpdateTime = 1;                                 // In Mins
         private ReflectionProbeRuntime runtimeReflectionObj;
-        private SkyboxCamera skyboxCam;
 
         // Timer sync
         private int syncCounter = 0;
@@ -55,6 +54,8 @@ namespace DCL.Skybox
         private Dictionary<string, SkyboxConfiguration> skyboxConfigurationsDictionary;
         private MaterialReferenceContainer materialReferenceContainer;
         private CancellationTokenSource addressableCTS;
+
+        public SkyboxCamera SkyboxCamera { get; private set; }
 
         public SkyboxController(DataStore dataStore)
         {
@@ -107,7 +108,7 @@ namespace DCL.Skybox
             }
 
             // Create skybox Camera
-            skyboxCam = new SkyboxCamera();
+            SkyboxCamera = new SkyboxCamera();
 
             // Get current time from the server
             GetTimeFromTheServer(dataStore.worldTimer.GetCurrentTime());
@@ -151,9 +152,14 @@ namespace DCL.Skybox
             }
         }
 
+        public void AssignMainOverlayCamera(Transform currentTransform)
+        {
+            SkyboxCamera.AssignTargetCamera(currentTransform);
+        }
+
         private void AssignCameraReferences(Transform currentTransform, Transform prevTransform)
         {
-            skyboxCam.AssignTargetCamera(currentTransform);
+            SkyboxCamera.AssignTargetCamera(currentTransform);
             skyboxElements.AssignCameraInstance(currentTransform);
         }
 
@@ -162,9 +168,9 @@ namespace DCL.Skybox
             if (visibleState == prevVisibleState)
                 return;
 
-            if(skyboxCam == null) return;
+            if(SkyboxCamera == null) return;
 
-            skyboxCam.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
+            SkyboxCamera.SetCameraEnabledState(!visibleState && CommonScriptableObjects.rendererState.Get());
         }
 
         private void FixedTime_OnChange(float current, float _ = 0)
