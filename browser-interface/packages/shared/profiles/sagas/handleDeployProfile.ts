@@ -1,12 +1,6 @@
 import { Authenticator } from '@dcl/crypto'
 import { hashV1 } from '@dcl/hashing'
-import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
-import {
-  BuildEntityOptions,
-  BuildEntityWithoutFilesOptions,
-  ContentClient
-} from 'dcl-catalyst-client/dist/ContentClient'
-import type { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
+import { Avatar, ContentMapping, EntityType, Profile, Snapshots } from '@dcl/schemas'
 import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
 import { call, put, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -20,6 +14,9 @@ import type { DeployProfile } from '../actions'
 import { deployProfileFailure, deployProfileSuccess } from '../actions'
 import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { ContentFile } from '../types'
+import { ContentClient, DeploymentBuilder, DeploymentData, createContentClient } from 'dcl-catalyst-client'
+import { IFetchComponent } from '@well-known-components/interfaces'
+import { DeploymentPreparationData } from 'dcl-catalyst-client/dist/client/types'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -29,7 +26,6 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
   defaultLogger.info('about to deploy profile', profile)
-  
   try {
     yield call(deployAvatar, {
       url: profileServiceUrl,
@@ -109,32 +105,38 @@ async function deploy(
   contentHashes: Map<string, string>
 ) {
   // Build the client
-  const catalyst = new ContentClient({ contentUrl: url })
+  const fetcher: IFetchComponent = createFetchComponent()
+  const client: ContentClient = createContentClient({ fetcher: fetcher, url: url })
 
-  const entityWithoutNewFilesPayload = {
-    type: EntityType.PROFILE,
-    pointers: [identity.address],
-    hashesByKey: contentHashes,
-    metadata
-  } as BuildEntityWithoutFilesOptions
-
-  const entity = {
+  const buildEntity: DeploymentPreparationData = await DeploymentBuilder.buildEntity({
     type: EntityType.PROFILE,
     pointers: [identity.address],
     files: contentFiles,
-    metadata
-  } as BuildEntityOptions
+    metadata: metadata
+  })
+
+  // convert map<string,string> to ContentMapping[]
+  const contentMaping: ContentMapping[] = []
+  contentHashes.forEach((value, key) => {
+    contentMaping.push({ file: key, hash: value })
+  })
+
+  const buildEntityAndFile: any = await DeploymentBuilder.buildEntityAndFile({
+    type: EntityType.PROFILE,
+    pointers: [identity.address],
+    content: contentMaping,
+    metadata: metadata,
+    timestamp: Date.now() // TODO: verify correct time assignment or if its necessary at all
+  })
 
   // Build entity and group all files
-  const preparationData = await (contentFiles.size
-    ? catalyst.buildEntity(entity)
-    : catalyst.buildEntityWithoutNewFiles(entityWithoutNewFilesPayload))
+  const preparationData = await (contentFiles.size ? buildEntity : buildEntityAndFile)
   // sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)
   // Build the deploy data
   const deployData: DeploymentData = { ...preparationData, authChain }
   // Deploy the actual entity
-  return catalyst.deployEntity(deployData)
+  return client.deploy(deployData)
 }
 
 async function makeContentFile(path: string, content: Uint8Array | ArrayBuffer): Promise<ContentFile> {
@@ -145,4 +147,7 @@ async function makeContentFile(path: string, content: Uint8Array | ArrayBuffer):
   } else {
     throw new Error('Unable to create ContentFile: content must be a string or a Blob')
   }
+}
+function createFetchComponent(): IFetchComponent {
+  throw new Error('Function not implemented.')
 }

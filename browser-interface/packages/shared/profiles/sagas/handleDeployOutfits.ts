@@ -1,6 +1,6 @@
 import { Authenticator } from '@dcl/crypto'
 import { EntityType, Outfits } from '@dcl/schemas'
-import { BuildEntityOptions, ContentClient, DeploymentData } from 'dcl-catalyst-client'
+import { ContentClient, DeploymentBuilder, DeploymentData, createContentClient } from 'dcl-catalyst-client'
 import defaultLogger from 'lib/logger'
 import { call, select } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
@@ -10,6 +10,8 @@ import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { getCurrentIdentity, getCurrentUserId } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
 import { DeployOutfits } from '../actions'
+import { IFetchComponent } from '@well-known-components/interfaces'
+import { DeploymentPreparationData } from 'dcl-catalyst-client/dist/client/types'
 
 export function* handleDeployOutfits(deployOutfitsAction: DeployOutfits) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -47,18 +49,16 @@ export async function deployOutfits(params: {
   const contentFiles = params.contentFiles || new Map<string, Uint8Array>()
 
   // Build the client
-  const catalyst = new ContentClient({ contentUrl: url })
+  const fetcher: IFetchComponent = createFetchComponent()
+  const client: ContentClient = createContentClient({ fetcher: fetcher, url: url })
 
   // The pointer for the outfits is: `<address>:outfits`
-  const entity = {
+  const preparationData: DeploymentPreparationData = await DeploymentBuilder.buildEntity({
     type: EntityType.OUTFITS,
     pointers: [identity.address + ':outfits'],
     files: contentFiles,
     metadata: outfits
-  } as unknown as BuildEntityOptions
-
-  // Build entity and group all files
-  const preparationData = await catalyst.buildEntity(entity)
+  })
 
   // Sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)
@@ -67,5 +67,8 @@ export async function deployOutfits(params: {
   const deployData: DeploymentData = { ...preparationData, authChain }
 
   // Deploy the entity
-  return catalyst.deploy(deployData)
+  return client.deploy(deployData)
+}
+function createFetchComponent(): IFetchComponent {
+  throw new Error('Function not implemented.')
 }
