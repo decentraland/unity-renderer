@@ -1,4 +1,4 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
 import { receiveUserTalking } from 'shared/comms/peers'
@@ -53,7 +53,7 @@ let audioRequestInitialized = false
 export function* voiceChatSaga() {
   yield fork(reactToNewVoiceChatHandler)
 
-  yield takeEvery(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
+  yield fork(reactToRecordingRequest)
 
   yield takeEvery(VOICE_PLAYING_UPDATE, handleUserVoicePlaying)
 
@@ -105,17 +105,26 @@ function* handleConnectVoiceChatToRoom() {
   }
 }
 
-function* handleRecordingRequest() {
-  const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
-    getHandleRecordingRequestInfo
-  )) as ReturnType<typeof getHandleRecordingRequestInfo>
+function* reactToRecordingRequest() {
+  let previousRequestedRecording: boolean = false
 
-  if (voiceHandler) {
-    if (!isAllowedByScene || !requestedRecording) {
-      yield voiceHandler.setRecording(false)
-    } else {
-      yield call(requestUserMediaIfNeeded)
-      yield voiceHandler.setRecording(true)
+  while (true) {
+    yield take(REQUEST_VOICE_CHAT_RECORDING)
+
+    const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
+      getHandleRecordingRequestInfo
+    )) as ReturnType<typeof getHandleRecordingRequestInfo>
+
+    if (previousRequestedRecording !== requestedRecording) {
+      if (voiceHandler) {
+        if (!isAllowedByScene || !requestedRecording) {
+          yield voiceHandler.setRecording(false)
+        } else {
+          yield call(requestUserMediaIfNeeded)
+          yield voiceHandler.setRecording(true)
+        }
+      }
+      previousRequestedRecording = requestedRecording
     }
   }
 }
