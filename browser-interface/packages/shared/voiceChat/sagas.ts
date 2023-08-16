@@ -112,10 +112,10 @@ function* handleRecordingRequest() {
 
   if (voiceHandler) {
     if (!isAllowedByScene || !requestedRecording) {
-      voiceHandler.setRecording(false)
+      yield voiceHandler.setRecording(false)
     } else {
       yield call(requestUserMediaIfNeeded)
-      voiceHandler.setRecording(true)
+      yield voiceHandler.setRecording(true)
     }
   }
 }
