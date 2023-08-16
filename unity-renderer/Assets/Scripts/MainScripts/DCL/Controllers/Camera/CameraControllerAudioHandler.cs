@@ -13,7 +13,7 @@ namespace DCL.Camera
         [SerializeField]
         AudioEvent eventCameraFadeIn, eventCameraFadeOut;
 
-        private void Awake() { cameraController.onSetCameraMode += OnSetCameraMode; }
+        private void Awake() { cameraController.OnSetCameraMode += OnSetCameraMode; }
 
         void OnSetCameraMode(CameraMode.ModeId mode)
         {
