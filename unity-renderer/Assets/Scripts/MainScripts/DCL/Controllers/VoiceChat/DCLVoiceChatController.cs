@@ -43,7 +43,7 @@ namespace DCL
         {
             if (isidle)
             {
-                Debug.LogError("APPLICATION IS IDLE ");
+                Debug.LogError("KURUK APPLICATION IS IDLE ");
                 StopRecording(true);
                 DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
             }
@@ -51,12 +51,12 @@ namespace DCL
 
         private void Update()
         {
-            if (!Application.isFocused) { Debug.Log("APPLICATION IS NOT FOCUS IN UPDATE"); }
+            if (!Application.isFocused) { Debug.Log("KURUK  APPLICATION IS NOT FOCUS IN UPDATE"); }
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            Debug.LogError("APPLICATION HAS FOCUS " + hasFocus);
+            Debug.LogError("KURUK  APPLICATION HAS FOCUS " + hasFocus);
 
             if (!hasFocus)
             {
@@ -67,7 +67,7 @@ namespace DCL
 
         private void OnApplicationFocusLost()
         {
-            Debug.LogError("APPLICATION LOST FOCUS ");
+            Debug.LogError("KURUK  APPLICATION LOST FOCUS ");
 
             StopRecording(true);
             DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
@@ -108,7 +108,7 @@ namespace DCL
         {
             if (isRecording) return;
 
-            Debug.LogError("STARTED RECORDING");
+            Debug.LogError("KURUK  STARTED RECORDING");
 
             WebInterface.SendSetVoiceChatRecording(true);
 
@@ -123,7 +123,7 @@ namespace DCL
         {
             if (!isRecording) return;
 
-            Debug.LogError("STOPPED RECORDING");
+            Debug.LogError("KURUK  STOPPED RECORDING");
 
             WebInterface.SendSetVoiceChatRecording(false);
 
