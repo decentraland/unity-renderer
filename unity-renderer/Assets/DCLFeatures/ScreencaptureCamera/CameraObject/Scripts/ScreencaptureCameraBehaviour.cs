@@ -29,11 +29,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private const float MIN_PLAYERNAME_HEIGHT = 1.14f;
 
-        [Header("EXTERNAL DEPENDENCIES")]
-        [SerializeField] internal Camera mainCamera;
-        [SerializeField] internal DCLCharacterController characterController;
-        [SerializeField] internal CameraController cameraController;
-
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
@@ -44,6 +39,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
+
+        internal Camera mainCamera;
+        internal DCLCharacterController characterController;
+        internal CameraController cameraController;
 
         internal Camera screenshotCamera;
         internal BooleanVariable isScreencaptureCameraActive;
@@ -113,12 +112,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
-        private void Awake()
-        {
-            storageStatus = new CameraReelStorageStatus(0, 0);
-            SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
-        }
-
         // TODO(Vitaly): Remove this logic when feature flag will be enabled
         private IEnumerator Start()
         {
@@ -143,6 +136,14 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
                     playerId = player.ownPlayer.Get().id;
                     UpdateStorageInfo();
+
+                    storageStatus = new CameraReelStorageStatus(0, 0);
+
+                    characterController = DCLCharacterController.i;
+                    cameraController = SceneReferences.i.cameraController;
+                    mainCamera = cameraController.GetCamera();
+
+                    SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
                 }
             }
         }
