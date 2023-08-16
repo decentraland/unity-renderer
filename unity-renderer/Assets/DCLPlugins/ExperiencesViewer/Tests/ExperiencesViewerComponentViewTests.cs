@@ -128,72 +128,67 @@ namespace DCL.ExperiencesViewer.Tests
         [Test]
         public void ShowUIHiddenToastCorrectly()
         {
-            // Arrange
-            experiencesViewerComponent.toastRoutine = null;
-
             // Act
             experiencesViewerComponent.ShowUiHiddenToast("pxName");
 
             // Assert
-            Assert.IsNotNull(experiencesViewerComponent.toastRoutine);
+            Assert.IsTrue(experiencesViewerComponent.toastAnimator.isVisible);
         }
 
         [Test]
         public void RaiseOnSomeExperienceUIVisibilityChangedCorrectly()
         {
             // Arrange
-            string testId = "TestId";
-            bool testUIVisibleFlag = true;
+            const string TEST_ID = "TestId";
             string receivedId = string.Empty;
             bool receivedUIVisibleFlag = false;
-            experiencesViewerComponent.onSomeExperienceUIVisibilityChanged += (id, isUIVisible) =>
+            experiencesViewerComponent.OnExperienceUiVisibilityChanged += (id, isUIVisible) =>
             {
                 receivedId = id;
                 receivedUIVisibleFlag = isUIVisible;
             };
 
             // Act
-            experiencesViewerComponent.OnSomeExperienceUIVisibilityChanged(testId, testUIVisibleFlag);
+            experiencesViewerComponent.AddAvailableExperience(new ExperienceRowComponentModel
+            {
+                id = TEST_ID,
+            });
+
+            experiencesViewerComponent.availableExperiences
+                                      .GetComponentInChildren<ExperienceRowComponentView>()
+                                      .showPEXUIButton.onClick.Invoke();
 
             // Assert
-            Assert.AreEqual(testId, receivedId);
-            Assert.AreEqual(testUIVisibleFlag, receivedUIVisibleFlag);
+            Assert.AreEqual(TEST_ID, receivedId);
+            Assert.IsTrue(receivedUIVisibleFlag);
         }
 
         [Test]
         public void RaiseOnSomeExperienceExecutionChangedCorrectly()
         {
             // Arrange
-            string testId = "TestId";
-            bool testPlayingFlag = true;
+            const string TEST_ID = "TestId";
             string receivedId = string.Empty;
             bool receivedPlayingFlag = false;
-            experiencesViewerComponent.onSomeExperienceExecutionChanged += (id, isPlaying) =>
+            experiencesViewerComponent.OnExperienceExecutionChanged += (id, isPlaying) =>
             {
                 receivedId = id;
                 receivedPlayingFlag = isPlaying;
             };
 
             // Act
-            experiencesViewerComponent.OnSomeExperienceExecutionChanged(testId, testPlayingFlag);
+            experiencesViewerComponent.AddAvailableExperience(new ExperienceRowComponentModel
+            {
+                id = TEST_ID,
+            });
+
+            experiencesViewerComponent.availableExperiences
+                                      .GetComponentInChildren<ExperienceRowComponentView>()
+                                      .startStopPEXToggle.isOn = true;
 
             // Assert
-            Assert.AreEqual(testId, receivedId);
-            Assert.AreEqual(testPlayingFlag, receivedPlayingFlag);
-        }
-
-        [Test]
-        public void ConfigurePEXPoolCorrectly()
-        {
-            // Arrange
-            experiencesViewerComponent.experiencesPool = null;
-
-            // Act
-            experiencesViewerComponent.ConfigurePEXPool();
-
-            // Assert
-            Assert.IsNotNull(experiencesViewerComponent.experiencesPool);
-            Assert.AreEqual(ExperiencesViewerComponentView.EXPERIENCES_POOL_NAME, experiencesViewerComponent.experiencesPool.id);
+            Assert.AreEqual(TEST_ID, receivedId);
+            Assert.IsTrue(receivedPlayingFlag);
         }
     }
 }
