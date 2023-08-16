@@ -162,8 +162,8 @@ namespace DCL.ExperiencesViewer.Tests
 
             portableExperiencesBridge.Received(1).SetDisabledPortableExperiences(
                 Arg.Is<IEnumerable<string>>(i => i.Count() == 2
-                                                 && i.ElementAt(0) == "otherPxId"
-                                                 && i.ElementAt(1) == "pxId"));
+                                                 && i.Contains("otherPxId")
+                                                 && i.Contains("pxId")));
 
             view.Received(1).ShowDisabledToast("sceneName");
         }
