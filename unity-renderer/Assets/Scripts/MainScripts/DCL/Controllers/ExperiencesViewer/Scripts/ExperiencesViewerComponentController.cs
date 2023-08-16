@@ -104,12 +104,16 @@ namespace DCL.ExperiencesViewer
             if (scene != null)
                 DataStore.i.HUDs.isSceneUiEnabled.AddOrSet(scene.sceneData.sceneNumber, isVisible);
 
-            if (!isVisible)
-                view.ShowUIHiddenToast();
+            if (isVisible)
+                view.ShowUiShownToast(scene?.GetSceneName());
+            else
+                view.ShowUiHiddenToast(scene?.GetSceneName());
         }
 
         private void DisableOrEnablePortableExperience(string pexId, bool isPlaying)
         {
+            IParcelScene scene = GetPortableExperienceScene(pexId);
+
             if (isPlaying)
             {
                 forcePortableExperience.Set(pexId);
@@ -118,6 +122,8 @@ namespace DCL.ExperiencesViewer
                     disabledPortableExperiences.GetKeys()
                                                .Where(s => s != pexId)
                                                .ToArray());
+
+                view.ShowEnabledToast(scene?.GetSceneName());
             }
             else
             {
@@ -125,6 +131,8 @@ namespace DCL.ExperiencesViewer
                                                                                        .Concat(new[] { pexId })
                                                                                        .Distinct()
                                                                                        .ToArray());
+
+                view.ShowDisabledToast(scene?.GetSceneName());
             }
         }
 

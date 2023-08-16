@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
+using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tasks;
@@ -85,6 +86,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private BooleanVariable featureKeyTriggersBlocked;
         private BooleanVariable userMovementKeysBlocked;
 
+        private bool isInTransition;
+
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
@@ -128,15 +131,21 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 Destroy(gameObject);
             else
             {
-                Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
-                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
-                CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
-
-                enabled = true;
-
                 yield return new WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id));
-                playerId = player.ownPlayer.Get().id;
-                UpdateStorageInfo();
+
+                if (isGuest)
+                    Destroy(gameObject);
+                else
+                {
+                    Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
+                    enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
+                    CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
+
+                    enabled = true;
+
+                    playerId = player.ownPlayer.Get().id;
+                    UpdateStorageInfo();
+                }
             }
         }
 
@@ -232,22 +241,40 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void ToggleScreenshotCamera(string source = null, bool isEnabled = true)
         {
-            if (isGuest) return;
+            if (isGuest || isInTransition) return;
             if (isEnabled == isScreencaptureCameraActive.Get()) return;
+
+            if (isEnabled && !string.IsNullOrEmpty(source))
+                analytics.OpenCamera(source);
 
             UpdateStorageInfo();
 
             bool activateScreenshotCamera = !(isInstantiated && screenshotCamera.gameObject.activeSelf);
-
             Utils.UnlockCursor();
 
-            ToggleExternalSystems(activateScreenshotCamera);
-            ToggleCameraSystems(activateScreenshotCamera);
+            if (activateScreenshotCamera)
+                OpenCameraAsync();
+            else
+            {
+                ToggleExternalSystems(activateScreenshotCamera: false);
+                ToggleCameraSystems(activateScreenshotCamera: false);
+                isScreencaptureCameraActive.Set(false);
+            }
+        }
 
-            isScreencaptureCameraActive.Set(activateScreenshotCamera);
+        private async void OpenCameraAsync()
+        {
+            isInTransition = true;
 
-            if (isEnabled && !string.IsNullOrEmpty(source))
-                analytics.OpenCamera(source);
+            cameraModeInputLocked.Set(true);
+            cameraController.SetCameraMode(CameraMode.ModeId.ThirdPerson);
+
+            await UniTask.WaitWhile(() => cameraController.CameraIsBlending);
+            isInTransition = false;
+
+            ToggleExternalSystems(activateScreenshotCamera: true);
+            ToggleCameraSystems(activateScreenshotCamera: true);
+            isScreencaptureCameraActive.Set(true);
         }
 
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
@@ -270,21 +297,21 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 playerName.Hide();
             }
 
-            SetActivePlayerCamera(isActive: !activateScreenshotCamera);
-            SetActiveScreenshotCamera(isActive: activateScreenshotCamera);
+            SetPlayerCameraActive(isActive: !activateScreenshotCamera);
+            SetScreenshotCameraActive(isActive: activateScreenshotCamera);
             avatarsLODController.SetCamera(activateScreenshotCamera ? screenshotCamera : mainCamera);
         }
 
-        private void SetActiveScreenshotCamera(bool isActive)
+        private void SetScreenshotCameraActive(bool isActive)
         {
             screenshotCamera.gameObject.SetActive(isActive);
             screencaptureCameraHUDController.SetVisibility(isActive, storageStatus.HasFreeSpace);
         }
 
-        private void SetActivePlayerCamera(bool isActive)
+        private void SetPlayerCameraActive(bool isActive)
         {
             cameraController.SetCameraEnabledState(isActive);
-            characterController.SetEnabled(isActive);
+            characterController.SetMovementInputToZero();
             characterCinemachineBrain.enabled = isActive;
         }
 
@@ -295,7 +322,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 prevUiHiddenState = allUIHidden.Get();
                 allUIHidden.Set(true);
 
-                prevMouseLockState = cameraModeInputLocked.Get();
                 cameraModeInputLocked.Set(true);
 
                 prevMouseButtonCursorLockMode = cameraLeftMouseButtonCursorLock.Get();
@@ -304,7 +330,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             else
             {
                 allUIHidden.Set(prevUiHiddenState);
-                cameraModeInputLocked.Set(prevMouseLockState);
+                cameraModeInputLocked.Set(false);
                 cameraLeftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
             }
 

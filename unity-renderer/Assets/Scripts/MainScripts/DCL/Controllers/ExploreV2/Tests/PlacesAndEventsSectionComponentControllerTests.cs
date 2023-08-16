@@ -37,7 +37,6 @@ public class PlacesAndEventsSectionComponentControllerTests
         Assert.AreEqual(placesAndEventsSectionComponentView, placesAndEventsSectionComponentController.view);
         Assert.IsNotNull(placesAndEventsSectionComponentController.placesSubSectionComponentController);
         Assert.IsNotNull(placesAndEventsSectionComponentController.eventsSubSectionComponentController);
-        Assert.IsNotNull(placesAndEventsSectionComponentController.highlightsSubSectionComponentController);
     }
 
     [Test]

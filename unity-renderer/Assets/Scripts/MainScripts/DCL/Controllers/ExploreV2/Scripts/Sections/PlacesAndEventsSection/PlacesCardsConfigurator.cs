@@ -18,14 +18,18 @@ public static class PlacesCardsConfigurator
     /// <param name="placeInfo">Model to apply.</param>
     /// <param name="OnPlaceInfoClicked">Action to inform when the Info button has been clicked.</param>
     /// <param name="OnPlaceJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
-    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteChanged)
+    public static PlaceCardComponentView Configure(PlaceCardComponentView placeCard, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool?> OnVoteChanged, Action<string, bool> OnFavoriteChanged)
     {
         placeCard.Configure(placeInfo);
 
         placeCard.onInfoClick.RemoveAllListeners();
         placeCard.onInfoClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
+        placeCard.onBackgroundClick.RemoveAllListeners();
+        placeCard.onBackgroundClick.AddListener(() => OnPlaceInfoClicked?.Invoke(placeInfo));
         placeCard.onJumpInClick.RemoveAllListeners();
         placeCard.onJumpInClick.AddListener(() => OnPlaceJumpInClicked?.Invoke(placeInfo.placeInfo));
+        placeCard.OnVoteChanged -= OnVoteChanged;
+        placeCard.OnVoteChanged += OnVoteChanged;
         placeCard.OnFavoriteChanged -= OnFavoriteChanged;
         placeCard.OnFavoriteChanged += OnFavoriteChanged;
 
