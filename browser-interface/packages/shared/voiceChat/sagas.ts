@@ -53,7 +53,7 @@ let audioRequestInitialized = false
 export function* voiceChatSaga() {
   yield fork(reactToNewVoiceChatHandler)
 
-  yield takeLatest(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
+  yield takeEvery(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
 
   yield takeEvery(VOICE_PLAYING_UPDATE, handleUserVoicePlaying)
 
