@@ -1,11 +1,13 @@
 using DCLServices.CameraReelService;
+using DG.Tweening;
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
-    public class CameraReelThumbnail : MonoBehaviour
+    public class CameraReelThumbnail : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private ImageComponentView image;
         [SerializeField] private Button interactionButton;
@@ -31,5 +33,17 @@ namespace DCLFeatures.CameraReel.Gallery
 
         public int CompareTo(CameraReelThumbnail thumbnail) =>
             picture.metadata.GetLocalizedDateTime().CompareTo(thumbnail.picture.metadata.GetLocalizedDateTime());
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            transform.DOScale(Vector3.one * 1.05f, 0.3f);
+            transform.DORotate(Vector3.forward * -5, 0.3f);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            transform.DOScale(Vector3.one, 0.3f);
+            transform.DORotate(Vector3.zero, 0.3f);
+        }
     }
 }
