@@ -29,6 +29,7 @@ public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionC
     /// It will be triggered when the JumpIn button is clicked.
     /// </summary>
     event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
+    event Action<string, bool?> OnVoteChanged;
 
     /// <summary>
     /// It will be triggered when the favorites button is clicked.

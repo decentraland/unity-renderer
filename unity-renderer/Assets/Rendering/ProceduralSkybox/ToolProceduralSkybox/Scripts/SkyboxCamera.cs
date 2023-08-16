@@ -7,12 +7,12 @@ namespace DCL.Skybox
     public class SkyboxCamera
     {
         private readonly GameObject skyboxCameraGO;
-        private readonly Camera skyboxCamera;
         private readonly SkyboxCameraBehaviour camBehavior;
 
         private List<Camera> skyboxCameraStack;
 
         public Camera CurrentCamera { get; private set; }
+        public Camera BaseCamera { get; }
 
         public SkyboxCamera()
         {
@@ -22,18 +22,18 @@ namespace DCL.Skybox
             skyboxCameraGO.transform.rotation = Quaternion.identity;
 
             // Attach camera component
-            skyboxCamera = skyboxCameraGO.AddComponent<Camera>();
+            BaseCamera = skyboxCameraGO.AddComponent<Camera>();
 
-            UniversalAdditionalCameraData cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
+            UniversalAdditionalCameraData cameraData = BaseCamera.GetUniversalAdditionalCameraData();
             cameraData.renderShadows = false;
 
             // This index is defined in UniversalRenderPipelineAsset
             // We are using a custom ForwardRenderer with less features that increase the performance and lowers the passes
             cameraData.SetRenderer(1);
 
-            skyboxCamera.useOcclusionCulling = false;
-            skyboxCamera.cullingMask = 1 << LayerMask.NameToLayer("Skybox");
-            skyboxCamera.farClipPlane = 5000;
+            BaseCamera.useOcclusionCulling = false;
+            BaseCamera.cullingMask = 1 << LayerMask.NameToLayer("Skybox");
+            BaseCamera.farClipPlane = 5000;
 
             // Attach follow script
             camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehaviour>();
@@ -52,7 +52,7 @@ namespace DCL.Skybox
 
             if (skyboxCameraStack == null)
             {
-                UniversalAdditionalCameraData cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
+                UniversalAdditionalCameraData cameraData = BaseCamera.GetUniversalAdditionalCameraData();
                 skyboxCameraStack = cameraData.cameraStack;
                 skyboxCameraStack.Add(CurrentCamera);
 
@@ -62,12 +62,12 @@ namespace DCL.Skybox
             else
                 skyboxCameraStack[0] = CurrentCamera;
 
-            camBehavior.AssignCamera(CurrentCamera, skyboxCamera);
+            camBehavior.AssignCamera(CurrentCamera, BaseCamera);
         }
 
         public void SetCameraEnabledState(bool enabled)
         {
-            skyboxCamera.enabled = enabled;
+            BaseCamera.enabled = enabled;
         }
     }
 }

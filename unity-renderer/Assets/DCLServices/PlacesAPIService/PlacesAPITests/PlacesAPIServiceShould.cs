@@ -36,7 +36,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Arrange
             var wholeCatalog = placesCatalog.Values.ToList();
 
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), "", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -48,7 +48,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             var result = await service.GetMostActivePlaces(pageNumber, pageSize, default);
 
             // Assert
-            client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
+            client.Received().GetMostActivePlaces(pageNumber, pageSize, "", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
@@ -60,7 +60,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         public async Task AddPlacesToCacheWhenCallingGetMostActivePlaces()
         {
             // Arrange
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), "", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -114,13 +114,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
             }, DateTime.Now));
-            service.activePlacesPagePointers.Add(pageSize, pagePointer);
+            service.activePlacesPagePointers.Add(pageSize.ToString(), pagePointer);
 
             // Act
             var result = await service.GetMostActivePlaces(pageNumber, pageSize, default);
 
             // Assert
-            client.DidNotReceiveWithAnyArgs().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+            client.DidNotReceiveWithAnyArgs().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(),"", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
@@ -136,7 +136,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         {
             // Arrange
             var wholeCatalog = placesCatalog.Values.ToList();
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(),"", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -153,13 +153,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
             }, DateTime.Now));
-            service.activePlacesPagePointers.Add(pageSize, pagePointer);
+            service.activePlacesPagePointers.Add(pageSize.ToString(), pagePointer);
 
             // Act
-            var result = await service.GetMostActivePlaces(pageNumber, pageSize, default, true);
+            var result = await service.GetMostActivePlaces(pageNumber, pageSize, "", "", default, true);
 
             // Assert
-            client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
+            client.Received().GetMostActivePlaces(pageNumber, pageSize, "", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {

@@ -349,7 +349,7 @@ namespace DCLServices.WearablesCatalogService
         }
 
         UniTask<(WearableWithDefinitionResponse response, bool success)> ILambdaServiceConsumer<WearableWithDefinitionResponse>.CreateRequest
-            (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
+            (string endPoint, int pageSize, int pageNumber, Dictionary<string, string> additionalData, CancellationToken cancellationToken) =>
             lambdasService.Get<WearableWithDefinitionResponse>(
                 PAGINATED_WEARABLES_END_POINT,
                 endPoint,
