@@ -59,12 +59,25 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                     overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
             }
 
+            // Create a new RenderTexture for the final image
+            RenderTexture finalTexture = new RenderTexture(width, height, 24);
+
+            Graphics.Blit(rTexture, finalTexture); // Copy the contents
             // Read the pixels from the RenderTexture
-            RenderTexture.active = rTexture;
+            RenderTexture.active = finalTexture;
             Texture2D screenshot = new Texture2D(width, height, TextureFormat.RGB24, false);
             screenshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
             screenshot.Apply();
             RenderTexture.active = null;
+            //
+            // // Create the final texture and use Graphics.Blit to copy the content
+            // Texture2D screenshot = new Texture2D(width, height, TextureFormat.RGB24, false);
+            // RenderTexture finalRenderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
+            // Graphics.Blit(renderTexture, finalRenderTexture);
+            // RenderTexture.active = finalRenderTexture;
+            // screenshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            // screenshot.Apply();
+            // RenderTexture.active = null;
 
             // Save the screenshot as a JPG file
             File.WriteAllBytes(Application.dataPath + "_screenshot1.jpg", screenshot.EncodeToJPG());

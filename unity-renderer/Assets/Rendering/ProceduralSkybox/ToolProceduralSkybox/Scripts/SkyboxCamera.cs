@@ -13,6 +13,7 @@ namespace DCL.Skybox
         private List<Camera> skyboxCameraStack;
 
         public Camera CurrentCamera { get; private set; }
+        public Camera BaseCamera => skyboxCamera;
 
         public SkyboxCamera()
         {
