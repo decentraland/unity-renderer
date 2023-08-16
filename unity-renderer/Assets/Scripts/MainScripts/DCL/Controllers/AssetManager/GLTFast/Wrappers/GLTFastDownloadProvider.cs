@@ -62,7 +62,7 @@ namespace DCL.GLTFast.Wrappers
 
             fileName = fileName.Replace(baseUrl, "");
 
-            if (fileName.StartsWith("file"))
+            if (fileName.StartsWith("file://"))
                 return fileName;
 
             // this can return false and the url is valid, only happens with asset with hash as a name ( mostly gltf )
@@ -107,7 +107,7 @@ namespace DCL.GLTFast.Wrappers
             if (!wrapper.Success)
             {
                 string errorMessage = promiseException != null ? promiseException.Message : wrapper.Error;
-                Debug.LogError($"[GLTFast Texture WebRequest Failed] Error: {errorMessage}" + finalUrl);
+                Debug.LogError($"[GLTFast Texture WebRequest Failed] Error: {errorMessage} | url: " + finalUrl);
             }
 
             return wrapper;
