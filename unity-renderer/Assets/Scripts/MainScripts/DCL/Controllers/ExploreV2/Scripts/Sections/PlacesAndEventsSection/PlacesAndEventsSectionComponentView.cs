@@ -1,14 +1,8 @@
 using DCL;
-using System;
 using UnityEngine;
 
 public interface IPlacesAndEventsSectionComponentView
 {
-    /// <summary>
-    /// Highlights sub-section component.
-    /// </summary>
-    IHighlightsSubSectionComponentView HighlightsSubSectionView { get; }
-
     /// <summary>
     /// Places sub-section component.
     /// </summary>
@@ -48,17 +42,15 @@ public interface IPlacesAndEventsSectionComponentView
 
 public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAndEventsSectionComponentView
 {
-    internal const int HIGHLIGHTS_SUB_SECTION_INDEX = 0;
-    internal const int PLACES_SUB_SECTION_INDEX = 1;
-    internal const int EVENTS_SUB_SECTION_INDEX = 2;
-    internal const int FAVORITES_SUB_SECTION_INDEX = 3;
-    internal const int SEARCH_SUB_SECTION_INDEX = 4;
+    internal const int PLACES_SUB_SECTION_INDEX = 0;
+    internal const int EVENTS_SUB_SECTION_INDEX = 1;
+    internal const int FAVORITES_SUB_SECTION_INDEX = 2;
+    internal const int SEARCH_SUB_SECTION_INDEX = 3;
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
 
     [Header("Sub-Sections")]
-    [SerializeField] internal HighlightsSubSectionComponentView highlightsSubSection;
     [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
     [SerializeField] internal FavoritesSubSectionComponentView favoritesSubSection;
@@ -80,7 +72,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         SetActive(false);
     }
 
-    public IHighlightsSubSectionComponentView HighlightsSubSectionView => highlightsSubSection;
     public IPlacesSubSectionComponentView PlacesSubSectionView => placesSubSection;
     public IEventsSubSectionComponentView EventsSubSectionView => eventsSubSection;
     public IFavoritesSubSectionComponentView FavoritesSubSectionView => favoritesSubSection;
@@ -100,7 +91,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         else
             subSectionSelector.DisableSection(FAVORITES_SUB_SECTION_INDEX);
 
-        highlightsSubSection.SetActive(isActive && currentSelectedIndex == HIGHLIGHTS_SUB_SECTION_INDEX);
         placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
         eventsSubSection.SetActive(isActive && currentSelectedIndex == EVENTS_SUB_SECTION_INDEX);
         favoritesSubSection.SetActive(isActive && currentSelectedIndex == FAVORITES_SUB_SECTION_INDEX);
@@ -120,7 +110,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     public override void RefreshControl()
     {
-        highlightsSubSection.RefreshControl();
         placesSubSection.RefreshControl();
         eventsSubSection.RefreshControl();
         favoritesSubSection.RefreshControl();
@@ -132,7 +121,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
         base.Dispose();
 
         RemoveSectionSelectorMappings();
-        highlightsSubSection.Dispose();
         placesSubSection.Dispose();
         eventsSubSection.Dispose();
         favoritesSubSection.Dispose();
@@ -141,12 +129,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void CreateSubSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
-        {
-            highlightsSubSection.SetActive(isActive);
-            searchSubSection.SetActive(false);
-            currentSelectedIndex = HIGHLIGHTS_SUB_SECTION_INDEX;
-        });
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.AddListener((isActive) =>
         {
             placesSubSection.SetActive(isActive);
@@ -174,11 +156,10 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
         placesSubSection.SetActive(false);
         eventsSubSection.SetActive(false);
-        highlightsSubSection.SetActive(false);
         favoritesSubSection.SetActive(false);
         searchSubSection.SetActive(false);
 
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
+        subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.SelectToggle(reselectIfAlreadyOn: true);
     }
 
     private void SearchTextChanged(string searchText)
@@ -197,7 +178,6 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
 
     internal void RemoveSectionSelectorMappings()
     {
-        subSectionSelector.GetSection(HIGHLIGHTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(PLACES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(EVENTS_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
         subSectionSelector.GetSection(FAVORITES_SUB_SECTION_INDEX)?.onSelect.RemoveAllListeners();
