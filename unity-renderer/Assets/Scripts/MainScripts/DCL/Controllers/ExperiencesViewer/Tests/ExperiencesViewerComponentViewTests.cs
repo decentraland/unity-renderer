@@ -129,13 +129,13 @@ namespace DCL.ExperiencesViewer.Tests
         public void ShowUIHiddenToastCorrectly()
         {
             // Arrange
-            experiencesViewerComponent.uiHiddenToastCoroutine = null;
+            experiencesViewerComponent.toastRoutine = null;
 
             // Act
-            experiencesViewerComponent.ShowUIHiddenToast();
+            experiencesViewerComponent.ShowUiHiddenToast("pxName");
 
             // Assert
-            Assert.IsNotNull(experiencesViewerComponent.uiHiddenToastCoroutine);
+            Assert.IsNotNull(experiencesViewerComponent.toastRoutine);
         }
 
         [Test]
