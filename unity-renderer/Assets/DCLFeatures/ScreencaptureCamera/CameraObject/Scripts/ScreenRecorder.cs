@@ -29,7 +29,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
             (ScreenFrameData targetScreenFrame, _) = CalculateTargetScreenFrame(currentScreenFrame);
 
-            RenderTexture initialRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, DefaultFormat.HDR);
+            RenderTexture initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8);
 
             UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
 
@@ -63,8 +63,31 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
 
             // Create an intermediate RenderTexture with the size of the cropped area
-            RenderTexture finalRenderTexture = new RenderTexture(initialRenderTexture.width, initialRenderTexture.height, 0);
+            RenderTexture finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
             Graphics.Blit(initialRenderTexture, finalRenderTexture);
+
+            // // Apply any post-processing effects or other operations using Graphics.Blit
+            // Graphics.Blit(initialRenderTexture, intermediateRenderTexture);
+            //
+            // // Create a Texture2D with the same GraphicsFormat as the RenderTexture
+            // Texture2D screenshot = new Texture2D(width, height, TextureFormat.RGBAHalf, false);
+            // Graphics.CopyTexture(intermediateRenderTexture, screenshot);
+            //
+            // Camera.main.targetTexture = null;
+            // RenderTexture.ReleaseTemporary(initialRenderTexture);
+            // RenderTexture.ReleaseTemporary(intermediateRenderTexture);
+            //
+            // // Define the specific rect you want to copy
+            // int rectX = 100;
+            // int rectY = 100;
+            // int rectWidth = 500;
+            // int rectHeight = 500;
+            //
+            // // Create a Texture2D with the same GraphicsFormat as the RenderTexture and the size of the rect
+            // Texture2D screenshot = new Texture2D(rectWidth, rectHeight, TextureFormat.RGBAHalf, false);
+            //
+            // // Copy the specific rect from the intermediateRenderTexture to the screenshot Texture2D
+            // Graphics.CopyTexture(intermediateRenderTexture, 0, 0, rectX, rectY, rectWidth, rectHeight, screenshot, 0, 0, 0, 0);
 
             // Read the pixels from the RenderTexture
             RenderTexture.active = finalRenderTexture;
@@ -76,8 +99,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             RenderTexture.active = null;
 
             // Clean up
-            Object.Destroy(initialRenderTexture);
-            Object.Destroy(finalRenderTexture);
+            RenderTexture.ReleaseTemporary(initialRenderTexture);
+            RenderTexture.ReleaseTemporary(finalRenderTexture);
 
             return screenshot;
         }
