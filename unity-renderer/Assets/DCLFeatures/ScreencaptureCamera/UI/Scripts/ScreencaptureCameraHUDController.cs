@@ -35,6 +35,8 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CameraReelButtonClicked += OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
+
+            input.MouseFirstClick.OnStarted += HideShortcutsInfoPanel;
         }
 
         public void Dispose()
@@ -54,6 +56,12 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
             view.SetVisibility(isVisible, hasStorageSpace);
+
+        private void HideShortcutsInfoPanel(DCLAction_Hold _)
+        {
+            view.ToggleShortcutsInfosHelpPanel();
+            input.MouseFirstClick.OnStarted -= HideShortcutsInfoPanel;
+        }
 
         public void PlayScreenshotFX(Texture2D image, float splashDuration, float middlePauseDuration, float transitionDuration)
         {
