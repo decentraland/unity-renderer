@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering.Universal;
-using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
@@ -16,6 +15,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly float targetAspectRatio;
         private readonly RectTransform canvasRectTransform;
 
+        private readonly List<RenderTexture> originalOverlayTargetTextures = new ();
+        private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
+        private List<Camera> overlayCameras;
+        private RenderTexture originalBaseTargetTexture;
+
         public ScreenRecorder(RectTransform canvasRectTransform)
         {
             targetAspectRatio = (float)TARGET_FRAME_WIDTH / TARGET_FRAME_HEIGHT;
@@ -24,132 +28,68 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.canvasRectTransform = canvasRectTransform;
         }
 
-         public Texture2D CaptureScreenshotWithRenderTexture(Camera baseCamera)
+        public Texture2D CaptureScreenshotWithRenderTexture(Camera baseCamera)
         {
-            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
-            (ScreenFrameData targetScreenFrame, _) = CalculateTargetScreenFrame(currentScreenFrame);
+            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(currentScreenFrameData: CalculateCurrentScreenFrame());
 
-            RenderTexture initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8);
+            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8);
+            RenderScreenIntoTexture(baseCamera, initialRenderTexture);
+            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
+            Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
-            UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
+            CropToScreenshotFrame(finalRenderTexture, targetScreenFrame);
 
-            // Set the base camera's target texture
-            RenderTexture originalTargetTexture = baseCamera.targetTexture;
-            baseCamera.targetTexture = initialRenderTexture;
-
-            // Iterate through all overlay cameras and set their target textures
-            var overlayCameras = baseCameraData.cameraStack;
-            var originalOverlayTargetTextures = new List<RenderTexture>();
-
-            if (overlayCameras != null)
-            {
-                foreach (Camera overlayCamera in overlayCameras)
-                {
-                    originalOverlayTargetTextures.Add(overlayCamera.targetTexture);
-                    overlayCamera.targetTexture = initialRenderTexture;
-                }
-            }
-
-            // Render the cameras to the RenderTexture
-            baseCamera.Render();
-
-            baseCamera.targetTexture = originalTargetTexture;
-
-            if (overlayCameras != null)
-            {
-                // Revert the target textures of the base and overlay cameras
-                for (var i = 0; i < overlayCameras.Count; i++)
-                    overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
-            }
-
-            // Create an intermediate RenderTexture with the size of the cropped area
-            RenderTexture finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
-            Graphics.Blit(initialRenderTexture, finalRenderTexture);
-
-            // // Apply any post-processing effects or other operations using Graphics.Blit
-            // Graphics.Blit(initialRenderTexture, intermediateRenderTexture);
-            //
-            // // Create a Texture2D with the same GraphicsFormat as the RenderTexture
-            // Texture2D screenshot = new Texture2D(width, height, TextureFormat.RGBAHalf, false);
-            // Graphics.CopyTexture(intermediateRenderTexture, screenshot);
-            //
-            // Camera.main.targetTexture = null;
-            // RenderTexture.ReleaseTemporary(initialRenderTexture);
-            // RenderTexture.ReleaseTemporary(intermediateRenderTexture);
-            //
-            // // Define the specific rect you want to copy
-            // int rectX = 100;
-            // int rectY = 100;
-            // int rectWidth = 500;
-            // int rectHeight = 500;
-            //
-            // // Create a Texture2D with the same GraphicsFormat as the RenderTexture and the size of the rect
-            // Texture2D screenshot = new Texture2D(rectWidth, rectHeight, TextureFormat.RGBAHalf, false);
-            //
-            // // Copy the specific rect from the intermediateRenderTexture to the screenshot Texture2D
-            // Graphics.CopyTexture(intermediateRenderTexture, 0, 0, rectX, rectY, rectWidth, rectHeight, screenshot, 0, 0, 0, 0);
-
-            // Read the pixels from the RenderTexture
-            RenderTexture.active = finalRenderTexture;
-
-            var corners = targetScreenFrame.CalculateFrameCorners();
-            Texture2D screenshot = new Texture2D(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
-            screenshot.ReadPixels(new Rect(corners.x, corners.y, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
-            screenshot.Apply();
-            RenderTexture.active = null;
-
-            // Clean up
-            RenderTexture.ReleaseTemporary(initialRenderTexture);
-            RenderTexture.ReleaseTemporary(finalRenderTexture);
+            CleanUp(initialRenderTexture, finalRenderTexture);
 
             return screenshot;
         }
 
-
-        public virtual Texture2D CaptureScreenshot()
+        private void RenderScreenIntoTexture(Camera baseCamera, RenderTexture initialRenderTexture)
         {
-            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
-            (_, float targetRescale) = CalculateTargetScreenFrame(currentScreenFrame);
-            int roundedUpscale = Mathf.CeilToInt(targetRescale);
-            ScreenFrameData rescaledScreenFrame = CalculateRoundRescaledScreenFrame(currentScreenFrame, roundedUpscale);
-
-            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
-            Texture2D upscaledFrameTexture = CropTexture2D(screenshotTexture, rescaledScreenFrame.CalculateFrameCorners(), rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
-            Texture2D finalTexture = ResizeTexture2D(upscaledFrameTexture, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
-
-            return finalTexture;
+            SetAndCacheCamerasTargetTexture(baseCamera, initialRenderTexture);
+            baseCamera.Render();
+            ResetCamerasTargetTexturesToCached(baseCamera);
         }
 
-        private static Texture2D CropTexture2D(Texture2D texture, Vector2Int startCorner, int width, int height)
+        private void CleanUp(RenderTexture initialRenderTexture, RenderTexture finalRenderTexture)
         {
-            Color[] pixels = texture.GetPixels(startCorner.x, startCorner.y, width, height);
-
-            var result = new Texture2D(width, height, TextureFormat.RGB24, false);
-            result.SetPixels(pixels);
-            result.Apply();
-
-            return result;
+            RenderTexture.ReleaseTemporary(initialRenderTexture);
+            RenderTexture.ReleaseTemporary(finalRenderTexture);
+            originalOverlayTargetTextures?.Clear();
         }
 
-        private static Texture2D ResizeTexture2D(Texture originalTexture, int width, int height)
+        private void CropToScreenshotFrame(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
         {
-            var rt = new RenderTexture(width, height, 24);
-            RenderTexture.active = rt;
-
-            // Copy and scale the original texture into the RenderTexture
-            Graphics.Blit(originalTexture, rt);
-
-            // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(width, height);
-
-            // Read the pixel data from the RenderTexture into the Texture2D
-            resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            resizedTexture.Apply();
-
+            RenderTexture.active = finalRenderTexture;
+            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
+            screenshot.ReadPixels(new Rect(corners.x, corners.y, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
+            screenshot.Apply();
             RenderTexture.active = null;
-            rt.Release();
+        }
 
-            return resizedTexture;
+        private void SetAndCacheCamerasTargetTexture(Camera baseCamera, RenderTexture targetRenderTexture)
+        {
+            originalBaseTargetTexture = baseCamera.targetTexture;
+            baseCamera.targetTexture = targetRenderTexture;
+
+            UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
+            overlayCameras = baseCameraData.cameraStack;
+
+            if (overlayCameras != null)
+                foreach (Camera overlayCamera in overlayCameras)
+                {
+                    originalOverlayTargetTextures.Add(overlayCamera.targetTexture);
+                    overlayCamera.targetTexture = targetRenderTexture;
+                }
+        }
+
+        private void ResetCamerasTargetTexturesToCached(Camera baseCamera)
+        {
+            baseCamera.targetTexture = originalBaseTargetTexture;
+
+            if (overlayCameras != null)
+                for (var i = 0; i < overlayCameras.Count; i++)
+                    overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
@@ -175,7 +115,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return screenFrameData;
         }
 
-        private static (ScreenFrameData data, float targetRescale) CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
+        private static ScreenFrameData CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
         {
             var screenFrameData = new ScreenFrameData();
 
@@ -192,41 +132,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.1f);
             Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.1f);
 
-            return (screenFrameData, targetRescale);
-        }
-
-        private static ScreenFrameData CalculateRoundRescaledScreenFrame(ScreenFrameData rescalingScreenFrame, int roundedRescaleFactor) =>
-            new ()
-            {
-                FrameWidth = rescalingScreenFrame.FrameWidth * roundedRescaleFactor,
-                FrameHeight = rescalingScreenFrame.FrameHeight * roundedRescaleFactor,
-                ScreenWidth = rescalingScreenFrame.ScreenWidth * roundedRescaleFactor,
-                ScreenHeight = rescalingScreenFrame.ScreenHeight * roundedRescaleFactor,
-            };
-
-        private struct ScreenFrameData
-        {
-            public float ScreenWidth;
-            public float ScreenHeight;
-
-            public float FrameWidth;
-            public float FrameHeight;
-
-            public int ScreenWidthInt => Mathf.RoundToInt(ScreenWidth);
-            public int ScreenHeightInt => Mathf.RoundToInt(ScreenHeight);
-
-            public int FrameWidthInt => Mathf.RoundToInt(FrameWidth);
-            public int FrameHeightInt => Mathf.RoundToInt(FrameHeight);
-
-            public float ScreenAspectRatio => ScreenWidth / ScreenHeight;
-            public float FrameAspectRatio => FrameWidth / FrameHeight;
-
-            public Vector2Int CalculateFrameCorners() =>
-                new ()
-                {
-                    x = Mathf.RoundToInt((ScreenWidth - FrameWidth) / 2f),
-                    y = Mathf.RoundToInt((ScreenHeight - FrameHeight) / 2f),
-                };
+            return screenFrameData;
         }
     }
 }
