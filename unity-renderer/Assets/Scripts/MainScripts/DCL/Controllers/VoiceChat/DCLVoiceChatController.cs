@@ -34,43 +34,16 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange += IsVoiceChatRecordingChanged;
-
-            Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost += OnApplicationFocusLost;
-            Environment.i.serviceLocator.Get<IIdleChecker>().Subscribe(CheckIdle);
         }
 
-        private void CheckIdle(bool isidle)
-        {
-            if (isidle)
-            {
-                Debug.LogError("KURUK APPLICATION IS IDLE ");
-                StopRecording(true);
-                DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
-            }
-        }
-
-        private void Update()
-        {
-            if (!Application.isFocused) { Debug.Log("KURUK  APPLICATION IS NOT FOCUS IN UPDATE"); }
-        }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            Debug.LogError("KURUK  APPLICATION HAS FOCUS " + hasFocus);
-
             if (!hasFocus)
             {
                 StopRecording(true);
                 DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
             }
-        }
-
-        private void OnApplicationFocusLost()
-        {
-            Debug.LogError("KURUK  APPLICATION LOST FOCUS ");
-
-            StopRecording(true);
-            DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
 
         void OnDestroy()
@@ -79,8 +52,6 @@ namespace DCL
             voiceChatAction.OnFinished -= voiceChatFinishedDelegate;
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange -= IsVoiceChatRecordingChanged;
-            Environment.i.serviceLocator.Get<IApplicationFocusService>().OnApplicationFocusLost -= OnApplicationFocusLost;
-            Environment.i.serviceLocator.Get<IIdleChecker>().Unsubscribe(CheckIdle);
         }
 
         void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
@@ -108,8 +79,6 @@ namespace DCL
         {
             if (isRecording) return;
 
-            Debug.LogError("KURUK  STARTED RECORDING");
-
             WebInterface.SendSetVoiceChatRecording(true);
 
             CreateSocialAnalyticsIfNeeded();
@@ -123,12 +92,9 @@ namespace DCL
         {
             if (!isRecording) return;
 
-            Debug.LogError("KURUK  STOPPED RECORDING");
-
             WebInterface.SendSetVoiceChatRecording(false);
 
             CreateSocialAnalyticsIfNeeded();
-            //TODO: Pressing T is considered as shortcut as well?
             socialAnalytics.SendVoiceMessage(
                 Time.realtimeSinceStartup - voiceMessageStartTime,
                 usedShortcut ? VoiceMessageSource.Shortcut : VoiceMessageSource.Button,

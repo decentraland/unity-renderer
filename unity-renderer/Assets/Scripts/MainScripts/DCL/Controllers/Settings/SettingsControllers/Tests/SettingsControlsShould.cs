@@ -32,7 +32,6 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         [SetUp]
         public void SetUp()
         {
-            Environment.Setup(ServiceLocatorFactory.CreateDefault());
             SetupReferences();
         }
 
