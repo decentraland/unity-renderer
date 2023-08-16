@@ -202,7 +202,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
 
-            Texture2D screenshot = screenRecorderLazy.CaptureScreenshotWithRenderTexture(SkyboxController.i.SkyboxCamera.BaseCamera);
+            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot(SkyboxController.i.SkyboxCamera.BaseCamera);
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
