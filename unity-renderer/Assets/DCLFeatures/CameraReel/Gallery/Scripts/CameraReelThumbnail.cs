@@ -10,6 +10,7 @@ namespace DCLFeatures.CameraReel.Gallery
     public class CameraReelThumbnail : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private ImageComponentView image;
+        [SerializeField] private Image flashImage;
         [SerializeField] private Button interactionButton;
         [SerializeField] private Button contextMenuButton;
         [SerializeField] private ThumbnailContextMenuView contextMenu;
@@ -22,6 +23,12 @@ namespace DCLFeatures.CameraReel.Gallery
         {
             interactionButton.onClick.AddListener(() => OnClicked?.Invoke());
             contextMenuButton.onClick.AddListener(() => contextMenu.Show(picture));
+
+            image.OnLoaded += _ =>
+            {
+                flashImage.color = Color.white;
+                flashImage.DOColor(new Color(1, 1, 1, 0), 0.5f);
+            };
         }
 
         public void Show(CameraReelResponse picture)
