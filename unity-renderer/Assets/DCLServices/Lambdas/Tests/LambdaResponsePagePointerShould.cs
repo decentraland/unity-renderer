@@ -2,6 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace DCLServices.Lambdas.Tests
 
         private void MockSuccess()
         {
-            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<CancellationToken>())
+            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), Arg.Any<CancellationToken>())
                            .Returns(info =>
                             {
                                 var ct = info.Arg<CancellationToken>();
@@ -54,7 +55,7 @@ namespace DCLServices.Lambdas.Tests
 
         private void MockFailure()
         {
-            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), source.Token)
+            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), source.Token)
                            .Returns(UniTask.FromResult<(Foo response, bool success)>((null, false)));
         }
 
@@ -63,7 +64,7 @@ namespace DCLServices.Lambdas.Tests
         {
             MockSuccess();
             await pointer.GetPageAsync(2, CancellationToken.None);
-            serviceConsumer.Received().CreateRequest(END_POINT, PAGE_SIZE, 2, source.Token);
+            serviceConsumer.Received().CreateRequest(END_POINT, PAGE_SIZE, 2, Arg.Any<Dictionary<string,string>>(), source.Token);
         }
 
         [Test]
@@ -95,7 +96,7 @@ namespace DCLServices.Lambdas.Tests
             await pointer.GetPageAsync(4, CancellationToken.None);
             serviceConsumer.ClearReceivedCalls();
             await pointer.GetPageAsync(4, CancellationToken.None);
-            serviceConsumer.DidNotReceive().CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<CancellationToken>());
+            serviceConsumer.DidNotReceive().CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), Arg.Any<CancellationToken>());
         }
 
         [Test]

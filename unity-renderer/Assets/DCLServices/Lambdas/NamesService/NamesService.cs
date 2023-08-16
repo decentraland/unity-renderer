@@ -43,7 +43,7 @@ namespace DCLServices.Lambdas.NamesService
             return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
         }
 
-        UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
+        UniTask<(NamesResponse response, bool success)> ILambdaServiceConsumer<NamesResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, Dictionary<string,string> additionalData, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<NamesResponse>(
                 END_POINT,
                 endPoint,
