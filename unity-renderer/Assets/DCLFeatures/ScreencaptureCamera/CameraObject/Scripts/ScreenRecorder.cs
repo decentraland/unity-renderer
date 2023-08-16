@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering.Universal;
+using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
@@ -19,6 +23,65 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             this.canvasRectTransform = canvasRectTransform;
         }
+
+         public Texture2D CaptureScreenshotWithRenderTexture(Camera baseCamera)
+        {
+            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
+            (ScreenFrameData targetScreenFrame, _) = CalculateTargetScreenFrame(currentScreenFrame);
+
+            RenderTexture initialRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, DefaultFormat.HDR);
+
+            UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
+
+            // Set the base camera's target texture
+            RenderTexture originalTargetTexture = baseCamera.targetTexture;
+            baseCamera.targetTexture = initialRenderTexture;
+
+            // Iterate through all overlay cameras and set their target textures
+            var overlayCameras = baseCameraData.cameraStack;
+            var originalOverlayTargetTextures = new List<RenderTexture>();
+
+            if (overlayCameras != null)
+            {
+                foreach (Camera overlayCamera in overlayCameras)
+                {
+                    originalOverlayTargetTextures.Add(overlayCamera.targetTexture);
+                    overlayCamera.targetTexture = initialRenderTexture;
+                }
+            }
+
+            // Render the cameras to the RenderTexture
+            baseCamera.Render();
+
+            baseCamera.targetTexture = originalTargetTexture;
+
+            if (overlayCameras != null)
+            {
+                // Revert the target textures of the base and overlay cameras
+                for (var i = 0; i < overlayCameras.Count; i++)
+                    overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
+            }
+
+            // Create an intermediate RenderTexture with the size of the cropped area
+            RenderTexture finalRenderTexture = new RenderTexture(initialRenderTexture.width, initialRenderTexture.height, 0);
+            Graphics.Blit(initialRenderTexture, finalRenderTexture);
+
+            // Read the pixels from the RenderTexture
+            RenderTexture.active = finalRenderTexture;
+
+            var corners = targetScreenFrame.CalculateFrameCorners();
+            Texture2D screenshot = new Texture2D(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
+            screenshot.ReadPixels(new Rect(corners.x, corners.y, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
+            screenshot.Apply();
+            RenderTexture.active = null;
+
+            // Clean up
+            Object.Destroy(initialRenderTexture);
+            Object.Destroy(finalRenderTexture);
+
+            return screenshot;
+        }
+
 
         public virtual Texture2D CaptureScreenshot()
         {
