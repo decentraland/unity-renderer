@@ -118,10 +118,15 @@ function* reactToRecordingRequest() {
     if (previousRequestedRecording !== requestedRecording) {
       if (voiceHandler) {
         if (!isAllowedByScene || !requestedRecording) {
+          console.log("JUANI SET RECORDING START false")
           yield voiceHandler.setRecording(false)
+          console.log("JUANI SET RECORDING END false")
         } else {
+          console.log("JUANI SET RECORDING START true")
           yield call(requestUserMediaIfNeeded)
+          console.log("JUANI SET RECORDING MID true")
           yield voiceHandler.setRecording(true)
+          console.log("JUANI SET RECORDING END true")
         }
       }
       previousRequestedRecording = requestedRecording
