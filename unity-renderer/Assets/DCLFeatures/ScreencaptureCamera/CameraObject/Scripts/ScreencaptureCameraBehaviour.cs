@@ -29,8 +29,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private const float MIN_PLAYERNAME_HEIGHT = 1.14f;
 
-        private readonly WaitForEndOfFrame waitEndOfFrameYield = new ();
-
         [Header("EXTERNAL DEPENDENCIES")]
         [SerializeField] internal Camera mainCamera;
         [SerializeField] internal DCLCharacterController characterController;
@@ -113,7 +111,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
         }
 
-        private bool isOnCooldown => Time.realtimeSinceStartup - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
+        private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
         private void Awake()
         {
@@ -198,7 +196,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return;
 
-            lastScreenshotTime = Time.realtimeSinceStartup;
+            lastScreenshotTime = Time.time;
 
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
 
