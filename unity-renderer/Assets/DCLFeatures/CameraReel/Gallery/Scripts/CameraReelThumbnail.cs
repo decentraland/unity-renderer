@@ -28,6 +28,7 @@ namespace DCLFeatures.CameraReel.Gallery
             {
                 flashImage.color = Color.white;
                 flashImage.DOColor(new Color(1, 1, 1, 0), 0.5f);
+                AudioScriptableObjects.listItemAppear.Play(true);
             };
         }
 
