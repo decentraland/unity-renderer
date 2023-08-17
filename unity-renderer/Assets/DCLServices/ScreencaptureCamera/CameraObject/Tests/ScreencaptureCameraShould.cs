@@ -102,7 +102,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public void ToggleScreenshotCamera_WhenGuest_DoesNothing_ExternalVarsNotToggled()
         {
             // Arrange
-            screencaptureCameraBehaviour.isGuestLazyValue = true;
             screencaptureCameraBehaviour.screenshotCamera.gameObject.SetActive(false);
 
             // Act
@@ -122,7 +121,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public void ToggleScreenshotCamera_WhenNotGuest_ActivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
-            screencaptureCameraBehaviour.isGuestLazyValue = false;
             screencaptureCameraBehaviour.screenshotCamera.gameObject.SetActive(false);
 
             // Act
@@ -142,7 +140,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public void ToggleScreenshotCamera_WhenNotGuest_DeactivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
             // Arrange
-            screencaptureCameraBehaviour.isGuestLazyValue = false;
             screencaptureCameraBehaviour.screenshotCamera.gameObject.SetActive(true);
 
             // Act
