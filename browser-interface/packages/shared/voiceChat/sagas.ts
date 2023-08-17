@@ -1,4 +1,4 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { positionReportToCommsPositionRfc4 } from 'shared/comms/interface/utils'
 import { receiveUserTalking } from 'shared/comms/peers'
@@ -10,7 +10,6 @@ import {
   JOIN_VOICE_CHAT,
   leaveVoiceChat,
   LEAVE_VOICE_CHAT,
-  REQUEST_TOGGLE_VOICE_CHAT_RECORDING,
   REQUEST_VOICE_CHAT_RECORDING,
   SetAudioDevice,
   setVoiceChatError,
@@ -37,7 +36,8 @@ import {
   getVoiceHandler,
   hasJoinedVoiceChat,
   isRequestedVoiceChatRecording,
-  isVoiceChatAllowedByCurrentScene
+  isVoiceChatAllowedByCurrentScene,
+  isVoiceChatRecording
 } from './selectors'
 import { RootVoiceChatState, VoiceChatState } from './types'
 import { VoiceHandler } from './VoiceHandler'
@@ -48,14 +48,14 @@ import { getCommsRoom } from 'shared/comms/selectors'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { incrementCounter } from 'shared/analytics/occurences'
 import { RootWorldState } from 'shared/world/types'
+import { waitForSelector } from 'lib/redux'
 
 let audioRequestInitialized = false
 
 export function* voiceChatSaga() {
   yield fork(reactToNewVoiceChatHandler)
 
-  yield takeLatest(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
-  yield takeLatest(REQUEST_TOGGLE_VOICE_CHAT_RECORDING, handleRecordingRequest)
+  yield takeEvery(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
 
   yield takeEvery(VOICE_PLAYING_UPDATE, handleUserVoicePlaying)
 
@@ -107,6 +107,8 @@ function* handleConnectVoiceChatToRoom() {
   }
 }
 
+const notRecording = (store: RootVoiceChatState) => !store.voiceChat.recording
+
 function* handleRecordingRequest() {
   const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
     getHandleRecordingRequestInfo
@@ -114,10 +116,16 @@ function* handleRecordingRequest() {
 
   if (voiceHandler) {
     if (!isAllowedByScene || !requestedRecording) {
-      voiceHandler.setRecording(false)
+
+      // Ensure that we're recording, to stop recording
+      yield call(waitForSelector, isVoiceChatRecording)
+      yield call(voiceHandler.setRecording, false)
     } else {
       yield call(requestUserMediaIfNeeded)
-      voiceHandler.setRecording(true)
+
+      // Ensure that we're not recording, when we try to start recording
+      yield call(waitForSelector, notRecording)
+      yield call(voiceHandler.setRecording, true)
     }
   }
 }

@@ -33,13 +33,6 @@ export const requestVoiceChatRecording = (recording: boolean) => action(REQUEST_
 export type RequestVoiceChatRecordingAction = ReturnType<typeof requestVoiceChatRecording>
 
 /**
- * Action to toggle voice chat recording
- */
-export const REQUEST_TOGGLE_VOICE_CHAT_RECORDING = '[VC] toggleVoiceChatRecording'
-export const requestToggleVoiceChatRecording = () => action(REQUEST_TOGGLE_VOICE_CHAT_RECORDING, {})
-export type RequestToggleVoiceChatRecordingAction = ReturnType<typeof requestToggleVoiceChatRecording>
-
-/**
  * Action triggered when recording starts or stops
  */
 export const VOICE_RECORDING_UPDATE = '[VC] voiceRecordingUpdate'
@@ -74,7 +67,6 @@ export type VoiceChatActions =
   | SetVoiceChatHandlerAction
   | SetVoiceChatErrorAction
   | RequestVoiceChatRecordingAction
-  | RequestToggleVoiceChatRecordingAction
   | VoiceRecordingUpdateAction
   | SetVoiceChatVolumeAction
   | SetVoiceChatMuteAction
