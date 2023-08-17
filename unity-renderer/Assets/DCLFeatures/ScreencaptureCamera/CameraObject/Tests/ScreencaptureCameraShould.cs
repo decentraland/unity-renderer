@@ -1,5 +1,4 @@
 using Cinemachine;
-using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCLFeatures.ScreencaptureCamera.CameraObject;
@@ -8,7 +7,6 @@ using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
