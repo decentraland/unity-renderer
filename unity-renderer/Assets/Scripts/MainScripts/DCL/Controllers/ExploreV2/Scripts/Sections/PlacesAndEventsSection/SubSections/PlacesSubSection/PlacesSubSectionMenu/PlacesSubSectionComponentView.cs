@@ -77,7 +77,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
-    public event Action OnFilterSorterChanged;
+    public event Action OnFilterChanged;
+    public event Action OnSortingChanged;
     public event Action OnShowMorePlacesClicked;
 
     public override void Awake()
@@ -136,7 +137,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
 
-        OnFilterSorterChanged?.Invoke();
+        OnFilterChanged?.Invoke();
     }
 
     private void ClickedOnPOI()
@@ -158,7 +159,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
         }
 
-        OnFilterSorterChanged?.Invoke();
+        OnFilterChanged?.Invoke();
     }
 
     private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
@@ -167,7 +168,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             return;
 
         SetSortDropdownValue(optionId, optionName, false);
-        OnFilterSorterChanged?.Invoke();
+        OnSortingChanged?.Invoke();
     }
 
     private void SetPoiStatus(bool isSelected)

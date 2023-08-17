@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
-using MainScripts.DCL.Controllers.HotScenes;
 using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
@@ -115,6 +114,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal void RequestAllFavorites()
     {
+        exploreV2Analytics.SendFavoritesTabOpen();
+
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
