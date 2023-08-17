@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
-    public class ScreenshotViewerInfoSidePanelView : MonoBehaviour
+    public class ScreenshotViewerInfoSidePanelView : MonoBehaviour, IScreenshotViewerInfoSidePanelView
     {
         private readonly Dictionary<ScreenshotVisiblePersonView, PoolableObject> profiles = new ();
 

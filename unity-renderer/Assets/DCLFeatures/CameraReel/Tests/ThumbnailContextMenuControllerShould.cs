@@ -119,12 +119,14 @@ namespace DCLFeatures.CameraReel.Tests
             cameraReelStorageService.DeleteScreenshot(Arg.Any<string>(), Arg.Any<CancellationToken>())
                                     .Returns(UniTask.FromResult(new CameraReelStorageStatus(15, 500)));
 
-            dataStore.notifications.GenericConfirmation.OnChange += (notification, _) =>
-            {
+            void ConfirmDeletion(GenericConfirmationNotificationData notification, GenericConfirmationNotificationData _) =>
                 notification.ConfirmAction.Invoke();
-            };
+
+            dataStore.notifications.GenericConfirmation.OnChange += ConfirmDeletion;
 
             view.OnDeletePictureRequested += Raise.Event<Action>();
+
+            dataStore.notifications.GenericConfirmation.OnChange -= ConfirmDeletion;
 
             cameraReelStorageService.Received(1).DeleteScreenshot("pictureId", Arg.Any<CancellationToken>());
             Assert.AreEqual(15, cameraReelModel.TotalScreenshotsInStorage);
@@ -138,12 +140,14 @@ namespace DCLFeatures.CameraReel.Tests
             cameraReelStorageService.DeleteScreenshot(Arg.Any<string>(), Arg.Any<CancellationToken>())
                                     .Returns(UniTask.FromResult(new CameraReelStorageStatus(15, 500)));
 
-            dataStore.notifications.GenericConfirmation.OnChange += (notification, _) =>
-            {
+            void CancelDeletion(GenericConfirmationNotificationData notification, GenericConfirmationNotificationData _) =>
                 notification.CancelAction.Invoke();
-            };
+
+            dataStore.notifications.GenericConfirmation.OnChange += CancelDeletion;
 
             view.OnDeletePictureRequested += Raise.Event<Action>();
+
+            dataStore.notifications.GenericConfirmation.OnChange -= CancelDeletion;
 
             cameraReelStorageService.DidNotReceiveWithAnyArgs().DeleteScreenshot(default);
             Assert.AreEqual(0, cameraReelModel.TotalScreenshotsInStorage);

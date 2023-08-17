@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
-    public class ScreenshotViewerActionsPanelView : MonoBehaviour
+    public class ScreenshotViewerActionsPanelView : MonoBehaviour, IScreenshotViewerActionsPanelView
     {
         [SerializeField] private Button downloadButton;
         [SerializeField] private Button deleteButton;
