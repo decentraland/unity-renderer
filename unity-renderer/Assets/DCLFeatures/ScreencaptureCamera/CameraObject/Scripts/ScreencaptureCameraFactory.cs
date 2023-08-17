@@ -9,8 +9,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     {
         public virtual PlayerName CreatePlayerNameUI(PlayerName playerNamePrefab, float minPlayerNameHeight, DataStore_Player player, PlayerAvatarController playerAvatar)
         {
-            var playerName = Object.Instantiate(playerNamePrefab, playerAvatar.transform);
-            var userProfile = UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id);
+            PlayerName playerName = Object.Instantiate(playerNamePrefab, playerAvatar.transform);
+            UserProfile userProfile = UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id);
             playerName.SetName(userProfile.userName, userProfile.hasClaimedName, userProfile.isGuest);
 
             float height = playerAvatar.Avatar.extents.y - 0.85f;
@@ -21,19 +21,20 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public virtual (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab, ScreencaptureCameraInputSchema inputActionsSchema)
         {
-            var screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
+            ScreencaptureCameraHUDView screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
 
             var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
                 mainBehaviour, inputActionsSchema, DataStore.i);
 
-             screencaptureCameraHUDController.Initialize();
+            screencaptureCameraHUDController.Initialize();
 
-             return (screencaptureCameraHUDController, screencaptureCameraHUDView);
+            return (screencaptureCameraHUDController, screencaptureCameraHUDView);
         }
 
-        public virtual Camera CreateScreencaptureCamera(Camera cameraPrefab, Transform characterCameraTransform, Transform parent, int layer, CharacterController cameraTarget, CinemachineVirtualCamera virtualCamera)
+        public virtual Camera CreateScreencaptureCamera(Camera cameraPrefab, Transform characterCameraTransform, Transform parent, int layer, CharacterController cameraTarget,
+            CinemachineVirtualCamera virtualCamera)
         {
-            var screenshotCamera =  Object.Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, parent);
+            Camera screenshotCamera = Object.Instantiate(cameraPrefab, characterCameraTransform.position, characterCameraTransform.rotation, parent);
             screenshotCamera.gameObject.layer = layer;
 
             ScreencaptureCameraMovement cameraMovement = screenshotCamera.GetComponent<ScreencaptureCameraMovement>();
