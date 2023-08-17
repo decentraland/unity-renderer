@@ -1,16 +1,14 @@
-import { AnyAction } from 'redux'
-
 import { COMMS_ESTABLISHED } from 'shared/loading/types'
 
-import { CommsState } from './types'
-import { SET_COMMS_ISLAND, SET_ROOM_CONNECTION } from './actions'
+import { CommsActions, CommsState } from './types'
+import { SET_COMMS_ISLAND, SET_LIVEKIT_ADAPTER, SET_ROOM_CONNECTION } from './actions'
 
 const INITIAL_COMMS: CommsState = {
   initialized: false,
   context: undefined
 }
 
-export function commsReducer(state?: CommsState, action?: AnyAction): CommsState {
+export function commsReducer(state?: CommsState, action?: CommsActions): CommsState {
   if (!state) {
     return INITIAL_COMMS
   }
@@ -27,6 +25,8 @@ export function commsReducer(state?: CommsState, action?: AnyAction): CommsState
         return state
       }
       return { ...state, context: action.payload }
+    case SET_LIVEKIT_ADAPTER:
+      return { ...state, livekitAdapter: action.payload}
     default:
       return state
   }

@@ -2,9 +2,8 @@ using DCL;
 using DCL.Browser;
 using DCL.Chat;
 using DCL.Chat.Channels;
-using DCL.Chat.HUD;
-using DCL.ProfanityFiltering;
 using DCL.Social.Chat;
+using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
 using NSubstitute;
@@ -165,7 +164,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             friendsController,
             socialAnalytics,
             Substitute.For<IMouseCatcher>(),
-            Substitute.For<IChatMentionSuggestionProvider>());
+            Substitute.For<IChatMentionSuggestionProvider>(),
+            Substitute.For<IClipboard>());
 
         controller.Initialize(GivenView());
 
@@ -197,7 +197,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IChannelsFeatureFlagService>(),
             Substitute.For<IBrowserBridge>(),
             CommonScriptableObjects.rendererState,
-            new DataStore_Mentions());
+            new DataStore_Mentions(),
+            Substitute.For<IClipboard>());
 
         controller.Initialize(GivenView());
 
@@ -226,7 +227,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
             Substitute.For<IMouseCatcher>(),
             Substitute.For<IChatMentionSuggestionProvider>(),
-            Substitute.For<ISocialAnalytics>());
+            Substitute.For<ISocialAnalytics>(),
+            Substitute.For<IClipboard>());
 
         controller.Initialize(GivenView());
 
@@ -302,7 +304,8 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
             Substitute.For<IMouseCatcher>(),
             socialAnalytics,
             new RegexProfanityFilter(Substitute.For<IProfanityWordProvider>()),
-            Substitute.For<IChatMentionSuggestionProvider>());
+            Substitute.For<IChatMentionSuggestionProvider>(),
+            Substitute.For<IClipboard>());
 
         controller.Initialize(GivenView());
 

@@ -40,10 +40,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
-
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    internal BaseVariable<bool> isCameraReelInitialized => DataStore.i.HUDs.isCameraReelInitialized;
+    internal BaseVariable<bool> cameraReelSectionVisible => DataStore.i.HUDs.cameraReelSectionVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
@@ -82,6 +83,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
+            { ExploreSection.CameraReel, (isCameraReelInitialized, cameraReelSectionVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
             { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
             { ExploreSection.MyAccount, (isMyAccountInitialized, myAccountVisible) },
@@ -148,6 +150,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.CameraReel, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.MyAccount, DataStore.i.exploreV2.configureMyAccountSectionInFullscreenMenu);
 
@@ -286,7 +289,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
-                view.SetSectionAsNew(ExploreSection.Backpack, true);
+                view.SetSectionAsNew(ExploreSection.Backpack, false);
 
             view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
 
@@ -343,8 +346,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        if(currentOpenSection == ExploreSection.Quest)
+        if (currentOpenSection == ExploreSection.Quest)
             view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        if (currentOpenSection == ExploreSection.CameraReel)
+            DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
         ChangeVisibilityVarForSwitchedSections();
 

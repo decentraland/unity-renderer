@@ -121,8 +121,8 @@ function findWearableContent(wearable: WearableV2): [KeyAndHash[], KeyAndHash] |
 export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl: string): Promise<LoadableScene> {
   const [wearableContent, mainFile] = findWearableContent(wearable) ?? []
   if (!wearableContent) throw new Error('Invalid wearable')
-  const defaultSceneJson = () => ({
-    main: mainFile?.key ?? 'bin/game.js',
+  const defaultSceneJson: () => Scene = () => ({
+    main: mainFile?.key ? getFile(mainFile?.key) : 'bin/game.js',
     scene: {
       parcels: ['0,0'],
       base: '0,0'
@@ -147,7 +147,7 @@ export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl
   }
 
   const content = wearableContent.map(($) => ({ file: getFile($.key), hash: $.hash }))
-  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson
+  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson()
 
   return {
     id: wearable.id,

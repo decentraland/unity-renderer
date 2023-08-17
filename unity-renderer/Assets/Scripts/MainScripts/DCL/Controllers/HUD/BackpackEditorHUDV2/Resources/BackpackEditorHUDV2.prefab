@@ -1370,7 +1370,6 @@ MonoBehaviour:
   outfitButton: {fileID: 415548664755361149}
   outfitButtonIcon: {fileID: 3485334918105635855}
   vrmExportButton: {fileID: 2441708800504307716}
-  DELETE_ME_vrmPath: {fileID: 0}
   vrmExportedToast: {fileID: 1332459953862512925}
 --- !u!114 &8774932851833110932
 MonoBehaviour:
@@ -6569,6 +6568,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WearablesSection
       objectReference: {fileID: 0}
+    - target: {fileID: 905428465606010205, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 963474931021153107, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_Sprite
@@ -7120,6 +7124,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4593194503409911029, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4793115084116977530, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -7720,10 +7729,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8524198665948457141, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8524198665948457141, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a,
+        type: 3}
+    - target: {fileID: 8524198665948457141, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8559751060532880588, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677794327266862381, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 8735210843893624001, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}

@@ -126,6 +126,9 @@ public static class AudioScriptableObjects
     private static AudioEvent friendRequestEvent;
     public static AudioEvent FriendRequestEvent => CommonScriptableObjects.GetOrLoad(ref friendRequestEvent, "ScriptableObjects/AudioEvents/HUDCommon/FriendRequest");
 
+    private static AudioEvent takeScreenshotEvent;
+    public static AudioEvent takeScreenshot => CommonScriptableObjects.GetOrLoad(ref takeScreenshotEvent, "ScriptableObjects/AudioEvents/HUDCommon/TakeScreenshot");
+
     public static void UnloadAll()
     {
         Resources.UnloadAsset(cameraFadeInEvent);
@@ -264,6 +267,9 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable voiceChatDisabledValue;
     public static BooleanVariable voiceChatDisabled => GetOrLoad(ref voiceChatDisabledValue, "ScriptableObjects/VoiceChatDisabled");
+
+    private static BooleanVariable isScreenshotCameraActiveValue;
+    public static BooleanVariable isScreenshotCameraActive => GetOrLoad(ref isScreenshotCameraActiveValue, "ScriptableObjects/IsScreenshotCameraActive");
 
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {

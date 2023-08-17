@@ -1321,7 +1321,7 @@ MonoBehaviour:
   m_text: 'You do not have any wearable that meets this category or search criteria.
 
     If
-    you want you can find the ideal one for you in the <color=#FF2D55><link="marketplace">Marketplace.</link></color>'
+    you want you can find the ideal one for you in the <color=#FF2D55><u><link="marketplace">Marketplace.</link></u></color>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}

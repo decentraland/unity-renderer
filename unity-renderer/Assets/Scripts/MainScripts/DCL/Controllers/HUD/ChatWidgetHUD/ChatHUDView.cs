@@ -1,4 +1,3 @@
-using DCL.Chat.HUD;
 using DCL.Helpers;
 using DCL.Interface;
 using System;
@@ -108,6 +107,7 @@ namespace DCL.Social.Chat
         public event Action OnPreviousChatInHistory;
         public event Action OnNextChatInHistory;
         public event Action<string> OnMentionSuggestionSelected;
+        public event Action<ChatEntryModel> OnCopyMessageRequested;
         public event Action<ChatMessage> OnSendMessage;
 
         public int EntryCount => entries.Count;
@@ -282,12 +282,13 @@ namespace DCL.Social.Chat
                 chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
                 chatEntry.OnCancelHover += OnMessageCancelHover;
                 chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+                chatEntry.OnCopyClicked += OnMessageCopy;
 
                 SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
             }
         }
 
-        public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
+        public void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
         {
             Dock(chatEntry);
             entries[messageId] = chatEntry;
@@ -518,6 +519,9 @@ namespace DCL.Social.Chat
 
             return firstEntry;
         }
+
+        private void OnMessageCopy(ChatEntry entry) =>
+            OnCopyMessageRequested?.Invoke(entry.Model);
 
         [Serializable]
         private struct Model

@@ -45,7 +45,6 @@ namespace DCLServices.WearablesCatalogService
 
         private const string PAGINATED_WEARABLES_END_POINT = "users/";
         private const string NON_PAGINATED_WEARABLES_END_POINT = "collections/wearables/";
-        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         private const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
         private const int REQUESTS_TIME_OUT_SECONDS = 45;
         private const int MAX_WEARABLES_PER_REQUEST = 200;
@@ -206,7 +205,7 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask RequestBaseWearablesAsync(CancellationToken ct)
         {
-            var url = $"{catalyst.contentUrl}entities/active/collections/{BASE_WEARABLES_COLLECTION_ID}";
+            var url = $"{catalyst.contentUrl}entities/active/collections/{IWearablesCatalogService.BASE_WEARABLES_COLLECTION_ID}";
 
             var request = await lambdasService.GetFromSpecificUrl<WearableCollectionResponse>(url, url, cancellationToken: ct);
 
@@ -350,7 +349,7 @@ namespace DCLServices.WearablesCatalogService
         }
 
         UniTask<(WearableWithDefinitionResponse response, bool success)> ILambdaServiceConsumer<WearableWithDefinitionResponse>.CreateRequest
-            (string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
+            (string endPoint, int pageSize, int pageNumber, Dictionary<string, string> additionalData, CancellationToken cancellationToken) =>
             lambdasService.Get<WearableWithDefinitionResponse>(
                 PAGINATED_WEARABLES_END_POINT,
                 endPoint,

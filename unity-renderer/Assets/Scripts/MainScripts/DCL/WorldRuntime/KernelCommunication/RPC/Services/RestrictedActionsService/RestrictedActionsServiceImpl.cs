@@ -11,11 +11,9 @@ namespace RPC.Services
 {
     public class RestrictedActionsServiceImpl : IRestrictedActionsService<RPCContext>
     {
-        public const int MAX_ELAPSED_FRAMES_SINCE_INPUT = 30;
-
         private static readonly OpenModalResponse OPEN_MODAL_SUCCESS_RESPONSE = new OpenModalResponse() { Success = true };
         private static readonly OpenModalResponse OPEN_MODAL_FAIL_RESPONSE = new OpenModalResponse() { Success = false };
-        private static readonly TeleportToResponse TELEPORT_TO_RESPONSE = new TeleportToResponse() {};
+        private static readonly TeleportToResponse TELEPORT_TO_RESPONSE = new TeleportToResponse() { };
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
@@ -27,12 +25,13 @@ namespace RPC.Services
             await UniTask.SwitchToMainThread(ct);
             RestrictedActionsContext restrictedActions = context.restrictedActions;
 
-            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
+            int sceneNumber = request.SceneNumber;
 
             try
             {
                 ct.ThrowIfCancellationRequested();
-                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
+
+                if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                     restrictedActions.TeleportToPrompt?.Invoke((int)request.WorldCoordinates.X, (int)request.WorldCoordinates.Y);
             }
             catch (OperationCanceledException _)
@@ -52,14 +51,14 @@ namespace RPC.Services
             RestrictedActionsContext restrictedActions = context.restrictedActions;
 
             bool success = false;
-            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
+            int sceneNumber = request.SceneNumber;
 
             try
             {
                 ct.ThrowIfCancellationRequested();
 
-                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
-                    success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, request.SceneNumber) ?? false;
+                if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
+                    success = restrictedActions.OpenExternalUrlPrompt?.Invoke(request.Url, sceneNumber) ?? false;
             }
             catch (OperationCanceledException _)
             { // ignored
@@ -78,13 +77,13 @@ namespace RPC.Services
             RestrictedActionsContext restrictedActions = context.restrictedActions;
 
             bool success = false;
-            int currentFrameCount = restrictedActions.GetCurrentFrameCount?.Invoke() ?? GetCurrentFrameCount();
+            int sceneNumber = request.SceneNumber;
 
             try
             {
                 ct.ThrowIfCancellationRequested();
 
-                if ((currentFrameCount - restrictedActions.LastFrameWithInput) <= MAX_ELAPSED_FRAMES_SINCE_INPUT)
+                if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                 {
                     if (NFTUtils.TryParseUrn(request.Urn, out string contractAddress, out string tokenId))
                     {
@@ -102,12 +101,6 @@ namespace RPC.Services
             }
 
             return success ? OPEN_MODAL_SUCCESS_RESPONSE : OPEN_MODAL_FAIL_RESPONSE;
-        }
-
-        // TODO: use scene tick instead of renderer frame count
-        private static int GetCurrentFrameCount()
-        {
-            return Time.frameCount;
         }
     }
 }

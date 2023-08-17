@@ -1,4 +1,4 @@
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.Interface;
 using NSubstitute;
 using NUnit.Framework;

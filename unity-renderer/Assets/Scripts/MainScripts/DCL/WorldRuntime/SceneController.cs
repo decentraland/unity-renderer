@@ -11,6 +11,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.World.PortableExperiences;
+using Newtonsoft.Json;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -292,7 +293,16 @@ namespace DCL
                     case MessagingTypes.OPEN_EXTERNAL_URL:
                     {
                         if (msgPayload is Protocol.OpenExternalUrl payload)
+                        {
+                            // SDK6 permission check for PX
+                            if (scene.isPortableExperience && !scene.sceneData.requiredPermissions.Contains(ScenePermissionNames.OPEN_EXTERNAL_LINK))
+                            {
+                                Debug.LogError($"PX requires permission {ScenePermissionNames.OPEN_EXTERNAL_LINK}");
+                                return;
+                            }
+
                             OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
+                        }
 
                         break;
                     }
@@ -836,11 +846,14 @@ namespace DCL
 
                 if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("px_confirm_enabled"))
                 {
-                    confirmPx = !IsPortableExperienceAlreadyConfirmed(pxId);
+                    if (!IsPortableExperienceInWhiteList(pxId))
+                    {
+                        confirmPx = !IsPortableExperienceAlreadyConfirmed(pxId);
 
-                    disablePx = IsPortableExperienceAlreadyConfirmed(pxId)
-                                && !ShouldForceAcceptPortableExperience(pxId)
-                                && !IsPortableExperienceConfirmedAndAccepted(pxId);
+                        disablePx = IsPortableExperienceAlreadyConfirmed(pxId)
+                                    && !ShouldForceAcceptPortableExperience(pxId)
+                                    && !IsPortableExperienceConfirmedAndAccepted(pxId);
+                    }
                 }
 
                 IWorldState worldState = Environment.i.world.state;
@@ -907,5 +920,22 @@ namespace DCL
 
         private bool IsPortableExperienceAlreadyConfirmed(string pxId) =>
             confirmedExperiencesRepository.Contains(pxId);
+
+        private bool IsPortableExperienceInWhiteList(string pxId)
+        {
+            FeatureFlag flags = DataStore.i.featureFlags.flags.Get();
+            FeatureFlagVariantPayload payload = flags.GetFeatureFlagVariantPayload("initial_portable_experiences:calendarpx");
+
+            if (payload == null) return false;
+
+            string[] whitelistedPxs = JsonConvert.DeserializeObject<string[]>(payload.value);
+
+            if (whitelistedPxs == null) return false;
+
+            for (var i = 0; i < whitelistedPxs.Length; i++)
+                if (whitelistedPxs[i].StartsWith(pxId)) return true;
+
+            return false;
+        }
     }
 }

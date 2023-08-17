@@ -2,9 +2,7 @@ using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using MainScripts.DCL.Controllers.HotScenes;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 using Object = UnityEngine.Object;
 
@@ -12,6 +10,8 @@ public static class PlacesAndEventsCardsFactory
 {
     internal const string EVENT_CARD_MODAL_ID = "EventCard_Modal";
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
+    internal const string ALL_ID = "all";
+    internal const string ALL_TEXT = "All";
 
     /// <summary>
     /// Creates and configures a pool for cards.
@@ -36,8 +36,8 @@ public static class PlacesAndEventsCardsFactory
     public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked) =>
         EventsCardsConfigurator.Configure(pool.Get<EventCardComponentView>(), eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
 
-    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool> OnFavoriteClicked) =>
-        PlacesCardsConfigurator.Configure(pool.Get<PlaceCardComponentView>(), placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnFavoriteClicked);
+    public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool?> OnVoteChanged, Action<string, bool> OnFavoriteClicked) =>
+        PlacesCardsConfigurator.Configure(pool.Get<PlaceCardComponentView>(), placeInfo, OnPlaceInfoClicked, OnPlaceJumpInClicked, OnVoteChanged, OnFavoriteClicked);
 
     /// <summary>
     /// Instantiates (if does not already exists) a place card modal from the given prefab.
@@ -91,7 +91,14 @@ public static class PlacesAndEventsCardsFactory
                     coords = Utils.ConvertStringToVector(place.base_position),
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    userVisits = place.user_visits,
+                    userRating = place.like_rate,
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
                 });
             count++;
             if(count >= amountToTake)
@@ -123,7 +130,14 @@ public static class PlacesAndEventsCardsFactory
                     coords = Utils.ConvertStringToVector(place.base_position),
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    userVisits = place.user_visits,
+                    userRating = place.like_rate,
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
                 });
         }
 
@@ -146,7 +160,47 @@ public static class PlacesAndEventsCardsFactory
                     coords = Utils.ConvertStringToVector(place.base_position),
                     parcels = place.Positions,
                     isFavorite = place.user_favorite,
-                    placeInfo = place
+                    userVisits = place.user_visits,
+                    userRating = place.like_rate,
+                    placeInfo = place,
+                    isUpvote = place.user_like,
+                    isDownvote = place.user_dislike,
+                    totalVotes = place.likes + place.dislikes,
+                    numberOfFavorites = place.favorites,
+                    deployedAt = place.deployed_at,
+                });
+        }
+
+        return modelsList;
+    }
+
+    public static List<ToggleComponentModel> ConvertCategoriesResponseToToggleModel(List<CategoryFromAPIModel> categories)
+    {
+        List<ToggleComponentModel> modelsList = new List<ToggleComponentModel>
+        {
+            new()
+            {
+                id = ALL_ID,
+                text = ALL_TEXT,
+                isOn = true,
+                isTextActive = true,
+                changeTextColorOnSelect = true,
+            },
+        };
+
+        foreach (var category in categories)
+        {
+            if (!category.active)
+                continue;
+
+            modelsList.Add(
+                new ToggleComponentModel
+                {
+                    id = category.name,
+                    text = category.i18n.en,
+                    isOn = false,
+                    isTextActive = true,
+                    changeTextColorOnSelect = true,
                 });
         }
 

@@ -70,8 +70,7 @@ namespace Tests
                     return true;
                 };
 
-                restrictedActions.GetCurrentFrameCount = () => 0;
-                restrictedActions.LastFrameWithInput = 0;
+                restrictedActions.IsSceneRestrictedActionEnabled = (x) => true;
 
                 var result = await rpcClient.OpenExternalUrl(
                     new OpenExternalUrlRequest()
@@ -102,8 +101,7 @@ namespace Tests
                     return true;
                 };
 
-                restrictedActions.GetCurrentFrameCount = () => RestrictedActionsServiceImpl.MAX_ELAPSED_FRAMES_SINCE_INPUT + 1;
-                restrictedActions.LastFrameWithInput = 0;
+                restrictedActions.IsSceneRestrictedActionEnabled = (x) => false;
 
                 var result = await rpcClient.OpenExternalUrl(
                     new OpenExternalUrlRequest()
@@ -194,8 +192,7 @@ namespace Tests
                     tokenId = token;
                 };
 
-                restrictedActions.GetCurrentFrameCount = () => 0;
-                restrictedActions.LastFrameWithInput = 0;
+                restrictedActions.IsSceneRestrictedActionEnabled = (x) => true;
 
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
@@ -225,8 +222,7 @@ namespace Tests
                     requested = true;
                 };
 
-                restrictedActions.GetCurrentFrameCount = () => RestrictedActionsServiceImpl.MAX_ELAPSED_FRAMES_SINCE_INPUT + 1;
-                restrictedActions.LastFrameWithInput = 0;
+                restrictedActions.IsSceneRestrictedActionEnabled = (x) => false;
 
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
@@ -251,8 +247,7 @@ namespace Tests
                     requested = true;
                 };
 
-                restrictedActions.GetCurrentFrameCount = () => 0;
-                restrictedActions.LastFrameWithInput = 0;
+                restrictedActions.IsSceneRestrictedActionEnabled = (x) => true;
 
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()

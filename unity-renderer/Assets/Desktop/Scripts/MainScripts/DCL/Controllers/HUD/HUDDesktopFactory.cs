@@ -54,7 +54,8 @@ public class HUDDesktopFactory : HUDFactory
                     new WebInterfaceHomeLocationController(),
                     DCL.Environment.i,
                     DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>(),
-                    new PlacesAnalytics());
+                    new PlacesAnalytics(),
+                    Clipboard.Create());
                 break;
 
             default:
