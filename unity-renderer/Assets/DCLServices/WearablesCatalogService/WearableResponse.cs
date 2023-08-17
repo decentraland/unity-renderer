@@ -191,7 +191,8 @@ namespace DCLServices.WearablesCatalogService
 
             public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
             {
-                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount, individualData[0].id);
+                string individualId = individualData != null ? individualData[0].id : string.Empty;
+                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount, individualId);
                 wearable.rarity ??= rarity;
                 wearable.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp()).DateTime;
                 return wearable;
