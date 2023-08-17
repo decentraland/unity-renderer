@@ -191,20 +191,18 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
-            StopAllCoroutines();
-            StartCoroutine(CaptureScreenshotAtTheFrameEnd(source));
+            CaptureScreenshotAtTheFrameEnd(source);
         }
 
-        private IEnumerator CaptureScreenshotAtTheFrameEnd(string source)
+        private void CaptureScreenshotAtTheFrameEnd(string source)
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) yield break;
+            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return;
 
             lastScreenshotTime = Time.realtimeSinceStartup;
 
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
-            yield return waitEndOfFrameYield;
 
-            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot();
+            Texture2D screenshot = screenRecorderLazy.CaptureScreenshotWithRenderTexture(SkyboxController.i.SkyboxCamera.BaseCamera);
 
             screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
             screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
