@@ -1,13 +1,29 @@
-﻿using DCL;
+﻿using Cysharp.Threading.Tasks;
 using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace DCLFeatures.CameraReel.Section
 {
-    public class CameraReelModel : Singleton<CameraReelModel>
+    public class CameraReelModel
     {
+        public CameraReelModel(ICameraReelStorageService storageService)
+        {
+            storageService.Upload += OnUpload;
+        }
+
+        private async void OnUpload(Texture2D image, ScreenshotMetadata metadata, UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)> completionSource)
+        {
+            // TODO: add temporary image with the Texture2D + ScreenshotMetadata in the gallery while the upload is in progress. Remove it if upload failed
+
+            (CameraReelResponse screenshot, CameraReelStorageStatus storage) uploadResponse = await completionSource.Task;
+
+            AddScreenshotAsFirst(uploadResponse.screenshot);
+            SetStorageStatus(uploadResponse.storage.CurrentScreenshots, uploadResponse.storage.MaxScreenshots);
+        }
+
         public delegate void StorageUpdatedHandler(int totalScreenshots, int maxScreenshots);
         private readonly LinkedList<CameraReelResponse> reels = new ();
 
@@ -26,7 +42,7 @@ namespace DCLFeatures.CameraReel.Section
             StorageUpdated?.Invoke(totalScreenshots, maxScreenshots);
         }
 
-        public void AddScreenshotAsFirst(CameraReelResponse screenshot)
+        private void AddScreenshotAsFirst(CameraReelResponse screenshot)
         {
             CameraReelResponse existingScreenshot = reels.FirstOrDefault(s => s.id == screenshot.id);
 

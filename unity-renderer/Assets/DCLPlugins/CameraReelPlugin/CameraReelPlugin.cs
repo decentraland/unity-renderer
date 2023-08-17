@@ -22,11 +22,13 @@ namespace DCLPlugins.CameraReelPlugin
 
         private Transform sectionParent;
         private CameraReelSectionController reelSectionController;
+        private CameraReelModel cameraReelModel;
 
         public CameraReelPlugin()
         {
             Initialize().Forget();
         }
+
 
         private async UniTaskVoid Initialize()
         {
@@ -40,7 +42,7 @@ namespace DCLPlugins.CameraReelPlugin
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
             ICameraReelStorageService storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
             DataStore dataStore = DataStore.i;
-            CameraReelModel cameraReelModel = CameraReelModel.i;
+            cameraReelModel = new CameraReelModel(storageService);
             ICameraReelAnalyticsService analytics = Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
             reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
@@ -83,7 +85,7 @@ namespace DCLPlugins.CameraReelPlugin
 
         private void OnThumbnailContextMenuAdded(ThumbnailContextMenuView view)
         {
-            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), CameraReelModel.i,
+            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), cameraReelModel,
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<ICameraReelStorageService>(),
                 DataStore.i,

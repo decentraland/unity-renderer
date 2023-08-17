@@ -6,7 +6,6 @@ using DCL.CameraTool;
 using DCL.Helpers;
 using DCL.Skybox;
 using DCL.Tasks;
-using DCLFeatures.CameraReel.Section;
 using DCLFeatures.ScreencaptureCamera.UI;
 using DCLServices.CameraReelService;
 using System;
@@ -45,7 +44,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal BooleanVariable isScreencaptureCameraActive;
 
         internal ScreenRecorder screenRecorderLazyValue;
-        internal bool? isGuestLazyValue;
         internal IAvatarsLODController avatarsLODControllerLazyValue;
 
         internal ScreencaptureCameraFactory factory = new ();
@@ -82,6 +80,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isInTransition;
 
+        public DataStore_Player Player { private get; set; }
+
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
         private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
@@ -104,31 +104,25 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
-        public DataStore_Player Player { private get; set; }
-
-        private void Start()
-        {
-            {
-                playerId = Player.ownPlayer.Get().id;
-                UpdateStorageInfo();
-
-                storageStatus = new CameraReelStorageStatus(0, 0);
-
-                characterController = DCLCharacterController.i;
-                cameraController = SceneReferences.i.cameraController;
-                mainCamera = cameraController.GetCamera();
-
-                SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
-            }
-        }
-
-        internal void OnEnable()
+        internal void Awake()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
         }
 
-        internal void OnDisable()
+        private void Start()
+        {
+            playerId = Player.ownPlayer.Get().id;
+            storageStatus = new CameraReelStorageStatus(0, 0);
+
+            UpdateStorageInfo();
+
+            characterController = DCLCharacterController.i;
+            cameraController = SceneReferences.i.cameraController;
+            mainCamera = cameraController.GetCamera();
+        }
+
+        internal void OnDestroy()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
@@ -150,7 +144,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             DataStore.i.HUDs.cameraReelSectionVisible.Set(!cameraReelWasOpen);
         }
 
-        internal void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
+        public void SetExternalDependencies(BooleanVariable allUIHidden, BooleanVariable cameraModeInputLocked, BaseVariable<bool> cameraLeftMouseButtonCursorLock,
             BooleanVariable cameraBlocked, BooleanVariable featureKeyTriggersBlocked, BooleanVariable userMovementKeysBlocked, BooleanVariable isScreenshotCameraActive)
         {
             this.allUIHidden = allUIHidden;
@@ -163,11 +157,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         }
 
         public void CaptureScreenshot(string source)
-        {
-            CaptureScreenshotAtTheFrameEnd(source);
-        }
-
-        private void CaptureScreenshotAtTheFrameEnd(string source)
         {
             if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get()) return;
 
@@ -190,12 +179,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             {
                 try
                 {
-                    (CameraReelResponse cameraReelResponse, CameraReelStorageStatus cameraReelStorageStatus) =
-                        await cameraReelStorageService.UploadScreenshot(screenshot, metadata, cancellationToken);
-
-                    storageStatus = cameraReelStorageStatus;
-                    CameraReelModel.i.AddScreenshotAsFirst(cameraReelResponse);
-                    CameraReelModel.i.SetStorageStatus(cameraReelStorageStatus.CurrentScreenshots, cameraReelStorageStatus.MaxScreenshots);
+                    storageStatus = await cameraReelStorageService.UploadScreenshot(screenshot, metadata, cancellationToken);
 
                     analytics.TakePhoto(metadata.userAddress,
                         $"{metadata.scene.location.x},{metadata.scene.location.y}",
@@ -317,17 +301,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void InstantiateCameraObjects()
         {
             (screencaptureCameraHUDController, screencaptureCameraHUDView) = factory.CreateHUD(this, screencaptureCameraHUDViewPrefab, inputActionsSchema);
-
-            screenRecorderLazyValue = new ScreenRecorder(screencaptureCameraHUDView.RectTransform);
-
+            screenRecorderLazyValue = factory.CreateScreenRecorder(screencaptureCameraHUDView.RectTransform);
             screenshotCamera = factory.CreateScreencaptureCamera(cameraPrefab, characterCameraTransform, transform, characterController.gameObject.layer, cameraTarget, virtualCamera);
-
-            playerName = factory.CreatePlayerNameUI(
-                playerNamePrefab,
-                MIN_PLAYERNAME_HEIGHT,
-                Player,
-                playerAvatar: characterController.GetComponent<PlayerAvatarController>()
-            );
+            playerName = factory.CreatePlayerNameUI(playerNamePrefab, MIN_PLAYERNAME_HEIGHT, Player, playerAvatar: characterController.GetComponent<PlayerAvatarController>());
 
             isInstantiated = true;
         }

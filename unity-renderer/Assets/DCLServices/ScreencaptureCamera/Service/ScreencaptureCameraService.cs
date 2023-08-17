@@ -3,6 +3,7 @@ using DCL;
 using DCL.Providers;
 using DCLFeatures.ScreencaptureCamera.CameraObject;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ namespace DCLServices.ScreencaptureCamera.Service
         private Canvas enableCameraButtonCanvas;
 
         private bool featureIsEnabled => featureFlags.Get().IsFeatureEnabled("camera_reel");
-        private bool isGuest => false;// isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
+        private bool isGuest => UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
         public ScreencaptureCameraService(IAddressableResourceProvider resourceProvider, BaseVariable<FeatureFlag> featureFlags, DataStore_Player player)
         {
@@ -48,15 +49,37 @@ namespace DCLServices.ScreencaptureCamera.Service
             await UniTask.WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id), cancellationToken: cancellationToken);
             if (isGuest) return;
 
-            cameraBehaviour = await resourceProvider.Instantiate<ScreencaptureCameraBehaviour>(CONTROLLER_PATH, cancellationToken: cancellationToken);
-            cameraBehaviour.Player = player;
+            await InitializeCameraBehaviour(cancellationToken);
+            await InitializeMainHUDButton(cancellationToken);
+        }
 
+        private async Task InitializeCameraBehaviour(CancellationToken cancellationToken)
+        {
+            cameraBehaviour = await resourceProvider.Instantiate<ScreencaptureCameraBehaviour>(CONTROLLER_PATH, cancellationToken: cancellationToken);
+
+            cameraBehaviour.Player = player;
+            cameraBehaviour.SetExternalDependencies(CommonScriptableObjects.allUIHidden,
+                CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock,
+                CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked,
+                CommonScriptableObjects.userMovementKeysBlocked,
+                CommonScriptableObjects.isScreenshotCameraActive);
+        }
+
+        private async Task InitializeMainHUDButton(CancellationToken cancellationToken)
+        {
             enableCameraButtonCanvas = await resourceProvider.Instantiate<Canvas>(MAIN_BUTTON_PATH, cancellationToken: cancellationToken);
-            enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(EnableScreenshotCamera);
+
+            enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(EnableScreenshotCameraFromButton);
             CommonScriptableObjects.allUIHidden.OnChange += ToggleMainButtonVisibility;
         }
 
-        private void EnableScreenshotCamera() => cameraBehaviour.ToggleScreenshotCamera("Button");
-        private void ToggleMainButtonVisibility(bool isHidden, bool _) => enableCameraButtonCanvas.enabled = !isHidden;
+        public void EnableScreencaptureCamera(string source) =>
+            cameraBehaviour.ToggleScreenshotCamera(source);
+
+        private void EnableScreenshotCameraFromButton() =>
+            cameraBehaviour.ToggleScreenshotCamera("Button");
+
+        private void ToggleMainButtonVisibility(bool isHidden, bool _) =>
+            enableCameraButtonCanvas.enabled = !isHidden;
     }
 }
