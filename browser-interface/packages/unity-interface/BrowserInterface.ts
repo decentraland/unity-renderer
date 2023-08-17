@@ -89,7 +89,6 @@ import {
 import {
   joinVoiceChat,
   leaveVoiceChat,
-  requestToggleVoiceChatRecording,
   requestVoiceChatRecording,
   setAudioDevice,
   setVoiceChatPolicy,
@@ -845,10 +844,6 @@ export class BrowserInterface {
 
   public LeaveVoiceChat() {
     store.dispatch(leaveVoiceChat())
-  }
-
-  public ToggleVoiceChatRecording() {
-    store.dispatch(requestToggleVoiceChatRecording())
   }
 
   public ApplySettings(settingsMessage: { voiceChatVolume: number; voiceChatAllowCategory: number }) {
