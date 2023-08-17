@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ExploreEventsCommonTests
 {
@@ -26,12 +27,8 @@ public class ExploreEventsCommonTests
     {
         eventsSubSectionComponent.featuredEvents.ExtractItems();
         eventsSubSectionComponent.featuredEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.trendingEvents.ExtractItems();
-        eventsSubSectionComponent.trendingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.upcomingEvents.ExtractItems();
-        eventsSubSectionComponent.upcomingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.goingEvents.ExtractItems();
-        eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
+        eventsSubSectionComponent.eventsGrid.ExtractItems();
+        eventsSubSectionComponent.eventCardsPool.ReleaseAll();
         eventsSubSectionComponent.Dispose();
         testEventCard.Dispose();
         GameObject.Destroy(eventsSubSectionComponent.eventModal.gameObject);
@@ -75,6 +72,7 @@ public class ExploreEventsCommonTests
     public void ConfigureEventCardCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
@@ -147,7 +145,11 @@ public class ExploreEventsCommonTests
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
-                user_name = "Test User Name"
+                user_name = "Test User Name",
+                categories = new []{ "art" },
+                recurrent = false,
+                duration = 7200000,
+                start_at = "2023-07-18T23:00:00.000Z",
             }
         };
     }
@@ -170,7 +172,11 @@ public class ExploreEventsCommonTests
             scene_name = "Test Scene Name",
             total_attendees = 100,
             trending = false,
-            user_name = "Test User Name"
+            user_name = "Test User Name",
+            categories = new []{ "art" },
+            recurrent = false,
+            duration = 7200000,
+            start_at = "2023-07-18T23:00:00.000Z",
         };
     }
 }

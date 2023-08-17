@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Interface;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -12,11 +11,12 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public event Action OnCloseExploreV2;
 
     private const int DEFAULT_NUMBER_OF_FEATURED_EVENTS = 3;
-    internal const int INITIAL_NUMBER_OF_UPCOMING_ROWS = 1;
-    internal const int INITIAL_NUMBER_OF_GOING_ROWS = 1;
-    private const int SHOW_MORE_UPCOMING_ROWS_INCREMENT = 2;
-    private const int SHOW_MORE_GOING_ROWS_INCREMENT = 2;
-    private const string EVENT_DETAIL_URL = "https://events.decentraland.org/event/?id={0}";
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
+    private const int SHOW_MORE_ROWS_INCREMENT = 2;
+    private const string ALL_FILTER_ID = "all";
+    private const string RECURRING_EVENT_FREQUENCY_FILTER_ID = "recurring_event";
+    private const float TIME_MIN_VALUE = 0;
+    private const float TIME_MAX_VALUE = 48;
 
     internal readonly IEventsSubSectionComponentView view;
     internal readonly IEventsAPIController eventsAPIApiController;
@@ -27,9 +27,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
-    internal List<EventFromAPIModel> goingToEventsFromAPI = new ();
     internal int availableUISlots;
-    internal int availableUISlotsForGoing;
 
     public EventsSubSectionComponentController(
         IEventsSubSectionComponentView view,
@@ -50,8 +48,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.view.OnSubscribeEventClicked += SubscribeToEvent;
         this.view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
 
-        this.view.OnShowMoreUpcomingEventsClicked += ShowMoreUpcomingEvents;
-        this.view.OnShowMoreGoingEventsClicked += ShowMoreGoingEvents;
+        this.view.OnShowMoreEventsClicked += ShowMoreEvents;
         this.view.OnConnectWallet += ConnectWallet;
 
         this.dataStore = dataStore;
@@ -78,9 +75,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnJumpInClicked -= OnJumpInToEvent;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
-        view.OnShowMoreUpcomingEventsClicked -= ShowMoreUpcomingEvents;
-        view.OnShowMoreGoingEventsClicked -= ShowMoreGoingEvents;
+        view.OnShowMoreEventsClicked -= ShowMoreEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
+        view.OnFiltersChanged -= LoadFilteredEvents;
         view.OnConnectWallet -= ConnectWallet;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
@@ -91,6 +88,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnEventsSubSectionEnable += RequestAllEvents;
+        view.OnFiltersChanged += LoadFilteredEvents;
         cardsReloader.Initialize();
     }
 
@@ -99,11 +97,8 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetIsGuestUser(userProfileBridge.GetOwn().isGuest);
         if (cardsReloader.CanReload())
         {
-            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_UPCOMING_ROWS;
-            availableUISlotsForGoing = view.CurrentGoingTilesPerRow * INITIAL_NUMBER_OF_GOING_ROWS;
-            view.SetShowMoreButtonActive(false);
-            view.SetShowMoreGoingButtonActive(false);
-
+            availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
+            view.SetShowMoreEventsButtonActive(false);
             cardsReloader.RequestAll();
         }
     }
@@ -118,64 +113,146 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void OnRequestedEventsUpdated(List<EventFromAPIModel> eventList)
     {
         eventsFromAPI = eventList;
-        goingToEventsFromAPI = eventsFromAPI.Where(e => e.attending).ToList();
 
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
-        view.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterGoingEvents()));
-        view.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterTrendingEvents()));
-        view.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterUpcomingEvents()));
-
-        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
-        view.SetShowMoreGoingEventsButtonActive(availableUISlotsForGoing < goingToEventsFromAPI.Count);
+        LoadFilteredEvents();
+        RequestAndLoadCategories();
     }
 
-    internal List<EventFromAPIModel> FilterFeaturedEvents()
+    private void LoadFilteredEvents()
     {
-        List<EventFromAPIModel> eventsFiltered = eventsFromAPI.Where(e => e.highlighted).ToList();
+        List<EventCardComponentModel> filteredEventCards = new ();
 
-        if (eventsFiltered.Count == 0)
+        bool anyFilterApplied =
+            view.SelectedEventType != EventsType.Upcoming ||
+            view.SelectedFrequency != ALL_FILTER_ID ||
+            view.SelectedCategory != ALL_FILTER_ID ||
+            view.SelectedLowTime > TIME_MIN_VALUE ||
+            view.SelectedHighTime < TIME_MAX_VALUE;
+
+        switch (view.SelectedEventType)
+        {
+            case EventsType.Upcoming:
+                availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterUpcomingEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime, anyFilterApplied));
+                view.SetShowMoreEventsButtonActive(!anyFilterApplied && availableUISlots < eventsFromAPI.Count);
+                break;
+            case EventsType.Featured:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterFeaturedEvents(false, view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+            case EventsType.Trending:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterTrendingEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+            case EventsType.WantToGo:
+                filteredEventCards = PlacesAndEventsCardsFactory.CreateEventsCards(
+                    FilterWantToGoEvents(view.SelectedFrequency, view.SelectedCategory, view.SelectedLowTime, view.SelectedHighTime));
+                view.SetShowMoreEventsButtonActive(false);
+                break;
+        }
+
+        view.SetEvents(filteredEventCards);
+    }
+
+    internal List<EventFromAPIModel> FilterUpcomingEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE,
+        bool takeAllResults = false)
+    {
+        return eventsFromAPI
+              .Where(e =>
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
+              .Take(takeAllResults ? eventsFromAPI.Count : availableUISlots)
+              .ToList();
+    }
+
+    internal List<EventFromAPIModel> FilterFeaturedEvents(
+        bool showDefaultsIfNoData = true,
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
+    {
+        List<EventFromAPIModel> eventsFiltered = eventsFromAPI
+                                                .Where(e =>
+                                                     e.highlighted &&
+                                                     FrequencyFilterQuery(e, frequencyFilter) &&
+                                                     CategoryFilterQuery(e, categoryFilter) &&
+                                                     TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
+                                                .ToList();
+
+        if (eventsFiltered.Count == 0 && showDefaultsIfNoData)
             eventsFiltered = eventsFromAPI.Take(DEFAULT_NUMBER_OF_FEATURED_EVENTS).ToList();
 
         return eventsFiltered;
     }
-    internal List<EventFromAPIModel> FilterTrendingEvents() => eventsFromAPI.Where(e => e.trending).ToList();
-    internal List<EventFromAPIModel> FilterUpcomingEvents() => eventsFromAPI.Take(availableUISlots).ToList();
-    internal List<EventFromAPIModel> FilterGoingEvents() => goingToEventsFromAPI.Take(availableUISlotsForGoing).ToList();
 
-    public void ShowMoreUpcomingEvents()
+    internal List<EventFromAPIModel> FilterTrendingEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
     {
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentUpcomingEventsPerRow) * view.currentUpcomingEventsPerRow) - availableUISlots;
-        int numberOfItemsToAdd = (view.currentUpcomingEventsPerRow * SHOW_MORE_UPCOMING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
+        return eventsFromAPI
+              .Where(e =>
+                   e.trending &&
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
+              .ToList();
+    }
+
+    internal List<EventFromAPIModel> FilterWantToGoEvents(
+        string frequencyFilter = ALL_FILTER_ID,
+        string categoryFilter = ALL_FILTER_ID,
+        float lowTimeFilter = TIME_MIN_VALUE,
+        float highTimeFilter = TIME_MAX_VALUE)
+    {
+        return eventsFromAPI
+              .Where(e =>
+                   e.attending &&
+                   FrequencyFilterQuery(e, frequencyFilter) &&
+                   CategoryFilterQuery(e, categoryFilter) &&
+                   TimeFilterQuery(e, lowTimeFilter, highTimeFilter))
+              .ToList();
+    }
+
+    private static bool FrequencyFilterQuery(EventFromAPIModel e, string frequencyFilter) =>
+        frequencyFilter == ALL_FILTER_ID ||
+        (frequencyFilter == RECURRING_EVENT_FREQUENCY_FILTER_ID ?
+            e.duration > TimeSpan.FromDays(1).TotalMilliseconds || e.recurrent :
+            e.duration <= TimeSpan.FromDays(1).TotalMilliseconds);
+
+    private static bool CategoryFilterQuery(EventFromAPIModel e, string categoryFilter) =>
+        categoryFilter == ALL_FILTER_ID || e.categories.Contains(categoryFilter);
+
+    private static bool TimeFilterQuery(EventFromAPIModel e, float lowTimeFilter, float highTimeFilter) =>
+        IsTimeInRange(e.start_at, lowTimeFilter, highTimeFilter);
+
+    public void ShowMoreEvents()
+    {
+        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlots / view.currentEventsPerRow) * view.currentEventsPerRow) - availableUISlots;
+        int numberOfItemsToAdd = (view.currentEventsPerRow * SHOW_MORE_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
 
         List<EventFromAPIModel> eventsFiltered = availableUISlots + numberOfItemsToAdd <= eventsFromAPI.Count
             ? eventsFromAPI.GetRange(availableUISlots, numberOfItemsToAdd)
             : eventsFromAPI.GetRange(availableUISlots, eventsFromAPI.Count - availableUISlots);
 
-        view.AddUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
+        view.AddEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
 
         availableUISlots += numberOfItemsToAdd;
         if (availableUISlots > eventsFromAPI.Count)
             availableUISlots = eventsFromAPI.Count;
 
-        view.SetShowMoreUpcomingEventsButtonActive(availableUISlots < eventsFromAPI.Count);
-    }
-
-    public void ShowMoreGoingEvents()
-    {
-        int numberOfExtraItemsToAdd = ((int)Mathf.Ceil((float)availableUISlotsForGoing / view.currentGoingEventsPerRow) * view.currentGoingEventsPerRow) - availableUISlotsForGoing;
-        int numberOfItemsToAdd = (view.currentGoingEventsPerRow * SHOW_MORE_GOING_ROWS_INCREMENT) + numberOfExtraItemsToAdd;
-
-        List<EventFromAPIModel> eventsFiltered = availableUISlotsForGoing + numberOfItemsToAdd <= goingToEventsFromAPI.Count
-            ? goingToEventsFromAPI.GetRange(availableUISlotsForGoing, numberOfItemsToAdd)
-            : goingToEventsFromAPI.GetRange(availableUISlotsForGoing, goingToEventsFromAPI.Count - availableUISlotsForGoing);
-
-        view.AddGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsFiltered));
-
-        availableUISlotsForGoing += numberOfItemsToAdd;
-        if (availableUISlotsForGoing > goingToEventsFromAPI.Count)
-            availableUISlotsForGoing = goingToEventsFromAPI.Count;
-
-        view.SetShowMoreGoingEventsButtonActive(availableUISlotsForGoing < goingToEventsFromAPI.Count);
+        view.SetShowMoreEventsButtonActive(availableUISlots < eventsFromAPI.Count);
     }
 
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
@@ -234,5 +311,46 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
             Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         else
             Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
+    }
+
+    private void RequestAndLoadCategories()
+    {
+        eventsAPIApiController.GetCategories(
+            onSuccess: categoryList =>
+            {
+                List<CategoryFromAPIModel> categoriesInUse = new ();
+                foreach (CategoryFromAPIModel category in categoryList)
+                {
+                    foreach (EventFromAPIModel loadedEvent in eventsFromAPI)
+                    {
+                        if (!loadedEvent.categories.Contains(category.name))
+                            continue;
+
+                        categoriesInUse.Add(category);
+                        break;
+                    }
+                }
+
+                view.SetCategories(PlacesAndEventsCardsFactory.ConvertCategoriesResponseToToggleModel(categoriesInUse));
+            },
+            onFail: error => { Debug.LogError($"Error receiving categories from the API: {error}"); });
+    }
+
+    private static bool IsTimeInRange(string dateTime, float lowTimeValue, float highTimeValue)
+    {
+        string startTimeString = ConvertToTimeString(lowTimeValue);
+        string endTimeString = ConvertToTimeString(highTimeValue);
+
+        TimeSpan startTime = lowTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(startTimeString) : TimeSpan.FromDays(1);
+        TimeSpan endTime = highTimeValue < TIME_MAX_VALUE ? TimeSpan.Parse(endTimeString) : TimeSpan.FromDays(1);
+        TimeSpan currentTime = Convert.ToDateTime(dateTime).ToUniversalTime().TimeOfDay;
+        return currentTime >= startTime && currentTime <= endTime;
+    }
+
+    private static string ConvertToTimeString(float hours)
+    {
+        var wholeHours = (int)(hours / 2);
+        int minutes = (int)(hours % 2) * 30;
+        return $"{wholeHours:D2}:{minutes:D2}";
     }
 }

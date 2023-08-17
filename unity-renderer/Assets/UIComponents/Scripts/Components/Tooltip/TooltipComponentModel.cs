@@ -6,6 +6,7 @@ namespace UIComponents.Scripts.Components.Tooltip
     public record TooltipComponentModel
     {
         public string message;
+        public bool autoAdaptContainerSize = true;
 
         public TooltipComponentModel()
         {
@@ -14,6 +15,7 @@ namespace UIComponents.Scripts.Components.Tooltip
         public TooltipComponentModel(string message)
         {
             this.message = message;
+            this.autoAdaptContainerSize = true;
         }
     }
 }

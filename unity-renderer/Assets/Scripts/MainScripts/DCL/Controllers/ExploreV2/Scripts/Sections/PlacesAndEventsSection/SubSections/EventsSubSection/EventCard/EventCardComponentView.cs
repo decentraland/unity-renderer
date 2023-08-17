@@ -11,11 +11,17 @@ public interface IEventCardComponentView
     /// Event that will be triggered when the jumpIn button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onJumpInClick { get; }
+    Button.ButtonClickedEvent onSecondaryJumpInClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onInfoClick { get; }
+
+    /// <summary>
+    /// Event that will be triggered when the background button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onBackgroundClick { get; }
 
     /// <summary>
     /// Event that will be triggered when the subscribe event button is clicked.
@@ -50,6 +56,12 @@ public interface IEventCardComponentView
     /// </summary>
     /// <param name="isLive">True to set the event as live.</param>
     void SetEventAsLive(bool isLive);
+
+    /// <summary>
+    /// Set the the number of users in the event.
+    /// </summary>
+    /// <param name="newNumberOfUsers">Number of users.</param>
+    void SetNumberOfUsers(int newNumberOfUsers);
 
     /// <summary>
     /// Set the live tag text.
@@ -120,16 +132,26 @@ public interface IEventCardComponentView
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig<EventCardComponentModel>
 {
-    internal const string USERS_CONFIRMED_MESSAGE = "{0} confirmed";
+    internal const string USERS_CONFIRMED_MESSAGE = "{0} going";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
+    private const string NO_DESCRIPTION_TEXT = "No description.";
+    private const int EVENT_TITLE_LENGTH_LIMIT = 65;
+
+    [Header("Assets References")]
+    [SerializeField] internal UserProfile ownUserProfile;
 
     [Header("Prefab References")]
     [SerializeField] internal ImageComponentView eventImage;
+    [SerializeField] internal GameObject numberOfUsersContainer;
+    [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TagComponentView liveTag;
     [SerializeField] internal TMP_Text eventDateText;
+    [SerializeField] internal TMP_Text eventDateTextOnFocus;
     [SerializeField] internal TMP_Text eventNameText;
+    [SerializeField] internal TMP_Text eventNameTextOnFocus;
     [SerializeField] internal TMP_Text eventDescText;
     [SerializeField] internal TMP_Text eventStartedInTitleForLive;
+    [SerializeField] internal TMP_Text eventStartedInTitleForLiveOnFocus;
     [SerializeField] internal TMP_Text eventStartedInTitleForNotLive;
     [SerializeField] internal TMP_Text eventStartedInText;
     [SerializeField] internal TMP_Text eventStartsInFromToText;
@@ -142,30 +164,39 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField] internal ButtonComponentView backgroundButton;
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView jumpinButton;
+    [SerializeField] internal ButtonComponentView secondaryJumpinButton;
     [SerializeField] internal ButtonComponentView subscribeEventButton;
     [SerializeField] internal ButtonComponentView unsubscribeEventButton;
     [SerializeField] internal GameObject imageContainer;
     [SerializeField] internal GameObject eventInfoContainer;
     [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField] internal GameObject cardSelectionFrame;
     [SerializeField] internal VerticalLayoutGroup contentVerticalLayout;
     [SerializeField] internal VerticalLayoutGroup infoVerticalLayout;
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
     [SerializeField] internal EventCardAnimator cardAnimator;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
-    [SerializeField] internal bool isEventCardModal = false;
+    [SerializeField] internal bool isEventCardModal;
     [SerializeField] internal EventCardComponentModel model;
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton?.onClick;
+    public Button.ButtonClickedEvent onSecondaryJumpInClick => secondaryJumpinButton?.onClick;
     public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
+    public Button.ButtonClickedEvent onBackgroundClick => backgroundButton?.onClick;
     public Button.ButtonClickedEvent onSubscribeClick => subscribeEventButton?.onClick;
     public Button.ButtonClickedEvent onUnsubscribeClick => unsubscribeEventButton?.onClick;
 
     public void Start()
     {
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
+
         if (closeCardButton != null)
             closeCardButton.onClick.AddListener(CloseModal);
 
@@ -181,6 +212,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     private void PressedSubscribe()
     {
+        if (ownUserProfile.isGuest)
+            return;
+
         model.isSubscribed = true;
         model.eventFromAPIInfo.attending = true;
         RefreshControl();
@@ -188,6 +222,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
     private void PressedUnsubscribe()
     {
+        if (ownUserProfile.isGuest)
+            return;
+
         model.isSubscribed = false;
         model.eventFromAPIInfo.attending = false;
         RefreshControl();
@@ -214,6 +251,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             SetEventPicture(sprite: null);
 
         SetEventAsLive(model.isLive);
+        SetNumberOfUsers(model.numberOfUsers);
         SetLiveTagText(model.liveTagText);
         SetEventDate(model.eventDateText);
         SetEventName(model.eventName);
@@ -224,7 +262,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
         SetCoords(model.coords);
-
+        ResetScrollPosition();
         RebuildCardLayouts();
     }
 
@@ -232,12 +270,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     {
         base.OnFocus();
 
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(true);
+
         cardAnimator?.Focus();
     }
 
     public override void OnLoseFocus()
     {
         base.OnLoseFocus();
+
+        if (cardSelectionFrame != null)
+            cardSelectionFrame.SetActive(false);
 
         cardAnimator?.Idle();
     }
@@ -334,11 +378,17 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (liveTag != null)
             liveTag.gameObject.SetActive(isLive);
 
-        if (eventDateText != null)
+        if (eventDateText != null && !isEventCardModal)
             eventDateText.gameObject.SetActive(!isLive);
+
+        if (eventDateTextOnFocus != null)
+            eventDateTextOnFocus.gameObject.SetActive(!isLive);
 
         if (jumpinButton != null)
             jumpinButton.gameObject.SetActive(isEventCardModal || isLive);
+
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.gameObject.SetActive(isEventCardModal || isLive);
 
         if (subscribeEventButton != null)
             subscribeEventButton.gameObject.SetActive(!isLive && !model.eventFromAPIInfo.attending);
@@ -348,6 +398,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (eventStartedInTitleForLive)
             eventStartedInTitleForLive.gameObject.SetActive(isLive);
+
+        if (eventStartedInTitleForLiveOnFocus)
+            eventStartedInTitleForLiveOnFocus.gameObject.SetActive(isLive);
 
         if (eventStartedInTitleForNotLive)
             eventStartedInTitleForNotLive.gameObject.SetActive(!isLive);
@@ -362,34 +415,47 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             goingUsersGameObject.SetActive(!isLive);
     }
 
+    public void SetNumberOfUsers(int newNumberOfUsers)
+    {
+        model.numberOfUsers = newNumberOfUsers;
+
+        if (numberOfUsersText == null)
+            return;
+
+        numberOfUsersText.text = FormatNumber(newNumberOfUsers);
+        numberOfUsersContainer.SetActive(model.isLive && newNumberOfUsers > 0);
+    }
+
     public void SetLiveTagText(string newText)
     {
         model.liveTagText = newText;
 
-        if (liveTag == null)
-            return;
-
-        liveTag.SetText(newText);
+        if (liveTag != null)
+            liveTag.SetText(newText);
     }
 
     public void SetEventDate(string newDate)
     {
         model.eventDateText = newDate;
 
-        if (eventDateText == null)
-            return;
+        if (eventDateText != null)
+            eventDateText.text = newDate;
 
-        eventDateText.text = newDate;
+        if (eventDateTextOnFocus != null)
+            eventDateTextOnFocus.text = newDate;
     }
 
     public void SetEventName(string newText)
     {
         model.eventName = newText;
 
-        if (eventNameText == null)
-            return;
+        string wrappedText = newText.Substring(0, Math.Min(EVENT_TITLE_LENGTH_LIMIT, newText.Length));
 
-        eventNameText.text = newText;
+        if (eventNameText != null)
+            eventNameText.text = wrappedText;
+
+        if (eventNameTextOnFocus != null)
+            eventNameTextOnFocus.text = wrappedText;
     }
 
     public void SetEventDescription(string newText)
@@ -399,7 +465,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (eventDescText == null)
             return;
 
-        eventDescText.text = newText;
+        eventDescText.text = string.IsNullOrEmpty(newText) ? NO_DESCRIPTION_TEXT : newText;
     }
 
     public void SetEventStartedIn(string newText)
@@ -451,21 +517,20 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (!isEventCardModal)
         {
             subscribedUsersText.text = $"{newNumberOfUsers.ToString()} going";
+            subscribedUsersText.gameObject.SetActive(!model.isLive);
         }
         else
-        {
             subscribedUsersText.text = newNumberOfUsers > 0 ? string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers) : NOBODY_CONFIRMED_MESSAGE;
-        }
     }
 
     public void SetCoords(Vector2Int newCoords)
     {
         model.coords = newCoords;
 
-        if (jumpinButton == null || !isEventCardModal)
+        if (secondaryJumpinButton == null || !isEventCardModal)
             return;
 
-        jumpinButton.SetText($"{newCoords.x},{newCoords.y}");
+        secondaryJumpinButton.SetText($"{newCoords.x},{newCoords.y}");
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)
@@ -485,9 +550,30 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (timeAndPlayersHorizontalLayout != null)
             Utils.ForceRebuildLayoutImmediate(timeAndPlayersHorizontalLayout.transform as RectTransform);
+
+        if (numberOfUsersContainer != null)
+            Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer.transform as RectTransform);
     }
 
     internal void CloseModal() { Hide(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
+
+    private static string FormatNumber(int num)
+    {
+        if (num < 1000)
+            return num.ToString();
+
+        float divided = num / 1000.0f;
+        divided = (int)(divided * 100) / 100f;
+        return $"{divided:F2}k";
+    }
+
+    private void ResetScrollPosition()
+    {
+        if (scroll == null)
+            return;
+
+        scroll.verticalNormalizedPosition = 1;
+    }
 }

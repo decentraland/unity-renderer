@@ -1,3 +1,5 @@
+using DCL;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Globalization;
 using UnityEngine;
@@ -9,6 +11,7 @@ using Environment = DCL.Environment;
 public static class EventsCardsConfigurator
 {
     internal const string LIVE_TAG_TEXT = "LIVE";
+    private static Service<IHotScenesFetcher> hotScenesFetcher;
 
     /// <summary>
     /// Configure a event card with the given model.
@@ -26,8 +29,12 @@ public static class EventsCardsConfigurator
 
         eventCard.onInfoClick?.RemoveAllListeners();
         eventCard.onInfoClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
+        eventCard.onBackgroundClick?.RemoveAllListeners();
+        eventCard.onBackgroundClick?.AddListener(() => OnEventInfoClicked?.Invoke(eventInfo));
         eventCard.onJumpInClick?.RemoveAllListeners();
         eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
+        eventCard.onSecondaryJumpInClick?.RemoveAllListeners();
+        eventCard.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
         eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
         eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
 
@@ -51,8 +58,36 @@ public static class EventsCardsConfigurator
         cardModel.isSubscribed = false;
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
+        cardModel.numberOfUsers = GetNumberOfUsersInCoords(cardModel.coords);
 
         return cardModel;
+    }
+
+    private static int GetNumberOfUsersInCoords(Vector2Int coords)
+    {
+        var numberOfUsers = 0;
+
+        if (hotScenesFetcher.Ref.ScenesInfo == null)
+            return numberOfUsers;
+
+        var sceneFound = false;
+        foreach (var hotSceneInfo in hotScenesFetcher.Ref.ScenesInfo.Value)
+        {
+            foreach (Vector2Int hotSceneParcel in hotSceneInfo.parcels)
+            {
+                if (hotSceneParcel != coords)
+                    continue;
+
+                numberOfUsers = hotSceneInfo.usersTotalCount;
+                sceneFound = true;
+                break;
+            }
+
+            if (sceneFound)
+                break;
+        }
+
+        return numberOfUsers;
     }
 
     internal static string FormatEventDate(EventFromAPIModel eventFromAPI)
