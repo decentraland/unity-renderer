@@ -1,11 +1,16 @@
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Camera;
 using DCLFeatures.ScreencaptureCamera.CameraObject;
 using DCLFeatures.ScreencaptureCamera.UI;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.Tests
 {
@@ -167,8 +172,12 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
     {
         public ScreenRecorderDummy() : base(null) { }
 
-        public override Texture2D CaptureScreenshot(Camera baseCamera) =>
-            new (1, 1);
+        public override IEnumerator CaptureScreenshot(Camera baseCamera, Action<Texture2D> onComplete)
+        {
+            yield return null;
+            onComplete.Invoke(new Texture2D(1, 1));
+        }
+
     }
 
     public class ScreencaptureCameraHUDViewDummy : ScreencaptureCameraHUDView
