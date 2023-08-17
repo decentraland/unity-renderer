@@ -85,8 +85,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isInTransition;
 
-        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
-
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
         private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
@@ -95,7 +93,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
         private DataStore_Player player => DataStore.i.player;
-        private bool isGuest => isGuestLazyValue ??= UserProfileController.userProfilesCatalog.Get(player.ownPlayer.Get().id).isGuest;
 
         private ScreenRecorder screenRecorderLazy
         {
@@ -112,39 +109,23 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
-        // TODO(Vitaly): Remove this logic when feature flag will be enabled
-        private IEnumerator Start()
+        private void Start()
         {
-            enabled = false;
-            yield return new WaitUntil(() => featureFlags.IsInitialized);
-
-            if (!featureFlags.IsFeatureEnabled("camera_reel"))
-                Destroy(gameObject);
-            else
             {
-                yield return new WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id));
+                Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
+                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
+                CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
 
-                if (isGuest)
-                    Destroy(gameObject);
-                else
-                {
-                    Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
-                    enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
-                    CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
+                playerId = player.ownPlayer.Get().id;
+                UpdateStorageInfo();
 
-                    enabled = true;
+                storageStatus = new CameraReelStorageStatus(0, 0);
 
-                    playerId = player.ownPlayer.Get().id;
-                    UpdateStorageInfo();
+                characterController = DCLCharacterController.i;
+                cameraController = SceneReferences.i.cameraController;
+                mainCamera = cameraController.GetCamera();
 
-                    storageStatus = new CameraReelStorageStatus(0, 0);
-
-                    characterController = DCLCharacterController.i;
-                    cameraController = SceneReferences.i.cameraController;
-                    mainCamera = cameraController.GetCamera();
-
-                    SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
-                }
+                SetExternalDependencies(CommonScriptableObjects.allUIHidden, CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked, CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
             }
         }
 
@@ -195,7 +176,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void CaptureScreenshotAtTheFrameEnd(string source)
         {
-            if (!isScreencaptureCameraActive.Get() || isGuest || isOnCooldown || !storageStatus.HasFreeSpace) return;
+            if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get()) return;
 
             lastScreenshotTime = Time.time;
 
@@ -240,8 +221,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void ToggleScreenshotCamera(string source = null, bool isEnabled = true)
         {
-            if (isGuest || isInTransition) return;
-            if (isEnabled == isScreencaptureCameraActive.Get()) return;
+            if (isInTransition || isEnabled == isScreencaptureCameraActive.Get()) return;
 
             if (isEnabled && !string.IsNullOrEmpty(source))
                 analytics.OpenCamera(source);
