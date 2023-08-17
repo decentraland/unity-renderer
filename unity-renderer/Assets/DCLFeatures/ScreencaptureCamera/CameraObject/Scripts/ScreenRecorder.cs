@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -15,9 +19,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly float targetAspectRatio;
         private readonly RectTransform canvasRectTransform;
 
-        private readonly List<RenderTexture> originalOverlayTargetTextures = new ();
         private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
-        private List<Camera> overlayCameras;
         private RenderTexture originalBaseTargetTexture;
 
         public ScreenRecorder(RectTransform canvasRectTransform)
@@ -28,34 +30,29 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public virtual Texture2D CaptureScreenshot(Camera baseCamera)
+        public virtual IEnumerator CaptureScreenshot(Camera baseCamera, Action<Texture2D> onComplete)
         {
             ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(currentScreenFrameData: CalculateCurrentScreenFrame());
 
-            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8);
-            RenderScreenIntoTexture(baseCamera, initialRenderTexture);
-            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
+            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24, GraphicsFormat.R32G32B32A32_SFloat, 8);
+
+            originalBaseTargetTexture = baseCamera.targetTexture;
+            baseCamera.targetTexture = initialRenderTexture;
+
+            yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
+            baseCamera.Render();
+
+            baseCamera.targetTexture = originalBaseTargetTexture;
+
+            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24);
             Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
             CropToScreenshotFrame(finalRenderTexture, targetScreenFrame);
 
-            CleanUp(initialRenderTexture, finalRenderTexture);
-
-            return screenshot;
-        }
-
-        private void RenderScreenIntoTexture(Camera baseCamera, RenderTexture initialRenderTexture)
-        {
-            SetAndCacheCamerasTargetTexture(baseCamera, initialRenderTexture);
-            baseCamera.Render();
-            ResetCamerasTargetTexturesToCached(baseCamera);
-        }
-
-        private void CleanUp(RenderTexture initialRenderTexture, RenderTexture finalRenderTexture)
-        {
             RenderTexture.ReleaseTemporary(initialRenderTexture);
             RenderTexture.ReleaseTemporary(finalRenderTexture);
-            originalOverlayTargetTextures?.Clear();
+
+            onComplete?.Invoke(screenshot);
         }
 
         private void CropToScreenshotFrame(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
@@ -65,31 +62,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             screenshot.ReadPixels(new Rect(corners.x, corners.y, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
             screenshot.Apply();
             RenderTexture.active = null;
-        }
-
-        private void SetAndCacheCamerasTargetTexture(Camera baseCamera, RenderTexture targetRenderTexture)
-        {
-            originalBaseTargetTexture = baseCamera.targetTexture;
-            baseCamera.targetTexture = targetRenderTexture;
-
-            UniversalAdditionalCameraData baseCameraData = baseCamera.GetUniversalAdditionalCameraData();
-            overlayCameras = baseCameraData.cameraStack;
-
-            if (overlayCameras != null)
-                foreach (Camera overlayCamera in overlayCameras)
-                {
-                    originalOverlayTargetTextures.Add(overlayCamera.targetTexture);
-                    overlayCamera.targetTexture = targetRenderTexture;
-                }
-        }
-
-        private void ResetCamerasTargetTexturesToCached(Camera baseCamera)
-        {
-            baseCamera.targetTexture = originalBaseTargetTexture;
-
-            if (overlayCameras != null)
-                for (var i = 0; i < overlayCameras.Count; i++)
-                    overlayCameras[i].targetTexture = originalOverlayTargetTextures[i];
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
