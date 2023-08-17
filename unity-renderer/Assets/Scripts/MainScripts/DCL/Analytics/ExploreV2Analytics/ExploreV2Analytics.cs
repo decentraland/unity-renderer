@@ -17,11 +17,15 @@ namespace ExploreV2Analytics
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
+        void SendPlacesTabOpen();
+        void SendEventsTabOpen();
+        void SendFavoritesTabOpen();
+        void SendFilterEvents(FilterType filterType, string filterValue = "");
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
     {
-        private const string START_MENU_VIBILILITY = "start_menu_visibility";
+        private const string START_MENU_VISIBILITY = "start_menu_visibility";
         private const string START_MENU_SECTION_VISIBILITY = "start_menu_section_visibility";
         private const string EXPLORE_EVENT_TELEPORT = "explore_event_teleport";
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
@@ -32,9 +36,16 @@ namespace ExploreV2Analytics
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
         private const string TELEPORT_FAVORITE_PLACE = "player_teleport_to_favorite_place";
+        private const string EXPLORE_PLACES_TAB_OPEN = "explore_places_tab_open";
+        private const string EXPLORE_EVENTS_TAB_OPEN = "explore_events_tab_open";
+        private const string EXPLORE_FAVORITES_TAB_OPEN = "explore_favorites_tab_open";
+        private const string FILTER_EVENTS = "player_filter_events";
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
         private static DateTime? exploreSectionSetVisibleTimeStamp = null;
+        private static DateTime? eventTimeFilterTimeStamp = null;
+
+        private const int MIN_TIME_TO_SEND_EVENT_TIME_FILTER_METRIC = 5;
 
         public void SendStartMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method)
         {
@@ -53,7 +64,7 @@ namespace ExploreV2Analytics
                 }
             }
 
-            GenericAnalytics.SendAnalytic(START_MENU_VIBILILITY, data);
+            GenericAnalytics.SendAnalytic(START_MENU_VISIBILITY, data);
         }
 
         public void SendStartMenuSectionVisibility(ExploreSection section, bool isVisible)
@@ -164,6 +175,45 @@ namespace ExploreV2Analytics
                 ["first_results_ids"] = string.Join(",", firstResultsIds)
             };
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_PLACES, data);
+        }
+
+        public void SendPlacesTabOpen()
+        {
+            var data = new Dictionary<string, string>();
+            GenericAnalytics.SendAnalytic(EXPLORE_PLACES_TAB_OPEN, data);
+        }
+
+        public void SendEventsTabOpen()
+        {
+            var data = new Dictionary<string, string>();
+            GenericAnalytics.SendAnalytic(EXPLORE_EVENTS_TAB_OPEN, data);
+        }
+
+        public void SendFavoritesTabOpen()
+        {
+            var data = new Dictionary<string, string>();
+            GenericAnalytics.SendAnalytic(EXPLORE_FAVORITES_TAB_OPEN, data);
+        }
+
+        public void SendFilterEvents(FilterType filterType, string filterValue = "")
+        {
+            if (eventTimeFilterTimeStamp == null)
+                eventTimeFilterTimeStamp = DateTime.Now;
+            else
+            {
+                // Due to the possible amount of times that we could send this metric, we are setting a min time of 5 secs
+                if ((DateTime.Now - eventTimeFilterTimeStamp.Value).TotalSeconds <= MIN_TIME_TO_SEND_EVENT_TIME_FILTER_METRIC)
+                    return;
+
+                eventTimeFilterTimeStamp = null;
+            }
+
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = filterType.ToString(),
+                ["value"] = filterValue
+            };
+            GenericAnalytics.SendAnalytic(FILTER_EVENTS, data);
         }
     }
 }
