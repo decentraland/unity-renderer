@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCLFeatures.CameraReel.Section
 {
-    public class CameraReelSectionView : MonoBehaviour
+    public class CameraReelSectionView : MonoBehaviour, ICameraReelSectionView
     {
         [SerializeField] private Canvas canvas;
         [SerializeField] private GameObject loadingSpinner;

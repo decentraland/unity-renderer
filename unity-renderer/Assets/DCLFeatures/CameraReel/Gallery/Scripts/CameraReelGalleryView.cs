@@ -13,7 +13,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
-    public class CameraReelGalleryView : MonoBehaviour
+    public class CameraReelGalleryView : MonoBehaviour, ICameraReelGalleryView
     {
         private readonly SortedDictionary<DateTime, (GridContainerComponentView gridContainer, GameObject headerContainer)> monthContainers = new ();
         private readonly Dictionary<CameraReelResponse, CameraReelThumbnail> thumbnails = new ();
