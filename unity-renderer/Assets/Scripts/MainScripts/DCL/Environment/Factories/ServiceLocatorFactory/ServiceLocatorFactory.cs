@@ -23,6 +23,7 @@ using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.PlacesAPIService;
+using DCLServices.ScreencaptureCamera.Service;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -199,6 +200,7 @@ namespace DCL
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
             result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
+            result.Register<IScreencaptureCameraService>(() => new ScreencaptureCameraService(addressableResourceProvider));
 
             // Analytics
             result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
