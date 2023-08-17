@@ -7,6 +7,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
     public class ScreencaptureCameraFactory
     {
+        public virtual ScreenRecorder CreateScreenRecorder(RectTransform canvasRectTransform) =>
+            new ScreenRecorder(canvasRectTransform);
+
         public virtual PlayerName CreatePlayerNameUI(PlayerName playerNamePrefab, float minPlayerNameHeight, DataStore_Player player, PlayerAvatarController playerAvatar)
         {
             PlayerName playerName = Object.Instantiate(playerNamePrefab, playerAvatar.transform);

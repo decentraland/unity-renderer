@@ -1,5 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -10,6 +10,8 @@ namespace DCLServices.CameraReelService
         private readonly ICameraReelNetworkClient networkClient;
 
         private ICameraReelAnalyticsService analyticsServiceLazy;
+
+        public event Action<Texture2D, ScreenshotMetadata, UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)>> Upload;
 
         public CameraReelNetworkStorageService(ICameraReelNetworkClient networkClient)
         {
@@ -35,10 +37,15 @@ namespace DCLServices.CameraReelService
             return new CameraReelStorageStatus(response.currentImages, response.maxImages);
         }
 
-        public async UniTask<(CameraReelResponse, CameraReelStorageStatus)> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
+        public async UniTask<CameraReelStorageStatus> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
         {
+            var taskSource = new UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)>();
+            Upload?.Invoke(image, metadata, taskSource);
+
             CameraReelUploadResponse response = await networkClient.UploadScreenshotRequest(image.EncodeToJPG(), metadata, ct);
-            return (response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages));
+            taskSource.TrySetResult((response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages)));
+
+            return new CameraReelStorageStatus(response.currentImages, response.maxImages);
         }
     }
 }
