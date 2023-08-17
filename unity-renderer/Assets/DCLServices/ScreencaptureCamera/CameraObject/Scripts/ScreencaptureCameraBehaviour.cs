@@ -10,10 +10,8 @@ using DCLFeatures.CameraReel.Section;
 using DCLFeatures.ScreencaptureCamera.UI;
 using DCLServices.CameraReelService;
 using System;
-using System.Collections;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 using Environment = DCL.Environment;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
@@ -32,7 +30,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [Header("MAIN COMPONENTS")]
         [SerializeField] internal Camera cameraPrefab;
         [SerializeField] internal ScreencaptureCameraHUDView screencaptureCameraHUDViewPrefab;
-        [SerializeField] internal Canvas enableCameraButtonPrefab;
         [SerializeField] private PlayerName playerNamePrefab;
 
         [SerializeField] private CharacterController cameraTarget;
@@ -92,8 +89,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
-        private DataStore_Player player => DataStore.i.player;
-
         private ScreenRecorder screenRecorderLazy
         {
             get
@@ -109,14 +104,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
+        public DataStore_Player Player { private get; set; }
+
         private void Start()
         {
             {
-                Canvas enableCameraButtonCanvas = Instantiate(enableCameraButtonPrefab);
-                enableCameraButtonCanvas.GetComponentInChildren<Button>().onClick.AddListener(() => ToggleScreenshotCamera("Button"));
-                CommonScriptableObjects.allUIHidden.OnChange += (isHidden, _) => enableCameraButtonCanvas.enabled = !isHidden;
-
-                playerId = player.ownPlayer.Get().id;
+                playerId = Player.ownPlayer.Get().id;
                 UpdateStorageInfo();
 
                 storageStatus = new CameraReelStorageStatus(0, 0);
@@ -188,7 +181,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
                 screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-                var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+                var metadata = ScreenshotMetadata.Create(Player, avatarsLODController, screenshotCamera);
                 uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
                 UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
             }
@@ -332,7 +325,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             playerName = factory.CreatePlayerNameUI(
                 playerNamePrefab,
                 MIN_PLAYERNAME_HEIGHT,
-                player,
+                Player,
                 playerAvatar: characterController.GetComponent<PlayerAvatarController>()
             );
 
