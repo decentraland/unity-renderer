@@ -146,7 +146,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         if (recordingListener) {
           recordingListener(recording)
         }
-        logger.log("JUANI RECORDING SET ", recording)
       } catch(err) {
         logger.error('Error: ', err, ', recording=', recording)
         if (recordingListener) {

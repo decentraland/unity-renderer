@@ -36,7 +36,8 @@ import {
   getVoiceHandler,
   hasJoinedVoiceChat,
   isRequestedVoiceChatRecording,
-  isVoiceChatAllowedByCurrentScene
+  isVoiceChatAllowedByCurrentScene,
+  isVoiceChatRecording
 } from './selectors'
 import { RootVoiceChatState, VoiceChatState } from './types'
 import { VoiceHandler } from './VoiceHandler'
@@ -47,13 +48,14 @@ import { getCommsRoom } from 'shared/comms/selectors'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { incrementCounter } from 'shared/analytics/occurences'
 import { RootWorldState } from 'shared/world/types'
+import { waitForSelector } from 'lib/redux'
 
 let audioRequestInitialized = false
 
 export function* voiceChatSaga() {
   yield fork(reactToNewVoiceChatHandler)
 
-  yield fork(reactToRecordingRequest)
+  yield takeEvery(REQUEST_VOICE_CHAT_RECORDING, handleRecordingRequest)
 
   yield takeEvery(VOICE_PLAYING_UPDATE, handleUserVoicePlaying)
 
@@ -105,31 +107,25 @@ function* handleConnectVoiceChatToRoom() {
   }
 }
 
-function* reactToRecordingRequest() {
-  let previousRequestedRecording: boolean = false
+const notRecording = (store: RootVoiceChatState) => !store.voiceChat.recording
 
-  while (true) {
-    yield take(REQUEST_VOICE_CHAT_RECORDING)
+function* handleRecordingRequest() {
+  const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
+    getHandleRecordingRequestInfo
+  )) as ReturnType<typeof getHandleRecordingRequestInfo>
 
-    const { requestedRecording, voiceHandler, isAllowedByScene } = (yield select(
-      getHandleRecordingRequestInfo
-    )) as ReturnType<typeof getHandleRecordingRequestInfo>
+  if (voiceHandler) {
+    if (!isAllowedByScene || !requestedRecording) {
 
-    if (previousRequestedRecording !== requestedRecording) {
-      if (voiceHandler) {
-        if (!isAllowedByScene || !requestedRecording) {
-          console.log("JUANI SET RECORDING START false")
-          yield voiceHandler.setRecording(false)
-          console.log("JUANI SET RECORDING END false")
-        } else {
-          console.log("JUANI SET RECORDING START true")
-          yield call(requestUserMediaIfNeeded)
-          console.log("JUANI SET RECORDING MID true")
-          yield voiceHandler.setRecording(true)
-          console.log("JUANI SET RECORDING END true")
-        }
-      }
-      previousRequestedRecording = requestedRecording
+      // Ensure that we're recording, to stop recording
+      yield call(waitForSelector, isVoiceChatRecording)
+      yield call(voiceHandler.setRecording, false)
+    } else {
+      yield call(requestUserMediaIfNeeded)
+
+      // Ensure that we're not recording, when we try to start recording
+      yield call(waitForSelector, notRecording)
+      yield call(voiceHandler.setRecording, true)
     }
   }
 }
