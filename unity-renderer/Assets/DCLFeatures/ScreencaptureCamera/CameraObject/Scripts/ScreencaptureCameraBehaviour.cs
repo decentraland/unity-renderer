@@ -200,15 +200,17 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             lastScreenshotTime = Time.time;
 
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
+            StartCoroutine(screenRecorderLazy.CaptureScreenshot(SkyboxController.i.SkyboxCamera.BaseCamera, OnComplete));
 
-            Texture2D screenshot = screenRecorderLazy.CaptureScreenshot(SkyboxController.i.SkyboxCamera.BaseCamera);
+            void OnComplete(Texture2D screenshot)
+            {
+                screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
+                screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
-            screencaptureCameraHUDController.SetVisibility(true, storageStatus.HasFreeSpace);
-            screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
-
-            var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
-            uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
-            UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
+                var metadata = ScreenshotMetadata.Create(player, avatarsLODController, screenshotCamera);
+                uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
+                UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
+            }
 
             async UniTaskVoid UploadScreenshotAsync(Texture2D screenshot, ScreenshotMetadata metadata, string source, CancellationToken cancellationToken)
             {
