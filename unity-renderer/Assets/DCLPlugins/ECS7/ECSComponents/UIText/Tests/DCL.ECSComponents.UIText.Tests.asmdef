@@ -2,6 +2,7 @@
     "name": "DCL.ECSComponents.UIText.Tests",
     "rootNamespace": "",
     "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:f3eba44237ea4969b29674e332426425",
         "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
         "GUID:97d8897529779cb49bebd400c7f402a6",
@@ -16,7 +17,12 @@
         "GUID:a3ceb534947fac14da25035bc5c24788",
         "GUID:cd4c1c51b9a395144a2550a24a6c496c",
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-        "GUID:1320d33ea2522ba4e8e60cf9e6a351dd"
+        "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
+        "GUID:cdb757fb6f774f549b5eb7bf55043627",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:8796c22c84974ce385f8d79b1ae08e1b",
+        "GUID:bbfa40c83c484c088f526c14256f6adf",
+        "GUID:e65144cdbd5b744238fa03c40df6cd71"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

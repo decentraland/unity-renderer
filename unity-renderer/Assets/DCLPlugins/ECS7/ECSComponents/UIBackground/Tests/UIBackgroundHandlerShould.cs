@@ -1,10 +1,8 @@
 using DCL;
-using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using DCL.UIElements.Structures;
 using Decentraland.Common;
-using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;

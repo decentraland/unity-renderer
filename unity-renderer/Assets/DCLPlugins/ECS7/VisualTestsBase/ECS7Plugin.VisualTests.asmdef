@@ -1,0 +1,42 @@
+{
+    "name": "ECS7Plugin.VisualTests",
+    "rootNamespace": "",
+    "references": [
+      "GUID:f3eba44237ea4969b29674e332426425",
+      "GUID:e65144cdbd5b744238fa03c40df6cd71",
+      "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+      "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+      "GUID:1320d33ea2522ba4e8e60cf9e6a351dd",
+      "GUID:ee6523961ef177343ad763fcd55c7c46",
+      "GUID:e9cee4050cfa5534d9b26e2782df20be",
+      "GUID:8796c22c84974ce385f8d79b1ae08e1b",
+      "GUID:f8a3a0af3ed28474c885e04c605a7962",
+      "GUID:3f9bd7dfada994a3ca114055e53e2c1f",
+      "GUID:a871c50d0a774d2b8594d36cb4766e5e",
+      "GUID:82873c2d9c9cbe94391e6b33e5153865",
+      "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+      "GUID:15fc0a57446b3144c949da3e2b9737a9",
+      "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+      "GUID:c27391cd3f3b5aeb4b4c45372ede8043",
+      "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+      "GUID:bbfa40c83c484c088f526c14256f6adf",
+      "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+      "GUID:97d8897529779cb49bebd400c7f402a6",
+      "GUID:a881b57670b1d2747a6d7f9e32b63230",
+      "GUID:9cccce9925d3495d8a5e4fa5b25f54a5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+      "nunit.framework.dll",
+      "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -36,14 +36,15 @@ namespace DCL.Helpers
         /// <param name="camera">camera used for taking the snapshot</param>
         /// <param name="shotPosition">camera will be placed here.</param>
         /// <param name="shotTarget">camera will point towards here.</param>
-        public static IEnumerator TakeSnapshot(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        /// <param name="useCamera">either use the camera to capture the texture that will be saved or use ScreenCapture.CaptureScreenshot() (UiToolkit/UiElements aren't rendered on the camera)</param>
+        public static IEnumerator TakeSnapshot(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null, bool useCamera = true)
         {
             snapshotName = snapshotName.Replace(".", "_");
-            yield return TakeSnapshotOrTest(snapshotName + "_" + snapshotIndex + ".png", camera, shotPosition, shotTarget);
+            yield return TakeSnapshotOrTest(snapshotName + "_" + snapshotIndex + ".png", camera, shotPosition, shotTarget, useCamera);
             snapshotIndex++;
         }
 
-        private static IEnumerator TakeSnapshotOrBaseline(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        private static IEnumerator TakeSnapshotOrBaseline(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null, bool useCamera = true)
         {
             if (shotPosition.HasValue || shotTarget.HasValue)
             {
@@ -59,11 +60,11 @@ namespace DCL.Helpers
             if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
             {
                 yield return TakeSnapshot(baselineImagesPath, snapshotName, camera,
-                    snapshotsWidth, snapshotsHeight);
+                    snapshotsWidth, snapshotsHeight, useCamera);
             }
             else
             {
-                yield return TakeSnapshot(testImagesPath, snapshotName, camera, snapshotsWidth, snapshotsHeight);
+                yield return TakeSnapshot(testImagesPath, snapshotName, camera, snapshotsWidth, snapshotsHeight, useCamera);
             }
         }
 
@@ -75,9 +76,10 @@ namespace DCL.Helpers
         /// <param name="camera">camera used for taking the snapshot</param>
         /// <param name="shotPosition">camera will be placed here.</param>
         /// <param name="shotTarget">camera will point towards here.</param>
-        private static IEnumerator TakeSnapshotOrTest(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        /// <param name="useCamera">either use the camera to capture the texture that will be saved or use ScreenCapture.CaptureScreenshot() (UiToolkit/UiElements aren't rendered on the camera)</param>
+        private static IEnumerator TakeSnapshotOrTest(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null, bool useCamera = true)
         {
-            yield return TakeSnapshotOrBaseline(snapshotName, camera, shotPosition, shotTarget);
+            yield return TakeSnapshotOrBaseline(snapshotName, camera, shotPosition, shotTarget, useCamera);
 
             TestSnapshot(baselineImagesPath + snapshotName, testImagesPath + snapshotName, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY);
         }
@@ -109,7 +111,7 @@ namespace DCL.Helpers
         /// <param name="width">Width of the final image</param>
         /// <param name="height">Height of the final image</param>
         private static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
-            int height)
+            int height, bool useCamera = true)
         {
             if (string.IsNullOrEmpty(snapshotName) || camera == null)
             {
@@ -133,40 +135,45 @@ namespace DCL.Helpers
             // We should only read the screen buffer after rendering is complete
             yield return null;
 
-            RenderTexture renderTexture = new RenderTexture(width, height, 32, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.sRGB);
-            camera.targetTexture = renderTexture;
-            camera.Render();
-
-            RenderTexture.active = renderTexture;
-            Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGBAFloat, false);
-            currentSnapshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-
-            // Apply Gamma color space
-            var pixels = currentSnapshot.GetPixels();
-            for (int index = 0; index < pixels.Length; index++)
+            if (useCamera)
             {
-                pixels[index] = new Color( Mathf.LinearToGammaSpace(pixels[index].r), Mathf.LinearToGammaSpace(pixels[index].g), Mathf.LinearToGammaSpace(pixels[index].b));
+                RenderTexture renderTexture = new RenderTexture(width, height, 32, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.sRGB);
+                camera.targetTexture = renderTexture;
+                camera.Render();
+
+                RenderTexture.active = renderTexture;
+                Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGBAFloat, false);
+                currentSnapshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+
+                // Apply Gamma color space
+                var pixels = currentSnapshot.GetPixels();
+                for (int index = 0; index < pixels.Length; index++)
+                {
+                   pixels[index] = new Color( Mathf.LinearToGammaSpace(pixels[index].r), Mathf.LinearToGammaSpace(pixels[index].g), Mathf.LinearToGammaSpace(pixels[index].b));
+                }
+
+                currentSnapshot.SetPixels(pixels);
+
+                currentSnapshot.Apply();
+
+                yield return null;
+
+                if (!Directory.Exists(snapshotPath))
+                   Directory.CreateDirectory(snapshotPath);
+
+                byte[] bytes = currentSnapshot.EncodeToPNG();
+                File.WriteAllBytes(finalPath, bytes);
             }
-
-            currentSnapshot.SetPixels(pixels);
-
-            currentSnapshot.Apply();
-
-            yield return null;
-
-            if (!Directory.Exists(snapshotPath))
+            else
             {
-                Directory.CreateDirectory(snapshotPath);
+                ScreenCapture.CaptureScreenshot(finalPath);
             }
-
-            byte[] bytes = currentSnapshot.EncodeToPNG();
-            File.WriteAllBytes(finalPath, bytes);
 
             // Just in case, wait until the file is created
             yield return new DCL.WaitUntil(() => { return File.Exists(finalPath); }, 10f);
 
             RenderTexture.active = null;
-            renderTexture.Release();
+            // renderTexture.Release();
 
             yield return new WaitForSeconds(0.2f);
 

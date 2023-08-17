@@ -139,6 +139,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
         yield return null;
 
         string testName = $"PBRMaterialVisualTests_Emission_AlphaTexture_AlbedoAlpha_{alpha.ToString(CultureInfo.InvariantCulture)}_{emissiveIntensity.ToString(CultureInfo.InvariantCulture)}";
+
         yield return VisualTestUtils.TakeSnapshot(testName, camera);
     }
 

@@ -2,6 +2,7 @@
   "name": "DCL.ECSComponents.UIDropdown.Tests",
   "rootNamespace": "",
   "references": [
+    "GUID:27619889b8ba8c24980f49ee34dbb44a",
     "GUID:f3eba44237ea4969b29674e332426425",
     "GUID:97d8897529779cb49bebd400c7f402a6",
     "GUID:9b110c16a6b8f4d54ae0f56af2163334",
@@ -15,11 +16,15 @@
     "GUID:02760f41040d3ef4c8652916aad15b45",
     "GUID:3c7b57a14671040bd8c549056adc04f5",
     "GUID:acb0f5633d7c47aba96ee6b61c872d94",
-    "GUID:9cccce9925d3495d8a5e4fa5b25f54a5"
+    "GUID:9cccce9925d3495d8a5e4fa5b25f54a5",
+    "GUID:cdb757fb6f774f549b5eb7bf55043627",
+    "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+    "GUID:cd4c1c51b9a395144a2550a24a6c496c",
+    "GUID:8796c22c84974ce385f8d79b1ae08e1b",
+    "GUID:bbfa40c83c484c088f526c14256f6adf",
+    "GUID:e65144cdbd5b744238fa03c40df6cd71"
   ],
-  "includePlatforms": [
-    "Editor"
-  ],
+  "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": true,
