@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.CameraReelService;
@@ -16,6 +17,7 @@ namespace DCLFeatures.CameraReel.Gallery
     {
         private readonly SortedDictionary<DateTime, (GridContainerComponentView gridContainer, GameObject headerContainer)> monthContainers = new ();
         private readonly Dictionary<CameraReelResponse, CameraReelThumbnail> thumbnails = new ();
+        private readonly Dictionary<CameraReelThumbnail, PoolableObject> thumbnailPoolObjects = new ();
         private readonly Dictionary<DateTime, int> thumbnailsByMonth = new ();
         private readonly List<CameraReelThumbnail> thumbnailSortingBuffer = new ();
         private readonly HashSet<GridContainerComponentView> containersToBeSorted = new ();
@@ -62,7 +64,12 @@ namespace DCLFeatures.CameraReel.Gallery
             CameraReelThumbnail thumbnail = thumbnails[reel];
             DateTime month = reel.metadata.GetStartOfTheMonthDate();
 
-            Destroy(thumbnail.gameObject);
+            if (thumbnailPoolObjects.ContainsKey(thumbnail))
+            {
+                thumbnailPoolObjects[thumbnail].Release();
+                thumbnailPoolObjects.Remove(thumbnail);
+            }
+
             thumbnails.Remove(reel);
 
             if (thumbnailsByMonth.ContainsKey(month))
@@ -91,14 +98,19 @@ namespace DCLFeatures.CameraReel.Gallery
 
             GridContainerComponentView gridContainer = GetMonthContainer(month);
 
-            CameraReelThumbnail thumbnail = Instantiate(thumbnailPrefab, gridContainer.transform);
+            Pool thumbnailPool = GetThumbnailEntryPool();
+            PoolableObject thumbnailPoolObj = thumbnailPool.Get();
+            CameraReelThumbnail thumbnail = thumbnailPoolObj.gameObject.GetComponent<CameraReelThumbnail>();
+            thumbnail.transform.SetParent(gridContainer.transform, false);
             thumbnail.Show(reel);
-            thumbnail.OnClicked += () => ScreenshotThumbnailClicked?.Invoke(reel);
+            thumbnail.OnClicked -= OnThumbnailClicked;
+            thumbnail.OnClicked += OnThumbnailClicked;
 
             if (setAsFirst)
                 thumbnail.transform.SetAsFirstSibling();
 
             thumbnails.Add(reel, thumbnail);
+            thumbnailPoolObjects[thumbnail] = thumbnailPoolObj;
 
             if (!thumbnailsByMonth.ContainsKey(month))
                 thumbnailsByMonth[month] = 0;
@@ -119,6 +131,9 @@ namespace DCLFeatures.CameraReel.Gallery
             }
             catch (OperationCanceledException) { }
         }
+
+        private void OnThumbnailClicked(CameraReelResponse picture) =>
+            ScreenshotThumbnailClicked?.Invoke(picture);
 
         private async UniTask SortThumbnailsByDateOnNextFrame(IEnumerable<GridContainerComponentView> containers, CancellationToken cancellationToken)
         {
@@ -204,5 +219,20 @@ namespace DCLFeatures.CameraReel.Gallery
 
         private string GetMonthName(DateTime date) =>
             date.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+
+        private Pool GetThumbnailEntryPool()
+        {
+            var poolId = $"CameraReelThumbnail_{name}_{GetInstanceID()}";
+            var entryPool = PoolManager.i.GetPool(poolId);
+            if (entryPool != null) return entryPool;
+
+            entryPool = PoolManager.i.AddPool(
+                poolId,
+                Instantiate(thumbnailPrefab).gameObject,
+                maxPrewarmCount: 10,
+                isPersistent: true);
+
+            return entryPool;
+        }
     }
 }
