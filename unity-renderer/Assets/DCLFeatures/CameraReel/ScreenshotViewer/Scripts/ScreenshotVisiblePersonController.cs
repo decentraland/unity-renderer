@@ -77,21 +77,28 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             foreach (string wearable in person.wearables)
             {
-                WearableItem wearableItem = await wearablesCatalogService.RequestWearableAsync(wearable, cancellationToken);
-
-                var nftModel = new NFTIconComponentModel
+                try
                 {
-                    name = wearableItem.GetName(),
-                    imageURI = wearableItem.ComposeThumbnailUrl(),
-                    rarity = wearableItem.rarity,
-                    nftInfo = wearableItem.GetNftInfo(),
-                    marketplaceURI = wearableItem.GetMarketplaceLink(),
-                    showMarketplaceButton = true,
-                    showType = false,
-                    type = wearableItem.data.category,
-                };
+                    WearableItem wearableItem = await wearablesCatalogService.RequestWearableAsync(wearable, cancellationToken);
 
-                view.AddWearable(nftModel);
+                    if (wearableItem == null) continue;
+
+                    var nftModel = new NFTIconComponentModel
+                    {
+                        name = wearableItem.GetName(),
+                        imageURI = wearableItem.ComposeThumbnailUrl(),
+                        rarity = wearableItem.rarity,
+                        nftInfo = wearableItem.GetNftInfo(),
+                        marketplaceURI = wearableItem.GetMarketplaceLink(),
+                        showMarketplaceButton = true,
+                        showType = false,
+                        type = wearableItem.data.category,
+                    };
+
+                    view.AddWearable(nftModel);
+                }
+                catch (OperationCanceledException) { break; }
+                catch (Exception e) { Debug.LogException(e); }
             }
         }
 
@@ -101,13 +108,11 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             {
                 UserProfile profile = userProfileBridge.Get(userId)
                                       ?? await userProfileBridge.RequestFullUserProfileAsync(userId, cancellationToken);
+
                 view.SetProfilePicture(profile.face256SnapshotURL);
             }
             catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         private void OnOpenProfileRequested()
