@@ -1,12 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using UnityEngine;
 using UnityEngine.Networking;
 
 public interface IEventsAPIController
@@ -26,6 +24,8 @@ public interface IEventsAPIController
     UniTask RegisterParticipation(string eventId);
 
     UniTask RemoveParticipation(string eventId);
+
+    UniTask GetCategories(Action<List<CategoryFromAPIModel>> onSuccess, Action<string> onFail);
 }
 
 [ExcludeFromCodeCoverage]
@@ -34,6 +34,7 @@ public class EventsAPIController : IEventsAPIController
     internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
     private const string URL_GET_DETAILED_EVENT = "https://events.decentraland.org/api/events/{event_id}";
     private const string URL_PARTICIPATE_EVENT = "https://events.decentraland.org/api/events/{event_id}/attendees";
+    internal const string URL_GET_CATEGORIES = "https://events.decentraland.org/api/events/categories";
 
     internal UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private Service<IWebRequestController> webRequestController;
@@ -79,5 +80,12 @@ public class EventsAPIController : IEventsAPIController
     public async UniTask RemoveParticipation(string eventId)
     {
         await DCL.Environment.i.platform.webRequest.DeleteAsync(URL_PARTICIPATE_EVENT.Replace("{event_id}", eventId), isSigned: true);
+    }
+
+    public async UniTask GetCategories(Action<List<CategoryFromAPIModel>> onSuccess, Action<string> onFail)
+    {
+        UnityWebRequest result = await DCL.Environment.i.platform.webRequest.GetAsync(URL_GET_CATEGORIES);
+        CategoryListFromAPIModel categoriesListFromAPIModel = Utils.SafeFromJson<CategoryListFromAPIModel>(result.downloadHandler.text);
+        onSuccess?.Invoke(categoriesListFromAPIModel.data);
     }
 }

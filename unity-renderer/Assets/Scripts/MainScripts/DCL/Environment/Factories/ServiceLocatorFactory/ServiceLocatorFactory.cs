@@ -16,6 +16,7 @@ using DCLServices.DCLFileBrowser;
 using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
+using DCLServices.EnvironmentProvider;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
@@ -55,6 +56,8 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
+            UnityEnvironmentProviderService environmentProviderService = new UnityEnvironmentProviderService(KernelConfig.i);
+            result.Register<IEnvironmentProviderService>(() => environmentProviderService);
 
             var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
@@ -195,13 +198,10 @@ namespace DCL
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
-
-            var cameraReelService = new CameraReelService(new CameraReelClient(webRequestController));
-            result.Register<ICameraReelGalleryService>(() => cameraReelService);
-            result.Register<IScreenshotCameraService>(() => cameraReelService);
+            result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
 
             // Analytics
-
+            result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
             return result;

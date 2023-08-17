@@ -15,7 +15,10 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new TeleportPromptHUDController(Substitute.For<DataStore>(), Substitute.For<IMinimapApiBridge>(), Substitute.For<RestrictedActionsContext>());
+            controller = new TeleportPromptHUDController(Substitute.For<DataStore>(),
+                Substitute.For<IMinimapApiBridge>(),
+                Substitute.For<RestrictedActionsContext>(),
+                Substitute.For<ITeleportController>());
         }
 
         protected override IEnumerator TearDown()

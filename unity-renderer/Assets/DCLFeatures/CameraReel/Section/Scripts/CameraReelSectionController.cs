@@ -1,94 +1,141 @@
-﻿using DCL;
-using DCL.Helpers;
+﻿using Cysharp.Threading.Tasks;
+using DCL;
+using DCL.Tasks;
 using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
 using DCLServices.CameraReelService;
 using System;
-using Object = UnityEngine.Object;
+using System.Threading;
 
 namespace DCLFeatures.CameraReel.Section
 {
     public class CameraReelSectionController : IDisposable
     {
+        private const int LIMIT = 30;
+
         private readonly CameraReelModel cameraReelModel;
         private readonly CameraReelSectionView sectionView;
-
         private readonly CameraReelGalleryView galleryView;
         private readonly CameraReelGalleryStorageView galleryStorageView;
+        private readonly DataStore dataStore;
+        private readonly ICameraReelStorageService storageService;
+        private readonly Func<ScreenshotViewerController> screenshotViewerControllerFactory;
+        private readonly ICameraReelAnalyticsService analytics;
 
-        private ScreenshotViewerView screenshotViewerView;
         private ScreenshotViewerController screenshotViewerController;
+        private bool isUpdating;
+        private int offset;
+        private CancellationTokenSource fetchScreenshotsCancellationToken;
 
-        private bool firstLoad = true;
-
-        public CameraReelSectionController(CameraReelSectionView sectionView, CameraReelGalleryView galleryView, CameraReelGalleryStorageView galleryStorageView)
+        public CameraReelSectionController(CameraReelSectionView sectionView,
+            CameraReelGalleryView galleryView,
+            CameraReelGalleryStorageView galleryStorageView,
+            DataStore dataStore,
+            ICameraReelStorageService storageService,
+            CameraReelModel cameraReelModel,
+            Func<ScreenshotViewerController> screenshotViewerControllerFactory,
+            ICameraReelAnalyticsService analytics)
         {
-            // Views
             this.sectionView = sectionView;
-
             this.galleryStorageView = galleryStorageView;
+            this.dataStore = dataStore;
+            this.storageService = storageService;
+            this.screenshotViewerControllerFactory = screenshotViewerControllerFactory;
+            this.analytics = analytics;
             this.galleryView = galleryView;
+            this.cameraReelModel = cameraReelModel;
 
-            // Model
-            cameraReelModel = new CameraReelModel();
-        }
+            cameraReelModel.ScreenshotRemoved += OnScreenshotRemoved;
+            cameraReelModel.ScreenshotAdded += OnScreenshotAdded;
+            cameraReelModel.StorageUpdated += OnStorageUpdated;
 
-        public void Initialize()
-        {
-            cameraReelModel.ScreenshotBatchFetched += OnModelScreenshotBatchFetched;
-            cameraReelModel.ScreenshotRemoved += galleryView.DeleteScreenshotThumbnail;
-            cameraReelModel.ScreenshotUploaded += galleryView.AddScreenshotThumbnail;
+            dataStore.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
 
-            DataStore.i.HUDs.cameraReelSectionVisible.OnChange += SwitchGalleryVisibility;
-
-            galleryView.ShowMoreButtonClicked += cameraReelModel.RequestScreenshotsBatchAsync;
+            galleryView.ShowMoreButtonClicked += OnShowMoreClicked;
             galleryView.ScreenshotThumbnailClicked += ShowScreenshotWithMetadata;
         }
 
         public void Dispose()
         {
-            cameraReelModel.ScreenshotBatchFetched -= OnModelScreenshotBatchFetched;
-            cameraReelModel.ScreenshotRemoved -= galleryView.DeleteScreenshotThumbnail;
-            cameraReelModel.ScreenshotUploaded -= galleryView.AddScreenshotThumbnail;
+            cameraReelModel.ScreenshotRemoved -= OnScreenshotRemoved;
+            cameraReelModel.ScreenshotAdded -= OnScreenshotAdded;
+            cameraReelModel.StorageUpdated -= OnStorageUpdated;
 
-            DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
-            galleryView.ShowMoreButtonClicked -= cameraReelModel.RequestScreenshotsBatchAsync;
+            dataStore.HUDs.cameraReelSectionVisible.OnChange -= SwitchGalleryVisibility;
+            galleryView.ShowMoreButtonClicked -= OnShowMoreClicked;
             galleryView.ScreenshotThumbnailClicked -= ShowScreenshotWithMetadata;
-
-            Utils.SafeDestroy(screenshotViewerView);
-        }
-
-        private void OnModelScreenshotBatchFetched(CameraReelResponses reelResponses)
-        {
-            galleryStorageView.UpdateStorageBar(reelResponses.currentImages, reelResponses.maxImages);
-
-            if (firstLoad)
-            {
-                sectionView.ShowGalleryWhenLoaded();
-                firstLoad = false;
-            }
-
-            galleryView.AddScreenshotThumbnails(reelResponses.images);
         }
 
         private void SwitchGalleryVisibility(bool isVisible, bool _)
         {
             sectionView.SwitchVisibility(isVisible);
+            UpdateEmptyStateVisibility();
 
-            if (firstLoad && !cameraReelModel.IsUpdating)
-                cameraReelModel.RequestScreenshotsBatchAsync();
+            if (!isUpdating && isVisible)
+                FetchScreenshots(0);
+
+            string source = dataStore.HUDs.cameraReelOpenSource.Get();
+
+            if (isVisible && !string.IsNullOrEmpty(source))
+                analytics.OpenCameraReel(source);
+        }
+
+        private void OnScreenshotAdded(bool isFirst, CameraReelResponse screenshot)
+        {
+            galleryView.AddScreenshotThumbnail(screenshot, isFirst);
+            UpdateEmptyStateVisibility();
+        }
+
+        private void OnScreenshotRemoved(CameraReelResponse screenshot)
+        {
+            galleryView.DeleteScreenshotThumbnail(screenshot);
+            UpdateEmptyStateVisibility();
         }
 
         private void ShowScreenshotWithMetadata(CameraReelResponse reelResponse)
         {
-            if (screenshotViewerView == null)
+            screenshotViewerController ??= screenshotViewerControllerFactory.Invoke();
+            screenshotViewerController.Show(reelResponse);
+        }
+
+        private void FetchScreenshots(int offset)
+        {
+            async UniTaskVoid FetchScreenshotsAndUpdateUiAsync(int offset, CancellationToken cancellationToken)
             {
-                screenshotViewerView = Object.Instantiate(sectionView.ScreenshotViewerPrefab);
-                screenshotViewerController = new ScreenshotViewerController(screenshotViewerView, cameraReelModel);
-                screenshotViewerController.Initialize();
+                this.offset = offset;
+                isUpdating = true;
+
+                CameraReelResponses screenshots = await storageService.GetScreenshotGallery(
+                    dataStore.player.ownPlayer.Get().id, LIMIT, offset, cancellationToken);
+
+                isUpdating = false;
+                this.offset += LIMIT;
+
+                foreach (CameraReelResponse reel in screenshots.images)
+                    cameraReelModel.AddScreenshotAsLast(reel);
+
+                cameraReelModel.SetStorageStatus(screenshots.currentImages, screenshots.maxImages);
+                sectionView.HideLoading();
+                galleryView.SwitchVisibility(true);
             }
 
-            screenshotViewerController.Show(reelResponse);
+            fetchScreenshotsCancellationToken = fetchScreenshotsCancellationToken.SafeRestart();
+            FetchScreenshotsAndUpdateUiAsync(offset, fetchScreenshotsCancellationToken.Token).Forget();
+        }
+
+        private void UpdateEmptyStateVisibility() =>
+            galleryView.SwitchEmptyStateVisibility(cameraReelModel.LoadedScreenshotCount == 0);
+
+        private void UpdateShowMoreVisibility() =>
+            galleryView.SwitchShowMoreVisibility(cameraReelModel.TotalScreenshotsInStorage > cameraReelModel.LoadedScreenshotCount);
+
+        private void OnShowMoreClicked() =>
+            FetchScreenshots(offset);
+
+        private void OnStorageUpdated(int totalScreenshots, int maxScreenshots)
+        {
+            galleryStorageView.UpdateStorageBar(totalScreenshots, maxScreenshots);
+            UpdateShowMoreVisibility();
         }
     }
 }

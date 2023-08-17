@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using MainScripts.DCL.Controllers.HotScenes;
 using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
@@ -18,8 +17,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 {
     public event Action OnCloseExploreV2;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 5;
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
+    private const string ONLY_POI_FILTER = "only_pois=true";
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
@@ -27,6 +27,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
+    private IReadOnlyList<string> allPointOfInterest;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
@@ -42,7 +44,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
         IPlacesAnalytics placesAnalytics,
-        DataStore dataStore)
+        DataStore dataStore,
+        IUserProfileBridge userProfileBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -53,7 +56,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
-
+        this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -68,6 +71,8 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.exploreV2Analytics = exploreV2Analytics;
         this.placesAnalytics = placesAnalytics;
 
+        this.userProfileBridge = userProfileBridge;
+
         view.ConfigurePools();
     }
 
@@ -80,8 +85,10 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
-        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
+        view.OnFavoriteClicked -= View_OnFavoritesClicked;
+        this.view.OnVoteChanged -= View_OnVoteChanged;
         view.OnPlacesSubSectionEnable -= RequestAllPlaces;
+        view.OnFilterSorterChanged -= RequestAllPlaces;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
 
@@ -90,19 +97,45 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         cardsReloader.Dispose();
     }
 
+    private void View_OnVoteChanged(string placeId, bool? isUpvote)
+    {
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
+        else
+        {
+            if (isUpvote != null)
+            {
+                if (isUpvote.Value)
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                else
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            }
+            else
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+
+            placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
+        }
+    }
+
     private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
     {
-        if(isFavorite)
-            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
-            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+        {
+            if (isFavorite)
+                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
 
-        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+            placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+        }
     }
 
     private void FirstLoading()
     {
         view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        view.OnFilterSorterChanged += RequestAllPlaces;
         cardsReloader.Initialize();
     }
 
@@ -129,18 +162,25 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         try
         {
-            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(ct);
+            if (allPointOfInterest != null)
+                view.SetPOICoords(allPointOfInterest.ToList());
+
+            string filter = view.filter;
+            if (filter == ONLY_POI_FILTER)
+                filter = BuildPointOfInterestFilter();
+
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, filter, view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             placesFromAPI.Clear();
             placesFromAPI.AddRange(firstPage.places);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, filter, view.sort, ct);
                 placesFromAPI.AddRange(secondPage.places);
             }
 
             view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
-
             view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
         }
         catch (OperationCanceledException) { }
@@ -155,7 +195,11 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, showMoreCts.Token);
+        string filter = view.filter;
+        if (filter == ONLY_POI_FILTER)
+            filter = BuildPointOfInterestFilter();
+
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, filter, view.sort, showMoreCts.Token);
 
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
@@ -219,5 +263,22 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             Environment.i.world.teleportController.Teleport(position.x, position.y);
         else
             Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
+    }
+
+    private string BuildPointOfInterestFilter()
+    {
+        string resultFilter = string.Empty;
+
+        if (allPointOfInterest == null)
+            return resultFilter;
+
+        foreach (string poi in allPointOfInterest)
+        {
+            string x = poi.Split(",")[0];
+            string y = poi.Split(",")[1];
+            resultFilter = string.Concat(resultFilter, $"&positions={x},{y}");
+        }
+
+        return resultFilter;
     }
 }

@@ -28,27 +28,24 @@ public class EventsSubSectionComponentViewTests
     {
         eventsSubSectionComponent.featuredEvents.ExtractItems();
         eventsSubSectionComponent.featuredEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.trendingEvents.ExtractItems();
-        eventsSubSectionComponent.trendingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.upcomingEvents.ExtractItems();
-        eventsSubSectionComponent.upcomingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.goingEvents.ExtractItems();
-        eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
+        eventsSubSectionComponent.eventsGrid.ExtractItems();
+        eventsSubSectionComponent.eventCardsPool.ReleaseAll();
         eventsSubSectionComponent.Dispose();
 
         Destroy(testTexture);
         Destroy(testSprite);
-        
+
         if(eventsSubSectionComponent.eventModal!=null)
             Destroy(eventsSubSectionComponent.eventModal.gameObject);
-        
+
         Destroy(eventsSubSectionComponent.gameObject);
     }
-    
+
     [Test]
     public void ShowEventModalCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         EventCardComponentModel testEventInfo = ExploreEventsTestHelpers.CreateTestEvent("1", testSprite);
 
         // Act
@@ -65,13 +62,13 @@ public class EventsSubSectionComponentViewTests
     public void SetShowMorePlacesButtonActiveCorrectly(bool isVisible)
     {
         // Arrange
-        eventsSubSectionComponent.showMoreUpcomingEventsButtonContainer.gameObject.SetActive(!isVisible);
+        eventsSubSectionComponent.showMoreEventsButtonContainer.gameObject.SetActive(!isVisible);
 
         // Act
-        eventsSubSectionComponent.SetShowMoreUpcomingEventsButtonActive(isVisible);
+        eventsSubSectionComponent.SetShowMoreEventsButtonActive(isVisible);
 
         // Assert
-        Assert.AreEqual(isVisible, eventsSubSectionComponent.showMoreUpcomingEventsButtonContainer.gameObject.activeSelf);
+        Assert.AreEqual(isVisible, eventsSubSectionComponent.showMoreEventsButtonContainer.gameObject.activeSelf);
     }
 
     [Test]
@@ -91,18 +88,8 @@ public class EventsSubSectionComponentViewTests
 
     [TestCase(true)]
     [TestCase(false)]
-    public void SetTrendingEventsAsLoadingCorrectly(bool isVisible) =>
-        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.trendingEvents.gameObject, eventsSubSectionComponent.trendingEventsLoading, eventsSubSectionComponent.trendingEventsNoDataText.gameObject);
-
-    [TestCase(true)]
-    [TestCase(false)]
     public void SetUpcomingEventsAsLoadingCorrectly(bool isVisible) =>
-        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.upcomingEvents.gameObject, eventsSubSectionComponent.upcomingEventsLoading, eventsSubSectionComponent.upcomingEventsNoDataText.gameObject);
-
-    [TestCase(true)]
-    [TestCase(false)]
-    public void SetGoingEventsAsLoadingCorrectly(bool isVisible) =>
-        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.goingEvents.gameObject, eventsSubSectionComponent.goingEventsLoading, eventsSubSectionComponent.goingEventsNoDataText.gameObject);
+        SetEventsAsLoadingCorrectly(isVisible, eventsSubSectionComponent.eventsGrid.gameObject, eventsSubSectionComponent.eventsLoading, eventsSubSectionComponent.eventsNoDataContainer.gameObject);
 
     private void SetEventsAsLoadingCorrectly(bool isVisible, GameObject events, GameObject loadingBar, GameObject NoDataText = null)
     {
@@ -127,18 +114,18 @@ public class EventsSubSectionComponentViewTests
     public IEnumerator AddUpcomingEventsCorrectly()
     {
         // Arrange
-        eventsSubSectionComponent.upcomingEvents.RemoveItems();
+        eventsSubSectionComponent.eventsGrid.RemoveItems();
         eventsSubSectionComponent.gameObject.SetActive(false); // hack needed for fix error "Invalid AABB inAABB" Canvas.SendWillRenderCanvases failed on tests (happens only in the tests)
         List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
-        eventsSubSectionComponent.AddUpcomingEvents(testEvents);
+        eventsSubSectionComponent.AddEvents(testEvents);
         yield return null;
 
         // Assert
-        Assert.AreEqual(2, eventsSubSectionComponent.upcomingEvents.instantiatedItems.Count, "The number of set events does not match.");
-        Assert.IsTrue(eventsSubSectionComponent.upcomingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[0]), "The event 1 is not contained in the places grid");
-        Assert.IsTrue(eventsSubSectionComponent.upcomingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[1]), "The event 2 is not contained in the places grid");
+        Assert.AreEqual(2, eventsSubSectionComponent.eventsGrid.instantiatedItems.Count, "The number of set events does not match.");
+        Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[0]), "The event 1 is not contained in the places grid");
+        Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[1]), "The event 2 is not contained in the places grid");
     }
 
     [UnityTest]
@@ -160,24 +147,6 @@ public class EventsSubSectionComponentViewTests
     }
 
     [UnityTest]
-    public IEnumerator SetTrendingEventsCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.gameObject.SetActive(false); // hack needed for fix error "Invalid AABB inAABB" Canvas.SendWillRenderCanvases failed on tests (happens only in the tests)
-        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
-
-        // Act
-        eventsSubSectionComponent.SetTrendingEvents(testEvents);
-        yield return null;
-
-        // Assert
-        Assert.AreEqual(2, eventsSubSectionComponent.trendingEvents.instantiatedItems.Count, "The number of set events does not match.");
-        Assert.IsTrue(eventsSubSectionComponent.trendingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[0]), "The event 1 is not contained in the places grid");
-        Assert.IsTrue(eventsSubSectionComponent.trendingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[1]), "The event 2 is not contained in the places grid");
-        Assert.IsFalse(eventsSubSectionComponent.trendingEventsNoDataText.gameObject.activeSelf, "The trendingEventsNoDataText should be visible.");
-    }
-
-    [UnityTest]
     public IEnumerator SetUpcomingEventsCorrectly()
     {
         // Arrange
@@ -185,31 +154,13 @@ public class EventsSubSectionComponentViewTests
         List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
 
         // Act
-        eventsSubSectionComponent.SetUpcomingEvents(testEvents);
+        eventsSubSectionComponent.SetEvents(testEvents);
         yield return null;
 
         // Assert
-        Assert.AreEqual(2, eventsSubSectionComponent.upcomingEvents.instantiatedItems.Count, "The number of set events does not match.");
-        Assert.IsTrue(eventsSubSectionComponent.upcomingEvents.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[0]), "The event 1 is not contained in the places grid");
-        Assert.IsTrue(eventsSubSectionComponent.upcomingEvents.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[1]), "The event 2 is not contained in the places grid");
-        Assert.IsFalse(eventsSubSectionComponent.upcomingEventsNoDataText.gameObject.activeSelf, "The upcomingEventsNoDataText should be visible.");
-    }
-
-    [UnityTest]
-    public IEnumerator SetGoingEventsCorrectly()
-    {
-        // Arrange
-        eventsSubSectionComponent.gameObject.SetActive(false); // hack needed for fix error "Invalid AABB inAABB" Canvas.SendWillRenderCanvases failed on tests (happens only in the tests)
-        List<EventCardComponentModel> testEvents = ExploreEventsTestHelpers.CreateTestEvents(testSprite);
-
-        // Act
-        eventsSubSectionComponent.SetGoingEvents(testEvents);
-        yield return null;
-
-        // Assert
-        Assert.AreEqual(2, eventsSubSectionComponent.goingEvents.instantiatedItems.Count, "The number of set events does not match.");
-        Assert.IsTrue(eventsSubSectionComponent.goingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[0]), "The event 1 is not contained in the places grid");
-        Assert.IsTrue(eventsSubSectionComponent.goingEvents.instantiatedItems.Any(x => (x as EventCardComponentView).model == testEvents[1]), "The event 2 is not contained in the places grid");
-        Assert.IsFalse(eventsSubSectionComponent.goingEventsNoDataText.gameObject.activeSelf, "The goingEventsNoDataText should be visible.");
+        Assert.AreEqual(2, eventsSubSectionComponent.eventsGrid.instantiatedItems.Count, "The number of set events does not match.");
+        Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[0]), "The event 1 is not contained in the places grid");
+        Assert.IsTrue(eventsSubSectionComponent.eventsGrid.instantiatedItems.Any(x => (x as EventCardComponentView)?.model == testEvents[1]), "The event 2 is not contained in the places grid");
+        Assert.IsFalse(eventsSubSectionComponent.eventsNoDataContainer.activeSelf, "The upcomingEventsNoDataText should be visible.");
     }
 }

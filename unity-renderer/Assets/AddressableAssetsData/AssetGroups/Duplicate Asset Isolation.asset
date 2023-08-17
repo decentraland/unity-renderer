@@ -649,10 +649,6 @@ MonoBehaviour:
     m_Address: WalletConnectLogo
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 87a25a674771b42209ef0ae9b6b6bce7
-    m_Address: CameraIconSmall
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: b22119773231a487caa76e1b94ae9af5
     m_Address: SliderHightlightWhite
     m_ReadOnly: 0
