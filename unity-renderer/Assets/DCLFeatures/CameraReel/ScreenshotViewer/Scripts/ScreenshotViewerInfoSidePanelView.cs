@@ -1,4 +1,5 @@
-﻿using DCLServices.CameraReelService;
+﻿using DCL;
+using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +12,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
     public class ScreenshotViewerInfoSidePanelView : MonoBehaviour
     {
-        private readonly List<GameObject> profiles = new ();
+        private readonly Dictionary<ScreenshotVisiblePersonView, PoolableObject> profiles = new ();
 
         [Header("INFORMATION PANEL")]
         [SerializeField] private Button infoPanelTextButton;
@@ -59,17 +60,17 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         public void ShowVisiblePersons(VisiblePerson[] visiblePeople)
         {
-            foreach (GameObject profileGameObject in profiles)
-                Destroy(profileGameObject);
+            ClearCurrentProfiles();
 
-            profiles.Clear();
+            Pool profilePool = GetProfileEntryPool();
 
             foreach (VisiblePerson visiblePerson in visiblePeople.OrderBy(person => person.isGuest)
                                                                  .ThenByDescending(person => person.wearables.Length))
             {
-                ScreenshotVisiblePersonView profileEntry = Instantiate(profileEntryTemplate, profileGridContainer);
-
-                profiles.Add(profileEntry.gameObject);
+                PoolableObject poolObj = profilePool.Get();
+                ScreenshotVisiblePersonView profileEntry = poolObj.gameObject.GetComponent<ScreenshotVisiblePersonView>();
+                profileEntry.transform.SetParent(profileGridContainer, false);
+                profiles[profileEntry] = poolObj;
                 profileEntry.Configure(visiblePerson);
                 profileEntry.gameObject.SetActive(true);
             }
@@ -79,6 +80,29 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         {
             photoOwnerNameLabel.text = userName;
             photoOwnerAvatarPicture.SetImage(avatarPictureUrl);
+        }
+
+        private void ClearCurrentProfiles()
+        {
+            foreach ((_, PoolableObject poolObj) in profiles)
+                poolObj.Release();
+
+            profiles.Clear();
+        }
+
+        private Pool GetProfileEntryPool()
+        {
+            var poolId = $"PictureDetailProfile_{name}_{GetInstanceID()}";
+            var entryPool = PoolManager.i.GetPool(poolId);
+            if (entryPool != null) return entryPool;
+
+            entryPool = PoolManager.i.AddPool(
+                poolId,
+                Instantiate(profileEntryTemplate).gameObject,
+                maxPrewarmCount: 10,
+                isPersistent: true);
+
+            return entryPool;
         }
     }
 }

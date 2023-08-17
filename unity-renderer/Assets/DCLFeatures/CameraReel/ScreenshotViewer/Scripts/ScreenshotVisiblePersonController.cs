@@ -65,6 +65,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             updateProfileIconCancellationToken = updateProfileIconCancellationToken.SafeRestart();
             UpdateProfileIcon(person.userAddress, updateProfileIconCancellationToken.Token).Forget();
             view.SetGuestMode(person.isGuest);
+            view.ClearWearables();
 
             if (!person.isGuest && person.wearables.Length > 0)
             {

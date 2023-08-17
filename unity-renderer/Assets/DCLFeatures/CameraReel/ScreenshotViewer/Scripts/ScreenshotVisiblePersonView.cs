@@ -1,6 +1,7 @@
+using DCL;
 using DCLServices.CameraReelService;
 using System;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +18,13 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         [SerializeField] private Button userNameButton;
         [SerializeField] private Image dropdownArrow;
         [SerializeField] private Sprite arrowUp;
-        [SerializeField] private TMP_Text userNameText;
 
         [Header("WEARABLES")]
         [SerializeField] private NFTIconComponentView wearableTemplate;
         [SerializeField] private Transform wearablesListContainer;
         [SerializeField] private GameObject emptyWearablesListMessage;
+
+        private readonly Dictionary<NFTIconComponentView, PoolableObject> wearables = new ();
 
         private Sprite arrowDown;
         private bool isShowingWearablesList;
@@ -56,15 +58,29 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             OnConfigureRequested?.Invoke(visiblePerson);
         }
 
+        public void ClearWearables()
+        {
+            foreach ((NFTIconComponentView _, PoolableObject poolObj) in wearables)
+                poolObj.Release();
+
+            wearables.Clear();
+        }
+
         public void AddWearable(NFTIconComponentModel nftModel)
         {
             wearablesListContainer.gameObject.SetActive(false);
             hasWearables = true;
 
-            NFTIconComponentView wearableEntry = Instantiate(wearableTemplate, wearablesListContainer);
+            Pool wearablePool = GetWearableEntryPool();
+            PoolableObject poolObj = wearablePool.Get();
+            NFTIconComponentView wearableEntry = poolObj.gameObject.GetComponent<NFTIconComponentView>();
+            wearableEntry.transform.SetParent(wearablesListContainer, false);
             wearableEntry.Configure(nftModel);
-            wearableEntry.GetComponent<Button>().onClick.AddListener(() => OnOpenWearableMarketplaceRequested?.Invoke(nftModel));
+            Button equipButton = wearableEntry.GetComponent<Button>();
+            equipButton.onClick.RemoveAllListeners();
+            equipButton.onClick.AddListener(() => OnOpenWearableMarketplaceRequested?.Invoke(nftModel));
             wearableEntry.gameObject.SetActive(true);
+            wearables[wearableEntry] = poolObj;
         }
 
         public void SetProfileName(string userName)
@@ -99,6 +115,21 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
                 emptyWearablesListMessage.SetActive(isShowingWearablesList);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+        }
+
+        private Pool GetWearableEntryPool()
+        {
+            var poolId = "CameraReelPictureDetailProfileWearables";
+            var entryPool = PoolManager.i.GetPool(poolId);
+            if (entryPool != null) return entryPool;
+
+            entryPool = PoolManager.i.AddPool(
+                poolId,
+                Instantiate(wearableTemplate).gameObject,
+                maxPrewarmCount: 10,
+                isPersistent: true);
+
+            return entryPool;
         }
     }
 }
