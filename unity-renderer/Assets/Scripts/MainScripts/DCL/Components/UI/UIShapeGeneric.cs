@@ -66,19 +66,10 @@ namespace DCL.Components
             bool isInsideSceneBounds = this.scene.IsInsideSceneBoundaries(dataStorePlayer.playerGridPosition.Get());
 
             // We hide the component visibility when it's not inside the scene bounds and it's not a child of another UI component
-
-            // FD:: This is a hacky way to hide the component visibility when it's not inside the scene bounds and it's not a child of another UI component
-            // but this triggers a wider refresh of all UIShape components and makes the spike in the Profiler.
-            // if (!isInsideSceneBounds && referencesContainer.transform.parent == null)
-            //     referencesContainer.SetVisibility(visible: false);
-            // else if (isInsideSceneBounds && referencesContainer.transform.parent == null)
-            //     referencesContainer.SetVisibility(model.visible, model.opacity);
-
-
-            // FD:: This should be the "Normal" flow, but it's not working properly, so we were using the hacky above (commented) code.
+            // The root UIShape object should always be UIScreenSpaceReferencesContainer, so we check for that
             if (firstApplyChangesCall)
                 referencesContainer.SetVisibility(visible: false);
-            else
+            else if (referencesContainer is not UIScreenSpaceReferencesContainer)
                 referencesContainer.SetVisibility(model.visible, model.opacity);
 
 

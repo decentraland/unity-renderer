@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DCL.Interface;
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine.Serialization;
 
@@ -59,12 +60,28 @@ namespace DCL.Components
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetVisibility(bool visible, float opacity = 1f)
         {
-            if (canvasGroup != null)
+            // if (gameObject.name.ToLower().Contains("screenspace"))
+            // {
+            //     Debug.Log("FD:: SetVisibility " + gameObject.name + "visible " + visible + " " + opacity);
+            // }
+            if (canvasGroup != null && Math.Abs(canvasGroup.alpha - (visible ? opacity : 0)) > 0.1f)
                 canvasGroup.alpha = visible ? opacity : 0;
+                // owner.ScheduleAlphaChange(this, visible ? opacity : 0); // FD:: test the scheduler in the right way
         }
 
+        public void SetVisibilityInstant(bool visible, float opacity = 1f)
+        {
+            // if (Math.Abs(canvasGroup.alpha - (visible ? opacity : 0)) > 0.1f && canvasGroup != null)
+            //     canvasGroup.alpha = visible ? opacity : 0;
+            if (canvasGroup != null)
+                owner.ScheduleAlphaChange(this, visible ? opacity : 0, true); // FD:: test the scheduler in the right way
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetBlockRaycast(bool isPointerBlocker)
         {
             if (canvasGroup != null)

@@ -136,7 +136,7 @@ namespace DCL.Components
             referencesContainer.paddingLayoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
             referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
 
-            MarkLayoutDirty(); // FD:: This fixed the Wondermine UI bug
+            MarkLayoutDirty(); // FD:: This fixed the Wondermine UI appearing wrongly. Check if it's steel needed after the latest changes
             // Utils.ForceRebuildLayoutImmediate(parentRecTransform); // FD:: this made the Wondermine UI appearing wrongly
         }
 

@@ -18,7 +18,7 @@ namespace DCL.Components
         private int batchSize; // How many alpha changes to process in a batch
         private int framesBetweenBatches; // How many frames to wait between batches
 
-        public UIShapeScheduler(int batchSize = 50, int framesBetweenBatches = 1)
+        public UIShapeScheduler(int batchSize = 100, int framesBetweenBatches = 1)
         {
             this.batchSize = batchSize;
             this.framesBetweenBatches = framesBetweenBatches;
