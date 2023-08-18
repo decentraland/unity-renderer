@@ -331,6 +331,7 @@ MonoBehaviour:
   placeDescText: {fileID: 0}
   placeAuthorOnIdleText: {fileID: 7544269963899785199}
   placeAuthorOnFocusText: {fileID: 7976896817663832654}
+  userVisitsAndRatingContainer: {fileID: 7395819973884427487}
   userVisitsText: {fileID: 2941433744369225119}
   userRatingIcon: {fileID: 7938194878604370652}
   userRatingText: {fileID: 1591632374566363125}
@@ -381,7 +382,6 @@ MonoBehaviour:
     isUpvote: 0
     isDownvote: 0
     totalVotes: 0
-    userRating: 0
     numberOfFavorites: 0
     deployedAt: 
     isPOI: 0
