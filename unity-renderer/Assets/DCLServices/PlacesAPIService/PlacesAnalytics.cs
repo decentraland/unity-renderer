@@ -12,11 +12,25 @@ namespace DCLServices.PlacesAPIService
             FromNavmap
         }
 
+        public enum FilterType
+        {
+            PointOfInterest,
+            Featured
+        }
+
+        public enum SortingType
+        {
+            MostActive,
+            Best
+        }
+
         void AddFavorite(string placeUUID, ActionSource source);
         void RemoveFavorite(string placeUUID, ActionSource source);
         void Like(string placeUUID, IPlacesAnalytics.ActionSource source);
         void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source);
         void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source);
+        void Filter(FilterType filterType);
+        void Sort(IPlacesAnalytics.SortingType sortingType);
     }
 
     public class PlacesAnalytics : IPlacesAnalytics
@@ -26,6 +40,8 @@ namespace DCLServices.PlacesAPIService
         private const string LIKE_PLACE = "player_like_place";
         private const string DISLIKE_PLACE = "player_dislike_place";
         private const string REMOVE_VOTE_PLACE = "player_remove_vote_place";
+        private const string FILTER_PLACES = "player_filter_places";
+        private const string SORT_PLACES = "player_sort_places";
 
         public void AddFavorite(string placeUUID, IPlacesAnalytics.ActionSource source)
         {
@@ -75,6 +91,24 @@ namespace DCLServices.PlacesAPIService
                 ["source"] = source.ToString()
             };
             GenericAnalytics.SendAnalytic(REMOVE_VOTE_PLACE, data);
+        }
+
+        public void Filter(IPlacesAnalytics.FilterType filterType)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = filterType.ToString()
+            };
+            GenericAnalytics.SendAnalytic(FILTER_PLACES, data);
+        }
+
+        public void Sort(IPlacesAnalytics.SortingType sortingType)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = sortingType.ToString()
+            };
+            GenericAnalytics.SendAnalytic(SORT_PLACES, data);
         }
     }
 }

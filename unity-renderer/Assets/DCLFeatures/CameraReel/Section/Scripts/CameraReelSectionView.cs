@@ -1,6 +1,5 @@
 using DCLFeatures.CameraReel.Gallery;
 using DCLFeatures.CameraReel.ScreenshotViewer;
-using System;
 using UnityEngine;
 
 namespace DCLFeatures.CameraReel.Section
@@ -20,6 +19,7 @@ namespace DCLFeatures.CameraReel.Section
         public void HideLoading()
         {
             loadingSpinner.SetActive(false);
+            GalleryStorageView.Show();
         }
     }
 }

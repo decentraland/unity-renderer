@@ -9,22 +9,22 @@ namespace DCL.ExperiencesViewer
         /// <summary>
         /// It will be triggered when the close button is clicked.
         /// </summary>
-        event Action onCloseButtonPressed;
+        event Action OnCloseButtonPressed;
 
         /// <summary>
         /// It will be triggered when the UI visibility of some experience changes.
         /// </summary>
-        event Action<string, bool> onSomeExperienceUIVisibilityChanged;
+        event Action<string, bool> OnExperienceUiVisibilityChanged;
 
         /// <summary>
         /// It will be triggered when the execution of some experience changes.
         /// </summary>
-        event Action<string, bool> onSomeExperienceExecutionChanged;
+        event Action<string, bool> OnExperienceExecutionChanged;
 
         /// <summary>
         /// It represents the container transform of the component.
         /// </summary>
-        Transform experienceViewerTransform { get; }
+        Transform ExperienceViewerTransform { get; }
 
         /// <summary>
         /// Set the available experiences component with a list of experiences.
