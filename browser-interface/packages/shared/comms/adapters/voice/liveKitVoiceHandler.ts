@@ -140,15 +140,18 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
   logger.log('initialized')
 
   return {
-    setRecording(recording) {
-      room.localParticipant
-        .setMicrophoneEnabled(recording)
-        .then(() => {
-          if (recordingListener) {
-            recordingListener(recording)
-          }
-        })
-        .catch((err) => logger.error('Error: ', err, ', recording=', recording))
+    async setRecording(recording) {
+      try {
+        await room.localParticipant.setMicrophoneEnabled(recording)
+        if (recordingListener) {
+          recordingListener(recording)
+        }
+      } catch(err) {
+        logger.error('Error: ', err, ', recording=', recording)
+        if (recordingListener) {
+          recordingListener(false)
+        }
+      }
     },
     onUserTalking(cb) {
       onUserTalkingCallback = cb

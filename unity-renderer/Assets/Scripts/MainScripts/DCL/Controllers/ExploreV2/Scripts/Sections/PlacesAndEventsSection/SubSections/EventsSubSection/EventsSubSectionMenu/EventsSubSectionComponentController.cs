@@ -77,7 +77,10 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnShowMoreEventsClicked -= ShowMoreEvents;
         view.OnEventsSubSectionEnable -= RequestAllEvents;
-        view.OnFiltersChanged -= LoadFilteredEvents;
+        view.OnEventTypeFiltersChanged -= ApplyEventTypeFilters;
+        view.OnEventFrequencyFilterChanged -= ApplyEventFrequencyFilter;
+        view.OnEventCategoryFilterChanged -= ApplyEventCategoryFilter;
+        view.OnEventTimeFilterChanged -= ApplyEventTimeFilter;
         view.OnConnectWallet -= ConnectWallet;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
@@ -88,12 +91,17 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnEventsSubSectionEnable += RequestAllEvents;
-        view.OnFiltersChanged += LoadFilteredEvents;
+        view.OnEventTypeFiltersChanged += ApplyEventTypeFilters;
+        view.OnEventFrequencyFilterChanged += ApplyEventFrequencyFilter;
+        view.OnEventCategoryFilterChanged += ApplyEventCategoryFilter;
+        view.OnEventTimeFilterChanged += ApplyEventTimeFilter;
         cardsReloader.Initialize();
     }
 
     internal void RequestAllEvents()
     {
+        exploreV2Analytics.SendEventsTabOpen();
+
         view.SetIsGuestUser(userProfileBridge.GetOwn().isGuest);
         if (cardsReloader.CanReload())
         {
@@ -117,6 +125,42 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
         LoadFilteredEvents();
         RequestAndLoadCategories();
+    }
+
+    private void ApplyEventTypeFilters()
+    {
+        switch (view.SelectedEventType)
+        {
+            case EventsType.Featured:
+                exploreV2Analytics.SendFilterEvents(FilterType.Featured);
+                break;
+            case EventsType.Trending:
+                exploreV2Analytics.SendFilterEvents(FilterType.Trending);
+                break;
+            case EventsType.WantToGo:
+                exploreV2Analytics.SendFilterEvents(FilterType.WantToGo);
+                break;
+        }
+
+        LoadFilteredEvents();
+    }
+
+    private void ApplyEventFrequencyFilter()
+    {
+        exploreV2Analytics.SendFilterEvents(FilterType.Frequency, view.SelectedFrequency);
+        LoadFilteredEvents();
+    }
+
+    private void ApplyEventCategoryFilter()
+    {
+        exploreV2Analytics.SendFilterEvents(FilterType.Category, view.SelectedCategory);
+        LoadFilteredEvents();
+    }
+
+    private void ApplyEventTimeFilter()
+    {
+        exploreV2Analytics.SendFilterEvents(FilterType.Time);
+        LoadFilteredEvents();
     }
 
     private void LoadFilteredEvents()

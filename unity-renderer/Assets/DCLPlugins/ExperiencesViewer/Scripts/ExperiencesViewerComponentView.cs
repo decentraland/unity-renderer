@@ -12,7 +12,7 @@ namespace DCL.ExperiencesViewer
     {
         private const int EXPERIENCES_POOL_PREWARM = 10;
         private const float UI_HIDDEN_TOAST_SHOWING_TIME = 2f;
-        internal const string EXPERIENCES_POOL_NAME = "ExperiencesViewer_ExperienceRowsPool";
+        private const string EXPERIENCES_POOL_NAME = "ExperiencesViewer_ExperienceRowsPool";
 
         [Header("Assets References")]
         [SerializeField] internal ExperienceRowComponentView experienceRowPrefab;
@@ -23,25 +23,33 @@ namespace DCL.ExperiencesViewer
         [SerializeField] internal ShowHideAnimator toastAnimator;
         [SerializeField] internal TMP_Text toastLabel;
 
+        private Pool experiencesPool;
+        private Coroutine toastRoutine;
+
         public Color rowsBackgroundColor;
         public Color rowsOnHoverColor;
 
-        public event Action onCloseButtonPressed;
-        public event Action<string, bool> onSomeExperienceUIVisibilityChanged;
-        public event Action<string, bool> onSomeExperienceExecutionChanged;
+        public event Action OnCloseButtonPressed;
+        public event Action<string, bool> OnExperienceUiVisibilityChanged;
+        public event Action<string, bool> OnExperienceExecutionChanged;
 
-        internal Pool experiencesPool;
-        internal Coroutine toastRoutine;
+        public Transform ExperienceViewerTransform => transform;
 
-        public Transform experienceViewerTransform => transform;
+        public static ExperiencesViewerComponentView Create()
+        {
+            ExperiencesViewerComponentView experiencesViewerComponentView = Instantiate(Resources.Load<GameObject>("ExperiencesViewer")).GetComponent<ExperiencesViewerComponentView>();
+            experiencesViewerComponentView.name = "_ExperiencesViewer";
+
+            return experiencesViewerComponentView;
+        }
 
         public override void Awake()
         {
             base.Awake();
 
-            closeButton.onClick.AddListener(() => onCloseButtonPressed?.Invoke());
+            closeButton.onClick.AddListener(() => OnCloseButtonPressed?.Invoke());
 
-            ConfigurePEXPool();
+            ConfigurePool();
         }
 
         public override void RefreshControl()
@@ -162,29 +170,25 @@ namespace DCL.ExperiencesViewer
             closeButton.onClick.RemoveAllListeners();
         }
 
-        internal void OnSomeExperienceUIVisibilityChanged(string pexId, bool isUIVisible)
-        {
-            onSomeExperienceUIVisibilityChanged?.Invoke(pexId, isUIVisible);
-        }
+        private void OnSomeExperienceUIVisibilityChanged(string pexId, bool isUIVisible) =>
+            OnExperienceUiVisibilityChanged?.Invoke(pexId, isUIVisible);
 
-        internal void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying)
-        {
-            onSomeExperienceExecutionChanged?.Invoke(pexId, isPlaying);
-        }
+        private void OnSomeExperienceExecutionChanged(string pexId, bool isPlaying) =>
+            OnExperienceExecutionChanged?.Invoke(pexId, isPlaying);
 
-        internal void ConfigurePEXPool()
+        private void ConfigurePool()
         {
             experiencesPool = PoolManager.i.GetPool(EXPERIENCES_POOL_NAME);
-            if (experiencesPool == null)
-            {
-                experiencesPool = PoolManager.i.AddPool(
-                    EXPERIENCES_POOL_NAME,
-                    Instantiate(experienceRowPrefab).gameObject,
-                    maxPrewarmCount: EXPERIENCES_POOL_PREWARM,
-                    isPersistent: true);
 
-                experiencesPool.ForcePrewarm();
-            }
+            if (experiencesPool != null) return;
+
+            experiencesPool = PoolManager.i.AddPool(
+                EXPERIENCES_POOL_NAME,
+                Instantiate(experienceRowPrefab).gameObject,
+                maxPrewarmCount: EXPERIENCES_POOL_PREWARM,
+                isPersistent: true);
+
+            experiencesPool.ForcePrewarm();
         }
 
         private IEnumerator ShowToastRoutine()
@@ -192,14 +196,6 @@ namespace DCL.ExperiencesViewer
             toastAnimator.Show();
             yield return new WaitForSeconds(UI_HIDDEN_TOAST_SHOWING_TIME);
             toastAnimator.Hide();
-        }
-
-        internal static ExperiencesViewerComponentView Create()
-        {
-            ExperiencesViewerComponentView experiencesViewerComponentView = Instantiate(Resources.Load<GameObject>("ExperiencesViewer")).GetComponent<ExperiencesViewerComponentView>();
-            experiencesViewerComponentView.name = "_ExperiencesViewer";
-
-            return experiencesViewerComponentView;
         }
     }
 }
