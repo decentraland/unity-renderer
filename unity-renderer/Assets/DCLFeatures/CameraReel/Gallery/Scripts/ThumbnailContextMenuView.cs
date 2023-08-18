@@ -1,14 +1,14 @@
+using DCL.Helpers;
 using DCLServices.CameraReelService;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using UIComponents.ContextMenu;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
-    public class ThumbnailContextMenuView : MonoBehaviour, IThumbnailContextMenuView
+    [RequireComponent(typeof(RectTransform))]
+    public class ThumbnailContextMenuView : ContextMenuComponentView, IThumbnailContextMenuView
     {
         public static readonly BaseList<ThumbnailContextMenuView> Instances = new ();
 
@@ -24,23 +24,37 @@ namespace DCLFeatures.CameraReel.Gallery
         public event Action OnShareToTwitterRequested;
         public event Action<CameraReelResponse> OnSetup;
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
+
+            HidingHierarchyTransforms = new[]
+            {
+                transform,
+                downloadButton.transform,
+                deleteButton.transform,
+                copyLinkButton.transform,
+                shareToTwitterButton.transform,
+            };
+
             downloadButton.onClick.AddListener(() =>
             {
                 OnDownloadRequested?.Invoke();
                 Hide();
             });
+
             deleteButton.onClick.AddListener(() =>
             {
                 OnDeletePictureRequested?.Invoke();
                 Hide();
             });
+
             copyLinkButton.onClick.AddListener(() =>
             {
                 OnCopyPictureLinkRequested?.Invoke();
                 Hide();
             });
+
             shareToTwitterButton.onClick.AddListener(() =>
             {
                 OnShareToTwitterRequested?.Invoke();
@@ -55,43 +69,26 @@ namespace DCLFeatures.CameraReel.Gallery
             Instances.Remove(this);
         }
 
-        private void Update()
-        {
-            HideIfClickedOutside();
-        }
+        public override void RefreshControl() { }
 
         public void Show(CameraReelResponse picture)
         {
             gameObject.SetActive(true);
+            Show(transform.position, instant: true);
             OnSetup?.Invoke(picture);
         }
 
-        public void Dispose()
+        public override void Hide(bool instant = false)
         {
-            if (selfDestroy)
-                Destroy(gameObject);
+            base.Hide(instant);
+
+            gameObject.SetActive(false);
         }
 
-        private void Hide() =>
-            gameObject.SetActive(false);
-
-        private void HideIfClickedOutside()
+        public override void Dispose()
         {
-            if (!Input.GetMouseButtonDown(0)) return;
-
-            var pointerEventData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-
-            var raycastResults = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-
-            if (raycastResults.All(result => result.gameObject != downloadButton.gameObject
-                && result.gameObject != deleteButton.gameObject
-                && result.gameObject != copyLinkButton.gameObject
-                && result.gameObject != shareToTwitterButton.gameObject))
-                Hide();
+            if (selfDestroy)
+                Utils.SafeDestroy(gameObject);
         }
     }
 }
