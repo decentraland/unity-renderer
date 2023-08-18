@@ -17,6 +17,7 @@ import type { ContentFile } from '../types'
 import { ContentClient, DeploymentBuilder, DeploymentData, createContentClient } from 'dcl-catalyst-client'
 import { IFetchComponent } from '@well-known-components/interfaces'
 import { DeploymentPreparationData } from 'dcl-catalyst-client/dist/client/types'
+import { createFetchComponent } from '@well-known-components/fetch-component'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -147,7 +148,4 @@ async function makeContentFile(path: string, content: Uint8Array | ArrayBuffer):
   } else {
     throw new Error('Unable to create ContentFile: content must be a string or a Blob')
   }
-}
-function createFetchComponent(): IFetchComponent {
-  throw new Error('Function not implemented.')
 }
