@@ -23,21 +23,21 @@ public class UIComponentsPlugin : IPlugin
     {
         uiPoolsRoot = new GameObject("_SDK6_UIShapes_Pools").transform;
 
-        inputTextPool = new (uiPoolsRoot, prefabPath: "UIInputText", true, 5);
-        containerRectPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true, 30);
-        scrollRectPool = new (uiPoolsRoot, prefabPath: "UIScrollRect");
-        containerStackPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true);
-        containerStackChildPool = new (uiPoolsRoot, prefabPath: "UIContainerStackChild", true);
-        imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 200);
-        textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 100);
+        inputTextPool = new (uiPoolsRoot, prefabPath: "UIInputText", capacity: 2);
+        containerRectPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true, 100);
+        scrollRectPool = new (uiPoolsRoot, prefabPath: "UIScrollRect", capacity: 5);
+        containerStackPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true, 100);
+        containerStackChildPool = new (uiPoolsRoot, prefabPath: "UIContainerStackChild", true, 5);
+        imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 500);
+        textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 400);
 
         // TODO: introduced partial pooling there instead of dynamically assembling the object each time
         // this needs to be fully converted to pooling when (if) we shift this part to Addressables
-        fullScreenPool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
-        screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", capacity: 3);
+        fullScreenPool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", true, capacity: 3);
+        screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", true, capacity: 3);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
-        uiShapeScheduler = new UIShapeScheduler(batchSize: 50, framesBetweenBatches: 2);
+        uiShapeScheduler = new UIShapeScheduler();
 
         // UI
         factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool, uiShapeScheduler));
