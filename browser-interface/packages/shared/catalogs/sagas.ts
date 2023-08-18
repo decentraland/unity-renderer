@@ -164,10 +164,14 @@ function* fetchItemsFromCatalyst(
       // Fetch published collections
       const urnCollections = collectionIds.filter((collectionId) => collectionId.startsWith('urn'))
       if (urnCollections.length > 0) {
-        const zoneItems: PartialItem[] = (yield contentClient.fetchEntitiesByPointers(urnCollections)).map(
-          (e) => e.metadata
-        )
-        result.push(...zoneItems)
+        // const zoneItems: PartialItem[] = (yield contentClient.fetchEntitiesByPointers(urnCollections)).map(
+        //   (e) => e.metadata
+        // )
+        const fethEntitiesByPointers = contentClient.fetchEntitiesByPointers
+        const result: any = yield apply(contentClient, fethEntitiesByPointers, [urnCollections])
+        result.push(result.map(
+          (e: any) => e.metadata
+        ))
       }
 
       // Fetch unpublished collections from builder server
@@ -268,10 +272,10 @@ function* fetchItemsFromCatalyst(
         }
 
         if (itemURNs.length > 0) {
-          const zoneItems: PartialItem[] = (yield contentClient.fetchEntitiesByPointers(itemURNs)).map(
-            (e) => e.metadata
-          )
-          result.push(...zoneItems)
+          const result = yield apply(contentClient, contentClient.fetchEntitiesByPointers, [itemURNs])
+          result.push(result.map(
+            (e: any) => e.metadata
+          ))
         }
       }
     } else if (WITH_FIXED_COLLECTIONS && COLLECTIONS_OR_ITEMS_ALLOWED) {
