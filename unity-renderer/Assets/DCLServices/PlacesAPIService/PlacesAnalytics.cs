@@ -21,7 +21,7 @@ namespace DCLServices.PlacesAPIService
         public enum SortingType
         {
             MostActive,
-            HighestRated
+            Best
         }
 
         void AddFavorite(string placeUUID, ActionSource source);

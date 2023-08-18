@@ -158,7 +158,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private void ApplySorting()
     {
-        placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.HighestRated);
+        placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
         RequestAllPlaces();
     }
 

@@ -15,8 +15,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     private const int PLACE_CARDS_POOL_PREWARM = 20;
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
     private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
-    private const string HIGHEST_RATED_FILTER_ID = "like_rate";
-    private const string HIGHEST_RATED_FILTER_TEXT = "Highest rated";
+    private const string BEST_FILTER_ID = "like_rate";
+    private const string BEST_FILTER_TEXT = "Best";
     private const string ONLY_FEATURED_FILTER = "only_featured=true";
     private const string ONLY_POI_FILTER = "only_pois=true";
 
@@ -111,7 +111,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         List<ToggleComponentModel> sortingMethodsToAdd = new List<ToggleComponentModel>
         {
             new () { id = MOST_ACTIVE_FILTER_ID, text = MOST_ACTIVE_FILTER_TEXT, isOn = true, isTextActive = true, changeTextColorOnSelect = true },
-            new () { id = HIGHEST_RATED_FILTER_ID, text = HIGHEST_RATED_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
+            new () { id = BEST_FILTER_ID, text = BEST_FILTER_TEXT, isOn = false, isTextActive = true, changeTextColorOnSelect = true },
         };
 
         sortByDropdown.SetTitle(sortingMethodsToAdd[0].text);
@@ -134,7 +134,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             filter = ONLY_FEATURED_FILTER;
             SetPoiStatus(false);
             SetFeaturedStatus(true);
-            SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
+            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
         }
 
         OnFilterChanged?.Invoke();
@@ -156,7 +156,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             filter = ONLY_POI_FILTER;
             SetPoiStatus(true);
             SetFeaturedStatus(false);
-            SetSortDropdownValue(HIGHEST_RATED_FILTER_ID, HIGHEST_RATED_FILTER_TEXT, false);
+            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
         }
 
         OnFilterChanged?.Invoke();

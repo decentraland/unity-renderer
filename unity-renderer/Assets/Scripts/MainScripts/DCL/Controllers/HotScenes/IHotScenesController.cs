@@ -3,6 +3,7 @@ using DCL;
 using DCLServices.Lambdas;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using UnityEngine;
 
@@ -76,7 +77,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int likes;
             public int dislikes;
             public string[] categories;
-            public float like_rate;
+            public float? like_rate;
             public bool highlighted;
             public string highlighted_image;
             public bool featured;
