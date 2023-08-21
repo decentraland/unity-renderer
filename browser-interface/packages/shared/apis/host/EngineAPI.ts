@@ -4,12 +4,27 @@ import type { RpcServerPort } from '@dcl/rpc/dist/types'
 import type { EventData, ManyEntityAction } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
 import { EngineApiServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
 import type { PortContext } from './context'
+import { sendParcelSceneCommsMessage } from '../../comms'
+import { ensureRealmAdapter } from '../../realm/ensureRealmAdapter'
+import { isWorldLoaderActive } from '../../realm/selectors'
+import { ICommunicationsController, subscribeParcelSceneToCommsMessages } from '../../comms/sceneSubscriptions'
+import { PeerInformation } from '../../comms/interface/types'
 
 export function registerEngineApiServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(
     port,
     EngineApiServiceDefinition,
-    async (): Promise<RpcServerModule<EngineApiServiceDefinition, PortContext>> => {
+    async (port, ctx): Promise<RpcServerModule<EngineApiServiceDefinition, PortContext>> => {
+      const crdtEvents: Uint8Array[] = []
+      const commsController: ICommunicationsController = {
+        cid: ctx.sceneData.id,
+        receiveCommsMessage(data: Uint8Array, _sender: PeerInformation) {
+          crdtEvents.push(data)
+        }
+      }
+
+      subscribeParcelSceneToCommsMessages(commsController)
+
       return {
         async sendBatch(_req: ManyEntityAction, ctx) {
           // TODO: (2023/01/06) `sendBatch` is still used by sdk7 scenes to retreive
@@ -21,7 +36,6 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           if (events.length) {
             ctx.events = []
           }
-
           return { events }
         },
 
@@ -32,6 +46,28 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
         async unsubscribe(req, ctx) {
           ctx.subscribedEvents.delete(req.eventId)
           return {}
+        },
+        async crdtSendNetwork(req, ctx) {
+          if (!ctx.sdk7) throw new Error('Cannot use SDK7 APIs on SDK6 scene')
+
+          // TODO: uncomment this. Testing for the moment
+          // const realmAdapter = await ensureRealmAdapter()
+          // const isWorld = isWorldLoaderActive(realmAdapter)
+
+          // if (!isWorld) {
+          //   ctx.logger.error('API only available for Worlds')
+          //   return { data: [] }
+          // }
+          if (req.data.byteLength) {
+            sendParcelSceneCommsMessage(ctx.sceneData.id, req.data)
+          }
+          const events = [...crdtEvents]
+          if (crdtEvents.length) {
+            console.log('CrdtSendNetwork', crdtEvents)
+            crdtEvents.length = 0
+          }
+
+          return { data: events }
         },
         async crdtSendToRenderer(req, ctx) {
           if (!ctx.sdk7) throw new Error('Cannot use SDK7 APIs on SDK6 scene')
