@@ -3,6 +3,7 @@ using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
 using Environment = DCL.Environment;
 
@@ -37,6 +38,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
         IPlacesAPIService placesAPIService,
+        IWorldsAPIService worldsAPIService,
         IPlacesAnalytics placesAnalytics
         )
     {
@@ -77,6 +79,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.SearchBar,
             eventsAPI,
             placesAPIService,
+            worldsAPIService,
             userProfileBridge,
             exploreV2Analytics,
             placesAnalytics,

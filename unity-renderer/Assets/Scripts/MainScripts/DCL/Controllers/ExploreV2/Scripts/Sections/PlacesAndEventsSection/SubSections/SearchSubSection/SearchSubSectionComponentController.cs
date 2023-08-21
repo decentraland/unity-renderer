@@ -3,6 +3,7 @@ using DCL;
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using System.Collections.Generic;
 using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -17,6 +18,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private readonly SearchBarComponentView searchBarComponentView;
     private readonly IEventsAPIController eventsAPI;
     private readonly IPlacesAPIService placesAPIService;
+    private readonly IWorldsAPIService worldsAPIService;
     private readonly IUserProfileBridge userProfileBridge;
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly IPlacesAnalytics placesAnalytics;
@@ -31,6 +33,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         SearchBarComponentView searchBarComponentView,
         IEventsAPIController eventsAPI,
         IPlacesAPIService placesAPIService,
+        IWorldsAPIService worldsAPIService,
         IUserProfileBridge userProfileBridge,
         IExploreV2Analytics exploreV2Analytics,
         IPlacesAnalytics placesAnalytics,
@@ -40,6 +43,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         this.searchBarComponentView = searchBarComponentView;
         this.eventsAPI = eventsAPI;
         this.placesAPIService = placesAPIService;
+        this.worldsAPIService = worldsAPIService;
         this.userProfileBridge = userProfileBridge;
         this.exploreV2Analytics = exploreV2Analytics;
         this.placesAnalytics = placesAnalytics;
@@ -47,6 +51,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
         view.OnRequestAllEvents += SearchAllEvents;
         view.OnRequestAllPlaces += SearchAllPlaces;
+        view.OnRequestAllWorlds += SearchAllWorlds;
         view.OnEventInfoClicked += OpenEventDetailsModal;
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
         view.OnVoteChanged += ChangeVote;
@@ -136,6 +141,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.SetHeaderEnabled(searchText);
         SearchEvents(searchText, cancellationToken: minimalSearchCts.Token).Forget();
         SearchPlaces(searchText, cancellationToken: minimalSearchCts.Token).Forget();
+        SearchWorlds(searchText, cancellationToken: minimalSearchCts.Token).Forget();
     }
 
     private void SubscribeToEvent(string eventId)
@@ -167,6 +173,13 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         fullSearchCts.SafeCancelAndDispose();
         fullSearchCts = new CancellationTokenSource();
         SearchPlaces(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
+    }
+
+    private void SearchAllWorlds(int pageNumber)
+    {
+        fullSearchCts.SafeCancelAndDispose();
+        fullSearchCts = new CancellationTokenSource();
+        SearchWorlds(searchBarComponentView.Text, pageNumber, 18, fullSearchCts.Token, true).Forget();
     }
 
     private async UniTaskVoid SearchEvents(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
@@ -201,10 +214,27 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         }
     }
 
+    private async UniTaskVoid SearchWorlds(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
+    {
+        var results = await worldsAPIService.SearchWorlds(searchText, pageNumber, pageSize, cancellationToken);
+        //List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results.Item1);
+        //exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
+
+        //if (isFullSearch)
+        //{
+        //    view.ShowAllWorlds(places, (pageNumber + 1) * pageSize < results.total);
+        //}
+        //else
+        //{
+        //    view.ShowWorlds(places, searchText);
+        //}
+    }
+
     public void Dispose()
     {
         view.OnRequestAllEvents -= SearchAllEvents;
         view.OnRequestAllPlaces -= SearchAllPlaces;
+        view.OnRequestAllWorlds -= SearchAllWorlds;
         view.OnEventInfoClicked -= OpenEventDetailsModal;
         view.OnPlaceInfoClicked -= OpenPlaceDetailsModal;
         view.OnEventInfoClicked -= OpenEventDetailsModal;

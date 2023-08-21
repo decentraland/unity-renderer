@@ -17,6 +17,7 @@ namespace ExploreV2Analytics
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
+        void SendSearchWorlds(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendPlacesTabOpen();
         void SendEventsTabOpen();
         void SendFavoritesTabOpen();
@@ -31,6 +32,7 @@ namespace ExploreV2Analytics
         private const string EXPLORE_CLICK_EVENT_INFO = "explore_click_event_info";
         private const string EXPLORE_SEARCH_EVENTS = "explore_search_events";
         private const string EXPLORE_SEARCH_PLACES = "explore_search_places";
+        private const string EXPLORE_SEARCH_WORLDS = "explore_search_worlds";
         private const string EXPLORE_PARTICIPATE_EVENT = "explore_participate_event";
         private const string EXPLORE_REMOVE_PARTICIPATE_EVENT = "explore_remove_participate_event";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
@@ -175,6 +177,17 @@ namespace ExploreV2Analytics
                 ["first_results_ids"] = string.Join(",", firstResultsIds)
             };
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_PLACES, data);
+        }
+
+        public void SendSearchWorlds(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["search_string"] = searchString,
+                ["first_results_coordinates"] = string.Join(",", firstResultsCoordinates),
+                ["first_results_ids"] = string.Join(",", firstResultsIds)
+            };
+            GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_WORLDS, data);
         }
 
         public void SendPlacesTabOpen()

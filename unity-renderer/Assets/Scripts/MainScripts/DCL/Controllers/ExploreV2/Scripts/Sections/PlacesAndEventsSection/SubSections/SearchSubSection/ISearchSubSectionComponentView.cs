@@ -8,6 +8,7 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
 {
     event Action<int> OnRequestAllEvents;
     event Action<int> OnRequestAllPlaces;
+    event Action<int> OnRequestAllWorlds;
     event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;

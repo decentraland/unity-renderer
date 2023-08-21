@@ -48,6 +48,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     internal PlaceCardComponentView placeModal;
     public event Action<int> OnRequestAllEvents;
     public event Action<int> OnRequestAllPlaces;
+    public event Action<int> OnRequestAllWorlds;
     public event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
