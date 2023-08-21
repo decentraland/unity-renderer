@@ -136,6 +136,7 @@ namespace DCL.Components
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
                                       scene.componentsManagerLegacy.HasSceneSharedComponent(model.parentComponent);
 
+            // FD:: This probably should attach it to the Scene parent GameObject. But it is not working.
             if (targetParentExists)
                 parentUIComponent = scene.componentsManagerLegacy.HasSceneSharedComponent(model.parentComponent)
                     ? scene.componentsManagerLegacy.GetSceneSharedComponent(model.parentComponent) as UIShape
@@ -393,8 +394,6 @@ namespace DCL.Components
         {
             if (referencesContainer != null)
             {
-                referencesContainer.owner.Dispose();
-
                 pool.ReleaseUIShape(referencesContainer);
                 referencesContainer = null;
             }
