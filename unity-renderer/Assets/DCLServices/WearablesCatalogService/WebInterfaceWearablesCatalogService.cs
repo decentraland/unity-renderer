@@ -202,6 +202,7 @@ namespace DCLServices.WearablesCatalogService
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
         {
+            if (wearableItems == null) return;
             foreach (WearableItem wearableItem in wearableItems)
             {
                 if (WearablesCatalog.ContainsKey(wearableItem.id))

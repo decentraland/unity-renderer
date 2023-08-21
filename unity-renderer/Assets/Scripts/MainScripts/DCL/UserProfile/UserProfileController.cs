@@ -59,7 +59,8 @@ public class UserProfileController : MonoBehaviour
             catch (Exception e)
             {
                 OnBaseWereablesFail?.Invoke();
-                Debug.LogError(e.Message);
+                Debug.LogError("[USER PROFILE LOADING] Failed to fetch Base Wearables, check error below");
+                Debug.LogException(e);
             }
         }
 
