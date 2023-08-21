@@ -20,6 +20,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
     private const string ONLY_POI_FILTER = "only_pois=true";
+    private const string MOST_ACTIVE_FILTER_ID = "most_active";
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
@@ -87,8 +88,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnJumpInClicked -= OnJumpInToPlace;
         view.OnFavoriteClicked -= View_OnFavoritesClicked;
         this.view.OnVoteChanged -= View_OnVoteChanged;
-        view.OnPlacesSubSectionEnable -= RequestAllPlaces;
-        view.OnFilterSorterChanged -= RequestAllPlaces;
+        view.OnPlacesSubSectionEnable -= OpenTab;
+        view.OnFilterChanged -= ApplyFilters;
+        view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
 
@@ -134,9 +136,30 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private void FirstLoading()
     {
-        view.OnPlacesSubSectionEnable += RequestAllPlaces;
-        view.OnFilterSorterChanged += RequestAllPlaces;
+        view.OnPlacesSubSectionEnable += OpenTab;
+        view.OnFilterChanged += ApplyFilters;
+        view.OnSortingChanged += ApplySorting;
         cardsReloader.Initialize();
+    }
+
+    private void OpenTab()
+    {
+        exploreV2Analytics.SendPlacesTabOpen();
+        RequestAllPlaces();
+    }
+
+    private void ApplyFilters()
+    {
+        if (!string.IsNullOrEmpty(view.filter))
+            placesAnalytics.Filter(view.filter == ONLY_POI_FILTER ? IPlacesAnalytics.FilterType.PointOfInterest : IPlacesAnalytics.FilterType.Featured);
+
+        RequestAllPlaces();
+    }
+
+    private void ApplySorting()
+    {
+        placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
+        RequestAllPlaces();
     }
 
     internal void RequestAllPlaces()

@@ -1,7 +1,6 @@
 import {
   JOIN_VOICE_CHAT,
   LEAVE_VOICE_CHAT,
-  REQUEST_TOGGLE_VOICE_CHAT_RECORDING,
   REQUEST_VOICE_CHAT_RECORDING,
   SET_AUDIO_DEVICE,
   SET_VOICE_CHAT_ERROR,
@@ -49,9 +48,6 @@ export function voiceChatReducer(state?: VoiceChatState, action?: VoiceChatActio
     case REQUEST_VOICE_CHAT_RECORDING: {
       const { payload } = action
       return { ...state, requestRecording: payload.recording }
-    }
-    case REQUEST_TOGGLE_VOICE_CHAT_RECORDING: {
-      return { ...state, requestRecording: !state.requestRecording }
     }
     case SET_VOICE_CHAT_VOLUME: {
       const { payload } = action

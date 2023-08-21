@@ -19,7 +19,7 @@ public class PlaceCardComponentModel : BaseComponentModel
     public bool isUpvote;
     public bool isDownvote;
     public int totalVotes;
-    public float userRating;
+    public float? userRating;
     public int numberOfFavorites;
     public string deployedAt;
     public bool isPOI;

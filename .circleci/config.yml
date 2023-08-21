@@ -302,7 +302,7 @@ jobs:
                 bash ci-playmode-test.sh
                 exit $?
             fi;
-          no_output_timeout: 30m
+          no_output_timeout: 40m
       - run:
           name: nunit-to-junit
           when: always

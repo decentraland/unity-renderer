@@ -285,13 +285,7 @@ namespace DCL.Social.Chat
 
         private void Unfriend(string friendId)
         {
-            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
-                UserProfileController.userProfilesCatalog.Get(friendId)?.userName,
-                () =>
-                {
-                    friendsController.RemoveFriend(friendId);
-                    Hide();
-                }), true);
+            Hide();
         }
 
         private bool IsMessageFomCurrentConversation(ChatMessage message)

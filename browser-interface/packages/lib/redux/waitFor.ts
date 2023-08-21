@@ -10,3 +10,12 @@ export function waitFor(selector: (state: any) => any, actionType?: string | str
     return result
   }
 }
+
+export function* waitForSelector(selector: (state: any) => any) {
+  if (yield select(selector)) return; // (1)
+
+  while (true) {
+    yield take('*'); // (1a)
+    if (yield select(selector)) return; // (1b)
+  }
+}

@@ -1,8 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.Lambdas;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using UnityEngine;
 
@@ -76,7 +78,6 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int likes;
             public int dislikes;
             public string[] categories;
-            public float like_rate;
             public bool highlighted;
             public string highlighted_image;
             public bool featured;
@@ -87,6 +88,23 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int user_count;
             public int user_visits;
             public Realm[] realms_detail;
+
+            public string like_rate;
+
+            [JsonIgnore]
+            public float? like_rate_as_float
+            {
+                get
+                {
+                    if (string.IsNullOrEmpty(like_rate))
+                        return null;
+
+                    if (float.TryParse(like_rate, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
+                        return result;
+
+                    return null;
+                }
+            }
 
             public void OnBeforeSerialize()
             {

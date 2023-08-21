@@ -11,4 +11,14 @@ namespace ExploreV2Analytics
         FromExplore,
         FromSearch
     }
+
+    public enum FilterType
+    {
+        Featured,
+        Trending,
+        WantToGo,
+        Frequency,
+        Category,
+        Time
+    }
 }
