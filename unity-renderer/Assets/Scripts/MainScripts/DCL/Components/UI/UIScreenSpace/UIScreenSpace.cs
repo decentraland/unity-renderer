@@ -57,10 +57,9 @@ namespace DCL.Components
 
         private bool initialized = false;
 
-        public UIScreenSpace(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
+        public UIScreenSpace(UIShapePool pool) : base(pool)
         {
             this.pool = pool;
-            this.scheduler = scheduler;
             dataStorePlayer.playerGridPosition.OnChange += OnPlayerCoordinatesChanged;
             DataStore.i.HUDs.isCurrentSceneUiEnabled.OnChange += OnChangeSceneUI;
             OnChangeSceneUI(isUIEnabled.Get(), true);

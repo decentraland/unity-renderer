@@ -8,7 +8,7 @@ namespace DCL.Components
     {
         protected const float RAYCAST_ALPHA_THRESHOLD = 0.01f;
 
-        protected UIShape(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
+        protected UIShape(UIShapePool pool) : base(pool)
         {
         }
 

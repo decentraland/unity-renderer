@@ -17,8 +17,6 @@ public class UIComponentsPlugin : IPlugin
 
     private readonly Transform uiPoolsRoot;
 
-    private UIShapeScheduler uiShapeScheduler;
-
     public UIComponentsPlugin()
     {
         uiPoolsRoot = new GameObject("_SDK6_UIShapes_Pools").transform;
@@ -28,8 +26,8 @@ public class UIComponentsPlugin : IPlugin
         scrollRectPool = new (uiPoolsRoot, prefabPath: "UIScrollRect", capacity: 5);
         containerStackPool = new (uiPoolsRoot, prefabPath: "UIContainerRect", true, 100);
         containerStackChildPool = new (uiPoolsRoot, prefabPath: "UIContainerStackChild", true, 5);
-        imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 500);
-        textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 400);
+        imagePool = new (uiPoolsRoot, prefabPath: "UIImage", true, 700);
+        textPool = new (uiPoolsRoot, prefabPath: "UIText", true, 600);
 
         // TODO: introduced partial pooling there instead of dynamically assembling the object each time
         // this needs to be fully converted to pooling when (if) we shift this part to Addressables
@@ -37,17 +35,16 @@ public class UIComponentsPlugin : IPlugin
         screenSpacePool = new UIShapePool(uiPoolsRoot, prefabPath: "UIScreenSpace", true, capacity: 3);
 
         IRuntimeComponentFactory factory = Environment.i.world.componentFactory;
-        uiShapeScheduler = new UIShapeScheduler();
 
         // UI
-        factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, () => new UIScreenSpace(fullScreenPool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_SLIDER_SHAPE, () => new UIScrollRect(scrollRectPool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool, containerStackChildPool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_IMAGE_SHAPE, () => new UIImage(imagePool, uiShapeScheduler));
-        factory.RegisterBuilder((int) CLASS_ID.UI_TEXT_SHAPE, () => new UIText(textPool, uiShapeScheduler));
+        factory.RegisterBuilder((int) CLASS_ID.UI_INPUT_TEXT_SHAPE, () => new UIInputText(inputTextPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_FULLSCREEN_SHAPE, () => new UIScreenSpace(fullScreenPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, () => new UIScreenSpace(screenSpacePool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_RECT, () => new UIContainerRect(containerRectPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_SLIDER_SHAPE, () => new UIScrollRect(scrollRectPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_CONTAINER_STACK, () => new UIContainerStack(containerStackPool, containerStackChildPool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_IMAGE_SHAPE, () => new UIImage(imagePool));
+        factory.RegisterBuilder((int) CLASS_ID.UI_TEXT_SHAPE, () => new UIText(textPool));
 
         factory.createConditions.Add((int) CLASS_ID.UI_SCREEN_SPACE_SHAPE, CanCreateScreenShape);
         factory.createConditions.Add((int) CLASS_ID.UI_FULLSCREEN_SHAPE, CanCreateScreenShape);

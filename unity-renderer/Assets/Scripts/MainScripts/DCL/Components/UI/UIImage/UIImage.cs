@@ -67,10 +67,9 @@ namespace DCL.Components
         private readonly DCLTexture.Fetcher dclTextureFetcher = new ();
         private bool isDisposed;
 
-        public UIImage(UIShapePool pool, UIShapeScheduler scheduler) : base(pool, scheduler)
+        public UIImage(UIShapePool pool) : base(pool)
         {
             this.pool = pool;
-            this.scheduler = scheduler;
             model = new Model();
         }
 

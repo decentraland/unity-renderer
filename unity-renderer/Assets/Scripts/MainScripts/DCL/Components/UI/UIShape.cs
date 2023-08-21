@@ -101,12 +101,10 @@ namespace DCL.Components
         private BaseVariable<Dictionary<int, Queue<IUIRefreshable>>> dirtyShapesBySceneVariable => DataStore.i.HUDs.dirtyShapes;
         protected UIShape parentUIComponent { get; private set; }
         protected UIShapePool pool;
-        protected UIShapeScheduler scheduler;
 
-        protected UIShape(UIShapePool pool, UIShapeScheduler scheduler)
+        protected UIShape(UIShapePool pool)
         {
             this.pool = pool;
-            this.scheduler = scheduler;
             screenSize.OnChange += OnScreenResize;
             model = new Model();
         }
@@ -156,12 +154,6 @@ namespace DCL.Components
             referencesContainer.owner = this;
 
             return referencesContainer as T;
-        }
-
-        internal void ScheduleAlphaChange(UIReferencesContainer container, float targetAlpha, bool instant = false)
-        {
-            if (container.canvasGroup != null)
-                scheduler.ScheduleAlphaChange(container.canvasGroup, targetAlpha);
         }
 
         private void RequestRefresh()
@@ -317,6 +309,7 @@ namespace DCL.Components
 
             if (parentUIComponent != null)
             {
+                // FD:: try optimise this
                 UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
                 foreach (var parent in parents)
@@ -330,10 +323,12 @@ namespace DCL.Components
 
             if (targetParentExists)
             {
+                // FD:: try optimise this
                 parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent(targetParent) as UIShape;
             }
             else
             {
+                // FD:: try optimise this
                 parentUIComponent = scene.componentsManagerLegacy.GetSceneSharedComponent<UIScreenSpace>();
             }
 
@@ -398,13 +393,11 @@ namespace DCL.Components
         {
             if (referencesContainer != null)
             {
+                referencesContainer.owner.Dispose();
+
                 pool.ReleaseUIShape(referencesContainer);
                 referencesContainer = null;
             }
-
-            // FD:: Optimize this
-            if (childHookRectTransform)
-                childHookRectTransform.GetComponent<UIReferencesContainer>()?.owner.Dispose();
 
             screenSize.OnChange -= OnScreenResize;
 

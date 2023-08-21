@@ -31,6 +31,8 @@ namespace DCL.Components
         private bool hasParentRectTransform = false;
         private RectTransform parentRectTransform;
 
+        float currentAlpha = -1f;
+
         public RectTransform GetParentRectTransform()
         {
             if (hasParentRectTransform)
@@ -63,22 +65,14 @@ namespace DCL.Components
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetVisibility(bool visible, float opacity = 1f)
         {
-            // if (gameObject.name.ToLower().Contains("screenspace"))
-            // {
-            //     Debug.Log("FD:: SetVisibility " + gameObject.name + "visible " + visible + " " + opacity);
-            // }
-            if (canvasGroup != null && Math.Abs(canvasGroup.alpha - (visible ? opacity : 0)) > 0.1f)
-                canvasGroup.alpha = visible ? opacity : 0;
-                // owner.ScheduleAlphaChange(this, visible ? opacity : 0); // FD:: test the scheduler in the right way
-        }
+            float finalAlpha = visible ? opacity : 0;
+            if (!(Math.Abs(currentAlpha - finalAlpha) > 0.1f))
+                return;
 
-        public void SetVisibilityInstant(bool visible, float opacity = 1f)
-        {
-            // if (Math.Abs(canvasGroup.alpha - (visible ? opacity : 0)) > 0.1f && canvasGroup != null)
-            //     canvasGroup.alpha = visible ? opacity : 0;
+            currentAlpha = finalAlpha;
+
             if (canvasGroup != null)
-                owner.ScheduleAlphaChange(this, visible ? opacity : 0, true); // FD:: test the scheduler in the right way
-
+                canvasGroup.alpha = finalAlpha;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
