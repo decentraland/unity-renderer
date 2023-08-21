@@ -79,7 +79,7 @@ public interface IPlaceCardComponentView
     /// Set the the user rating that considers only up and down votes with at least 100 VotingPower.
     /// </summary>
     /// <param name="userRating">User rating value.</param>
-    void SetUserRating(float userRating);
+    void SetUserRating(float? userRating);
 
     /// <summary>
     /// Set the place coords.
@@ -157,8 +157,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text placeDescText;
     [SerializeField] internal TMP_Text placeAuthorOnIdleText;
     [SerializeField] internal TMP_Text placeAuthorOnFocusText;
+    [SerializeField] internal RectTransform userVisitsAndRatingContainer;
     [SerializeField] internal TMP_Text userVisitsText;
-    [SerializeField] internal GameObject userRatingIcon;
     [SerializeField] internal TMP_Text userRatingText;
     [SerializeField] internal RectTransform numberOfUsersContainer;
     [SerializeField] internal TMP_Text numberOfUsersText;
@@ -578,18 +578,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             userVisitsText.text = FormatNumber(userVisits);
     }
 
-    public void SetUserRating(float userRating)
+    public void SetUserRating(float? userRating)
     {
         model.userRating = userRating;
 
         if (userRatingText != null)
-        {
-            userRatingText.text = userRating > 0 ? $"{(userRating * 100):0}%" : "-%";
-            userRatingText.gameObject.SetActive(isPlaceCardModal || (!isPlaceCardModal && userRating > 0));
-        }
-
-        if (userRatingIcon != null)
-            userRatingIcon.SetActive(isPlaceCardModal || (!isPlaceCardModal && userRating > 0));
+            userRatingText.text = userRating != null ? $"{userRating.Value * 100:0}%" : "-%";
     }
 
     public void SetNumberOfUsers(int newNumberOfUsers)
@@ -710,6 +704,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (numberOfUsersContainer != null)
             Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer);
+
+        if (userVisitsAndRatingContainer != null)
+            Utils.ForceRebuildLayoutImmediate(userVisitsAndRatingContainer);
     }
 
     internal void CloseModal() { Hide(); }
