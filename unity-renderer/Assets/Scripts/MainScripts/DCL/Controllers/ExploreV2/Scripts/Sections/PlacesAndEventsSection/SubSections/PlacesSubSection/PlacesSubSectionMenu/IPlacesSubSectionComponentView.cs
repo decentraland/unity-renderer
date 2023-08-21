@@ -49,7 +49,8 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnPlacesSubSectionEnable;
-    event Action OnFilterSorterChanged;
+    event Action OnFilterChanged;
+    event Action OnSortingChanged;
 
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
