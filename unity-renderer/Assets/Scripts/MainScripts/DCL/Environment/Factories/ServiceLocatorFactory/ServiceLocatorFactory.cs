@@ -61,7 +61,7 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
-            UnityEnvironmentProviderService environmentProviderService = new UnityEnvironmentProviderService(KernelConfig.i);
+            var environmentProviderService = new UnityEnvironmentProviderService(KernelConfig.i);
             result.Register<IEnvironmentProviderService>(() => environmentProviderService);
 
             var webRequestController = new WebRequestController(
@@ -75,6 +75,7 @@ namespace DCL
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             );
+
             result.Register<IWebRequestController>(() => webRequestController);
 
             result.Register<IServiceProviders>(() => new ServiceProviders());
@@ -110,7 +111,7 @@ namespace DCL
             result.Register<IFriendsController>(() =>
             {
                 // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
-                WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
+                var webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
                 return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
                         webInterfaceFriendsApiBridge,
@@ -121,13 +122,13 @@ namespace DCL
 
             result.Register<IMessagingControllersManager>(() => new MessagingControllersManager());
 
-
             result.Register<IEmotesCatalogService>(() =>
             {
                 var emotesRequest = new EmotesRequestWeb(
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     featureFlagsDataStore);
+
                 var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
                 var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
                 return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, featureFlagsDataStore, KernelConfig.i);
@@ -205,7 +206,12 @@ namespace DCL
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
             result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
-            result.Register<IScreencaptureCameraService>(() => new ScreencaptureCameraService(addressableResourceProvider, featureFlagsDataStore, DataStore.i.player));
+
+            var screencaptureCameraExternalDependencies = new ScreencaptureCameraExternalDependencies(CommonScriptableObjects.allUIHidden,
+                CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked,
+                CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
+
+            result.Register<IScreencaptureCameraService>(() => new ScreencaptureCameraService(addressableResourceProvider, featureFlagsDataStore, DataStore.i.player, userProfileWebInterfaceBridge, screencaptureCameraExternalDependencies));
 
             // Analytics
             result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
