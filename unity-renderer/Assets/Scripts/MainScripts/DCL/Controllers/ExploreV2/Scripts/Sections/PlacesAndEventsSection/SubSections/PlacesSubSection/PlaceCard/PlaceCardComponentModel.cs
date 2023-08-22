@@ -5,6 +5,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
 {
+    public bool isWorld;
     public Sprite placePictureSprite;
     public Texture2D placePictureTexture;
     public string placePictureUri;

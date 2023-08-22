@@ -217,17 +217,17 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private async UniTaskVoid SearchWorlds(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await worldsAPIService.SearchWorlds(searchText, pageNumber, pageSize, cancellationToken);
-        //List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results.Item1);
+        List<PlaceCardComponentModel> worlds = PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(results.Item1);
         //exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
 
-        //if (isFullSearch)
-        //{
-        //    view.ShowAllWorlds(places, (pageNumber + 1) * pageSize < results.total);
-        //}
-        //else
-        //{
-        //    view.ShowWorlds(places, searchText);
-        //}
+        if (isFullSearch)
+        {
+            view.ShowAllWorlds(worlds, (pageNumber + 1) * pageSize < results.total);
+        }
+        else
+        {
+            view.ShowWorlds(worlds, searchText);
+        }
     }
 
     public void Dispose()
