@@ -121,7 +121,8 @@ public interface IEventCardComponentView
     /// Set the event coords.
     /// </summary>
     /// <param name="newCoords">Event coords.</param>
-    void SetCoords(Vector2Int newCoords);
+    /// <param name="worldAddress">World address (for world's events)</param>
+    void SetCoords(Vector2Int newCoords, string worldAddress);
 
     /// <summary>
     /// Active or deactive the loading indicator.
@@ -264,7 +265,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventOrganizer(model.eventOrganizer);
         SetEventPlace(model.eventPlace);
         SetSubscribersUsers(model.subscribedUsers);
-        SetCoords(model.coords);
+        SetCoords(model.coords, model.worldAddress);
         ResetScrollPosition();
         RebuildCardLayouts();
     }
@@ -529,14 +530,15 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             subscribedUsersText.text = newNumberOfUsers > 0 ? string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers) : NOBODY_CONFIRMED_MESSAGE;
     }
 
-    public void SetCoords(Vector2Int newCoords)
+    public void SetCoords(Vector2Int newCoords, string worldAddress)
     {
         model.coords = newCoords;
+        model.worldAddress = worldAddress;
 
         if (secondaryJumpinButton == null || !isEventCardModal)
             return;
 
-        secondaryJumpinButton.SetText($"{newCoords.x},{newCoords.y}");
+        secondaryJumpinButton.SetText(string.IsNullOrEmpty(worldAddress) ? $"{newCoords.x},{newCoords.y}" : worldAddress);
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)

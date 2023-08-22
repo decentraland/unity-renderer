@@ -59,6 +59,7 @@ public static class EventsCardsConfigurator
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
         cardModel.numberOfUsers = GetNumberOfUsersInCoords(cardModel.coords);
+        cardModel.worldAddress = eventFromAPI.world ? eventFromAPI.server : null;
 
         return cardModel;
     }

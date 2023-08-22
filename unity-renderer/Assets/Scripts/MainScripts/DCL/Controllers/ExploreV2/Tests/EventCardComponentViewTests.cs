@@ -303,16 +303,19 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void SetCoordsCorrectly()
+    [TestCase("")]
+    [TestCase("test-world")]
+    public void SetCoordsCorrectly(string worldAddress)
     {
         // Arrange
         Vector2Int testCoords = new Vector2Int(20, 20);
 
         // Act
-        eventCardModalComponent.SetCoords(testCoords);
+        eventCardModalComponent.SetCoords(testCoords, worldAddress);
 
         // Assert
         Assert.AreEqual(testCoords, eventCardModalComponent.model.coords, "The event card coords does not match in the model.");
+        Assert.AreEqual(worldAddress, eventCardModalComponent.model.worldAddress, "The event card world address does not match in the model.");
     }
 
     [Test]
