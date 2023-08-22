@@ -296,9 +296,18 @@ namespace DCL.Backpack
         {
             async UniTaskVoid UpdateAvatarAsync(CancellationToken ct)
             {
-                await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
-                backpackPreviewPanel.SetLoadingActive(false);
-                OnAvatarUpdated?.Invoke();
+                try
+                {
+                    await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
+                    backpackPreviewPanel.SetLoadingActive(false);
+                    OnAvatarUpdated?.Invoke();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Debug.LogWarning("Update avatar preview cancelled");
+                    Debug.LogWarning(e);
+                }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             if (!isAvatarDirty)
