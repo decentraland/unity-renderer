@@ -23,6 +23,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     internal IPlacesAndEventsSectionComponentView view;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
+    internal IWorldsSubSectionComponentController worldsSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
     internal ISearchSubSectionComponentController searchSubSectionComponentController;
@@ -56,6 +57,17 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             dataStore,
             userProfileBridge);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
+        worldsSubSectionComponentController = new WorldsSubSectionComponentController(
+            view.WorldsSubSectionView,
+            placesAPIService,
+            worldsAPIService,
+            friendsController,
+            exploreV2Analytics,
+            placesAnalytics,
+            dataStore,
+            userProfileBridge);
+        worldsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
             view.EventsSubSectionView,
@@ -98,6 +110,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     {
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         placesSubSectionComponentController.Dispose();
+
+        worldsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+        worldsSubSectionComponentController.Dispose();
 
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.Dispose();
