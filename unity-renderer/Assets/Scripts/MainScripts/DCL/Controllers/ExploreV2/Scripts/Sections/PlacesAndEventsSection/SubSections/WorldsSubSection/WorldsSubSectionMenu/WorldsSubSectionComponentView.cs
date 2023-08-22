@@ -18,8 +18,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
     private const string BEST_FILTER_ID = "like_rate";
     private const string BEST_FILTER_TEXT = "Best";
-    private const string ONLY_FEATURED_FILTER = "only_featured=true";
-    private const string ONLY_POI_FILTER = "only_pois=true";
 
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setWorldsCts = new ();
@@ -38,16 +36,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     [SerializeField] internal Color[] friendColors = null;
     [SerializeField] internal GameObject showMoreWorldsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreWorldsButton;
-    [SerializeField] internal Button poiButton;
-    [SerializeField] internal GameObject poiDeselected;
-    [SerializeField] internal Image poiDeselectedImage;
-    [SerializeField] internal GameObject poiSelected;
-    [SerializeField] internal Image poiSelectedImage;
-    [SerializeField] internal Button featuredButton;
-    [SerializeField] internal GameObject featuredDeselected;
-    [SerializeField] internal Image featuredDeselectedImage;
-    [SerializeField] internal GameObject featuredSelected;
-    [SerializeField] internal Image featuredSelectedImage;
     [SerializeField] internal DropdownComponentView sortByDropdown;
 
     [SerializeField] private Canvas canvas;
@@ -97,10 +85,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
 
         showMoreWorldsButton.onClick.RemoveAllListeners();
         showMoreWorldsButton.onClick.AddListener(() => OnShowMoreWorldsClicked?.Invoke());
-        poiButton.onClick.RemoveAllListeners();
-        poiButton.onClick.AddListener(ClickedOnPOI);
-        featuredButton.onClick.RemoveAllListeners();
-        featuredButton.onClick.AddListener(ClickedOnFeatured);
         sortByDropdown.OnOptionSelectionChanged += SortByDropdownValueChanged;
         filter = "";
         SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
@@ -119,50 +103,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
         sortByDropdown.SetOptions(sortingMethodsToAdd);
     }
 
-    private void ClickedOnFeatured()
-    {
-        DeselectButtons();
-
-        if (filter == ONLY_FEATURED_FILTER)
-        {
-            filter = "";
-            SetPoiStatus(false);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
-        }
-        else
-        {
-            filter = ONLY_FEATURED_FILTER;
-            SetPoiStatus(false);
-            SetFeaturedStatus(true);
-            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
-        }
-
-        OnFilterChanged?.Invoke();
-    }
-
-    private void ClickedOnPOI()
-    {
-        DeselectButtons();
-
-        if (filter == ONLY_POI_FILTER)
-        {
-            filter = "";
-            SetPoiStatus(false);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
-        }
-        else
-        {
-            filter = ONLY_POI_FILTER;
-            SetPoiStatus(true);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
-        }
-
-        OnFilterChanged?.Invoke();
-    }
-
     private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
     {
         if (!isOn)
@@ -172,24 +112,8 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
         OnSortingChanged?.Invoke();
     }
 
-    private void SetPoiStatus(bool isSelected)
-    {
-        poiButton.targetGraphic = isSelected ? poiSelectedImage : poiDeselectedImage;
-        poiDeselected.SetActive(!isSelected);
-        poiSelected.SetActive(isSelected);
-    }
-
-    private void SetFeaturedStatus(bool isSelected)
-    {
-        featuredButton.targetGraphic = isSelected ? featuredSelectedImage : featuredDeselectedImage;
-        featuredDeselected.SetActive(!isSelected);
-        featuredSelected.SetActive(isSelected);
-    }
-
     public override void OnEnable()
     {
-        SetPoiStatus(false);
-        SetFeaturedStatus(false);
         filter = "";
         SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         OnWorldsSubSectionEnable?.Invoke();
