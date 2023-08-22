@@ -61,6 +61,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private void OnEnable()
         {
+            target.enabled = true;
             rotation.Activate();
             ResetVirtualCameraToPlayerCamera();
         }
@@ -68,6 +69,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void OnDisable()
         {
             rotation.Deactivate();
+            target.enabled = false;
         }
 
         private void UpdateDataStore()
