@@ -353,10 +353,18 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         if (realmFromAPI.Length > 1)
             layerName = realmFromAPI[1];
 
-        if (string.IsNullOrEmpty(serverName))
-            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
+        if (!eventFromAPI.world)
+        {
+            if (string.IsNullOrEmpty(serverName))
+                Environment.i.world.teleportController.Teleport(coords.x, coords.y);
+            else
+                Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
+        }
         else
-            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
+        {
+            // We jump in to the specific world defined in 'serverName'
+            Environment.i.world.teleportController.JumpIn(0, 0, serverName, "");
+        }
     }
 
     private void RequestAndLoadCategories()
