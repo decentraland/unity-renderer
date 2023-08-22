@@ -20,7 +20,7 @@ public class EventFromAPIModel
     public string finish_at;
     public string scene_name;
     public int[] coordinates;
-    public string realm;
+    public string server;
     public int total_attendees;
     public bool live;
     public string user_name;
@@ -31,6 +31,7 @@ public class EventFromAPIModel
     public bool recurrent;
     public double duration;
     public string start_at;
+    public bool world;
 }
 
 [Serializable]

@@ -206,6 +206,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
 
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.onClick.AddListener(CloseModal);
+
         onSubscribeClick.AddListener(PressedSubscribe);
         onUnsubscribeClick.AddListener(PressedUnsubscribe);
     }
@@ -315,6 +318,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.RemoveAllListeners();
+
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.onClick.RemoveAllListeners();
 
         onSubscribeClick.RemoveAllListeners();
         onUnsubscribeClick.RemoveAllListeners();

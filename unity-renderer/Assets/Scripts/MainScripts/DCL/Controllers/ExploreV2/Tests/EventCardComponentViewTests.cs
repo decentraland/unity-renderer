@@ -70,7 +70,7 @@ public class EventCardComponentViewTests
                 live = true,
                 name = "Test Name",
                 next_start_at = "Test Start",
-                realm = "Test Realm",
+                server = "Test Realm",
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
