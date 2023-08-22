@@ -21,6 +21,10 @@ MonoBehaviour:
     m_Address: ScreencaptureCameraController
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 0ec15e0bcbdac1a4e89571580222c90b
+    m_Address: ScreencaptureMainButton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
