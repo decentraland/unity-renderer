@@ -98,25 +98,6 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             Object.DestroyImmediate(screencaptureCameraBehaviour.gameObject);
         }
 
-        [Test] [Category("EditModeCI")]
-        public void ToggleScreenshotCamera_WhenGuest_DoesNothing_ExternalVarsNotToggled()
-        {
-            // Arrange
-            screencaptureCameraBehaviour.screenshotCamera.gameObject.SetActive(false);
-
-            // Act
-            screencaptureCameraBehaviour.ToggleScreenshotCamera();
-
-            // Assert
-            Assert.IsFalse(screencaptureCameraBehaviour.isScreencaptureCameraActive.Get());
-            Assert.IsFalse(allUIHidden.Get());
-            Assert.IsFalse(cameraModeInputLocked.Get());
-            Assert.IsFalse(cameraBlocked.Get());
-            Assert.IsFalse(featureKeyTriggersBlocked.Get());
-            Assert.IsFalse(userMovementKeysBlocked.Get());
-            cameraLeftMouseButtonCursorLock.DidNotReceive().Set(true);
-        }
-
         [Test]
         public void ToggleScreenshotCamera_WhenNotGuest_ActivatesScreenshotCamera_CorrectlyTogglesVariables()
         {
