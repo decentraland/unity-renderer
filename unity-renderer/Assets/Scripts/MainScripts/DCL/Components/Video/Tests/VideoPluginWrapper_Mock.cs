@@ -47,6 +47,11 @@ namespace Tests
             coroutineDelayedReady = CoroutineStarter.Start(GetReadyAfterDelay());
             texture = new Texture2D(1, 1);
         }
+        
+        public void Create(string id, string url, VideoType type)
+        {
+            Create(id, url, type == VideoType.Hls);
+        }
 
         /// <summary>
         /// This small method simulates what happens in the plugin. Ready state can get delayed.

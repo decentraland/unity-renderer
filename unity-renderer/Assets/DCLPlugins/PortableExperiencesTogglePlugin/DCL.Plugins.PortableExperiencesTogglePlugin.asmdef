@@ -1,0 +1,27 @@
+{
+    "name": "DCL.Plugins.PortableExperiencesTogglePlugin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:7fe146b43e76fe745aeaf2020feb54b7",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:3c7b57a14671040bd8c549056adc04f5",
+        "GUID:2995626b54c60644988f134a69a77450",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:44a9db8f655ab05409802e5476cf9dd3",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

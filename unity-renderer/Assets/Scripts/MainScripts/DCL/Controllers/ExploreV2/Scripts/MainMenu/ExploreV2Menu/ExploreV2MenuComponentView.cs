@@ -24,6 +24,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal FeatureEncapsulatorComponentView backpackSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView cameraReelSection;
     [SerializeField] internal FeatureEncapsulatorComponentView mapSection;
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
@@ -90,6 +91,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             { ExploreSection.Explore, null },
             { ExploreSection.Quest, questSection },
             { ExploreSection.Backpack, backpackSection },
+            { ExploreSection.CameraReel, cameraReelSection },
             { ExploreSection.Map, mapSection },
             { ExploreSection.Settings, settingsSection },
             { ExploreSection.Wallet, walletSection },

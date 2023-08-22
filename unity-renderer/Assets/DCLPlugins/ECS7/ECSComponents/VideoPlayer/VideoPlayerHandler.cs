@@ -69,14 +69,22 @@ namespace DCL.ECSComponents
                 videoPlayer?.Dispose();
 
                 var id = entity.entityId.ToString();
-                bool isStream = !NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x));
-                string videoUrl = model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames);
+
+                VideoType videoType = VideoType.Common;
+                if (model.Src.StartsWith("livekit-video://"))
+                    videoType = VideoType.LiveKit;
+                else if (!NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x)))
+                    videoType = VideoType.Hls;
+
+                string videoUrl = videoType != VideoType.LiveKit
+                    ? model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames)
+                    : model.Src;
 
                 isValidUrl = !string.IsNullOrEmpty(videoUrl);
                 if (!isValidUrl)
                     return;
 
-                videoPlayer = new WebVideoPlayer(id, videoUrl, isStream, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+                videoPlayer = new WebVideoPlayer(id, videoUrl, videoType, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,

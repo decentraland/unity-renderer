@@ -89,7 +89,6 @@ import {
   getTotalFriends,
   isFriend,
   isFromPendingRequest,
-  isPendingRequest,
   isToPendingRequest
 } from 'shared/friends/selectors'
 import { FriendRequest, FriendsState, SocialData } from 'shared/friends/types'
@@ -382,11 +381,6 @@ function* configureMatrixClient(action: SetMatrixClient) {
 
       if (message.sender === ownId && !isChannelType) {
         // ignore messages sent to private chats by the local user
-        return
-      }
-
-      if (isPendingRequest(store.getState(), getUserIdFromMatrix(message.sender))) {
-        // ignore messages sent in the request event
         return
       }
 
@@ -990,8 +984,8 @@ export async function getPrivateMessages(getPrivateMessagesPayload: GetPrivateMe
   getUnityInstance().AddChatMessages(addChatMessagesPayload)
 }
 
-export function getUnseenMessagesByUser() {
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+export async function getUnseenMessagesByUser() {
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return
@@ -1012,7 +1006,7 @@ export function getUnseenMessagesByUser() {
 export async function getFriendsWithDirectMessages(request: GetFriendsWithDirectMessagesPayload) {
   const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return

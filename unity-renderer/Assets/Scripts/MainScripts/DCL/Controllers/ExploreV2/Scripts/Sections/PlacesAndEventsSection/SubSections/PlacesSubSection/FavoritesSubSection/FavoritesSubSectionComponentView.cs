@@ -48,6 +48,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     public event Action OnReady;
     public event Action<PlaceCardComponentModel> OnInfoClicked;
     public event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
+    public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnFavoriteSubSectionEnable;
@@ -132,7 +133,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
         {
             // The server might not be in sync yet with the local favorites, we force them to be favorites
             place.isFavorite = true;
-            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(favoritesCardsPool, place, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
+            PlaceCardComponentView placeCard = PlacesAndEventsCardsFactory.CreateConfiguredPlaceCard(favoritesCardsPool, place, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
             OnFriendHandlerAdded?.Invoke(placeCard.friendsHandler);
 
             this.favorites.AddItem(placeCard);
@@ -162,7 +163,7 @@ public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSub
     public void ShowPlaceModal(PlaceCardComponentModel placeInfo)
     {
         placeModal.Show();
-        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked, OnFavoriteClicked);
+        PlacesCardsConfigurator.Configure(placeModal, placeInfo, OnInfoClicked, OnJumpInClicked, OnVoteChanged, OnFavoriteClicked);
     }
 
     public void HidePlaceModal()

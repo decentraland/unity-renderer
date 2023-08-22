@@ -139,6 +139,30 @@ namespace Tests
         }
 
         [Test]
+        public void DoNotPlayAudioIfConditionsAreMeet()
+        {
+            const string URL = "http://fake/audio.mp4";
+
+            // Arrange
+            sceneData.allowedMediaHostnames = new[] { "fake" };
+            sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
+            model.Url = URL;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = true;
+            audioSourceComponentHandler.hadUserInteraction = false;
+
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
+            Assert.AreEqual(URL, audioSourceComponentHandler.url);
+        }
+
+        [Test]
         public void StopAudioIfRendererIsDisable()
         {
             // Arrange
@@ -184,7 +208,7 @@ namespace Tests
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            Assert.IsNull(audioSourceComponentHandler.url);
+            Assert.IsTrue(string.IsNullOrEmpty(audioSourceComponentHandler.url));
         }
 
         [Test]
@@ -223,7 +247,7 @@ namespace Tests
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            Assert.IsNull(audioSourceComponentHandler.url);
+            Assert.IsTrue(string.IsNullOrEmpty(audioSourceComponentHandler.url));
         }
 
         private PBAudioStream CreateAudioStreamModel()

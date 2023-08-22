@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
 using DCL.Chat.Channels;
+using DCL.Social.Chat;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class CreateChannelWindowController : IHUD
     {

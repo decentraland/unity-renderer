@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type { Vector3 } from 'lib/math/Vector3'
 import type { Vector2 } from 'lib/math/Vector2'
+import { SceneFeatureToggle } from 'lib/decentraland/sceneJson/types'
 import { Entity } from '@dcl/schemas'
 import { MinimapSceneInfo } from '@dcl/legacy-ecs/dist/decentraland/Types'
 export type { WearableId, Wearable, WearableV2 } from './catalogs/types'
@@ -175,11 +176,6 @@ export type SceneSourcePlacement = {
   rotation: 'north' | 'east' | 'south' | 'west'
   point: { x: number; y: number }
   layout: { cols: number; rows: number }
-}
-
-export type SceneFeatureToggle = {
-  name: string
-  default: 'enabled' | 'disabled'
 }
 
 export const VOICE_CHAT_FEATURE_TOGGLE: SceneFeatureToggle = { name: 'voiceChat', default: 'enabled' }

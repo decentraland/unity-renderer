@@ -454,7 +454,7 @@ namespace DCL.Helpers
 
             public static T GetFromJsonArray(string jsonArray)
             {
-                string newJson = $"{{ \"value\": {jsonArray}}}";
+                var newJson = $"{{ \"value\": {jsonArray}}}";
                 return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
@@ -684,7 +684,7 @@ namespace DCL.Helpers
         {
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
-            return $"{dtDateTime.Hour}:{dtDateTime.Minute.ToString("D2")}";
+            return $"{dtDateTime.Hour}:{dtDateTime.Minute:D2}";
         }
 
         public static DateTime UnixToDateTimeWithTime(ulong unixTimeStampMilliseconds)
@@ -698,9 +698,13 @@ namespace DCL.Helpers
 
         public static Vector2Int ConvertStringToVector(string input)
         {
-            Match match = COORDINATES_REGEX.Match(input);
+            Match match = COORDINATES_REGEX.Match(input.Replace(" ",""));
 
-            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y)) { throw new Exception("Coordinates parsing error"); }
+            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y))
+            {
+                Debug.LogError("Coordinates parsing error for coords " + input);
+                return new Vector2Int(0, 0);
+            }
 
             return new Vector2Int(x, y);
         }

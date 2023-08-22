@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
-using MainScripts.DCL.Controllers.HotScenes;
 using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
@@ -24,6 +23,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
@@ -38,17 +38,20 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         IPlacesAPIService placesAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
         DataStore dataStore)
     {
         this.dataStore = dataStore;
         this.dataStore.channels.currentJoinChannelModal.OnChange += OnChannelToJoinChanged;
         this.view = view;
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
         placesAPIService = placesAPI;
 
         this.view.OnReady += FirstLoading;
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnVoteChanged += VoteChanegd;
         this.view.OnShowMoreFavoritesClicked += ShowMoreFavorites;
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
@@ -58,16 +61,27 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
         view.ConfigurePools();
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    private void VoteChanegd(string placeId, bool? isUpvote)
     {
-        if (isFavorite)
+        if (isUpvote != null)
         {
-            exploreV2Analytics.AddFavorite(placeUUID);
+            if (isUpvote.Value)
+                placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
         }
         else
-        {
-            exploreV2Analytics.RemoveFavorite(placeUUID);
-        }
+            placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+
+        placesAPIService.SetPlaceVote(isUpvote, placeId, default);
+    }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if(isFavorite)
+            placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+        else
+            placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
 
         cts?.Cancel();
         cts?.Dispose();
@@ -100,6 +114,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     internal void RequestAllFavorites()
     {
+        exploreV2Analytics.SendFavoritesTabOpen();
+
         if (cardsReloader.CanReload())
         {
             availableUISlots = view.CurrentTilesPerRow * INITIAL_NUMBER_OF_ROWS;

@@ -1,8 +1,9 @@
+using DCL.Social.Chat;
 using System;
 using TMPro;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelJoinErrorWindowComponentView : BaseComponentView, IChannelJoinErrorWindowView
     {

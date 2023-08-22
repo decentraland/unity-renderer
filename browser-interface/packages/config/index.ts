@@ -75,6 +75,8 @@ export const QS_MAX_VISIBLE_PEERS =
 export const BUILDER_SERVER_URL =
   ensureSingleString(qs.get('BUILDER_SERVER_URL')) ?? 'https://builder-api.decentraland.org/v1'
 
+export const SSO_URL = ensureSingleString(qs.get('SSO_URL')) ?? 'https://id.decentraland.org'
+
 /**
  * Get the root URL and ensure not to end with slash
  * @returns Root URL with pathname where the index.html is served.
@@ -110,7 +112,7 @@ export const commConfigurations = {
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 'mainnet',
-  GOERLI = 'goerli'
+  SEPOLIA = 'sepolia'
 }
 
 const knownTLDs = ['zone', 'org', 'today']
@@ -194,17 +196,17 @@ export namespace ethereumConfigurations {
     CatalystProxy: assertValue(contractInfo.mainnet.CatalystProxy),
     MANAToken: assertValue(contractInfo.mainnet.MANAToken)
   }
-  export const goerli = {
-    wss: 'wss://rpc.decentraland.org/goerli',
-    http: 'https://rpc.decentraland.org/goerli',
-    etherscan: 'https://goerli.etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-goerli',
+  export const sepolia = {
+    wss: 'wss://rpc.decentraland.org/sepolia',
+    http: 'https://rpc.decentraland.org/sepolia',
+    etherscan: 'https://sepolia.etherscan.io',
+    names: 'https://api.studio.thegraph.com/query/49472/marketplace-sepolia/version/latest',
 
     // contracts
-    LANDProxy: assertValue(contractInfo.goerli.LANDProxy),
-    EstateProxy: assertValue(contractInfo.goerli.EstateProxy),
-    CatalystProxy: assertValue(contractInfo.goerli.CatalystProxy || contractInfo.goerli.Catalyst),
-    MANAToken: assertValue(contractInfo.goerli.MANAToken)
+    LANDProxy: assertValue(contractInfo.sepolia.LANDProxy),
+    EstateProxy: assertValue(contractInfo.sepolia.EstateProxy),
+    CatalystProxy: assertValue(contractInfo.sepolia.Catalyst),
+    MANAToken: assertValue(contractInfo.sepolia.MANAToken)
   }
 }
 

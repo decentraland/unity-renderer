@@ -1,5 +1,7 @@
 using DCL.Helpers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
@@ -10,21 +12,34 @@ namespace DCL.PortableExperiences.Confirmation
     public class ExperiencesConfirmationPopupComponentView : BaseComponentView<ExperiencesConfirmationViewModel>,
         IExperiencesConfirmationPopupView
     {
+        [Serializable]
+        private struct PermissionContainer
+        {
+            public string permission;
+            public GameObject container;
+        }
+
         [SerializeField] private Button acceptButton;
         [SerializeField] private Button rejectButton;
         [SerializeField] private Button[] cancelButtons;
         [SerializeField] private InputAction_Trigger cancelTrigger;
         [SerializeField] private GameObject permissionsContainer;
         [SerializeField] private GameObject descriptionContainer;
-        [SerializeField] private TMP_Text permissionsLabel;
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text descriptionLabel;
+        [SerializeField] private TMP_Text allowButtonLabel;
+        [SerializeField] private TMP_Text rejectButtonLabel;
         [SerializeField] private Toggle dontAskMeAgainToggle;
         [SerializeField] private ImageComponentView iconImage;
         [SerializeField] private Texture2D defaultIconSprite;
         [SerializeField] private RectTransform root;
         [SerializeField] private GameObject smartWearableTitle;
         [SerializeField] private GameObject scenePxTitle;
+        [SerializeField] private List<PermissionContainer> permissionsConfig;
+        [SerializeField] private Button useWeb3ApiInfoButton;
+        [SerializeField] private ShowHideAnimator useWeb3ApiInfoToast;
+
+        private Dictionary<string, GameObject> permissionContainers;
 
         public event Action OnAccepted;
         public event Action OnRejected;
@@ -35,6 +50,8 @@ namespace DCL.PortableExperiences.Confirmation
         public override void Awake()
         {
             base.Awake();
+
+            permissionContainers = permissionsConfig.ToDictionary(container => container.permission, container => container.container);
 
             acceptButton.onClick.AddListener(() => OnAccepted?.Invoke());
             rejectButton.onClick.AddListener(() => OnRejected?.Invoke());
@@ -48,6 +65,17 @@ namespace DCL.PortableExperiences.Confirmation
                     OnDontShowAnymore?.Invoke();
                 else
                     OnKeepShowing?.Invoke();
+            });
+
+            useWeb3ApiInfoButton.onClick.AddListener(() =>
+            {
+                if (useWeb3ApiInfoToast.gameObject.activeSelf)
+                    useWeb3ApiInfoToast.Hide();
+                else
+                {
+                    useWeb3ApiInfoToast.gameObject.SetActive(true);
+                    useWeb3ApiInfoToast.ShowDelayHide(10f);
+                }
             });
         }
 
@@ -73,9 +101,11 @@ namespace DCL.PortableExperiences.Confirmation
             permissionsContainer.SetActive(isPermissionsEnabled);
             descriptionContainer.SetActive(isDescriptionEnabled);
 
-            permissionsLabel.text = "";
+            foreach ((string _, GameObject container) in permissionContainers)
+                container.SetActive(false);
+
             foreach (string permission in model.Permissions)
-                permissionsLabel.text += $"- {permission}\n";
+                permissionContainers[permission].SetActive(true);
 
             descriptionLabel.text = model.Description;
             nameLabel.text = model.Name;
@@ -84,7 +114,7 @@ namespace DCL.PortableExperiences.Confirmation
             {
                 iconImage.UseLoadingIndicator = false;
                 iconImage.SetImage(defaultIconSprite);
-                iconImage.ImageComponent.color = new Color(0.44f, 0.41f, 0.48f, 1f);
+                iconImage.ImageComponent.color = new Color(0.08627451f, 0.08235294f, 0.09411765f, 1f);
             }
             else
             {
@@ -96,6 +126,17 @@ namespace DCL.PortableExperiences.Confirmation
             smartWearableTitle.SetActive(model.IsSmartWearable);
             scenePxTitle.SetActive(!model.IsSmartWearable);
 
+            if (model.IsSmartWearable)
+            {
+                allowButtonLabel.text = "ALLOW AND EQUIP";
+                rejectButtonLabel.text = "DON'T ALLOW\nAND EQUIP";
+            }
+            else
+            {
+                allowButtonLabel.text = "OK";
+                rejectButtonLabel.text = "DON'T ALLOW";
+            }
+
             root.ForceUpdateLayout();
         }
 
@@ -104,11 +145,11 @@ namespace DCL.PortableExperiences.Confirmation
             gameObject.SetActive(true);
             base.Show(instant);
 
-            // let the subscribers know that the default option is 'dont show anymore'
-            if (!dontAskMeAgainToggle.isOn)
-                dontAskMeAgainToggle.isOn = true;
+            // let the subscribers know that the default option is 'keep showing'
+            if (dontAskMeAgainToggle.isOn)
+                dontAskMeAgainToggle.isOn = false;
             else
-                OnDontShowAnymore?.Invoke();
+                OnKeepShowing?.Invoke();
         }
 
         public override void Hide(bool instant = false)

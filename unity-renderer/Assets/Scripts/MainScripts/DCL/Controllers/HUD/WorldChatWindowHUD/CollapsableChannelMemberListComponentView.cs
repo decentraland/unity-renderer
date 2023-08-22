@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DCL;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
+using DCL.Social.Chat;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
 

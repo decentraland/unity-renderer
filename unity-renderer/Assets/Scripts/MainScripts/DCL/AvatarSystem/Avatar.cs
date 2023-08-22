@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using GPUSkinning;
 using UnityEngine;
 
@@ -128,20 +129,16 @@ namespace AvatarSystem
 
         protected async UniTask<List<WearableItem>> LoadWearables(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken linkedCt = default)
         {
-            WearableItem bodyshape;
-            WearableItem eyes;
-            WearableItem eyebrows;
-            WearableItem mouth;
+            BodyWearables bodyWearables;
             List<WearableItem> wearables;
             List<WearableItem> emotes;
 
-            (bodyshape, eyes, eyebrows, mouth, wearables, emotes) =
-                await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
+            (bodyWearables, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
 
-            if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+            if (!loader.IsValidForBodyShape(bodyWearables))
                 visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
-            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, bonesRenderers, linkedCt);
+            await loader.Load(bodyWearables, wearables, settings, bonesRenderers, linkedCt);
             return emotes;
         }
 
@@ -179,6 +176,12 @@ namespace AvatarSystem
         public void PlayEmote(string emoteId, long timestamps) =>
             animator?.PlayEmote(emoteId, timestamps);
 
+        public void EquipEmote(string emoteId, EmoteClipData emoteClipData) =>
+            animator?.EquipEmote(emoteId, emoteClipData);
+
+        public void UnequipEmote(string emoteId) =>
+            animator?.UnequipEmote(emoteId);
+
         public void SetLODLevel(int lodIndex) =>
             lod.SetLodIndex(lodIndex);
 
@@ -196,6 +199,8 @@ namespace AvatarSystem
 
         public Renderer GetMainRenderer() =>
             gpuSkinning.renderer;
+
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => loader.originalVisibleRenderers;
 
         public void Dispose()
         {

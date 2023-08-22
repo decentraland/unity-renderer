@@ -19,7 +19,7 @@ public class InputAction_Measurable : ScriptableObject
     [SerializeField] internal BooleanVariable blockMeasurable;
     public BooleanVariable isMeasurableBlocked { get => blockMeasurable; set => blockMeasurable = value; }
 
-    internal void RaiseOnValueChanged(float value)
+    public void SetValue(float value)
     {
         if (Math.Abs(currentValue - value) > Mathf.Epsilon)
         {
@@ -42,7 +42,7 @@ public class InputAction_Measurable : ScriptableObject
             changeValue = GUILayout.HorizontalSlider(changeValue, 0, 1);
             if (Application.isPlaying && GUILayout.Button("Raise OnChange"))
             {
-                ((InputAction_Measurable)target).RaiseOnValueChanged(changeValue);
+                ((InputAction_Measurable)target).SetValue(changeValue);
             }
         }
     }

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CameraReel
+  m_EditorClassIdentifier: 
+  m_GroupName: CameraReel
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0c25c397835febc4da1b4295af52dd49
+  m_SerializeEntries:
+  - m_GUID: 02c9c3e59ec665748b30c0ca02b0f871
+    m_Address: CameraReelSectionView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 08892dc27f1f1f549a7a2e521aaad444
+    m_Address: ScreenshotView
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3dcf6c20b9a67014fb75d2bca9d16747, type: 2}
+    - {fileID: 11400000, guid: 0e077ce760593b24fa94d19741089391, type: 2}

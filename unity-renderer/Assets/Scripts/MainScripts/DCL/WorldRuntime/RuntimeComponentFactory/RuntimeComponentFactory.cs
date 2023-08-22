@@ -12,14 +12,22 @@ namespace DCL
     public class RuntimeComponentFactory : IRuntimeComponentFactory
     {
         // Temporal delegate for special behaviours. Should be deleted or refactored later.
-        public Dictionary<int, IRuntimeComponentFactory.CreateCondition> createConditions { get; } = new ();
-        public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; } = new ();
+        public Dictionary<int, IRuntimeComponentFactory.CreateCondition> createConditions { get; set; } =
+            new Dictionary<int, IRuntimeComponentFactory.CreateCondition>();
 
-        private readonly Dictionary<int, Func<IComponent>> builders = new ();
+        public Dictionary<int, IRuntimeComponentFactory.CreateOverride> createOverrides { get; set; } =
+            new Dictionary<int, IRuntimeComponentFactory.CreateOverride>();
+        
+        protected delegate IComponent ComponentBuilder(int classId);
+
+        protected Dictionary<int, ComponentBuilder> builders = new Dictionary<int, ComponentBuilder>();
 
         public void RegisterBuilder(int classId, Func<IComponent> builder)
         {
-            builders[classId] = builder;
+            if (builders.ContainsKey(classId))
+                builders[classId] = (id) => builder();
+            else
+                builders.Add(classId, (id) => builder());
         }
 
         public void UnregisterBuilder(int classId)
@@ -39,7 +47,7 @@ namespace DCL
                 return null;
             }
 
-            IComponent newComponent = builders[classId]();
+            IComponent newComponent = builders[classId](classId);
 
             return newComponent;
         }

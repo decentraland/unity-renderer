@@ -21,8 +21,10 @@ public class PlacesAndEventsSectionComponentControllerTests
             exploreV2Analytics,
             DataStore.i,
             Substitute.For<IUserProfileBridge>(),
-            Substitute.For<IFriendsController>()
-            , Substitute.For<IPlacesAPIService>());
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IPlacesAPIService>(),
+            Substitute.For<IPlacesAnalytics>()
+            );
     }
 
     [TearDown]
@@ -35,7 +37,6 @@ public class PlacesAndEventsSectionComponentControllerTests
         Assert.AreEqual(placesAndEventsSectionComponentView, placesAndEventsSectionComponentController.view);
         Assert.IsNotNull(placesAndEventsSectionComponentController.placesSubSectionComponentController);
         Assert.IsNotNull(placesAndEventsSectionComponentController.eventsSubSectionComponentController);
-        Assert.IsNotNull(placesAndEventsSectionComponentController.highlightsSubSectionComponentController);
     }
 
     [Test]

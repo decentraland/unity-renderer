@@ -1,209 +1,212 @@
 using System.Collections;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class ChannelMembersComponentViewShould
+namespace DCL.Social.Chat
 {
-    private ChannelMembersComponentView experienceRowComponent;
-
-    [SetUp]
-    public void SetUp()
+    public class ChannelMembersComponentViewShould
     {
-        experienceRowComponent = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<ChannelMembersComponentView>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelMembersHUD.prefab"));
-    }
+        private ChannelMembersComponentView experienceRowComponent;
 
-    [TearDown]
-    public void TearDown()
-    {
-        experienceRowComponent.Dispose();
-    }
-
-    [Test]
-    public void ClearAllEntriesCorrectly()
-    {
-        // Arrange
-        string testId = "testId";
-        ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+        [SetUp]
+        public void SetUp()
         {
-            userId = testId,
-            isOnline = true,
-            thumnailUrl = "testUri",
-            userName = "testName"
-        };
+            experienceRowComponent = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelMembersComponentView>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelMembersHUD.prefab"));
+        }
 
-        experienceRowComponent.memberList.Set(testId, testModel);
-
-        // Act
-        experienceRowComponent.ClearAllEntries();
-
-        // Assert
-        Assert.AreEqual(0, experienceRowComponent.memberList.Count());
-        Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
-    }
-
-    [Test]
-    public void ShowLoadingCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.loadingContainer.SetActive(false);
-        experienceRowComponent.memberList.gameObject.SetActive(true);
-        experienceRowComponent.resultsHeaderLabel.gameObject.SetActive(true);
-
-        // Act
-        experienceRowComponent.ShowLoading();
-
-        // Assert
-        Assert.IsTrue(experienceRowComponent.loadingContainer.activeSelf);
-        Assert.IsFalse(experienceRowComponent.memberList.gameObject.activeSelf);
-        Assert.IsFalse(experienceRowComponent.resultsHeaderLabel.gameObject.activeSelf);
-    }
-
-    [UnityTest]
-    public IEnumerator SetCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.memberList.Clear();
-        string testId = "testId";
-        ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+        [TearDown]
+        public void TearDown()
         {
-            userId = testId,
-            isOnline = true,
-            thumnailUrl = "",
-            userName = "testName"
-        };
+            experienceRowComponent.Dispose();
+        }
 
-        // Act
-        experienceRowComponent.Set(testModel);
-        // wait for the queued entry to be added in the next frame
-        yield return null;
+        [Test]
+        public void ClearAllEntriesCorrectly()
+        {
+            // Arrange
+            string testId = "testId";
+            ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+            {
+                userId = testId,
+                isOnline = true,
+                thumnailUrl = "testUri",
+                userName = "testName"
+            };
 
-        // Assert
-        Assert.IsTrue(experienceRowComponent.memberList.Contains(testId));
-        Assert.AreEqual($"Results ({1})", experienceRowComponent.resultsHeaderLabel.text);
-    }
+            experienceRowComponent.memberList.Set(testId, testModel);
 
-    [UnityTest]
-    public IEnumerator RemoveCorrectly()
-    {
-        // Act
-        yield return SetCorrectly();
-        experienceRowComponent.Remove("testId");
+            // Act
+            experienceRowComponent.ClearAllEntries();
 
-        // Assert
-        Assert.IsFalse(experienceRowComponent.memberList.Contains("testId"));
-        Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
-    }
+            // Assert
+            Assert.AreEqual(0, experienceRowComponent.memberList.Count());
+            Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
+        }
 
-    [Test]
-    public void ShowCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.gameObject.SetActive(false);
+        [Test]
+        public void ShowLoadingCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.loadingContainer.SetActive(false);
+            experienceRowComponent.memberList.gameObject.SetActive(true);
+            experienceRowComponent.resultsHeaderLabel.gameObject.SetActive(true);
 
-        // Act
-        experienceRowComponent.Show();
+            // Act
+            experienceRowComponent.ShowLoading();
 
-        // Assert
-        Assert.IsTrue(experienceRowComponent.gameObject.activeSelf);
-    }
+            // Assert
+            Assert.IsTrue(experienceRowComponent.loadingContainer.activeSelf);
+            Assert.IsFalse(experienceRowComponent.memberList.gameObject.activeSelf);
+            Assert.IsFalse(experienceRowComponent.resultsHeaderLabel.gameObject.activeSelf);
+        }
 
-    [Test]
-    public void HideCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.gameObject.SetActive(true);
+        [UnityTest]
+        public IEnumerator SetCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.memberList.Clear();
+            string testId = "testId";
+            ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+            {
+                userId = testId,
+                isOnline = true,
+                thumnailUrl = "",
+                userName = "testName"
+            };
 
-        // Act
-        experienceRowComponent.Hide();
+            // Act
+            experienceRowComponent.Set(testModel);
+            // wait for the queued entry to be added in the next frame
+            yield return null;
 
-        // Assert
-        Assert.IsFalse(experienceRowComponent.gameObject.activeSelf);
-    }
+            // Assert
+            Assert.IsTrue(experienceRowComponent.memberList.Contains(testId));
+            Assert.AreEqual($"Results ({1})", experienceRowComponent.resultsHeaderLabel.text);
+        }
 
-    [Test]
-    public void ClearSearchInputCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.searchBar.inputField.text = "test text";
+        [UnityTest]
+        public IEnumerator RemoveCorrectly()
+        {
+            // Act
+            yield return SetCorrectly();
+            experienceRowComponent.Remove("testId");
 
-        // Act
-        experienceRowComponent.ClearSearchInput();
+            // Assert
+            Assert.IsFalse(experienceRowComponent.memberList.Contains("testId"));
+            Assert.AreEqual($"Results ({0})", experienceRowComponent.resultsHeaderLabel.text);
+        }
 
-        // Assert
-        Assert.AreEqual("", experienceRowComponent.searchBar.Text);
-    }
+        [Test]
+        public void ShowCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.gameObject.SetActive(false);
 
-    [Test]
-    public void HideLoadingCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.loadingContainer.SetActive(true);
-        experienceRowComponent.memberList.gameObject.SetActive(false);
-        experienceRowComponent.resultsHeaderLabel.gameObject.SetActive(false);
+            // Act
+            experienceRowComponent.Show();
 
-        // Act
-        experienceRowComponent.HideLoading();
+            // Assert
+            Assert.IsTrue(experienceRowComponent.gameObject.activeSelf);
+        }
 
-        // Assert
-        Assert.IsFalse(experienceRowComponent.loadingContainer.activeSelf);
-        Assert.IsTrue(experienceRowComponent.memberList.gameObject.activeSelf);
-        Assert.IsTrue(experienceRowComponent.resultsHeaderLabel.gameObject.activeSelf);
-    }
+        [Test]
+        public void HideCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.gameObject.SetActive(true);
 
-    [Test]
-    public void ShowLoadingMoreCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.loadMoreContainer.SetActive(false);
+            // Act
+            experienceRowComponent.Hide();
 
-        // Act
-        experienceRowComponent.ShowLoadingMore();
+            // Assert
+            Assert.IsFalse(experienceRowComponent.gameObject.activeSelf);
+        }
 
-        // Assert
-        Assert.IsTrue(experienceRowComponent.loadMoreContainer.activeSelf);
-    }
+        [Test]
+        public void ClearSearchInputCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.searchBar.inputField.text = "test text";
 
-    [Test]
-    public void HideLoadingMoreCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.loadMoreContainer.SetActive(true);
+            // Act
+            experienceRowComponent.ClearSearchInput();
 
-        // Act
-        experienceRowComponent.HideLoadingMore();
+            // Assert
+            Assert.AreEqual("", experienceRowComponent.searchBar.Text);
+        }
 
-        // Assert
-        Assert.IsFalse(experienceRowComponent.loadMoreContainer.activeSelf);
-    }
+        [Test]
+        public void HideLoadingCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.loadingContainer.SetActive(true);
+            experienceRowComponent.memberList.gameObject.SetActive(false);
+            experienceRowComponent.resultsHeaderLabel.gameObject.SetActive(false);
 
-    [Test]
-    public void ShowResultsHeaderCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.resultsHeaderLabelContainer.SetActive(false);
+            // Act
+            experienceRowComponent.HideLoading();
 
-        // Act
-        experienceRowComponent.ShowResultsHeader();
+            // Assert
+            Assert.IsFalse(experienceRowComponent.loadingContainer.activeSelf);
+            Assert.IsTrue(experienceRowComponent.memberList.gameObject.activeSelf);
+            Assert.IsTrue(experienceRowComponent.resultsHeaderLabel.gameObject.activeSelf);
+        }
 
-        // Assert
-        Assert.IsTrue(experienceRowComponent.resultsHeaderLabelContainer.activeSelf);
-    }
+        [Test]
+        public void ShowLoadingMoreCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.loadMoreContainer.SetActive(false);
 
-    [Test]
-    public void HideResultsHeaderCorrectly()
-    {
-        // Arrange
-        experienceRowComponent.resultsHeaderLabelContainer.SetActive(true);
+            // Act
+            experienceRowComponent.ShowLoadingMore();
 
-        // Act
-        experienceRowComponent.HideResultsHeader();
+            // Assert
+            Assert.IsTrue(experienceRowComponent.loadMoreContainer.activeSelf);
+        }
 
-        // Assert
-        Assert.IsFalse(experienceRowComponent.resultsHeaderLabelContainer.activeSelf);
+        [Test]
+        public void HideLoadingMoreCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.loadMoreContainer.SetActive(true);
+
+            // Act
+            experienceRowComponent.HideLoadingMore();
+
+            // Assert
+            Assert.IsFalse(experienceRowComponent.loadMoreContainer.activeSelf);
+        }
+
+        [Test]
+        public void ShowResultsHeaderCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.resultsHeaderLabelContainer.SetActive(false);
+
+            // Act
+            experienceRowComponent.ShowResultsHeader();
+
+            // Assert
+            Assert.IsTrue(experienceRowComponent.resultsHeaderLabelContainer.activeSelf);
+        }
+
+        [Test]
+        public void HideResultsHeaderCorrectly()
+        {
+            // Arrange
+            experienceRowComponent.resultsHeaderLabelContainer.SetActive(true);
+
+            // Act
+            experienceRowComponent.HideResultsHeader();
+
+            // Assert
+            Assert.IsFalse(experienceRowComponent.resultsHeaderLabelContainer.activeSelf);
+        }
     }
 }

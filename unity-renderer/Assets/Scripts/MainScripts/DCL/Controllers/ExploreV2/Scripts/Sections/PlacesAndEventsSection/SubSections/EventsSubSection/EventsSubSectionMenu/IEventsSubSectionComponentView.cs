@@ -1,17 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public enum EventsType
+{
+    Upcoming,
+    Featured,
+    Trending,
+    WantToGo,
+}
+
 public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Number of events per row that fit with the current upcoming events grid configuration.
     /// </summary>
-    int currentUpcomingEventsPerRow { get; }
+    int currentEventsPerRow { get; }
 
     /// <summary>
-    /// Number of going to events per row that fit with the current upcoming events grid configuration.
+    /// Current event type filter (FEATURED, TRENDING or WANT TO GO) selected.
     /// </summary>
-    int currentGoingEventsPerRow { get; }
+    EventsType SelectedEventType { get; }
+
+    /// <summary>
+    /// Current frequency filter (ALL, ONE TIME EVENT or RECURRING EVENT) selected.
+    /// </summary>
+    string SelectedFrequency { get; }
+
+    /// <summary>
+    /// Current category filter (ALL, ART & CULTURE, EDUCATION, etc.) selected.
+    /// </summary>
+    string SelectedCategory { get; }
+
+    /// <summary>
+    /// Current time (low value) filter (00:00 - 24:00)
+    /// </summary>
+    public float SelectedLowTime { get; }
+
+    /// <summary>
+    /// Current time (high value) filter (00:00 - 24:00)
+    /// </summary>
+    public float SelectedHighTime { get; }
 
     /// <summary>
     /// It will be triggered when all the UI components have been fully initialized.
@@ -41,12 +69,7 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
     /// </summary>
-    event Action OnShowMoreUpcomingEventsClicked;
-
-    /// <summary>
-    /// It will be triggered when the "Show More" for going events button is clicked.
-    /// </summary>
-    event Action OnShowMoreGoingEventsClicked;
+    event Action OnShowMoreEventsClicked;
 
     event Action OnConnectWallet;
 
@@ -56,51 +79,48 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     event Action OnEventsSubSectionEnable;
 
     /// <summary>
+    /// It will be triggered each time any event type filter is changed.
+    /// </summary>
+    event Action OnEventTypeFiltersChanged;
+
+    /// <summary>
+    /// It will be triggered each time the frequency filter is changed.
+    /// </summary>
+    event Action OnEventFrequencyFilterChanged;
+
+    /// <summary>
+    /// It will be triggered each time the category filter is changed.
+    /// </summary>
+    event Action OnEventCategoryFilterChanged;
+
+    /// <summary>
+    /// It will be triggered each time the time filter is changed.
+    /// </summary>
+    event Action OnEventTimeFilterChanged;
+
+    /// <summary>
     /// Set the featured events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
     void SetFeaturedEvents(List<EventCardComponentModel> events);
 
     /// <summary>
-    /// </summary>
-    /// <param name="events">List of events (model) to be loaded.</param>
-    void SetTrendingEvents(List<EventCardComponentModel> events);
-
-    /// <summary>
     /// Set the upcoming events component with a list of events.
     /// </summary>
     /// <param name="events">List of events (model) to be loaded.</param>
-    void SetUpcomingEvents(List<EventCardComponentModel> events);
+    void SetEvents(List<EventCardComponentModel> events);
 
     /// <summary>
     /// Add a list of events in the events component.
     /// </summary>
     /// <param name="places">List of events (model) to be added.</param>
-    void AddUpcomingEvents(List<EventCardComponentModel> events);
-
-    /// <summary>
-    /// Add a list of events in the going events component.
-    /// </summary>
-    /// <param name="places">List of events (model) to be added.</param>
-    void AddGoingEvents(List<EventCardComponentModel> events);
+    void AddEvents(List<EventCardComponentModel> events);
 
     /// <summary>
     /// Activates/Deactivates the "Show More" button.
     /// </summary>
     /// <param name="isActive">True for activating it.</param>
-    void SetShowMoreUpcomingEventsButtonActive(bool isActive);
-
-    /// <summary>
-    /// Activates/Deactivates the "Show More" button for going events section.
-    /// </summary>
-    /// <param name="isActive">True for activating it.</param>
-    void SetShowMoreGoingEventsButtonActive(bool isActive);
-
-    /// <summary>
-    /// Set the going events component with a list of events.
-    /// </summary>
-    /// <param name="events">List of events (model) to be loaded.</param>
-    void SetGoingEvents(List<EventCardComponentModel> events);
+    void SetShowMoreEventsButtonActive(bool isActive);
 
     /// <summary>
     /// Shows the Event Card modal with the provided information.
@@ -123,8 +143,7 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// </summary>
     void SetAllEventGroupsAsLoading();
 
-    void SetShowMoreButtonActive(bool isActive);
-    void SetShowMoreGoingButtonActive(bool isActive);
-
     void SetIsGuestUser(bool isGuestUser);
+
+    void SetCategories(List<ToggleComponentModel> categories);
 }

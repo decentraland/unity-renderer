@@ -4,6 +4,7 @@ namespace DCL.Backpack
     {
         Wearable,
         InfoCard,
+        Outfit,
         None
     }
 

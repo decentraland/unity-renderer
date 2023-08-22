@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -5,9 +6,13 @@ namespace DCL.Skybox
 {
     public class SkyboxCamera
     {
-        private GameObject skyboxCameraGO;
-        private Camera skyboxCamera;
-        private SkyboxCameraBehaviour camBehavior;
+        private readonly GameObject skyboxCameraGO;
+        private readonly SkyboxCameraBehaviour camBehavior;
+
+        private List<Camera> skyboxCameraStack;
+
+        public Camera CurrentCamera { get; private set; }
+        public Camera BaseCamera { get; }
 
         public SkyboxCamera()
         {
@@ -17,18 +22,18 @@ namespace DCL.Skybox
             skyboxCameraGO.transform.rotation = Quaternion.identity;
 
             // Attach camera component
-            skyboxCamera = skyboxCameraGO.AddComponent<Camera>();
+            BaseCamera = skyboxCameraGO.AddComponent<Camera>();
 
-            var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
+            UniversalAdditionalCameraData cameraData = BaseCamera.GetUniversalAdditionalCameraData();
             cameraData.renderShadows = false;
 
             // This index is defined in UniversalRenderPipelineAsset
             // We are using a custom ForwardRenderer with less features that increase the performance and lowers the passes
             cameraData.SetRenderer(1);
 
-            skyboxCamera.useOcclusionCulling = false;
-            skyboxCamera.cullingMask = (1 << LayerMask.NameToLayer("Skybox"));
-            skyboxCamera.farClipPlane = 5000;
+            BaseCamera.useOcclusionCulling = false;
+            BaseCamera.cullingMask = 1 << LayerMask.NameToLayer("Skybox");
+            BaseCamera.farClipPlane = 5000;
 
             // Attach follow script
             camBehavior = skyboxCameraGO.AddComponent<SkyboxCameraBehaviour>();
@@ -39,25 +44,30 @@ namespace DCL.Skybox
             if (mainCam == null)
                 return;
 
-            Camera mainCamComponent = mainCam.GetComponent<Camera>();
-            var mainCameraData = mainCamComponent.GetUniversalAdditionalCameraData();
-            var cameraStack = mainCameraData.cameraStack;
+            CurrentCamera = mainCam.GetComponent<Camera>();
+            UniversalAdditionalCameraData mainCameraData = CurrentCamera.GetUniversalAdditionalCameraData();
+            List<Camera> cameraStack = mainCameraData.cameraStack;
 
             mainCameraData.renderType = CameraRenderType.Overlay;
 
-            var cameraData = skyboxCamera.GetUniversalAdditionalCameraData();
-            cameraData.cameraStack.Add(mainCamComponent);
-            foreach (Camera camera in cameraStack)
+            if (skyboxCameraStack == null)
             {
-                cameraData.cameraStack.Add(camera);
-            }
+                UniversalAdditionalCameraData cameraData = BaseCamera.GetUniversalAdditionalCameraData();
+                skyboxCameraStack = cameraData.cameraStack;
+                skyboxCameraStack.Add(CurrentCamera);
 
-            camBehavior.AssignCamera(mainCamComponent, skyboxCamera);
+                foreach (Camera camera in cameraStack)
+                    skyboxCameraStack.Add(camera);
+            }
+            else
+                skyboxCameraStack[0] = CurrentCamera;
+
+            camBehavior.AssignCamera(CurrentCamera, BaseCamera);
         }
 
         public void SetCameraEnabledState(bool enabled)
         {
-            skyboxCamera.enabled = enabled;
+            BaseCamera.enabled = enabled;
         }
     }
 }

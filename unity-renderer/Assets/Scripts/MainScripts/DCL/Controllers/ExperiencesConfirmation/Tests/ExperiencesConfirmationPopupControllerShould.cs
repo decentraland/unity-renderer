@@ -30,6 +30,7 @@ namespace DCL.PortableExperiences.Confirmation
             ownUserProfile.UpdateData(new UserProfileModel
             {
                 userId = "ownId",
+                avatar = new AvatarModel(),
             });
 
             userProfileBridge.GetOwn().Returns(ownUserProfile);
@@ -142,6 +143,7 @@ namespace DCL.PortableExperiences.Confirmation
                         "USE_WEB3_API",
                         "ALLOW_TO_TRIGGER_AVATAR_EMOTE",
                         "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE",
+                        "ALLOW_MEDIA_HOSTNAMES",
                     },
                 },
                 OnAcceptCallback = () => { },
@@ -150,12 +152,13 @@ namespace DCL.PortableExperiences.Confirmation
 
             view.Received(1)
                 .SetModel(Arg.Is<ExperiencesConfirmationViewModel>(e =>
-                     e.Permissions[0] == "Let the scene perform external HTTP requests."
-                     && e.Permissions[1] == "Let the scene use the Websocket API to establish external connections."
-                     && e.Permissions[2] == "Let the scene open a URL (in a browser tab or web view)."
-                     && e.Permissions[3] == "Let the scene communicate with a wallet."
-                     && e.Permissions[4] == "Let the scene to animate the player’s avatar with an emote."
-                     && e.Permissions[5] == "Let the scene to change the player’s position."));
+                     e.Permissions[0] == "USE_FETCH"
+                     && e.Permissions[1] == "USE_WEBSOCKET"
+                     && e.Permissions[2] == "OPEN_EXTERNAL_LINK"
+                     && e.Permissions[3] == "USE_WEB3_API"
+                     && e.Permissions[4] == "ALLOW_TO_TRIGGER_AVATAR_EMOTE"
+                     && e.Permissions[5] == "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE"
+                     && e.Permissions[6] == "ALLOW_MEDIA_HOSTNAMES"));
         }
 
         [Test]

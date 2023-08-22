@@ -46,7 +46,7 @@ namespace DCL
             serviceBuilders.Remove(type);
         }
 
-        public T Get<T>() where T : class, IService
+        public T Get<T>() where T : class
         {
             Type type = typeof(T);
             Assert.IsTrue( type.IsInterface, "ServiceLocator's generic type should be an interface." );

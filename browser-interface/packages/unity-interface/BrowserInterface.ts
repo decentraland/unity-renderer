@@ -89,7 +89,6 @@ import {
 import {
   joinVoiceChat,
   leaveVoiceChat,
-  requestToggleVoiceChatRecording,
   requestVoiceChatRecording,
   setAudioDevice,
   setVoiceChatPolicy,
@@ -744,8 +743,8 @@ export class BrowserInterface {
     store.dispatch(setWorldLoadingRadius(Math.max(Math.round(data.newRadius), 1)))
   }
 
-  public GetUnseenMessagesByUser() {
-    getUnseenMessagesByUser()
+  public async GetUnseenMessagesByUser() {
+    await getUnseenMessagesByUser()
   }
 
   public SetHomeScene(data: { sceneId: string; sceneCoords: string }) {
@@ -845,10 +844,6 @@ export class BrowserInterface {
 
   public LeaveVoiceChat() {
     store.dispatch(leaveVoiceChat())
-  }
-
-  public ToggleVoiceChatRecording() {
-    store.dispatch(requestToggleVoiceChatRecording())
   }
 
   public ApplySettings(settingsMessage: { voiceChatVolume: number; voiceChatAllowCategory: number }) {

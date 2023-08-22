@@ -6,6 +6,7 @@ using UIComponents.CollapsableSortedList;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount

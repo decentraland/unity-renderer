@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,7 +11,7 @@ using System.Threading;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatChannelHUDControllerShould
     {
@@ -28,6 +27,7 @@ namespace DCL.Chat.HUD
         private IProfanityFilter profanityFilter;
         private IUserProfileBridge userProfileBridge;
         private IChatMentionSuggestionProvider mentionSuggestionProvider;
+        private IClipboard clipboard;
 
         [SetUp]
         public void SetUp()
@@ -51,13 +51,16 @@ namespace DCL.Chat.HUD
             profanityFilter = Substitute.For<IProfanityFilter>();
             mentionSuggestionProvider = Substitute.For<IChatMentionSuggestionProvider>();
 
+            clipboard = Substitute.For<IClipboard>();
+
             controller = new ChatChannelHUDController(dataStore,
                 userProfileBridge,
                 chatController,
                 Substitute.For<IMouseCatcher>(),
                 socialAnalytics,
                 profanityFilter,
-                mentionSuggestionProvider);
+                mentionSuggestionProvider,
+                clipboard);
 
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();
@@ -193,6 +196,14 @@ namespace DCL.Chat.HUD
             chatView.OnMessageUpdated += Raise.Event<Action<string, int>>(text, 1);
 
             mentionSuggestionProvider.Received(1).GetProfilesFromChatChannelsStartingWith(name, CHANNEL_ID, 5, Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public void CopyChannelNameToClipboard()
+        {
+            view.OnCopyNameRequested += Raise.Event<Action<string>>("#my-channel");
+
+            clipboard.Received(1).WriteText("#my-channel");
         }
     }
 }

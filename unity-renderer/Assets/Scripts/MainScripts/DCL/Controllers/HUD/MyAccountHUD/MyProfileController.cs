@@ -3,6 +3,7 @@ using DCL.Browser;
 using DCL.Tasks;
 using DCL.UserProfiles;
 using DCLServices.Lambdas.NamesService;
+using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.MyAccount
 {
@@ -25,6 +27,7 @@ namespace DCL.MyAccount
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly KernelConfig kernelConfig;
         private readonly IMyAccountAnalyticsService myAccountAnalyticsService;
+        private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfileAdditionalInfoValueListProvider countryListProvider;
         private readonly IProfileAdditionalInfoValueListProvider genderListProvider;
         private readonly IProfileAdditionalInfoValueListProvider sexualOrientationProvider;
@@ -55,6 +58,7 @@ namespace DCL.MyAccount
             MyAccountSectionHUDController myAccountSectionHUDController,
             KernelConfig kernelConfig,
             IMyAccountAnalyticsService myAccountAnalyticsService,
+            ISocialAnalytics socialAnalytics,
             IProfileAdditionalInfoValueListProvider countryListProvider,
             IProfileAdditionalInfoValueListProvider genderListProvider,
             IProfileAdditionalInfoValueListProvider sexualOrientationProvider,
@@ -71,6 +75,7 @@ namespace DCL.MyAccount
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.kernelConfig = kernelConfig;
             this.myAccountAnalyticsService = myAccountAnalyticsService;
+            this.socialAnalytics = socialAnalytics;
             this.countryListProvider = countryListProvider;
             this.genderListProvider = genderListProvider;
             this.sexualOrientationProvider = sexualOrientationProvider;
@@ -247,6 +252,7 @@ namespace DCL.MyAccount
 
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 myAccountAnalyticsService.SendProfileInfoEditAnalytic(newDesc.Length);
+                socialAnalytics.SendProfileEdit(newDesc.Length, false, PlayerActionSource.MyProfile);
             }
 
             saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
@@ -339,8 +345,16 @@ namespace DCL.MyAccount
         {
             async UniTaskVoid RemoveAndSaveLinkAsync(string title, string url, CancellationToken cancellationToken)
             {
+                url = UnityWebRequest.UnEscapeURL(url ?? "");
                 List<UserProfileModel.Link> links = new (ownUserProfile.Links);
-                links.RemoveAll(link => link.title == title && link.url == url);
+                links.RemoveAll(link =>
+                {
+                    string linkTitle = link.title ?? "";
+                    string linkURL = UnityWebRequest.UnEscapeURL(link.url ?? "");
+
+                    return linkTitle.Equals(title, StringComparison.OrdinalIgnoreCase)
+                           && linkURL.Equals(url, StringComparison.OrdinalIgnoreCase);
+                });
 
                 try
                 {

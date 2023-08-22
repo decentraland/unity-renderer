@@ -24,11 +24,16 @@ namespace DCL.Components.Video.Plugin
         private string lastError = "";
 
         public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
+            : this(id, url, useHls? VideoType.Hls : VideoType.Common, plugin)
+        {
+        }
+
+        public WebVideoPlayer(string id, string url, VideoType videoType, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
             this.url = url;
-            plugin.Create(id, url, useHls);
+            plugin.Create(id, url, videoType);
         }
 
         public void Update()

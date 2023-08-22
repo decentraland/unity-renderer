@@ -1,6 +1,8 @@
 ﻿using DCL.Browser;
+using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
@@ -8,6 +10,7 @@ using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -34,6 +37,8 @@ namespace DCL.Backpack
         private IBackpackFiltersComponentView backpackFiltersComponentView;
         private Texture2D testFace256Texture = new Texture2D(1, 1);
         private Texture2D testBodyTexture = new Texture2D(1, 1);
+        private IVRMExporter vrmExporter;
+        private IDCLFileBrowserService fileBrowserService;
 
         GameObject audioHandler;
 
@@ -55,6 +60,8 @@ namespace DCL.Backpack
             wearableGridView = Substitute.For<IWearableGridView>();
             testFace256Texture = new Texture2D(1, 1);
             testBodyTexture = new Texture2D(1, 1);
+            vrmExporter = Substitute.For<IVRMExporter>();
+            fileBrowserService = Substitute.For<IDCLFileBrowserService>();
 
             backpackAnalyticsService = new BackpackAnalyticsService(
                 analytics,
@@ -64,7 +71,10 @@ namespace DCL.Backpack
             backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView, wearablesCatalogService);
 
             avatarSlotsView = Substitute.For<IAvatarSlotsView>();
-            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService);
+            var ffBaseVariable = Substitute.For<IBaseVariable<FeatureFlag>>();
+            var featureFlags = new FeatureFlag();
+            ffBaseVariable.Get().Returns(featureFlags);
+            avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
 
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
@@ -85,7 +95,9 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController,
-                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(),Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()));
+                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
+                vrmExporter,
+                fileBrowserService);
         }
 
         [TearDown]
@@ -335,6 +347,49 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
             avatarSlotsView.Received(1).Select(WearableLiterals.Categories.BODY_SHAPE, true);
+        }
+
+        [Test]
+        public async Task ExportVrm()
+        {
+            List<SkinnedMeshRenderer> smrs = new List<SkinnedMeshRenderer>()
+            {
+                new GameObject("go0").AddComponent<SkinnedMeshRenderer>(),
+                new GameObject("go1").AddComponent<SkinnedMeshRenderer>(),
+            };
+            view.originalVisibleRenderers.Returns(x => smrs);
+            userProfile.model.name = "testing#name";
+            view.ClearReceivedCalls();
+
+            await backpackEditorHUDController.VrmExport(default);
+
+            Received.InOrder(() =>
+            {
+                // Assert disabling buttons while exporting
+                view?.SetVRMButtonEnabled(false);
+                view?.SetVRMSuccessToastActive(false);
+
+                // Assert analytics
+                backpackAnalyticsService.SendVRMExportStarted();
+
+                // Assert exportation
+                vrmExporter.Export(Arg.Any<string>(), Arg.Any<string>(), smrs);
+                fileBrowserService.SaveFileAsync(Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Is<string>(s => s.StartsWith("testing_name")),
+                    Arg.Any<byte[]>(),
+                    Arg.Any<ExtensionFilter[]>());
+
+                // Assert enabling buttons after exporting
+                view?.SetVRMSuccessToastActive(true);
+                view?.SetVRMButtonEnabled(true);
+                view?.SetVRMSuccessToastActive(false);
+
+                // Assert analytics
+                backpackAnalyticsService.SendVRMExportSucceeded();
+            });
+            for (int i = smrs.Count - 1; i >= 0; i--)
+                Object.Destroy(smrs[i].gameObject);
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

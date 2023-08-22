@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public interface IPlaceCardComponentView
 {
-    event Action<string, bool> OnFavoritePlaceChange;
+    event Action<string, bool?> OnVoteChanged;
 
     FriendsHandler friendsHandler { get; set; }
 
@@ -21,6 +21,11 @@ public interface IPlaceCardComponentView
     /// Event that will be triggered when the info button is clicked.
     /// </summary>
     Button.ButtonClickedEvent onInfoClick { get; }
+
+    /// <summary>
+    /// Event that will be triggered when the background button is clicked.
+    /// </summary>
+    Button.ButtonClickedEvent onBackgroundClick { get; }
 
     /// <summary>
     /// Set the place picture directly from a sprite.
@@ -65,6 +70,18 @@ public interface IPlaceCardComponentView
     void SetNumberOfUsers(int newNumberOfUsers);
 
     /// <summary>
+    /// Set the the number of visits in the last 30 days.
+    /// </summary>
+    /// <param name="userVisits">Number of visits.</param>
+    void SetUserVisits(int userVisits);
+
+    /// <summary>
+    /// Set the the user rating that considers only up and down votes with at least 100 VotingPower.
+    /// </summary>
+    /// <param name="userRating">User rating value.</param>
+    void SetUserRating(float? userRating);
+
+    /// <summary>
     /// Set the place coords.
     /// </summary>
     /// <param name="newCoords">Place coords.</param>
@@ -81,6 +98,44 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="isVisible">True for showing the loading indicator and hiding the card info.</param>
     void SetLoadingIndicatorVisible(bool isVisible);
+
+    /// <summary>
+    /// Set the place as favorite or not.
+    /// </summary>
+    /// <param name="isFavorite"></param>
+    /// <param name="placeId"></param>
+    void SetFavoriteButton(bool isFavorite, string placeId);
+
+    /// <summary>
+    /// Vote/Unvote the place.
+    /// </summary>
+    /// <param name="isUpvoted"></param>
+    /// <param name="isDownvoted"></param>
+    void SetVoteButtons(bool isUpvoted, bool isDownvoted);
+
+    /// <summary>
+    /// Set the total amount of votes of the place.
+    /// </summary>
+    /// <param name="totalVotes"></param>
+    void SetTotalVotes(int totalVotes);
+
+    /// <summary>
+    /// Set the amount of favorites set in the place.
+    /// </summary>
+    /// <param name="numberOfFavorites"></param>
+    void SetNumberOfFavorites(int numberOfFavorites);
+
+    /// <summary>
+    /// Set the date of the last update of this place.
+    /// </summary>
+    /// <param name="updatedAt"></param>
+    void SetDeployedAt(string updatedAt);
+
+    /// <summary>
+    /// Set the place card as point of interest.
+    /// </summary>
+    /// <param name="isPOI">Tru for set it as POI.</param>
+    void SetIsPOI(bool isPOI);
 }
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig<PlaceCardComponentModel>
@@ -88,22 +143,38 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal const int THMBL_MARKETPLACE_WIDTH = 196;
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
     internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+    private const string NO_DESCRIPTION_TEXT = "No description.";
 
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
+    [SerializeField] internal UserProfile ownUserProfile;
 
     [Header("Prefab References")]
+    [SerializeField] internal GameObject poiMark;
     [SerializeField] internal ImageComponentView placeImage;
     [SerializeField] internal TMP_Text placeNameOnIdleText;
     [SerializeField] internal TMP_Text placeNameOnFocusText;
     [SerializeField] internal TMP_Text placeDescText;
-    [SerializeField] internal TMP_Text placeAuthorText;
+    [SerializeField] internal TMP_Text placeAuthorOnIdleText;
+    [SerializeField] internal TMP_Text placeAuthorOnFocusText;
+    [SerializeField] internal RectTransform userVisitsAndRatingContainer;
+    [SerializeField] internal TMP_Text userVisitsText;
+    [SerializeField] internal TMP_Text userRatingText;
+    [SerializeField] internal RectTransform numberOfUsersContainer;
     [SerializeField] internal TMP_Text numberOfUsersText;
     [SerializeField] internal TMP_Text coordsText;
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField] internal ButtonComponentView backgroundButton;
     [SerializeField] internal ButtonComponentView infoButton;
+    [SerializeField] internal ButtonComponentView upvoteButton;
+    [SerializeField] internal ButtonComponentView downvoteButton;
+    [SerializeField] internal GameObject upvoteOff;
+    [SerializeField] internal GameObject upvoteOn;
+    [SerializeField] internal GameObject downvoteOff;
+    [SerializeField] internal GameObject downvoteOn;
+    [SerializeField] internal TMP_Text totalVotesText;
     [SerializeField] internal ButtonComponentView jumpinButton;
     [SerializeField] internal GridContainerComponentView friendsGrid;
     [SerializeField] internal GameObject imageContainer;
@@ -115,9 +186,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal PlaceCardAnimatorBase cardAnimator;
     [SerializeField] internal FavoriteButtonComponentView favoriteButton;
     [SerializeField] internal GameObject favoriteButtonContainer;
+    [SerializeField] internal TMP_Text numberOfFavoritesText;
+    [SerializeField] internal TMP_Text updatedAtText;
+    [SerializeField] internal ScrollRect scroll;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
+    [SerializeField] internal bool isPlaceCardModal;
     [SerializeField] internal PlaceCardComponentModel model;
 
     public FriendsHandler friendsHandler { get; set; }
@@ -127,11 +202,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public Button.ButtonClickedEvent onJumpInClick => jumpinButton != null ? jumpinButton.onClick : new Button.ButtonClickedEvent();
     public Button.ButtonClickedEvent onInfoClick => infoButton != null ? infoButton.onClick : new Button.ButtonClickedEvent();
+    public Button.ButtonClickedEvent onBackgroundClick => backgroundButton != null ? backgroundButton.onClick : new Button.ButtonClickedEvent();
 
     public event Action<string, bool> OnFavoriteChanged;
 
     private bool thumbnailFromMarketPlaceRequested;
-    public event Action<string, bool> OnFavoritePlaceChange;
+    public event Action<string, bool?> OnVoteChanged;
 
     public override void Awake()
     {
@@ -152,7 +228,38 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
 
+        if(upvoteButton != null)
+            upvoteButton.onClick.AddListener(() => ChangeVote(true));
+
+        if(downvoteButton != null)
+            downvoteButton.onClick.AddListener(() => ChangeVote(false));
+
         CleanFriendHeadsItems();
+    }
+
+    private void ChangeVote(bool upvote)
+    {
+        if (upvote)
+        {
+            OnVoteChanged?.Invoke(model.placeInfo.id, model.isUpvote ? (bool?)null : true);
+
+            if (ownUserProfile != null && ownUserProfile.isGuest)
+                return;
+
+            model.isUpvote = !model.isUpvote;
+            model.isDownvote = false;
+        }
+        else
+        {
+            OnVoteChanged?.Invoke(model.placeInfo.id, model.isDownvote ? (bool?)null : false);
+
+            if (ownUserProfile != null && ownUserProfile.isGuest)
+                return;
+
+            model.isDownvote = !model.isDownvote;
+            model.isUpvote = false;
+        }
+        SetVoteButtons(model.isUpvote, model.isDownvote);
     }
 
     public void Configure(PlaceCardComponentModel newModel)
@@ -188,6 +295,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetPlaceName(model.placeName);
         SetPlaceDescription(model.placeDescription);
         SetPlaceAuthor(model.placeAuthor);
+        SetUserVisits(model.userVisits);
+        SetUserRating(model.userRating);
         SetNumberOfUsers(model.numberOfUsers);
         SetCoords(model.coords);
         SetFavoriteButton(model.isFavorite, model.placeInfo.id);
@@ -199,11 +308,20 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
                 favoriteButtonContainer.SetActive(false);
         }
 
+        SetVoteButtons(model.isUpvote, model.isDownvote);
+        SetTotalVotes(model.totalVotes);
+        SetNumberOfFavorites(model.numberOfFavorites);
+        SetDeployedAt(model.deployedAt);
+        SetIsPOI(model.isPOI);
+        ResetScrollPosition();
         RebuildCardLayouts();
     }
 
-    private void SetFavoriteButton(bool isFavorite, string placeId)
+    public void SetFavoriteButton(bool isFavorite, string placeId)
     {
+        model.isFavorite = isFavorite;
+        model.placeInfo.id = placeId;
+
         if (favoriteButton == null)
             return;
         favoriteButton.gameObject.SetActive(true);
@@ -218,9 +336,77 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         favoriteButton.OnFavoriteChange += FavoriteValueChanged;
     }
 
+    public void SetVoteButtons(bool isUpvoted, bool isDownvoted)
+    {
+        model.isUpvote = isUpvoted;
+        model.isDownvote = isDownvoted;
+
+        if(upvoteOn == null || upvoteOff == null || downvoteOn == null || downvoteOff == null)
+            return;
+
+        upvoteOn.SetActive(isUpvoted);
+        upvoteOff.SetActive(!isUpvoted);
+        downvoteOn.SetActive(isDownvoted);
+        downvoteOff.SetActive(!isDownvoted);
+    }
+
+    public void SetTotalVotes(int totalVotes)
+    {
+        model.totalVotes = totalVotes;
+
+        if (totalVotesText == null)
+            return;
+
+        totalVotesText.text = $"({totalVotes})";
+    }
+
+    public void SetNumberOfFavorites(int numberOfFavorites)
+    {
+        model.numberOfFavorites = numberOfFavorites;
+
+        if (numberOfFavoritesText != null)
+            numberOfFavoritesText.text = FormatNumber(numberOfFavorites);
+    }
+
+    public void SetDeployedAt(string updatedAt)
+    {
+        model.deployedAt = updatedAt;
+
+        if (updatedAtText == null)
+            return;
+
+        updatedAtText.text = DateTime.TryParse(updatedAt, out DateTime updateAtDT) ?
+            updateAtDT.ToString("dd/MM/yyyy") :
+            "-";
+    }
+
+    public void SetIsPOI(bool isPOI)
+    {
+        model.isPOI = isPOI;
+
+        if (poiMark == null)
+            return;
+
+        poiMark.SetActive(isPOI);
+
+    }
+
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)
     {
         OnFavoriteChanged?.Invoke(placeUUID, isFavorite);
+
+        if (ownUserProfile != null && ownUserProfile.isGuest)
+        {
+            favoriteButton.Configure(new FavoriteButtonComponentModel
+            {
+                placeUUID = placeUUID,
+                isFavorite = false,
+            });
+            return;
+        }
+
+        model.isFavorite = true;
+        model.placeInfo.id = placeUUID;
     }
 
     public override void OnFocus()
@@ -370,27 +556,45 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if (placeDescText == null)
             return;
 
-        placeDescText.text = newText;
+        placeDescText.text = string.IsNullOrEmpty(newText) ? NO_DESCRIPTION_TEXT : newText;
     }
 
     public void SetPlaceAuthor(string newText)
     {
         model.placeAuthor = newText;
 
-        if (placeAuthorText == null)
-            return;
+        if (placeAuthorOnIdleText != null)
+            placeAuthorOnIdleText.text = newText;
 
-        placeAuthorText.text = newText;
+        if(placeAuthorOnFocusText != null)
+            placeAuthorOnFocusText.text = newText;
+    }
+
+    public void SetUserVisits(int userVisits)
+    {
+        model.userVisits = userVisits;
+
+        if (userVisitsText != null)
+            userVisitsText.text = FormatNumber(userVisits);
+    }
+
+    public void SetUserRating(float? userRating)
+    {
+        model.userRating = userRating;
+
+        if (userRatingText != null)
+            userRatingText.text = userRating != null ? $"{userRating.Value * 100:0}%" : "-%";
     }
 
     public void SetNumberOfUsers(int newNumberOfUsers)
     {
         model.numberOfUsers = newNumberOfUsers;
 
-        if (numberOfUsersText == null)
-            return;
+        if (numberOfUsersText != null)
+            numberOfUsersText.text = FormatNumber(newNumberOfUsers);
 
-        numberOfUsersText.text = newNumberOfUsers.ToString();
+        if (numberOfUsersContainer != null)
+            numberOfUsersContainer.gameObject.SetActive(newNumberOfUsers > 0);
     }
 
     public void SetCoords(Vector2Int newCoords)
@@ -490,16 +694,40 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         return friendHeadGO;
     }
 
-    internal void RebuildCardLayouts()
+    private void RebuildCardLayouts()
     {
         if (contentVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(contentVerticalLayout.transform as RectTransform);
 
         if (infoVerticalLayout != null)
             Utils.ForceRebuildLayoutImmediate(infoVerticalLayout.transform as RectTransform);
+
+        if (numberOfUsersContainer != null)
+            Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer);
+
+        if (userVisitsAndRatingContainer != null)
+            Utils.ForceRebuildLayoutImmediate(userVisitsAndRatingContainer);
     }
 
     internal void CloseModal() { Hide(); }
 
     internal void OnCloseActionTriggered(DCLAction_Trigger action) { CloseModal(); }
+
+    private static string FormatNumber(int num)
+    {
+        if (num < 1000)
+            return num.ToString();
+
+        float divided = num / 1000.0f;
+        divided = (int)(divided * 100) / 100f;
+        return $"{divided:F2}k";
+    }
+
+    private void ResetScrollPosition()
+    {
+        if (scroll == null)
+            return;
+
+        scroll.verticalNormalizedPosition = 1;
+    }
 }

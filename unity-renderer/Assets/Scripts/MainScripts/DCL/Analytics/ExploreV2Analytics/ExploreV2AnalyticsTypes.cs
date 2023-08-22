@@ -5,4 +5,20 @@ namespace ExploreV2Analytics
         FromShortcut,
         FromClick,
     }
+
+    public enum ActionSource
+    {
+        FromExplore,
+        FromSearch
+    }
+
+    public enum FilterType
+    {
+        Featured,
+        Trending,
+        WantToGo,
+        Frequency,
+        Category,
+        Time
+    }
 }

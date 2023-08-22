@@ -40,7 +40,13 @@ namespace Tests
             yield return base.SetUp();
 
             placesAPIService = Substitute.For<IPlacesAPIService>();
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i, placesAPIService);
+            controller = new MinimapHUDController(
+                Substitute.For<MinimapMetadataController>(),
+                Substitute.For<IHomeLocationController>(),
+                DCL.Environment.i,
+                placesAPIService,
+                Substitute.For<IPlacesAnalytics>(),
+                Substitute.For<IClipboard>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }

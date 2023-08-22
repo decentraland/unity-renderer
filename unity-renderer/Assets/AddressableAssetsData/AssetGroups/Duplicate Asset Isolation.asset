@@ -493,10 +493,6 @@ MonoBehaviour:
     m_Address: ContainerShadowRadiusSix
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 4e9a4135cdf6d42afb73b12a76bf53f2
-    m_Address: JumpInSquare
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 47acd065431664e80a9a8cdedf8acb31
     m_Address: BubblePeak
     m_ReadOnly: 0
@@ -651,10 +647,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 5f5d6367f6d5ebc4ab5480df6fb70c5f
     m_Address: WalletConnectLogo
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 87a25a674771b42209ef0ae9b6b6bce7
-    m_Address: CameraIconSmall
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b22119773231a487caa76e1b94ae9af5
