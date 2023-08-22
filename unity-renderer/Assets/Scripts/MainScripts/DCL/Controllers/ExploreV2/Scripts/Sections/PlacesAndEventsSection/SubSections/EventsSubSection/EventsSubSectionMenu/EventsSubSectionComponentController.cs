@@ -347,24 +347,11 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     public static void JumpInToEvent(EventFromAPIModel eventFromAPI)
     {
         Vector2Int coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-        string[] realmFromAPI = string.IsNullOrEmpty(eventFromAPI.server) ? new[] { "", "" } : eventFromAPI.server.Split('-');
-        string serverName = realmFromAPI[0];
-        string layerName = string.Empty;
-        if (realmFromAPI.Length > 1)
-            layerName = realmFromAPI[1];
 
-        if (!eventFromAPI.world)
-        {
-            if (string.IsNullOrEmpty(serverName))
-                Environment.i.world.teleportController.Teleport(coords.x, coords.y);
-            else
-                Environment.i.world.teleportController.JumpIn(coords.x, coords.y, serverName, layerName);
-        }
+        if (string.IsNullOrEmpty(eventFromAPI.server))
+            Environment.i.world.teleportController.Teleport(coords.x, coords.y);
         else
-        {
-            // We jump in to the specific world defined in 'serverName'
-            Environment.i.world.teleportController.JumpIn(0, 0, serverName, "");
-        }
+            Environment.i.world.teleportController.JumpIn(coords.x, coords.y, eventFromAPI.server);
     }
 
     private void RequestAndLoadCategories()
