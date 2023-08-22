@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL.Components.UI;
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.CameraReelService;
@@ -96,13 +95,6 @@ namespace DCLFeatures.CameraReel.Gallery
             CameraReelThumbnail thumbnail = Instantiate(thumbnailPrefab, gridContainer.transform);
             thumbnail.Show(reel);
             thumbnail.OnClicked += () => ScreenshotThumbnailClicked?.Invoke(reel);
-
-            // The thumbnail has an internal Canvas to be able to override the Z sorting when playing animations
-            // but this messes up the UI masking
-            // As a workaround, a manual masking is applied to the thumbnail given by the current's mask rectangle
-            MaskCanvasRenderer masking = thumbnail.GetComponent<MaskCanvasRenderer>();
-            if (masking)
-                masking.MaskRectTransform = scrollMaskTransform;
 
             if (setAsFirst)
                 thumbnail.transform.SetAsFirstSibling();
