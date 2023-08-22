@@ -153,14 +153,19 @@ static class BuildCommand
         var buildName = GetBuildName();
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
 
+        var targetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
+
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
+            Console.WriteLine($":: Setting Il2CPP Compiler config {PlayerSettings.GetIl2CppCompilerConfiguration(targetGroup)}");
+            PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, Il2CppCompilerConfiguration.Debug);
         }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
 
+        Console.WriteLine($":: Setting Il2CPP Compiler config {PlayerSettings.GetIl2CppCompilerConfiguration(targetGroup)}");
         if (buildSummary.summary.result != BuildResult.Succeeded)
         {
             throw new Exception("The build was not successful");
