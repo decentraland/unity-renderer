@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Emotes;
+using DCL.Tasks;
 using GPUSkinning;
 using UnityEngine;
 
@@ -21,13 +22,14 @@ namespace AvatarSystem
         protected readonly ILoader loader;
         protected readonly IVisibility visibility;
         protected readonly IAnimator animator;
+
         private readonly IAvatarCurator avatarCurator;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
         private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
 
-        private CancellationTokenSource disposeCts = new ();
+        private CancellationTokenSource loadCancellationToken;
 
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
@@ -57,12 +59,10 @@ namespace AvatarSystem
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
         {
-            disposeCts ??= new CancellationTokenSource();
-
             status = IAvatar.Status.Idle;
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
 
-            linkedCt.ThrowIfCancellationRequested();
+            loadCancellationToken = loadCancellationToken.SafeRestart();
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, loadCancellationToken.Token).Token;
 
             try
             {
@@ -70,23 +70,34 @@ namespace AvatarSystem
             }
             catch (OperationCanceledException)
             {
-                Dispose();
+                // Cancel any ongoing process except the current loadCancellationToken
+                // since it was provoking a double cancellation thus inconsistencies in the flow
+                status = IAvatar.Status.Idle;
+                avatarCurator?.Dispose();
+                loader?.Dispose();
+                visibility?.Dispose();
+                lod?.Dispose();
+                gpuSkinningThrottlerService?.Unregister(gpuSkinning);
+
                 throw;
             }
             catch (Exception e)
             {
-                Dispose();
+                // Cancel any ongoing process except the current loadCancellationToken
+                // since it was provoking a double cancellation thus inconsistencies in the flow
+                status = IAvatar.Status.Idle;
+                avatarCurator?.Dispose();
+                loader?.Dispose();
+                visibility?.Dispose();
+                lod?.Dispose();
+                gpuSkinningThrottlerService?.Unregister(gpuSkinning);
+
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
                           $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else
                     throw;
-            }
-            finally
-            {
-                disposeCts?.Dispose();
-                disposeCts = null;
             }
         }
 
@@ -205,9 +216,9 @@ namespace AvatarSystem
         public void Dispose()
         {
             status = IAvatar.Status.Idle;
-            disposeCts?.Cancel();
-            disposeCts?.Dispose();
-            disposeCts = null;
+            loadCancellationToken?.Cancel();
+            loadCancellationToken?.Dispose();
+            loadCancellationToken = null;
             avatarCurator?.Dispose();
             loader?.Dispose();
             visibility?.Dispose();
