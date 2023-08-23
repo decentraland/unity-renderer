@@ -37,6 +37,8 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
 
             input.MouseFirstClick.OnStarted += HideShortcutsInfoPanel;
+
+            input.ToggleScreenshotViewVisibilityAction.OnTriggered += ToggleViewVisibility;
         }
 
         public void Dispose()
@@ -50,8 +52,15 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked -= view.ToggleShortcutsInfosHelpPanel;
+            input.ToggleScreenshotViewVisibilityAction.OnTriggered -= ToggleViewVisibility;
 
             Object.Destroy(view.gameObject);
+        }
+
+        private void ToggleViewVisibility(DCLAction_Trigger _)
+        {
+            if (screencaptureCameraBehaviour.isScreencaptureCameraActive.Get())
+                SetVisibility(!view.IsVisible, screencaptureCameraBehaviour.HasStorageSpace);
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
