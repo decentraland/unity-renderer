@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Duplicate Asset Isolation2
+  m_EditorClassIdentifier: 
+  m_GroupName: Duplicate Asset Isolation2
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b8d5903a8d30d2c4da68f67f1659b93f
+  m_SerializeEntries:
+  - m_GUID: 7d0f2d70494277a42b52e83bc500f6ec
+    m_Address: Assets/Rendering/Shaders/UIDefaultZTest.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4f17c4c0f7b1c414f8c8113a665a1cae
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/Atlas/CameraReelImg.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3eaaafb2f8b1644f28e7327602f7cfcc
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/InWorldCameraAtlas.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9400c5d3cfd556444a0754ee1caaf7c5
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/Atlas/KeyboardIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 842fd51cf401e4651a850e7cb508ca88
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/Atlas/ShootIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4182681c6cdabf94eaa4d78d69628883
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/Atlas/CameraReelIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a08c897d9ace246a9bd29b9e89b04c70
+    m_Address: Assets/DCLServices/ScreencaptureCamera/UI/Textures/Atlas/WearablesIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4d8bcdf7de5bdbb4495bb53a976a64d6, type: 2}
+    - {fileID: 11400000, guid: 2be4591ca04acca41ac8f489d4c63d04, type: 2}
