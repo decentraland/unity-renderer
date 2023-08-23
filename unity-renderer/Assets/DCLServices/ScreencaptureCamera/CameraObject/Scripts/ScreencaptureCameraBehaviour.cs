@@ -80,6 +80,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private InputAction_Trigger toggleScreenshotCameraAction;
         private InputAction_Trigger toggleCameraReelAction;
+        private InputAction_Trigger exitScreenshotModeAction;
 
         public DataStore_Player Player { private get; set; }
         public bool HasStorageSpace => storageStatus.HasFreeSpace;
@@ -110,9 +111,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             toggleScreenshotCameraAction = Resources.Load<InputAction_Trigger>("ToggleScreenshotCamera");
             toggleCameraReelAction = Resources.Load<InputAction_Trigger>("ToggleCameraReelSection");
+            exitScreenshotModeAction = Resources.Load<InputAction_Trigger>("CloseScreenshotCamera");
 
             toggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
             toggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
+
+            exitScreenshotModeAction.OnTriggered += CloseScreenshotCamera;
         }
 
         private void Start()
@@ -131,6 +135,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             toggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             toggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
+            exitScreenshotModeAction.OnTriggered -= CloseScreenshotCamera;
         }
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
@@ -238,8 +243,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             isScreencaptureCameraActive.Set(true);
         }
 
+        private void CloseScreenshotCamera(DCLAction_Trigger _) =>
+            ToggleScreenshotCamera("Shortcut", isEnabled: false);
+
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
-            ToggleScreenshotCamera("Shortcut", !isScreencaptureCameraActive.Get());
+            ToggleScreenshotCamera("Shortcut", isEnabled: !isScreencaptureCameraActive.Get());
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {
