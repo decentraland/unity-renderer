@@ -5,6 +5,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     [Serializable]
     public class ScreencaptureCameraInputSchema
     {
+        public InputAction_Trigger ExitScreenshotModeAction;
         public InputAction_Trigger ToggleScreenshotCameraAction;
         public InputAction_Trigger ToggleCameraReelAction;
         public InputAction_Trigger TakeScreenshotAction;

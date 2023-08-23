@@ -108,6 +108,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void Awake()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
+            inputActionsSchema.ExitScreenshotModeAction.OnTriggered += CloseScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
         }
 
@@ -126,6 +127,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         internal void OnDestroy()
         {
             inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
+            inputActionsSchema.ExitScreenshotModeAction.OnTriggered -= CloseScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
         }
 
@@ -234,8 +236,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             isScreencaptureCameraActive.Set(true);
         }
 
+        private void CloseScreenshotCamera(DCLAction_Trigger _) =>
+            ToggleScreenshotCamera("Shortcut", isEnabled: false);
+
         private void ToggleScreenshotCamera(DCLAction_Trigger _) =>
-            ToggleScreenshotCamera("Shortcut", !isScreencaptureCameraActive.Get());
+            ToggleScreenshotCamera("Shortcut", isEnabled: !isScreencaptureCameraActive.Get());
 
         private void ToggleCameraSystems(bool activateScreenshotCamera)
         {

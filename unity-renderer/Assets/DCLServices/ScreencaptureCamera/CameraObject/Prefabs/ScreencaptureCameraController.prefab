@@ -248,6 +248,8 @@ MonoBehaviour:
   cameraTarget: {fileID: 3582248969414585223}
   virtualCamera: {fileID: 7308663692020878939}
   inputActionsSchema:
+    ExitScreenshotModeAction: {fileID: 11400000, guid: 7c7653c0d9ba2c149adc5583fc1b4aba,
+      type: 2}
     ToggleScreenshotCameraAction: {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815,
       type: 2}
     ToggleCameraReelAction: {fileID: 11400000, guid: 4dba3cd16e0754e40aa328f383a2d52b,
