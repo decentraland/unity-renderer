@@ -72,12 +72,8 @@ namespace AvatarSystem
             {
                 // Cancel any ongoing process except the current loadCancellationToken
                 // since it was provoking a double cancellation thus inconsistencies in the flow
-                status = IAvatar.Status.Idle;
-                avatarCurator?.Dispose();
-                loader?.Dispose();
-                visibility?.Dispose();
-                lod?.Dispose();
-                gpuSkinningThrottlerService?.Unregister(gpuSkinning);
+                // TODO: disposing collaborators is an anti-pattern in the current context. Disposed objects should not be reused. Instead all collaborators should handle OperationCancelledException by their own so the internal state is restored
+                CancelAndRestoreOngoingProcessesExceptTheLoading();
 
                 throw;
             }
@@ -85,12 +81,8 @@ namespace AvatarSystem
             {
                 // Cancel any ongoing process except the current loadCancellationToken
                 // since it was provoking a double cancellation thus inconsistencies in the flow
-                status = IAvatar.Status.Idle;
-                avatarCurator?.Dispose();
-                loader?.Dispose();
-                visibility?.Dispose();
-                lod?.Dispose();
-                gpuSkinningThrottlerService?.Unregister(gpuSkinning);
+                // TODO: disposing collaborators is an anti-pattern in the current context. Disposed objects should not be reused. Instead all collaborators should handle OperationCancelledException by their own so the internal state is restored
+                CancelAndRestoreOngoingProcessesExceptTheLoading();
 
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
                           $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
@@ -215,10 +207,15 @@ namespace AvatarSystem
 
         public void Dispose()
         {
-            status = IAvatar.Status.Idle;
             loadCancellationToken?.Cancel();
             loadCancellationToken?.Dispose();
             loadCancellationToken = null;
+            CancelAndRestoreOngoingProcessesExceptTheLoading();
+        }
+
+        private void CancelAndRestoreOngoingProcessesExceptTheLoading()
+        {
+            status = IAvatar.Status.Idle;
             avatarCurator?.Dispose();
             loader?.Dispose();
             visibility?.Dispose();
