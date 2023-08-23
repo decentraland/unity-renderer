@@ -896,9 +896,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
-  worldCardPrefab: {fileID: 76922209017619485, guid: eb934d40e41b2c3419cd97c6e35d51b7,
+  worldCardPrefab: {fileID: 76922209017619485, guid: 024d857dbd9074befb2abe3c3c276e15,
     type: 3}
-  worldCardModalPrefab: {fileID: 6938330954477096662, guid: ab186ea8747757847957451f6ec22160,
+  worldCardModalPrefab: {fileID: 6938330954477096662, guid: a5a0fe238dcb249bf995a8afee6c14c9,
     type: 3}
   scrollView: {fileID: 1756152051762512818}
   worlds: {fileID: 9001267973490917559}
