@@ -158,7 +158,7 @@ static class BuildCommand
         if (buildTarget.ToString().ToLower().Contains("webgl"))
         {
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
-            PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, Il2CppCompilerConfiguration.Debug);
+            PlayerSettings.SetIl2CppCompilerConfiguration(targetGroup, Il2CppCompilerConfiguration.Master);
         }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
