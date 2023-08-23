@@ -15,6 +15,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private InputAction_Trigger takeScreenshotAction;
         private InputAction_Trigger closeWindowAction;
         private InputAction_Hold mouseFirstClick;
+        private InputAction_Trigger toggleScreenshotCameraHUDAction;
 
         public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
             DataStore dataStore)
@@ -29,6 +30,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             takeScreenshotAction = Resources.Load<InputAction_Trigger>("TakeScreenshot");
             closeWindowAction = Resources.Load<InputAction_Trigger>("CloseWindow");
             mouseFirstClick = Resources.Load<InputAction_Hold>("MouseFirstClickDown");
+            toggleScreenshotCameraHUDAction = Resources.Load<InputAction_Trigger>("ToggleScreenshotCameraHUD");
 
             view.CloseButtonClicked += DisableScreenshotCameraMode;
             closeWindowAction.OnTriggered += DisableScreenshotCameraMode;
@@ -41,6 +43,8 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
 
             mouseFirstClick.OnStarted += HideShortcutsInfoPanel;
+
+            toggleScreenshotCameraHUDAction.OnTriggered += ToggleViewVisibility;
         }
 
         public void Dispose()
@@ -54,9 +58,15 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked -= view.ToggleShortcutsInfosHelpPanel;
-
+            toggleScreenshotCameraHUDAction.OnTriggered -= ToggleViewVisibility;
 
             Object.Destroy(view.gameObject);
+        }
+
+        private void ToggleViewVisibility(DCLAction_Trigger _)
+        {
+            if (screencaptureCameraBehaviour.isScreencaptureCameraActive.Get())
+                SetVisibility(!view.IsVisible, screencaptureCameraBehaviour.HasStorageSpace);
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace) =>

@@ -82,6 +82,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private InputAction_Trigger toggleCameraReelAction;
 
         public DataStore_Player Player { private get; set; }
+        public bool HasStorageSpace => storageStatus.HasFreeSpace;
 
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
         private ICameraReelAnalyticsService analytics => Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
