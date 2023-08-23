@@ -63,7 +63,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private ICameraReelStorageService cameraReelStorageServiceLazyValue;
 
         // Cached states
-        private bool prevUiHiddenState;
         private bool prevMouseLockState;
         private bool prevMouseButtonCursorLockMode;
         private Camera prevSkyboxCamera;
@@ -288,7 +287,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             if (activateScreenshotCamera)
             {
-                prevUiHiddenState = allUIHidden.Get();
                 allUIHidden.Set(true);
 
                 cameraModeInputLocked.Set(true);
@@ -298,7 +296,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
             else
             {
-                allUIHidden.Set(prevUiHiddenState);
+                allUIHidden.Set(false);
                 cameraModeInputLocked.Set(false);
                 cameraLeftMouseButtonCursorLock.Set(prevMouseButtonCursorLockMode);
             }
