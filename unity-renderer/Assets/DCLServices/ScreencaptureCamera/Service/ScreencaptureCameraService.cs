@@ -41,8 +41,11 @@ namespace DCLServices.ScreencaptureCamera.Service
         {
             externalDependencies.AllUIHidden.OnChange -= ToggleMainButtonVisibility;
 
-            Object.Destroy(cameraBehaviour);
-            Object.Destroy(enableCameraButtonCanvas.gameObject);
+            if(cameraBehaviour != null)
+                Object.Destroy(cameraBehaviour);
+
+            if(enableCameraButtonCanvas != null)
+                Object.Destroy(enableCameraButtonCanvas.gameObject);
         }
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
