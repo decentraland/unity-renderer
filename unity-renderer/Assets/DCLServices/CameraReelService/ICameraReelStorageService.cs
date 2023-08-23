@@ -8,7 +8,7 @@ namespace DCLServices.CameraReelService
 {
     public interface ICameraReelStorageService : IService
     {
-        event Action<Texture2D,  ScreenshotMetadata, UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)>> Upload;
+        event Action<CameraReelResponse, CameraReelStorageStatus> ScreenshotUploaded;
 
         UniTask<CameraReelStorageStatus> GetUserGalleryStorageInfo(string userAddress, CancellationToken ct = default);
 
