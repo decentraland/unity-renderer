@@ -11,7 +11,7 @@ namespace DCLServices.CameraReelService
 
         private ICameraReelAnalyticsService analyticsServiceLazy;
 
-        public event Action<Texture2D, ScreenshotMetadata, UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)>> Upload;
+        public event Action<CameraReelResponse, CameraReelStorageStatus> ScreenshotUploaded;
 
         public CameraReelNetworkStorageService(ICameraReelNetworkClient networkClient)
         {
@@ -39,13 +39,11 @@ namespace DCLServices.CameraReelService
 
         public async UniTask<CameraReelStorageStatus> UploadScreenshot(Texture2D image, ScreenshotMetadata metadata, CancellationToken ct = default)
         {
-            var taskSource = new UniTaskCompletionSource<(CameraReelResponse, CameraReelStorageStatus)>();
-            Upload?.Invoke(image, metadata, taskSource);
-
             CameraReelUploadResponse response = await networkClient.UploadScreenshotRequest(image.EncodeToJPG(), metadata, ct);
-            taskSource.TrySetResult((response.image, new CameraReelStorageStatus(response.currentImages, response.maxImages)));
 
-            return new CameraReelStorageStatus(response.currentImages, response.maxImages);
+            var storageStatus = new CameraReelStorageStatus(response.currentImages, response.maxImages);
+            ScreenshotUploaded?.Invoke(response.image,storageStatus);
+            return storageStatus;
         }
     }
 }

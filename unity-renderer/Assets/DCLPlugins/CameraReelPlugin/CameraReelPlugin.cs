@@ -24,11 +24,12 @@ namespace DCLPlugins.CameraReelPlugin
         private CameraReelSectionController reelSectionController;
         private CameraReelModel cameraReelModel;
 
+        private ICameraReelStorageService storageService;
+
         public CameraReelPlugin()
         {
             Initialize().Forget();
         }
-
 
         private async UniTaskVoid Initialize()
         {
@@ -40,9 +41,9 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            ICameraReelStorageService storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
+            storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
             DataStore dataStore = DataStore.i;
-            cameraReelModel = new CameraReelModel(storageService);
+            cameraReelModel = new CameraReelModel();
             ICameraReelAnalyticsService analytics = Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
             reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
@@ -64,6 +65,8 @@ namespace DCLPlugins.CameraReelPlugin
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
             ScreenshotVisiblePersonView.Instances.OnAdded += OnVisiblePersonAdded;
 
+            storageService.ScreenshotUploaded += cameraReelModel.AddScreenshotAsFirst;
+
             dataStore.HUDs.isCameraReelInitialized.Set(true);
         }
 
@@ -71,6 +74,8 @@ namespace DCLPlugins.CameraReelPlugin
         {
             ThumbnailContextMenuView.Instances.OnAdded -= OnThumbnailContextMenuAdded;
             ScreenshotVisiblePersonView.Instances.OnAdded -= OnVisiblePersonAdded;
+
+            storageService.ScreenshotUploaded -= cameraReelModel.AddScreenshotAsFirst;
 
             foreach (ThumbnailContextMenuController controller in thumbnailContextMenuControllers)
                 controller.Dispose();
