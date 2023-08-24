@@ -15,10 +15,21 @@ public static class ExplorePlacesTestHelpers
         return testPlaces;
     }
 
+    public static List<PlaceCardComponentModel> CreateTestWorlds(Sprite sprite, int amount = 2)
+    {
+        List<PlaceCardComponentModel> testWorlds = new List<PlaceCardComponentModel>();
+
+        for (int j = 0; j < amount; j++)
+            testWorlds.Add(CreateTestWorld($"Test world {j + 1}", sprite));
+
+        return testWorlds;
+    }
+
     public static PlaceCardComponentModel CreateTestPlace(string name, Sprite sprite)
     {
         return new PlaceCardComponentModel
         {
+            isWorld = false,
             coords = new Vector2Int(10, 10),
             placeInfo = new PlaceInfo()
             {
@@ -26,6 +37,28 @@ public static class ExplorePlacesTestHelpers
                 title = name,
                 owner = "Test Author",
                 description = "Test Description"
+            },
+            numberOfUsers = 10,
+            parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+            placeAuthor = "Test Author",
+            placeDescription = "Test Description",
+            placeName = name,
+            placePictureSprite = sprite
+        };
+    }
+
+    public static PlaceCardComponentModel CreateTestWorld(string name, Sprite sprite)
+    {
+        return new PlaceCardComponentModel
+        {
+            isWorld = true,
+            coords = new Vector2Int(0, 0),
+            placeInfo = new PlaceInfo()
+            {
+                base_position = "0,0",
+                title = name,
+                owner = "Test world Author",
+                description = "Test world Description"
             },
             numberOfUsers = 10,
             parcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
