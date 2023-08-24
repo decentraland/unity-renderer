@@ -12,6 +12,7 @@ using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
 using DCLServices.CameraReelService;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.DCLFileBrowser;
 using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
@@ -204,6 +205,7 @@ namespace DCL
             result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
+            result.Register<ICopyPasteAnalyticsService>(() => new CopyPasteAnalyticsService(Environment.i.platform.serviceProviders.analytics));
             return result;
         }
     }

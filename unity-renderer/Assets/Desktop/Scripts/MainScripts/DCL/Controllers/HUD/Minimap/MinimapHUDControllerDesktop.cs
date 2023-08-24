@@ -1,3 +1,4 @@
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.PlacesAPIService;
 
 namespace DCL.Controllers.HUD
@@ -13,8 +14,10 @@ namespace DCL.Controllers.HUD
             Environment.Model environment,
             IPlacesAPIService placesAPIService,
             IPlacesAnalytics placesAnalytics,
-            IClipboard clipboard
-            )
-            : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics, clipboard) { }
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService,
+            IUserProfileBridge userProfileBridge
+        ) : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics, clipboard,
+            copyPasteAnalyticsService, userProfileBridge) { }
     }
 }

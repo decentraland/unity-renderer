@@ -1,6 +1,7 @@
 using AvatarSystem;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
@@ -72,7 +73,8 @@ namespace DCL.Social.Passports
                                     Substitute.For<INamesService>(),
                                     NotificationsController.i),
                                 Substitute.For<IAdditionalInfoFieldIconProvider>(),
-                                Substitute.For<IClipboard>());
+                                Substitute.For<IClipboard>(),
+                                Substitute.For<ICopyPasteAnalyticsService>());
 
             controller = new PlayerPassportHUDController(
                 view,

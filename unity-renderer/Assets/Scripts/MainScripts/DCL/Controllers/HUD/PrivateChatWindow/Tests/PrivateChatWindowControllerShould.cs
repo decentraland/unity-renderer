@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -61,7 +62,8 @@ namespace DCL.Social.Chat
                 socialAnalytics,
                 mouseCatcher,
                 mentionSuggestionProvider,
-                Substitute.For<IClipboard>());
+                Substitute.For<IClipboard>(),
+                Substitute.For<ICopyPasteAnalyticsService>());
         }
 
         [TearDown]

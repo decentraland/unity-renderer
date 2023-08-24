@@ -5,11 +5,10 @@ using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
-using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
-using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
@@ -138,6 +137,9 @@ namespace DCL
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
             result.Register<IHUDController>(() => Substitute.For<IHUDController>());
+
+            // Analytics
+            result.Register<ICopyPasteAnalyticsService>(() => Substitute.For<ICopyPasteAnalyticsService>());
 
             return result;
         }
