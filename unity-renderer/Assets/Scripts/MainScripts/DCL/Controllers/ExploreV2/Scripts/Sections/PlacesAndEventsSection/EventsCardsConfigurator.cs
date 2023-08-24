@@ -58,7 +58,7 @@ public static class EventsCardsConfigurator
         cardModel.isSubscribed = false;
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
-        cardModel.numberOfUsers = GetNumberOfUsersInCoords(cardModel.coords);
+        cardModel.numberOfUsers = eventFromAPI.world ? GetNumberOfUsersInWorld(eventFromAPI.server) : GetNumberOfUsersInCoords(cardModel.coords);
         cardModel.worldAddress = eventFromAPI.world ? eventFromAPI.server : null;
 
         return cardModel;
@@ -86,6 +86,25 @@ public static class EventsCardsConfigurator
 
             if (sceneFound)
                 break;
+        }
+
+        return numberOfUsers;
+    }
+
+    private static int GetNumberOfUsersInWorld(string worldName)
+    {
+        var numberOfUsers = 0;
+
+        if (hotScenesFetcher.Ref.WorldsInfo == null)
+            return numberOfUsers;
+
+        foreach (var worldInfo in hotScenesFetcher.Ref.WorldsInfo.Value)
+        {
+            if (worldInfo.worldName == worldName)
+            {
+                numberOfUsers = worldInfo.users;
+                break;
+            }
         }
 
         return numberOfUsers;
