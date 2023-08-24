@@ -261,17 +261,21 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void SetEventPlaceCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetEventPlaceCorrectly(bool isWorld)
     {
         // Arrange
         string testText = "Test text";
 
         // Act
-        eventCardModalComponent.SetEventPlace(testText);
+        eventCardModalComponent.SetEventPlace(testText, isWorld);
 
         // Assert
         Assert.AreEqual(testText, eventCardModalComponent.model.eventPlace, "The event card eventPlace does not match in the model.");
         Assert.AreEqual(testText, eventCardModalComponent.eventPlaceText.text);
+        Assert.AreEqual(!isWorld, eventCardModalComponent.placeIcon.activeSelf);
+        Assert.AreEqual(isWorld, eventCardModalComponent.worldIcon.activeSelf);
     }
 
     [Test]

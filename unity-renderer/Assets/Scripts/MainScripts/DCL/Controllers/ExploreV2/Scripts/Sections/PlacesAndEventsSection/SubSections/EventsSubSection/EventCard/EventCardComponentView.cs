@@ -109,7 +109,8 @@ public interface IEventCardComponentView
     /// Set the event place in the card.
     /// </summary>
     /// <param name="newText">New event place.</param>
-    void SetEventPlace(string newText);
+    /// <param name="isWorld">True for setting the place as world.</param>
+    void SetEventPlace(string newText, bool isWorld);
 
     /// <summary>
     /// Set the the number of users subscribed to the event.
@@ -180,6 +181,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
     [SerializeField] internal EventCardAnimator cardAnimator;
     [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal GameObject placeIcon;
+    [SerializeField] internal GameObject worldIcon;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -263,7 +266,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventStartedIn(model.eventStartedIn);
         SetEventStartsInFromTo(model.eventStartsInFromTo);
         SetEventOrganizer(model.eventOrganizer);
-        SetEventPlace(model.eventPlace);
+        SetEventPlace(model.eventPlace, !string.IsNullOrEmpty(model.worldAddress));
         SetSubscribersUsers(model.subscribedUsers);
         SetCoords(model.coords, model.worldAddress);
         ResetScrollPosition();
@@ -505,14 +508,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         eventOrganizerText.text = newText;
     }
 
-    public void SetEventPlace(string newText)
+    public void SetEventPlace(string newText, bool isWorld)
     {
         model.eventPlace = newText;
 
-        if (eventPlaceText == null)
-            return;
+        if (eventPlaceText != null)
+            eventPlaceText.text = newText;
 
-        eventPlaceText.text = newText;
+        if (placeIcon != null)
+            placeIcon.SetActive(!isWorld);
+
+        if (worldIcon != null)
+            worldIcon.SetActive(isWorld);
     }
 
     public void SetSubscribersUsers(int newNumberOfUsers)
