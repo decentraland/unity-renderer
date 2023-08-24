@@ -54,7 +54,7 @@ namespace DCLServices.ScreencaptureCamera.Service
             if (!featureIsEnabled) return;
 
             await UniTask.WaitUntil(() => player.ownPlayer.Get() != null && !string.IsNullOrEmpty(player.ownPlayer.Get().id), cancellationToken: cancellationToken);
-            if (isGuest) return;
+                //if (isGuest) return;
 
             await InitializeCameraBehaviour(cancellationToken);
             await InitializeMainHUDButton(cancellationToken);
