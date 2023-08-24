@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Tasks;
+using DCLServices.CustomNftCollection;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
@@ -28,6 +29,7 @@ namespace DCL.Backpack
         private readonly BackpackFiltersController backpackFiltersController;
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private readonly IBackpackAnalyticsService backpackAnalyticsService;
+        private readonly ICustomNftCollectionService customNftCollectionService;
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -51,7 +53,8 @@ namespace DCL.Backpack
             IBrowserBridge browserBridge,
             BackpackFiltersController backpackFiltersController,
             AvatarSlotsHUDController avatarSlotsHUDController,
-            IBackpackAnalyticsService backpackAnalyticsService)
+            IBackpackAnalyticsService backpackAnalyticsService,
+            ICustomNftCollectionService customNftCollectionService)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
@@ -61,6 +64,7 @@ namespace DCL.Backpack
             this.backpackFiltersController = backpackFiltersController;
             this.avatarSlotsHUDController = avatarSlotsHUDController;
             this.backpackAnalyticsService = backpackAnalyticsService;
+            this.customNftCollectionService = customNftCollectionService;
 
             view.OnWearablePageChanged += HandleNewPageRequested;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -242,6 +246,7 @@ namespace DCL.Backpack
                 currentWearables.Clear();
 
                 view.SetLoadingActive(true);
+
                 (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
@@ -249,6 +254,7 @@ namespace DCL.Backpack
                     categoryFilter, NftRarity.None, collectionTypeMask,
                     thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
+
                 view.SetLoadingActive(false);
 
                 currentWearables = wearables.Select(ToWearableGridModel)

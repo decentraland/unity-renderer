@@ -2009,5 +2009,10 @@ namespace DCL.Interface
         {
             SendMessage("SaveProfileAdditionalInfo", payload);
         }
+
+        public static void GetWithCollectionsUrlParam()
+        {
+            SendMessage("GetWithCollectionsUrlParam");
+        }
     }
 }
