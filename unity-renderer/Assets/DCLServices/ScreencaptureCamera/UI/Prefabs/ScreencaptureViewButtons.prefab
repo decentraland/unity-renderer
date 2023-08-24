@@ -522,11 +522,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2646481263273473357, guid: 2198f3202dd33b64db604a96577bb96d,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 2100000, guid: b864f6f6b3cee7b48a7270a724e2806f, type: 2}
     - target: {fileID: 3915869077436214683, guid: 2198f3202dd33b64db604a96577bb96d,
         type: 3}
       propertyPath: m_Pivot.x
