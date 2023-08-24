@@ -32,7 +32,6 @@ public class MinimapHUDController : IHUD
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly IClipboard clipboard;
     private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
-    private readonly IUserProfileBridge userProfileBridge;
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
@@ -53,8 +52,7 @@ public class MinimapHUDController : IHUD
         IPlacesAPIService placesAPIService,
         IPlacesAnalytics placesAnalytics,
         IClipboard clipboard,
-        ICopyPasteAnalyticsService copyPasteAnalyticsService,
-        IUserProfileBridge userProfileBridge)
+        ICopyPasteAnalyticsService copyPasteAnalyticsService)
     {
         minimapZoom.Set(1f);
         metadataController = minimapMetadataController;
@@ -64,7 +62,6 @@ public class MinimapHUDController : IHUD
         this.placesAnalytics = placesAnalytics;
         this.clipboard = clipboard;
         this.copyPasteAnalyticsService = copyPasteAnalyticsService;
-        this.userProfileBridge = userProfileBridge;
 
         if (metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
@@ -300,6 +297,6 @@ public class MinimapHUDController : IHUD
     {
         clipboard.WriteText($"{model.sceneName}: {model.playerPosition}");
         view.ShowLocationCopiedToast();
-        copyPasteAnalyticsService.Copy(userProfileBridge.GetOwn().userId, "location");
+        copyPasteAnalyticsService.Copy("location");
     }
 }

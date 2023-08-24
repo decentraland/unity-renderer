@@ -105,7 +105,7 @@ namespace DCL.Social.Chat
         private void CopyNameToClipboard(string channelName)
         {
             clipboard.WriteText(channelName);
-            copyPasteAnalyticsService.Copy(userProfileBridge.GetOwn().userId, "channel_name");
+            copyPasteAnalyticsService.Copy("channel_name");
         }
 
         public void Setup(string channelId)

@@ -53,12 +53,11 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new MinimapHUDControllerDesktop(
                     MinimapMetadataController.i,
                     new WebInterfaceHomeLocationController(),
-                    DCL.Environment.i,
-                    DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                    Environment.i,
+                    Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                     new PlacesAnalytics(),
                     Clipboard.Create(),
-                    DCL.Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>(),
-                    new UserProfileWebInterfaceBridge());
+                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>());
                 break;
 
             default:

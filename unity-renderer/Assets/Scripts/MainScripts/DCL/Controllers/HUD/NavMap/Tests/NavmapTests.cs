@@ -48,8 +48,7 @@ namespace Tests
                 placesAPIService,
                 Substitute.For<IPlacesAnalytics>(),
                 Substitute.For<IClipboard>(),
-                Substitute.For<ICopyPasteAnalyticsService>(),
-                Substitute.For<IUserProfileBridge>());
+                Substitute.For<ICopyPasteAnalyticsService>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }

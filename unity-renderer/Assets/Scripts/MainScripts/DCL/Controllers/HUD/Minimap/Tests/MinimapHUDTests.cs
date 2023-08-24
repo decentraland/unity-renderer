@@ -30,8 +30,7 @@ namespace Tests
                 Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                 Substitute.For<IPlacesAnalytics>(),
                 clipboard,
-                Substitute.For<ICopyPasteAnalyticsService>(),
-                Substitute.For<IUserProfileBridge>());
+                Substitute.For<ICopyPasteAnalyticsService>());
             controller.Initialize();
         }
 

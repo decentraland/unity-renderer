@@ -206,7 +206,7 @@ namespace DCL
             result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
-            result.Register<ICopyPasteAnalyticsService>(() => new CopyPasteAnalyticsService(Environment.i.platform.serviceProviders.analytics));
+            result.Register<ICopyPasteAnalyticsService>(() => new CopyPasteAnalyticsService(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()));
             result.Register<IPortableExperiencesAnalyticsService>(() => new PortableExperiencesAnalyticsService(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()));
             return result;
         }

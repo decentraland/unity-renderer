@@ -527,7 +527,7 @@ public class UserContextMenu : MonoBehaviour
         clipboard.WriteText($"@{userName.text}");
         nameCopiedToast.gameObject.SetActive(true);
         nameCopiedToast.ShowDelayHide(3);
-        copyPasteAnalyticsService.Copy(UserProfile.GetOwnUserProfile().userId, "name");
+        copyPasteAnalyticsService.Copy("name");
     }
 
 #if UNITY_EDITOR

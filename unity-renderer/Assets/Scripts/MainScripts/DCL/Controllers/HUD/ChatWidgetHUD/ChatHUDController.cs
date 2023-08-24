@@ -529,7 +529,7 @@ namespace DCL.Social.Chat
         private void HandleCopyMessageToClipboard(ChatEntryModel model)
         {
             clipboard.WriteText(ChatUtils.RemoveNoParse(model.bodyText));
-            copyPasteAnalyticsService.Copy(userProfileBridge.GetOwn().userId, "message");
+            copyPasteAnalyticsService.Copy("message");
         }
     }
 }

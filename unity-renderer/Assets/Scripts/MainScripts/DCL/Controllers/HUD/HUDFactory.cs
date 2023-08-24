@@ -63,8 +63,7 @@ public class HUDFactory : IHUDFactory
                     new WebInterfaceHomeLocationController(), Environment.i,
                     Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                     new PlacesAnalytics(), Clipboard.Create(),
-                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>(),
-                    new UserProfileWebInterfaceBridge());
+                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>());
             case HUDElementID.PROFILE_HUD:
                 ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
 

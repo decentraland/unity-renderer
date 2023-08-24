@@ -440,7 +440,7 @@ namespace DCL.Social.Passports
             string description = userProfile.description;
             description = ExtractLinks(description);
             clipboard.WriteText(description);
-            copyPasteAnalyticsService.Copy(userProfileBridge.GetOwn().userId, "player_data");
+            copyPasteAnalyticsService.Copy("player_data");
         }
     }
 }
