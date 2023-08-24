@@ -6,6 +6,7 @@ using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -26,6 +27,30 @@ namespace DCL.Backpack
         private readonly OutfitsController outfitsController;
         private readonly IVRMExporter vrmExporter;
         private readonly IDCLFileBrowserService fileBrowser;
+        private readonly Dictionary<string, Dictionary<string, string>> fallbackWearables = new ()
+        {
+            {"urn:decentraland:off-chain:base-avatars:BaseFemale", new Dictionary<string, string>
+            {
+                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:f_blue_jacket"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:f_capris"},
+                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:ruby_blue_loafer"},
+                {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:pony_tail"},
+                {WearableLiterals.Categories.MOUTH, "urn:decentraland:off-chain:base-avatars:f_mouth_05"},
+                {WearableLiterals.Categories.EYEBROWS, "urn:decentraland:off-chain:base-avatars:f_eyebrows_02"},
+                {WearableLiterals.Categories.EYES, "urn:decentraland:off-chain:base-avatars:f_eyes_06"},
+            }},
+            {"urn:decentraland:off-chain:base-avatars:BaseMale", new Dictionary<string, string>
+            {
+                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:m_sweater_02"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:comfortablepants"},
+                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:Espadrilles"},
+                {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:cool_hair"},
+                {WearableLiterals.Categories.FACIAL_HAIR, "urn:decentraland:off-chain:base-avatars:beard"},
+                {WearableLiterals.Categories.EYEBROWS, "urn:decentraland:off-chain:base-avatars:eyebrows_00"},
+                {WearableLiterals.Categories.EYES, "urn:decentraland:off-chain:base-avatars:eyes_00"},
+            }}
+        };
+
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
@@ -350,7 +375,8 @@ namespace DCL.Backpack
 
             // We always keep the loaded emotes into the Avatar Preview
             foreach (string emoteId in dataStore.emotesCustomization.currentLoadedEmotes.Get())
-                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
+                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry
+                    { urn = emoteId });
 
             UpdateAvatarModel(modelToUpdate);
         }
@@ -508,6 +534,7 @@ namespace DCL.Backpack
             {
                 UnEquipCurrentBodyShape();
                 EquipBodyShape(wearable);
+                ReplaceIncompatibleWearablesWithDefaultWearables();
             }
             else
             {
@@ -526,7 +553,7 @@ namespace DCL.Backpack
                 if (resetOverride)
                     ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
+                avatarSlotsHUDController.Equip(wearable, model.bodyShape.id, model.forceRender);
                 wearableGridController.Equip(wearableId);
             }
 
@@ -540,6 +567,36 @@ namespace DCL.Backpack
             {
                 UpdateAvatarModel(model.ToAvatarModel());
                 categoryPendingToPlayEmote = wearable.data.category;
+            }
+        }
+
+        private void ReplaceIncompatibleWearablesWithDefaultWearables()
+        {
+            WearableItem bodyShape = model.bodyShape;
+
+            if (bodyShape == null) return;
+            if (!fallbackWearables.ContainsKey(bodyShape.id)) return;
+
+            HashSet<string> replacedCategories = new ();
+
+            foreach (var w in model.wearables.Values.ToArray())
+            {
+                if (w.SupportsBodyShape(bodyShape.id)) continue;
+
+                UnEquipWearable(w, UnequipWearableSource.None, true, false);
+
+                string category = w.data.category;
+
+                if (!string.IsNullOrEmpty(category) && !replacedCategories.Contains(category))
+                    replacedCategories.Add(category);
+            }
+
+            Dictionary<string, string> fallbackWearablesByCategory = fallbackWearables[bodyShape.id];
+
+            foreach (string category in replacedCategories)
+            {
+                if (!fallbackWearablesByCategory.ContainsKey(category)) continue;
+                EquipWearable(fallbackWearablesByCategory[category], EquipWearableSource.None, true, false);
             }
         }
 
