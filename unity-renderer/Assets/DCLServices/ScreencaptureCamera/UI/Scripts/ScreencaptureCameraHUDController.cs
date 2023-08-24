@@ -12,16 +12,18 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private readonly ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
         private readonly ScreencaptureCameraInputSchema input;
         private readonly DataStore dataStore;
+        private readonly HUDController hudController;
 
         public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view,
             ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
             ScreencaptureCameraInputSchema input,
-            DataStore dataStore)
+            DataStore dataStore, HUDController hudController)
         {
             this.view = view;
             this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
             this.input = input;
             this.dataStore = dataStore;
+            this.hudController = hudController;
         }
 
         public void Initialize()
@@ -33,11 +35,9 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             input.TakeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
-
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
 
             input.MouseFirstClick.OnStarted += HideShortcutsInfoPanel;
-
             input.ToggleScreenshotViewVisibilityAction.OnTriggered += ToggleViewVisibility;
         }
 
@@ -50,8 +50,9 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             input.TakeScreenshotAction.OnTriggered -= CaptureScreenshot;
 
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
-
             view.ShortcutsInfoButtonClicked -= view.ToggleShortcutsInfosHelpPanel;
+
+            input.MouseFirstClick.OnStarted -= HideShortcutsInfoPanel;
             input.ToggleScreenshotViewVisibilityAction.OnTriggered -= ToggleViewVisibility;
 
             Object.Destroy(view.gameObject);
@@ -68,14 +69,14 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             else
                 AudioScriptableObjects.UIHide.Play();
 
-            HUDController.i?.ToggleAllUIHiddenNotification(isHidden: !view.IsVisible, false);
+            hudController.ToggleAllUIHiddenNotification(isHidden: !view.IsVisible, false);
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace)
         {
             // Hide AllUIHidden notification when entering camera mode
             if (isVisible)
-                HUDController.i?.ToggleAllUIHiddenNotification(isHidden: false, false);
+                hudController.ToggleAllUIHiddenNotification(isHidden: false, false);
 
             view.SetVisibility(isVisible, hasStorageSpace);
         }

@@ -22,7 +22,7 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
             ScreencaptureCameraHUDView screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
 
             var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
-                mainBehaviour, inputActionsSchema, DataStore.i);
+                mainBehaviour, inputActionsSchema, DataStore.i, HUDController.i);
 
             return (screencaptureCameraHUDController, screencaptureCameraHUDView);
         }
