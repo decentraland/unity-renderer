@@ -59,19 +59,26 @@ namespace DCLFeatures.ScreencaptureCamera.UI
 
         private void ToggleViewVisibility(DCLAction_Trigger _)
         {
-            if (screencaptureCameraBehaviour.isScreencaptureCameraActive.Get())
-            {
-                if (view.IsVisible)
-                    AudioScriptableObjects.UIHide.Play();
-                else
-                    AudioScriptableObjects.UIShow.Play();
+            if (!screencaptureCameraBehaviour.isScreencaptureCameraActive.Get()) return;
 
-                SetVisibility(!view.IsVisible, screencaptureCameraBehaviour.HasStorageSpace);
-            }
+            SetVisibility(!view.IsVisible, screencaptureCameraBehaviour.HasStorageSpace);
+
+            if (view.IsVisible)
+                AudioScriptableObjects.UIShow.Play();
+            else
+                AudioScriptableObjects.UIHide.Play();
+
+            HUDController.i?.ToggleAllUIHiddenNotification(isHidden: !view.IsVisible, false);
         }
 
-        public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
+        public void SetVisibility(bool isVisible, bool hasStorageSpace)
+        {
+            // Hide AllUIHidden notification when entering camera mode
+            if (isVisible)
+                HUDController.i?.ToggleAllUIHiddenNotification(isHidden: false, false);
+
             view.SetVisibility(isVisible, hasStorageSpace);
+        }
 
         private void HideShortcutsInfoPanel(DCLAction_Hold _)
         {
