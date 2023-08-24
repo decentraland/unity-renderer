@@ -127,7 +127,7 @@ MonoBehaviour:
   translationInputSchema:
     xAxis: {fileID: 11400000, guid: abf07b6aa547cdb4cb90fcab32a79cf1, type: 2}
     yAxis: {fileID: 11400000, guid: 3e5e69dfa39b1644f9805bc7d2cad95f, type: 2}
-    upAction: {fileID: 0}
+    upAction: {fileID: 11400000, guid: 0315b943c1d516449bfdb07463c3a3d4, type: 2}
     downAction: {fileID: 11400000, guid: 9da538e6dbdadbd4db8e3fd1c339706f, type: 2}
   rotationSpeed: 50
   maxRotationPerFrame: 10
@@ -136,7 +136,7 @@ MonoBehaviour:
     cameraXAxis: {fileID: 11400000, guid: 2ae727ffde932b04d8b4180993b81f3d, type: 2}
     cameraYAxis: {fileID: 11400000, guid: 485f3af6b1a262e48890cf2c75da6b1e, type: 2}
     mouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
-    cameraRollLeft: {fileID: 0}
+    cameraRollLeft: {fileID: 11400000, guid: 2ba41cc842288904eaf1868d86a23ecc, type: 2}
     cameraRollRight: {fileID: 11400000, guid: 6ac03361c8a1a0c4ea36ef9e59cc2034, type: 2}
 --- !u!114 &6585314960302842260
 MonoBehaviour:
