@@ -239,14 +239,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a8fdd7fe1745beac581373ec12db95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
-  characterController: {fileID: 0}
-  cameraController: {fileID: 0}
   cameraPrefab: {fileID: 7813136116666180052, guid: dffcf881f8cb36a448628ae8e7331ff2,
     type: 3}
   screencaptureCameraHUDViewPrefab: {fileID: 8664929919244729531, guid: 73f988cecacd42e48920937e996e446d,
-    type: 3}
-  enableCameraButtonPrefab: {fileID: 2717278584910967307, guid: 0ec15e0bcbdac1a4e89571580222c90b,
     type: 3}
   playerNamePrefab: {fileID: 3574357807223115553, guid: c53ec74589327644bba45b4054fb78dc,
     type: 3}
@@ -257,8 +252,7 @@ MonoBehaviour:
       type: 2}
     ToggleCameraReelAction: {fileID: 11400000, guid: 4dba3cd16e0754e40aa328f383a2d52b,
       type: 2}
-    TakeScreenshotAction: {fileID: 11400000, guid: fdfab5e29b7455f45996567365819641,
-      type: 2}
+    TakeScreenshotAction: {fileID: 0}
     CloseWindowAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
       type: 2}
     MouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
