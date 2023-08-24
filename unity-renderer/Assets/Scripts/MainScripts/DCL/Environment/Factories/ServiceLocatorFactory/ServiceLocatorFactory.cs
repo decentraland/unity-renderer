@@ -24,6 +24,7 @@ using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.PlacesAPIService;
+using DCLServices.PortableExperiences.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -206,6 +207,7 @@ namespace DCL
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
             result.Register<ICopyPasteAnalyticsService>(() => new CopyPasteAnalyticsService(Environment.i.platform.serviceProviders.analytics));
+            result.Register<IPortableExperiencesAnalyticsService>(() => new PortableExperiencesAnalyticsService(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()));
             return result;
         }
     }

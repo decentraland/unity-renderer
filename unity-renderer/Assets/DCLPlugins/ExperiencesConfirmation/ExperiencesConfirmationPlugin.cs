@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Providers;
 using DCL.World.PortableExperiences;
+using DCLServices.PortableExperiences.Analytics;
 using System.Threading;
 
 namespace DCL.PortableExperiences.Confirmation
@@ -26,7 +27,8 @@ namespace DCL.PortableExperiences.Confirmation
             popupController = new ExperiencesConfirmationPopupController(view,
                 DataStore.i,
                 new PlayerPrefsConfirmedExperiencesRepository(new DefaultPlayerPrefs()),
-                new UserProfileWebInterfaceBridge());
+                new UserProfileWebInterfaceBridge(),
+                Environment.i.serviceLocator.Get<IPortableExperiencesAnalyticsService>());
         }
 
         public void Dispose()

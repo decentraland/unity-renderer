@@ -7,6 +7,7 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.Social.Friends;
 using DCLServices.CopyPaste.Analytics;
+using DCLServices.PortableExperiences.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -140,6 +141,7 @@ namespace DCL
 
             // Analytics
             result.Register<ICopyPasteAnalyticsService>(() => Substitute.For<ICopyPasteAnalyticsService>());
+            result.Register<IPortableExperiencesAnalyticsService>(() => Substitute.For<IPortableExperiencesAnalyticsService>());
 
             return result;
         }
