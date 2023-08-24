@@ -40,7 +40,7 @@ namespace Tests.ValidationTests
         }
 
         [TestCaseSource(nameof(PrefabPaths))]
-        public void CheckPrefabForIssues(string prefabPath)
+        public void PrefabShouldNotHaveMissingReferences(string prefabPath)
         {
             GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
 
@@ -52,7 +52,7 @@ namespace Tests.ValidationTests
         }
 
         [TestCaseSource(nameof(ScriptableObjectPaths))]
-        public void CheckScriptableObjectForIssues(string scriptableObjectPath)
+        public void ScriptableObjectShouldNotHaveMissingReferences(string scriptableObjectPath)
         {
             ScriptableObject scriptableObjectAsset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(scriptableObjectPath);
             Assert.IsFalse(HasBrokenReferences(scriptableObjectAsset, out string brokenReferenceMessage), $"ScriptableObject at {scriptableObjectPath} {brokenReferenceMessage}");
