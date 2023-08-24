@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
+using DCLServices.CopyPaste.Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -60,7 +61,8 @@ namespace DCL.Social.Chat
                 socialAnalytics,
                 profanityFilter,
                 mentionSuggestionProvider,
-                clipboard);
+                clipboard,
+                Substitute.For<ICopyPasteAnalyticsService>());
 
             view = Substitute.For<IChatChannelWindowView>();
             chatView = Substitute.For<IChatHUDComponentView>();

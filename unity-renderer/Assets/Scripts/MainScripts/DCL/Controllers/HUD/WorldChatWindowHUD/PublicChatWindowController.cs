@@ -3,6 +3,7 @@ using DCL.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
+using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace DCL.Social.Chat
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
@@ -45,7 +47,8 @@ namespace DCL.Social.Chat
             IMouseCatcher mouseCatcher,
             IChatMentionSuggestionProvider chatMentionSuggestionProvider,
             ISocialAnalytics socialAnalytics,
-            IClipboard clipboard)
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
@@ -55,6 +58,7 @@ namespace DCL.Social.Chat
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
             this.socialAnalytics = socialAnalytics;
             this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
         }
 
         public void Initialize(IPublicChatWindowView view, bool isVisible = true)
@@ -75,6 +79,7 @@ namespace DCL.Social.Chat
                 socialAnalytics,
                 chatController,
                 clipboard,
+                copyPasteAnalyticsService,
                 profanityFilter);
             // dont set any message's sorting strategy, just add them sequentally
             // comms cannot calculate a server timestamp for each message

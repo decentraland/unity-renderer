@@ -3,6 +3,7 @@ using DCL.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
+using DCLServices.CopyPaste.Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -55,7 +56,8 @@ namespace DCL.Social.Chat
                 mouseCatcher,
                 mentionSuggestionProvider,
                 Substitute.For<ISocialAnalytics>(),
-                Substitute.For<IClipboard>());
+                Substitute.For<IClipboard>(),
+                Substitute.For<ICopyPasteAnalyticsService>());
 
             view = Substitute.For<IPublicChatWindowView>();
             internalChatView = Substitute.For<IChatHUDComponentView>();
