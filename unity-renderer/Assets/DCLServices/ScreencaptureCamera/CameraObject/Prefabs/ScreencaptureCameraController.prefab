@@ -252,7 +252,8 @@ MonoBehaviour:
       type: 2}
     ToggleCameraReelAction: {fileID: 11400000, guid: 4dba3cd16e0754e40aa328f383a2d52b,
       type: 2}
-    TakeScreenshotAction: {fileID: 0}
+    TakeScreenshotAction: {fileID: 11400000, guid: fdfab5e29b7455f45996567365819641,
+      type: 2}
     CloseWindowAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
       type: 2}
     MouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
