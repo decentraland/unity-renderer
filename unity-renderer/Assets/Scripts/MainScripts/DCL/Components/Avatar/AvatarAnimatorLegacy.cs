@@ -109,6 +109,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private Ray rayCache;
     private bool hasTarget;
+    private EmoteClipData lastExtendedEmoteData;
 
     private void Awake()
     {
@@ -367,13 +368,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         if (exitTransitionStarted)
-        {
-            animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
-
-            bb.expressionTriggerId = null;
-            bb.shouldLoop = false;
-            OnUpdateWithDeltaTime(bb.deltaTime);
-        }
+            StopEmote(bb);
         else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
             animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
@@ -390,6 +385,16 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
             return isAnimationOver || isMoving;
         }
+    }
+
+    private void StopEmote(BlackBoard bb)
+    {
+        animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
+        bb.expressionTriggerId = null;
+        bb.shouldLoop = false;
+        OnUpdateWithDeltaTime(bb.deltaTime);
+
+        lastExtendedEmoteData?.StopAllAnimations();
     }
 
     private void SetExpressionValues(string expressionTriggerId, long expressionTriggerTimestamp)
@@ -416,8 +421,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 latestAnimation = AvatarAnimation.IDLE;
             }
 
-            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData)
-                                    && clipData.loop;
+            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) && clipData.Loop;
 
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
@@ -438,6 +442,21 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public void PlayEmote(string emoteId, long timestamps)
     {
         SetExpressionValues(emoteId, timestamps);
+
+        if (!string.IsNullOrEmpty(emoteId))
+        {
+            lastExtendedEmoteData?.StopAllAnimations();
+
+            if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
+            {
+                lastExtendedEmoteData = emoteClipData;
+                emoteClipData.PlayAllAnimations();
+            }
+        }
+        else
+        {
+            lastExtendedEmoteData?.StopAllAnimations();
+        }
     }
 
     public void EquipBaseClip(AnimationClip clip)
@@ -457,18 +476,22 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null)
             return;
 
-        if (emoteClipData.clip == null)
-        {
-            Debug.LogError("Can't equip null animation clip for emote " + emoteId);
-            return;
-        }
-
         if (animation.GetClip(emoteId) != null)
             animation.RemoveClip(emoteId);
 
         emoteClipDataMap[emoteId] = emoteClipData;
 
-        animation.AddClip(emoteClipData.clip, emoteId);
+        animation.AddClip(emoteClipData.AvatarClip, emoteId);
+
+        // Enhanced emotes setup
+
+        if (emoteClipData.ExtraContent != null)
+        {
+            emoteClipData.ExtraContent.transform.SetParent(animation.transform, false);
+            emoteClipData.ExtraContent.transform.ResetLocalTRS();
+        }
+
+        // TODO: Setup sound clip for this emote
     }
 
     public void UnequipEmote(string emoteId)
@@ -480,6 +503,15 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
 
         animation.RemoveClip(emoteId);
+
+        if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
+        {
+            // Enhanced emotes setup
+            if (emoteClipData.ExtraContent != null)
+                emoteClipData.ExtraContent.transform.SetParent(null, false);
+
+            // TODO: Setup sound clip for this emote
+        }
     }
 
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)

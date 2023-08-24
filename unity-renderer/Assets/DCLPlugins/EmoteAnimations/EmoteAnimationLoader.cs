@@ -10,15 +10,17 @@ namespace DCL.Emotes
     {
         private readonly IWearableRetriever retriever;
         public AnimationClip loadedAnimationClip { get; internal set; }
+        public GameObject container { get; private set; }
+        public AudioClip audioClip { get; private set; }
 
         public EmoteAnimationLoader(IWearableRetriever retriever)
         {
             this.retriever = retriever;
         }
 
-        public async UniTask LoadEmote(GameObject container, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
+        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
         {
-            if (container == null)
+            if (targetContainer == null)
                 throw new NullReferenceException("Container cannot be null");
 
             if (emote == null)
@@ -29,7 +31,7 @@ namespace DCL.Emotes
 
             ct.ThrowIfCancellationRequested();
 
-            Rendereable rendereable = await retriever.Retrieve(container, emote, bodyShapeId, ct);
+            Rendereable rendereable = await retriever.Retrieve(targetContainer, emote, bodyShapeId, ct);
 
             var animation = rendereable.container.GetComponentInChildren<Animation>();
 
@@ -37,6 +39,11 @@ namespace DCL.Emotes
             {
                 Debug.LogError("Animation component not found in the container for emote " + emote.id);
                 return;
+            }
+
+            if (animation.GetClipCount() > 1)
+            {
+                this.container = rendereable.container;
             }
 
             animation.enabled = false;

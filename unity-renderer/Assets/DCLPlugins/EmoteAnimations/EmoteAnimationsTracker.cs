@@ -14,15 +14,20 @@ namespace DCL.Emotes
 {
     public class EmoteAnimationsTracker : IDisposable
     {
+        //To avoid circular references in assemblies we hardcode this here instead of using WearableLiterals
+        //Embedded Emotes are only temporary until they can be retrieved from the content server
+        private const string FEMALE = "urn:decentraland:off-chain:base-avatars:BaseFemale";
+        private const string MALE = "urn:decentraland:off-chain:base-avatars:BaseMale";
+
         internal readonly DataStore_Emotes dataStore;
         internal readonly EmoteAnimationLoaderFactory emoteAnimationLoaderFactory;
         private readonly IEmotesCatalogService emotesCatalogService;
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly ICatalyst catalyst;
 
-        internal Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader> loaders = new Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader>();
+        internal Dictionary<(string bodyshapeId, string emoteId), IEmoteAnimationLoader> loaders = new ();
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource cts = new ();
 
         internal GameObject animationsModelsContainer;
 
@@ -47,41 +52,31 @@ namespace DCL.Emotes
 
         private async UniTaskVoid AsyncInitialization()
         {
-            //To avoid circular references in assemblies we hardcode this here instead of using WearableLiterals
-            //Embedded Emotes are only temporary until they can be retrieved from the content server
-            const string FEMALE = "urn:decentraland:off-chain:base-avatars:BaseFemale";
-            const string MALE = "urn:decentraland:off-chain:base-avatars:BaseMale";
-
             EmbeddedEmotesSO embeddedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
 
             foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
             {
                 if (embeddedEmote.maleAnimation != null)
-                {
-                    //We match the animation id with its name due to performance reasons
-                    //Unity's Animation uses the name to play the clips.
-                    embeddedEmote.maleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((MALE, embeddedEmote.id), 5000);
-                    var clipData = new EmoteClipData(embeddedEmote.maleAnimation, embeddedEmote.emoteDataV0);
-                    dataStore.animations.Add((MALE, embeddedEmote.id), clipData);
-                    loaders.Add((MALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
-                }
+                    SetupEmbeddedClip(embeddedEmote, embeddedEmote.maleAnimation, MALE);
 
                 if (embeddedEmote.femaleAnimation != null)
-                {
-                    //We match the animation id with its name due to performance reasons
-                    //Unity's Animation uses the name to play the clips.
-                    embeddedEmote.femaleAnimation.name = embeddedEmote.id;
-                    dataStore.emotesOnUse.SetRefCount((FEMALE, embeddedEmote.id), 5000);
-                    var emoteClipData = new EmoteClipData(embeddedEmote.femaleAnimation, embeddedEmote.emoteDataV0);
-                    dataStore.animations.Add((FEMALE, embeddedEmote.id), emoteClipData);
-                    loaders.Add((FEMALE, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
-                }
+                    SetupEmbeddedClip(embeddedEmote, embeddedEmote.femaleAnimation, FEMALE);
             }
 
             wearablesCatalogService.EmbedWearables(embeddedEmotes.emotes);
             InitializeEmotes(this.dataStore.emotesOnUse.GetAllRefCounts());
             this.dataStore.emotesOnUse.OnRefCountUpdated += OnRefCountUpdated;
+        }
+
+        private void SetupEmbeddedClip(EmbeddedEmote embeddedEmote, AnimationClip clip, string urn)
+        {
+            //We match the animation id with its name due to performance reasons
+            //Unity's Animation uses the name to play the clips.
+            clip.name = embeddedEmote.id;
+            dataStore.emotesOnUse.SetRefCount((urn, embeddedEmote.id), 5000);
+            var clipData = new EmoteClipData(clip, embeddedEmote.emoteDataV0?.loop ?? false);
+            dataStore.animations.Add((urn, embeddedEmote.id), clipData);
+            loaders.Add((urn, embeddedEmote.id), emoteAnimationLoaderFactory.Get());
         }
 
         private void OnRefCountUpdated((string bodyshapeId, string emoteId) value, int refCount)
@@ -94,10 +89,7 @@ namespace DCL.Emotes
 
         private void InitializeEmotes(IEnumerable<KeyValuePair<(string bodyshapeId, string emoteId), int>> refCounts)
         {
-            foreach (KeyValuePair<(string bodyshapeId, string emoteId), int> keyValuePair in refCounts)
-            {
-                LoadEmote(keyValuePair.Key.bodyshapeId, keyValuePair.Key.emoteId, cts.Token);
-            }
+            foreach (KeyValuePair<(string bodyshapeId, string emoteId), int> keyValuePair in refCounts) { LoadEmote(keyValuePair.Key.bodyshapeId, keyValuePair.Key.emoteId, cts.Token); }
         }
 
         private async UniTaskVoid LoadEmote(string bodyShapeId, string emoteId, CancellationToken ct)
@@ -124,14 +116,13 @@ namespace DCL.Emotes
                 if (emote is EmoteItem newEmoteItem)
                     emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, newEmoteItem.data.loop);
                 else
-                    emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, emote.emoteDataV0);
+                    emoteClipData = new EmoteClipData(animationLoader.loadedAnimationClip, emote.emoteDataV0?.loop ?? false);
+
+                emoteClipData.LoadExtraContent(animationLoader.container, animationLoader.audioClip);
 
                 dataStore.animations.Add((bodyShapeId, emoteId), emoteClipData);
 
-                if (animationLoader.loadedAnimationClip == null)
-                {
-                    Debug.LogError("Emote animation failed to load for emote " + emote.id);
-                }
+                if (animationLoader.loadedAnimationClip == null) { Debug.LogError("Emote animation failed to load for emote " + emote.id); }
             }
             catch (Exception e)
             {
@@ -158,10 +149,7 @@ namespace DCL.Emotes
             dataStore.emotesOnUse.OnRefCountUpdated -= OnRefCountUpdated;
             (string bodyshapeId, string emoteId)[] keys = loaders.Keys.ToArray();
 
-            foreach ((string bodyshapeId, string emoteId) in keys)
-            {
-                UnloadEmote(bodyshapeId, emoteId);
-            }
+            foreach ((string bodyshapeId, string emoteId) in keys) { UnloadEmote(bodyshapeId, emoteId); }
 
             loaders.Clear();
             cts.Cancel();
@@ -181,10 +169,7 @@ namespace DCL.Emotes
 
         private static WearableItem GenerateSceneEmoteItem(string bodyShapeId, string emoteId, string contentLambdaUrl)
         {
-            if (!SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop))
-            {
-                return null;
-            }
+            if (!SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop)) { return null; }
 
             return new EmoteItem()
             {

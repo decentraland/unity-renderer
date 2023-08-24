@@ -201,7 +201,7 @@ namespace DCL.EmotesCustomization
 
         internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData)
         {
-            if(emoteClipData.clip != null)
+            if(emoteClipData.AvatarClip != null)
                 RefreshEmoteLoadingState(values.emoteId);
             else
             {
