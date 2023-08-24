@@ -114,8 +114,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             SetCameraSize(value);
             // Clamp local position as boundaries are dependent on zoom
-            SetLocalPositionClamped(mapCameraObject.transform.localPosition);
-            cullingController.SetCameraDirty(this);
+            // SetLocalPositionClamped(mapCameraObject.transform.localPosition);
+            // cullingController.SetCameraDirty(this);
         }
 
         public void SetPosition(Vector2 coordinates)
