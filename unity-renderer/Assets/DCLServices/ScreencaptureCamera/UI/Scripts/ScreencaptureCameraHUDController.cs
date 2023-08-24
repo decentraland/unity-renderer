@@ -66,7 +66,14 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private void ToggleViewVisibility(DCLAction_Trigger _)
         {
             if (screencaptureCameraBehaviour.isScreencaptureCameraActive.Get())
+            {
+                if (view.IsVisible)
+                    AudioScriptableObjects.UIHide.Play();
+                else
+                    AudioScriptableObjects.UIShow.Play();
+
                 SetVisibility(!view.IsVisible, screencaptureCameraBehaviour.HasStorageSpace);
+            }
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace) =>
