@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.ScreenshotViewer
 {
-    public class ScreenshotViewerView : MonoBehaviour
+    public class ScreenshotViewerView : MonoBehaviour, IScreenshotViewerView
     {
         private const float SIDE_PANEL_ANIM_DURATION = 0.5f;
 
