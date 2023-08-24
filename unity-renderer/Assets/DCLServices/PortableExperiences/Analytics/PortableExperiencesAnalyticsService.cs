@@ -7,6 +7,8 @@ namespace DCLServices.PortableExperiences.Analytics
         private readonly IAnalytics analytics;
         private readonly IUserProfileBridge userProfileBridge;
 
+        private string ownUserId => userProfileBridge.GetOwn().userId;
+
         public PortableExperiencesAnalyticsService(IAnalytics analytics,
             IUserProfileBridge userProfileBridge)
         {
@@ -22,7 +24,7 @@ namespace DCLServices.PortableExperiences.Analytics
         {
             analytics.SendAnalytic("spawn_portable_experience", new Dictionary<string, string>
             {
-                { "wallet_id", userProfileBridge.GetOwn().userId },
+                { "wallet_id", ownUserId },
                 { "pex_urn", pexId },
             });
         }
@@ -31,7 +33,7 @@ namespace DCLServices.PortableExperiences.Analytics
         {
             analytics.SendAnalytic("player_accept_portable_experience", new Dictionary<string, string>
             {
-                { "wallet_id", userProfileBridge.GetOwn().userId },
+                { "wallet_id", ownUserId },
                 { "pex_urn", pexId },
                 { "dont_ask_again_flag", dontAskAgain.ToString().ToLower() },
                 { "triggered_from", source },
@@ -42,7 +44,7 @@ namespace DCLServices.PortableExperiences.Analytics
         {
             analytics.SendAnalytic("player_reject_portable_experience", new Dictionary<string, string>
             {
-                { "wallet_id", userProfileBridge.GetOwn().userId },
+                { "wallet_id", ownUserId },
                 { "pex_urn", pexId },
                 { "dont_ask_again_flag", dontAskAgain.ToString().ToLower() },
                 { "triggered_from", source },
