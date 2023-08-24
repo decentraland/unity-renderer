@@ -223,12 +223,12 @@ namespace DCLFeatures.CameraReel.Gallery
 
         private Pool GetThumbnailEntryPool()
         {
-            var poolId = $"CameraReelThumbnail_{name}_{GetInstanceID()}";
-            var entryPool = PoolManager.i.GetPool(poolId);
+            const string POOL_ID = "CameraReelThumbnails";
+            var entryPool = PoolManager.i.GetPool(POOL_ID);
             if (entryPool != null) return entryPool;
 
             entryPool = PoolManager.i.AddPool(
-                poolId,
+                POOL_ID,
                 Instantiate(thumbnailPrefab).gameObject,
                 maxPrewarmCount: 10,
                 isPersistent: true);

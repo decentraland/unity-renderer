@@ -119,12 +119,12 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
 
         private Pool GetWearableEntryPool()
         {
-            var poolId = "CameraReelPictureDetailProfileWearables";
-            var entryPool = PoolManager.i.GetPool(poolId);
+            const string POOL_ID = "CameraReelPictureDetailProfileWearables";
+            var entryPool = PoolManager.i.GetPool(POOL_ID);
             if (entryPool != null) return entryPool;
 
             entryPool = PoolManager.i.AddPool(
-                poolId,
+                POOL_ID,
                 Instantiate(wearableTemplate).gameObject,
                 maxPrewarmCount: 10,
                 isPersistent: true);
