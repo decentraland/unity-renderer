@@ -66,7 +66,9 @@ namespace DCLServices.ScreencaptureCamera.Service
         {
             cameraBehaviour = await resourceProvider.Instantiate<ScreencaptureCameraBehaviour>(CONTROLLER_PATH, cancellationToken: cancellationToken);
 
-            cameraBehaviour.toggleInput.OnTriggered += EnableScreencaptureCamera;
+            var toggleInput = Resources.Load<InputAction_Trigger>("ToggleScreenshotCamera");
+            toggleInput.OnTriggered += EnableScreencaptureCamera;
+
             cameraBehaviour.Player = player;
 
             cameraBehaviour.SetExternalDependencies(externalDependencies.AllUIHidden,
@@ -76,7 +78,7 @@ namespace DCLServices.ScreencaptureCamera.Service
 
         private void EnableScreencaptureCamera(DCLAction_Trigger action)
         {
-            cameraBehaviour.ToggleScreenshotCamera("shortcut");
+            EnableScreenshotCameraFromButton();
         }
 
         private async Task InitializeMainHUDButton(CancellationToken cancellationToken)
