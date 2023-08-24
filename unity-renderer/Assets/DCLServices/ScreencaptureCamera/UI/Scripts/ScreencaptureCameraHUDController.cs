@@ -11,6 +11,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private readonly ScreencaptureCameraHUDView view;
         private readonly ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
         private readonly DataStore dataStore;
+        private readonly HUDController hudController;
 
         private InputAction_Trigger takeScreenshotAction;
         private InputAction_Trigger closeWindowAction;
@@ -18,11 +19,12 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private InputAction_Trigger toggleScreenshotCameraHUDAction;
 
         public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
-            DataStore dataStore)
+            DataStore dataStore, HUDController hudController)
         {
             this.view = view;
             this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
             this.dataStore = dataStore;
+            this.hudController = hudController;
         }
 
         public void Initialize()
@@ -39,7 +41,6 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             takeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
-
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
 
             mouseFirstClick.OnStarted += HideShortcutsInfoPanel;
@@ -74,14 +75,14 @@ namespace DCLFeatures.ScreencaptureCamera.UI
             else
                 AudioScriptableObjects.UIHide.Play();
 
-            HUDController.i?.ToggleAllUIHiddenNotification(isHidden: !view.IsVisible, false);
+            hudController.ToggleAllUIHiddenNotification(isHidden: !view.IsVisible, false);
         }
 
         public void SetVisibility(bool isVisible, bool hasStorageSpace)
         {
             // Hide AllUIHidden notification when entering camera mode
             if (isVisible)
-                HUDController.i?.ToggleAllUIHiddenNotification(isHidden: false, false);
+                hudController.ToggleAllUIHiddenNotification(isHidden: false, false);
 
             view.SetVisibility(isVisible, hasStorageSpace);
         }
