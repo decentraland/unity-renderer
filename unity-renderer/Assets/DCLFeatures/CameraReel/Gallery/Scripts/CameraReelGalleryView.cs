@@ -27,6 +27,7 @@ namespace DCLFeatures.CameraReel.Gallery
         [SerializeField] private RectTransform showMoreButtonPanel;
         [SerializeField] private Canvas canvas;
         [SerializeField] private GameObject emptyStateContainer;
+        [SerializeField] private RectTransform scrollMaskTransform;
 
         [Header("RESOURCES")]
         [SerializeField] private GameObject monthHeaderPrefab;
