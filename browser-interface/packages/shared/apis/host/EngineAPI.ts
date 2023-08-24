@@ -61,6 +61,7 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           if (req.data.byteLength) {
             sendParcelSceneCommsMessage(ctx.sceneData.id, req.data)
           }
+
           const events = [...crdtEvents]
           if (crdtEvents.length) {
             console.log('CrdtSendNetwork', crdtEvents)
@@ -68,6 +69,9 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           }
 
           return { data: events }
+        },
+        async isServer(req, ctx) {
+          return { isServer: false }
         },
         async crdtSendToRenderer(req, ctx) {
           if (!ctx.sdk7) throw new Error('Cannot use SDK7 APIs on SDK6 scene')
