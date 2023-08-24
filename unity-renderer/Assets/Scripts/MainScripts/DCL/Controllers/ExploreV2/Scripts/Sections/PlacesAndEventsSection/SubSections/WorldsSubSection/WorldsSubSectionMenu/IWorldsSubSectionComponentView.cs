@@ -49,7 +49,6 @@ public interface IWorldsSubSectionComponentView : IPlacesAndEventsSubSectionComp
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnWorldsSubSectionEnable;
-    event Action OnFilterChanged;
     event Action OnSortingChanged;
 
     /// <summary>

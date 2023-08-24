@@ -66,7 +66,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     public event Action<string, bool> OnFavoriteClicked;
     public event Action<FriendsHandler> OnFriendHandlerAdded;
     public event Action OnWorldsSubSectionEnable;
-    public event Action OnFilterChanged;
     public event Action OnSortingChanged;
     public event Action OnShowMoreWorldsClicked;
 

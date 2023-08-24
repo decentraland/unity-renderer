@@ -37,7 +37,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
     internal readonly List<WorldsResponse.WorldInfo> worldsFromAPI = new ();
     internal int availableUISlots;
-    private CancellationTokenSource getPlacesCts = new ();
+    private CancellationTokenSource getWorldsCts = new ();
     private CancellationTokenSource showMoreCts = new ();
     private CancellationTokenSource disposeCts = new ();
 
@@ -57,8 +57,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
         this.view.OnReady += FirstLoading;
 
-        this.view.OnInfoClicked += ShowPlaceDetailedInfo;
-        this.view.OnJumpInClicked += OnJumpInToPlace;
+        this.view.OnInfoClicked += ShowWorldDetailedInfo;
+        this.view.OnJumpInClicked += OnJumpInToWorld;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMoreWorldsClicked += ShowMoreWorlds;
@@ -85,15 +85,14 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     {
         disposeCts?.SafeCancelAndDispose();
         showMoreCts?.SafeCancelAndDispose();
-        getPlacesCts?.SafeCancelAndDispose();
+        getWorldsCts?.SafeCancelAndDispose();
 
         view.OnReady -= FirstLoading;
-        view.OnInfoClicked -= ShowPlaceDetailedInfo;
-        view.OnJumpInClicked -= OnJumpInToPlace;
+        view.OnInfoClicked -= ShowWorldDetailedInfo;
+        view.OnJumpInClicked -= OnJumpInToWorld;
         view.OnFavoriteClicked -= View_OnFavoritesClicked;
         this.view.OnVoteChanged -= View_OnVoteChanged;
         view.OnWorldsSubSectionEnable -= OpenTab;
-        view.OnFilterChanged -= ApplyFilters;
         view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMoreWorldsClicked -= ShowMoreWorlds;
@@ -141,32 +140,23 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     private void FirstLoading()
     {
         view.OnWorldsSubSectionEnable += OpenTab;
-        view.OnFilterChanged += ApplyFilters;
         view.OnSortingChanged += ApplySorting;
         cardsReloader.Initialize();
     }
 
     private void OpenTab()
     {
-        exploreV2Analytics.SendPlacesTabOpen();
-        RequestAllPlaces();
-    }
-
-    private void ApplyFilters()
-    {
-        if (!string.IsNullOrEmpty(view.filter))
-            placesAnalytics.Filter(view.filter == ONLY_POI_FILTER ? IPlacesAnalytics.FilterType.PointOfInterest : IPlacesAnalytics.FilterType.Featured);
-
-        RequestAllPlaces();
+        exploreV2Analytics.SendWorldsTabOpen();
+        RequestAllWorlds();
     }
 
     private void ApplySorting()
     {
         placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
-        RequestAllPlaces();
+        RequestAllWorlds();
     }
 
-    internal void RequestAllPlaces()
+    internal void RequestAllWorlds()
     {
         if (cardsReloader.CanReload())
         {
@@ -179,10 +169,10 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
     public void RequestAllFromAPI()
     {
-        getPlacesCts?.SafeCancelAndDispose();
-        getPlacesCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        getWorldsCts?.SafeCancelAndDispose();
+        getWorldsCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
 
-        RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
+        RequestAllFromAPIAsync(getWorldsCts.Token).Forget();
     }
 
     private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
@@ -217,10 +207,10 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     {
         showMoreCts?.SafeCancelAndDispose();
         showMoreCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
-        ShowMorePlacesAsync(showMoreCts.Token).Forget();
+        ShowMoreWorldsAsync(showMoreCts.Token).Forget();
     }
 
-    private async UniTask ShowMorePlacesAsync(CancellationToken ct)
+    private async UniTask ShowMoreWorldsAsync(CancellationToken ct)
     {
         string filter = view.filter;
         if (filter == ONLY_POI_FILTER)
@@ -233,17 +223,17 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         view.SetShowMoreWorldsButtonActive(worldsFromAPI.Count < total);
     }
 
-    internal void ShowPlaceDetailedInfo(PlaceCardComponentModel placeModel)
+    internal void ShowWorldDetailedInfo(PlaceCardComponentModel worldModel)
     {
-        view.ShowWorldModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName);
+        view.ShowWorldModal(worldModel);
+        exploreV2Analytics.SendClickOnPlaceInfo(worldModel.placeInfo.id, worldModel.placeName);
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToPlace(PlaceInfo placeFromAPI)
+    internal void OnJumpInToWorld(PlaceInfo placeFromAPI)
     {
-        JumpInToPlace(placeFromAPI);
+        JumpInToWorld(placeFromAPI);
         view.HideWorldModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
@@ -265,31 +255,28 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     }
 
     /// <summary>
-    /// Makes a jump in to the place defined by the given place data from API.
+    /// Makes a jump in to the world defined by the given world data from API.
     /// </summary>
-    /// <param name="placeFromAPI">Place data from API.</param>
-    public static void JumpInToPlace(PlaceInfo placeFromAPI)
+    /// <param name="worldFromAPI">World data from API.</param>
+    public static void JumpInToWorld(PlaceInfo worldFromAPI)
     {
         PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
-        placeFromAPI.realms_detail = placeFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
+        worldFromAPI.realms_detail = worldFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
 
-        for (int i = 0; i < placeFromAPI.realms_detail.Length; i++)
+        for (int i = 0; i < worldFromAPI.realms_detail.Length; i++)
         {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(placeFromAPI.realms_detail[i].layer);
+            bool isArchipelagoRealm = string.IsNullOrEmpty(worldFromAPI.realms_detail[i].layer);
 
-            if (isArchipelagoRealm || placeFromAPI.realms_detail[i].usersCount < placeFromAPI.realms_detail[i].maxUsers)
+            if (isArchipelagoRealm || worldFromAPI.realms_detail[i].usersCount < worldFromAPI.realms_detail[i].maxUsers)
             {
-                realm = placeFromAPI.realms_detail[i];
+                realm = worldFromAPI.realms_detail[i];
                 break;
             }
         }
 
-        Vector2Int position = Utils.ConvertStringToVector(placeFromAPI.base_position);
+        Vector2Int position = Utils.ConvertStringToVector(worldFromAPI.base_position);
 
-        if (string.IsNullOrEmpty(realm.serverName))
-            Environment.i.world.teleportController.Teleport(position.x, position.y);
-        else
-            Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
+        //Environment.i.world.teleportController.JumpInWorld(placeFromAPI.world_name);
     }
 
     private string BuildPointOfInterestFilter()

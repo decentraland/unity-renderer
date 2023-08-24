@@ -19,6 +19,7 @@ namespace ExploreV2Analytics
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchWorlds(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendPlacesTabOpen();
+        void SendWorldsTabOpen();
         void SendEventsTabOpen();
         void SendFavoritesTabOpen();
         void SendFilterEvents(FilterType filterType, string filterValue = "");
@@ -39,6 +40,7 @@ namespace ExploreV2Analytics
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
         private const string TELEPORT_FAVORITE_PLACE = "player_teleport_to_favorite_place";
         private const string EXPLORE_PLACES_TAB_OPEN = "explore_places_tab_open";
+        private const string EXPLORE_WORLDS_TAB_OPEN = "explore_worlds_tab_open";
         private const string EXPLORE_EVENTS_TAB_OPEN = "explore_events_tab_open";
         private const string EXPLORE_FAVORITES_TAB_OPEN = "explore_favorites_tab_open";
         private const string FILTER_EVENTS = "player_filter_events";
@@ -194,6 +196,12 @@ namespace ExploreV2Analytics
         {
             var data = new Dictionary<string, string>();
             GenericAnalytics.SendAnalytic(EXPLORE_PLACES_TAB_OPEN, data);
+        }
+
+        public void SendWorldsTabOpen()
+        {
+            var data = new Dictionary<string, string>();
+            GenericAnalytics.SendAnalytic(EXPLORE_WORLDS_TAB_OPEN, data);
         }
 
         public void SendEventsTabOpen()

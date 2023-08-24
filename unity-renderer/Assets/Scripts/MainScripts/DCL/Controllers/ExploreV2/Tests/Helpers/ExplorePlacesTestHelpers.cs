@@ -1,3 +1,4 @@
+using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
 using System.Collections.Generic;
 using UnityEngine;
@@ -81,6 +82,18 @@ public static class ExplorePlacesTestHelpers
         return testPlaces;
     }
 
+    public static List<WorldsResponse.WorldInfo> CreateTestWorldsFromApi(int numberOfWorlds)
+    {
+        List<WorldsResponse.WorldInfo> testWorlds = new List<WorldsResponse.WorldInfo>();
+
+        for (int i = 0; i < numberOfWorlds; i++)
+        {
+            testWorlds.Add(CreateTestWorldSceneInfo((i + 1).ToString()));
+        }
+
+        return testWorlds;
+    }
+
     public static PlaceInfo CreateTestHotSceneInfo(string id)
     {
         return new PlaceInfo
@@ -94,6 +107,32 @@ public static class ExplorePlacesTestHelpers
             realms_detail = new PlaceInfo.Realm[]
             {
                 new PlaceInfo.Realm
+                {
+                    layer = "Test Layer",
+                    maxUsers = 500,
+                    serverName = "Test Server",
+                    userParcels = new Vector2Int[] { new Vector2Int(10, 10), new Vector2Int(20, 20) },
+                    usersCount = 50
+                }
+            },
+            image = "Test Thumbnail",
+            user_count = 50
+        };
+    }
+
+    public static WorldsResponse.WorldInfo CreateTestWorldSceneInfo(string id)
+    {
+        return new WorldsResponse.WorldInfo()
+        {
+            id = id,
+            base_position = "0,0",
+            owner = "Test Creator",
+            description = "Test Description",
+            title = "Test world",
+            Positions = new Vector2Int[] { new Vector2Int(0, 0), new Vector2Int(0, 1) },
+            realms_detail = new WorldsResponse.WorldInfo.Realm[]
+            {
+                new WorldsResponse.WorldInfo.Realm
                 {
                     layer = "Test Layer",
                     maxUsers = 500,
