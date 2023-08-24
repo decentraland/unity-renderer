@@ -89,6 +89,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
 
+        [field: SerializeField] public InputAction_Trigger toggleInput;
+
         private ScreenRecorder screenRecorderLazy
         {
             get
@@ -106,7 +108,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void Awake()
         {
-            inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
+            // inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
         }
 
@@ -124,7 +126,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void OnDestroy()
         {
-            inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
+            // inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
         }
 

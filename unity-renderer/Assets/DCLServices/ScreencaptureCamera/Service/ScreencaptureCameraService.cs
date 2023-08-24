@@ -2,10 +2,12 @@
 using DCL;
 using DCL.Providers;
 using DCLFeatures.ScreencaptureCamera.CameraObject;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace DCLServices.ScreencaptureCamera.Service
 {
@@ -64,11 +66,17 @@ namespace DCLServices.ScreencaptureCamera.Service
         {
             cameraBehaviour = await resourceProvider.Instantiate<ScreencaptureCameraBehaviour>(CONTROLLER_PATH, cancellationToken: cancellationToken);
 
+            cameraBehaviour.toggleInput.OnTriggered += EnableScreencaptureCamera;
             cameraBehaviour.Player = player;
 
             cameraBehaviour.SetExternalDependencies(externalDependencies.AllUIHidden,
                 externalDependencies.CameraModeInputLocked, externalDependencies.CameraLeftMouseButtonCursorLock, externalDependencies.CameraBlocked,
                 externalDependencies.FeatureKeyTriggersBlocked, externalDependencies.UserMovementKeysBlocked, externalDependencies.IsScreenshotCameraActive);
+        }
+
+        private void EnableScreencaptureCamera(DCLAction_Trigger action)
+        {
+            cameraBehaviour.ToggleScreenshotCamera("shortcut");
         }
 
         private async Task InitializeMainHUDButton(CancellationToken cancellationToken)
