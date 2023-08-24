@@ -195,6 +195,7 @@ public class SearchSubSectionComponentViewShould
     {
         view.ShowPlaces(new List<PlaceCardComponentModel>(), "test");
         view.ShowEvents(new List<EventCardComponentModel>(), "test");
+        view.ShowWorlds(new List<PlaceCardComponentModel>(), "test");
 
         Assert.True(view.noResults.activeSelf, "no results gameobject should be active");
     }
