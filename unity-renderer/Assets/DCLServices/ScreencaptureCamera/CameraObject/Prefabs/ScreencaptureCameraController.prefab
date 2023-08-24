@@ -257,4 +257,4 @@ MonoBehaviour:
     CloseWindowAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b,
       type: 2}
     MouseFirstClick: {fileID: 11400000, guid: e2ba52a0250da0048833104531dc836e, type: 2}
-  toggleInput: {fileID: 11400000, guid: fc494e45e4049c94c952532998beffeb, type: 2}
+  toggleInput: {fileID: 11400000, guid: 1d31dadea710e42ce80206a83c695e80, type: 2}
