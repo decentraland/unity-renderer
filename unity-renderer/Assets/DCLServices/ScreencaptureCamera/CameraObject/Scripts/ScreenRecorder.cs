@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
@@ -26,95 +27,54 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public virtual IEnumerator CaptureScreenshot(Camera baseCamera, Action<Texture2D> onComplete)
         {
-            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
-            (ScreenFrameData targetScreenFrame, float targetRescale) = CalculateTargetScreenFrame(currentScreenFrame);
-            int roundedUpscale = Mathf.CeilToInt(targetRescale);
-            ScreenFrameData rescaledScreenFrame = currentScreenFrame * roundedUpscale;
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
+            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
+            (ScreenFrameData targetScreenFrame, float _) = CalculateTargetScreenFrame(currentScreenFrame);
 
-            // Crop Frame
-            Vector2Int startCorner = rescaledScreenFrame.CalculateFrameCorners();
-            Color[] pixels = screenshotTexture.GetPixels(startCorner.x, startCorner.y, rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
-            Texture2D upscaledFrameTexture = new Texture2D(rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt, TextureFormat.RGB24, false);
-            upscaledFrameTexture.SetPixels(pixels);
-            upscaledFrameTexture.Apply();
+            // Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
+            var initialRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24, DefaultFormat.HDR);
+            ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            // Resize Frame
-            var rt = new RenderTexture(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, 24);
-            RenderTexture.active = rt;
+            var finalRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24);
+            Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
-            // Copy and scale the original texture into the RenderTexture
-            Graphics.Blit(upscaledFrameTexture, rt);
-
-            // Read the pixel data from the RenderTexture into the Texture2D
-            screenshot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            // Your existing code
+            RenderTexture.active = finalRenderTexture;
+            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
+            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
             screenshot.Apply();
-
             RenderTexture.active = null;
-            rt.Release();
 
-            // var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24, GraphicsFormat.R32G32B32A32_SFloat, 8);
-            // // Texture2D upscaledFrameTexture = CropTexture2D(screenshotTexture, rescaledScreenFrame.CalculateFrameCorners(), rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
-            // // Texture2D finalTexture = ResizeTexture2D(upscaledFrameTexture, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
-            // // originalBaseTargetTexture = baseCamera.targetTexture;
-            // // baseCamera.targetTexture = initialRenderTexture;
-            // var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24);
-            // Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
-            // CropToScreenshotFrame(upscaledFrameTexture, targetScreenFrame);
+            // Function to flip the texture vertically
+            Texture2D FlipTextureVertically(Texture2D original)
+            {
+                Texture2D flipped = new Texture2D(original.width, original.height);
+                int xN = original.width;
+                int yN = original.height;
 
-            onComplete?.Invoke(screenshotTexture);
-        }
+                for (int i = 0; i < xN; i++)
+                for (int j = 0; j < yN; j++)
+                    flipped.SetPixel(i, yN - j - 1, original.GetPixel(i, j));
 
-        private static Texture2D ResizeTexture2D(Texture originalTexture, int width, int height)
-        {
-            var rt = new RenderTexture(width, height, 24);
-            RenderTexture.active = rt;
+                flipped.Apply();
+                return flipped;
+            }
 
-            // Copy and scale the original texture into the RenderTexture
-            Graphics.Blit(originalTexture, rt);
+            // Flip the screenshot
+            var finalScreenshot = FlipTextureVertically(screenshot);
 
-            // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(width, height);
+            initialRenderTexture.Release();
+            finalRenderTexture.Release();
 
-            // Read the pixel data from the RenderTexture into the Texture2D
-            resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            resizedTexture.Apply();
-
-            RenderTexture.active = null;
-            rt.Release();
-
-            return resizedTexture;
-        }
-
-
-        private static Texture2D ResizeToTargetScale(Texture originalTexture, int width, int height)
-        {
-            var rt = new RenderTexture(width, height, 24);
-
-            RenderTexture.active = rt;
-            // Copy and scale the original texture into the RenderTexture
-            Graphics.Blit(originalTexture, rt);
-
-            // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(width, height);
-
-            // Read the pixel data from the RenderTexture into the Texture2D
-            screenshot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            screenshot.Apply();
-
-            RenderTexture.active = null;
-            rt.Release();
-
-            return resizedTexture;
+            onComplete?.Invoke(finalScreenshot);
         }
 
         private void CropToScreenshotFrame(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
         {
             RenderTexture.active = finalRenderTexture;
             Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
-            screenshot.ReadPixels(new Rect(corners.x, corners.y, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT), 0, 0);
+            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
             screenshot.Apply();
             RenderTexture.active = null;
         }
