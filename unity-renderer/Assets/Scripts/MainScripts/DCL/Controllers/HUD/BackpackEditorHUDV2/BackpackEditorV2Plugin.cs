@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Providers;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
@@ -68,7 +69,8 @@ namespace DCL.Backpack
                 new WebInterfaceBrowserBridge(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                backpackAnalyticsService);
+                backpackAnalyticsService,
+                Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
             hudController = new BackpackEditorHUDController(
                 view,

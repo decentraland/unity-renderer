@@ -13,7 +13,7 @@ namespace DCLServices.CustomNftCollection
 {
     public class WebInterfaceCustomNftCatalogBridge : MonoBehaviour, ICustomNftCollectionService
     {
-        private UniTaskCompletionSource<IReadOnlyList<string>> getParametrizedTask;
+        private UniTaskCompletionSource<IReadOnlyList<string>> getCollectionsTask;
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
@@ -32,24 +32,24 @@ namespace DCLServices.CustomNftCollection
         {
         }
 
-        public async UniTask<IReadOnlyList<string>> GetParametrizedCustomNftCollectionAsync(CancellationToken cancellationToken)
+        public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
         {
             try
             {
-                if (getParametrizedTask != null)
-                    return await getParametrizedTask.Task.AttachExternalCancellation(cancellationToken);
+                if (getCollectionsTask != null)
+                    return await getCollectionsTask.Task.AttachExternalCancellation(cancellationToken);
 
-                getParametrizedTask ??= new UniTaskCompletionSource<IReadOnlyList<string>>();
+                getCollectionsTask ??= new UniTaskCompletionSource<IReadOnlyList<string>>();
 
                 WebInterface.GetWithCollectionsUrlParam();
 
-                return await getParametrizedTask.Task
+                return await getCollectionsTask.Task
                                                 .Timeout(TimeSpan.FromSeconds(30))
                                                 .AttachExternalCancellation(cancellationToken);
             }
             catch (Exception)
             {
-                getParametrizedTask = null;
+                getCollectionsTask = null;
                 throw;
             }
         }
@@ -58,8 +58,8 @@ namespace DCLServices.CustomNftCollection
         public void SetWithCollectionsParam(string json)
         {
             string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
-            getParametrizedTask.TrySetResult(collectionIds);
-            getParametrizedTask = null;
+            getCollectionsTask.TrySetResult(collectionIds);
+            getCollectionsTask = null;
         }
     }
 }

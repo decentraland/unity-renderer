@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
+using DCLServices.CustomNftCollection;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
@@ -17,7 +18,7 @@ namespace DCL.Backpack
 {
     public class WearableGridControllerShould
     {
-        private string OWN_USER_ID = "ownUserId";
+        private const string OWN_USER_ID = "ownUserId";
 
         private WearableGridController controller;
         private IWearableGridView view;
@@ -67,6 +68,11 @@ namespace DCL.Backpack
             ffBaseVariable.Get().Returns(featureFlag);
             avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService, ffBaseVariable);
 
+            ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+
+            customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+
             controller = new WearableGridController(view,
                 userProfileBridge,
                 wearablesCatalogService,
@@ -74,7 +80,8 @@ namespace DCL.Backpack
                 browserBridge,
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                backpackAnalyticsService);
+                backpackAnalyticsService,
+                customNftCollectionService);
         }
 
         [TearDown]

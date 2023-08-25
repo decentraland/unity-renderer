@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 using static DCLServices.WearablesCatalogService.WearableWithEntityResponseDto.ElementDto;
@@ -50,32 +49,30 @@ namespace DCLServices.WearablesCatalogService
         private const int MAX_WEARABLES_PER_REQUEST = 200;
 
         private readonly ILambdasService lambdasService;
-        private readonly IServiceProviders serviceProviders;
         private readonly Dictionary<string, int> wearablesInUseCounters = new ();
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
         private readonly BaseVariable<FeatureFlag> featureFlags;
+        private readonly DataStore dataStore;
+        private readonly ICatalyst catalyst;
+
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
 
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
-        private ICatalyst catalyst;
 
-#if UNITY_EDITOR
-        private readonly DebugConfig debugConfig = DataStore.i.debugConfig;
-#endif
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService,
             IServiceProviders serviceProviders,
-            BaseVariable<FeatureFlag> featureFlags)
+            BaseVariable<FeatureFlag> featureFlags,
+            DataStore dataStore)
         {
             this.featureFlags = featureFlags;
+            this.dataStore = dataStore;
             this.lambdasService = lambdasService;
-            this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
-
         }
 
         public void Initialize()
@@ -168,7 +165,7 @@ namespace DCLServices.WearablesCatalogService
         {
 
 #if UNITY_EDITOR
-            string debugUserId = debugConfig.overrideUserID;
+            string debugUserId = dataStore.debugConfig.overrideUserID;
 
             if (!string.IsNullOrEmpty(debugUserId))
                 userId = debugUserId;
@@ -275,6 +272,39 @@ namespace DCLServices.WearablesCatalogService
             }
             catch (OperationCanceledException) { return null; }
         }
+
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken)
+        {
+            var joinedCollections = string.Join(",", collectionIds);
+            if (string.IsNullOrEmpty(joinedCollections)) return Array.Empty<WearableItem>();
+
+            var queryParams = new List<(string name, string value)>
+            {
+                ("collectionId", joinedCollections),
+            };
+
+            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
+            var url = $"{lambdaUrl}/collections/wearables";
+
+            (WearableWithoutDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithoutDefinitionResponse>(
+                url, url,
+                cancellationToken: cancellationToken,
+                urlEncodedParams: queryParams.ToArray());
+
+            if (!success)
+                throw new Exception($"The request for collection of wearables '{joinedCollections}' failed!");
+
+            List<WearableItem> wearables = response.wearables.ToList();
+            MapLambdasDataIntoWearableItem(wearables);
+            AddWearablesToCatalog(wearables);
+
+            return wearables;
+        }
+
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken) =>
+            Array.Empty<WearableItem>();
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
         {

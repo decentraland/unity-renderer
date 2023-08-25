@@ -97,6 +97,12 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
         }
 
+        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
+            lambdasWearablesCatalogService.RequestWearableCollection(collectionIds, cancellationToken);
+
+        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
+            lambdasWearablesCatalogService.RequestWearableCollectionInBuilder(collectionIds, cancellationToken);
+
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems) =>
             wearablesCatalogServiceInUse?.AddWearablesToCatalog(wearableItems);
 

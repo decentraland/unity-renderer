@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -37,6 +38,7 @@ namespace DCL.Backpack
         private string categoryFilter;
         private ICollection<string> thirdPartyCollectionIdsFilter;
         private string nameFilter;
+
         // initialize as "newest"
         private (NftOrderByOperation type, bool directionAscendent)? wearableSorting = new (NftOrderByOperation.Date, false);
         private NftCollectionType collectionTypeMask = NftCollectionType.Base | NftCollectionType.OnChain;
@@ -247,13 +249,18 @@ namespace DCL.Backpack
 
                 view.SetLoadingActive(true);
 
-                (IReadOnlyList<WearableItem> wearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
+                List<WearableItem> wearables = new ();
+
+                (IReadOnlyList<WearableItem> ownedWearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
                     ownUserId,
                     page,
                     PAGE_SIZE, cancellationToken,
                     categoryFilter, NftRarity.None, collectionTypeMask,
                     thirdPartyCollectionIdsFilter,
                     nameFilter, wearableSorting);
+
+                wearables.AddRange(ownedWearables);
+                wearables.AddRange(await FetchCustomWearableCollections(cancellationToken));
 
                 view.SetLoadingActive(false);
 
@@ -272,6 +279,26 @@ namespace DCL.Backpack
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
+        }
+
+        private async UniTask<IEnumerable<WearableItem>> FetchCustomWearableCollections(CancellationToken cancellationToken)
+        {
+            IReadOnlyList<string> customCollections =
+                await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+
+            IEnumerable<string> publishedCollections = customCollections
+               .Where(collectionId => collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+
+            IEnumerable<string> collectionsInBuilder = customCollections
+               .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+
+            IReadOnlyList<WearableItem> publishedWearablesInCollections =
+                await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken);
+
+            IReadOnlyList<WearableItem> nonPublishedWearablesInCollections =
+                await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken);
+
+            return publishedWearablesInCollections.Concat(nonPublishedWearablesInCollections);
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
