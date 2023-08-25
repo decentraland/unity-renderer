@@ -22,11 +22,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private Vector3 GetMoveVectorFromInput(Transform target, float moveSpeed, float deltaTime)
         {
-            Vector3 forward = target.forward.normalized * input.yAxis.GetValue();
-            Vector3 horizontal = target.right.normalized * input.xAxis.GetValue();
+            Vector3 forward = target.forward.normalized * input.YAxis.GetValue();
+            Vector3 horizontal = target.right.normalized * input.XAxis.GetValue();
 
-            float verticalDirection = input.upAction.isOn ? 1 :
-                input.downAction.isOn ? -1 : 0f;
+            float verticalDirection = input.UpAction.isOn ? 1 :
+                input.DownAction.isOn ? -1 : 0f;
 
             Vector3 vertical = target.up.normalized * verticalDirection;
 

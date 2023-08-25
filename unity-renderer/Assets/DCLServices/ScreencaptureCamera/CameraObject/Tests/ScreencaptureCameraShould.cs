@@ -17,13 +17,11 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         public override PlayerName CreatePlayerNameUI(PlayerName playerNamePrefab, float minPlayerNameHeight, DataStore_Player player, PlayerAvatarController playerAvatar) =>
             Substitute.For<PlayerName>();
 
-        public override (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab, ScreencaptureCameraInputSchema inputActionsSchema)
+        public override (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab)
         {
             ScreencaptureCameraHUDView screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
 
-            var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
-                mainBehaviour, inputActionsSchema, DataStore.i);
-
+            var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, mainBehaviour, DataStore.i);
             return (screencaptureCameraHUDController, screencaptureCameraHUDView);
         }
 
@@ -52,18 +50,12 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
         {
             var gameObject = new GameObject();
             screencaptureCameraBehaviour = gameObject.AddComponent<ScreencaptureCameraBehaviour>();
-            screencaptureCameraBehaviour.inputActionsSchema = new ScreencaptureCameraInputSchema();
 
             // Mock prefab dependencies
             screencaptureCameraBehaviour.cameraPrefab = gameObject.AddComponent<Camera>();
             screencaptureCameraBehaviour.screencaptureCameraHUDViewPrefab = gameObject.AddComponent<ScreencaptureCameraHUDViewDummy>();
             screencaptureCameraBehaviour.characterController = gameObject.AddComponent<DCLCharacterController>();
             screencaptureCameraBehaviour.cameraController = gameObject.AddComponent<CameraControllerMock>();
-
-            screencaptureCameraBehaviour.inputActionsSchema.ToggleScreenshotCameraAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
-            screencaptureCameraBehaviour.inputActionsSchema.TakeScreenshotAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
-            screencaptureCameraBehaviour.inputActionsSchema.CloseWindowAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
-            screencaptureCameraBehaviour.inputActionsSchema.ToggleCameraReelAction = ScriptableObject.CreateInstance<InputAction_Trigger>();
 
             // Mock external dependencies
             screencaptureCameraBehaviour.isScreencaptureCameraActive = ScriptableObject.CreateInstance<BooleanVariable>();

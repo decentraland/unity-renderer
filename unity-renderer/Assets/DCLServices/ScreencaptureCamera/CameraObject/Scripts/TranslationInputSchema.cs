@@ -5,9 +5,17 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
     [Serializable]
     public struct TranslationInputSchema
     {
-        public InputAction_Measurable xAxis;
-        public InputAction_Measurable yAxis;
-        public InputAction_Hold upAction;
-        public InputAction_Hold downAction;
+        public readonly InputAction_Measurable XAxis;
+        public readonly InputAction_Measurable YAxis;
+        public readonly InputAction_Hold UpAction;
+        public readonly InputAction_Hold DownAction;
+
+        public TranslationInputSchema(InputAction_Measurable xAxis, InputAction_Measurable yAxis, InputAction_Hold upAction, InputAction_Hold downAction)
+        {
+            this.XAxis = xAxis;
+            this.YAxis = yAxis;
+            this.UpAction = upAction;
+            this.DownAction = downAction;
+        }
     }
 }

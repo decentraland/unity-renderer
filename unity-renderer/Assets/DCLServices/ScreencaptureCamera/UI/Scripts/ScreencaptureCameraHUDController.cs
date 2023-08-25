@@ -10,46 +10,51 @@ namespace DCLFeatures.ScreencaptureCamera.UI
     {
         private readonly ScreencaptureCameraHUDView view;
         private readonly ScreencaptureCameraBehaviour screencaptureCameraBehaviour;
-        private readonly ScreencaptureCameraInputSchema input;
         private readonly DataStore dataStore;
 
-        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view,
-            ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
-            ScreencaptureCameraInputSchema input,
+        private InputAction_Trigger takeScreenshotAction;
+        private InputAction_Trigger closeWindowAction;
+        private InputAction_Hold mouseFirstClick;
+
+        public ScreencaptureCameraHUDController(ScreencaptureCameraHUDView view, ScreencaptureCameraBehaviour screencaptureCameraBehaviour,
             DataStore dataStore)
         {
             this.view = view;
             this.screencaptureCameraBehaviour = screencaptureCameraBehaviour;
-            this.input = input;
             this.dataStore = dataStore;
         }
 
         public void Initialize()
         {
+            takeScreenshotAction = Resources.Load<InputAction_Trigger>("TakeScreenshot");
+            closeWindowAction = Resources.Load<InputAction_Trigger>("CloseWindow");
+            mouseFirstClick = Resources.Load<InputAction_Hold>("MouseFirstClickDown");
+
             view.CloseButtonClicked += DisableScreenshotCameraMode;
-            input.CloseWindowAction.OnTriggered += DisableScreenshotCameraMode;
+            closeWindowAction.OnTriggered += DisableScreenshotCameraMode;
 
             view.TakeScreenshotButtonClicked += CaptureScreenshot;
-            input.TakeScreenshotAction.OnTriggered += CaptureScreenshot;
+            takeScreenshotAction.OnTriggered += CaptureScreenshot;
 
             view.CameraReelButtonClicked += OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked += view.ToggleShortcutsInfosHelpPanel;
 
-            input.MouseFirstClick.OnStarted += HideShortcutsInfoPanel;
+            mouseFirstClick.OnStarted += HideShortcutsInfoPanel;
         }
 
         public void Dispose()
         {
             view.CloseButtonClicked -= DisableScreenshotCameraMode;
-            input.CloseWindowAction.OnTriggered -= DisableScreenshotCameraMode;
+            closeWindowAction.OnTriggered -= DisableScreenshotCameraMode;
 
             view.TakeScreenshotButtonClicked -= CaptureScreenshot;
-            input.TakeScreenshotAction.OnTriggered -= CaptureScreenshot;
+            takeScreenshotAction.OnTriggered -= CaptureScreenshot;
 
             view.CameraReelButtonClicked -= OpenCameraReelGallery;
 
             view.ShortcutsInfoButtonClicked -= view.ToggleShortcutsInfosHelpPanel;
+
 
             Object.Destroy(view.gameObject);
         }
@@ -60,7 +65,7 @@ namespace DCLFeatures.ScreencaptureCamera.UI
         private void HideShortcutsInfoPanel(DCLAction_Hold _)
         {
             view.ToggleShortcutsInfosHelpPanel();
-            input.MouseFirstClick.OnStarted -= HideShortcutsInfoPanel;
+            mouseFirstClick.OnStarted -= HideShortcutsInfoPanel;
         }
 
         public void PlayScreenshotFX(Texture2D image, float splashDuration, float middlePauseDuration, float transitionDuration)

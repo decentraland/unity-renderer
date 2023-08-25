@@ -35,8 +35,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             Vector3 currentAngles = target.eulerAngles;
 
-            axisTarget[0] = input.cameraXAxis.GetValue();
-            axisTarget[1] = input.cameraYAxis.GetValue();
+            axisTarget[0] = input.CameraXAxis.GetValue();
+            axisTarget[1] = input.CameraYAxis.GetValue();
             axis += Damper.Damp(axisTarget - axis, dampTime, deltaTime);
 
             currentAngles.y += Mathf.Clamp(inputSpikeFixer[0].GetValue(axis[0]) * rotationSpeed * deltaTime, -maxRotationPerFrame, maxRotationPerFrame); // Yaw
@@ -50,16 +50,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             if (Utils.IsCursorLocked)
                 EnableRotation(DUMMY_ACTION);
 
-            input.mouseFirstClick.OnStarted += EnableRotation;
-            input.mouseFirstClick.OnFinished += DisableRotation;
+            input.MouseFirstClick.OnStarted += EnableRotation;
+            input.MouseFirstClick.OnFinished += DisableRotation;
         }
 
         public void Deactivate()
         {
             DisableRotation(DUMMY_ACTION);
 
-            input.mouseFirstClick.OnStarted -= EnableRotation;
-            input.mouseFirstClick.OnFinished -= DisableRotation;
+            input.MouseFirstClick.OnStarted -= EnableRotation;
+            input.MouseFirstClick.OnFinished -= DisableRotation;
         }
 
         private void EnableRotation(DCLAction_Hold _) =>

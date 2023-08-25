@@ -34,8 +34,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         [SerializeField] private CharacterController cameraTarget;
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
-        [Space] [SerializeField] internal ScreencaptureCameraInputSchema inputActionsSchema;
-
         internal Camera mainCamera;
         internal DCLCharacterController characterController;
         internal CameraController cameraController;
@@ -80,6 +78,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isInTransition;
 
+        private InputAction_Trigger toggleScreenshotCameraAction;
+        private InputAction_Trigger toggleCameraReelAction;
+
         public DataStore_Player Player { private get; set; }
 
         private ICameraReelStorageService cameraReelStorageService => cameraReelStorageServiceLazyValue ??= Environment.i.serviceLocator.Get<ICameraReelStorageService>();
@@ -88,8 +89,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private Transform characterCameraTransform => mainCamera.transform;
         private CinemachineBrain characterCinemachineBrain => characterCinemachineBrainLazyValue ??= mainCamera.GetComponent<CinemachineBrain>();
         private IAvatarsLODController avatarsLODController => avatarsLODControllerLazyValue ??= Environment.i.serviceLocator.Get<IAvatarsLODController>();
-
-        [field: SerializeField] public InputAction_Trigger toggleInput;
 
         private ScreenRecorder screenRecorderLazy
         {
@@ -108,8 +107,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void Awake()
         {
-            // inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
-            inputActionsSchema.ToggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
+            toggleScreenshotCameraAction = Resources.Load<InputAction_Trigger>("ToggleScreenshotCamera");
+            toggleCameraReelAction = Resources.Load<InputAction_Trigger>("ToggleCameraReelSection");
+
+            toggleScreenshotCameraAction.OnTriggered += ToggleScreenshotCamera;
+            toggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
         }
 
         private void Start()
@@ -126,8 +128,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void OnDestroy()
         {
-            // inputActionsSchema.ToggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
-            inputActionsSchema.ToggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
+            toggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
+            toggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
         }
 
         private void OpenCameraReelGallery(DCLAction_Trigger _) =>
@@ -302,7 +304,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void InstantiateCameraObjects()
         {
-            (screencaptureCameraHUDController, screencaptureCameraHUDView) = factory.CreateHUD(this, screencaptureCameraHUDViewPrefab, inputActionsSchema);
+            (screencaptureCameraHUDController, screencaptureCameraHUDView) = factory.CreateHUD(this, screencaptureCameraHUDViewPrefab);
             screenRecorderLazyValue = factory.CreateScreenRecorder(screencaptureCameraHUDView.RectTransform);
             screenshotCamera = factory.CreateScreencaptureCamera(cameraPrefab, characterCameraTransform, transform, characterController.gameObject.layer, cameraTarget, virtualCamera);
             playerName = factory.CreatePlayerNameUI(playerNamePrefab, MIN_PLAYERNAME_HEIGHT, Player, playerAvatar: characterController.GetComponent<PlayerAvatarController>());

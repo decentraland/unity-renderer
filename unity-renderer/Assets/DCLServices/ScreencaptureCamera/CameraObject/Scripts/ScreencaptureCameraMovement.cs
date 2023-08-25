@@ -10,13 +10,13 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         [Header("TRANSLATION")]
         [SerializeField] private float translationSpeed = 5f;
-        [SerializeField] private TranslationInputSchema translationInputSchema;
+        private TranslationInputSchema translationInputSchema;
 
         [Header("ROTATION")]
         [SerializeField] private float rotationSpeed = 100f;
         [SerializeField] private float maxRotationPerFrame = 1.5f;
         [SerializeField] private float rotationDamping = 7;
-        [SerializeField] private RotationInputSchema rotationInputSchema;
+        private RotationInputSchema rotationInputSchema;
 
         private ScreencaptureCameraTranslation translation;
         private ScreencaptureCameraRotation rotation;
@@ -44,6 +44,19 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private void Awake()
         {
             cinemachineBrain = GetComponent<CinemachineBrain>();
+
+            rotationInputSchema = new RotationInputSchema(
+                Resources.Load<InputAction_Measurable>("ScreenshotCameraXRotationAxis"),
+                Resources.Load<InputAction_Measurable>("ScreenshotCameraYRotationAxis"),
+                Resources.Load<InputAction_Hold>("MouseFirstClickDown")
+            );
+
+            translationInputSchema = new TranslationInputSchema(
+                Resources.Load<InputAction_Measurable>("ScreenshotCameraXTranslationAxis"),
+                Resources.Load<InputAction_Measurable>("ScreenshotCameraYTranslationAxis"),
+                Resources.Load<InputAction_Hold>("ScreenshotCameraUp"),
+                Resources.Load<InputAction_Hold>("ScreenshotCameraDown")
+            );
 
             rotation = new ScreencaptureCameraRotation(rotationInputSchema);
             translation = new ScreencaptureCameraTranslation(translationInputSchema);

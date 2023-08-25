@@ -66,9 +66,6 @@ namespace DCLServices.ScreencaptureCamera.Service
         {
             cameraBehaviour = await resourceProvider.Instantiate<ScreencaptureCameraBehaviour>(CONTROLLER_PATH, cancellationToken: cancellationToken);
 
-            var toggleInput = Resources.Load<InputAction_Trigger>("ToggleScreenshotCamera");
-            toggleInput.OnTriggered += EnableScreencaptureCamera;
-
             cameraBehaviour.Player = player;
 
             cameraBehaviour.SetExternalDependencies(externalDependencies.AllUIHidden,

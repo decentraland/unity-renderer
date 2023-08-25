@@ -22,13 +22,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return playerName;
         }
 
-        public virtual (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab, ScreencaptureCameraInputSchema inputActionsSchema)
+        public virtual (ScreencaptureCameraHUDController, ScreencaptureCameraHUDView) CreateHUD(ScreencaptureCameraBehaviour mainBehaviour, ScreencaptureCameraHUDView viewPrefab)
         {
             ScreencaptureCameraHUDView screencaptureCameraHUDView = Object.Instantiate(viewPrefab);
 
-            var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView,
-                mainBehaviour, inputActionsSchema, DataStore.i);
-
+            var screencaptureCameraHUDController = new ScreencaptureCameraHUDController(screencaptureCameraHUDView, mainBehaviour, DataStore.i);
             screencaptureCameraHUDController.Initialize();
 
             return (screencaptureCameraHUDController, screencaptureCameraHUDView);
