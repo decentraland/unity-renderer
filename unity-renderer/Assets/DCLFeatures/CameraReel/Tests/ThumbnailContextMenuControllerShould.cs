@@ -67,7 +67,7 @@ namespace DCLFeatures.CameraReel.Tests
             };
 
             cameraReelModel = new CameraReelModel();
-            cameraReelModel.AddScreenshotAsFirst(picture);
+            cameraReelModel.AddScreenshotAsFirst(picture, new CameraReelStorageStatus(1,110));
 
             controller = new ThumbnailContextMenuController(
                 view, clipboard, cameraReelModel, browserBridge, cameraReelStorageService, dataStore,

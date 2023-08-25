@@ -1,12 +1,11 @@
-﻿using DCL;
-using DCLServices.CameraReelService;
+﻿using DCLServices.CameraReelService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DCLFeatures.CameraReel.Section
 {
-    public class CameraReelModel : Singleton<CameraReelModel>
+    public class CameraReelModel
     {
         public delegate void StorageUpdatedHandler(int totalScreenshots, int maxScreenshots);
         private readonly LinkedList<CameraReelResponse> reels = new ();
@@ -26,7 +25,13 @@ namespace DCLFeatures.CameraReel.Section
             StorageUpdated?.Invoke(totalScreenshots, maxScreenshots);
         }
 
-        public void AddScreenshotAsFirst(CameraReelResponse screenshot)
+        public void AddScreenshotAsFirst(CameraReelResponse screenshot, CameraReelStorageStatus storage)
+        {
+            AddScreenshotAsFirst(screenshot);
+            SetStorageStatus(storage.CurrentScreenshots, storage.MaxScreenshots);
+        }
+
+        private void AddScreenshotAsFirst(CameraReelResponse screenshot)
         {
             CameraReelResponse existingScreenshot = reels.FirstOrDefault(s => s.id == screenshot.id);
 

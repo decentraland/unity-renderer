@@ -52,6 +52,9 @@ public enum DCLAction_Trigger
     ToggleScreenshotCamera = 156,
     TakeScreenshot = 157,
     ToggleCameraReelSection = 158,
+    ToggleScreenshotCameraHUD = 159,
+    CloseScreenshotCamera = 160,
+
     Expression_Wave = 201,
     Expression_FistPump = 202,
     Expression_Robot = 203,
@@ -303,6 +306,14 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.ToggleScreenshotCamera:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.ToggleScreenshotCameraHUD:
+                    InputProcessor.FromKey(action, KeyCode.U, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.CloseScreenshotCamera:
+                    if (!DataStore.i.common.isSignUpFlow.Get())
+                        InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
+                    break;
+
                 case DCLAction_Trigger.TakeScreenshot:
                     InputProcessor.FromKey(action, KeyCode.E, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
