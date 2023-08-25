@@ -30,6 +30,7 @@ namespace DCLServices.WorldsAPIService
             public string owner;
             public string[] tags;
             [SerializeField] private string[] positions;
+            public string world_name;
 
             public Vector2Int[] Positions;
 

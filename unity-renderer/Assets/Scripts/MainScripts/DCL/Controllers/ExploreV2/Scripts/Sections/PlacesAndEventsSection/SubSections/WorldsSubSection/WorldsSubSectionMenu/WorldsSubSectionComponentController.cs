@@ -20,7 +20,6 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
-    private const string ONLY_POI_FILTER = "only_pois=true";
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
 
     internal readonly IWorldsSubSectionComponentView view;
@@ -31,7 +30,6 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
-    private IReadOnlyList<string> allPointOfInterest;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
@@ -91,7 +89,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         view.OnInfoClicked -= ShowWorldDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToWorld;
         view.OnFavoriteClicked -= View_OnFavoritesClicked;
-        this.view.OnVoteChanged -= View_OnVoteChanged;
+        view.OnVoteChanged -= View_OnVoteChanged;
         view.OnWorldsSubSectionEnable -= OpenTab;
         view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
@@ -179,21 +177,13 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     {
         try
         {
-            allPointOfInterest = await placesAPI.GetPointsOfInterestCoords(ct);
-            if (allPointOfInterest != null)
-                view.SetPOICoords(allPointOfInterest.ToList());
-
-            string filter = view.filter;
-            if (filter == ONLY_POI_FILTER)
-                filter = BuildPointOfInterestFilter();
-
-            (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) firstPage = await worldsAPIService.GetWorlds(0, PAGE_SIZE, filter, view.sort, ct);
+            (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) firstPage = await worldsAPIService.GetWorlds(0, PAGE_SIZE, "", view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             worldsFromAPI.Clear();
             worldsFromAPI.AddRange(firstPage.worlds);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) secondPage = await worldsAPIService.GetWorlds(1, PAGE_SIZE, filter, view.sort, ct);
+                (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) secondPage = await worldsAPIService.GetWorlds(1, PAGE_SIZE, "", view.sort, ct);
                 worldsFromAPI.AddRange(secondPage.worlds);
             }
 
@@ -212,11 +202,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
     private async UniTask ShowMoreWorldsAsync(CancellationToken ct)
     {
-        string filter = view.filter;
-        if (filter == ONLY_POI_FILTER)
-            filter = BuildPointOfInterestFilter();
-
-        (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) = await worldsAPIService.GetWorlds((worldsFromAPI.Count/PAGE_SIZE), PAGE_SIZE, filter, view.sort, showMoreCts.Token);
+        (IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total) = await worldsAPIService.GetWorlds((worldsFromAPI.Count/PAGE_SIZE), PAGE_SIZE, "", view.sort, showMoreCts.Token);
 
         worldsFromAPI.AddRange(worlds);
         view.AddWorlds(PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(worlds));
@@ -227,7 +213,6 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     {
         view.ShowWorldModal(worldModel);
         exploreV2Analytics.SendClickOnPlaceInfo(worldModel.placeInfo.id, worldModel.placeName);
-
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
@@ -254,45 +239,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         OnCloseExploreV2?.Invoke();
     }
 
-    /// <summary>
-    /// Makes a jump in to the world defined by the given world data from API.
-    /// </summary>
-    /// <param name="worldFromAPI">World data from API.</param>
     public static void JumpInToWorld(PlaceInfo worldFromAPI)
     {
-        PlaceInfo.Realm realm = new PlaceInfo.Realm() { layer = null, serverName = null };
-        worldFromAPI.realms_detail = worldFromAPI.realms_detail.OrderByDescending(x => x.usersCount).ToArray();
-
-        for (int i = 0; i < worldFromAPI.realms_detail.Length; i++)
-        {
-            bool isArchipelagoRealm = string.IsNullOrEmpty(worldFromAPI.realms_detail[i].layer);
-
-            if (isArchipelagoRealm || worldFromAPI.realms_detail[i].usersCount < worldFromAPI.realms_detail[i].maxUsers)
-            {
-                realm = worldFromAPI.realms_detail[i];
-                break;
-            }
-        }
-
-        Vector2Int position = Utils.ConvertStringToVector(worldFromAPI.base_position);
-
-        //Environment.i.world.teleportController.JumpInWorld(placeFromAPI.world_name);
-    }
-
-    private string BuildPointOfInterestFilter()
-    {
-        string resultFilter = string.Empty;
-
-        if (allPointOfInterest == null)
-            return resultFilter;
-
-        foreach (string poi in allPointOfInterest)
-        {
-            string x = poi.Split(",")[0];
-            string y = poi.Split(",")[1];
-            resultFilter = string.Concat(resultFilter, $"&positions={x},{y}");
-        }
-
-        return resultFilter;
+        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
     }
 }

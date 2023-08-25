@@ -24,12 +24,12 @@ public class TeleportController : ITeleportController
 
     public void JumpInWorld(string worldName)
     {
-        /*WebInterface.SendChatMessage(new ChatMessage
+        WebInterface.SendChatMessage(new ChatMessage
         {
             messageType = ChatMessage.Type.NONE,
             recipient = string.Empty,
             body = $"/changerealm {worldName}"
-        });*/
+        });
     }
 
     public void GoToMagic()

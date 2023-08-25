@@ -134,6 +134,7 @@ public static class PlacesAndEventsCardsFactory
                         categories = new []{""},
                         contact_name = world.contact_name,
                         description = world.description,
+                        world_name = world.world_name,
                         id = world.id,
                         image = world.image,
                         likes = world.likes,
@@ -147,6 +148,7 @@ public static class PlacesAndEventsCardsFactory
                         favorites = world.favorites,
                         deployed_at = world.deployed_at,
                         Positions = world.Positions,
+
                     },
                     isUpvote = world.user_like,
                     isDownvote = world.user_dislike,
@@ -221,6 +223,7 @@ public static class PlacesAndEventsCardsFactory
                         base_position = world.base_position,
                         categories = new []{""},
                         contact_name = world.contact_name,
+                        world_name = world.world_name,
                         description = world.description,
                         id = world.id,
                         image = world.image,

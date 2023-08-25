@@ -491,12 +491,12 @@ SpriteAtlas:
   - CameraReelOn
   - SmartItemIcn
   - Key
-  - NamesIcon
+  - NameIcn
   - NFTUniqueContainer
   - RoundedSquare20x20
   - ExpandIcon
   - DialogBubble
-  - WifiIcon
+  - WifiIcn
   - PolygonManaIcon
   - MicrophoneVoiceChatOn
   - CameraReelOff
@@ -567,7 +567,7 @@ SpriteAtlas:
   - ArrowLeft
   - ProfileStrokeShadow
   - GradientMulticolor
-  - CodeIcon
+  - CodeIcn
   - BackgroundValue
   - SearchBarBuilder
   - VoiceChatOn
