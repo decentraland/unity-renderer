@@ -54,7 +54,9 @@ namespace DCLPlugins.CameraReelPlugin
                     return new ScreenshotViewerController(screenshotViewerView, cameraReelModel, dataStore,
                         storageService, new UserProfileWebInterfaceBridge(),
                         Clipboard.Create(), new WebInterfaceBrowserBridge(),
-                        analytics, Environment.i.serviceLocator.Get<IEnvironmentProviderService>());
+                        analytics, Environment.i.serviceLocator.Get<IEnvironmentProviderService>(),
+                        screenshotViewerView.ActionPanel,
+                        screenshotViewerView.InfoSidePanel);
                 }, analytics);
 
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;

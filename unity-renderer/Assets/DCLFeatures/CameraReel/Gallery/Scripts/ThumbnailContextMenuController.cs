@@ -15,11 +15,11 @@ namespace DCLFeatures.CameraReel.Gallery
     {
         private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
 
-        private readonly ThumbnailContextMenuView view;
+        private readonly IThumbnailContextMenuView view;
         private CameraReelResponse picture;
         private CancellationTokenSource deleteScreenshotCancellationToken;
 
-        public ThumbnailContextMenuController(ThumbnailContextMenuView view,
+        public ThumbnailContextMenuController(IThumbnailContextMenuView view,
             IClipboard clipboard,
             CameraReelModel cameraReelModel,
             IBrowserBridge browser,

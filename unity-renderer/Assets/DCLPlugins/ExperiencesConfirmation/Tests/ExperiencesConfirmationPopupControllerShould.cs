@@ -1,4 +1,5 @@
 using DCL.World.PortableExperiences;
+using DCLServices.PortableExperiences.Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -39,7 +40,8 @@ namespace DCL.PortableExperiences.Confirmation
                 view,
                 dataStore,
                 confirmedExperiencesRepository,
-                userProfileBridge);
+                userProfileBridge,
+                Substitute.For<IPortableExperiencesAnalyticsService>());
 
             view.ClearReceivedCalls();
         }
