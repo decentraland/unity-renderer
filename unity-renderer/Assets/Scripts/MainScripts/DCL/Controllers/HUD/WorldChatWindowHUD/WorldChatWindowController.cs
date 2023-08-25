@@ -13,6 +13,7 @@ using DCL.Social.Friends;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 using DCL.Tasks;
+using DCLServices.CopyPaste.Analytics;
 
 namespace DCL.Social.Chat
 {
@@ -34,6 +35,7 @@ namespace DCL.Social.Chat
         private readonly RendererState rendererState;
         private readonly DataStore_Mentions mentionsDataStore;
         private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private readonly Dictionary<string, PublicChatModel> publicChannels = new Dictionary<string, PublicChatModel>();
         private readonly Dictionary<string, ChatMessage> lastPrivateMessages = new Dictionary<string, ChatMessage>();
         private readonly HashSet<string> channelsClearedUnseenNotifications = new HashSet<string>();
@@ -79,7 +81,8 @@ namespace DCL.Social.Chat
             IBrowserBridge browserBridge,
             RendererState rendererState,
             DataStore_Mentions mentionsDataStore,
-            IClipboard clipboard)
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             this.userProfileBridge = userProfileBridge;
             this.friendsController = friendsController;
@@ -92,6 +95,7 @@ namespace DCL.Social.Chat
             this.rendererState = rendererState;
             this.mentionsDataStore = mentionsDataStore;
             this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
         }
 
         public void Initialize(IWorldChatWindowView view, bool isVisible = true)
@@ -751,6 +755,7 @@ namespace DCL.Social.Chat
         private void CopyChannelNameToClipboard(string channelName)
         {
             clipboard.WriteText(channelName);
+            copyPasteAnalyticsService.Copy("channel_name");
         }
     }
 }

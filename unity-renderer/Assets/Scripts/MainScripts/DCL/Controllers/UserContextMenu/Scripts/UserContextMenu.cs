@@ -3,6 +3,7 @@ using DCL;
 using DCL.Interface;
 using DCL.Social.Friends;
 using DCL.Tasks;
+using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -108,6 +109,7 @@ public class UserContextMenu : MonoBehaviour
     }
 
     private IClipboard clipboard => clipboardInternal ??= Clipboard.Create();
+    private ICopyPasteAnalyticsService copyPasteAnalyticsService => Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>();
 
     internal ISocialAnalytics socialAnalytics;
 
@@ -525,6 +527,7 @@ public class UserContextMenu : MonoBehaviour
         clipboard.WriteText($"@{userName.text}");
         nameCopiedToast.gameObject.SetActive(true);
         nameCopiedToast.ShowDelayHide(3);
+        copyPasteAnalyticsService.Copy("name");
     }
 
 #if UNITY_EDITOR

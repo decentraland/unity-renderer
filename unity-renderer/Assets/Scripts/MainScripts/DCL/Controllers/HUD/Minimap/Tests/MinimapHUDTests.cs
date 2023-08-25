@@ -1,8 +1,8 @@
 using DCL;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.PlacesAPIService;
 using NSubstitute;
 using NUnit.Framework;
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -29,7 +29,8 @@ namespace Tests
                 Environment.i,
                 Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                 Substitute.For<IPlacesAnalytics>(),
-                clipboard);
+                clipboard,
+                Substitute.For<ICopyPasteAnalyticsService>());
             controller.Initialize();
         }
 

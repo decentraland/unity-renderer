@@ -2,6 +2,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.ProfanityFiltering;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
@@ -29,6 +30,7 @@ namespace DCL.Social.Passports
         private readonly ViewAllComponentController viewAllController;
         private readonly IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider;
         private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
         private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
         private readonly List<UserProfileModel.Link> links = new ();
@@ -59,7 +61,8 @@ namespace DCL.Social.Passports
             DataStore dataStore,
             ViewAllComponentController viewAllController,
             IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider,
-            IClipboard clipboard)
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             const string NAME_TYPE = "name";
             const string PARCEL_TYPE = "parcel";
@@ -77,6 +80,7 @@ namespace DCL.Social.Passports
             this.viewAllController = viewAllController;
             this.additionalInfoFieldIconProvider = additionalInfoFieldIconProvider;
             this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
 
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
@@ -436,6 +440,7 @@ namespace DCL.Social.Passports
             string description = userProfile.description;
             description = ExtractLinks(description);
             clipboard.WriteText(description);
+            copyPasteAnalyticsService.Copy("player_data");
         }
     }
 }

@@ -9,6 +9,7 @@ import { StoredSession } from './types'
 import { getProvider as getProviderSelector } from './selectors'
 import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
+import { isSessionExpired } from 'lib/web3/provider'
 
 /**
  * Store a session into the current PersistentStorage
@@ -57,7 +58,7 @@ async function getSessionWithSSOIdentity(sessions: StoredSession[]) {
 
   const ssoIdentity = await SingleSignOn.getIdentity(session.identity.address)
 
-  if (!ssoIdentity) {
+  if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
     return null
   }
 

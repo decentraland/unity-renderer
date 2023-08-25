@@ -841,7 +841,6 @@ GameObject:
   - component: {fileID: 3405051900245707662}
   - component: {fileID: 8468188487045077624}
   - component: {fileID: 2566079238092881621}
-  - component: {fileID: 6784646814467949724}
   m_Layer: 5
   m_Name: ScreenshotThumbnail
   m_TagString: Untagged
@@ -1015,20 +1014,6 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
---- !u!114 &6784646814467949724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3698480427522893417}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02d167b0ab684984b0ac522278bcd459, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maskRectTransform: {fileID: 0}
-  offset: {x: 0, y: -70}
 --- !u!1 &4314700736003648970
 GameObject:
   m_ObjectHideFlags: 0

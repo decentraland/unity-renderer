@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
 using DCLServices.PlacesAPIService;
 using NSubstitute;
@@ -42,7 +43,8 @@ namespace Tests
                 DCL.Environment.i,
                 Substitute.For<IPlacesAPIService>(),
                 Substitute.For<IPlacesAnalytics>(),
-                Substitute.For<IClipboard>());
+                Substitute.For<IClipboard>(),
+                Substitute.For<ICopyPasteAnalyticsService>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
             navmapToastView = navmapView.toastView;

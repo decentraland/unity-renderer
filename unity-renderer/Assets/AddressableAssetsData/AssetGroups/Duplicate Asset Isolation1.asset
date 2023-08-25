@@ -433,10 +433,6 @@ MonoBehaviour:
     m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/MustacheIcon.png
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: feb17d16b84e84e55a6dc530923024ef
-    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/Silhouette004.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 09fd8686734544b9eb4a37d61ec2890c
     m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ContainerCard.png
     m_ReadOnly: 0
@@ -495,10 +491,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 665a0e081e71c4699b07e587f9578d1d
     m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellNFTUniqueframe.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f57d8e78f64d542e098dbaf497a8b139
-    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/Silhouette001.png
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 48d5dd980b244494b9f9d9fc540e0b01
@@ -571,10 +563,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 2bd9c7cbf6f504ad89e22e7f1f497fd2
     m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/ShoesIcon.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 566238cb65c3147e192bcfd9e1aa7198
-    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/OutfitEmpty.png
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 2d93daeb29e2746d8a0c30203496d9c7
