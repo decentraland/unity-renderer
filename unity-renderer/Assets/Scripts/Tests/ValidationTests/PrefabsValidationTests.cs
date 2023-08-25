@@ -62,10 +62,10 @@ namespace Tests.ValidationTests
             AllAssetsAtPaths(assetTypes: "t: Prefab", ASSETS_FOLDER_PATH);
 
         public static IEnumerable<string> PrefabPaths() =>
-            AssetDatabase.FindAssets("t:Prefab", SEARCH_IN_FOLDERS).Select(AssetDatabase.GUIDToAssetPath);
+            AllAssetsAtPaths(assetTypes: "t: Prefab", SEARCH_IN_FOLDERS);
 
         public static IEnumerable<string> ScriptableObjectPaths() =>
-            AssetDatabase.FindAssets("t:ScriptableObject", SEARCH_IN_FOLDERS).Select(AssetDatabase.GUIDToAssetPath);
+            AllAssetsAtPaths(assetTypes: "t: ScriptableObject", SEARCH_IN_FOLDERS);
 
         private static bool HasMissingScripts(GameObject obj)
         {
