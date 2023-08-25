@@ -92,7 +92,7 @@ namespace DCLFeatures.CameraReel.Tests
         [Test]
         public void AddThumbnailToGallery()
         {
-            cameraReelModel.AddScreenshotAsFirst(picture);
+            cameraReelModel.AddScreenshotAsFirst(picture, new CameraReelStorageStatus(1,100));
 
             galleryView.Received(1).AddScreenshotThumbnail(picture, true);
             galleryView.Received(1).SwitchEmptyStateVisibility(false);

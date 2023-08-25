@@ -25,6 +25,7 @@ using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.PlacesAPIService;
 using DCLServices.PortableExperiences.Analytics;
+using DCLServices.ScreencaptureCamera.Service;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
@@ -39,10 +40,14 @@ namespace DCL
 {
     public static class ServiceLocatorFactory
     {
+        private static BaseVariable<FeatureFlag> featureFlagsDataStore;
+
         public static ServiceLocator CreateDefault()
         {
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
+
+            featureFlagsDataStore = DataStore.i.featureFlags.flags;
 
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
@@ -123,10 +128,10 @@ namespace DCL
                 var emotesRequest = new EmotesRequestWeb(
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
-                    DataStore.i.featureFlags.flags);
+                    featureFlagsDataStore);
                 var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
                 var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
-                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
+                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, featureFlagsDataStore, KernelConfig.i);
             });
 
             result.Register<ITeleportController>(() => new TeleportController());
@@ -139,12 +144,12 @@ namespace DCL
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
-                    DataStore.i.featureFlags.flags),
+                    featureFlagsDataStore),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
                 new WearablesWebInterfaceBridge(),
-                DataStore.i.featureFlags.flags));
+                featureFlagsDataStore));
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
@@ -201,6 +206,12 @@ namespace DCL
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
             result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
+
+            var screencaptureCameraExternalDependencies = new ScreencaptureCameraExternalDependencies(CommonScriptableObjects.allUIHidden,
+                CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked,
+                CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
+
+            result.Register<IScreencaptureCameraService>(() => new ScreencaptureCameraService(addressableResourceProvider, featureFlagsDataStore, DataStore.i.player, userProfileWebInterfaceBridge, screencaptureCameraExternalDependencies));
 
             // Analytics
             result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
