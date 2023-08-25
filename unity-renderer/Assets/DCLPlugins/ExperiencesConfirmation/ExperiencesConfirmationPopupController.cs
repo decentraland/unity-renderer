@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using DCL.World.PortableExperiences;
+using DCLServices.PortableExperiences.Analytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace DCL.PortableExperiences.Confirmation
         private readonly DataStore dataStore;
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IPortableExperiencesAnalyticsService analytics;
         private readonly List<string> descriptionBuffer = new ();
 
         private string experienceId;
@@ -31,12 +33,14 @@ namespace DCL.PortableExperiences.Confirmation
         public ExperiencesConfirmationPopupController(IExperiencesConfirmationPopupView view,
             DataStore dataStore,
             IConfirmedExperiencesRepository confirmedExperiencesRepository,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            IPortableExperiencesAnalyticsService analytics)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.confirmedExperiencesRepository = confirmedExperiencesRepository;
             this.userProfileBridge = userProfileBridge;
+            this.analytics = analytics;
 
             view.Hide(true);
 
@@ -79,13 +83,15 @@ namespace DCL.PortableExperiences.Confirmation
 
                 view.Show();
 
+                bool isSmartWearable = userProfileBridge.GetOwn().avatar.wearables.Contains(pxId);
+
                 view.SetModel(new ExperiencesConfirmationViewModel
                 {
                     Name = metadata.ExperienceName,
                     IconUrl = metadata.IconUrl,
                     Permissions = descriptionBuffer,
                     Description = metadata.Description,
-                    IsSmartWearable = userProfileBridge.GetOwn().avatar.wearables.Contains(pxId),
+                    IsSmartWearable = isSmartWearable,
                 });
 
                 try
@@ -98,11 +104,15 @@ namespace DCL.PortableExperiences.Confirmation
                             if (dontShowAnymore)
                                 confirmedExperiencesRepository.Set(experienceId, true);
 
+                            analytics.Accept(experienceId, dontShowAnymore, isSmartWearable ? "smart_wearable" : "scene");
+
                             confirmationData.OnAcceptCallback?.Invoke();
                             break;
                         case InputType.Reject:
                             if (dontShowAnymore)
                                 confirmedExperiencesRepository.Set(experienceId, false);
+
+                            analytics.Reject(experienceId, dontShowAnymore, isSmartWearable ? "smart_wearable" : "scene");
 
                             confirmationData.OnRejectCallback?.Invoke();
                             break;
