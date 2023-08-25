@@ -264,6 +264,6 @@ export interface IUnityInterface {
   OnBuilderKeyDown(key: string): void
   SetBuilderConfiguration(config: BuilderConfiguration): void
   SendMessageToUnity(object: string, method: string, payload?: any): void
-
   SetAudioDevices(devices: SetAudioDevicesPayload): void
+  SetWithCollectionsParam(collectionIds: string[]): void
 }
