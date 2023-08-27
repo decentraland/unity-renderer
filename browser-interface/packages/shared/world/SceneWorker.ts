@@ -154,10 +154,7 @@ export class SceneWorker {
       defaultLogger.error('Invalid scene metadata', loadableScene.entity.metadata, Scene.validate.errors)
     }
 
-    const IS_SDK7 =
-      loadableScene.entity.metadata.runtimeVersion === '7' ||
-      !!loadableScene.entity.metadata.ecs7 ||
-      !!loadableScene.entity.metadata.sdk7
+    const IS_SDK7 = true // everything is a SDK7 Scene, the SDK6 Scenes are going to use the SDK7 Adaption Layer that is implemented in the SceneRuntime
 
     const rpcSceneControllerService = codegen.loadService<any>(scenePort, RpcSceneControllerServiceDefinition)
 
