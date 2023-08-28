@@ -53,6 +53,8 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     internal const int FAVORITES_SUB_SECTION_INDEX = 3;
     internal const int SEARCH_SUB_SECTION_INDEX = 4;
 
+    internal const string WORLDS_SUBSECTION_FF = "enable_worlds_subsection";
+
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
 
@@ -98,6 +100,12 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
             subSectionSelector.EnableSection(FAVORITES_SUB_SECTION_INDEX);
         else
             subSectionSelector.DisableSection(FAVORITES_SUB_SECTION_INDEX);
+
+        //Temporary until the full feature is released
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF))
+            subSectionSelector.EnableSection(WORLDS_SUB_SECTION_INDEX);
+        else
+            subSectionSelector.DisableSection(WORLDS_SUB_SECTION_INDEX);
 
         placesSubSection.SetActive(isActive && currentSelectedIndex == PLACES_SUB_SECTION_INDEX);
         worldsSubSection.SetActive(isActive && currentSelectedIndex == WORLDS_SUB_SECTION_INDEX);

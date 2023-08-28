@@ -1,3 +1,4 @@
+using DCL;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System;
@@ -10,6 +11,7 @@ using Utils = DCL.Helpers.Utils;
 public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectionComponentView
 {
     private const int MAX_POOL_COUNT = 6;
+    internal const string WORLDS_SUBSECTION_FF = "enable_worlds_subsection";
 
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
@@ -22,12 +24,14 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private TMP_Text searchTerm;
 
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject worldsSection;
     [SerializeField] private Transform eventsParent;
     [SerializeField] private Transform placesParent;
     [SerializeField] private Transform worldsParent;
     [SerializeField] private RectTransform fullEventsParent;
     [SerializeField] private RectTransform fullPlacesParent;
     [SerializeField] private RectTransform fullWorldsParent;
+    [SerializeField] private RectTransform gridContainer;
     [SerializeField] private EventCardComponentView eventPrefab;
     [SerializeField] private PlaceCardComponentView placePrefab;
     [SerializeField] private GameObject loadingEvents;
@@ -88,6 +92,9 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+
+        //Temporary until the full feature is released
+        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     private void InitialiseButtonEvents()
@@ -282,7 +289,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             if(minimalSearchSection.activeSelf == false)
                 minimalSearchSection.SetActive(true);
         }
-
+        Utils.ForceRebuildLayoutImmediate(gridContainer);
     }
 
     private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
