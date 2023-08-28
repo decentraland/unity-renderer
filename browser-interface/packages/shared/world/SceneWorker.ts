@@ -156,7 +156,8 @@ export class SceneWorker {
 
     // All the scenes are a SDK7 Scene, the SDK6 Scenes are going to use the SDK7 Adaption Layer that is implemented in the SceneRuntime
     const globalScene = loadableScene.isGlobalScene || false
-    const IS_SDK7 = !globalScene // global scenes, still are sdk6, not included in the adapter
+    const emptyParcel = loadableScene.emptyParcel || false
+    const IS_SDK7 = !globalScene || !emptyParcel // global scenes, still are sdk6, not included in the adapter
 
     const rpcSceneControllerService = codegen.loadService<any>(scenePort, RpcSceneControllerServiceDefinition)
 

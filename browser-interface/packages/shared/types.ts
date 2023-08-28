@@ -189,6 +189,7 @@ export type LoadableScene = {
   readonly isGlobalScene?: boolean
   readonly isPortableExperience?: boolean
   readonly useFPSThrottling?: boolean
+  readonly emptyParcel?: boolean
 }
 
 export type SceneSpawnPoint = {
