@@ -19,7 +19,7 @@ namespace ExploreV2Analytics
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
-        void SendSearchWorlds(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
+        void SendSearchWorlds(string searchString, string[] firstResultsIds);
         void SendPlacesTabOpen();
         void SendWorldsTabOpen();
         void SendEventsTabOpen();
@@ -204,12 +204,11 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_PLACES, data);
         }
 
-        public void SendSearchWorlds(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds)
+        public void SendSearchWorlds(string searchString, string[] firstResultsIds)
         {
             var data = new Dictionary<string, string>
             {
                 ["search_string"] = searchString,
-                ["first_results_coordinates"] = string.Join(",", firstResultsCoordinates),
                 ["first_results_ids"] = string.Join(",", firstResultsIds)
             };
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_WORLDS, data);

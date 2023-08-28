@@ -218,7 +218,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         var results = await worldsAPIService.SearchWorlds(searchText, pageNumber, pageSize, cancellationToken);
         List<PlaceCardComponentModel> worlds = PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(results.Item1);
-        //exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
+        exploreV2Analytics.SendSearchWorlds(searchText, worlds.Select(p=>p.placeInfo.id).ToArray());
 
         if (isFullSearch)
         {
