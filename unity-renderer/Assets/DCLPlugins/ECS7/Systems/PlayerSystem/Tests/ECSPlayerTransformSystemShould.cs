@@ -10,9 +10,11 @@ using DCL.Models;
 using ECSSystems.PlayerSystem;
 using NSubstitute;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using TestUtils;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -20,7 +22,8 @@ namespace Tests
     {
         private Transform avatarTransform;
         private BaseList<IParcelScene> scenes;
-        private WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool;
+        private ReferenceTypeComponentPool<ECSTransform> transformPool;
+        private WrappedComponentPool<IWrappedComponent<ECSTransform>> wrappedPool;
         private ECSComponent<ECSTransform> transformComponent;
         private IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
         private DualKeyValueSet<long, int, WriteData> outgoingMessages;
@@ -47,8 +50,16 @@ namespace Tests
                 { 666, new ComponentWriter(outgoingMessages) }
             };
 
-            transformPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
-            transformComponent = new ECSComponent<ECSTransform>(null, null);
+            // FD:: old code
+            // transformPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
+            // transformComponent = new ECSComponent<ECSTransform>(null, null);
+
+            // FD:: new test:
+            wrappedPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
+            transformPool = new ReferenceTypeComponentPool<ECSTransform>(wrappedPool);
+
+            transformComponent = new ECSComponent<ECSTransform>(null, transformPool);
+            // FD:: end
 
             avatarTransform = (new GameObject("GO")).transform;
             avatarTransform.position = new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);
@@ -69,7 +80,7 @@ namespace Tests
         [Test]
         public void NotSendTransformIfNoChange()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, transformPool, transformComponent, scenes,
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, wrappedPool, transformComponent, scenes,
                 DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();
@@ -95,7 +106,7 @@ namespace Tests
         [Test]
         public void SendTransformIfChanged()
         {
-            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, transformPool, transformComponent, scenes,
+            ECSPlayerTransformSystem system = new ECSPlayerTransformSystem(componentsWriter, wrappedPool, transformComponent, scenes,
                 DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
             system.Update();

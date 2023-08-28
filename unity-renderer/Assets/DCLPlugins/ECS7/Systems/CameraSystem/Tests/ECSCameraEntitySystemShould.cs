@@ -26,7 +26,8 @@ namespace Tests
 
         private WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool;
         private WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool;
-        private WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool;
+        private ReferenceTypeComponentPool<ECSTransform> transformPool;
+        private WrappedComponentPool<IWrappedComponent<ECSTransform>> wrappedPool;
         private ECSComponent<ECSTransform> transformComponent;
         private IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
         private DualKeyValueSet<long, int, WriteData> outgoingMessages;
@@ -58,9 +59,18 @@ namespace Tests
 
             cameraModePool = new WrappedComponentPool<IWrappedComponent<PBCameraMode>>(1, () => new ProtobufWrappedComponent<PBCameraMode>(new PBCameraMode()));
             pointerLockPool = new WrappedComponentPool<IWrappedComponent<PBPointerLock>>(1, () => new ProtobufWrappedComponent<PBPointerLock>(new PBPointerLock()));
-            transformPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(1 * 2, () => new TransformWrappedComponent(new ECSTransform()));
 
-            transformComponent = new ECSComponent<ECSTransform>(null, null);
+            // FD:: old code
+            // transformPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(1 * 2, () => new TransformWrappedComponent(new ECSTransform()));
+            // transformComponent = new ECSComponent<ECSTransform>(null, null);
+            // FD:: end
+
+            // FD:: new test:
+            wrappedPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
+            transformPool = new ReferenceTypeComponentPool<ECSTransform>(wrappedPool);
+
+            transformComponent = new ECSComponent<ECSTransform>(null, transformPool);
+            // FD:: end
 
             CommonScriptableObjects.rendererState.Set(true);
             CommonScriptableObjects.worldOffset.Set(Vector3.zero);
@@ -82,7 +92,7 @@ namespace Tests
                 componentsWriter,
                 cameraModePool,
                 pointerLockPool,
-                transformPool,
+                wrappedPool,
                 transformComponent,
                 scenes,
                 DataStore.i.camera.transform,
@@ -114,7 +124,7 @@ namespace Tests
                 componentsWriter,
                 cameraModePool,
                 pointerLockPool,
-                transformPool,
+                wrappedPool,
                 transformComponent,
                 scenes,
                 DataStore.i.camera.transform,
@@ -152,7 +162,7 @@ namespace Tests
                 componentsWriter,
                 cameraModePool,
                 pointerLockPool,
-                transformPool,
+                wrappedPool,
                 transformComponent,
                 scenes,
                 DataStore.i.camera.transform,
@@ -191,7 +201,7 @@ namespace Tests
                 componentsWriter,
                 cameraModePool,
                 pointerLockPool,
-                transformPool,
+                wrappedPool,
                 transformComponent,
                 scenes,
                 DataStore.i.camera.transform,

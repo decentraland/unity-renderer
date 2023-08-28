@@ -59,5 +59,51 @@ namespace DCL.ECSRuntime
         {
             return new ECSComponent<ModelType>(deserializer, handlerBuilder);
         }
+
+        // FD:: testing out the following methods for pooling support -----------------------------
+
+        /// <summary>
+        /// Add or replace a component in the component builder dictionary with pooling support.
+        /// </summary>
+        /// <param name="componentId"></param>
+        /// <param name="componentPool"></param>
+        /// <param name="handlerBuilder"></param>
+        /// <typeparam name="ModelType"></typeparam>
+        public void AddOrReplaceComponentWithPooling<ModelType>(
+            int componentId,
+            IComponentPool<ModelType> componentPool,
+            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        {
+            components[componentId] = CreatePoolableComponentBuilder(componentPool, handlerBuilder);
+        }
+
+        /// <summary>
+        /// Creates a component builder with pooling support.
+        /// </summary>
+        /// <param name="componentPool"></param>
+        /// <param name="handlerBuilder"></param>
+        /// <typeparam name="ModelType"></typeparam>
+        /// <returns>Returns a delegate to create the component.</returns>
+        public static ECSComponentBuilder CreatePoolableComponentBuilder<ModelType>(
+            IComponentPool<ModelType> componentPool,
+            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        {
+            return () => BuildPoolableComponent(componentPool, handlerBuilder);
+        }
+
+        /// <summary>
+        /// Builds a component instance with pooling support.
+        /// </summary>
+        /// <param name="componentPool"></param>
+        /// <param name="handlerBuilder"></param>
+        /// <typeparam name="ModelType"></typeparam>
+        /// <returns>Returns the constructed component.</returns>
+        private static IECSComponent BuildPoolableComponent<ModelType>(
+            IComponentPool<ModelType> componentPool,
+            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        {
+            return new ECSComponent<ModelType>(handlerBuilder, componentPool);
+        }
+
     }
 }

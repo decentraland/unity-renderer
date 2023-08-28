@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,16 @@ namespace DCL.ECSRuntime
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
 
+        private readonly IComponentPool<ModelType> componentPool;
+
+        // FD:: Constructor with pooling
+        public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IComponentPool<ModelType> componentPool)
+        {
+            this.handlerBuilder = handlerBuilder;
+            this.componentPool = componentPool;
+        }
+
+        // FD:: Constructor for deserialization (without pooling)
         public ECSComponent(Func<object, ModelType> deserializer, Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
             this.deserializer = deserializer;
@@ -37,16 +48,20 @@ namespace DCL.ECSRuntime
 
             var handler = handlerBuilder?.Invoke();
 
+            // FD:: Use pooled component if available, otherwise create a new one (re-check this)
+            ModelType modelInstance = componentPool != null ? componentPool.Get() : default(ModelType);
+
             componentData.Add(scene, entityId, new ECSComponentData<ModelType>
             (
                 entity: entity,
-                model: default,
+                model: modelInstance,
                 scene: scene,
                 handler: handler
             ));
 
             handler?.OnComponentCreated(scene, entity);
         }
+
 
         /// <summary>
         /// remove component from entity
@@ -59,10 +74,15 @@ namespace DCL.ECSRuntime
             if (!componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
                 return false;
 
+            // FD:: Release the component back to the pool if applicable
+            if (componentPool != null)
+                componentPool.Release(data.model);
+
             data.handler?.OnComponentRemoved(scene, entity);
             componentData.Remove(scene, entity.entityId);
             return true;
         }
+
 
         /// <summary>
         /// set component model for entity
@@ -150,4 +170,42 @@ namespace DCL.ECSRuntime
             return componentData.Pairs;
         }
     }
+
+    // FD:: new interfaces
+    public interface IComponentPool<ModelType>
+    {
+        ModelType Get();
+        void Release(ModelType item);
+    }
+
+    public class ReferenceTypeComponentPool<ModelType> : IComponentPool<ModelType> where ModelType : class
+    {
+        private readonly WrappedComponentPool<IWrappedComponent<ModelType>> internalPool;
+
+        public ReferenceTypeComponentPool(WrappedComponentPool<IWrappedComponent<ModelType>> internalPool)
+        {
+            this.internalPool = internalPool;
+        }
+
+        public ModelType Get()
+        {
+            return (ModelType)internalPool.Get().WrappedComponentBase;
+        }
+
+        public void Release(ModelType item)
+        {
+            internalPool.Release(item as PooledWrappedComponent<IWrappedComponent<ModelType>>);
+        }
+    }
+
+    public class ValueTypeComponentPool<ModelType> : IComponentPool<ModelType> where ModelType : struct
+    {
+        public ModelType Get()
+        {
+            return default;
+        }
+
+        public void Release(ModelType item) { }
+    }
+
 }
