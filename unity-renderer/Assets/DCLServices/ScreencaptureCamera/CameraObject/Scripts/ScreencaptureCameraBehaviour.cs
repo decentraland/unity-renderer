@@ -170,9 +170,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get()) return;
 
             lastScreenshotTime = Time.time;
-
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
-            StartCoroutine(screenRecorderLazy.CaptureScreenshot(SkyboxController.i.SkyboxCamera.BaseCamera, OnComplete));
+
+            StopAllCoroutines();
+            StartCoroutine(screenRecorderLazy.CaptureScreenshot(OnComplete));
+            return;
 
             void OnComplete(Texture2D screenshot)
             {

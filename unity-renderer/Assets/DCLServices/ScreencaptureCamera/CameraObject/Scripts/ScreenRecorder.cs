@@ -25,16 +25,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.canvasRectTransform = canvasRectTransform;
         }
 
-        public virtual IEnumerator CaptureScreenshot(Camera baseCamera, Action<Texture2D> onComplete)
+        public virtual IEnumerator CaptureScreenshot(Action<Texture2D> onComplete)
         {
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
             ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(CalculateCurrentScreenFrame());
 
-            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat);
+            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8, RenderTextureMemoryless.Depth);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
+            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
             Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
             CropCentralFrameToScreenshotTexture(finalRenderTexture, targetScreenFrame);
@@ -42,7 +42,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             RenderTexture.ReleaseTemporary(initialRenderTexture);
             RenderTexture.ReleaseTemporary(finalRenderTexture);
 
-            onComplete?.Invoke(FlipTextureVertically(screenshot));
+            onComplete?.Invoke(Application.isEditor ? FlipTextureVertically(screenshot) : screenshot);
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
