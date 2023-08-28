@@ -1,11 +1,15 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.PlacesAPIService;
 using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
+using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class EventsSubSectionComponentControllerTests
@@ -35,7 +39,15 @@ public class EventsSubSectionComponentControllerTests
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
         placesAPIService = Substitute.For<IPlacesAPIService>();
+        placesAPIService
+           .Configure()
+           .GetPlacesByCoordsList(Arg.Any<IEnumerable<Vector2Int>>(), Arg.Any<CancellationToken>())
+           .Returns(new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>()));
         worldsAPIService = Substitute.For<IWorldsAPIService>();
+        worldsAPIService
+           .Configure()
+           .GetWorldsByNamesList(Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
+           .Returns(new UniTask<List<WorldsResponse.WorldInfo>>(new List<WorldsResponse.WorldInfo>()));
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel
         {
