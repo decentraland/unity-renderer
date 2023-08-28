@@ -11,7 +11,9 @@ namespace ExploreV2Analytics
         void SendEventTeleport(string eventId, string eventName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
         void SendClickOnEventInfo(string eventId, string eventName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
+        void SendWorldTeleport(string worldId, string worldName, ActionSource source = ActionSource.FromExplore);
         void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
+        void SendClickOnWorldInfo(string worldId, string worldName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
         void SendRemoveParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
@@ -37,7 +39,9 @@ namespace ExploreV2Analytics
         private const string EXPLORE_PARTICIPATE_EVENT = "explore_participate_event";
         private const string EXPLORE_REMOVE_PARTICIPATE_EVENT = "explore_remove_participate_event";
         private const string EXPLORE_PLACE_TELEPORT = "explore_place_teleport";
+        private const string EXPLORE_WORLD_TELEPORT = "explore_world_teleport";
         private const string EXPLORE_CLICK_PLACE_INFO = "explore_click_place_info";
+        private const string EXPLORE_CLICK_WORLD_INFO = "explore_click_world_info";
         private const string TELEPORT_FAVORITE_PLACE = "player_teleport_to_favorite_place";
         private const string EXPLORE_PLACES_TAB_OPEN = "explore_places_tab_open";
         private const string EXPLORE_WORLDS_TAB_OPEN = "explore_worlds_tab_open";
@@ -139,6 +143,15 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_PLACE_TELEPORT, data);
         }
 
+        public void SendWorldTeleport(string worldId, string worldName, ActionSource source = ActionSource.FromExplore)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("place_id", worldId);
+            data.Add("place_name", worldName);
+            data.Add("source", source.ToString());
+            GenericAnalytics.SendAnalytic(EXPLORE_WORLD_TELEPORT, data);
+        }
+
         public void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
@@ -147,6 +160,16 @@ namespace ExploreV2Analytics
             data.Add("source", source.ToString());
             data.Add("result_position", resultPosition.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_PLACE_INFO, data);
+        }
+
+        public void SendClickOnWorldInfo(string worldId, string worldName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("world_id", worldId);
+            data.Add("world_name", worldName);
+            data.Add("source", source.ToString());
+            data.Add("result_position", resultPosition.ToString());
+            GenericAnalytics.SendAnalytic(EXPLORE_CLICK_WORLD_INFO, data);
         }
 
         public void TeleportToPlaceFromFavorite(string placeUUID, string placeName)

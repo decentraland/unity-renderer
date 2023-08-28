@@ -100,7 +100,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         cardsReloader.Dispose();
     }
 
-    private void View_OnVoteChanged(string placeId, bool? isUpvote)
+    private void View_OnVoteChanged(string worldId, bool? isUpvote)
     {
         if (userProfileBridge.GetOwn().isGuest)
             dataStore.HUDs.connectWalletModalVisible.Set(true);
@@ -109,29 +109,29 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
             if (isUpvote != null)
             {
                 if (isUpvote.Value)
-                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
+                    placesAnalytics.Like(worldId, IPlacesAnalytics.ActionSource.FromExplore, true);
                 else
-                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
+                    placesAnalytics.Dislike(worldId, IPlacesAnalytics.ActionSource.FromExplore, true);
             }
             else
-                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
+                placesAnalytics.RemoveVote(worldId, IPlacesAnalytics.ActionSource.FromExplore, true);
 
-            placesAPI.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
+            placesAPI.SetPlaceVote(isUpvote, worldId, disposeCts.Token);
         }
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    private void View_OnFavoritesClicked(string worldId, bool isFavorite)
     {
         if (userProfileBridge.GetOwn().isGuest)
             dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
             if (isFavorite)
-                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore, true);
+                placesAnalytics.AddFavorite(worldId, IPlacesAnalytics.ActionSource.FromExplore, true);
             else
-                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore, true);
+                placesAnalytics.RemoveFavorite(worldId, IPlacesAnalytics.ActionSource.FromExplore, true);
 
-            placesAPI.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+            placesAPI.SetPlaceFavorite(worldId, isFavorite, disposeCts.Token);
         }
     }
 
@@ -212,18 +212,18 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     internal void ShowWorldDetailedInfo(PlaceCardComponentModel worldModel)
     {
         view.ShowWorldModal(worldModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(worldModel.placeInfo.id, worldModel.placeName);
+        exploreV2Analytics.SendClickOnWorldInfo(worldModel.placeInfo.id, worldModel.placeName);
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToWorld(PlaceInfo placeFromAPI)
+    internal void OnJumpInToWorld(PlaceInfo worldFromAPI)
     {
-        JumpInToWorld(placeFromAPI);
+        JumpInToWorld(worldFromAPI);
         view.HideWorldModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
+        exploreV2Analytics.SendWorldTeleport(worldFromAPI.id, worldFromAPI.title);
     }
 
     private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
