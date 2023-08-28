@@ -43,34 +43,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             RenderTexture.ReleaseTemporary(finalRenderTexture);
 
             onComplete?.Invoke(FlipTextureVertically(screenshot));
-            yield break;
-
-            Texture2D FlipTextureVertically(Texture2D original)
-            {
-                var flipped = new Texture2D(original.width, original.height);
-                int xN = original.width;
-                int yN = original.height;
-
-                for (var i = 0; i < xN; i++)
-                for (var j = 0; j < yN; j++)
-                    flipped.SetPixel(i, yN - j - 1, original.GetPixel(i, j));
-
-                flipped.Apply();
-                return flipped;
-            }
-        }
-
-        private void CropCentralFrameToScreenshotTexture(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
-        {
-            RenderTexture.active = finalRenderTexture;
-            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
-
-            Debug.Assert(corners.x + targetScreenFrame.FrameWidthInt <= finalRenderTexture.width, "Texture width is smaller than needed for target screenshot resolution");
-            Debug.Assert(corners.y + targetScreenFrame.FrameHeightInt <= finalRenderTexture.height, "Texture height is smaller than needed for target screenshot resolution");
-
-            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
-            screenshot.Apply();
-            RenderTexture.active = null;
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
@@ -94,6 +66,33 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
 
             return screenFrameData;
+        }
+
+        private void CropCentralFrameToScreenshotTexture(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
+        {
+            RenderTexture.active = finalRenderTexture;
+            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
+
+            Debug.Assert(corners.x + targetScreenFrame.FrameWidthInt <= finalRenderTexture.width, "Texture width is smaller than needed for target screenshot resolution");
+            Debug.Assert(corners.y + targetScreenFrame.FrameHeightInt <= finalRenderTexture.height, "Texture height is smaller than needed for target screenshot resolution");
+
+            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
+            screenshot.Apply(updateMipmaps: false);
+            RenderTexture.active = null;
+        }
+
+        private static Texture2D FlipTextureVertically(Texture2D original)
+        {
+            var flipped = new Texture2D(original.width, original.height);
+            int xN = original.width;
+            int yN = original.height;
+
+            for (var i = 0; i < xN; i++)
+            for (var j = 0; j < yN; j++)
+                flipped.SetPixel(i, yN - j - 1, original.GetPixel(i, j));
+
+            flipped.Apply(updateMipmaps: false);
+            return flipped;
         }
 
         private static ScreenFrameData CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
