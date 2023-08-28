@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
-    public class ThumbnailContextMenuView : MonoBehaviour
+    public class ThumbnailContextMenuView : MonoBehaviour, IThumbnailContextMenuView
     {
         public static readonly BaseList<ThumbnailContextMenuView> Instances = new ();
 

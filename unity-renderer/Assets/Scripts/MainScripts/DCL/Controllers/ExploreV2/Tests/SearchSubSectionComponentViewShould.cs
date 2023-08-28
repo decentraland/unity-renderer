@@ -101,6 +101,90 @@ public class SearchSubSectionComponentViewShould
     }
 
     [Test]
+    public void ShowWorlds()
+    {
+        view.ShowWorlds(new List<PlaceCardComponentModel>()
+        {
+            new ()
+            {
+                isWorld = true,
+                placeName = "World 1",
+                isFavorite = false,
+                numberOfUsers = 3,
+                placeAuthor = "test auth",
+                placeDescription = "test description",
+                coords = new Vector2Int(0,0),
+                parcels = new []{new Vector2Int(0,0)},
+                placePictureUri = "www.test.com",
+                placeInfo = new IHotScenesController.PlaceInfo()
+                {
+                    id = "id1"
+                }
+            },
+            new ()
+            {
+                isWorld = true,
+                placeName = "World 2",
+                isFavorite = true,
+                numberOfUsers = 0,
+                placeAuthor = "test auth",
+                placeDescription = "test description",
+                coords = new Vector2Int(0,0),
+                parcels = new []{new Vector2Int(0,0)},
+                placePictureUri = "www.test.com",
+                placeInfo = new IHotScenesController.PlaceInfo()
+                {
+                    id = "id2"
+                }
+            }
+        }, "test");
+
+        Assert.AreEqual(2, view.pooledWorlds.Count, "worlds count does not match");
+    }
+
+    [Test]
+    public void ShowAllWorlds()
+    {
+        view.ShowAllWorlds(new List<PlaceCardComponentModel>()
+        {
+            new ()
+            {
+                isWorld = true,
+                placeName = "World 1",
+                isFavorite = false,
+                numberOfUsers = 3,
+                placeAuthor = "test auth",
+                placeDescription = "test description",
+                coords = new Vector2Int(10,3),
+                parcels = new []{new Vector2Int(10,3)},
+                placePictureUri = "www.test.com",
+                placeInfo = new IHotScenesController.PlaceInfo()
+                {
+                    id = "id1"
+                }
+            },
+            new ()
+            {
+                isWorld = true,
+                placeName = "World 2",
+                isFavorite = true,
+                numberOfUsers = 0,
+                placeAuthor = "test auth",
+                placeDescription = "test description",
+                coords = new Vector2Int(11,10),
+                parcels = new []{new Vector2Int(11,10)},
+                placePictureUri = "www.test.com",
+                placeInfo = new IHotScenesController.PlaceInfo()
+                {
+                    id = "id2"
+                }
+            }
+        }, false);
+
+        Assert.AreEqual(2, view.pooledFullWorlds.Count, "places count does not match");
+    }
+
+    [Test]
     public void ShowEvents()
     {
         view.ShowEvents(new List<EventCardComponentModel>()
@@ -191,10 +275,20 @@ public class SearchSubSectionComponentViewShould
     }
 
     [Test]
+    public void ShowEmptyWorlds()
+    {
+        view.ShowWorlds(new List<PlaceCardComponentModel>(), "test");
+
+        Assert.AreEqual(0, view.pooledWorlds.Count, "worlds count does not match");
+        Assert.True(view.noWorlds.activeSelf, "no worlds gameobject should be active");
+    }
+
+    [Test]
     public void ShowEmptyStatus()
     {
         view.ShowPlaces(new List<PlaceCardComponentModel>(), "test");
         view.ShowEvents(new List<EventCardComponentModel>(), "test");
+        view.ShowWorlds(new List<PlaceCardComponentModel>(), "test");
 
         Assert.True(view.noResults.activeSelf, "no results gameobject should be active");
     }

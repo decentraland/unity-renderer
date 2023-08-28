@@ -70,7 +70,7 @@ public class EventCardComponentViewTests
                 live = true,
                 name = "Test Name",
                 next_start_at = "Test Start",
-                realm = "Test Realm",
+                server = "Test Realm",
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
@@ -261,17 +261,21 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void SetEventPlaceCorrectly()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SetEventPlaceCorrectly(bool isWorld)
     {
         // Arrange
         string testText = "Test text";
 
         // Act
-        eventCardModalComponent.SetEventPlace(testText);
+        eventCardModalComponent.SetEventPlace(testText, isWorld);
 
         // Assert
         Assert.AreEqual(testText, eventCardModalComponent.model.eventPlace, "The event card eventPlace does not match in the model.");
         Assert.AreEqual(testText, eventCardModalComponent.eventPlaceText.text);
+        Assert.AreEqual(!isWorld, eventCardModalComponent.placeIcon.activeSelf);
+        Assert.AreEqual(isWorld, eventCardModalComponent.worldIcon.activeSelf);
     }
 
     [Test]
@@ -303,16 +307,19 @@ public class EventCardComponentViewTests
     }
 
     [Test]
-    public void SetCoordsCorrectly()
+    [TestCase("")]
+    [TestCase("test-world")]
+    public void SetCoordsCorrectly(string worldAddress)
     {
         // Arrange
         Vector2Int testCoords = new Vector2Int(20, 20);
 
         // Act
-        eventCardModalComponent.SetCoords(testCoords);
+        eventCardModalComponent.SetCoords(testCoords, worldAddress);
 
         // Assert
         Assert.AreEqual(testCoords, eventCardModalComponent.model.coords, "The event card coords does not match in the model.");
+        Assert.AreEqual(worldAddress, eventCardModalComponent.model.worldAddress, "The event card world address does not match in the model.");
     }
 
     [Test]
