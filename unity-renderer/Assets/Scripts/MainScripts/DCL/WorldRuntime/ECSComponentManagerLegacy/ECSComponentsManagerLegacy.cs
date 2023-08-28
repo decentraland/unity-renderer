@@ -400,7 +400,11 @@ namespace DCL
         const string DISABLE_TEXT_SHAPE = "DISABLE_TEXT_SHAPE";
         public IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            if (WebInterface.CheckURLParam(DISABLE_TEXT_SHAPE) && classId == CLASS_ID_COMPONENT.TEXT_SHAPE) return null;
+            if (WebInterface.CheckURLParam(DISABLE_TEXT_SHAPE) && classId == CLASS_ID_COMPONENT.TEXT_SHAPE)
+            {
+                Debug.Log("PRAVS - escaping text shape!");
+                return null;
+            }
 
             IDCLEntity entity = scene.GetEntityById(entityId);
 

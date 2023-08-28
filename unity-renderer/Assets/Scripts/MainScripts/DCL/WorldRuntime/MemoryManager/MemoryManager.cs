@@ -49,7 +49,7 @@ namespace DCL
 
             bool returnValue = usedMemory >= this.memoryThresholdForCleanup;
             if(returnValue)
-                Debug.Log($"CALLING MEMORY CLEANUP - used memory: {usedMemory} / {this.memoryThresholdForCleanup}");
+                Debug.Log($"PRAVS - CALLING MEMORY CLEANUP - used memory: {usedMemory} / {this.memoryThresholdForCleanup}");
 
             return returnValue;
         }
