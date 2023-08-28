@@ -22,6 +22,9 @@ namespace DCLPlugins.CameraReelPlugin
 
         private Transform sectionParent;
         private CameraReelSectionController reelSectionController;
+        private CameraReelModel cameraReelModel;
+
+        private ICameraReelStorageService storageService;
 
         public CameraReelPlugin()
         {
@@ -38,9 +41,9 @@ namespace DCLPlugins.CameraReelPlugin
             IAddressableResourceProvider assetProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
 
             CameraReelSectionView view = await CreateCameraReelSectionView(assetProvider);
-            ICameraReelStorageService storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
+            storageService = Environment.i.serviceLocator.Get<ICameraReelStorageService>();
             DataStore dataStore = DataStore.i;
-            CameraReelModel cameraReelModel = CameraReelModel.i;
+            cameraReelModel = new CameraReelModel();
             ICameraReelAnalyticsService analytics = Environment.i.serviceLocator.Get<ICameraReelAnalyticsService>();
 
             reelSectionController = new CameraReelSectionController(view, view.GalleryView, view.GalleryStorageView,
@@ -62,6 +65,8 @@ namespace DCLPlugins.CameraReelPlugin
             ThumbnailContextMenuView.Instances.OnAdded += OnThumbnailContextMenuAdded;
             ScreenshotVisiblePersonView.Instances.OnAdded += OnVisiblePersonAdded;
 
+            storageService.ScreenshotUploaded += cameraReelModel.AddScreenshotAsFirst;
+
             dataStore.HUDs.isCameraReelInitialized.Set(true);
         }
 
@@ -69,6 +74,8 @@ namespace DCLPlugins.CameraReelPlugin
         {
             ThumbnailContextMenuView.Instances.OnAdded -= OnThumbnailContextMenuAdded;
             ScreenshotVisiblePersonView.Instances.OnAdded -= OnVisiblePersonAdded;
+
+            storageService.ScreenshotUploaded -= cameraReelModel.AddScreenshotAsFirst;
 
             foreach (ThumbnailContextMenuController controller in thumbnailContextMenuControllers)
                 controller.Dispose();
@@ -85,7 +92,7 @@ namespace DCLPlugins.CameraReelPlugin
 
         private void OnThumbnailContextMenuAdded(ThumbnailContextMenuView view)
         {
-            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), CameraReelModel.i,
+            ThumbnailContextMenuController controller = new (view, Clipboard.Create(), cameraReelModel,
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<ICameraReelStorageService>(),
                 DataStore.i,
