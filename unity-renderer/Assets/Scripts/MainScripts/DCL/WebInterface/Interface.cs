@@ -2014,5 +2014,10 @@ namespace DCL.Interface
         {
             SendMessage("GetWithCollectionsUrlParam");
         }
+
+        public static void GetWithItemsUrlParam()
+        {
+            SendMessage("GetWithItemsUrlParam");
+        }
     }
 }

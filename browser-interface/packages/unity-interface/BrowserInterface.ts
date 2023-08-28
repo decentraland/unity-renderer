@@ -2,7 +2,14 @@ import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math
 
 import { Authenticator } from '@dcl/crypto'
 import { Avatar, generateLazyValidator, JSONSchema, Outfits, WearableCategory } from '@dcl/schemas'
-import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER, WITH_FIXED_COLLECTIONS } from 'config'
+import {
+  DEBUG,
+  ethereumConfigurations,
+  playerHeight,
+  WORLD_EXPLORER,
+  WITH_FIXED_COLLECTIONS,
+  WITH_FIXED_ITEMS
+} from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
@@ -639,6 +646,11 @@ export class BrowserInterface {
   public GetWithCollectionsUrlParam() {
     const collectionIds: string[] = WITH_FIXED_COLLECTIONS.split(',')
     getUnityInstance().SetWithCollectionsParam(collectionIds)
+  }
+
+  public GetWithItemsUrlParam() {
+    const itemIds: string[] = WITH_FIXED_ITEMS.split(',')
+    getUnityInstance().SetWithItemsParam(itemIds)
   }
 
   public GetFriends(getFriendsRequest: GetFriendsPayload) {

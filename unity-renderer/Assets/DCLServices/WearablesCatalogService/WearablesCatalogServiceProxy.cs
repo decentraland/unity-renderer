@@ -97,11 +97,23 @@ namespace DCLServices.WearablesCatalogService
             return await wearablesCatalogServiceInUse.RequestWearableAsync(wearableId, ct);
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
-            lambdasWearablesCatalogService.RequestWearableCollection(collectionIds, cancellationToken);
+        public async UniTask<WearableItem> RequestWearableFromBuilderAsync(string wearableId, CancellationToken ct)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: ct);
+            return await lambdasWearablesCatalogService.RequestWearableFromBuilderAsync(wearableId, ct);
+        }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
-            lambdasWearablesCatalogService.RequestWearableCollectionInBuilder(collectionIds, cancellationToken);
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+            return await lambdasWearablesCatalogService.RequestWearableCollection(collectionIds, cancellationToken);
+        }
+
+        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+        {
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+            return await lambdasWearablesCatalogService.RequestWearableCollectionInBuilder(collectionIds, cancellationToken);
+        }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems) =>
             wearablesCatalogServiceInUse?.AddWearablesToCatalog(wearableItems);

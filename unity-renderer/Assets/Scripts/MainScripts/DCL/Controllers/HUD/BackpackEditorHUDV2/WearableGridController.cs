@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Backpack
@@ -260,7 +259,13 @@ namespace DCL.Backpack
                     nameFilter, wearableSorting);
 
                 wearables.AddRange(ownedWearables);
-                wearables.AddRange(await FetchCustomWearableCollections(cancellationToken));
+
+                try
+                {
+                    wearables.AddRange(await FetchCustomWearableCollections(cancellationToken));
+                    wearables.AddRange(await FetchCustomWearableItems(cancellationToken));
+                }
+                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
 
                 view.SetLoadingActive(false);
 
@@ -281,6 +286,55 @@ namespace DCL.Backpack
             return 0;
         }
 
+        private async UniTask<IEnumerable<WearableItem>> FetchCustomWearableItems(CancellationToken cancellationToken)
+        {
+            IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+
+            IEnumerable<string> publishedItems = customItems
+               .Where(nftId => nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+
+            IEnumerable<string> itemsInBuilder = customItems
+               .Where(nftId => !nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+
+            List<WearableItem> wearables = new ();
+
+            foreach (string nftId in publishedItems)
+            {
+                try
+                {
+                    WearableItem wearable = await wearablesCatalogService.RequestWearableAsync(nftId, cancellationToken);
+
+                    if (wearable == null)
+                    {
+                        Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
+                        continue;
+                    }
+
+                    wearables.Add(wearable);
+                }
+                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+            }
+
+            foreach (string nftId in itemsInBuilder)
+            {
+                try
+                {
+                    WearableItem wearable = await wearablesCatalogService.RequestWearableFromBuilderAsync(nftId, cancellationToken);
+
+                    if (wearable == null)
+                    {
+                        Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
+                        continue;
+                    }
+
+                    wearables.Add(wearable);
+                }
+                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+            }
+
+            return wearables;
+        }
+
         private async UniTask<IEnumerable<WearableItem>> FetchCustomWearableCollections(CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customCollections =
@@ -292,13 +346,21 @@ namespace DCL.Backpack
             IEnumerable<string> collectionsInBuilder = customCollections
                .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
 
-            IReadOnlyList<WearableItem> publishedWearablesInCollections =
-                await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken);
+            List<WearableItem> wearables = new ();
 
-            IReadOnlyList<WearableItem> nonPublishedWearablesInCollections =
-                await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken);
+            try
+            {
+                wearables.AddRange(await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken));
+            }
+            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
-            return publishedWearablesInCollections.Concat(nonPublishedWearablesInCollections);
+            try
+            {
+                wearables.AddRange(await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken));
+            }
+            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+            return wearables;
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)

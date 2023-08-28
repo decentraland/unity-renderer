@@ -266,4 +266,5 @@ export interface IUnityInterface {
   SendMessageToUnity(object: string, method: string, payload?: any): void
   SetAudioDevices(devices: SetAudioDevicesPayload): void
   SetWithCollectionsParam(collectionIds: string[]): void
+  SetWithItemsParam(collectionIds: string[]): void
 }

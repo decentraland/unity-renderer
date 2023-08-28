@@ -14,6 +14,7 @@ namespace DCLServices.CustomNftCollection
     public class WebInterfaceCustomNftCatalogBridge : MonoBehaviour, ICustomNftCollectionService
     {
         private UniTaskCompletionSource<IReadOnlyList<string>> getCollectionsTask;
+        private UniTaskCompletionSource<IReadOnlyList<string>> getItemsTask;
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
@@ -54,12 +55,42 @@ namespace DCLServices.CustomNftCollection
             }
         }
 
+        public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (getItemsTask != null)
+                    return await getItemsTask.Task.AttachExternalCancellation(cancellationToken);
+
+                getItemsTask ??= new UniTaskCompletionSource<IReadOnlyList<string>>();
+
+                WebInterface.GetWithItemsUrlParam();
+
+                return await getItemsTask.Task
+                                         .Timeout(TimeSpan.FromSeconds(30))
+                                         .AttachExternalCancellation(cancellationToken);
+            }
+            catch (Exception)
+            {
+                getItemsTask = null;
+                throw;
+            }
+        }
+
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
         public void SetWithCollectionsParam(string json)
         {
             string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
             getCollectionsTask.TrySetResult(collectionIds);
             getCollectionsTask = null;
+        }
+
+        [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
+        public void SetWithItemsParam(string json)
+        {
+            string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
+            getItemsTask.TrySetResult(collectionIds);
+            getItemsTask = null;
         }
     }
 }

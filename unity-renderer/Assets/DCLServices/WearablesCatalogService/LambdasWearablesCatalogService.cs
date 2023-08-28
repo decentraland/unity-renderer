@@ -30,9 +30,7 @@ namespace DCLServices.WearablesCatalogService
             public int total;
             public EntityDto[] entities;
 
-            public WearableCollectionResponse()
-            {
-            }
+            public WearableCollectionResponse() { }
 
             public WearableCollectionResponse(EntityDto[] entities)
             {
@@ -163,7 +161,6 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
-
 #if UNITY_EDITOR
             string debugUserId = dataStore.debugConfig.overrideUserID;
 
@@ -273,13 +270,43 @@ namespace DCLServices.WearablesCatalogService
             catch (OperationCanceledException) { return null; }
         }
 
+        public async UniTask<WearableItem> RequestWearableFromBuilderAsync(string wearableId, CancellationToken ct)
+        {
+            if (WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            {
+                if (wearablesInUseCounters.ContainsKey(wearableId))
+                    wearablesInUseCounters[wearableId]++;
+
+                return wearable;
+            }
+
+            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:wearableId";
+            string url = TEMPLATE_URL.Replace(":wearableId", wearableId);
+
+            (WearableItem response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItem>(
+                TEMPLATE_URL, url,
+                isSigned: true,
+                signUrl: $"https://builder-api.decentraland.org/items/{wearableId}",
+                cancellationToken: ct);
+
+            if (!success)
+                throw new Exception($"The request of wearables from builder '{wearableId}' failed!");
+
+            List<WearableItem> ws = new List<WearableItem> { response };
+
+            MapLambdasDataIntoWearableItem(ws);
+            AddWearablesToCatalog(ws);
+
+            return ws.Count > 0 ? ws[0] : null;
+        }
+
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
             CancellationToken cancellationToken)
         {
             var joinedCollections = string.Join(",", collectionIds);
             if (string.IsNullOrEmpty(joinedCollections)) return Array.Empty<WearableItem>();
 
-            var queryParams = new []
+            var queryParams = new[]
             {
                 ("collectionId", joinedCollections),
             };
@@ -308,7 +335,8 @@ namespace DCLServices.WearablesCatalogService
             const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items";
 
             var wearables = new List<WearableItem>();
-            var queryParams = new []
+
+            var queryParams = new[]
             {
                 ("page", "1"),
                 ("limit", "5000"),
