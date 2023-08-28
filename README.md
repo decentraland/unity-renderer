@@ -15,7 +15,7 @@ This repository contains the reference implementation of the [decentraland explo
     git lfs pull
 
 * The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
-* [node.js](https://nodejs.com), version 16 or later
+* [node.js](https://nodejs.org), version 16 or later
 
 ### Steps
 
