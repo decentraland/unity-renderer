@@ -279,7 +279,7 @@ namespace DCLServices.WearablesCatalogService
             var joinedCollections = string.Join(",", collectionIds);
             if (string.IsNullOrEmpty(joinedCollections)) return Array.Empty<WearableItem>();
 
-            var queryParams = new List<(string name, string value)>
+            var queryParams = new []
             {
                 ("collectionId", joinedCollections),
             };
@@ -295,7 +295,7 @@ namespace DCLServices.WearablesCatalogService
             if (!success)
                 throw new Exception($"The request for collection of wearables '{joinedCollections}' failed!");
 
-            List<WearableItem> wearables = response.wearables.ToList();
+            List<WearableItem> wearables = response.wearables;
             MapLambdasDataIntoWearableItem(wearables);
             AddWearablesToCatalog(wearables);
 
@@ -303,8 +303,40 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken) =>
-            Array.Empty<WearableItem>();
+            CancellationToken cancellationToken)
+        {
+            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items";
+
+            var wearables = new List<WearableItem>();
+            var queryParams = new []
+            {
+                ("page", "1"),
+                ("limit", "5000"),
+            };
+
+            foreach (string collectionId in collectionIds)
+            {
+                string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
+
+                (WearableWithoutDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithoutDefinitionResponse>(
+                    TEMPLATE_URL, url,
+                    isSigned: true,
+                    signUrl: $"https://builder-api.decentraland.org/collections/{collectionId}/items",
+                    urlEncodedParams: queryParams,
+                    cancellationToken: cancellationToken);
+
+                if (!success)
+                    throw new Exception($"The request for collection of wearables from builder '{collectionId}' failed!");
+
+                List<WearableItem> ws = response.wearables;
+                MapLambdasDataIntoWearableItem(ws);
+                AddWearablesToCatalog(ws);
+
+                wearables.AddRange(ws);
+            }
+
+            return wearables;
+        }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)
         {

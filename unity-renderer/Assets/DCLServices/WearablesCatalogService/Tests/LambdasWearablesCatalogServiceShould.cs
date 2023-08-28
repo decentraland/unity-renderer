@@ -290,6 +290,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -333,6 +335,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -363,6 +367,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -410,6 +416,8 @@ namespace DCLServices.WearablesCatalogService
                                Arg.Any<string>(),
                                Arg.Any<int>(),
                                Arg.Any<int>(),
+                               Arg.Any<bool>(),
+                               Arg.Any<string>(),
                                Arg.Any<CancellationToken>(),
                                Arg.Any<(string paramName, string paramValue)[]>())
                           .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
@@ -429,6 +437,8 @@ namespace DCLServices.WearablesCatalogService
                                Arg.Any<string>(),
                                Arg.Any<int>(),
                                Arg.Any<int>(),
+                               Arg.Any<bool>(),
+                               Arg.Any<string>(),
                                Arg.Any<CancellationToken>(),
                                Arg.Any<(string paramName, string paramValue)[]>())
                           .Returns(UniTask.FromResult<(WearableWithEntityResponseDto response, bool success)>(
