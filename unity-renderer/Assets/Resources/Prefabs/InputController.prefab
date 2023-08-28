@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5175052615018462640}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 744.5, y: 332, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -91,9 +91,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 963604f308a161b4daa2e9ad5a9beba4, type: 2}
   - {fileID: 11400000, guid: 766b998e6c8734e3d9971cfc48b788cb, type: 2}
   - {fileID: 11400000, guid: 06d28566773ab401d82c0f1ac66713c8, type: 2}
-  - {fileID: 11400000, guid: db0191cd17187924f8982a9efe0d7815, type: 2}
+  - {fileID: 11400000, guid: fc494e45e4049c94c952532998beffeb, type: 2}
   - {fileID: 11400000, guid: fdfab5e29b7455f45996567365819641, type: 2}
   - {fileID: 11400000, guid: 4dba3cd16e0754e40aa328f383a2d52b, type: 2}
+  - {fileID: 11400000, guid: 864e845936b1ef646b2a19fd9d1a4f34, type: 2}
+  - {fileID: 11400000, guid: 7c7653c0d9ba2c149adc5583fc1b4aba, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}

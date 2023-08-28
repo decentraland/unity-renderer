@@ -16,7 +16,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private const string SCREEN_SOURCE = "ReelPictureDetail";
         private const string DELETE_ERROR_MESSAGE = "There was an unexpected error when deleting the picture. Try again later.";
 
-        private readonly ScreenshotViewerView view;
+        private readonly IScreenshotViewerView view;
         private readonly CameraReelModel model;
         private readonly DataStore dataStore;
         private readonly ICameraReelStorageService storageService;
@@ -25,19 +25,24 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
         private readonly IBrowserBridge browserBridge;
         private readonly ICameraReelAnalyticsService analytics;
         private readonly IEnvironmentProviderService environmentProviderService;
+        private readonly IScreenshotViewerActionsPanelView actionsPanelView;
+        private readonly IScreenshotViewerInfoSidePanelView infoSidePanelView;
 
         private CancellationTokenSource deleteScreenshotCancellationToken;
         private CancellationTokenSource pictureOwnerCancellationToken;
         private CameraReelResponse currentScreenshot;
 
-        public ScreenshotViewerController(ScreenshotViewerView view, CameraReelModel model,
+        public ScreenshotViewerController(IScreenshotViewerView view,
+            CameraReelModel model,
             DataStore dataStore,
             ICameraReelStorageService storageService,
             IUserProfileBridge userProfileBridge,
             IClipboard clipboard,
             IBrowserBridge browserBridge,
             ICameraReelAnalyticsService analytics,
-            IEnvironmentProviderService environmentProviderService)
+            IEnvironmentProviderService environmentProviderService,
+            IScreenshotViewerActionsPanelView actionsPanelView,
+            IScreenshotViewerInfoSidePanelView infoSidePanelView)
         {
             this.view = view;
             this.model = model;
@@ -48,20 +53,22 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             this.browserBridge = browserBridge;
             this.analytics = analytics;
             this.environmentProviderService = environmentProviderService;
+            this.actionsPanelView = actionsPanelView;
+            this.infoSidePanelView = infoSidePanelView;
 
             view.CloseButtonClicked += view.Hide;
             view.PrevScreenshotClicked += ShowPrevScreenshot;
             view.NextScreenshotClicked += ShowNextScreenshot;
 
-            view.ActionPanel.DownloadClicked += DownloadScreenshot;
-            view.ActionPanel.DeleteClicked += DeleteScreenshot;
-            view.ActionPanel.LinkClicked += CopyScreenshotLink;
-            view.ActionPanel.TwitterClicked += ShareOnTwitter;
-            view.ActionPanel.InfoClicked += view.ToggleInfoSidePanel;
+            actionsPanelView.DownloadClicked += DownloadScreenshot;
+            actionsPanelView.DeleteClicked += DeleteScreenshot;
+            actionsPanelView.LinkClicked += CopyScreenshotLink;
+            actionsPanelView.TwitterClicked += ShareOnTwitter;
+            actionsPanelView.InfoClicked += view.ToggleInfoSidePanel;
 
-            view.InfoSidePanel.SidePanelButtonClicked += view.ToggleInfoSidePanel;
-            view.InfoSidePanel.SceneButtonClicked += JumpInScene;
-            view.InfoSidePanel.OnOpenPictureOwnerProfile += OpenPictureOwnerProfile;
+            infoSidePanelView.SidePanelButtonClicked += view.ToggleInfoSidePanel;
+            infoSidePanelView.SceneButtonClicked += JumpInScene;
+            infoSidePanelView.OnOpenPictureOwnerProfile += OpenPictureOwnerProfile;
         }
 
         public void Dispose()
@@ -70,15 +77,15 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             view.PrevScreenshotClicked -= ShowPrevScreenshot;
             view.NextScreenshotClicked -= ShowNextScreenshot;
 
-            view.ActionPanel.DownloadClicked -= DownloadScreenshot;
-            view.ActionPanel.DeleteClicked -= DeleteScreenshot;
-            view.ActionPanel.LinkClicked -= CopyScreenshotLink;
-            view.ActionPanel.TwitterClicked -= ShareOnTwitter;
-            view.ActionPanel.InfoClicked -= view.ToggleInfoSidePanel;
+            actionsPanelView.DownloadClicked -= DownloadScreenshot;
+            actionsPanelView.DeleteClicked -= DeleteScreenshot;
+            actionsPanelView.LinkClicked -= CopyScreenshotLink;
+            actionsPanelView.TwitterClicked -= ShareOnTwitter;
+            actionsPanelView.InfoClicked -= view.ToggleInfoSidePanel;
 
-            view.InfoSidePanel.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
-            view.InfoSidePanel.SceneButtonClicked -= JumpInScene;
-            view.InfoSidePanel.OnOpenPictureOwnerProfile -= OpenPictureOwnerProfile;
+            infoSidePanelView.SidePanelButtonClicked -= view.ToggleInfoSidePanel;
+            infoSidePanelView.SceneButtonClicked -= JumpInScene;
+            infoSidePanelView.OnOpenPictureOwnerProfile -= OpenPictureOwnerProfile;
 
             view.Dispose();
         }
@@ -90,9 +97,9 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             currentScreenshot = reel;
 
             view.SetScreenshotImage(reel.url);
-            view.InfoSidePanel.SetSceneInfoText(reel.metadata.scene);
-            view.InfoSidePanel.SetDateText(reel.metadata.GetLocalizedDateTime());
-            view.InfoSidePanel.ShowVisiblePersons(reel.metadata.visiblePeople);
+            infoSidePanelView.SetSceneInfoText(reel.metadata.scene);
+            infoSidePanelView.SetDateText(reel.metadata.GetLocalizedDateTime());
+            infoSidePanelView.ShowVisiblePersons(reel.metadata.visiblePeople);
             pictureOwnerCancellationToken = pictureOwnerCancellationToken.SafeRestart();
             UpdatePictureOwnerInfo(reel, pictureOwnerCancellationToken.Token).Forget();
 
@@ -104,7 +111,7 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             UserProfile profile = userProfileBridge.Get(reel.metadata.userAddress)
                                                       ?? await userProfileBridge.RequestFullUserProfileAsync(reel.metadata.userAddress, cancellationToken);
 
-            view.InfoSidePanel.SetPictureOwner(reel.metadata.userName, profile.face256SnapshotURL);
+            infoSidePanelView.SetPictureOwner(reel.metadata.userName, profile.face256SnapshotURL);
         }
 
         private void ShowPrevScreenshot() =>

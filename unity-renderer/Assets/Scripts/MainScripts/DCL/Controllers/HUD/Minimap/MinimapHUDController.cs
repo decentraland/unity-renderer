@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Interface;
 using DCL.Tasks;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -30,6 +31,7 @@ public class MinimapHUDController : IHUD
     private readonly IPlacesAPIService placesAPIService;
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly IClipboard clipboard;
+    private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
@@ -49,7 +51,8 @@ public class MinimapHUDController : IHUD
         DCL.Environment.Model environment,
         IPlacesAPIService placesAPIService,
         IPlacesAnalytics placesAnalytics,
-        IClipboard clipboard)
+        IClipboard clipboard,
+        ICopyPasteAnalyticsService copyPasteAnalyticsService)
     {
         minimapZoom.Set(1f);
         metadataController = minimapMetadataController;
@@ -58,6 +61,7 @@ public class MinimapHUDController : IHUD
         this.placesAPIService = placesAPIService;
         this.placesAnalytics = placesAnalytics;
         this.clipboard = clipboard;
+        this.copyPasteAnalyticsService = copyPasteAnalyticsService;
 
         if (metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
@@ -293,5 +297,6 @@ public class MinimapHUDController : IHUD
     {
         clipboard.WriteText($"{model.sceneName}: {model.playerPosition}");
         view.ShowLocationCopiedToast();
+        copyPasteAnalyticsService.Copy("location");
     }
 }

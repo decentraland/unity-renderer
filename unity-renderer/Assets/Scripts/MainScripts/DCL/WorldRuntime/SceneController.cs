@@ -11,6 +11,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.World.PortableExperiences;
+using DCLServices.PortableExperiences.Analytics;
 using Newtonsoft.Json;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -33,6 +34,7 @@ namespace DCL
         private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences => DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
+        private IPortableExperiencesAnalyticsService portableExperiencesAnalytics => Environment.i.serviceLocator.Get<IPortableExperiencesAnalyticsService>();
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
         public bool enabled { get; set; } = true;
@@ -779,6 +781,8 @@ namespace DCL
 
                     if (!portableExperienceIds.Contains(sceneData.id))
                         portableExperienceIds.Add(sceneData.id);
+
+                    portableExperiencesAnalytics.Spawn(sceneData.id);
                 }
 
                 messagingControllersManager.AddControllerIfNotExists(this, newGlobalSceneNumber, isGlobal: true);
