@@ -159,7 +159,7 @@ static class BuildCommand
         }
 
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions() | BuildOptions.DetailedBuildReport);
-        Console.WriteLine(":: Done with build process");
+        Console.WriteLine(":: Done with build process - ");
 
         if (buildSummary.summary.result != BuildResult.Succeeded)
         {
