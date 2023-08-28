@@ -29,51 +29,45 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
-            (ScreenFrameData targetScreenFrame, float _) = CalculateTargetScreenFrame(currentScreenFrame);
+            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(CalculateCurrentScreenFrame());
 
-            // Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
-            var initialRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24, DefaultFormat.HDR);
+            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            var finalRenderTexture = new RenderTexture(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 24);
+            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0);
             Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
-            // Your existing code
-            RenderTexture.active = finalRenderTexture;
-            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
-            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
-            screenshot.Apply();
-            RenderTexture.active = null;
+            CropCentralFrameToScreenshotTexture(finalRenderTexture, targetScreenFrame);
 
-            // Function to flip the texture vertically
+            RenderTexture.ReleaseTemporary(initialRenderTexture);
+            RenderTexture.ReleaseTemporary(finalRenderTexture);
+
+            onComplete?.Invoke(FlipTextureVertically(screenshot));
+            yield break;
+
             Texture2D FlipTextureVertically(Texture2D original)
             {
-                Texture2D flipped = new Texture2D(original.width, original.height);
+                var flipped = new Texture2D(original.width, original.height);
                 int xN = original.width;
                 int yN = original.height;
 
-                for (int i = 0; i < xN; i++)
-                for (int j = 0; j < yN; j++)
+                for (var i = 0; i < xN; i++)
+                for (var j = 0; j < yN; j++)
                     flipped.SetPixel(i, yN - j - 1, original.GetPixel(i, j));
 
                 flipped.Apply();
                 return flipped;
             }
-
-            // Flip the screenshot
-            var finalScreenshot = FlipTextureVertically(screenshot);
-
-            initialRenderTexture.Release();
-            finalRenderTexture.Release();
-
-            onComplete?.Invoke(finalScreenshot);
         }
 
-        private void CropToScreenshotFrame(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
+        private void CropCentralFrameToScreenshotTexture(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
         {
             RenderTexture.active = finalRenderTexture;
             Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
+
+            Debug.Assert(corners.x + targetScreenFrame.FrameWidthInt <= finalRenderTexture.width, "Texture width is smaller than needed for target screenshot resolution");
+            Debug.Assert(corners.y + targetScreenFrame.FrameHeightInt <= finalRenderTexture.height, "Texture height is smaller than needed for target screenshot resolution");
+
             screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
             screenshot.Apply();
             RenderTexture.active = null;
@@ -102,24 +96,22 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return screenFrameData;
         }
 
-        private static (ScreenFrameData data, float targetRescale) CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
+        private static ScreenFrameData CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
         {
             var screenFrameData = new ScreenFrameData();
 
             float upscaleFrameWidth = TARGET_FRAME_WIDTH / currentScreenFrameData.FrameWidth;
             float upscaleFrameHeight = TARGET_FRAME_HEIGHT / currentScreenFrameData.FrameHeight;
-            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.01f);
+            Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.01f, "Screenshot upscale factors should be the same");
 
-            float targetRescale = upscaleFrameWidth;
+            screenFrameData.ScreenWidth = currentScreenFrameData.ScreenWidth * upscaleFrameWidth;
+            screenFrameData.ScreenHeight = currentScreenFrameData.ScreenHeight * upscaleFrameWidth;
+            screenFrameData.FrameWidth = currentScreenFrameData.FrameWidth * upscaleFrameWidth;
+            screenFrameData.FrameHeight = currentScreenFrameData.FrameHeight * upscaleFrameWidth;
+            Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.1f, "Calculated screenshot width should be the same as target width");
+            Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.1f, "Calculated screenshot height should be the same as target height");
 
-            screenFrameData.ScreenWidth = currentScreenFrameData.ScreenWidth * targetRescale;
-            screenFrameData.ScreenHeight = currentScreenFrameData.ScreenHeight * targetRescale;
-            screenFrameData.FrameWidth = currentScreenFrameData.FrameWidth * targetRescale;
-            screenFrameData.FrameHeight = currentScreenFrameData.FrameHeight * targetRescale;
-            Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.1f);
-            Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.1f);
-
-            return (screenFrameData, targetRescale);
+            return screenFrameData;
         }
     }
 }
