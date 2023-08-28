@@ -74,7 +74,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             eventsAPI,
             exploreV2Analytics,
             dataStore,
-            userProfileBridge);
+            userProfileBridge,
+            placesAPIService,
+            worldsAPIService);
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(

@@ -28,6 +28,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private CancellationTokenSource minimalSearchCts;
     private CancellationTokenSource fullSearchCts;
+    private CancellationTokenSource getPlacesAssociatedToEventsCts;
 
     public SearchSubSectionComponentController(ISearchSubSectionComponentView view,
         SearchBarComponentView searchBarComponentView,
@@ -185,16 +186,56 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private async UniTaskVoid SearchEvents(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await eventsAPI.SearchEvents(searchText, pageNumber,pageSize, cancellationToken);
-        List<EventCardComponentModel> searchedEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
-        exploreV2Analytics.SendSearchEvents(searchText, searchedEvents.Select(e=>e.coords).ToArray(), searchedEvents.Select(p=>p.eventFromAPIInfo.id).ToArray());
 
-        if (isFullSearch)
+        getPlacesAssociatedToEventsCts = getPlacesAssociatedToEventsCts.SafeRestart();
+        GetPlacesAssociatedToEventsAsync(results, getPlacesAssociatedToEventsCts.Token).Forget();
+
+        async UniTaskVoid GetPlacesAssociatedToEventsAsync((List<EventFromAPIModel> eventsFromAPI, int total) searchData, CancellationToken ct)
         {
-            view.ShowAllEvents(searchedEvents, (pageNumber + 1) * pageSize < results.total);
-        }
-        else
-        {
-            view.ShowEvents(searchedEvents, searchText);
+            // Land's events
+            var coordsList = searchData.eventsFromAPI
+                            .Where(e => !e.world)
+                            .Select(e => new Vector2Int(e.coordinates[0], e.coordinates[1]));
+
+            var places = await placesAPIService.GetPlacesByCoordsList(coordsList, ct);
+
+            foreach (IHotScenesController.PlaceInfo place in places)
+            {
+                foreach (EventFromAPIModel eventFromAPI in searchData.eventsFromAPI)
+                {
+                    Vector2Int eventCoords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+                    if (!place.Positions.Contains(eventCoords))
+                        continue;
+
+                    eventFromAPI.scene_name = place.title;
+                }
+            }
+
+            // World's events
+            var worldNamesList = searchData.eventsFromAPI
+                                .Where(e => e.world)
+                                .Select(e => e.server);
+
+            var worlds = await worldsAPIService.GetWorldsByNamesList(worldNamesList, ct);
+
+            foreach (WorldsResponse.WorldInfo world in worlds)
+            {
+                foreach (EventFromAPIModel eventFromAPI in searchData.eventsFromAPI)
+                {
+                    if (world.world_name != eventFromAPI.server)
+                        continue;
+
+                    eventFromAPI.scene_name = world.title;
+                }
+            }
+
+            List<EventCardComponentModel> searchedEvents = PlacesAndEventsCardsFactory.CreateEventsCards(searchData.eventsFromAPI);
+            exploreV2Analytics.SendSearchEvents(searchText, searchedEvents.Select(e=>e.coords).ToArray(), searchedEvents.Select(p=>p.eventFromAPIInfo.id).ToArray());
+
+            if (isFullSearch)
+                view.ShowAllEvents(searchedEvents, (pageNumber + 1) * pageSize < searchData.total);
+            else
+                view.ShowEvents(searchedEvents, searchText);
         }
     }
 
@@ -232,6 +273,8 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     public void Dispose()
     {
+        getPlacesAssociatedToEventsCts.SafeCancelAndDispose();
+
         view.OnRequestAllEvents -= SearchAllEvents;
         view.OnRequestAllPlaces -= SearchAllPlaces;
         view.OnRequestAllWorlds -= SearchAllWorlds;

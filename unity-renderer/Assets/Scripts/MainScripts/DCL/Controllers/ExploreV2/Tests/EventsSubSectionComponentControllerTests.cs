@@ -1,4 +1,6 @@
 using DCL;
+using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,6 +15,8 @@ public class EventsSubSectionComponentControllerTests
     private IEventsAPIController eventsAPIController;
     private IExploreV2Analytics exploreV2Analytics;
     private IUserProfileBridge userProfileBridge;
+    private IPlacesAPIService placesAPIService;
+    private IWorldsAPIService worldsAPIService;
 
     [SetUp]
     public void SetUp()
@@ -30,6 +34,8 @@ public class EventsSubSectionComponentControllerTests
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        placesAPIService = Substitute.For<IPlacesAPIService>();
+        worldsAPIService = Substitute.For<IWorldsAPIService>();
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel
         {
@@ -37,7 +43,14 @@ public class EventsSubSectionComponentControllerTests
             hasConnectedWeb3 = true
         });
         userProfileBridge.GetOwn().Returns(ownUserProfile);
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i, userProfileBridge);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(
+            eventsSubSectionComponentView,
+            eventsAPIController,
+            exploreV2Analytics,
+            DataStore.i,
+            userProfileBridge,
+            placesAPIService,
+            worldsAPIService);
     }
 
     [TearDown]

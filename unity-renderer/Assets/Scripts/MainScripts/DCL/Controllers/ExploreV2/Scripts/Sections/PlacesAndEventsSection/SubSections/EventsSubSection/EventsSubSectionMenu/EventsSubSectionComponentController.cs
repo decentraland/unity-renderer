@@ -1,8 +1,14 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Tasks;
+using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -23,18 +29,24 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     private readonly DataStore dataStore;
     private readonly IExploreV2Analytics exploreV2Analytics;
     private readonly IUserProfileBridge userProfileBridge;
+    private readonly IPlacesAPIService placesAPIService;
+    private readonly IWorldsAPIService worldsAPIService;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal List<EventFromAPIModel> eventsFromAPI = new ();
     internal int availableUISlots;
 
+    private CancellationTokenSource getPlacesAssociatedToEventsCts;
+
     public EventsSubSectionComponentController(
         IEventsSubSectionComponentView view,
         IEventsAPIController eventsAPI,
         IExploreV2Analytics exploreV2Analytics,
         DataStore dataStore,
-        IUserProfileBridge userProfileBridge)
+        IUserProfileBridge userProfileBridge,
+        IPlacesAPIService placesAPIService,
+        IWorldsAPIService worldsAPIService)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -59,6 +71,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         this.exploreV2Analytics = exploreV2Analytics;
         this.userProfileBridge = userProfileBridge;
 
+        this.placesAPIService = placesAPIService;
+        this.worldsAPIService = worldsAPIService;
+
         view.ConfigurePools();
     }
 
@@ -69,8 +84,9 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
 
     public void Dispose()
     {
-        view.OnReady -= FirstLoading;
+        getPlacesAssociatedToEventsCts.SafeCancelAndDispose();
 
+        view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowEventDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToEvent;
         view.OnSubscribeEventClicked -= SubscribeToEvent;
@@ -122,9 +138,52 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     {
         eventsFromAPI = eventList;
 
-        view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
-        LoadFilteredEvents();
-        RequestAndLoadCategories();
+        getPlacesAssociatedToEventsCts = getPlacesAssociatedToEventsCts.SafeRestart();
+        GetPlacesAssociatedToEventsAsync(getPlacesAssociatedToEventsCts.Token).Forget();
+
+        async UniTaskVoid GetPlacesAssociatedToEventsAsync(CancellationToken ct)
+        {
+            // Land's events
+            var coordsList = eventsFromAPI
+                            .Where(e => !e.world)
+                            .Select(e => new Vector2Int(e.coordinates[0], e.coordinates[1]));
+
+            var places = await placesAPIService.GetPlacesByCoordsList(coordsList, ct);
+
+            foreach (IHotScenesController.PlaceInfo place in places)
+            {
+                foreach (EventFromAPIModel eventFromAPI in eventsFromAPI)
+                {
+                    Vector2Int eventCoords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
+                    if (!place.Positions.Contains(eventCoords))
+                        continue;
+
+                    eventFromAPI.scene_name = place.title;
+                }
+            }
+
+            // World's events
+            var worldNamesList = eventsFromAPI
+                                .Where(e => e.world)
+                                .Select(e => e.server);
+
+            var worlds = await worldsAPIService.GetWorldsByNamesList(worldNamesList, ct);
+
+            foreach (WorldsResponse.WorldInfo world in worlds)
+            {
+                foreach (EventFromAPIModel eventFromAPI in eventsFromAPI)
+                {
+                    if (world.world_name != eventFromAPI.server)
+                        continue;
+
+                    eventFromAPI.scene_name = world.title;
+                }
+            }
+
+            view.SetFeaturedEvents(PlacesAndEventsCardsFactory.CreateEventsCards(FilterFeaturedEvents()));
+            LoadFilteredEvents();
+            RequestAndLoadCategories();
+        }
     }
 
     private void ApplyEventTypeFilters()
