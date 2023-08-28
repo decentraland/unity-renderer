@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
         public CameraModeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             // since this component travels only one way (from renderer to scene) we don't need a handler
-            factory.AddOrReplaceComponent(componentId, CameraModeSerializer.Deserialize, () => null);
+            factory.AddOrReplaceInternalComponent(componentId, CameraModeSerializer.Deserialize, () => null);
             componentWriter.AddOrReplaceComponentSerializer<PBCameraMode>(componentId, CameraModeSerializer.Serialize);
 
             this.factory = factory;

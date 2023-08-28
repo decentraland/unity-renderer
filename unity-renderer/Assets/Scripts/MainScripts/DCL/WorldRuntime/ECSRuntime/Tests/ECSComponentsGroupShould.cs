@@ -44,22 +44,22 @@ namespace Tests
                 {
                     {
                         (int)CompId.Comp1,
-                        ECSComponentsFactory.CreateComponentBuilder(o => (Comp1)o,
+                        ECSComponentsFactory.CreateInternalComponentBuilder(o => (Comp1)o,
                             () => Substitute.For<IECSComponentHandler<Comp1>>())
                     },
                     {
                         (int)CompId.Comp2,
-                        ECSComponentsFactory.CreateComponentBuilder(o => (Comp2)o,
+                        ECSComponentsFactory.CreateInternalComponentBuilder(o => (Comp2)o,
                             () => Substitute.For<IECSComponentHandler<Comp2>>())
                     },
                     {
                         (int)CompId.Comp3,
-                        ECSComponentsFactory.CreateComponentBuilder(o => (Comp3)o,
+                        ECSComponentsFactory.CreateInternalComponentBuilder(o => (Comp3)o,
                             () => Substitute.For<IECSComponentHandler<Comp3>>())
                     },
                     {
                         (int)CompId.Comp4,
-                        ECSComponentsFactory.CreateComponentBuilder(o => (Comp4)o,
+                        ECSComponentsFactory.CreateInternalComponentBuilder(o => (Comp4)o,
                             () => Substitute.For<IECSComponentHandler<Comp4>>())
                     },
                 };

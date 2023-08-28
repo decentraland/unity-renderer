@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
         public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTextShape>,
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBTextShape>,
                 () => new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, internalComponents.renderersComponent, internalComponents.sceneBoundsCheckComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBTextShape>(componentId, ProtoSerialization.Serialize);
 

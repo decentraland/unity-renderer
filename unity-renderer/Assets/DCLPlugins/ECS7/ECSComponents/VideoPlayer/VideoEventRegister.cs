@@ -11,7 +11,7 @@ namespace DCLPlugins.ECSComponents
 
         public VideoEventRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBVideoEvent>, null);
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBVideoEvent>, null);
             componentWriter.AddOrReplaceComponentSerializer<PBVideoEvent>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

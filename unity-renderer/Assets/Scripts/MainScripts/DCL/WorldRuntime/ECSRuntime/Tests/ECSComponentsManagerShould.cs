@@ -34,11 +34,11 @@ namespace Tests
                 {
                     {
                         (int)ComponentsID.Component0,
-                        ECSComponentsFactory.CreateComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler0)
+                        ECSComponentsFactory.CreateInternalComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler0)
                     },
                     {
                         (int)ComponentsID.Component1,
-                        ECSComponentsFactory.CreateComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler1)
+                        ECSComponentsFactory.CreateInternalComponentBuilder(TestingComponentSerialization.Deserialize, () => componentHandler1)
                     },
                 };
 

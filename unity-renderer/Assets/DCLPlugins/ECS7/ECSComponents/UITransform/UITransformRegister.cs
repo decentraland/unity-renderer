@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
             var handler = new UITransformHandler(internalUiContainer, componentId);
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBUiTransform>, () => handler);
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBUiTransform>, () => handler);
             componentWriter.AddOrReplaceComponentSerializer<PBUiTransform>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

@@ -12,7 +12,7 @@ namespace DCLPlugins.ECSComponents
         
         public PointerEventResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBPointerEventsResult>, null);
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBPointerEventsResult>, null);
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEventsResult>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

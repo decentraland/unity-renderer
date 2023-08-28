@@ -27,7 +27,7 @@ namespace DCL.ECSComponents.UIAbstractElements
         {
             this.feedbackResultComponentId = feedbackResultComponentId;
 
-            factory.AddOrReplaceComponent(feedbackResultComponentId, ProtoSerialization.Deserialize<TFeedbackResult>,
+            factory.AddOrReplaceInternalComponent(feedbackResultComponentId, ProtoSerialization.Deserialize<TFeedbackResult>,
                 () => null);
 
             componentWriter.AddOrReplaceComponentSerializer<TFeedbackResult>(feedbackResultComponentId, ProtoSerialization.Serialize);
@@ -62,7 +62,7 @@ namespace DCL.ECSComponents.UIAbstractElements
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer,
             HandlerBuilder handlerBuilder)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<T>,
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<T>,
                 () => handlerBuilder(internalUiContainer, componentId));
 
             componentWriter.AddOrReplaceComponentSerializer<T>(componentId, ProtoSerialization.Serialize);

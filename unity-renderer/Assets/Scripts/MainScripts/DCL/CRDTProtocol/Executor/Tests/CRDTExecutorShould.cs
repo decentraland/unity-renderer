@@ -38,12 +38,12 @@ namespace Tests
 
             ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
 
-            componentsFactory.AddOrReplaceComponent(
+            componentsFactory.AddOrReplaceInternalComponent(
                 (int)ComponentIds.COMPONENT_STRING,
                 data => new ComponentString() { value = (string)data },
                 () => stringCompHandler);
 
-            componentsFactory.AddOrReplaceComponent(
+            componentsFactory.AddOrReplaceInternalComponent(
                 (int)ComponentIds.COMPONENT_INT,
                 data => new ComponentInt() { value = (int)data },
                 () => intCompHandler);

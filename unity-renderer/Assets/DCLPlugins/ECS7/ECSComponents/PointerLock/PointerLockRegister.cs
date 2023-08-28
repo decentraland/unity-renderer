@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
         public PointerLockRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
             // since this component travels only one way (from renderer to scene) we don't need a handler
-            factory.AddOrReplaceComponent(componentId, PointerLockSerializer.Deserialize, () => null);
+            factory.AddOrReplaceInternalComponent(componentId, PointerLockSerializer.Deserialize, () => null);
             componentWriter.AddOrReplaceComponentSerializer<PBPointerLock>(componentId, PointerLockSerializer.Serialize);
 
             this.factory = factory;

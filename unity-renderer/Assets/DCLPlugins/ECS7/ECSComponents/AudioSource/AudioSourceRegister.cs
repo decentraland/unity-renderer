@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
 
         public AudioSourceRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, AudioSourceSerializer.Deserialize, () => new ECSAudioSourceComponentHandler(
+            factory.AddOrReplaceInternalComponent(componentId, AudioSourceSerializer.Deserialize, () => new ECSAudioSourceComponentHandler(
                 DataStore.i,
                 Settings.i,
                 AssetPromiseKeeper_AudioClip.i,

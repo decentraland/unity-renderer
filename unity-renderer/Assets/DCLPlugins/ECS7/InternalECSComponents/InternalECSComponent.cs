@@ -40,7 +40,7 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
         this.crdtExecutors = crdtExecutors;
         this.dirtySystem = dirtySystem;
 
-        componentsFactory.AddOrReplaceComponent<T>(componentId, x => (T)x, handlerBuilder);
+        componentsFactory.AddOrReplaceInternalComponent<T>(componentId, x => (T)x, handlerBuilder);
         component = (ECSComponent<T>)componentsManager.GetOrCreateComponent(componentId);
 
         dirtySystem.MarkComponentsAsDirty += MarkDirtyComponentData;

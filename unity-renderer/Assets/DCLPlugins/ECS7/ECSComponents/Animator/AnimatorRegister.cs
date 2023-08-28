@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public AnimatorRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, AnimatorSerializer.Deserialize, () => new AnimatorComponentHandler(DataStore.i.ecs7));
+            factory.AddOrReplaceInternalComponent(componentId, AnimatorSerializer.Deserialize, () => new AnimatorComponentHandler(DataStore.i.ecs7));
             componentWriter.AddOrReplaceComponentSerializer<PBAnimator>(componentId, AnimatorSerializer.Serialize);
 
             this.factory = factory;

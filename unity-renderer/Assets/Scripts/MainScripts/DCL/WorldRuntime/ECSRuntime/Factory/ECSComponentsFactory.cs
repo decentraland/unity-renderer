@@ -22,12 +22,12 @@ namespace DCL.ECSRuntime
         /// <param name="deserializer"></param>
         /// <param name="handlerBuilder"></param>
         /// <typeparam name="ModelType"></typeparam>
-        public void AddOrReplaceComponent<ModelType>(
+        public void AddOrReplaceInternalComponent<ModelType>(
             int componentId,
             Func<object, ModelType> deserializer,
             Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
-            components[componentId] = CreateComponentBuilder(deserializer, handlerBuilder);
+            components[componentId] = CreateInternalComponentBuilder(deserializer, handlerBuilder);
         }
 
         /// <summary>
@@ -46,14 +46,14 @@ namespace DCL.ECSRuntime
         /// <param name="handlerBuilder"></param>
         /// <typeparam name="ModelType"></typeparam>
         /// <returns>component builder</returns>
-        public static ECSComponentBuilder CreateComponentBuilder<ModelType>(
+        public static ECSComponentBuilder CreateInternalComponentBuilder<ModelType>(
             Func<object, ModelType> deserializer,
             Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
-            return () => BuildComponent(deserializer, handlerBuilder);
+            return () => BuildInternalComponent(deserializer, handlerBuilder);
         }
 
-        private static IECSComponent BuildComponent<ModelType>(
+        private static IECSComponent BuildInternalComponent<ModelType>(
             Func<object, ModelType> deserializer,
             Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {

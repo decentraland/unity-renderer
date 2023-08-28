@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
         {
             modifierFactory = new AvatarModifierFactory();
             
-            factory.AddOrReplaceComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player, modifierFactory));
+            factory.AddOrReplaceInternalComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player, modifierFactory));
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarModifierArea>(componentId, AvatarModifierAreaSerializer.Serialize);
 
             this.factory = factory;

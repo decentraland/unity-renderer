@@ -10,7 +10,7 @@ namespace DCL.ECSComponents
 
         public GltfContainerLoadingStateRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainerLoadingState>, null);
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainerLoadingState>, null);
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainerLoadingState>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

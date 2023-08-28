@@ -11,7 +11,7 @@ namespace DCLPlugins.ECSComponents
 
         public EngineInfoRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBEngineInfo>, null);
+            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBEngineInfo>, null);
             componentWriter.AddOrReplaceComponentSerializer<PBEngineInfo>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
