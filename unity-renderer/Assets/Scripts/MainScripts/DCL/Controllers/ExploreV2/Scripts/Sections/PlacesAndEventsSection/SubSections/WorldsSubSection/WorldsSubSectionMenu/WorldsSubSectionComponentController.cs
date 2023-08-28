@@ -109,12 +109,12 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
             if (isUpvote != null)
             {
                 if (isUpvote.Value)
-                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
                 else
-                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
             }
             else
-                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore, true);
 
             placesAPI.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
         }
@@ -127,9 +127,9 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         else
         {
             if (isFavorite)
-                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore, true);
             else
-                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore, true);
 
             placesAPI.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
         }
@@ -150,7 +150,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
     private void ApplySorting()
     {
-        placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
+        placesAnalytics.SortWorlds(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
         RequestAllWorlds();
     }
 
