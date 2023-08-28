@@ -1,3 +1,4 @@
+using DCL;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System;
@@ -10,6 +11,7 @@ using Utils = DCL.Helpers.Utils;
 public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectionComponentView
 {
     private const int MAX_POOL_COUNT = 6;
+    internal const string WORLDS_SUBSECTION_FF = "enable_worlds_subsection";
 
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
@@ -22,24 +24,32 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private TMP_Text searchTerm;
 
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject worldsSection;
     [SerializeField] private Transform eventsParent;
     [SerializeField] private Transform placesParent;
+    [SerializeField] private Transform worldsParent;
     [SerializeField] private RectTransform fullEventsParent;
     [SerializeField] private RectTransform fullPlacesParent;
+    [SerializeField] private RectTransform fullWorldsParent;
+    [SerializeField] private RectTransform gridContainer;
     [SerializeField] private EventCardComponentView eventPrefab;
     [SerializeField] private PlaceCardComponentView placePrefab;
     [SerializeField] private GameObject loadingEvents;
     [SerializeField] private GameObject loadingPlaces;
+    [SerializeField] private GameObject loadingWorlds;
     [SerializeField] private GameObject loadingAll;
     [SerializeField] private Button showAllPlaces;
+    [SerializeField] private Button showAllWorlds;
     [SerializeField] private Button showAllEvents;
     [SerializeField] private Button showMore;
 
     [SerializeField] internal GameObject noEvents;
     [SerializeField] internal GameObject noPlaces;
+    [SerializeField] internal GameObject noWorlds;
     [SerializeField] internal GameObject noResults;
     [SerializeField] private TMP_Text noEventsText;
     [SerializeField] private TMP_Text noPlacesText;
+    [SerializeField] private TMP_Text noWorldsText;
     [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
@@ -48,6 +58,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     internal PlaceCardComponentView placeModal;
     public event Action<int> OnRequestAllEvents;
     public event Action<int> OnRequestAllPlaces;
+    public event Action<int> OnRequestAllWorlds;
     public event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
@@ -66,6 +77,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     internal List<PlaceCardComponentView> pooledPlaces = new List<PlaceCardComponentView>();
     private UnityObjectPool<PlaceCardComponentView> fullPlacesPool;
     internal List<PlaceCardComponentView> pooledFullPlaces = new List<PlaceCardComponentView>();
+    private UnityObjectPool<PlaceCardComponentView> worldsPool;
+    internal List<PlaceCardComponentView> pooledWorlds = new List<PlaceCardComponentView>();
+    private UnityObjectPool<PlaceCardComponentView> fullWorldsPool;
+    internal List<PlaceCardComponentView> pooledFullWorlds = new List<PlaceCardComponentView>();
     private int currentPage = 0;
 
     public override void Awake()
@@ -77,6 +92,9 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+
+        //Temporary until the full feature is released
+        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     private void InitialiseButtonEvents()
@@ -91,6 +109,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         {
             showAllPlaces.onClick.RemoveAllListeners();
             showAllPlaces.onClick.AddListener(RequestAllPlaces);
+        }
+
+        if (showAllWorlds != null)
+        {
+            showAllWorlds.onClick.RemoveAllListeners();
+            showAllWorlds.onClick.AddListener(RequestAllWorlds);
         }
 
         if (showMore != null)
@@ -114,6 +138,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             OnRequestAllEvents?.Invoke(currentPage);
         else if(fullPlacesParent.gameObject.activeSelf)
             OnRequestAllPlaces?.Invoke(currentPage);
+        else if(fullWorldsParent.gameObject.activeSelf)
+            OnRequestAllWorlds?.Invoke(currentPage);
     }
 
     private void OnBackButtonPressed()
@@ -136,6 +162,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         fullSearchSection.SetActive(true);
         fullEventsParent.gameObject.SetActive(true);
         fullPlacesParent.gameObject.SetActive(false);
+        fullWorldsParent.gameObject.SetActive(false);
         loadingAll.SetActive(true);
         ClearFullEventsPool();
         OnRequestAllEvents?.Invoke(currentPage);
@@ -148,9 +175,23 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         fullSearchSection.SetActive(true);
         fullEventsParent.gameObject.SetActive(false);
         fullPlacesParent.gameObject.SetActive(true);
+        fullWorldsParent.gameObject.SetActive(false);
         loadingAll.SetActive(true);
         ClearFullPlacesPool();
         OnRequestAllPlaces?.Invoke(currentPage);
+    }
+
+    private void RequestAllWorlds()
+    {
+        currentPage = 0;
+        minimalSearchSection.SetActive(false);
+        fullSearchSection.SetActive(true);
+        fullEventsParent.gameObject.SetActive(false);
+        fullPlacesParent.gameObject.SetActive(false);
+        fullWorldsParent.gameObject.SetActive(true);
+        loadingAll.SetActive(true);
+        ClearFullWorldsPool();
+        OnRequestAllWorlds?.Invoke(currentPage);
     }
 
     public void ShowEvents(List<EventCardComponentModel> events, string searchText)
@@ -207,9 +248,36 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         CheckAndSetNoResults(searchText);
     }
 
+    public void ShowWorlds(List<PlaceCardComponentModel> worlds, string searchText)
+    {
+        ClearWorldsPool();
+        foreach (PlaceCardComponentModel placeCardComponentModel in worlds)
+        {
+            PlaceCardComponentView placeCardComponentView = worldsPool.Get();
+            placeCardComponentView.model = placeCardComponentModel;
+            placeCardComponentView.RefreshControl();
+            pooledWorlds.Add(placeCardComponentView);
+            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+        }
+        worldsParent.gameObject.SetActive(true);
+        loadingWorlds.gameObject.SetActive(false);
+
+        showAllWorlds.gameObject.SetActive(worlds.Count == 6);
+        if (worlds.Count == 0)
+        {
+            noWorlds.SetActive(true);
+            noWorldsText.text = $"No wordls found for '{searchText}'";
+        }
+        else
+        {
+            noWorlds.SetActive(false);
+        }
+        CheckAndSetNoResults(searchText);
+    }
+
     private void CheckAndSetNoResults(string searchText)
     {
-        if (noPlaces.activeSelf && noEvents.activeSelf)
+        if (noPlaces.activeSelf && noEvents.activeSelf && noWorlds.activeSelf)
         {
             noResults.SetActive(true);
             minimalSearchSection.SetActive(false);
@@ -221,7 +289,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             if(minimalSearchSection.activeSelf == false)
                 minimalSearchSection.SetActive(true);
         }
-
+        Utils.ForceRebuildLayoutImmediate(gridContainer);
     }
 
     private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
@@ -309,16 +377,37 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         Utils.ForceRebuildLayoutImmediate(fullPlacesParent);
     }
 
+    public void ShowAllWorlds(List<PlaceCardComponentModel> worlds, bool showMoreButton)
+    {
+        showMore.gameObject.SetActive(showMoreButton);
+        foreach (PlaceCardComponentModel placeCardComponentModel in worlds)
+        {
+            PlaceCardComponentView placeCardComponentView = fullWorldsPool.Get();
+            placeCardComponentView.model = placeCardComponentModel;
+            placeCardComponentView.RefreshControl();
+            placeCardComponentView.OnLoseFocus();
+            placeCardComponentView.transform.SetAsLastSibling();
+            pooledFullWorlds.Add(placeCardComponentView);
+            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+        }
+        loadingAll.SetActive(false);
+        Utils.ForceRebuildLayoutImmediate(fullWorldsParent);
+    }
+
     private void InitializePools()
     {
         eventsPool = new UnityObjectPool<EventCardComponentView>(eventPrefab, eventsParent);
         eventsPool.Prewarm(MAX_POOL_COUNT);
         placesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, placesParent);
         placesPool.Prewarm(MAX_POOL_COUNT);
+        worldsPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, worldsParent);
+        worldsPool.Prewarm(MAX_POOL_COUNT);
         fullEventsPool = new UnityObjectPool<EventCardComponentView>(eventPrefab, fullEventsParent);
         fullEventsPool.Prewarm(MAX_POOL_COUNT);
         fullPlacesPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, fullPlacesParent);
         fullPlacesPool.Prewarm(MAX_POOL_COUNT);
+        fullWorldsPool = new UnityObjectPool<PlaceCardComponentView>(placePrefab, fullWorldsParent);
+        fullWorldsPool.Prewarm(MAX_POOL_COUNT);
     }
 
     public void RestartScrollViewPosition()
@@ -336,8 +425,10 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         CloseFullList();
         eventsParent.gameObject.SetActive(false);
         placesParent.gameObject.SetActive(false);
+        worldsParent.gameObject.SetActive(false);
         loadingEvents.SetActive(true);
         loadingPlaces.SetActive(true);
+        loadingWorlds.SetActive(true);
     }
 
     public void SetHeaderEnabled(string searchText)
@@ -371,6 +462,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         ClearFullEventsPool();
         ClearPlacesPool();
         ClearFullPlacesPool();
+        ClearWorldsPool();
+        ClearFullWorldsPool();
     }
 
     private void ClearEventsPool()
@@ -398,5 +491,18 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         foreach (var pooledEvent in pooledFullPlaces)
             fullPlacesPool.Release(pooledEvent);
         pooledFullPlaces.Clear();
+    }
+
+    private void ClearWorldsPool()
+    {
+        foreach (var pooledWorld in pooledWorlds)
+            worldsPool.Release(pooledWorld);
+        pooledWorlds.Clear();
+    }
+
+    private void ClearFullWorldsPool(){
+        foreach (var pooledWorld in pooledFullWorlds)
+            fullWorldsPool.Release(pooledWorld);
+        pooledFullWorlds.Clear();
     }
 }
