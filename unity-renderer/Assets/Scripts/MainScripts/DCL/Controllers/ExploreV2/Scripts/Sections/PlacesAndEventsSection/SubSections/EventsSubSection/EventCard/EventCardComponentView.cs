@@ -109,7 +109,8 @@ public interface IEventCardComponentView
     /// Set the event place in the card.
     /// </summary>
     /// <param name="newText">New event place.</param>
-    void SetEventPlace(string newText);
+    /// <param name="isWorld">True for setting the place as world.</param>
+    void SetEventPlace(string newText, bool isWorld);
 
     /// <summary>
     /// Set the the number of users subscribed to the event.
@@ -121,7 +122,8 @@ public interface IEventCardComponentView
     /// Set the event coords.
     /// </summary>
     /// <param name="newCoords">Event coords.</param>
-    void SetCoords(Vector2Int newCoords);
+    /// <param name="worldAddress">World address (for world's events)</param>
+    void SetCoords(Vector2Int newCoords, string worldAddress);
 
     /// <summary>
     /// Active or deactive the loading indicator.
@@ -179,6 +181,8 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
     [SerializeField] internal HorizontalLayoutGroup timeAndPlayersHorizontalLayout;
     [SerializeField] internal EventCardAnimator cardAnimator;
     [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal GameObject placeIcon;
+    [SerializeField] internal GameObject worldIcon;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -205,6 +209,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
+
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.onClick.AddListener(CloseModal);
 
         onSubscribeClick.AddListener(PressedSubscribe);
         onUnsubscribeClick.AddListener(PressedUnsubscribe);
@@ -259,9 +266,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         SetEventStartedIn(model.eventStartedIn);
         SetEventStartsInFromTo(model.eventStartsInFromTo);
         SetEventOrganizer(model.eventOrganizer);
-        SetEventPlace(model.eventPlace);
+        SetEventPlace(model.eventPlace, !string.IsNullOrEmpty(model.worldAddress));
         SetSubscribersUsers(model.subscribedUsers);
-        SetCoords(model.coords);
+        SetCoords(model.coords, model.worldAddress);
         ResetScrollPosition();
         RebuildCardLayouts();
     }
@@ -315,6 +322,9 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.RemoveAllListeners();
+
+        if (secondaryJumpinButton != null)
+            secondaryJumpinButton.onClick.RemoveAllListeners();
 
         onSubscribeClick.RemoveAllListeners();
         onUnsubscribeClick.RemoveAllListeners();
@@ -498,14 +508,18 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
         eventOrganizerText.text = newText;
     }
 
-    public void SetEventPlace(string newText)
+    public void SetEventPlace(string newText, bool isWorld)
     {
         model.eventPlace = newText;
 
-        if (eventPlaceText == null)
-            return;
+        if (eventPlaceText != null)
+            eventPlaceText.text = newText;
 
-        eventPlaceText.text = newText;
+        if (placeIcon != null)
+            placeIcon.SetActive(!isWorld);
+
+        if (worldIcon != null)
+            worldIcon.SetActive(isWorld);
     }
 
     public void SetSubscribersUsers(int newNumberOfUsers)
@@ -523,14 +537,15 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
             subscribedUsersText.text = newNumberOfUsers > 0 ? string.Format(USERS_CONFIRMED_MESSAGE, newNumberOfUsers) : NOBODY_CONFIRMED_MESSAGE;
     }
 
-    public void SetCoords(Vector2Int newCoords)
+    public void SetCoords(Vector2Int newCoords, string worldAddress)
     {
         model.coords = newCoords;
+        model.worldAddress = worldAddress;
 
         if (secondaryJumpinButton == null || !isEventCardModal)
             return;
 
-        secondaryJumpinButton.SetText($"{newCoords.x},{newCoords.y}");
+        secondaryJumpinButton.SetText(string.IsNullOrEmpty(worldAddress) ? $"{newCoords.x},{newCoords.y}" : worldAddress);
     }
 
     public void SetLoadingIndicatorVisible(bool isVisible)

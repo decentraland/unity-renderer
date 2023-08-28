@@ -17,6 +17,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
     public interface IHotScenesController : IService
     {
         UniTask<IReadOnlyList<HotSceneInfo>> GetHotScenesListAsync(CancellationToken cancellationToken);
+        UniTask<IReadOnlyList<HotWorldInfo.WorldInfo>> GetHotWorldsListAsync(CancellationToken cancellationToken);
 
         [Serializable]
         class HotSceneInfo
@@ -40,6 +41,28 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public Vector2Int[] parcels;
             public int usersTotalCount;
             public Realm[] realms;
+        }
+
+        [Serializable]
+        class HotWorldInfo
+        {
+            [Serializable]
+            public class WorldInfo
+            {
+                public string worldName;
+                public int users;
+            }
+
+            [Serializable]
+            public class WorldData
+            {
+                public int totalUsers;
+                public WorldInfo[] perWorld;
+            }
+
+            public WorldData data;
+            public string lastUpdated;
+
         }
 
         [Serializable]

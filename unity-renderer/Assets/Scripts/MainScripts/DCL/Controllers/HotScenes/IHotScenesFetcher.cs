@@ -14,6 +14,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> ScenesInfo { get; }
+        IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotWorldInfo.WorldInfo>> WorldsInfo { get; }
 
         public void SetUpdateMode(UpdateMode mode);
     }
