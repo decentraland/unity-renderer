@@ -17,11 +17,11 @@ namespace DCLFeatures.CameraReel.Gallery
 
         private CameraReelResponse picture;
 
-        public event Action OnClicked;
+        public event Action<CameraReelResponse> OnClicked;
 
         private void Awake()
         {
-            interactionButton.onClick.AddListener(() => OnClicked?.Invoke());
+            interactionButton.onClick.AddListener(() => OnClicked?.Invoke(picture));
             contextMenuButton.onClick.AddListener(() => contextMenu.Show(picture));
 
             image.OnLoaded += _ =>

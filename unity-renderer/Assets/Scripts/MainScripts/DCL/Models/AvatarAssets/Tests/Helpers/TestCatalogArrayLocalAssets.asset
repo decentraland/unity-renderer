@@ -21,14 +21,19 @@ MonoBehaviour:
         contents:
         - key: Avatar_FemaleSkinBase.png
           hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+          url: 
         - key: BaseFemale.glb
           hash: QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2
+          url: 
         - key: Brows_00.png
           hash: QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81
+          url: 
         - key: Eyes_00.png
           hash: QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28
+          url: 
         - key: F_Mouth_00.png
           hash: QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: body_shape
@@ -39,7 +44,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:BaseFemale
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -48,6 +58,7 @@ MonoBehaviour:
     - code: es
       text: Mujer
     thumbnail: QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -59,14 +70,19 @@ MonoBehaviour:
         contents:
         - key: Avatar_MaleSkinBase.png
           hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
+          url: 
         - key: BaseMale.glb
           hash: QmRhw6iFmT1r8KTbComWMKFLPxf7pFZqFwKrEY1Az2whZ8
+          url: 
         - key: EyeBrows_00.png
           hash: QmP4823KZpn5d5iAEwXJyGTZy19HriJsJYkCJ22ERmpFMa
+          url: 
         - key: Eyes_00.png
           hash: QmUYEYptrfbtvAr53C4X3ReAtYYuQsuN41dB5D5cfuLxkh
+          url: 
         - key: Mouth_00.png
           hash: QmTZXe8CyZWCfV9KvjKx6LpYwDXAzCeRCozoZRuRUth7qP
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: body_shape
@@ -77,7 +93,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:BaseMale
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -86,6 +107,7 @@ MonoBehaviour:
     - code: es
       text: Hombre
     thumbnail: QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -97,8 +119,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: F_Eyewear_BlackSunglasses.glb
           hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -107,8 +131,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: F_Eyewear_BlackSunglasses.glb
           hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyewear
@@ -121,7 +147,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:black_sun_glasses
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -130,6 +161,7 @@ MonoBehaviour:
     - code: es
       text: Anteojos Negros
     thumbnail: QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -141,8 +173,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: BlueBandana.glb
           hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -151,8 +185,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: BlueBandana.glb
           hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: tiara
@@ -168,7 +204,12 @@ MonoBehaviour:
       - hat
       - helmet
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:blue_bandana
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -177,6 +218,7 @@ MonoBehaviour:
     - code: es
       text: Bandana Azul
     thumbnail: QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -188,6 +230,7 @@ MonoBehaviour:
         contents:
         - key: M_Eyes_00.png
           hash: QmdPqHWhGTu6H3Dtn1SgvatmpxWeCR9Dm2Qb2hofAHqg1A
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyes
@@ -199,7 +242,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:eyes_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -208,6 +256,7 @@ MonoBehaviour:
     - code: es
       text: Eyes_00
     thumbnail: Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -219,6 +268,7 @@ MonoBehaviour:
         contents:
         - key: M_EyeBrows_00.png
           hash: QmZWwUgq6UYJLCgtPbzVdhThkPTNPHqezWiQKw7Lg3yqKV
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyebrows
@@ -230,7 +280,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:eyebrows_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -239,6 +294,7 @@ MonoBehaviour:
     - code: es
       text: EyeBrows_00
     thumbnail: QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -250,6 +306,7 @@ MonoBehaviour:
         contents:
         - key: M_Mouth_00.png
           hash: QmQZ6MAyHpGaPpntHJnU3x4o2dUvz5KhvNtWbbzvbAE34T
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: mouth
@@ -261,7 +318,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:mouth_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -270,6 +332,7 @@ MonoBehaviour:
     - code: es
       text: Mouth_00
     thumbnail: QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -281,8 +344,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: M_Hair_Standard_01.glb
           hash: QmQtwaQT8etWM4XHZANtvBYdpqiiSg3rXFREDKacx7FDkF
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: hair
@@ -293,7 +358,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:casual_hair_01
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -302,6 +372,7 @@ MonoBehaviour:
     - code: es
       text: Corte Casual
     thumbnail: QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -313,8 +384,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: Beard_01.glb
           hash: QmY2eXCDj9arFjXD7ofoVLfJvKqJdXVm7zA9o9Macp7mTv
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: facial_hair
@@ -325,7 +398,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:beard
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -334,6 +412,7 @@ MonoBehaviour:
     - code: es
       text: Barba
     thumbnail: QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -345,10 +424,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
+          url: 
         - key: M_uBody_Hoodie_01.glb
           hash: QmSHjzk2Uc2QU5dMx1WZEWxqi6Zrijy8FhHZeatjDApS2e
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: upper_body
@@ -359,7 +441,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:green_hoodie
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -368,6 +455,7 @@ MonoBehaviour:
     - code: es
       text: Sudadera Verde con Capucha
     thumbnail: QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -379,10 +467,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: Sneakers_01.glb
           hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -391,10 +482,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: Sneakers_01.glb
           hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: feet
@@ -407,7 +501,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:sneakers
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -416,6 +515,7 @@ MonoBehaviour:
     - code: es
       text: Zapatillas
     thumbnail: QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -427,6 +527,7 @@ MonoBehaviour:
         contents:
         - key: F_Eyes_00.png
           hash: QmPt59PBdQkYZw9A7KRHx8hBbUSXkWfXmxEATvnDavJ7gR
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyes
@@ -438,7 +539,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_eyes_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -447,6 +553,7 @@ MonoBehaviour:
     - code: es
       text: f_Eyes_00
     thumbnail: Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -458,6 +565,7 @@ MonoBehaviour:
         contents:
         - key: F_Eyebrows_00.png
           hash: QmXqPxhpVaNx7KfiWDjBoufQK28373nbZhNqWbKSwcGwUr
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyebrows
@@ -469,7 +577,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_eyebrows_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -478,6 +591,7 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_00
     thumbnail: QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -489,6 +603,7 @@ MonoBehaviour:
         contents:
         - key: F_Mouth_00.png
           hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: mouth
@@ -500,7 +615,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_mouth_00
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -509,6 +629,7 @@ MonoBehaviour:
     - code: es
       text: f_Mouth_00
     thumbnail: QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -520,8 +641,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png.001.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: F_Hair_Standard.glb
           hash: Qmbgt2AnZu9JMdxk4tCgERrbzcUYw82ivEDViywwh3dkp7
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: hair
@@ -532,7 +655,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:standard_hair
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -541,6 +669,7 @@ MonoBehaviour:
     - code: es
       text: "Peinado Cl\xE1sico"
     thumbnail: QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -552,10 +681,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_FemaleSkinBase.png
           hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+          url: 
         - key: F_uBody_Sweater_01.glb
           hash: QmUog3pt3CHwGDCB2QXbnKKY1GoBsJo71L8qdzV9u133Ph
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: upper_body
@@ -566,7 +698,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_sweater
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -575,6 +712,7 @@ MonoBehaviour:
     - code: es
       text: "Su\xE9ter Amarillo"
     thumbnail: QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -586,8 +724,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: F_lBody_Jeans_01.glb
           hash: QmNXsTqL9MS24Wae8N7VXi2u4YrDnvaiZRiK8U29DZAC2z
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: lower_body
@@ -598,7 +738,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_jeans
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -607,6 +752,7 @@ MonoBehaviour:
     - code: es
       text: Jeans
     thumbnail: QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -618,10 +764,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_FemaleSkinBase.png
           hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+          url: 
         - key: F_BunShoes_01.glb
           hash: QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: feet
@@ -632,7 +781,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:bun_shoes
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -641,6 +795,7 @@ MonoBehaviour:
     - code: es
       text: Zapatillas de Lona
     thumbnail: QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -652,6 +807,7 @@ MonoBehaviour:
         contents:
         - key: F_Eyebrows_01.png
           hash: QmVbxn91ZRByw9u5jRSuxzs6wrdnLhMqiTX7LXH27CEngb
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyebrows
@@ -663,7 +819,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_eyebrows_01
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -672,6 +833,7 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_01
     thumbnail: QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -683,10 +845,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: BearSlippers_01.glb
           hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -695,10 +860,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: BearSlippers_01.glb
           hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: feet
@@ -711,7 +879,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:bear_slippers
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -720,6 +893,7 @@ MonoBehaviour:
     - code: es
       text: Pantuflas de Oso
     thumbnail: QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -731,8 +905,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: F_lBody_AfricanLeggings.glb
           hash: QmWJiYDnp1aeqWRCHydFKZcyT966WWtzA2hgS1E7dkHmpE
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: lower_body
@@ -743,7 +919,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_african_leggins
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -752,6 +933,7 @@ MonoBehaviour:
     - code: es
       text: Leggins Africanos
     thumbnail: Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -763,10 +945,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+          url: 
         - key: Avatar_FemaleSkinBase.png
           hash: QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ
+          url: 
         - key: F_uBody_BeeTShirt.glb
           hash: QmTA6EHFiqBPuT8ESafQGyp2VnKXrnYV8faBWpvmbeM6v5
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: upper_body
@@ -777,7 +962,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:bee_t_shirt
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -786,6 +976,7 @@ MonoBehaviour:
     - code: es
       text: Remera con Estampado de Abeja
     thumbnail: QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -797,10 +988,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: M_lBody_LongPants_01.glb
           hash: QmVBByC2XaeoxY9oowr9r9N3NX8DyMfVdT5vHe7ZYbjYbN
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: lower_body
@@ -811,7 +1005,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:brown_pants
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -820,6 +1019,7 @@ MonoBehaviour:
     - code: es
       text: "Pantal\xF3n Marr\xF3n"
     thumbnail: QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -831,8 +1031,10 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: F_Eyewear_CatStyle.glb
           hash: QmXVGQTKqfvXuX8hTWzbviAVHievAGEFFaWFcPhQXRUEdr
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyewear
@@ -843,7 +1045,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_glasses_cat_style
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -852,6 +1059,7 @@ MonoBehaviour:
     - code: es
       text: Gafas de Estilo Gato
     thumbnail: QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -863,6 +1071,7 @@ MonoBehaviour:
         contents:
         - key: F_Eyebrows_02.png
           hash: QmNM7wkfpUDULNJ7FC8AGua7b9hNnUtw9zMR676bt57v6J
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyebrows
@@ -874,7 +1083,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_eyebrows_02
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -883,6 +1097,7 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_02
     thumbnail: QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -894,10 +1109,13 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_TX.png
           hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+          url: 
         - key: Avatar_MaleSkinBase.png
           hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+          url: 
         - key: M_uBody_Clown.glb
           hash: QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: upper_body
@@ -910,7 +1128,12 @@ MonoBehaviour:
       - exclusive
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -919,6 +1142,7 @@ MonoBehaviour:
     - code: es
       text: Traje de Payaso Triste
     thumbnail: QmTK397dYkoUTGh5vYY4yXPMqCXDwhEWhJg4CJFCBwCi2v
+    thumbnailSprite: {fileID: 0}
     rarity: epic
     description: 'Little known fact: blue, red and gold are the saddest colours'
     issuedId: 0
@@ -930,8 +1154,10 @@ MonoBehaviour:
         contents:
         - key: F_Eyes_01.png
           hash: Qmbar9bThqMwjzN6LD7KhtSJshMp6ACAVXC3cgLjnoBBin
+          url: 
         - key: F_Eyes_01_Mask.png
           hash: QmWMR45paAvZtYvCTVvt296NBXsHDvcc54pURbqu2qMKje
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyes
@@ -943,7 +1169,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:f_eyes_01
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -952,6 +1183,7 @@ MonoBehaviour:
     - code: es
       text: f_Eyes_01
     thumbnail: QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -963,8 +1195,10 @@ MonoBehaviour:
         contents:
         - key: dracula_mouth.png
           hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+          url: 
         - key: dracula_mouth_mask.png
           hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: mouth
@@ -976,7 +1210,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:dracula_mouth
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -985,6 +1224,7 @@ MonoBehaviour:
     - code: es
       text: f_Mouth_00
     thumbnail: QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -996,6 +1236,7 @@ MonoBehaviour:
         contents:
         - key: M_EyeBrows_02.png
           hash: QmaPGCFTsiAPGYkhmDbTcxvM5SyqWyhHraPJ65Rzfp4dWi
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyebrows
@@ -1007,7 +1248,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:off-chain:base-avatars:eyebrows_02
+    entityId: 
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -1016,6 +1262,7 @@ MonoBehaviour:
     - code: es
       text: EyeBrows_02
     thumbnail: QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr
+    thumbnailSprite: {fileID: 0}
     rarity: 
     description: 
     issuedId: 0
@@ -1027,12 +1274,16 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_Emissive_TX.png
           hash: 
+          url: 
         - key: AvatarWearables_TP_TX.png
           hash: 
+          url: 
         - key: AvatarWearables_TX.png
           hash: 
+          url: 
         - key: Eyewear_Raver.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -1041,12 +1292,16 @@ MonoBehaviour:
         contents:
         - key: AvatarWearables_Emissive_TX.png
           hash: 
+          url: 
         - key: AvatarWearables_TP_TX.png
           hash: 
+          url: 
         - key: AvatarWearables_TX.png
           hash: 
+          url: 
         - key: Eyewear_Raver.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: eyewear
@@ -1064,7 +1319,12 @@ MonoBehaviour:
       - mask
       - helmet
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -1073,6 +1333,7 @@ MonoBehaviour:
     - code: es
       text: Antiparras de Raver
     thumbnail: https://peer.decentraland.org/content/contents/QmPe2CPbt9JLdjpoH5sKAy9KYYL8bsYuUm1ddr3ipUMh6n
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: 
     issuedId: 0
@@ -1084,10 +1345,13 @@ MonoBehaviour:
         contents:
         - key: M_niftyblocksmith_boots.glb
           hash: 
+          url: 
         - key: blocksmith_v08_lambert4_BaseColor.png
           hash: 
+          url: 
         - key: blocksmith_v08_lambert4_Emissive.png
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -1096,10 +1360,13 @@ MonoBehaviour:
         contents:
         - key: M_niftyblocksmith_boots.glb
           hash: 
+          url: 
         - key: blocksmith_v08_lambert4_BaseColor.png
           hash: 
+          url: 
         - key: blocksmith_v08_lambert4_Emissive.png
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: feet
@@ -1111,13 +1378,19 @@ MonoBehaviour:
       - exclusive
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
     - code: en
       text: DC Nifty Blocksmith Boots
     thumbnail: https://peer.decentraland.org/content/contents/QmehBEhwZQmuYaKE1Ck5sazZxcpML8f12cyE2WZusRPBcQ
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: These boots will leave digital footprints wherever you go
     issuedId: 0
@@ -1129,10 +1402,13 @@ MonoBehaviour:
         contents:
         - key: DCL-TechTribal-Alphas.png
           hash: 
+          url: 
         - key: DCL-TechTribal-Masks.png
           hash: 
+          url: 
         - key: Techtribal_Beast_Mask.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -1141,10 +1417,13 @@ MonoBehaviour:
         contents:
         - key: DCL-TechTribal-Alphas.png
           hash: 
+          url: 
         - key: DCL-TechTribal-Masks.png
           hash: 
+          url: 
         - key: Techtribal_Beast_Mask.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: mask
@@ -1168,7 +1447,12 @@ MonoBehaviour:
       hides:
       - facial_hair
       - eyewear
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -1177,6 +1461,7 @@ MonoBehaviour:
     - code: es
       text: "M\xE1scara de Bestia Tribal de Tecnolog\xEDas"
     thumbnail: https://peer.decentraland.org/content/contents/Qme3E7qbVmRh51v9CAnXVG5U8yok9jYp8JiSGCxUCESWCq
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: VR Infused Beast Mask created by Marc0Matic
     issuedId: 0
@@ -1188,6 +1473,7 @@ MonoBehaviour:
         contents:
         - key: COLDIE_3D.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces:
         - helmet
@@ -1198,6 +1484,7 @@ MonoBehaviour:
         contents:
         - key: COLDIE_3D.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces:
         - helmet
@@ -1211,13 +1498,19 @@ MonoBehaviour:
       - helmet
       - mask
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:matic:collections-v2:0x7c688630370a2900960f5ffd7573d2f66f179733:0
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
     - code: en
       text: COLDIE 3D shades
     thumbnail: https://peer-eu1.decentraland.org/content/contents/QmUQkjk13EHRinBDABH4PVNx17xHMuVWVHfY6sQjqPjy7f
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: 'Legendary Coldie 3D shades designed by SugarClub '
     issuedId: 0
@@ -1229,8 +1522,10 @@ MonoBehaviour:
         contents:
         - key: warrior.glb
           hash: 
+          url: 
         - key: thumbnail.png
           hash: 
+          url: 
         overrideHides:
         - head
         - facial_hair
@@ -1242,8 +1537,10 @@ MonoBehaviour:
         contents:
         - key: warrior.glb
           hash: 
+          url: 
         - key: thumbnail.png
           hash: 
+          url: 
         overrideHides:
         - head
         - facial_hair
@@ -1263,13 +1560,19 @@ MonoBehaviour:
       - head
       - facial_hair
       - hair
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:matic:collections-v2:0x3bb75349bfd21176b4e41f8b9afe96b4b86059db:0
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
     - code: en
       text: Fire Warrior Face
     thumbnail: https://peer-eu1.decentraland.org/content/contents/QmZAo85c5kuu9YWLxypwBEf3kF3HXHjQ13GjL7FEi7ZSxE
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: Fire Warrior Face For Battle.
     issuedId: 0
@@ -1281,12 +1584,16 @@ MonoBehaviour:
         contents:
         - key: Buckle7.png
           hash: 
+          url: 
         - key: Jacket5.png
           hash: 
+          url: 
         - key: steampunk_corset_female.glb
           hash: 
+          url: 
         - key: steampunk_jacket_male.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -1295,12 +1602,16 @@ MonoBehaviour:
         contents:
         - key: Buckle7.png
           hash: 
+          url: 
         - key: Jacket5.png
           hash: 
+          url: 
         - key: steampunk_corset_female.glb
           hash: 
+          url: 
         - key: steampunk_jacket_male.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: upper_body
@@ -1319,7 +1630,12 @@ MonoBehaviour:
       - exclusive
       replaces: []
       hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_jacket
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -1328,6 +1644,7 @@ MonoBehaviour:
     - code: es
       text: Saco formal del Steampunk
     thumbnail: https://peer.decentraland.org/content/contents/QmZv8xpUbyQgyLyJNKNGUSmXg8pcysjZdBP7hLQngkSCf7
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: Elegant Steampunk jacket. Gives a bonus in the WonderMine game.
       Created by Maricela
@@ -1340,14 +1657,19 @@ MonoBehaviour:
         contents:
         - key: SteampunkHatFlat1.png
           hash: 
+          url: 
         - key: SteampunkHatLight.png
           hash: 
+          url: 
         - key: pasted__ReflectionMap.png
           hash: 
+          url: 
         - key: steampunk_hat_female.glb
           hash: 
+          url: 
         - key: steampunk_hat_male.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       - bodyShapes:
@@ -1356,14 +1678,19 @@ MonoBehaviour:
         contents:
         - key: SteampunkHatFlat1.png
           hash: 
+          url: 
         - key: SteampunkHatLight.png
           hash: 
+          url: 
         - key: pasted__ReflectionMap.png
           hash: 
+          url: 
         - key: steampunk_hat_female.glb
           hash: 
+          url: 
         - key: steampunk_hat_male.glb
           hash: 
+          url: 
         overrideHides: []
         overrideReplaces: []
       category: hat
@@ -1380,7 +1707,12 @@ MonoBehaviour:
       - helmet
       hides:
       - hair
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
     id: urn:decentraland:ethereum:collections-v1:wonderzone_steampunk:steampunk_hat
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -1391,6 +1723,151 @@ MonoBehaviour:
     - code: fr
       text: Chapeau haut-de-forme Steampunk
     thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    thumbnailSprite: {fileID: 0}
+    rarity: legendary
+    description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
+      by Maricela.
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_hat_male.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+          url: 
+        - key: SteampunkHatLight.png
+          hash: 
+          url: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+          url: 
+        - key: steampunk_hat_female.glb
+          hash: 
+          url: 
+        - key: steampunk_hat_male.glb
+          hash: 
+          url: 
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags: []
+      replaces: []
+      hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: urn:decentraland:off-chain:base-avatars:m_sweater_02
+    entityId: 
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Top Hat
+    - code: es
+      text: Sombrero de Steampunk
+    - code: fr
+      text: Chapeau haut-de-forme Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    thumbnailSprite: {fileID: 0}
+    rarity: legendary
+    description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
+      by Maricela.
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_hat_male.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+          url: 
+        - key: SteampunkHatLight.png
+          hash: 
+          url: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+          url: 
+        - key: steampunk_hat_female.glb
+          hash: 
+          url: 
+        - key: steampunk_hat_male.glb
+          hash: 
+          url: 
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags: []
+      replaces: []
+      hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: urn:decentraland:off-chain:base-avatars:comfortablepants
+    entityId: 
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Top Hat
+    - code: es
+      text: Sombrero de Steampunk
+    - code: fr
+      text: Chapeau haut-de-forme Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    thumbnailSprite: {fileID: 0}
+    rarity: legendary
+    description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
+      by Maricela.
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_hat_male.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+          url: 
+        - key: SteampunkHatLight.png
+          hash: 
+          url: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+          url: 
+        - key: steampunk_hat_female.glb
+          hash: 
+          url: 
+        - key: steampunk_hat_male.glb
+          hash: 
+          url: 
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags: []
+      replaces: []
+      hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: urn:decentraland:off-chain:base-avatars:soccer_pants
+    entityId: 
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Top Hat
+    - code: es
+      text: Sombrero de Steampunk
+    - code: fr
+      text: Chapeau haut-de-forme Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    thumbnailSprite: {fileID: 0}
     rarity: legendary
     description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
       by Maricela.

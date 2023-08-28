@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace DCLFeatures.CameraReel.Gallery
 {
-    public class CameraReelGalleryStorageView : MonoBehaviour
+    public class CameraReelGalleryStorageView : MonoBehaviour, ICameraReelGalleryStorageView
     {
         [SerializeField] private Slider storageBar;
         [SerializeField] private TMP_Text storageText;
