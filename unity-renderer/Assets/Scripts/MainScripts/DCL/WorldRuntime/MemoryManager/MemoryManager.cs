@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -47,7 +46,12 @@ namespace DCL
         {
             long usedMemory = Profiler.GetTotalAllocatedMemoryLong() + Profiler.GetMonoUsedSizeLong() +
                               Profiler.GetAllocatedMemoryForGraphicsDriver();
-            return usedMemory >= this.memoryThresholdForCleanup;
+
+            bool returnValue = usedMemory >= this.memoryThresholdForCleanup;
+            if(returnValue)
+                Debug.Log($"CALLING MEMORY CLEANUP - used memory: {usedMemory} / {this.memoryThresholdForCleanup}");
+
+            return returnValue;
         }
 
         IEnumerator AutoCleanup()

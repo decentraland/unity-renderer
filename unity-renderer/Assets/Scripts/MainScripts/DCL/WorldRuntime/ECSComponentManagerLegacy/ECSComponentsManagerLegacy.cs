@@ -4,6 +4,7 @@ using System.Linq;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Interface;
 using DCL.Models;
 using DCL.Rendering;
 using UnityEngine;
@@ -396,8 +397,11 @@ namespace DCL
             }
         }
 
+        const string DISABLE_TEXT_SHAPE = "DISABLE_TEXT_SHAPE";
         public IEntityComponent EntityComponentCreateOrUpdate(long entityId, CLASS_ID_COMPONENT classId, object data)
         {
+            if (WebInterface.CheckURLParam(DISABLE_TEXT_SHAPE) && classId == CLASS_ID_COMPONENT.TEXT_SHAPE) return null;
+
             IDCLEntity entity = scene.GetEntityById(entityId);
 
             if (entity == null)
@@ -537,7 +541,7 @@ namespace DCL
 
             switch (componentName)
             {
-                case "shape":
+                case ComponentNameLiterals.Shape:
                     if (entity.meshesInfo.currentShape is BaseShape baseShape)
                     {
                         baseShape.DetachFrom(entity);
@@ -591,7 +595,7 @@ namespace DCL
                         }
                     }
                     return;
-                case "transform":
+                case ComponentNameLiterals.Transform:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
                         {
