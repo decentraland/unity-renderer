@@ -33,7 +33,7 @@ mergeInto(LibraryManager.library, {
     },
     ToggleFPSCap: function(useFPSCap) {
     window.capFPS = useFPSCap;
-    }
+    },
     CheckURLParam: function(targetParam) {    
       return window.DCL.queryString.has(Pointer_stringify(targetParam))
     },
