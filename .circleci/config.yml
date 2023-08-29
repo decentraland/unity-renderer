@@ -104,6 +104,7 @@ commands:
           command: |
             apt-get update
             apt-get install -y zip jq gpg
+            apt-get install moreutils
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: ./scripts/hash-unity-files.sh
@@ -130,7 +131,7 @@ commands:
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "${PROJECT_PATH}/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
 
-                ./ci-build.sh
+                ./ci-build.sh | ts
             else
               echo "Skipping build, using cached artifacts."
             fi;
