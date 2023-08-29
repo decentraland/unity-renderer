@@ -116,13 +116,13 @@ commands:
             echo $DCL_OUTPUT_NAME > /tmp/target
       - restore_cache:
           keys:
-            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-v2022.3.6f1
-            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev-v2022.3.6f1
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev-2022.3.6f1
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-v2022.3.6f1
-            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-dev-v2022.3.6f1
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-2022.3.6f1
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-dev-2022.3.6f1
       - run:
           name: Build Unity Project
           no_output_timeout: 45m
@@ -141,11 +141,11 @@ commands:
 
       - save_cache:
           name: Store build cache
-          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
+          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
           paths: *CACHED_PATHS
       - save_cache:
           name: Store library
-          key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-v2022.3.6f1
+          key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-2022.3.6f1
           paths:
             - ./unity-renderer/Library
       - run:
