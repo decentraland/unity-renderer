@@ -56,7 +56,8 @@ namespace DCL.Backpack
                 dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IEmotesCatalogService>());
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 

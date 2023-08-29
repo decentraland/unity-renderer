@@ -2,14 +2,11 @@ using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
-using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 
 public class EmotesCatalogServiceProxy : IEmotesCatalogService
 {
-
     private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
 
     private readonly LambdasEmotesCatalogService lambdasEmotesCatalogService;
@@ -63,7 +60,6 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
         isInitialized = true;
     }
 
-
     public void Dispose()
     {
         emotesCatalogServiceInUse?.Dispose();
@@ -79,11 +75,23 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
         return emotesCatalogServiceInUse.TryGetLoadedEmote(id, out emote);
     }
 
+    public async UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken)
+    {
+        await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+        return await lambdasEmotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, cancellationToken);
+    }
+
     public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId) =>
         emotesCatalogServiceInUse.RequestOwnedEmotes(userId);
 
     public UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default) =>
         emotesCatalogServiceInUse.RequestOwnedEmotesAsync(userId, ct);
+
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    {
+        await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionAsync(collectionIds, cancellationToken);
+    }
 
     public Promise<WearableItem> RequestEmote(string id) =>
         emotesCatalogServiceInUse.RequestEmote(id);
@@ -104,6 +112,11 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
         return await emotesCatalogServiceInUse.GetEmbeddedEmotes();
     }
 
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    {
+        await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionIds, cancellationToken);
+    }
 
     public void ForgetEmote(string id) =>
         emotesCatalogServiceInUse.ForgetEmote(id);
