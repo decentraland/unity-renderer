@@ -39,7 +39,6 @@ namespace DCL.SettingsPanelHUD
 
         [Header("Others")]
         [SerializeField] private Button tutorialButton;
-        [SerializeField] private Button reportBugButton;
         [SerializeField] private Button helpAndSupportButton;
 
         [Header("Animations")]
