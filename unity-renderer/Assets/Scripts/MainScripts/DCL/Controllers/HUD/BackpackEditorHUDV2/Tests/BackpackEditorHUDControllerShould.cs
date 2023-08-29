@@ -421,7 +421,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.Set(false, true);
 
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:m_sweater_02"));
-            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:comfortablepants"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:soccer_pants"));
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:sneakers"));
             Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_sweater"));
             Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_jeans"));
