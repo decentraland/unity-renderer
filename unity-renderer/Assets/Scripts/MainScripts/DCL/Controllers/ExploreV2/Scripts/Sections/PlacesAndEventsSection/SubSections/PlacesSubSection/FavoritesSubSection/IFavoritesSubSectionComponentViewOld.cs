@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
 
-public interface IFavoritesSubSectionComponentView : IPlacesAndEventsSubSectionComponentView
+public interface IFavoritesSubSectionComponentViewOld : IPlacesAndEventsSubSectionComponentView
 {
     /// <summary>
     /// Colors used for the background of the friends heads.

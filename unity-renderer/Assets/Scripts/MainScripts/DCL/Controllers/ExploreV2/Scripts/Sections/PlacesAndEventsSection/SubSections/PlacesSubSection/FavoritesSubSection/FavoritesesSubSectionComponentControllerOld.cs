@@ -12,14 +12,14 @@ using Environment = DCL.Environment;
 using System.Threading;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
 
-public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComponentController, IPlacesAndEventsAPIRequester
+public class FavoritesesSubSectionComponentControllerOld : IFavoritesSubSectionComponentControllerOld, IPlacesAndEventsAPIRequester
 {
     public event Action OnCloseExploreV2;
 
     internal const int INITIAL_NUMBER_OF_ROWS = 5;
     private const int SHOW_MORE_ROWS_INCREMENT = 3;
 
-    internal readonly IFavoritesSubSectionComponentView view;
+    internal readonly IFavoritesSubSectionComponentViewOld view;
     internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
@@ -33,8 +33,8 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
 
     private CancellationTokenSource cts = new ();
 
-    public FavoritesesSubSectionComponentController(
-        IFavoritesSubSectionComponentView view,
+    public FavoritesesSubSectionComponentControllerOld(
+        IFavoritesSubSectionComponentViewOld view,
         IPlacesAPIService placesAPI,
         IFriendsController friendsController,
         IExploreV2Analytics exploreV2Analytics,
@@ -137,7 +137,7 @@ public class FavoritesesSubSectionComponentController : IFavoritesSubSectionComp
     {
         try
         {
-            var favorites = await placesAPIService.GetFavorites(cts.Token);
+            var favorites = await placesAPIService.GetFavorites(0, 1000, cts.Token);
             friendsTrackerController.RemoveAllHandlers();
 
             favoritesFromAPI.Clear();

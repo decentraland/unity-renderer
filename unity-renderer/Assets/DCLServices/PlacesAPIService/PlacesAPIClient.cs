@@ -18,7 +18,7 @@ namespace DCLServices.PlacesAPIService
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct);
 
-        UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct);
+        UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
         UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
@@ -116,10 +116,10 @@ namespace DCLServices.PlacesAPIService
             return response.data;
         }
 
-        public async UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct)
+        public async UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct)
         {
-            const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true";
-            UnityWebRequest result = await webRequestController.GetAsync(URL, isSigned: true, cancellationToken: ct);
+            const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true&offset={0}&limit={1}";
+            UnityWebRequest result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), isSigned: true, cancellationToken: ct);
             var response = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
 
             if (response == null)

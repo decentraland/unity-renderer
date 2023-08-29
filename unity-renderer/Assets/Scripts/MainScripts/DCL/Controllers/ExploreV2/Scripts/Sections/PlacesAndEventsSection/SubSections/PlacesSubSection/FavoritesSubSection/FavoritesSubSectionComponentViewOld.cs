@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
 
-public class FavoritesSubSectionComponentView : BaseComponentView, IFavoritesSubSectionComponentView
+public class FavoritesSubSectionComponentViewOld : BaseComponentView, IFavoritesSubSectionComponentViewOld
 {
     internal const string FAVORITE_CARDS_POOL_NAME = "Places_FavoriteCardsPool";
     private const int FAVORITE_CARDS_POOL_PREWARM = 20;

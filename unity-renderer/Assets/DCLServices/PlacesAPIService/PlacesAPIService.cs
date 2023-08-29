@@ -20,7 +20,7 @@ namespace DCLServices.PlacesAPIService
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct, bool renewCache = false);
 
-        UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false);
+        UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
         UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
@@ -116,7 +116,7 @@ namespace DCLServices.PlacesAPIService
             return place;
         }
 
-        public async UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false)
+        public async UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false)
         {
             const int CACHE_EXPIRATION = 30; // Seconds
 
@@ -124,7 +124,7 @@ namespace DCLServices.PlacesAPIService
             async UniTask RetrieveFavorites(UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>> source)
             {
                 // We dont use the ct param, otherwise the whole flow would be cancel if the first call is cancelled
-                var favorites = await client.GetFavorites(disposeCts.Token);
+                var favorites = await client.GetFavorites(pageNumber, pageSize, disposeCts.Token);
                 foreach (IHotScenesController.PlaceInfo place in favorites)
                 {
                     CachePlace(place);
@@ -188,7 +188,7 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<bool> IsFavoritePlace(IHotScenesController.PlaceInfo placeInfo, CancellationToken ct, bool renewCache = false)
         {
-            var favorites = await GetFavorites(ct, renewCache);
+            var favorites = await GetFavorites(0,1000, ct, renewCache);
 
             foreach (IHotScenesController.PlaceInfo favorite in favorites)
             {
@@ -202,7 +202,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<bool> IsFavoritePlace(Vector2Int coords, CancellationToken ct, bool renewCache = false)
         {
             // We could call IsFavoritePlace with the placeInfo and avoid code repetition, but this way we can have the calls in parallel
-            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(coords, ct, renewCache), GetFavorites(ct, renewCache));
+            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(coords, ct, renewCache), GetFavorites(0,1000, ct, renewCache));
 
             foreach (IHotScenesController.PlaceInfo favorite in favorites)
             {
@@ -216,7 +216,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<bool> IsFavoritePlace(string placeUUID, CancellationToken ct, bool renewCache = false)
         {
             // We could call IsFavoritePlace with the placeInfo and avoid code repetition, but this way we can have the calls in parallel
-            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(placeUUID, ct, renewCache), GetFavorites(ct, renewCache));
+            (IHotScenesController.PlaceInfo placeInfo, IReadOnlyList<IHotScenesController.PlaceInfo> favorites) = await UniTask.WhenAll(GetPlace(placeUUID, ct, renewCache), GetFavorites( 0, 1000, ct, renewCache));
 
             foreach (IHotScenesController.PlaceInfo favorite in favorites)
             {
