@@ -303,28 +303,32 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
             CancellationToken cancellationToken)
         {
-            var joinedCollections = string.Join(",", collectionIds);
-            if (string.IsNullOrEmpty(joinedCollections)) return Array.Empty<WearableItem>();
+            List<WearableItem> wearables = new ();
+            var templateURL = $"{catalyst.contentUrl}entities/active/collections/:collectionId";
 
-            var queryParams = new[]
+            foreach (string collectionId in collectionIds)
             {
-                ("collectionId", joinedCollections),
-            };
+                string url = templateURL.Replace(":collectionId", collectionId);
 
-            string lambdaUrl = await catalyst.GetLambdaUrl(cancellationToken);
-            var url = $"{lambdaUrl}/collections/wearables";
+                (WearableCollectionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponse>(
+                    templateURL, url,
+                    cancellationToken: cancellationToken);
 
-            (WearableWithoutDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithoutDefinitionResponse>(
-                url, url,
-                cancellationToken: cancellationToken,
-                urlEncodedParams: queryParams.ToArray());
+                if (!success)
+                    throw new Exception($"The request for collection of wearables '{collectionId}' failed!");
 
-            if (!success)
-                throw new Exception($"The request for collection of wearables '{joinedCollections}' failed!");
+                var poolList = PoolUtils.RentList<WearableItem>();
+                IList<WearableItem> wearableItems = poolList.GetList();
 
-            List<WearableItem> wearables = response.wearables;
-            MapLambdasDataIntoWearableItem(wearables);
-            AddWearablesToCatalog(wearables);
+                foreach (EntityDto entityDto in response.entities)
+                    wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
+
+                MapLambdasDataIntoWearableItem(wearableItems);
+                AddWearablesToCatalog(wearableItems);
+
+                wearables.AddRange(wearableItems);
+                poolList.Dispose();
+            }
 
             return wearables;
         }

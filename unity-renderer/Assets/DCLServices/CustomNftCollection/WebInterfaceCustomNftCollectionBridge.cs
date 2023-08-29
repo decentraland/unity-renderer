@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -81,7 +82,7 @@ namespace DCLServices.CustomNftCollection
         public void SetWithCollectionsParam(string json)
         {
             string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
-            getCollectionsTask.TrySetResult(collectionIds);
+            getCollectionsTask.TrySetResult(collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getCollectionsTask = null;
         }
 
@@ -89,7 +90,7 @@ namespace DCLServices.CustomNftCollection
         public void SetWithItemsParam(string json)
         {
             string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
-            getItemsTask.TrySetResult(collectionIds);
+            getItemsTask.TrySetResult(collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getItemsTask = null;
         }
     }
