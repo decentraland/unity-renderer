@@ -43,6 +43,7 @@ export class TeleportController {
         return TeleportController.goTo(
           target[0],
           target[1],
+          true,
           `Found a parcel with ${closeUsers} user(s) nearby: ${target[0]},${target[1]}. Teleporting...`
         )
       } else {
@@ -64,7 +65,7 @@ export class TeleportController {
     const x = Math.floor(Math.random() * 301) - 150
     const y = Math.floor(Math.random() * 301) - 150
     const tpMessage = `Teleporting to random location (${x}, ${y})...`
-    return TeleportController.goTo(x, y, tpMessage)
+    return TeleportController.goTo(x, y, true, tpMessage)
   }
 
   public static async goToHome(): Promise<{ message: string; success: boolean }> {
@@ -74,6 +75,7 @@ export class TeleportController {
       return TeleportController.goTo(
         homeCoordinates.x,
         homeCoordinates.y,
+        true,
         `Teleporting to Home (${homeCoordinates.x},${homeCoordinates.y})...`
       )
     } catch (e) {
@@ -88,12 +90,14 @@ export class TeleportController {
   public static async goTo(
     x: number,
     y: number,
+    goToMostPopulatedRealm: boolean = true,
     teleportMessage?: string
   ): Promise<{ message: string; success: boolean }> {
     const tpMessage: string = teleportMessage ? teleportMessage : `Teleporting to ${x}, ${y}...`
     if (isInsideWorldLimits(x, y)) {
       try {
-        await changeToMostPopulatedRealm()
+        if (goToMostPopulatedRealm)
+          await changeToMostPopulatedRealm()
 
         store.dispatch(trackTeleportTriggered(tpMessage))
         store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))

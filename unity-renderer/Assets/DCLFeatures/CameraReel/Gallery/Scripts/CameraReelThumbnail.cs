@@ -14,18 +14,15 @@ namespace DCLFeatures.CameraReel.Gallery
         [SerializeField] private Button interactionButton;
         [SerializeField] private Button contextMenuButton;
         [SerializeField] private ThumbnailContextMenuView contextMenu;
-        [SerializeField] private Canvas canvas;
 
         private CameraReelResponse picture;
-        private int canvasOriginalSortingOrder;
 
-        public event Action OnClicked;
+        public event Action<CameraReelResponse> OnClicked;
 
         private void Awake()
         {
-            interactionButton.onClick.AddListener(() => OnClicked?.Invoke());
+            interactionButton.onClick.AddListener(() => OnClicked?.Invoke(picture));
             contextMenuButton.onClick.AddListener(() => contextMenu.Show(picture));
-            canvasOriginalSortingOrder = canvas.sortingOrder;
 
             image.OnLoaded += _ =>
             {
@@ -47,14 +44,12 @@ namespace DCLFeatures.CameraReel.Gallery
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            transform.DOScale(Vector3.one * 1.05f, 0.3f);
-            canvas.sortingOrder++;
+            transform.DOScale(Vector3.one * 1.03f, 0.3f);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             transform.DOScale(Vector3.one, 0.3f);
-            canvas.sortingOrder = canvasOriginalSortingOrder;
         }
     }
 }

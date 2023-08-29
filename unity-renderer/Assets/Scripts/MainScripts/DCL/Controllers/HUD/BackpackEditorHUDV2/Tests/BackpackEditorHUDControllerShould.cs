@@ -392,6 +392,34 @@ namespace DCL.Backpack
                 Object.Destroy(smrs[i].gameObject);
         }
 
+        [Test]
+        public void FallbackIncompatibleWearablesWhenChangingBodyShape()
+        {
+            userProfile.avatar.bodyShape = WearableLiterals.BodyShapes.FEMALE;
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_sweater");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_jeans");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:sneakers");
+
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel
+            {
+                WearableId = WearableLiterals.BodyShapes.MALE,
+            }, EquipWearableSource.Wearable);
+
+            dataStore.HUDs.avatarEditorVisible.Set(false, true);
+
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:m_sweater_02"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:soccer_pants"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:sneakers"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_sweater"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_jeans"));
+        }
+
         private static UserProfileModel GetTestUserProfileModel() =>
             new ()
             {

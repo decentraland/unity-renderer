@@ -321,7 +321,7 @@ async function createAuthIdentity(requestManager: RequestManager, isGuest: boole
 
   const ssoIdentity = await SingleSignOn.getIdentity(address)
 
-  if (!ssoIdentity) {
+  if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
     auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
 
     await SingleSignOn.storeIdentity(address, auth)

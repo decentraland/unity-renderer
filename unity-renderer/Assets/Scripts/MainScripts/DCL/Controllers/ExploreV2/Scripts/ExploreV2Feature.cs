@@ -1,5 +1,6 @@
 using DCL;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 
 /// <summary>
 /// Plugin feature that initialize the ExploreV2 feature.
@@ -14,7 +15,7 @@ public class ExploreV2Feature : IPlugin
         exploreV2MenuComponentController.Initialize();
     }
 
-    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>(),Environment.i.serviceLocator.Get<IWorldsAPIService>(), new PlacesAnalytics());
 
     public void Dispose()
     {

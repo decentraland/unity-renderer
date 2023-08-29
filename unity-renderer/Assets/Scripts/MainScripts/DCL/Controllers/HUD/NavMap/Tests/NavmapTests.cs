@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
 using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -46,7 +47,8 @@ namespace Tests
                 DCL.Environment.i,
                 placesAPIService,
                 Substitute.For<IPlacesAnalytics>(),
-                Substitute.For<IClipboard>());
+                Substitute.For<IClipboard>(),
+                Substitute.For<ICopyPasteAnalyticsService>());
             controller.Initialize();
             navmapView = Object.FindObjectOfType<NavmapView>();
         }

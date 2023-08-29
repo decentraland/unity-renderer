@@ -645,6 +645,7 @@ MonoBehaviour:
   showMoreButtonPanel: {fileID: 4290208090933550867}
   canvas: {fileID: 2452549162064602847}
   emptyStateContainer: {fileID: 8552701980970885336}
+  scrollMaskTransform: {fileID: 8598900832005062844}
   monthHeaderPrefab: {fileID: 816142868648288106, guid: 4631d5288231697489b884df705df08e,
     type: 3}
   monthGridContainerPrefab: {fileID: 6408376535620168257, guid: ec6e563cf5a659e4c8d81d46d9a8eec2,
