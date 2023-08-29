@@ -1824,3 +1824,51 @@ MonoBehaviour:
     description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
       by Maricela.
     issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: steampunk_hat_male.glb
+        contents:
+        - key: SteampunkHatFlat1.png
+          hash: 
+          url: 
+        - key: SteampunkHatLight.png
+          hash: 
+          url: 
+        - key: pasted__ReflectionMap.png
+          hash: 
+          url: 
+        - key: steampunk_hat_female.glb
+          hash: 
+          url: 
+        - key: steampunk_hat_male.glb
+          hash: 
+          url: 
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags: []
+      replaces: []
+      hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: urn:decentraland:off-chain:base-avatars:soccer_pants
+    entityId: 
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Steampunk Top Hat
+    - code: es
+      text: Sombrero de Steampunk
+    - code: fr
+      text: Chapeau haut-de-forme Steampunk
+    thumbnail: https://peer.decentraland.org/content/contents/QmUP7THwKQshPSUAEtczkUwKSEppz4Jgn8tvgbKGN26PCC
+    thumbnailSprite: {fileID: 0}
+    rarity: legendary
+    description: Steampunk top hat. Gives a bonus in the WonderMine game. Created
+      by Maricela.
+    issuedId: 0
