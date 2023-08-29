@@ -31,8 +31,8 @@ namespace DCL.Backpack
         {
             {"urn:decentraland:off-chain:base-avatars:BaseFemale", new Dictionary<string, string>
             {
-                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:f_blue_jacket"},
-                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:f_capris"},
+                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:white_top"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:f_jeans"},
                 {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:ruby_blue_loafer"},
                 {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:pony_tail"},
                 {WearableLiterals.Categories.MOUTH, "urn:decentraland:off-chain:base-avatars:f_mouth_05"},
@@ -42,8 +42,8 @@ namespace DCL.Backpack
             {"urn:decentraland:off-chain:base-avatars:BaseMale", new Dictionary<string, string>
             {
                 {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:m_sweater_02"},
-                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:comfortablepants"},
-                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:Espadrilles"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:soccer_pants"},
+                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:sport_colored_shoes"},
                 {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:cool_hair"},
                 {WearableLiterals.Categories.FACIAL_HAIR, "urn:decentraland:off-chain:base-avatars:beard"},
                 {WearableLiterals.Categories.EYEBROWS, "urn:decentraland:off-chain:base-avatars:eyebrows_00"},

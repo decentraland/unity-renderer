@@ -36,7 +36,7 @@ namespace DCL.Providers
                 var hash128 = ComputeHash(contentUrl, hash);
 
                 if (cachingEnabled)
-                    AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached: {Caching.IsVersionCached(url, hash128)}");
+                    AssetResolverLogger.LogVerbose(featureFlags, LogType.Log, $"Asset Bundle {hash} is cached...");
 
                 using var webRequest = cachingEnabled
                     ? webRequestController.Ref.GetAssetBundle(url, hash: hash128, disposeOnCompleted: false)
