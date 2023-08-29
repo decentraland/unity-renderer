@@ -17,6 +17,9 @@ namespace DCLServices.CameraReelService
         public Scene scene;
         public VisiblePerson[] visiblePeople;
 
+        private static bool isWorld => DataStore.i.common.isWorld.Get();
+        private static string realmName => DataStore.i.realm.realmName.Get();
+
         public static ScreenshotMetadata Create(DataStore_Player player, IAvatarsLODController avatarsLODController, Camera screenshotCamera)
         {
             Player ownPlayer = player.ownPlayer.Get();
@@ -27,10 +30,10 @@ namespace DCLServices.CameraReelService
                 userName = UserProfileController.userProfilesCatalog.Get(ownPlayer.id).userName,
                 userAddress = ownPlayer.id,
                 dateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                realm = DataStore.i.realm.realmName.Get(),
+                realm = realmName,
                 scene = new Scene
                 {
-                    name = MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
+                    name = isWorld? $"World {realmName}" : MinimapMetadata.GetMetadata().GetSceneInfo(playerPosition.x, playerPosition.y).name,
                     location = new Location(playerPosition),
                 },
                 visiblePeople = GetVisiblePeoplesMetadata(
@@ -45,11 +48,9 @@ namespace DCLServices.CameraReelService
             var visiblePeople = new VisiblePerson[visiblePlayers.Count];
             UserProfileDictionary userProfilesCatalog = UserProfileController.userProfilesCatalog;
 
-            UserProfile profile;
-
             for (var i = 0; i < visiblePlayers.Count; i++)
             {
-                profile = userProfilesCatalog.Get(visiblePlayers[i].id);
+                UserProfile profile = userProfilesCatalog.Get(visiblePlayers[i].id);
 
                 visiblePeople[i] = new VisiblePerson
                 {
