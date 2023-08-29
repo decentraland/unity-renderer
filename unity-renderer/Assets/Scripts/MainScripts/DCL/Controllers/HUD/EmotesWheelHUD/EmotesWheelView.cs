@@ -10,6 +10,7 @@ namespace DCL.EmotesWheel
     {
         public class EmoteSlotData
         {
+            public string emoteId;
             public WearableItem emoteItem;
             public Sprite thumbnailSprite;
         }
@@ -22,7 +23,7 @@ namespace DCL.EmotesWheel
         }
 
         private const string PATH = "EmotesWheelHUD";
-      
+
 
         public event Action<string> onEmoteClicked;
         public event Action OnClose;
@@ -37,7 +38,7 @@ namespace DCL.EmotesWheel
         [SerializeField] internal GameObject customizeTitle;
 
         private HUDCanvasCameraModeController hudCanvasCameraModeController;
-        
+
         public static EmotesWheelView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<EmotesWheelView>(); }
 
         private void Awake()
@@ -78,40 +79,45 @@ namespace DCL.EmotesWheel
             {
                 EmoteSlotData equippedEmote = emotes[i];
 
-                if (i < emoteButtons.Length)
-                {
-                    emoteButtons[i].button.onClick.RemoveAllListeners();
-                    emoteButtons[i].onSlotHover -= OnSlotHover;
-                    emoteButtons[i].onSlotHover += OnSlotHover;
+                if (i >= emoteButtons.Length) continue;
 
-                    if (equippedEmote != null)
-                    {
-                        emoteButtons[i].button.onClick.AddListener(() => onEmoteClicked?.Invoke(equippedEmote.emoteItem.id));
-                        
-                        if (equippedEmote.thumbnailSprite != null)
-                            emoteButtons[i].SetImage(equippedEmote.thumbnailSprite);
-                        else
-                            emoteButtons[i].SetImage(equippedEmote.emoteItem.ComposeThumbnailUrl());
-
-                        emoteButtons[i].SetId(equippedEmote.emoteItem.id);
-                        emoteButtons[i].SetName(equippedEmote.emoteItem.GetName());
-                        
-                        RarityColor rarityColor = rarityColors.FirstOrDefault(x => x.rarity == equippedEmote.emoteItem.rarity);
-                        emoteButtons[i].SetRarity(
-                            rarityColor != null, 
-                            rarityColor != null ? rarityColor.markColor : Color.white);
-                    }
-                    else
-                    {
-                        emoteButtons[i].SetImage(nonAssignedEmoteSprite);
-                        emoteButtons[i].SetId(string.Empty);
-                        emoteButtons[i].SetName(string.Empty);
-                        emoteButtons[i].SetRarity(false, Color.white);
-                    }
-                }
+                EmoteWheelSlot emoteWheelSlot = emoteButtons[i];
+                SetupEmoteWheelSlot(emoteWheelSlot, equippedEmote);
             }
 
             return emoteButtons.ToList();
+        }
+
+        public void SetupEmoteWheelSlot(EmoteWheelSlot emoteWheelSlot, EmoteSlotData slotData)
+        {
+            emoteWheelSlot.button.onClick.RemoveAllListeners();
+            emoteWheelSlot.onSlotHover -= OnSlotHover;
+            emoteWheelSlot.onSlotHover += OnSlotHover;
+
+            if (slotData != null)
+            {
+                emoteWheelSlot.button.onClick.AddListener(() => onEmoteClicked?.Invoke(slotData.emoteItem.id));
+
+                if (slotData.thumbnailSprite != null)
+                    emoteWheelSlot.SetImage(slotData.thumbnailSprite);
+                else
+                    emoteWheelSlot.SetImage(slotData.emoteItem.ComposeThumbnailUrl());
+
+                emoteWheelSlot.SetId(slotData.emoteItem.id);
+                emoteWheelSlot.SetName(slotData.emoteItem.GetName());
+
+                RarityColor rarityColor = rarityColors.FirstOrDefault(x => x.rarity == slotData.emoteItem.rarity);
+                emoteWheelSlot.SetRarity(
+                    rarityColor != null,
+                    rarityColor != null ? rarityColor.markColor : Color.white);
+            }
+            else
+            {
+                emoteWheelSlot.SetImage(nonAssignedEmoteSprite);
+                emoteWheelSlot.SetId(string.Empty);
+                emoteWheelSlot.SetName(string.Empty);
+                emoteWheelSlot.SetRarity(false, Color.white);
+            }
         }
 
         private void OnSlotHover(string emoteName) { selectedEmoteName.text = emoteName; }

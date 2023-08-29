@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AvatarSystem;
+using System;
 using System.Threading;
-using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace DCL.Emotes
     public class EmoteAnimationLoader : IEmoteAnimationLoader
     {
         private readonly IWearableRetriever retriever;
-        public AnimationClip loadedAnimationClip { get; internal set; }
+        public AnimationClip mainClip { get; internal set; }
         public GameObject container { get; private set; }
         public AudioClip audioClip { get; private set; }
 
@@ -56,7 +56,7 @@ namespace DCL.Emotes
             }
 
             //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
-            this.loadedAnimationClip = animationClip;
+            this.mainClip = animationClip;
             animationClip.name = emote.id;
         }
 

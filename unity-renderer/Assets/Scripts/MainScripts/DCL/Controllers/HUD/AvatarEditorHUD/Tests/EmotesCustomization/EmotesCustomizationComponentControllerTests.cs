@@ -1,10 +1,10 @@
+using AvatarSystem;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Emotes;
-using UnityEngine;
 
 namespace DCL.EmotesCustomization.Tests
 {
@@ -12,30 +12,34 @@ namespace DCL.EmotesCustomization.Tests
     {
         private EmotesCustomizationComponentController emotesCustomizationComponentController;
         private DataStore_EmotesCustomization emotesCustomizationDataStore;
-        private DataStore_Emotes emotesDataStore;
         private DataStore_ExploreV2 exploreV2DataStore;
         private DataStore_HUDs hudsDataStore;
         private IEmotesCustomizationComponentView emotesCustomizationComponentView;
+        private IAvatarEmotesController emotesController;
 
         [SetUp]
         public void SetUp()
         {
             emotesCustomizationDataStore = new DataStore_EmotesCustomization();
-            emotesDataStore = new DataStore_Emotes();
             exploreV2DataStore = new DataStore_ExploreV2();
             hudsDataStore = new DataStore_HUDs();
             emotesCustomizationComponentView = Substitute.For<IEmotesCustomizationComponentView>();
             emotesCustomizationComponentController = Substitute.ForPartsOf<EmotesCustomizationComponentController>();
+            emotesController = Substitute.For<IAvatarEmotesController>();
             emotesCustomizationComponentController.Configure().CreateView().Returns(info => emotesCustomizationComponentView);
+
             emotesCustomizationComponentController.Initialize(emotesCustomizationDataStore,
-                emotesDataStore,
+                emotesController,
                 exploreV2DataStore,
                 hudsDataStore,
                 null);
         }
 
         [TearDown]
-        public void TearDown() { emotesCustomizationComponentController.Dispose(); }
+        public void TearDown()
+        {
+            emotesCustomizationComponentController.Dispose();
+        }
 
         [Test]
         public void InitializeCorrectly()
@@ -49,10 +53,11 @@ namespace DCL.EmotesCustomization.Tests
         {
             // Arrange
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(new List<EquippedEmoteData>());
+
             emotesCustomizationDataStore.equippedEmotes.Set(new List<EquippedEmoteData>
             {
-                new EquippedEmoteData { id = "TestId1", cachedThumbnail = null },
-                new EquippedEmoteData { id = "TestId2", cachedThumbnail = null }
+                new () { id = "TestId1", cachedThumbnail = null },
+                new () { id = "TestId2", cachedThumbnail = null },
             });
 
             // Act
@@ -68,8 +73,8 @@ namespace DCL.EmotesCustomization.Tests
             // Arrange
             List<EquippedEmoteData> testEquippedEmotes = new List<EquippedEmoteData>
             {
-                new EquippedEmoteData { id = "TestId1", cachedThumbnail = null },
-                new EquippedEmoteData { id = "TestId2", cachedThumbnail = null }
+                new () { id = "TestId1", cachedThumbnail = null },
+                new () { id = "TestId2", cachedThumbnail = null },
             };
 
             // Act
@@ -106,24 +111,25 @@ namespace DCL.EmotesCustomization.Tests
         {
             // Arrange
             emotesCustomizationComponentController.emotesCustomizationDataStore.currentLoadedEmotes.Set(new List<string>());
-            string testId1 = "TestId1";
-            string testId2 = "TestId2";
-            WearableItem[] emotes = new []
+            var testId1 = "TestId1";
+            var testId2 = "TestId2";
+
+            WearableItem[] emotes =
             {
-                new WearableItem
+                new ()
                 {
                     id = testId1,
-                    emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId1 } }
+                    emoteDataV0 = new EmoteDataV0 { loop = false },
+                    data = new WearableItem.Data { tags = new[] { WearableLiterals.Tags.BASE_WEARABLE } },
+                    i18n = new[] { new i18n { code = "en", text = testId1 } },
                 },
-                new WearableItem
+                new ()
                 {
                     id = testId2,
-                    emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
-                }
+                    emoteDataV0 = new EmoteDataV0 { loop = false },
+                    data = new WearableItem.Data { tags = new[] { WearableLiterals.Tags.BASE_WEARABLE } },
+                    i18n = new[] { new i18n { code = "en", text = testId2 } },
+                },
             };
 
             // Act
@@ -136,40 +142,18 @@ namespace DCL.EmotesCustomization.Tests
         }
 
         [Test]
-        public void RefreshEmoteLoadingStateCorrectly()
-        {
-            // Arrange
-            string emoteId = "TestId";
-            EmoteCardComponentView testEmoteCard = new GameObject().AddComponent<EmoteCardComponentView>();
-            emotesCustomizationComponentController.SetEquippedBodyShape("bodyShapeId");
-
-            emotesCustomizationComponentController.emotesDataStore.animations
-                .Add(("bodyShapeId", emoteId), new EmoteClipData(new AnimationClip()));
-
-            testEmoteCard.model = new EmoteCardComponentModel { isLoading = true };
-            emotesCustomizationComponentController.emotesInLoadingState.Add(emoteId, testEmoteCard);
-
-            // Act
-            emotesCustomizationComponentController.RefreshEmoteLoadingState(emoteId);
-
-            // Assert
-            Assert.IsFalse(testEmoteCard.model.isLoading);
-            Assert.AreEqual(0, emotesCustomizationComponentController.emotesInLoadingState.Count());
-        }
-
-        [Test]
         public void ParseWearableItemIntoEmoteCardModelCorrectly()
         {
             // Arrange
             WearableItem testWearableItem = new WearableItem
             {
                 id = "TestId",
-                i18n = new i18n[] { new i18n { code = "en", text = "Test Name" } },
+                i18n = new[] { new i18n { code = "en", text = "Test Name" } },
                 description = "Test Desc",
                 baseUrl = "",
                 thumbnail = "",
                 thumbnailSprite = null,
-                rarity = "Epic"
+                rarity = "Epic",
             };
 
             // Act
@@ -190,31 +174,29 @@ namespace DCL.EmotesCustomization.Tests
             Assert.AreEqual(true, result.isCollectible);
         }
 
-
         [Test]
         public void UpdateEmoteSlotsCorrectly()
         {
             // Arrange
-            string testId1 = "TestId1";
-            string testId2 = "TestId2";
+            var testId1 = "TestId1";
+            var testId2 = "TestId2";
 
-            WearableItem[] emotes = new []
+            WearableItem[] emotes =
             {
-
-                new WearableItem
+                new ()
                 {
                     id = testId1,
-                    emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId1 } }
+                    emoteDataV0 = new EmoteDataV0 { loop = false },
+                    data = new WearableItem.Data { tags = new[] { WearableLiterals.Tags.BASE_WEARABLE } },
+                    i18n = new[] { new i18n { code = "en", text = testId1 } },
                 },
-                new WearableItem
+                new ()
                 {
                     id = testId2,
-                    emoteDataV0 = new Emotes.EmoteDataV0 { loop = false },
-                    data = new WearableItem.Data { tags = new string[] { WearableLiterals.Tags.BASE_WEARABLE } },
-                    i18n = new i18n[] { new i18n { code = "en", text = testId2 } }
-                }
+                    emoteDataV0 = new EmoteDataV0 { loop = false },
+                    data = new WearableItem.Data { tags = new[] { WearableLiterals.Tags.BASE_WEARABLE } },
+                    i18n = new[] { new i18n { code = "en", text = testId2 } },
+                },
             };
 
             emotesCustomizationComponentController.ownedEmotes = emotes.ToDictionary(x => x.id, x => x);
@@ -222,8 +204,8 @@ namespace DCL.EmotesCustomization.Tests
 
             emotesCustomizationDataStore.unsavedEquippedEmotes.Set(new List<EquippedEmoteData>
             {
-                new EquippedEmoteData { id = testId1, cachedThumbnail = null },
-                new EquippedEmoteData { id = testId2, cachedThumbnail = null }
+                new () { id = testId1, cachedThumbnail = null },
+                new () { id = testId2, cachedThumbnail = null },
             });
 
             // Act
@@ -237,11 +219,11 @@ namespace DCL.EmotesCustomization.Tests
         public void RaiseOnEmoteEquippedCorrectly()
         {
             // Arrange
-            string emoteId = "TestId";
-            string receivedId1 = "";
+            var emoteId = "TestId";
+            var receivedId1 = "";
             emotesCustomizationComponentController.onEmotePreviewed += (id) => { receivedId1 = id; };
 
-            string receivedId2 = "";
+            var receivedId2 = "";
             emotesCustomizationComponentController.onEmoteEquipped += (id) => { receivedId2 = id; };
 
             // Act
@@ -256,8 +238,8 @@ namespace DCL.EmotesCustomization.Tests
         public void RaiseOnEmoteUnequippedCorrectly()
         {
             // Arrange
-            string emoteId = "TestId";
-            string receivedId = "";
+            var emoteId = "TestId";
+            var receivedId = "";
             emotesCustomizationComponentController.onEmoteUnequipped += (id) => { receivedId = id; };
 
             // Act
@@ -271,8 +253,8 @@ namespace DCL.EmotesCustomization.Tests
         public void RaiseOnSellEmoteClickedCorrectly()
         {
             // Arrange
-            string emoteId = "TestId";
-            string receivedId = "";
+            var emoteId = "TestId";
+            var receivedId = "";
             emotesCustomizationComponentController.onEmoteSell += (id) => { receivedId = id; };
 
             // Act
@@ -286,8 +268,8 @@ namespace DCL.EmotesCustomization.Tests
         public void RaiseOnSlotSelectedCorrectly()
         {
             // Arrange
-            string emoteId = "TestId";
-            string receivedId = "";
+            var emoteId = "TestId";
+            var receivedId = "";
             emotesCustomizationComponentController.onEmotePreviewed += (id) => { receivedId = id; };
 
             // Act

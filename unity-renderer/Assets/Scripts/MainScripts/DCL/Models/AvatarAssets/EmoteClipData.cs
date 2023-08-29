@@ -21,29 +21,32 @@ namespace DCL.Emotes
             this.Loop = loop;
         }
 
-        public void LoadExtraContent(GameObject extraContent, AudioClip audioClip)
+        public EmoteClipData(AnimationClip mainClip, GameObject container, AudioClip audioClip, bool loop = false)
         {
-            this.ExtraContent = extraContent;
+            this.AvatarClip = mainClip;
+            this.Loop = loop;
+            this.ExtraContent = container;
             this.AudioClip = audioClip;
 
-            if (extraContent != null)
-            {
-                animation = extraContent.GetComponentInChildren<Animation>();
+            if (ExtraContent == null) return;
 
-                if (animation == null)
-                    Debug.LogError($"Animation {AvatarClip.name} extra content does not have an animation");
+            animation = ExtraContent.GetComponentInChildren<Animation>();
 
-                renderers = extraContent.GetComponentsInChildren<Renderer>();
-            }
+            if (animation == null)
+                Debug.LogError($"Animation {AvatarClip.name} extra content does not have an animation");
+
+            renderers = ExtraContent.GetComponentsInChildren<Renderer>();
         }
 
-        public void PlayAllAnimations()
+
+        public void PlayAllAnimations(int gameObjectLayer)
         {
             if (renderers != null)
             {
                 foreach (Renderer renderer in renderers)
                 {
                     renderer.enabled = true;
+                    renderer.gameObject.layer = gameObjectLayer;
                 }
             }
 

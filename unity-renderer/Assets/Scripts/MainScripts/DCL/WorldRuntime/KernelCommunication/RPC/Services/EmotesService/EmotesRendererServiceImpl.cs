@@ -1,4 +1,5 @@
-﻿using AvatarSystem;
+﻿using AvatarAssets;
+using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Controllers;
@@ -15,20 +16,19 @@ namespace RPC.Services
 {
     public class EmotesRendererServiceImpl : IEmotesRendererService<RPCContext>
     {
-        private static readonly SuccessResponse FAILURE_RESPONSE = new SuccessResponse() { Success = false };
-        private static readonly SuccessResponse SUCCESS_RESPONSE = new SuccessResponse() { Success = true };
+        private static readonly SuccessResponse FAILURE_RESPONSE = new () { Success = false };
+        private static readonly SuccessResponse SUCCESS_RESPONSE = new () { Success = true };
 
         private readonly IWorldState worldState;
         private readonly ISceneController sceneController;
         private readonly UserProfile userProfile;
         private readonly BaseVariable<Player> ownPlayer;
-        private readonly IBaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> alreadyLoadedEmotes;
-        private readonly BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse;
-        private readonly IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> pendingEmotesByScene;
-        private readonly IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene;
+        private readonly IEmotesService emotesService;
+
+        private readonly IDictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>> emotesByScene;
         private readonly IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources;
 
-        private IAvatar avatarData;
+        private IAvatarEmotesController emotesController;
 
         public static void RegisterService(RpcServerPort<RPCContext> port)
         {
@@ -40,10 +40,8 @@ namespace RPC.Services
                     sceneController: Environment.i.world.sceneController,
                     userProfile: UserProfile.GetOwnUserProfile(),
                     ownPlayer: DataStore.i.player.ownPlayer,
-                    alreadyLoadedEmotes: DataStore.i.emotes.animations,
-                    emotesInUse: DataStore.i.emotes.emotesOnUse,
-                    pendingEmotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>(),
-                    equippedEmotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>>(),
+                    emotesService: Environment.i.serviceLocator.Get<IEmotesService>(),
+                    emotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>>(),
                     cancellationTokenSources: new Dictionary<IParcelScene, CancellationTokenSource>()
                 ));
         }
@@ -54,10 +52,8 @@ namespace RPC.Services
             ISceneController sceneController,
             UserProfile userProfile,
             BaseVariable<Player> ownPlayer,
-            IBaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> alreadyLoadedEmotes,
-            BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesInUse,
-            IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> pendingEmotesByScene,
-            IDictionary<IParcelScene, HashSet<(string bodyshapeId, string emoteId)>> equippedEmotesByScene,
+            IEmotesService emotesService,
+            IDictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>> emotesByScene,
             IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources
         )
         {
@@ -65,10 +61,8 @@ namespace RPC.Services
             this.sceneController = sceneController;
             this.userProfile = userProfile;
             this.ownPlayer = ownPlayer;
-            this.alreadyLoadedEmotes = alreadyLoadedEmotes;
-            this.pendingEmotesByScene = pendingEmotesByScene;
-            this.equippedEmotesByScene = equippedEmotesByScene;
-            this.emotesInUse = emotesInUse;
+            this.emotesService = emotesService;
+            this.emotesByScene = emotesByScene;
             this.cancellationTokenSources = cancellationTokenSources;
 
             port.OnClose += OnPortClosed;
@@ -99,25 +93,18 @@ namespace RPC.Services
             if (!SceneEmoteHelper.TryGenerateEmoteId(scene, request.Path, request.Loop, out string emoteId))
                 return FAILURE_RESPONSE;
 
-            avatarData ??= ownPlayer.Get()?.avatar;
+            emotesController ??= ownPlayer.Get()?.avatar.GetEmotesController();
 
-            if (avatarData == null)
+            if (emotesController == null)
                 return FAILURE_RESPONSE;
 
             string userBodyShape = userProfile.avatar.bodyShape;
 
-            // get hashset for scene emotes that are currently loading or create one if none
-            if (!pendingEmotesByScene.TryGetValue(scene, out HashSet<(string bodyshapeId, string emoteId)> scenePendingEmotes))
-            {
-                scenePendingEmotes = new HashSet<(string bodyshapeId, string emoteId)>();
-                pendingEmotesByScene.Add(scene, scenePendingEmotes);
-            }
-
             // get hashset for scene emotes that are already equipped
-            if (!equippedEmotesByScene.TryGetValue(scene, out HashSet<(string bodyshapeId, string emoteId)> sceneEquippedEmotes))
+            if (!emotesByScene.TryGetValue(scene, out HashSet<(string bodyShape, string emoteId)> sceneEquippedEmotes))
             {
-                sceneEquippedEmotes = new HashSet<(string bodyshapeId, string emoteId)>();
-                equippedEmotesByScene.Add(scene, sceneEquippedEmotes);
+                sceneEquippedEmotes = new HashSet<(string bodyShape, string emoteId)>();
+                emotesByScene.Add(scene, sceneEquippedEmotes);
             }
 
             // get / create cancellation source for scene
@@ -134,20 +121,15 @@ namespace RPC.Services
             {
                 await UniTask.SwitchToMainThread(ct);
 
-                // request emote to load using DataStore::emotes which will make `EmoteAnimationsTracker` plugin to load the emote
-                await SceneEmoteHelper.RequestLoadSceneEmote(
-                    userBodyShape,
-                    emoteId,
-                    alreadyLoadedEmotes,
-                    emotesInUse,
-                    scenePendingEmotes,
-                    sceneEquippedEmotes,
-                    cancellationTokenSource.Token);
-
-                // make emote play
-                avatarData.EquipEmote(emoteId, alreadyLoadedEmotes[(userBodyShape, emoteId)]);
+                if (!emotesByScene[scene].Contains((userBodyShape, emoteId)))
+                {
+                    var result = await emotesService.RequestEmote(userBodyShape, emoteId, cancellationTokenSource.Token);
+                    emotesController.EquipEmote(emoteId, result);
+                    emotesByScene[scene].Add((userBodyShape, emoteId));
+                }
 
                 userProfile.SetAvatarExpression(emoteId, UserProfile.EmoteSource.Command);
+
                 return SUCCESS_RESPONSE;
             }
             catch (OperationCanceledException _)
@@ -170,26 +152,12 @@ namespace RPC.Services
                 cancellationTokenSources.Remove(scene);
             }
 
-            if (equippedEmotesByScene.TryGetValue(scene, out var equippedEmotes))
-            {
-                foreach (var emoteData in equippedEmotes)
-                {
-                    avatarData?.UnequipEmote(emoteData.emoteId);
-                    emotesInUse.DecreaseRefCount(emoteData);
-                }
+            if (!emotesByScene.TryGetValue(scene, out var equippedEmotes)) return;
 
-                equippedEmotesByScene.Remove(scene);
-            }
+            foreach (var emoteData in equippedEmotes)
+                emotesController?.UnEquipEmote(emoteData.emoteId);
 
-            if (pendingEmotesByScene.TryGetValue(scene, out var pendingEmotes))
-            {
-                foreach (var emoteData in pendingEmotes)
-                {
-                    emotesInUse.DecreaseRefCount((bodyshapeId: emoteData.bodyshapeId, emoteId: emoteData.emoteId));
-                }
-
-                pendingEmotesByScene.Remove(scene);
-            }
+            emotesByScene.Remove(scene);
         }
     }
 }

@@ -3,139 +3,117 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Emotes;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.TestTools;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tests
 {
     public class AvatarSceneEmoteHandlerShould
     {
-        private BaseRefCountedCollection<(string bodyshapeId, string emoteId)> emotesOnUse;
-        private BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> animations;
         private AvatarSceneEmoteHandler handler;
-        private IAvatar avatar;
+        private IAvatarEmotesController emotesController;
+        private IEmotesService emotesService;
 
         [SetUp]
         public void SetUp()
         {
-            emotesOnUse = new BaseRefCountedCollection<(string bodyshapeId, string emoteId)>();
-            animations = new BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData>();
-            avatar = Substitute.For<IAvatar>();
-            handler = new AvatarSceneEmoteHandler(avatar, animations, emotesOnUse);
+            emotesService = Substitute.For<IEmotesService>();
+            emotesController = Substitute.For<IAvatarEmotesController>();
+            handler = new AvatarSceneEmoteHandler(emotesController, emotesService);
         }
 
-        [UnityTest]
-        public IEnumerator LoadAndPlayEmote_Success()
+        [Test]
+        public async Task LoadAndPlayEmote_Success()
         {
             const string BODY_SHAPE = "nogender";
             const string EMOTE_ID = "emoteId";
 
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                emotesOnUse.OnRefCountUpdated += (tuple, i) => animations[tuple] = new EmoteClipData(new AnimationClip());
+            var emote = SetupEmoteService(BODY_SHAPE, EMOTE_ID);
 
-                await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
+            await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
 
-                var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-                Assert.IsTrue(animations.ContainsKey(emoteData));
-                Assert.AreEqual(1, emotesOnUse.GetRefCount(emoteData));
-                avatar.Received(1).EquipEmote(EMOTE_ID, animations[emoteData]);
-                avatar.Received(1).PlayEmote(EMOTE_ID, 0);
-            });
+            var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
+            emotesService.Received(1).RequestEmote(emoteData.bodyshapeId, emoteData.emoteId, Arg.Any<CancellationToken>());
+            emotesController.Received(1).EquipEmote(EMOTE_ID, emote);
+            emotesController.Received(1).PlayEmote(EMOTE_ID, 0);
         }
 
-        [UnityTest]
-        public IEnumerator LoadAndPlayEmote_Cancelled()
+        [Test]
+        public async Task LoadAndPlayEmote_Cancelled()
         {
             const string BODY_SHAPE = "nogender";
             const string EMOTE_ID = "emoteId";
 
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                var task = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
-                handler.cancellationTokenSource.Cancel();
-                await task;
+            emotesService.RequestEmote(BODY_SHAPE, EMOTE_ID, Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
 
-                var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-                Assert.IsFalse(animations.ContainsKey(emoteData));
-                Assert.AreEqual(0, emotesOnUse.GetRefCount(emoteData));
-                avatar.DidNotReceive().EquipEmote(Arg.Any<string>(), Arg.Any<EmoteClipData>());
-                avatar.DidNotReceive().PlayEmote(Arg.Any<string>(), Arg.Any<long>());
-            });
+            await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
+
+            var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
+            emotesService.Received(1).RequestEmote(emoteData.bodyshapeId, emoteData.emoteId, Arg.Any<CancellationToken>());
+            emotesController.DidNotReceive().EquipEmote(Arg.Any<string>(), Arg.Any<IEmoteReference>());
+            emotesController.DidNotReceive().PlayEmote(Arg.Any<string>(), Arg.Any<long>());
         }
 
-        [UnityTest]
-        public IEnumerator LoadAndPlayEmote_LoadTwice()
+        [Test]
+        public async Task LoadAndPlayEmote_LoadTwice()
         {
             const string BODY_SHAPE = "nogender";
             const string EMOTE_ID1 = "emoteId";
             const string EMOTE_ID2 = "emoteId2";
 
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> animationsToAdd = new ();
-                emotesOnUse.OnRefCountUpdated += (tuple, i) => animationsToAdd[tuple] = new EmoteClipData(new AnimationClip());
+            var emote1 = SetupEmoteService(BODY_SHAPE, EMOTE_ID1);
+            var emote2 = SetupEmoteService(BODY_SHAPE, EMOTE_ID2);
 
-                handler.SetExpressionLamportTimestamp(0);
-                var load1 = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID1);
-                handler.SetExpressionLamportTimestamp(1);
-                var load2 = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID2);
+            handler.SetExpressionLamportTimestamp(0);
+            var load1 = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID1);
+            handler.SetExpressionLamportTimestamp(1);
+            var load2 = handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID2);
 
-                foreach (var toAdd in animationsToAdd)
-                {
-                    animations[toAdd.Key] = toAdd.Value;
-                }
+            await UniTask.WhenAll(load1, load2);
 
-                await UniTask.WhenAll(load1, load2);
-
-                avatar.DidNotReceive().EquipEmote(EMOTE_ID1, animations[(bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID1)]);
-                avatar.DidNotReceive().PlayEmote(EMOTE_ID1, 0);
-                avatar.Received(1).EquipEmote(EMOTE_ID2, animations[(bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID2)]);
-                avatar.Received(1).PlayEmote(EMOTE_ID2, 1);
-            });
+            // first emote is equipped
+            emotesController.Received(1).EquipEmote(EMOTE_ID1, emote1);
+            // but not played
+            emotesController.DidNotReceive().PlayEmote(EMOTE_ID1, 0);
+            // second emote is equipped
+            emotesController.Received(1).EquipEmote(EMOTE_ID2, emote2);
+            // and played
+            emotesController.Received(1).PlayEmote(EMOTE_ID2, 1);
         }
 
-        [UnityTest]
-        public IEnumerator CleanUp()
+        [Test]
+        public async Task CleanUp()
         {
             const string BODY_SHAPE = "nogender";
             const string EMOTE_ID = "emoteId";
 
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                emotesOnUse.OnRefCountUpdated += (tuple, i) => animations[tuple] = new EmoteClipData(new AnimationClip());
+            var emote = SetupEmoteService(BODY_SHAPE, EMOTE_ID);
 
-                await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
+            await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
 
-                var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-                Assert.IsTrue(animations.ContainsKey(emoteData));
-                Assert.AreEqual(1, emotesOnUse.GetRefCount(emoteData));
-                avatar.Received(1).EquipEmote(EMOTE_ID, animations[emoteData]);
-                avatar.Received(1).PlayEmote(EMOTE_ID, 0);
+            emotesController.Received(1).EquipEmote(EMOTE_ID, emote);
+            emotesController.Received(1).PlayEmote(EMOTE_ID, 0);
 
-                handler.CleanUp();
-                Assert.AreEqual(0, emotesOnUse.GetRefCount(emoteData));
-            });
+            handler.CleanUp();
+
+            emotesController.Received(1).UnEquipEmote(EMOTE_ID);
         }
 
-        [UnityTest]
-        public IEnumerator CleanUp_WhileLoadingEmote()
+        private IEmoteReference SetupEmoteService(string bodyShape, string emoteId)
         {
-            const string BODY_SHAPE = "nogender";
-            const string EMOTE_ID = "emoteId";
+            var emote = Substitute.For<IEmoteReference>();
+            emotesService.RequestEmote(bodyShape, emoteId, Arg.Any<CancellationToken>()).Returns(_ => GetResult(emote));
+            return emote;
+        }
 
-            yield return UniTask.ToCoroutine(async () =>
-            {
-                handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID).Forget();
-
-                var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-                Assert.AreEqual(1, emotesOnUse.GetRefCount(emoteData));
-
-                handler.CleanUp();
-                Assert.AreEqual(0, emotesOnUse.GetRefCount(emoteData));
-            });
+        // the yield hack was used for the test LoadAndPlayEmote_LoadTwice in order to simulate that the emotes are not loaded yet
+        private async UniTask<IEmoteReference> GetResult(IEmoteReference emote)
+        {
+            await UniTask.Yield();
+            return emote;
         }
     }
 }

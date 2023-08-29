@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Emotes;
 using UnityEngine;
 

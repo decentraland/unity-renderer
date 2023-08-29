@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DCL.Emotes;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -22,9 +21,7 @@ namespace AvatarSystem
         UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default);
         void AddVisibilityConstraint(string key);
         void RemoveVisibilityConstrain(string key);
-        void PlayEmote(string emoteId, long timestamps);
-        void EquipEmote(string emoteId, EmoteClipData emoteClipData);
-        void UnequipEmote(string emoteId);
+        IAvatarEmotesController GetEmotesController();
         void SetLODLevel(int lodIndex);
         void SetAnimationThrottling(int framesBetweenUpdate);
         void SetImpostorTexture(Texture2D impostorTexture);

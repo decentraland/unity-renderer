@@ -1,23 +1,31 @@
+using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Emotes;
+using DCL.Tasks;
+using System.Threading;
 using UnityEngine;
 
 namespace DCL.EmotesCustomization
 {
     public class EmotesCustomizationComponentController : IEmotesCustomizationComponentController
     {
+        public event Action<string> onEmotePreviewed;
+        public event Action<string> onEmoteEquipped;
+        public event Action<string> onEmoteUnequipped;
+        public event Action<string> onEmoteSell;
+
         internal const int NUMBER_OF_SLOTS = 10;
         internal string bodyShapeId;
 
         internal DataStore_EmotesCustomization emotesCustomizationDataStore;
-        internal DataStore_Emotes emotesDataStore;
-        internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new BaseDictionary<string, EmoteCardComponentView>();
+        internal BaseDictionary<string, EmoteCardComponentView> emotesInLoadingState = new ();
         internal InputAction_Hold equipInputAction;
         internal DataStore_ExploreV2 exploreV2DataStore;
         internal DataStore_HUDs hudsDataStore;
-        internal Dictionary<string, WearableItem> ownedEmotes = new Dictionary<string, WearableItem>();
+        internal Dictionary<string, WearableItem> ownedEmotes = new ();
         // internal InputAction_Hold showInfoInputAction;
         internal InputAction_Trigger shortcut0InputAction;
         internal InputAction_Trigger shortcut1InputAction;
@@ -34,34 +42,30 @@ namespace DCL.EmotesCustomization
 
         internal bool isEmotesCustomizationSectionOpen => exploreV2DataStore.isOpen.Get() && view.isActive;
 
-        public event Action<string> onEmotePreviewed;
-        public event Action<string> onEmoteEquipped;
-        public event Action<string> onEmoteUnequipped;
-        public event Action<string> onEmoteSell;
+        private CancellationTokenSource cts = new ();
+        private IAvatarEmotesController emotesController;
 
         public EmotesCustomizationComponentController() { }
 
-        public EmotesCustomizationComponentController(
-            DataStore_EmotesCustomization emotesCustomizationDataStore,
-            DataStore_Emotes emotesDataStore,
+        public EmotesCustomizationComponentController(DataStore_EmotesCustomization emotesCustomizationDataStore,
+            IAvatarEmotesController avatarEmotesController,
             DataStore_ExploreV2 exploreV2DataStore,
             DataStore_HUDs hudsDataStore,
             Transform parent,
             string viewPath = "EmotesCustomization/EmotesCustomizationSection")
         {
-            Initialize(emotesCustomizationDataStore, emotesDataStore, exploreV2DataStore, hudsDataStore, parent, viewPath);
+            Initialize(emotesCustomizationDataStore, avatarEmotesController, exploreV2DataStore, hudsDataStore, parent, viewPath);
         }
 
-        internal void Initialize(
-            DataStore_EmotesCustomization emotesCustomizationDataStore,
-            DataStore_Emotes emotesDataStore,
+        internal void Initialize(DataStore_EmotesCustomization emotesCustomizationDataStore,
+            IAvatarEmotesController avatarEmotesController,
             DataStore_ExploreV2 exploreV2DataStore,
             DataStore_HUDs hudsDataStore,
             Transform parent,
             string viewPath = "EmotesCustomization/EmotesCustomizationSection")
         {
+            this.emotesController = avatarEmotesController;
             this.emotesCustomizationDataStore = emotesCustomizationDataStore;
-            this.emotesDataStore = emotesDataStore;
             this.exploreV2DataStore = exploreV2DataStore;
             this.hudsDataStore = hudsDataStore;
 
@@ -71,8 +75,7 @@ namespace DCL.EmotesCustomization
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
             OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
 
-            emotesDataStore.animations.OnAdded -= OnAnimationAdded;
-            emotesDataStore.animations.OnAdded += OnAnimationAdded;
+            this.emotesController.OnEmoteEquipped += OnAnimationAdded;
         }
 
         public void SetEmotes(WearableItem[] ownedEmotes)
@@ -81,9 +84,7 @@ namespace DCL.EmotesCustomization
             List<string> idsToRemove = emotesCustomizationDataStore.currentLoadedEmotes.Get().Where(x => ownedEmotes.All(y => x != y.id)).ToList();
 
             foreach (string emoteId in idsToRemove)
-            {
                 RemoveEmote(emoteId);
-            }
 
             this.ownedEmotes.Clear();
             for (int i = 0; i < ownedEmotes.Length; i++)
@@ -94,9 +95,8 @@ namespace DCL.EmotesCustomization
                 this.ownedEmotes[emote.id] = emote;
             }
             foreach (WearableItem emote in this.ownedEmotes.Values)
-            {
                 AddEmote(emote);
-            }
+
             UpdateEmoteSlots();
         }
 
@@ -120,6 +120,7 @@ namespace DCL.EmotesCustomization
 
         public void Dispose()
         {
+            cts.SafeCancelAndDispose();
             view.onEmoteEquipped -= OnEmoteEquipped;
             view.onEmoteUnequipped -= OnEmoteUnequipped;
             view.onSellEmoteClicked -= OnSellEmoteClicked;
@@ -127,7 +128,6 @@ namespace DCL.EmotesCustomization
             exploreV2DataStore.isOpen.OnChange -= IsStarMenuOpenChanged;
             hudsDataStore.avatarEditorVisible.OnChange -= OnAvatarEditorVisibleChanged;
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
-            emotesDataStore.animations.OnAdded -= OnAnimationAdded;
             equipInputAction.OnFinished -= OnEquipInputActionTriggered;
             // showInfoInputAction.OnFinished -= OnShowInfoInputActionTriggered;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -172,8 +172,6 @@ namespace DCL.EmotesCustomization
                 return;
 
             emotesCustomizationDataStore.currentLoadedEmotes.Add(emoteId);
-            emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
-            emotesDataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
 
             if (!emote.ShowInBackpack())
                 return;
@@ -192,33 +190,24 @@ namespace DCL.EmotesCustomization
 
         internal void RemoveEmote(string emoteId)
         {
-            emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.FEMALE, emoteId));
-            emotesDataStore.emotesOnUse.DecreaseRefCount((WearableLiterals.BodyShapes.MALE, emoteId));
             emotesCustomizationDataStore.currentLoadedEmotes.Remove(emoteId);
             view.RemoveEmote(emoteId);
             UpdateEmoteSlots();
         }
 
-        internal void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData)
+        private void OnAnimationAdded(string emoteId, IEmoteReference emoteClipData)
         {
-            if(emoteClipData.AvatarClip != null)
-                RefreshEmoteLoadingState(values.emoteId);
-            else
-            {
-                var emoteId = values.emoteId;
-                RemoveEmote(emoteId);
-                Debug.LogError("Emote " + emoteId + " was not found in emotes data store");
-            }
+            RefreshEmoteLoadingState(emoteId);
         }
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
-            if (emotesDataStore.animations.ContainsKey((bodyShapeId, emoteId)))
+            if (emotesController.TryGetEquippedEmote(bodyShapeId, emoteId, out IEmoteReference _))
             {
-                emotesInLoadingState.TryGetValue(emoteId, out EmoteCardComponentView emote);
-                if (emote != null)
+                emotesInLoadingState.TryGetValue(emoteId, out EmoteCardComponentView emoteCard);
+                if (emoteCard != null)
                 {
-                    emote.SetAsLoading(false);
+                    emoteCard.SetAsLoading(false);
                     emotesInLoadingState.Remove(emoteId);
                 }
             }

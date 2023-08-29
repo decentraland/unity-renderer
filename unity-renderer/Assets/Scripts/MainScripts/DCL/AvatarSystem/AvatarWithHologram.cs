@@ -14,8 +14,8 @@ namespace AvatarSystem
         private readonly IBaseAvatar baseAvatar;
 
         internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility,
-            ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IEmoteAnimationEquipper emoteAnimationEquipper)
-            : base(avatarCurator, loader, animator, visibility, lod, gpuSkinning, gpuSkinningThrottlerService, emoteAnimationEquipper)
+            ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IAvatarEmotesController emotesController)
+            : base(avatarCurator, loader, animator, visibility, lod, gpuSkinning, gpuSkinningThrottlerService, emotesController)
         {
             this.baseAvatar = baseAvatar;
         }

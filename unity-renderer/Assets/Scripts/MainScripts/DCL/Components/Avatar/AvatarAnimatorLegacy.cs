@@ -450,7 +450,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
-                emoteClipData.PlayAllAnimations();
+                emoteClipData.PlayAllAnimations(gameObject.layer);
             }
         }
         else

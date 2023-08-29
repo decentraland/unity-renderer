@@ -1,4 +1,6 @@
+using AvatarSystem;
 using Cysharp.Threading.Tasks;
+using DCL.Emotes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,5 +24,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void SetCameraLimits(Bounds limits);
         void ConfigureZoom(float verticalCenterRef, float bottomMaxOffset, float topMaxOffset);
         void SetCharacterShadowActive(bool isActive);
+
+        IAvatarEmotesController GetEmotesController();
     }
 }

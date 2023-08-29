@@ -1,12 +1,14 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Emotes;
 using MainScripts.DCL.Components.Avatar.VRMExporter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Environment = DCL.Environment;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
@@ -220,8 +222,15 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void SetCharacterShadowActive(bool isActive) =>
             avatarShadow.SetActive(isActive);
 
-        public void PlayEmote(string emoteId, long timestamp) =>
-            avatar.PlayEmote(emoteId, timestamp);
+        public IAvatarEmotesController GetEmotesController() =>
+            avatar.GetEmotesController();
+
+        public void PlayEmote(string emoteId, long timestamp)
+        {
+            Debug.Log("[Character Preview] Playing emote " + emoteId);
+            avatar.GetEmotesController().PlayEmote(emoteId, timestamp);
+        }
+
 
         public void Dispose() =>
             Destroy(gameObject);

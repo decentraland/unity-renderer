@@ -1,3 +1,4 @@
+using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
@@ -46,6 +47,7 @@ namespace DCL.Backpack
         [SerializeField] internal RectTransform vrmExportedToast;
 
         public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
+        public IAvatarEmotesController EmotesController => backpackPreviewPanel?.EmotesController;
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;

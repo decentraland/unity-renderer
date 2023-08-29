@@ -27,10 +27,9 @@ namespace AvatarSystem
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
-        private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
+        private readonly IAvatarEmotesController emotesController;
 
         private CancellationTokenSource loadCancellationToken;
-
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
@@ -39,7 +38,7 @@ namespace AvatarSystem
 
         internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator,
             IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService,
-            IEmoteAnimationEquipper emoteAnimationEquipper)
+            IAvatarEmotesController emotesController)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
@@ -48,7 +47,7 @@ namespace AvatarSystem
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
             this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
-            this.emoteAnimationEquipper = emoteAnimationEquipper;
+            this.emotesController = emotesController;
         }
 
         /// <summary>
@@ -64,10 +63,7 @@ namespace AvatarSystem
             loadCancellationToken = loadCancellationToken.SafeRestart();
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, loadCancellationToken.Token).Token;
 
-            try
-            {
-                await LoadTry(wearablesIds, emotesIds, settings, linkedCt);
-            }
+            try { await LoadTry(wearablesIds, emotesIds, settings, linkedCt); }
             catch (OperationCanceledException)
             {
                 // Cancel any ongoing process except the current loadCancellationToken
@@ -86,6 +82,7 @@ namespace AvatarSystem
 
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
                           $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else
@@ -150,7 +147,7 @@ namespace AvatarSystem
             //Scale the bounds due to the giant avatar not being skinned yet
             extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
-            emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
+            emotesController.LoadEmotes(settings.bodyshapeId, emotes);
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottlerService.Register(gpuSkinning);
         }
@@ -176,14 +173,7 @@ namespace AvatarSystem
         public void RemoveVisibilityConstrain(string key) =>
             visibility.RemoveGlobalConstrain(key);
 
-        public void PlayEmote(string emoteId, long timestamps) =>
-            animator?.PlayEmote(emoteId, timestamps);
-
-        public void EquipEmote(string emoteId, EmoteClipData emoteClipData) =>
-            animator?.EquipEmote(emoteId, emoteClipData);
-
-        public void UnequipEmote(string emoteId) =>
-            animator?.UnequipEmote(emoteId);
+        public IAvatarEmotesController GetEmotesController() => emotesController;
 
         public void SetLODLevel(int lodIndex) =>
             lod.SetLodIndex(lodIndex);

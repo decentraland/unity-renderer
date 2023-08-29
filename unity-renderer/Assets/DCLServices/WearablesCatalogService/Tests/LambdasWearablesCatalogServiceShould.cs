@@ -398,7 +398,7 @@ namespace DCLServices.WearablesCatalogService
         [Test]
         public void RemoveWearablesInUse()
         {
-            service.EmbedWearables(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
+            service.AddEmbeddedWearablesToCatalog(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
             service.AddWearablesToCatalog(new[] { GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) });
 
             service.RemoveWearablesInUse(new[] { VALID_WEARABLE_ID, WEARABLE_WITHOUT_THUMBNAIL });

@@ -1,8 +1,11 @@
+using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.EmotesCustomization.Tests
 {
+    [TestFixture, RequiresPlayMode]
     public class EmoteCardComponentViewTests
     {
         private EmoteCardComponentView emoteCardComponent;
@@ -21,8 +24,8 @@ namespace DCL.EmotesCustomization.Tests
         public void TearDown()
         {
             emoteCardComponent.Dispose();
-            GameObject.Destroy(testTexture);
-            GameObject.Destroy(testSprite);
+            Utils.SafeDestroy(testTexture);
+            Utils.SafeDestroy(testSprite);
         }
 
         [Test]

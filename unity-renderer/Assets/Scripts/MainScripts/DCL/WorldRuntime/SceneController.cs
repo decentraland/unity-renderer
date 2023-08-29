@@ -97,8 +97,8 @@ namespace DCL
 
         public void Dispose()
         {
-            tokenSource.Cancel();
-            tokenSource.Dispose();
+            tokenSource?.Cancel();
+            tokenSource?.Dispose();
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
