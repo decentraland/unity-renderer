@@ -1586,8 +1586,8 @@ MonoBehaviour:
   infoButton: {fileID: 3943046758750737686}
   jumpinButton: {fileID: 6759147769794526785}
   secondaryJumpinButton: {fileID: 0}
-  subscribeEventButton: {fileID: 9006856045368665380}
-  unsubscribeEventButton: {fileID: 1370087865557025792}
+  subscribeEventButton: {fileID: 1370087865557025792}
+  unsubscribeEventButton: {fileID: 9006856045368665380}
   imageContainer: {fileID: 8216777136951531091}
   eventInfoContainer: {fileID: 7878928884639934820}
   loadingSpinner: {fileID: 8180511524207197854}
@@ -2214,8 +2214,8 @@ RectTransform:
   m_Children:
   - {fileID: 2485608766125330518}
   - {fileID: 5263438268540746497}
-  - {fileID: 7510011831041122404}
   - {fileID: 560042319465742656}
+  - {fileID: 7510011831041122404}
   m_Father: {fileID: 42801683097877200}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3159,7 +3159,7 @@ PrefabInstance:
     - target: {fileID: 206246940420980493, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 122
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 206246940420980493, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
         type: 3}
@@ -3230,6 +3230,11 @@ PrefabInstance:
     - target: {fileID: 3579113947851614117, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
         type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3579113947851614117, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3579113947851614117, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
@@ -3381,7 +3386,7 @@ PrefabInstance:
     - target: {fileID: 5314493218358394919, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
         type: 3}
       propertyPath: m_Name
-      value: Button_UnsubscribeEvent
+      value: Button_SubscribeEvent
       objectReference: {fileID: 0}
     - target: {fileID: 5314493218358394919, guid: e2b95e7f8ef05a645a989f2a8f5d5a6c,
         type: 3}
@@ -3829,6 +3834,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 2363930309505844742, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2421204755745569786, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
         type: 3}
       propertyPath: m_TargetGraphic
@@ -3897,7 +3907,7 @@ PrefabInstance:
     - target: {fileID: 3219948898348276759, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
         type: 3}
       propertyPath: m_Name
-      value: Button_SubscribeEvent
+      value: Button_UnsubscribeEvent
       objectReference: {fileID: 0}
     - target: {fileID: 3219948898348276759, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
         type: 3}
@@ -4058,7 +4068,7 @@ PrefabInstance:
     - target: {fileID: 7472577228312781629, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 122
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7472577228312781629, guid: 6d121474d6d6a0e43bdf6c0c270556dd,
         type: 3}
