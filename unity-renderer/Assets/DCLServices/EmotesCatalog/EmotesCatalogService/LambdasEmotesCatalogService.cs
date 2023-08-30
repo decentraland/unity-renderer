@@ -103,8 +103,29 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         return emotes.TryGetValue(id, out emote);
     }
 
-    public UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken) =>
-        throw new NotImplementedException();
+    public async UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken)
+    {
+        const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:emoteId";
+        string url = TEMPLATE_URL.Replace(":emoteId", emoteId);
+
+        (EmoteEntityDto response, bool success) = await lambdasService.GetFromSpecificUrl<EmoteEntityDto>(
+            TEMPLATE_URL, url,
+            isSigned: true,
+            signUrl: $"https://builder-api.decentraland.org/items/{emoteId}",
+            cancellationToken: cancellationToken);
+
+        if (!success)
+            throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
+
+        var contentUrl = $"{catalyst.contentUrl}contents/";
+        var wearable = response.ToWearableItem(contentUrl);
+        wearable.baseUrl = contentUrl;
+        wearable.baseUrlBundles = assetBundlesUrl;
+
+        OnEmoteReceived(wearable);
+
+        return wearable;
+    }
 
     public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
     {
@@ -168,6 +189,8 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                 emotes.Add(wearable);
             }
         }
+
+        OnEmotesReceived(emotes);
 
         return emotes;
     }
@@ -312,20 +335,25 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         {
             string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
 
-            // (WearableWithoutDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithoutDefinitionResponse>(
-            //     TEMPLATE_URL, url,
-            //     isSigned: true,
-            //     signUrl: $"https://builder-api.decentraland.org/collections/{collectionId}/items",
-            //     urlEncodedParams: queryParams,
-            //     cancellationToken: cancellationToken);
-            //
-            // if (!success)
-            //     throw new Exception($"The request for collection of wearables from builder '{collectionId}' failed!");
-            //
-            // List<WearableItem> ws = response.wearables;
-            //
-            // wearables.AddRange(ws);
+            (EmoteCollectionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<EmoteCollectionResponse>(
+                TEMPLATE_URL, url,
+                cancellationToken: cancellationToken,
+                urlEncodedParams: queryParams);
+
+            if (!success)
+                throw new Exception($"The request for collection of emotes '{collectionId}' failed!");
+
+            foreach (EmoteEntityDto dto in response.entities)
+            {
+                var contentUrl = $"{catalyst.contentUrl}contents/";
+                var wearable = dto.ToWearableItem(contentUrl);
+                wearable.baseUrl = contentUrl;
+                wearable.baseUrlBundles = assetBundlesUrl;
+                emotes.Add(wearable);
+            }
         }
+
+        OnEmotesReceived(emotes);
 
         return emotes;
     }
