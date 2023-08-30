@@ -19,8 +19,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
-    private const string DAO_PROPOSAL_LINK = "https://docs.decentraland.org/decentraland/worlds/";
-    private const string WORLDS_DOCS_LINK = "https://docs.decentraland.org/decentraland/worlds/";
+    private const string DAO_PROPOSAL_LINK = "https://governance.decentraland.org/proposal/?id=c3216070-e822-11ed-b8f1-75dbe089d333";
+    private const string WORLDS_DOCS_LINK = "https://decentraland.org/blog/announcements/introducing-decentraland-worlds-beta-your-own-3d-space-in-the-metaverse";
 
     internal readonly IWorldsSubSectionComponentView view;
     internal readonly IWorldsAPIService worldsAPIService;
