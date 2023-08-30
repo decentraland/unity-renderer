@@ -56,26 +56,29 @@ namespace DCLServices.WearablesCatalogService
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
         private readonly BaseVariable<FeatureFlag> featureFlags;
+        private readonly DataStore dataStore;
+        private readonly ICatalyst catalyst;
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
 
         private CancellationTokenSource serviceCts;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
-        private ICatalyst catalyst;
 
 #if UNITY_EDITOR
         private readonly DebugConfig debugConfig = DataStore.i.debugConfig;
 #endif
+
         public LambdasWearablesCatalogService(BaseDictionary<string, WearableItem> wearablesCatalog,
             ILambdasService lambdasService,
             IServiceProviders serviceProviders,
-            BaseVariable<FeatureFlag> featureFlags)
+            BaseVariable<FeatureFlag> featureFlags,
+            DataStore dataStore)
         {
             this.featureFlags = featureFlags;
+            this.dataStore = dataStore;
             this.lambdasService = lambdasService;
             this.serviceProviders = serviceProviders;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
-
         }
 
         public void Initialize()
@@ -143,8 +146,15 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string collectionId in thirdPartyCollectionIds)
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
-            string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
-            string explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
+            string explorerUrl;
+
+            if (IsLocalPreview())
+                explorerUrl = "https://peer.decentraland.org/explorer/";
+            else
+            {
+                string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
+                explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
+            }
 
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
                 $"{explorerUrl}/:userId/wearables",
@@ -582,5 +592,8 @@ namespace DCLServices.WearablesCatalogService
 
             return false;
         }
+
+        private bool IsLocalPreview() =>
+            dataStore.realm.playerRealm.Get()?.serverName?.Equals("LocalPreview", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 }
