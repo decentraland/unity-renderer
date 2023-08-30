@@ -24,7 +24,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     public event Action OnCloseExploreV2;
 
-    private CancellationTokenSource minimalSearchCts;
+    private CancellationTokenSource minimalListCts;
     private CancellationTokenSource fullSearchCts;
 
     public FavoriteSubSectionComponentController(
@@ -51,6 +51,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnPlaceJumpInClicked += JumpInToPlace;
         view.OnBackFromSearch += CloseSearchPanel;
         view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
+        view.OnRequestFavorites += RequestFavorites;
     }
 
     private void ChangeVote(string placeId, bool? isUpvote)
@@ -105,15 +106,15 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
     }
 
-    private void Search(string searchText)
+    private void RequestFavorites()
     {
-        minimalSearchCts.SafeCancelAndDispose();
-        minimalSearchCts = new CancellationTokenSource();
+        minimalListCts.SafeCancelAndDispose();
+        minimalListCts = new CancellationTokenSource();
 
         view.SetAllAsLoading();
-        view.SetHeaderEnabled(searchText);
-        RequestFavoritePlaces(cancellationToken: minimalSearchCts.Token).Forget();
-        RequestFavoriteWorlds(cancellationToken: minimalSearchCts.Token).Forget();
+        view.SetHeaderEnabled();
+        RequestFavoritePlaces(cancellationToken: minimalListCts.Token).Forget();
+        RequestFavoriteWorlds(cancellationToken: minimalListCts.Token).Forget();
     }
 
     private void RequestAllFavoritePlaces(int pageNumber)
@@ -132,7 +133,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     private async UniTaskVoid RequestFavoritePlaces(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
-        var results = await placesAPIService.GetFavorites(pageNumber, pageSize, cancellationToken);
+        var results = await placesAPIService.GetFavorites(pageNumber, pageSize, cancellationToken, true);
         List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results);
         //exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
 
@@ -148,20 +149,18 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     private async UniTaskVoid RequestFavoriteWorlds(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
-        /*
-        var results = await worldsAPIService.SearchWorlds(pageNumber, pageSize, cancellationToken);
-        List<PlaceCardComponentModel> worlds = PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(results.Item1);
-        exploreV2Analytics.SendSearchWorlds(searchText, worlds.Select(p=>p.placeInfo.id).ToArray());
+        var results = await worldsAPIService.GetFavorites(pageNumber, pageSize, cancellationToken);
+        List<PlaceCardComponentModel> worlds = PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(results);
+        //exploreV2Analytics.SendSearchWorlds(searchText, worlds.Select(p=>p.placeInfo.id).ToArray());
 
         if (isFullSearch)
         {
-            view.ShowAllWorlds(worlds, (pageNumber + 1) * pageSize < results.total);
+            view.ShowAllWorlds(worlds, false);
         }
         else
         {
             view.ShowWorlds(worlds);
         }
-        */
     }
 
     public void Dispose()
@@ -172,5 +171,6 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnPlaceJumpInClicked -= JumpInToPlace;
         view.OnBackFromSearch -= CloseSearchPanel;
         view.OnPlaceFavoriteChanged -= ChangePlaceFavorite;
+        view.OnRequestFavorites -= RequestFavorites;
     }
 }

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,6 +14,7 @@ namespace DCLServices.WorldsAPIService
     {
         UniTask<(IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total)> SearchWorlds(string searchText, int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
         UniTask<(IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total)> GetWorlds(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default, bool renewCache = false);
+        UniTask<IReadOnlyList<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
     }
 
     public class WorldsAPIService : IWorldsAPIService, ILambdaServiceConsumer<WorldsResponse.WorldsAPIResponse>
@@ -56,6 +58,12 @@ namespace DCLServices.WorldsAPIService
             (WorldsResponse.WorldsAPIResponse response, bool _) = await pagePointer.GetPageAsync(pageNumber, ct, new Dictionary<string, string>(){{"filter", filter},{"sort", sort}});
 
             return (response.data, response.total);
+        }
+
+        public async UniTask<IReadOnlyList<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct)
+        {
+            var favorites = await client.GetFavorites(pageNumber, pageSize, disposeCts.Token);
+            return favorites;
         }
 
         public async UniTask<(WorldsResponse.WorldsAPIResponse response, bool success)> CreateRequest(string endPoint, int pageSize, int pageNumber, Dictionary<string,string> additionalData, CancellationToken ct = default)

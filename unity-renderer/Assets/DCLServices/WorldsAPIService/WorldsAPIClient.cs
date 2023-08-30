@@ -15,6 +15,8 @@ namespace DCLServices.WorldsAPIService
         UniTask<WorldsResponse.WorldsAPIResponse> SearchWorlds(string searchString, int pageNumber, int pageSize, CancellationToken ct);
 
         UniTask<WorldsResponse.WorldsAPIResponse> GetWorlds(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default);
+
+        UniTask<List<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
     }
 
     public class WorldsAPIClient : IWorldsAPIClient
@@ -64,6 +66,22 @@ namespace DCLServices.WorldsAPIService
                 throw new Exception($"No world info retrieved:\n{result.downloadHandler.text}");
 
             return response;
+        }
+
+        public async UniTask<List<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct)
+        {
+            const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true&offset={0}&limit={1}";
+            Debug.Log($"url is: {string.Format(URL, pageNumber * pageSize, pageSize)}");
+            UnityWebRequest result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), isSigned: true, cancellationToken: ct);
+            var response = Utils.SafeFromJson<WorldsResponse.WorldsAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing get favorites response:\n{result.downloadHandler.text}");
+
+            if (response.data == null)
+                throw new Exception($"No favorites info retrieved:\n{result.downloadHandler.text}");
+
+            return response.data;
         }
     }
 }

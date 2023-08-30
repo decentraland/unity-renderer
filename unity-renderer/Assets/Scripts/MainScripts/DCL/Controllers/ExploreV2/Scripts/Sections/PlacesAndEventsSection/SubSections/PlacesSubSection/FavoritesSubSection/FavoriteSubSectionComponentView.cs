@@ -46,6 +46,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
 
     internal PlaceCardComponentView placeModal;
+    public event Action OnRequestFavorites;
     public event Action<int> OnRequestAllPlaces;
     public event Action<int> OnRequestAllWorlds;
     public event Action OnBackFromSearch;
@@ -71,9 +72,6 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
 
         noPlaces.SetActive(false);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
-
-        //Temporary until the full feature is released
-        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     private void InitialiseButtonEvents()
@@ -195,7 +193,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         if (worlds.Count == 0)
         {
             noWorlds.SetActive(true);
-            noWorldsText.text = $"No favorite worlds found for";
+            noWorldsText.text = $"No favorite worlds found";
         }
         else
         {
@@ -219,16 +217,6 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
                 minimalFavoriteList.SetActive(true);
         }
         Utils.ForceRebuildLayoutImmediate(gridContainer);
-    }
-
-    private void ConfigureEventCardActions(EventCardComponentView view, EventCardComponentModel model)
-    {
-        view.onInfoClick.RemoveAllListeners();
-        view.onBackgroundClick.RemoveAllListeners();
-        view.onSubscribeClick.RemoveAllListeners();
-        view.onUnsubscribeClick.RemoveAllListeners();
-        view.onJumpInClick.RemoveAllListeners();
-        view.onSecondaryJumpInClick?.RemoveAllListeners();
     }
 
     private void ConfigurePlaceCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
@@ -326,9 +314,9 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         loadingWorlds.SetActive(true);
     }
 
-    public void SetHeaderEnabled(string searchText)
+    public void SetHeaderEnabled()
     {
-        fullFavoriteListHeader.SetActive(!string.IsNullOrEmpty(searchText));
+        fullFavoriteListHeader.SetActive(false);
     }
 
     public void SetActive(bool isActive)
@@ -343,6 +331,13 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         {
             OnDisable();
         }
+    }
+
+    public override void OnEnable()
+    {
+        //Temporary until the full feature is released
+        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
+        OnRequestFavorites?.Invoke();
     }
 
     public override void RefreshControl()

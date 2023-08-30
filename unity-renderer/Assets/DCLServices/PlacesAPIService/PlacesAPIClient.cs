@@ -119,6 +119,7 @@ namespace DCLServices.PlacesAPIService
         public async UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct)
         {
             const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true&offset={0}&limit={1}";
+            
             UnityWebRequest result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), isSigned: true, cancellationToken: ct);
             var response = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
 
