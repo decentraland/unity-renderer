@@ -2195,7 +2195,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
   minimalFavoriteList: {fileID: 8459124776605710342}
+  headerText: {fileID: 0}
   fullFavoriteList: {fileID: 57023277445393060}
+  normalHeader: {fileID: 0}
   fullFavoriteListHeader: {fileID: 0}
   backButton: {fileID: 0}
   canvas: {fileID: 7254015126755689928}

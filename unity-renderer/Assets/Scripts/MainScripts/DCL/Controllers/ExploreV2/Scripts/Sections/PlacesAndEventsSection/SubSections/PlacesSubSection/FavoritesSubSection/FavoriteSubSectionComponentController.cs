@@ -8,9 +8,7 @@ using System.Collections.Generic;
 using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
-using System.Linq;
 using System.Threading;
-using UnityEngine;
 
 public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponentController
 {
@@ -49,7 +47,6 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
         view.OnVoteChanged += ChangeVote;
         view.OnPlaceJumpInClicked += JumpInToPlace;
-        view.OnBackFromSearch += CloseSearchPanel;
         view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
         view.OnRequestFavorites += RequestFavorites;
     }
@@ -87,10 +84,6 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
             placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
         }
-    }
-
-    private void CloseSearchPanel()
-    {
     }
 
     private void JumpInToPlace(IHotScenesController.PlaceInfo place)
@@ -171,7 +164,6 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnRequestAllWorlds -= RequestAllFavoriteWorlds;
         view.OnPlaceInfoClicked -= OpenPlaceDetailsModal;
         view.OnPlaceJumpInClicked -= JumpInToPlace;
-        view.OnBackFromSearch -= CloseSearchPanel;
         view.OnPlaceFavoriteChanged -= ChangePlaceFavorite;
         view.OnRequestFavorites -= RequestFavorites;
     }

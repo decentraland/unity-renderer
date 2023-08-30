@@ -18,7 +18,9 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     public int CurrentGoingTilesPerRow { get; }
 
     [SerializeField] private GameObject minimalFavoriteList;
+    [SerializeField] private TMP_Text headerText;
     [SerializeField] private GameObject fullFavoriteList;
+    [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject fullFavoriteListHeader;
     [SerializeField] private Button backButton;
 
@@ -49,7 +51,6 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     public event Action OnRequestFavorites;
     public event Action<int> OnRequestAllPlaces;
     public event Action<int> OnRequestAllWorlds;
-    public event Action OnBackFromSearch;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
@@ -113,15 +114,9 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
 
     private void OnBackButtonPressed()
     {
-        if (minimalFavoriteList.activeSelf || noResults.activeSelf)
-        {
-            OnBackFromSearch?.Invoke();
-        }
-        else
-        {
-            minimalFavoriteList.SetActive(true);
-            fullFavoriteList.SetActive(false);
-        }
+        SetHeaderEnabled(false);
+        minimalFavoriteList.SetActive(true);
+        fullFavoriteList.SetActive(false);
     }
 
     private void RequestAllPlaces()
@@ -314,8 +309,14 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         loadingWorlds.SetActive(true);
     }
 
-    public void SetHeaderEnabled(bool isActive) =>
-        fullFavoriteListHeader.SetActive(isActive);
+    public void SetHeaderEnabled(bool isFullHeaderActive)
+    {
+        normalHeader.SetActive(!isFullHeaderActive);
+        fullFavoriteListHeader.SetActive(isFullHeaderActive);
+
+        if (isFullHeaderActive)
+            headerText.text = fullPlacesParent.gameObject.activeSelf ? "Favorite Places" : "Favorite Worlds";
+    }
 
     public void SetActive(bool isActive)
     {
