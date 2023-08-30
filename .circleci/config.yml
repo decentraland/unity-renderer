@@ -276,6 +276,8 @@ jobs:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: playmode
     steps:
       - <<: *attach_root
       - run: &HASH_UNITY_FILES
@@ -334,6 +336,8 @@ jobs:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: editmode
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
