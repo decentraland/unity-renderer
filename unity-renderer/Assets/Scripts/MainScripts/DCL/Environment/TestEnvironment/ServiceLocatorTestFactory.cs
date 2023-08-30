@@ -7,6 +7,7 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.Social.Friends;
 using DCLServices.CopyPaste.Analytics;
+using DCLServices.CustomNftCollection;
 using DCLServices.PortableExperiences.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
@@ -37,6 +38,15 @@ namespace DCL
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
             result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
+            result.Register<ICustomNftCollectionService>(() =>
+            {
+                ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+                customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                return customNftCollectionService;
+            });
 
             result.Register<IWebRequestMonitor>(() =>
             {
