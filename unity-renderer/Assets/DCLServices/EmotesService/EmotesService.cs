@@ -53,6 +53,9 @@ namespace DCL.Emotes
         {
             EmbeddedEmotesSO embeddedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
 
+            // early return for not configured emotesCatalogService substitutes in legacy test base
+            if (embeddedEmotes == null) return;
+
             foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
             {
                 if (embeddedEmote.maleAnimation != null)
