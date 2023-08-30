@@ -31,6 +31,7 @@ namespace DCL.Backpack
         private AvatarSlotsHUDController avatarSlotsHUDController;
         private IBackpackFiltersComponentView filtersView;
         private IAvatarSlotsView slotsView;
+        private ICustomNftCollectionService customNftCollectionService;
 
         [SetUp]
         public void SetUp()
@@ -69,10 +70,11 @@ namespace DCL.Backpack
             ffBaseVariable.Get().Returns(featureFlag);
             avatarSlotsHUDController = new AvatarSlotsHUDController(slotsView, backpackAnalyticsService, ffBaseVariable);
 
-            ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+            customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
 
             customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
                                       .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+
             customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
                                       .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
 
@@ -354,6 +356,7 @@ namespace DCL.Backpack
                                                                 && w.IsSelected == false
                                                                 && w.IsEquipped == true
                                                                 && w.ImageUrl == "http://localimagesw1thumbnail"));
+
             view.Received(1).RefreshAllWearables();
         }
 
@@ -424,6 +427,7 @@ namespace DCL.Backpack
                                                                 && w.IsSelected == false
                                                                 && w.IsEquipped == false
                                                                 && w.ImageUrl == "http://localimagesw1thumbnail"));
+
             view.Received(1).RefreshWearable("w1");
         }
 
@@ -1071,8 +1075,72 @@ namespace DCL.Backpack
         {
             controller.LoadWearables();
 
-            filtersView.Received(1).SelectDropdownCollections(Arg.Is<HashSet<string>>(h => h.Contains("decentraland")),
-                false);
+            filtersView.Received(1)
+                       .SelectDropdownCollections(Arg.Is<HashSet<string>>(h => h.Contains("decentraland")),
+                            false);
+        }
+
+        [UnityTest]
+        public IEnumerator IncludeCustomWearableCollection()
+        {
+            customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(new[] { "urn:collection", "builder:collection" }));
+
+            IReadOnlyList<WearableItem> publishedWearableList = new[]
+            {
+                new WearableItem
+                {
+                    id = "w1",
+                    rarity = "common",
+                    description = "super wearable",
+                    thumbnail = "w1thumbnail",
+                    baseUrl = "http://localimages",
+                    MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                    data = new WearableItem.Data
+                    {
+                        category = "upper_body",
+                    },
+                }
+            };
+
+            IReadOnlyList<WearableItem> nonPublishedWearableList = new[]
+            {
+                new WearableItem
+                {
+                    id = "w2",
+                    rarity = "common",
+                    description = "super wearable",
+                    thumbnail = "w1thumbnail",
+                    baseUrl = "http://localimages",
+                    MostRecentTransferredDate = DateTime.UtcNow.Subtract(TimeSpan.FromHours(20)),
+                    data = new WearableItem.Data
+                    {
+                        category = "lower_body",
+                    },
+                }
+            };
+
+            wearablesCatalogService.RequestWearableCollectionInBuilder(Arg.Is<IEnumerable<string>>(i => i.Count() == 1 && i.ElementAt(0) == "builder:collection"),
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult(nonPublishedWearableList));
+
+            wearablesCatalogService.RequestWearableCollection(Arg.Is<IEnumerable<string>>(i => i.Count() == 1 && i.ElementAt(0) == "urn:collection"),
+                                        Arg.Any<CancellationToken>())
+                                   .Returns(UniTask.FromResult(publishedWearableList));
+
+            controller.LoadWearablesWithFilters();
+            yield return null;
+
+            Func<IEnumerable<WearableGridItemModel>, bool> wearablesToShownContainsCustomCollections = i =>
+            {
+                WearableGridItemModel[] models = i.ToArray();
+
+                return models[0].WearableId == "w1"
+                       && models[1].WearableId == "w2";
+            };
+
+            view.Received(1)
+                .ShowWearables(Arg.Is<IEnumerable<WearableGridItemModel>>(i => wearablesToShownContainsCustomCollections(i)));
         }
     }
 }
