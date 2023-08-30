@@ -71,7 +71,6 @@ namespace DCLServices.WorldsAPIService
         public async UniTask<List<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct)
         {
             const string URL = BASE_URL + "?only_favorites=true&with_realms_detail=true&offset={0}&limit={1}";
-            Debug.Log($"url is: {string.Format(URL, pageNumber * pageSize, pageSize)}");
             UnityWebRequest result = await webRequestController.GetAsync(string.Format(URL, pageNumber * pageSize, pageSize), isSigned: true, cancellationToken: ct);
             var response = Utils.SafeFromJson<WorldsResponse.WorldsAPIResponse>(result.downloadHandler.text);
 
