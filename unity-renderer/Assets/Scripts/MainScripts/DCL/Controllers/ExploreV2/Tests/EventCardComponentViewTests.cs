@@ -295,7 +295,7 @@ public class EventCardComponentViewTests
         Assert.AreEqual(newNumberOfUsers, eventCardComponent.model.subscribedUsers, "The event card subscribedUsers does not match in the model.");
         if (!isEventCardModal)
         {
-            Assert.AreEqual(newNumberOfUsers.ToString() + " going", eventCardComponent.subscribedUsersText.text);
+            Assert.AreEqual(newNumberOfUsers.ToString() + " interested", eventCardComponent.subscribedUsersText.text);
         }
         else
         {
