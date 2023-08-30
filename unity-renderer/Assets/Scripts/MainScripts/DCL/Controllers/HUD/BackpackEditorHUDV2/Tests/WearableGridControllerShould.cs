@@ -43,6 +43,7 @@ namespace DCL.Backpack
             {
                 userId = OWN_USER_ID,
                 name = "ownUserName",
+                avatar = new AvatarModel(),
             });
 
             userProfileBridge = Substitute.For<IUserProfileBridge>();
@@ -71,6 +72,8 @@ namespace DCL.Backpack
             ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
 
             customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+            customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
                                       .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
 
             controller = new WearableGridController(view,
@@ -736,6 +739,7 @@ namespace DCL.Backpack
                 userId = OWN_USER_ID,
                 name = "ownUserName",
                 hasConnectedWeb3 = true,
+                avatar = new AvatarModel(),
             });
 
             view.OnGoToMarketplace += Raise.Event<Action>();
@@ -751,6 +755,7 @@ namespace DCL.Backpack
                 userId = OWN_USER_ID,
                 name = "ownUserName",
                 hasConnectedWeb3 = false,
+                avatar = new AvatarModel(),
             });
 
             view.OnGoToMarketplace += Raise.Event<Action>();
