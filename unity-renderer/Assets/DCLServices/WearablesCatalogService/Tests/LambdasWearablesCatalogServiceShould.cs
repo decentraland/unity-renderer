@@ -409,27 +409,6 @@ namespace DCLServices.WearablesCatalogService
             Assert.IsFalse(service.IsValidWearable(WEARABLE_WITHOUT_THUMBNAIL));
         }
 
-        private void GivenWearableDefinitionWithSpecificLambdasUrl(WearableItem wearable)
-        {
-            lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                               Arg.Any<string>(),
-                               Arg.Any<string>(),
-                               Arg.Any<int>(),
-                               Arg.Any<int>(),
-                               Arg.Any<bool>(),
-                               Arg.Any<string>(),
-                               Arg.Any<CancellationToken>(),
-                               Arg.Any<(string paramName, string paramValue)[]>())
-                          .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
-                               (new WearableWithDefinitionResponse(new List<WearableElementV1Dto>
-                               {
-                                   new ()
-                                   {
-                                       definition = wearable
-                                   },
-                               }, 0, 10, 1), true)));
-        }
-
         private void GivenWearableEntityWithSpecificLambdasUrl(EntityDto entity)
         {
             lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
@@ -441,7 +420,7 @@ namespace DCLServices.WearablesCatalogService
                                Arg.Any<string>(),
                                Arg.Any<CancellationToken>(),
                                Arg.Any<(string paramName, string paramValue)[]>())
-                          .Returns(UniTask.FromResult<(WearableWithEntityResponseDto response, bool success)>(
+                          .ReturnsForAnyArgs(UniTask.FromResult<(WearableWithEntityResponseDto response, bool success)>(
                                (new WearableWithEntityResponseDto(new List<WearableWithEntityResponseDto.ElementDto>
                                {
                                    new ()

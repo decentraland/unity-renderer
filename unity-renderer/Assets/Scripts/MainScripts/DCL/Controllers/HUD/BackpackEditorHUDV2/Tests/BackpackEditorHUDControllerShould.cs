@@ -81,6 +81,8 @@ namespace DCL.Backpack
             ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
             customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
                                       .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+            customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
 
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
