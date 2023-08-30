@@ -101,8 +101,12 @@ namespace DCL.Backpack
                     List<WearableItem> allEmotes = new ();
                     allEmotes.AddRange(embeddedEmotesSo.emotes);
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
-                    allEmotes.AddRange(await FetchCustomEmoteCollections(ct));
-                    allEmotes.AddRange(await FetchCustomEmoteItems(ct));
+
+                    try { allEmotes.AddRange(await FetchCustomEmoteCollections(ct)); }
+                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                    try { allEmotes.AddRange(await FetchCustomEmoteItems(ct)); }
+                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
                     dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
                     emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
@@ -155,36 +159,28 @@ namespace DCL.Backpack
 
             foreach (string nftId in publishedItems)
             {
-                try
+                WearableItem wearable = await emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken);
+
+                if (wearable == null)
                 {
-                    WearableItem wearable = await emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken);
-
-                    if (wearable == null)
-                    {
-                        Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
-                        continue;
-                    }
-
-                    emotes.Add(wearable);
+                    Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
+                    continue;
                 }
-                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                emotes.Add(wearable);
             }
 
             foreach (string nftId in itemsInBuilder)
             {
-                try
+                WearableItem wearable = await emotesCatalogService.RequestEmoteFromBuilderAsync(nftId, cancellationToken);
+
+                if (wearable == null)
                 {
-                    WearableItem wearable = await emotesCatalogService.RequestEmoteFromBuilderAsync(nftId, cancellationToken);
-
-                    if (wearable == null)
-                    {
-                        Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
-                        continue;
-                    }
-
-                    emotes.Add(wearable);
+                    Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
+                    continue;
                 }
-                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                emotes.Add(wearable);
             }
 
             return emotes;
@@ -203,11 +199,8 @@ namespace DCL.Backpack
 
             List<WearableItem> emotes = new ();
 
-            try { emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken)); }
-            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
-
-            try { emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken)); }
-            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+            emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken));
+            emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken));
 
             return emotes;
         }

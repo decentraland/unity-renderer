@@ -300,36 +300,28 @@ namespace DCL.Backpack
 
             foreach (string nftId in publishedItems)
             {
-                try
+                WearableItem wearable = await wearablesCatalogService.RequestWearableAsync(nftId, cancellationToken);
+
+                if (wearable == null)
                 {
-                    WearableItem wearable = await wearablesCatalogService.RequestWearableAsync(nftId, cancellationToken);
-
-                    if (wearable == null)
-                    {
-                        Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
-                        continue;
-                    }
-
-                    wearables.Add(wearable);
+                    Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
+                    continue;
                 }
-                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                wearables.Add(wearable);
             }
 
             foreach (string nftId in itemsInBuilder)
             {
-                try
+                WearableItem wearable = await wearablesCatalogService.RequestWearableFromBuilderAsync(nftId, cancellationToken);
+
+                if (wearable == null)
                 {
-                    WearableItem wearable = await wearablesCatalogService.RequestWearableFromBuilderAsync(nftId, cancellationToken);
-
-                    if (wearable == null)
-                    {
-                        Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
-                        continue;
-                    }
-
-                    wearables.Add(wearable);
+                    Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
+                    continue;
                 }
-                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                wearables.Add(wearable);
             }
 
             return wearables;
@@ -347,18 +339,8 @@ namespace DCL.Backpack
                .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
 
             List<WearableItem> wearables = new ();
-
-            try
-            {
-                wearables.AddRange(await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken));
-            }
-            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
-
-            try
-            {
-                wearables.AddRange(await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken));
-            }
-            catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+            wearables.AddRange(await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken));
+            wearables.AddRange(await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken));
 
             return wearables;
         }
