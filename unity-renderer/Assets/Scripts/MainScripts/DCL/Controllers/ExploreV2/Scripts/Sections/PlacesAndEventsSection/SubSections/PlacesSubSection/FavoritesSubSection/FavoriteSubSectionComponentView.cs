@@ -314,10 +314,8 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         loadingWorlds.SetActive(true);
     }
 
-    public void SetHeaderEnabled()
-    {
-        fullFavoriteListHeader.SetActive(false);
-    }
+    public void SetHeaderEnabled(bool isActive) =>
+        fullFavoriteListHeader.SetActive(isActive);
 
     public void SetActive(bool isActive)
     {
@@ -335,6 +333,8 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
 
     public override void OnEnable()
     {
+        base.OnEnable();
+
         //Temporary until the full feature is released
         worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
         OnRequestFavorites?.Invoke();

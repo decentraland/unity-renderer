@@ -119,6 +119,8 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
 
     public override void OnEnable()
     {
+        base.OnEnable();
+
         filter = "";
         SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         OnWorldsSubSectionEnable?.Invoke();

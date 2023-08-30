@@ -108,17 +108,18 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     private void RequestFavorites()
     {
+        view.SetHeaderEnabled(false);
         minimalListCts.SafeCancelAndDispose();
         minimalListCts = new CancellationTokenSource();
 
         view.SetAllAsLoading();
-        view.SetHeaderEnabled();
         RequestFavoritePlaces(cancellationToken: minimalListCts.Token).Forget();
         RequestFavoriteWorlds(cancellationToken: minimalListCts.Token).Forget();
     }
 
     private void RequestAllFavoritePlaces(int pageNumber)
     {
+        view.SetHeaderEnabled(true);
         fullSearchCts.SafeCancelAndDispose();
         fullSearchCts = new CancellationTokenSource();
         RequestFavoritePlaces(pageNumber, 18, fullSearchCts.Token, true).Forget();
@@ -126,6 +127,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     private void RequestAllFavoriteWorlds(int pageNumber)
     {
+        view.SetHeaderEnabled(true);
         fullSearchCts.SafeCancelAndDispose();
         fullSearchCts = new CancellationTokenSource();
         RequestFavoriteWorlds(pageNumber, 18, fullSearchCts.Token, true).Forget();

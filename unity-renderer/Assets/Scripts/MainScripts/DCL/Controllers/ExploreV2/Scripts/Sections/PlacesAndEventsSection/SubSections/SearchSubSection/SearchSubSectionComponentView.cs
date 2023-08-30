@@ -92,9 +92,6 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
-
-        //Temporary until the full feature is released
-        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     private void InitialiseButtonEvents()
@@ -450,6 +447,14 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         {
             OnDisable();
         }
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+
+        //Temporary until the full feature is released
+        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     public override void RefreshControl()
