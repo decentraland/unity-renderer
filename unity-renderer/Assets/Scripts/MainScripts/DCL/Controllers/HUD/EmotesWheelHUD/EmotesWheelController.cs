@@ -2,14 +2,12 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using DCL.Emotes;
+using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
-using System;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = UnityEngine.Object;
 
 namespace DCL.EmotesWheel
 {
@@ -86,10 +84,12 @@ namespace DCL.EmotesWheel
             emotesCustomizationDataStore.isWheelInitialized.Set(true);
 
             DataStore.i.player.ownPlayer.OnChange += OnPlayerSet;
+            OnPlayerSet(DataStore.i.player.ownPlayer.Get(), null);
         }
 
         private void OnPlayerSet(Player current, Player previous)
         {
+            if (current == null) return;
             emotesController = current.avatar.GetEmotesController();
             emotesController.OnEmoteEquipped += OnEmoteEquipped;
             emotesController.OnEmoteUnequipped += OnEmoteUnequipped;
@@ -270,8 +270,13 @@ namespace DCL.EmotesWheel
             auxShortcut7InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
-            emotesController.OnEmoteEquipped -= OnEmoteEquipped;
-            emotesController.OnEmoteUnequipped -= OnEmoteUnequipped;
+
+            if (emotesController != null)
+            {
+                emotesController.OnEmoteEquipped -= OnEmoteEquipped;
+                emotesController.OnEmoteUnequipped -= OnEmoteUnequipped;
+            }
+
             cts?.Cancel();
             cts?.Dispose();
             cts = null;
@@ -279,7 +284,7 @@ namespace DCL.EmotesWheel
             if (view != null)
             {
                 view.CleanUp();
-                Object.Destroy(view.gameObject);
+                Utils.SafeDestroy(view.gameObject);
             }
         }
 
