@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Interface;
 using DCL.Tasks;
 using System;
 using System.Collections.Generic;
@@ -7,12 +8,12 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
+using TMPro;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
-public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectionComponentView
+public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectionComponentView, IPointerClickHandler
 {
-    internal const string WORLD_CARDS_POOL_NAME = "Worlds_WorldCardsPool";
+    private const string WORLD_CARDS_POOL_NAME = "Worlds_WorldCardsPool";
     private const int WORLD_CARDS_POOL_PREWARM = 20;
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
     private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
@@ -37,6 +38,8 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     [SerializeField] internal GameObject showMoreWorldsButtonContainer;
     [SerializeField] internal ButtonComponentView showMoreWorldsButton;
     [SerializeField] internal DropdownComponentView sortByDropdown;
+    [SerializeField] internal Button findOutMoreButton;
+    [SerializeField] internal TMP_Text textComponent;
 
     [SerializeField] private Canvas canvas;
 
@@ -55,7 +58,6 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
         poiCoords = poiList;
 
     public int CurrentTilesPerRow => currentWorldsPerRow;
-    public int CurrentGoingTilesPerRow { get; }
     public string filter { get; private set; }
     public string sort { get; private set; }
 
@@ -68,6 +70,8 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     public event Action OnWorldsSubSectionEnable;
     public event Action OnSortingChanged;
     public event Action OnShowMoreWorldsClicked;
+    public event Action OnOpenWorldsInfo;
+    public event Action OnOpenWorldsDaoProposal;
 
     public override void Awake()
     {
@@ -81,6 +85,8 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
 
         worlds.RemoveItems();
         LoadSortByDropdown();
+        findOutMoreButton.onClick.RemoveAllListeners();
+        findOutMoreButton.onClick.AddListener(()=>OnOpenWorldsInfo?.Invoke());
 
         showMoreWorldsButton.onClick.RemoveAllListeners();
         showMoreWorldsButton.onClick.AddListener(() => OnShowMoreWorldsClicked?.Invoke());
@@ -241,11 +247,15 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
         sortByDropdown.SelectOption(id, notify);
     }
 
-    private static void DeselectButtons()
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (EventSystem.current == null)
-            return;
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, eventData.position, textComponent.canvas.worldCamera);
 
-        EventSystem.current.SetSelectedGameObject(null);
+        if (linkIndex == -1) return;
+
+        TMP_LinkInfo linkInfo = textComponent.textInfo.linkInfo[linkIndex];
+
+        if (linkInfo.GetLinkID() == "dao")
+            OnOpenWorldsDaoProposal?.Invoke();
     }
 }

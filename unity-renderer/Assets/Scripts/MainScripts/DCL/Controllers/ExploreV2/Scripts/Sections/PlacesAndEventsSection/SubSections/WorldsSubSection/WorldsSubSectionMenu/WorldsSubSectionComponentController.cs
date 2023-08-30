@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
+using DCL.Interface;
 using DCL.Social.Friends;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
@@ -8,8 +8,6 @@ using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
@@ -21,6 +19,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
+    private const string DAO_PROPOSAL_LINK = "https://docs.decentraland.org/decentraland/worlds/";
+    private const string WORLDS_DOCS_LINK = "https://docs.decentraland.org/decentraland/worlds/";
 
     internal readonly IWorldsSubSectionComponentView view;
     internal readonly IWorldsAPIService worldsAPIService;
@@ -60,6 +60,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMoreWorldsClicked += ShowMoreWorlds;
+        this.view.OnOpenWorldsInfo += OpenWorldsInfo;
+        this.view.OnOpenWorldsDaoProposal += OpenWorldsDaoProposal;
 
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
@@ -94,6 +96,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMoreWorldsClicked -= ShowMoreWorlds;
+        this.view.OnOpenWorldsInfo -= OpenWorldsInfo;
+        this.view.OnOpenWorldsDaoProposal -= OpenWorldsDaoProposal;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
@@ -238,6 +242,12 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
         OnCloseExploreV2?.Invoke();
     }
+
+    private void OpenWorldsDaoProposal() =>
+        WebInterface.OpenURL(DAO_PROPOSAL_LINK);
+
+    private void OpenWorldsInfo() =>
+        WebInterface.OpenURL(WORLDS_DOCS_LINK);
 
     public static void JumpInToWorld(PlaceInfo worldFromAPI)
     {

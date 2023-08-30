@@ -905,6 +905,8 @@ MonoBehaviour:
   showMoreWorldsButtonContainer: {fileID: 4387709849468574449}
   showMoreWorldsButton: {fileID: 6656462159696491730}
   sortByDropdown: {fileID: 3662062210310201633}
+  findOutMoreButton: {fileID: 3658591688276082732}
+  textComponent: {fileID: 8918894173729592739}
   canvas: {fileID: 7254015126755689928}
 --- !u!223 &7254015126755689928
 Canvas:
@@ -3412,7 +3414,7 @@ PrefabInstance:
     - target: {fileID: 1550905255137128880, guid: eb934d40e41b2c3419cd97c6e35d51b7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 74.075
       objectReference: {fileID: 0}
     - target: {fileID: 1550905255137128880, guid: eb934d40e41b2c3419cd97c6e35d51b7,
         type: 3}
@@ -3442,7 +3444,7 @@ PrefabInstance:
     - target: {fileID: 1635685171757883036, guid: eb934d40e41b2c3419cd97c6e35d51b7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 36.67
       objectReference: {fileID: 0}
     - target: {fileID: 1635685171757883036, guid: eb934d40e41b2c3419cd97c6e35d51b7,
         type: 3}
