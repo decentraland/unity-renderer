@@ -6,12 +6,11 @@ using DCL.Tasks;
 using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TMPro;
+using UIComponents.ContextMenu;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Environment = DCL.Environment;
 
@@ -21,13 +20,14 @@ using Environment = DCL.Environment;
 [RequireComponent(typeof(RectTransform))]
 
 // TODO: refactor into MVC
-public class UserContextMenu : MonoBehaviour
+public class UserContextMenu : ContextMenuComponentView
 {
     private const string BLOCK_BTN_BLOCK_TEXT = "Block";
     private const string BLOCK_BTN_UNBLOCK_TEXT = "Unblock";
     private const string OPEN_PASSPORT_NORMAL_SOURCE = "FriendsHUD";
     private const string OPEN_PASSPORT_MENTION_SOURCE = "Mention";
-    private const string DELETE_MSG_PATTERN = "Are you sure you want to delete {0} as a friend?";
+    private const MenuConfigFlags HEADER_FLAGS = MenuConfigFlags.Name | MenuConfigFlags.Friendship;
+    private const MenuConfigFlags USES_FRIENDS_API_FLAGS = MenuConfigFlags.Friendship | MenuConfigFlags.Message;
 
     [Flags]
     public enum MenuConfigFlags
@@ -40,9 +40,6 @@ public class UserContextMenu : MonoBehaviour
         Report = 32,
         Mention = 64,
     }
-
-    const MenuConfigFlags headerFlags = MenuConfigFlags.Name | MenuConfigFlags.Friendship;
-    const MenuConfigFlags usesFriendsApiFlags = MenuConfigFlags.Friendship | MenuConfigFlags.Message;
 
     [Header("Optional: Set Confirmation Dialog")]
     [SerializeField] internal UserContextConfirmationDialog confirmationDialog;
@@ -142,6 +139,7 @@ public class UserContextMenu : MonoBehaviour
             SetConfirmationDialog(confirmationDialog);
 
         gameObject.SetActive(true);
+        ClampPositionToScreenBorders(transform.position);
         OnShowMenu?.Invoke();
     }
 
@@ -178,11 +176,10 @@ public class UserContextMenu : MonoBehaviour
         this.currentConfirmationDialog = confirmationPopup;
     }
 
-    /// <summary>
-    /// Hides the context menu.
-    /// </summary>
-    public void Hide()
+    public override void Hide(bool instant = false)
     {
+        base.Hide(instant);
+
         friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
         gameObject.SetActive(false);
         OnHide?.Invoke();
@@ -199,8 +196,10 @@ public class UserContextMenu : MonoBehaviour
         isFromMentionContextMenu = isFromMention;
     }
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
+
         currentPlayerId = DataStore.i.HUDs.currentPlayerId;
         passportButton.onClick.AddListener(OnPassportButtonPressed);
         blockButton.onClick.AddListener(OnBlockUserButtonPressed);
@@ -215,14 +214,15 @@ public class UserContextMenu : MonoBehaviour
             mentionButton.onClick.AddListener(OnMentionButtonPressed);
     }
 
-    private void Update()
+    public override void OnDisable()
     {
-        HideIfClickedOutside();
+        base.OnDisable();
+
+        friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
     }
 
-    private void OnDisable()
+    public override void RefreshControl()
     {
-        friendsController.OnUpdateFriendship -= OnFriendActionUpdate;
     }
 
     private void OnPassportButtonPressed()
@@ -351,27 +351,11 @@ public class UserContextMenu : MonoBehaviour
         Hide();
     }
 
-    private void HideIfClickedOutside()
-    {
-        if (!Input.GetMouseButtonDown(0)) return;
-
-        var pointerEventData = new PointerEventData(EventSystem.current)
-        {
-            position = Input.mousePosition
-        };
-
-        var raycastResults = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-
-        if (raycastResults.All(result => result.gameObject != gameObject))
-            Hide();
-    }
-
     private void ProcessActiveElements(MenuConfigFlags flags)
     {
         bool isOwnUser = UserProfile.GetOwnUserProfile().userId == userId;
 
-        headerContainer.SetActive((flags & headerFlags) != 0);
+        headerContainer.SetActive((flags & HEADER_FLAGS) != 0);
         userName.gameObject.SetActive((flags & MenuConfigFlags.Name) != 0);
         friendshipContainer.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
         deleteFriendButton.gameObject.SetActive((flags & MenuConfigFlags.Friendship) != 0 && isFriendsEnabled && !isOwnUser);
@@ -397,7 +381,7 @@ public class UserContextMenu : MonoBehaviour
         }
 
         if (profile.isGuest || !UserProfile.GetOwnUserProfile().hasConnectedWeb3)
-            configFlags &= ~usesFriendsApiFlags;
+            configFlags &= ~USES_FRIENDS_API_FLAGS;
 
         currentConfigFlags = configFlags;
         ProcessActiveElements(configFlags);
@@ -414,7 +398,7 @@ public class UserContextMenu : MonoBehaviour
             userName.text = name;
         }
 
-        if ((configFlags & usesFriendsApiFlags) != 0)
+        if ((configFlags & USES_FRIENDS_API_FLAGS) != 0)
         {
             UserStatus status = friendsController.GetUserStatus(userId);
             SetupFriendship(status?.friendshipStatus ?? FriendshipStatus.NOT_FRIEND);

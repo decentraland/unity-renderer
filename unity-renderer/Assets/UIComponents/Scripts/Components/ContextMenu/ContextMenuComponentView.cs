@@ -29,14 +29,10 @@ namespace UIComponents.ContextMenu
                 HideIfClickedOutside();
         }
 
-        public void Show(Vector2 position, bool stayInsideScreen = true, bool instant = false)
+        public void ClampPositionToScreenBorders(Vector2 position)
         {
-            base.Show(instant);
-
             rectTransform.position = position;
-
-            if (stayInsideScreen)
-                ClampPositionIntoScreenBorders();
+            ClampPositionIntoScreenBorders();
         }
 
         private void ClampPositionIntoScreenBorders()

@@ -74,7 +74,7 @@ namespace DCLFeatures.CameraReel.Gallery
         public void Show(CameraReelResponse picture)
         {
             gameObject.SetActive(true);
-            Show(transform.position, instant: true);
+            ClampPositionToScreenBorders(transform.position);
             OnSetup?.Invoke(picture);
         }
 

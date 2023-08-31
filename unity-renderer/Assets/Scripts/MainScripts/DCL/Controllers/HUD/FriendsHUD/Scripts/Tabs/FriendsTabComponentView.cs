@@ -380,8 +380,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
-        contextMenuPanel.Show(friendEntry.Model.userId);
         friendEntry.Dock(contextMenuPanel);
+        contextMenuPanel.Show(friendEntry.Model.userId);
     }
 
     private Pool GetEntryPool()
