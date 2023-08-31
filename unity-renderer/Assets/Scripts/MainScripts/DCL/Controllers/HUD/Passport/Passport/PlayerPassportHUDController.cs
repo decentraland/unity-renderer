@@ -140,7 +140,7 @@ namespace DCL.Social.Passports
 
             if (currentUserProfile == null)
             {
-                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
+                socialAnalytics.SendPassportClose(previous.playerId, Time.realtimeSinceStartup - passportOpenStartTime);
                 SetPassportPanelVisibility(false);
             }
             else
@@ -148,7 +148,7 @@ namespace DCL.Social.Passports
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
                 Enum.TryParse(current.source, out AvatarOpenSource source);
-                socialAnalytics.SendPassportOpen(source: source);
+                socialAnalytics.SendPassportOpen(current.playerId, source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
