@@ -54,6 +54,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.OnRequestAllWorlds += SearchAllWorlds;
         view.OnEventInfoClicked += OpenEventDetailsModal;
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
+        view.OnWorldInfoClicked += OpenWorldDetailsModal;
         view.OnVoteChanged += ChangeVote;
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
@@ -129,6 +130,12 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel, int index)
     {
         view.ShowPlaceModal(placeModel);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
+    }
+
+    private void OpenWorldDetailsModal(PlaceCardComponentModel placeModel, int index)
+    {
+        view.ShowWorldModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
     }
 

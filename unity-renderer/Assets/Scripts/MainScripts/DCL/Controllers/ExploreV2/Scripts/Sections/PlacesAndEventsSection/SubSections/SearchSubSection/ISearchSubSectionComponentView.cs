@@ -12,6 +12,7 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
     event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
+    public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
@@ -27,5 +28,6 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
     void ShowAllWorlds(List<PlaceCardComponentModel> worlds, bool showMoreButton);
     void ShowEventModal(EventCardComponentModel eventModel);
     void ShowPlaceModal(PlaceCardComponentModel placeModel);
+    void ShowWorldModal(PlaceCardComponentModel placeModel);
     void SetHeaderEnabled(string searchText);
 }

@@ -10,6 +10,8 @@ public interface IFavoriteSubSectionComponentView : IPlacesAndEventsSubSectionCo
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnWorldJumpInClicked;
     public event Action<string, bool> OnPlaceFavoriteChanged;
 
     void ShowPlaces(List<PlaceCardComponentModel> places);
@@ -17,5 +19,6 @@ public interface IFavoriteSubSectionComponentView : IPlacesAndEventsSubSectionCo
     void ShowWorlds(List<PlaceCardComponentModel> worlds);
     void ShowAllWorlds(List<PlaceCardComponentModel> worlds, bool showMoreButton);
     void ShowPlaceModal(PlaceCardComponentModel placeModel);
+    void ShowWorldModal(PlaceCardComponentModel placeModel);
     void SetHeaderEnabled(bool isFullHeaderActive);
 }
