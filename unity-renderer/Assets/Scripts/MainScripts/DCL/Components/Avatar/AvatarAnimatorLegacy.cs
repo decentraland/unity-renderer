@@ -397,34 +397,54 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         lastExtendedEmoteData?.StopAllAnimations();
     }
 
-    private void SetExpressionValues(string expressionTriggerId, long expressionTriggerTimestamp)
+    private void SetExpressionValues(string emoteId, long expressionTriggerTimestamp)
     {
         if (animation == null)
             return;
 
-        if (string.IsNullOrEmpty(expressionTriggerId))
+        if (string.IsNullOrEmpty(emoteId))
             return;
 
-        if (animation.GetClip(expressionTriggerId) == null)
+        if (animation.GetClip(emoteId) == null)
             return;
 
-        var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId)
+        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId)
                                    && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
-        blackboard.expressionTriggerId = expressionTriggerId;
+        blackboard.expressionTriggerId = emoteId;
         blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
 
         if (mustTriggerAnimation)
         {
-            if (!string.IsNullOrEmpty(expressionTriggerId))
+            StartEmote(emoteId);
+
+            if (!string.IsNullOrEmpty(emoteId))
             {
-                animation.Stop(expressionTriggerId);
+                animation.Stop(emoteId);
                 latestAnimation = AvatarAnimation.IDLE;
             }
 
-            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData) && clipData.Loop;
+            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
 
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
+        }
+    }
+
+    private void StartEmote(string emoteId)
+    {
+        if (!string.IsNullOrEmpty(emoteId))
+        {
+            lastExtendedEmoteData?.StopAllAnimations();
+
+            if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
+            {
+                lastExtendedEmoteData = emoteClipData;
+                emoteClipData.PlayAllAnimations(gameObject.layer);
+            }
+        }
+        else
+        {
+            lastExtendedEmoteData?.StopAllAnimations();
         }
     }
 
@@ -442,21 +462,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public void PlayEmote(string emoteId, long timestamps)
     {
         SetExpressionValues(emoteId, timestamps);
-
-        if (!string.IsNullOrEmpty(emoteId))
-        {
-            lastExtendedEmoteData?.StopAllAnimations();
-
-            if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
-            {
-                lastExtendedEmoteData = emoteClipData;
-                emoteClipData.PlayAllAnimations(gameObject.layer);
-            }
-        }
-        else
-        {
-            lastExtendedEmoteData?.StopAllAnimations();
-        }
     }
 
     public void EquipBaseClip(AnimationClip clip)

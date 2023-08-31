@@ -39,7 +39,6 @@ namespace DCL.Emotes
             renderers = ExtraContent.GetComponentsInChildren<Renderer>();
         }
 
-
         public void PlayAllAnimations(int gameObjectLayer)
         {
             if (renderers != null)

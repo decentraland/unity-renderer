@@ -81,6 +81,7 @@ namespace DCL.Emotes
                     audioSource.rolloffMode = AudioRolloffMode.Linear;
                     audioSource.minDistance = 3;
                     audioSource.maxDistance = 30;
+                    audioSource.spatialBlend = 1;
                 }
 
                 break;
