@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -23,6 +24,7 @@ public class PlacesAndEventsSectionComponentControllerTests
             Substitute.For<IUserProfileBridge>(),
             Substitute.For<IFriendsController>(),
             Substitute.For<IPlacesAPIService>(),
+            Substitute.For<IWorldsAPIService>(),
             Substitute.For<IPlacesAnalytics>()
             );
     }

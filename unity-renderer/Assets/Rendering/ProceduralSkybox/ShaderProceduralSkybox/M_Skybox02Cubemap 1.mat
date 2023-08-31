@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -23,6 +23,8 @@ Material:
   m_Name: M_Skybox02Cubemap 1
   m_Shader: {fileID: -6465566751694194690, guid: bf4000fbd9b31784cab1d27368431336,
     type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -31,6 +33,7 @@ Material:
   m_CustomRenderQueue: 2999
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -98,6 +101,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2D696c52219a64421abfac24088c8c2d3e_3259457213_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SGLayerParticles_1c423f4cd0624eca9ef3b77eef2eb8d3_Texture2Dfc450b2db7f54977a54b88410e0e641d_756302754:
         m_Texture: {fileID: 2800000, guid: 42cc058140f798e46bde1006aab6fa8b, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -139,6 +146,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SGSingleParticle_9b74e1d945554c5ea87d3306f4178581_Texture2Dbd5b8ce37ff545e1be8d418c193ee500_3418281140:
+        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SGSingleParticle_9b74e1d945554c5ea87d3306f4178581_Texture2Dbd5b8ce37ff545e1be8d418c193ee500_3418281140_Texture2D:
         m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -356,6 +367,7 @@ Material:
     - Vector1_ee4830b881524b7d911e938223ed7a1f: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_1: 0
     - Vector1_ee4830b881524b7d911e938223ed7a1f_2: 0
+    - _HorizonGroundAlpha: 1
     - _LAYERTYPE_0: 0
     - _QueueControl: 1
     - _QueueOffset: 0

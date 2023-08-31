@@ -21,7 +21,7 @@ This repository contains the reference implementation of the [decentraland explo
 
 Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
 
-1. Download and install Unity 2021.3.14f1
+1. Download and install Unity 2022.3.6f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
