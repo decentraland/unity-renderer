@@ -76,8 +76,11 @@ namespace DCL.Emotes
 
                 if (audioClip != null)
                 {
-                    audioSource = targetContainer.AddComponent<AudioSource>();
+                    audioSource = rendereable.container.AddComponent<AudioSource>();
                     audioSource.clip = audioClip;
+                    audioSource.rolloffMode = AudioRolloffMode.Linear;
+                    audioSource.minDistance = 3;
+                    audioSource.maxDistance = 30;
                 }
 
                 break;
