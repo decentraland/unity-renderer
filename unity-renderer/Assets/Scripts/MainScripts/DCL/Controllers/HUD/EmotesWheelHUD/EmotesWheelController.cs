@@ -139,12 +139,10 @@ namespace DCL.EmotesWheel
                 {
                     if (emotesController.TryGetEquippedEmote(userProfile.avatar.bodyShape, equippedEmoteData.id, out var emote))
                     {
-                        var entity = emote.GetEntity();
+                        var entity = emote?.GetEntity();
 
-                        if (entity == null)
+                        if (entity == null) // emote exists but its not loaded yet
                         {
-                            Debug.LogError("Something is not quite right");
-
                             emotesToSet.Add(new EmotesWheelView.EmoteSlotData
                             {
                                 emoteId = equippedEmoteData.id,
