@@ -74,7 +74,7 @@ public static class TextureHelpers
         Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
 
         // Note: Surprisingly this works in WebGL here but it doesn't work in Resize()
-        Graphics.CopyTexture(sourceTexture, texture);
+        Graphics.CopyTexture(sourceTexture, 0, 0, texture, 0, 0);
 
         return texture;
     }
