@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 using static DCLServices.WearablesCatalogService.WearableWithEntityResponseDto.ElementDto;
@@ -147,13 +146,18 @@ namespace DCLServices.WearablesCatalogService
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
             string explorerUrl;
+            string contentUrl;
 
             if (IsLocalPreview())
+            {
                 explorerUrl = "https://peer.decentraland.org/explorer/";
+                contentUrl = "https://peer.decentraland.org/content/contents/";
+            }
             else
             {
                 string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
                 explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
+                contentUrl = $"{catalyst.contentUrl}/contents/";
             }
 
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
@@ -166,7 +170,7 @@ namespace DCLServices.WearablesCatalogService
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
             List<WearableItem> wearables = ValidateWearables(response.elements,
-                $"{catalyst.contentUrl}/contents/",
+                contentUrl,
                 assetBundlesUrl);
 
             AddWearablesToCatalog(wearables);
