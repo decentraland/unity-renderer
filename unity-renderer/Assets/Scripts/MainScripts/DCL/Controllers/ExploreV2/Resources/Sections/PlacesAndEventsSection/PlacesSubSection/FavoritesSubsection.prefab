@@ -559,7 +559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6703714230899486412}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -832,10 +832,10 @@ RectTransform:
   - {fileID: 6365939723591215513}
   m_Father: {fileID: 7300023388137581901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -540}
+  m_SizeDelta: {x: 0, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1711298950524073521
 CanvasRenderer:
@@ -901,7 +901,7 @@ GameObject:
   - component: {fileID: 5834313131983595892}
   - component: {fileID: 5486437206564225759}
   m_Layer: 5
-  m_Name: PlacesButton
+  m_Name: ViewMoreButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1270,7 +1270,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 938, y: 0}
+  m_AnchoredPosition: {x: 940, y: 0}
   m_SizeDelta: {x: 1876, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3886831397350180239
@@ -1323,7 +1323,7 @@ GameObject:
   - component: {fileID: 8169846851324915468}
   - component: {fileID: 9014910823224393408}
   m_Layer: 5
-  m_Name: Places
+  m_Name: GenesisCityPlaces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1349,8 +1349,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1898, y: 0}
-  m_SizeDelta: {x: 1876, y: 0}
+  m_AnchoredPosition: {x: 1906, y: 0}
+  m_SizeDelta: {x: 1880, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &8169846851324915468
 MonoBehaviour:
@@ -1430,8 +1430,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1898, y: 0}
-  m_SizeDelta: {x: 1876, y: 0}
+  m_AnchoredPosition: {x: 1906, y: 0}
+  m_SizeDelta: {x: 1880, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &7946182810651034016
 MonoBehaviour:
@@ -1507,7 +1507,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 938, y: 0}
+  m_AnchoredPosition: {x: 940, y: 0}
   m_SizeDelta: {x: 1876, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3459667661231662385
@@ -2221,7 +2221,6 @@ MonoBehaviour:
   noResults: {fileID: 7083053440865631779}
   noPlacesText: {fileID: 7064807000035185168}
   noWorldsText: {fileID: 5649646412191610701}
-  noResultsText: {fileID: 4658373330064825490}
   placeCardModalPrefab: {fileID: 6938330954477096662, guid: ab186ea8747757847957451f6ec22160,
     type: 3}
 --- !u!1 &5026211887509532422
@@ -2862,7 +2861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6042707294748881951}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3568,7 +3567,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Places
+  m_text: Genesis City
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
@@ -3823,7 +3822,7 @@ GameObject:
   - component: {fileID: 8085563048636854344}
   - component: {fileID: 8172100844794351025}
   m_Layer: 5
-  m_Name: WorldsButton
+  m_Name: ViewMoreButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3983,8 +3982,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6}
-  m_SizeDelta: {x: 0, y: -6}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6285526556835638716
 CanvasRenderer:

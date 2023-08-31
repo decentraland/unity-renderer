@@ -1240,7 +1240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4788583352343983601}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1658,7 +1658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5385711455891318024}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2213,7 +2213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8598073857750386298}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2645,7 +2645,7 @@ GameObject:
   - component: {fileID: 30150260179679671}
   - component: {fileID: 1412363749207479761}
   m_Layer: 5
-  m_Name: EventsButton
+  m_Name: ViewMoreButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3881,7 +3881,7 @@ GameObject:
   - component: {fileID: 4815862552011672725}
   - component: {fileID: 5139708934087426398}
   m_Layer: 5
-  m_Name: PlacesButton
+  m_Name: ViewMoreButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4216,7 +4216,7 @@ GameObject:
   - component: {fileID: 3333793751541133482}
   - component: {fileID: 6647114905973339469}
   m_Layer: 5
-  m_Name: WorldsButton
+  m_Name: ViewMoreButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4712,7 +4712,7 @@ GameObject:
   - component: {fileID: 8680834997988558237}
   - component: {fileID: 4360044952972845408}
   m_Layer: 5
-  m_Name: Places
+  m_Name: GenesisCityPlaces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4846,7 +4846,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Places
+  m_text: Genesis City
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
