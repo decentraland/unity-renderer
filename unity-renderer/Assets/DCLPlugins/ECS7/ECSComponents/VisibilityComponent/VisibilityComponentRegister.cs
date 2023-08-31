@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
 
         public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBVisibilityComponent>, () => new ECSVisibilityComponentHandler(internalComponents.visibilityComponent));
+            factory.AddOrReplaceComponent(componentId, () => new ECSVisibilityComponentHandler(internalComponents.visibilityComponent), ProtoSerialization.Deserialize<PBVisibilityComponent>);
             componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

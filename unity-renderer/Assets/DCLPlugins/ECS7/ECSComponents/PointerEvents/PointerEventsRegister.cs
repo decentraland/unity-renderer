@@ -15,9 +15,8 @@ namespace DCL.ECSComponents
         {
             var handler = new PointerEventsHandler(internalPointerEvents);
 
-            factory.AddOrReplaceInternalComponent(componentId,
-                ProtoSerialization.Deserialize<PBPointerEvents>,
-                () => handler);
+            factory.AddOrReplaceComponent(componentId,
+                () => handler, ProtoSerialization.Deserialize<PBPointerEvents>);
 
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
 

@@ -12,11 +12,10 @@ namespace DCL.ECSComponents
 
         public VideoPlayerRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(componentId,
-                ProtoSerialization.Deserialize<PBVideoPlayer>,
+            factory.AddOrReplaceComponent(componentId,
                 () => new VideoPlayerHandler(
                     internalComponents.videoPlayerComponent,
-                    DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD));
+                    DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD), ProtoSerialization.Deserialize<PBVideoPlayer>);
             componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

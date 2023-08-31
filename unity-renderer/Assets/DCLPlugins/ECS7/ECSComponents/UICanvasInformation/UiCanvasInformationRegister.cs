@@ -11,7 +11,7 @@ namespace DCLPlugins.ECSComponents
 
         public UiCanvasInformationRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBUiCanvasInformation>, null);
+            factory.AddOrReplaceComponent(componentId, null, ProtoSerialization.Deserialize<PBUiCanvasInformation>);
             componentWriter.AddOrReplaceComponentSerializer<PBUiCanvasInformation>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

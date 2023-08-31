@@ -12,9 +12,8 @@ namespace DCL.ECSComponents
         public MeshColliderRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(componentId,
-                ProtoSerialization.Deserialize<PBMeshCollider>,
-                () => new MeshColliderHandler(internalComponents.onPointerColliderComponent, internalComponents.physicColliderComponent, internalComponents.customLayerColliderComponent));
+            factory.AddOrReplaceComponent(componentId,
+                () => new MeshColliderHandler(internalComponents.onPointerColliderComponent, internalComponents.physicColliderComponent, internalComponents.customLayerColliderComponent), ProtoSerialization.Deserialize<PBMeshCollider>);
             componentWriter.AddOrReplaceComponentSerializer<PBMeshCollider>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

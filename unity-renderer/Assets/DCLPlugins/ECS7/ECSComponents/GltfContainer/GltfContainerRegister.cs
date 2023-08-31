@@ -15,7 +15,7 @@ namespace DCL.ECSComponents
             var dataStoreEcs7 = DataStore.i.ecs7;
             var featureFlags = DataStore.i.featureFlags;
 
-            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainer>,
+            factory.AddOrReplaceComponent(componentId,
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
                     internalComponents.physicColliderComponent,
@@ -23,7 +23,7 @@ namespace DCL.ECSComponents
                     internalComponents.renderersComponent,
                     internalComponents.GltfContainerLoadingStateComponent,
                     dataStoreEcs7,
-                    featureFlags));
+                    featureFlags), ProtoSerialization.Deserialize<PBGltfContainer>);
 
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);
 

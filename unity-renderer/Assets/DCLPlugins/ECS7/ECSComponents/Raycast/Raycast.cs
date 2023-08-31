@@ -12,11 +12,9 @@ namespace DCLPlugins.ECSComponents
 
         public RaycastRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(
+            factory.AddOrReplaceComponent(
                 componentId,
-                ProtoSerialization.Deserialize<PBRaycast>,
-                () => new RaycastComponentHandler(internalComponents.raycastComponent)
-            );
+                () => new RaycastComponentHandler(internalComponents.raycastComponent), ProtoSerialization.Deserialize<PBRaycast>);
             componentWriter.AddOrReplaceComponentSerializer<PBRaycast>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

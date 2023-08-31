@@ -11,8 +11,8 @@ namespace DCL.ECSComponents
 
         public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceInternalComponent(componentId, ProtoSerialization.Deserialize<PBAudioStream>,
-                () => new ECSAudioStreamComponentHandler());
+            factory.AddOrReplaceComponent(componentId,
+                () => new ECSAudioStreamComponentHandler(), ProtoSerialization.Deserialize<PBAudioStream>);
             componentWriter.AddOrReplaceComponentSerializer<PBAudioStream>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

@@ -11,9 +11,8 @@ namespace DCL.ECSComponents
 
         public MaterialRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(componentId,
-                ProtoSerialization.Deserialize<PBMaterial>,
-                () => new MaterialHandler(internalComponents.materialComponent, internalComponents.videoMaterialComponent));
+            factory.AddOrReplaceComponent(componentId,
+                () => new MaterialHandler(internalComponents.materialComponent, internalComponents.videoMaterialComponent), ProtoSerialization.Deserialize<PBMaterial>);
             componentWriter.AddOrReplaceComponentSerializer<PBMaterial>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

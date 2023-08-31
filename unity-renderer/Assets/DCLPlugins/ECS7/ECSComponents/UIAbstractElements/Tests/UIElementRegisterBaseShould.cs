@@ -33,8 +33,7 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         public void AddDeserializer()
         {
             factory.Received(1)
-                   .AddOrReplaceInternalComponent(COMPONENT_ID,
-                        Arg.Any<Func<object, PBUiBackground>>(), default);
+                   .AddOrReplaceComponent(COMPONENT_ID, default, Arg.Any<Func<object, PBUiBackground>>());
 
             Assert.IsTrue(factory.componentBuilders.TryGetValue(COMPONENT_ID, out var componentBuilder));
             Assert.AreEqual(typeof(ECSComponent<PBUiBackground>), componentBuilder().GetType());

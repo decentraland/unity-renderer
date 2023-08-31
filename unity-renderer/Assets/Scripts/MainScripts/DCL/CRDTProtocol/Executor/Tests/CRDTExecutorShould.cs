@@ -38,15 +38,13 @@ namespace Tests
 
             ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
 
-            componentsFactory.AddOrReplaceInternalComponent(
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_STRING,
-                data => new ComponentString() { value = (string)data },
-                () => stringCompHandler);
+                () => stringCompHandler, data => new ComponentString() { value = (string)data });
 
-            componentsFactory.AddOrReplaceInternalComponent(
+            componentsFactory.AddOrReplaceComponent(
                 (int)ComponentIds.COMPONENT_INT,
-                data => new ComponentInt() { value = (int)data },
-                () => intCompHandler);
+                () => intCompHandler, data => new ComponentInt() { value = (int)data });
 
             componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             testUtils = new ECS7TestUtilsScenesAndEntities();

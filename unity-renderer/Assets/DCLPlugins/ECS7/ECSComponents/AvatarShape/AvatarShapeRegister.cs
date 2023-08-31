@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
         {
             AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>(AVATAR_PREFAB_PATH);
             ConfigurePool(avatarShapePrefab.gameObject);
-            factory.AddOrReplaceInternalComponent(componentId, AvatarShapeSerializer.Deserialize, () => new AvatarShapeComponentHandler(pool, internalComponents.renderersComponent));
+            factory.AddOrReplaceComponent(componentId, () => new AvatarShapeComponentHandler(pool, internalComponents.renderersComponent), AvatarShapeSerializer.Deserialize);
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarShape>(componentId, AvatarShapeSerializer.Serialize);
 
             this.factory = factory;

@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public AvatarAttachRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceInternalComponent(componentId, AvatarAttachSerializer.Deserialize, () => new AvatarAttachComponentHandler(Environment.i.platform.updateEventHandler, internalComponents.sceneBoundsCheckComponent));
+            factory.AddOrReplaceComponent(componentId, () => new AvatarAttachComponentHandler(Environment.i.platform.updateEventHandler, internalComponents.sceneBoundsCheckComponent), AvatarAttachSerializer.Deserialize);
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarAttach>(componentId, AvatarAttachSerializer.Serialize);
 
             this.factory = factory;

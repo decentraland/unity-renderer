@@ -12,9 +12,8 @@ namespace DCL.ECSComponents
         public MeshRendererRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
-            factory.AddOrReplaceInternalComponent(componentId,
-                ProtoSerialization.Deserialize<PBMeshRenderer>,
-                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent));
+            factory.AddOrReplaceComponent(componentId,
+                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent), ProtoSerialization.Deserialize<PBMeshRenderer>);
             componentWriter.AddOrReplaceComponentSerializer<PBMeshRenderer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

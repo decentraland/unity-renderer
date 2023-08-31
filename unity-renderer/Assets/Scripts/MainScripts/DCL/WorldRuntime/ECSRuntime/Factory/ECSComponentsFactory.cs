@@ -19,15 +19,14 @@ namespace DCL.ECSRuntime
         /// put component to the components builder dictionary
         /// </summary>
         /// <param name="componentId"></param>
-        /// <param name="deserializer"></param>
         /// <param name="handlerBuilder"></param>
+        /// <param name="deserializer"></param>
         /// <typeparam name="ModelType"></typeparam>
-        public void AddOrReplaceInternalComponent<ModelType>(
-            int componentId,
-            Func<object, ModelType> deserializer,
-            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        public void AddOrReplaceComponent<ModelType>(int componentId,
+            Func<IECSComponentHandler<ModelType>> handlerBuilder,
+            Func<object, ModelType> deserializer)
         {
-            components[componentId] = CreateInternalComponentBuilder(deserializer, handlerBuilder);
+            components[componentId] = CreateComponentBuilder(handlerBuilder, deserializer);
         }
 
         /// <summary>
@@ -42,20 +41,16 @@ namespace DCL.ECSRuntime
         /// <summary>
         /// creates a component builder
         /// </summary>
-        /// <param name="deserializer"></param>
         /// <param name="handlerBuilder"></param>
+        /// <param name="deserializer"></param>
         /// <typeparam name="ModelType"></typeparam>
         /// <returns>component builder</returns>
-        public static ECSComponentBuilder CreateInternalComponentBuilder<ModelType>(
-            Func<object, ModelType> deserializer,
-            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        public static ECSComponentBuilder CreateComponentBuilder<ModelType>(Func<IECSComponentHandler<ModelType>> handlerBuilder, Func<object, ModelType> deserializer)
         {
-            return () => BuildInternalComponent(deserializer, handlerBuilder);
+            return () => BuildComponent(handlerBuilder, deserializer);
         }
 
-        private static IECSComponent BuildInternalComponent<ModelType>(
-            Func<object, ModelType> deserializer,
-            Func<IECSComponentHandler<ModelType>> handlerBuilder)
+        private static IECSComponent BuildComponent<ModelType>(Func<IECSComponentHandler<ModelType>> handlerBuilder, Func<object, ModelType> deserializer)
         {
             return new ECSComponent<ModelType>(deserializer, handlerBuilder);
         }

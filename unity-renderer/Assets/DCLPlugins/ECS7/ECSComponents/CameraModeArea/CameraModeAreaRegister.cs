@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public CameraModeAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceInternalComponent(componentId, CameraModeAreaSerializer.Deserialize, () => new CameraModeAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player));
+            factory.AddOrReplaceComponent(componentId, () => new CameraModeAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player), CameraModeAreaSerializer.Deserialize);
             componentWriter.AddOrReplaceComponentSerializer<PBCameraModeArea>(componentId, CameraModeAreaSerializer.Serialize);
 
             this.factory = factory;
