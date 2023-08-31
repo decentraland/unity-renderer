@@ -209,7 +209,9 @@ function* initializeRenderer(action: InitializeRenderer) {
 
   // start loading the renderer
   try {
+    console.log('PRAVS - 1')
     const { renderer, transport }: { renderer: UnityGame; transport: Transport } = yield call(delegate, container)
+    console.log('PRAVS - 2')
 
     const startTime = performance.now()
 
