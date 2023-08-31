@@ -10,10 +10,11 @@ namespace DCL.Emotes
         public bool Loop { get; }
 
         [CanBeNull] private Animation animation;
-        [CanBeNull] public GameObject ExtraContent { get; private set; }
-        [CanBeNull] public AudioClip AudioClip { get; private set; }
+        [CanBeNull] public GameObject ExtraContent { get; }
 
         [CanBeNull] private Renderer[] renderers;
+
+        [CanBeNull] private AudioSource audioSource;
 
         public EmoteClipData(AnimationClip avatarClip, bool loop = false)
         {
@@ -21,12 +22,12 @@ namespace DCL.Emotes
             this.Loop = loop;
         }
 
-        public EmoteClipData(AnimationClip mainClip, GameObject container, AudioClip audioClip, bool loop = false)
+        public EmoteClipData(AnimationClip mainClip, GameObject container, AudioSource audioSource, bool loop = false)
         {
             this.AvatarClip = mainClip;
             this.Loop = loop;
             this.ExtraContent = container;
-            this.AudioClip = audioClip;
+            this.audioSource = audioSource;
 
             if (ExtraContent == null) return;
 
@@ -63,6 +64,12 @@ namespace DCL.Emotes
 
                 animation.enabled = true;
             }
+
+            if (audioSource != null)
+            {
+                audioSource.loop = Loop;
+                audioSource.Play();
+            }
         }
 
         public void StopAllAnimations()
@@ -85,6 +92,9 @@ namespace DCL.Emotes
 
                 animation.enabled = false;
             }
+
+            if (audioSource != null)
+                audioSource.Stop();
         }
     }
 }

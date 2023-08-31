@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL.Emotes
@@ -11,7 +12,9 @@ namespace DCL.Emotes
         private readonly IWearableRetriever retriever;
         public AnimationClip mainClip { get; internal set; }
         public GameObject container { get; private set; }
-        public AudioClip audioClip { get; private set; }
+        public AudioSource audioSource { get; private set; }
+
+        private AudioClip audioClip;
 
         public EmoteAnimationLoader(IWearableRetriever retriever)
         {
@@ -41,10 +44,7 @@ namespace DCL.Emotes
                 return;
             }
 
-            if (animation.GetClipCount() > 1)
-            {
-                this.container = rendereable.container;
-            }
+            if (animation.GetClipCount() > 1) { this.container = rendereable.container; }
 
             animation.enabled = false;
             var animationClip = animation.clip;
@@ -58,6 +58,41 @@ namespace DCL.Emotes
             //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
             this.mainClip = animationClip;
             animationClip.name = emote.id;
+
+            var contentProvider = emote.GetContentProvider(bodyShapeId);
+
+            foreach (var contentMap in contentProvider.contents)
+            {
+                if (!contentMap.file.EndsWith(".mp3")) continue; //do we need to support more of em?
+
+                try
+                {
+                    await AsyncLoadAudioClip(contentMap.file, contentProvider).ToUniTask(cancellationToken: ct);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                if (audioClip != null)
+                {
+                    audioSource = targetContainer.AddComponent<AudioSource>();
+                    audioSource.clip = audioClip;
+                }
+
+                break;
+            }
+        }
+
+        private IEnumerator AsyncLoadAudioClip(string file, ContentProvider contentProvider)
+        {
+            var audioClipPromise = new AssetPromise_AudioClip(file, contentProvider);
+            audioClipPromise.OnSuccessEvent += asset => audioClip = asset.audioClip;
+            audioClipPromise.OnFailEvent += (_, e) => throw e;
+
+            AssetPromiseKeeper_AudioClip.i.Keep(audioClipPromise);
+
+            yield return audioClipPromise;
         }
 
         public void Dispose()

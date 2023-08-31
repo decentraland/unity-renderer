@@ -141,12 +141,26 @@ namespace DCL.EmotesWheel
                     {
                         var entity = emote.GetEntity();
 
-                        emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                        if (entity == null)
                         {
-                            emoteId = equippedEmoteData.id,
-                            emoteItem = entity,
-                            thumbnailSprite = entity.thumbnailSprite != null ? entity.thumbnailSprite : equippedEmoteData.cachedThumbnail,
-                        });
+                            Debug.LogError("Something is not quite right");
+
+                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                            {
+                                emoteId = equippedEmoteData.id,
+                                emoteItem = null,
+                                thumbnailSprite = equippedEmoteData.cachedThumbnail,
+                            });
+                        }
+                        else
+                        {
+                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                            {
+                                emoteId = equippedEmoteData.id,
+                                emoteItem = entity,
+                                thumbnailSprite = entity.thumbnailSprite != null ? entity.thumbnailSprite : equippedEmoteData.cachedThumbnail,
+                            });
+                        }
                     }
                     else
                         emotesToSet.Add(new EmotesWheelView.EmoteSlotData

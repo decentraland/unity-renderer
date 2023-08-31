@@ -9,7 +9,7 @@ namespace DCL.Emotes
     {
         AnimationClip mainClip { get; }
         GameObject container { get; }
-        AudioClip audioClip { get; }
+        AudioSource audioSource { get; }
         UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default);
     }
 }

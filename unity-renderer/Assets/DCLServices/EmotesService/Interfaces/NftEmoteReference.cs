@@ -10,7 +10,7 @@
         {
             this.emoteItem = emoteItem;
             this.loader = loader;
-            emoteClipData = new EmoteClipData(loader.mainClip, loader.container, loader.audioClip, loop);
+            emoteClipData = new EmoteClipData(loader.mainClip, loader.container, loader.audioSource, loop);
         }
 
         public WearableItem GetEntity() =>
