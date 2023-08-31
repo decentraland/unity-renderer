@@ -1,5 +1,4 @@
 using DCL.Controllers;
-using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
@@ -15,13 +14,13 @@ namespace DCL.ECSRuntime
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
 
-        private readonly IComponentPool<ModelType> componentPool;
+        private readonly IECSComponentPool<ModelType> iecsComponentPool;
 
         // FD:: Constructor with pooling
-        public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IComponentPool<ModelType> componentPool)
+        public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iecsComponentPool)
         {
             this.handlerBuilder = handlerBuilder;
-            this.componentPool = componentPool;
+            this.iecsComponentPool = iecsComponentPool;
         }
 
         // FD:: Constructor for deserialization (without pooling)
@@ -49,7 +48,7 @@ namespace DCL.ECSRuntime
             var handler = handlerBuilder?.Invoke();
 
             // FD:: Use pooled component if available, otherwise create a new one (re-check this)
-            ModelType modelInstance = componentPool != null ? componentPool.Get() : default(ModelType);
+            ModelType modelInstance = iecsComponentPool != null ? iecsComponentPool.Get() : default(ModelType);
 
             componentData.Add(scene, entityId, new ECSComponentData<ModelType>
             (
@@ -75,8 +74,8 @@ namespace DCL.ECSRuntime
                 return false;
 
             // FD:: Release the component back to the pool if applicable
-            if (componentPool != null)
-                componentPool.Release(data.model);
+            if (iecsComponentPool != null)
+                iecsComponentPool.Release(data.model);
 
             data.handler?.OnComponentRemoved(scene, entity);
             componentData.Remove(scene, entity.entityId);
@@ -172,40 +171,4 @@ namespace DCL.ECSRuntime
     }
 
     // FD:: new interfaces
-    public interface IComponentPool<ModelType>
-    {
-        ModelType Get();
-        void Release(ModelType item);
-    }
-
-    public class ReferenceTypeComponentPool<ModelType> : IComponentPool<ModelType> where ModelType : class
-    {
-        private readonly WrappedComponentPool<IWrappedComponent<ModelType>> internalPool;
-
-        public ReferenceTypeComponentPool(WrappedComponentPool<IWrappedComponent<ModelType>> internalPool)
-        {
-            this.internalPool = internalPool;
-        }
-
-        public ModelType Get()
-        {
-            return (ModelType)internalPool.Get().WrappedComponentBase;
-        }
-
-        public void Release(ModelType item)
-        {
-            internalPool.Release(item as PooledWrappedComponent<IWrappedComponent<ModelType>>);
-        }
-    }
-
-    public class ValueTypeComponentPool<ModelType> : IComponentPool<ModelType> where ModelType : struct
-    {
-        public ModelType Get()
-        {
-            return default;
-        }
-
-        public void Release(ModelType item) { }
-    }
-
 }
