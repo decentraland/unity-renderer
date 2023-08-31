@@ -905,8 +905,8 @@ MonoBehaviour:
   showMoreWorldsButtonContainer: {fileID: 4387709849468574449}
   showMoreWorldsButton: {fileID: 6656462159696491730}
   sortByDropdown: {fileID: 3662062210310201633}
-  findOutMoreButton: {fileID: 0}
-  textComponent: {fileID: 0}
+  findOutMoreButton: {fileID: 3658591688276082732}
+  textComponent: {fileID: 8918894173729592739}
   canvas: {fileID: 7254015126755689928}
 --- !u!223 &7254015126755689928
 Canvas:
