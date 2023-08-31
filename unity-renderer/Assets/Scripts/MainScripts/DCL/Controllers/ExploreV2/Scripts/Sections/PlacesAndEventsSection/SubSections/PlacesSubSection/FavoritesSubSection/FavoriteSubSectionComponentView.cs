@@ -45,13 +45,17 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     [SerializeField] private TMP_Text noPlacesText;
     [SerializeField] private TMP_Text noWorldsText;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
+    [SerializeField] internal PlaceCardComponentView worldCardModalPrefab;
 
     internal PlaceCardComponentView placeModal;
+    internal PlaceCardComponentView worldModal;
     public event Action OnRequestFavorites;
     public event Action<int> OnRequestAllPlaces;
     public event Action<int> OnRequestAllWorlds;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnWorldJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnPlaceFavoriteChanged;
 
@@ -72,6 +76,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
 
         noPlaces.SetActive(false);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+        worldModal = PlacesAndEventsCardsFactory.GetWorldCardTemplateHiddenLazy(worldCardModalPrefab);
     }
 
     private void InitialiseButtonEvents()
@@ -178,7 +183,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
             placeCardComponentView.model = placeCardComponentModel;
             placeCardComponentView.RefreshControl();
             pooledWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         worldsParent.gameObject.SetActive(true);
         loadingWorlds.gameObject.SetActive(false);
@@ -226,6 +231,20 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         view.OnVoteChanged += ViewOnVoteChanged;
     }
 
+    private void ConfigureWorldCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
+    {
+        view.onInfoClick.RemoveAllListeners();
+        view.onBackgroundClick.RemoveAllListeners();
+        view.onJumpInClick.RemoveAllListeners();
+        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.OnVoteChanged -= ViewOnVoteChanged;
+        view.onInfoClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onBackgroundClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onJumpInClick.AddListener(()=>OnWorldJumpInClicked?.Invoke(model.placeInfo));
+        view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
+        view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
     private void ViewOnVoteChanged(string arg1, bool? arg2)
     {
         OnVoteChanged?.Invoke(arg1, arg2);
@@ -240,6 +259,12 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     {
         placeModal.Show();
         PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
+    }
+
+    public void ShowWorldModal(PlaceCardComponentModel placeModel)
+    {
+        worldModal.Show();
+        PlacesCardsConfigurator.Configure(worldModal, placeModel, null, OnWorldJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllPlaces(List<PlaceCardComponentModel> places, bool showMoreButton)
@@ -270,7 +295,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
             placeCardComponentView.OnLoseFocus();
             placeCardComponentView.transform.SetAsLastSibling();
             pooledFullWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         loadingAll.SetActive(false);
         Utils.ForceRebuildLayoutImmediate(fullWorldsParent);

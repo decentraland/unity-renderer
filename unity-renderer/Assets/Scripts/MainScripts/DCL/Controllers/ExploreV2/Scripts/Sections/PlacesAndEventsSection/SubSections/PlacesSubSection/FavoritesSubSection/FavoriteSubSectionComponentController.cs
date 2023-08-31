@@ -45,6 +45,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnRequestAllPlaces += RequestAllFavoritePlaces;
         view.OnRequestAllWorlds += RequestAllFavoriteWorlds;
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
+        view.OnWorldInfoClicked += OpenWorldDetailsModal;
         view.OnVoteChanged += ChangeVote;
         view.OnPlaceJumpInClicked += JumpInToPlace;
         view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
@@ -97,6 +98,12 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     {
         view.ShowPlaceModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
+    }
+
+    private void OpenWorldDetailsModal(PlaceCardComponentModel placeModel, int index)
+    {
+        view.ShowWorldModal(placeModel);
+        exploreV2Analytics.SendClickOnWorldInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
     }
 
     private void RequestFavorites()

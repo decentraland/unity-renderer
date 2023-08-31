@@ -53,15 +53,18 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
+    [SerializeField] internal PlaceCardComponentView worldCardModalPrefab;
 
     internal EventCardComponentView eventModal;
     internal PlaceCardComponentView placeModal;
+    internal PlaceCardComponentView worldModal;
     public event Action<int> OnRequestAllEvents;
     public event Action<int> OnRequestAllPlaces;
     public event Action<int> OnRequestAllWorlds;
     public event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
+    public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
@@ -92,6 +95,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
+        worldModal = PlacesAndEventsCardsFactory.GetWorldCardTemplateHiddenLazy(worldCardModalPrefab);
     }
 
     private void InitialiseButtonEvents()
@@ -254,7 +258,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             placeCardComponentView.model = placeCardComponentModel;
             placeCardComponentView.RefreshControl();
             pooledWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         worldsParent.gameObject.SetActive(true);
         loadingWorlds.gameObject.SetActive(false);
@@ -319,6 +323,20 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.OnVoteChanged += ViewOnVoteChanged;
     }
 
+    private void ConfigureWorldCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
+    {
+        view.onInfoClick.RemoveAllListeners();
+        view.onBackgroundClick.RemoveAllListeners();
+        view.onJumpInClick.RemoveAllListeners();
+        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.OnVoteChanged -= ViewOnVoteChanged;
+        view.onInfoClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onBackgroundClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
+        view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
+        view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
     private void ViewOnVoteChanged(string arg1, bool? arg2)
     {
         OnVoteChanged?.Invoke(arg1, arg2);
@@ -339,6 +357,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         placeModal.Show();
         PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
+    }
+
+    public void ShowWorldModal(PlaceCardComponentModel placeModel)
+    {
+        worldModal.Show();
+        PlacesCardsConfigurator.Configure(worldModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
@@ -385,7 +409,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             placeCardComponentView.OnLoseFocus();
             placeCardComponentView.transform.SetAsLastSibling();
             pooledFullWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         loadingAll.SetActive(false);
         Utils.ForceRebuildLayoutImmediate(fullWorldsParent);

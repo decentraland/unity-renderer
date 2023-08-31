@@ -81,7 +81,7 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
 
     public void Start()
     {
-        worldModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(worldCardModalPrefab);
+        worldModal = PlacesAndEventsCardsFactory.GetWorldCardTemplateHiddenLazy(worldCardModalPrefab);
 
         worlds.RemoveItems();
         LoadSortByDropdown();
