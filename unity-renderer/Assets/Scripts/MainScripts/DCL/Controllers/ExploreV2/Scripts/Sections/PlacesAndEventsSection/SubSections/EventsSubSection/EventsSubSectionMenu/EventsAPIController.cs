@@ -31,7 +31,7 @@ public interface IEventsAPIController
 [ExcludeFromCodeCoverage]
 public class EventsAPIController : IEventsAPIController
 {
-    internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.org/api/events";
+    internal const string URL_GET_ALL_EVENTS = "https://events.decentraland.zone/api/events"; // TODO: Set it back to .org before merging!!
     private const string URL_GET_DETAILED_EVENT = "https://events.decentraland.org/api/events/{event_id}";
     private const string URL_PARTICIPATE_EVENT = "https://events.decentraland.org/api/events/{event_id}/attendees";
     internal const string URL_GET_CATEGORIES = "https://events.decentraland.org/api/events/categories";
