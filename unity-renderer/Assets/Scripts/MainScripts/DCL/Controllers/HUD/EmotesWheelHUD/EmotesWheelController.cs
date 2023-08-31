@@ -156,7 +156,7 @@ namespace DCL.EmotesWheel
                             thumbnailSprite = equippedEmoteData.cachedThumbnail,
                         });
                 } else
-                    equippedEmotes.Add(null);
+                    emotesToSet.Add(null);
             }
 
             ListPool<EquippedEmoteData>.Release(equippedEmotes);

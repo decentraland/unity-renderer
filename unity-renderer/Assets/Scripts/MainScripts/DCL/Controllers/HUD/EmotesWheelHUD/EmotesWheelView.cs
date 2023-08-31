@@ -94,7 +94,7 @@ namespace DCL.EmotesWheel
             emoteWheelSlot.onSlotHover -= OnSlotHover;
             emoteWheelSlot.onSlotHover += OnSlotHover;
 
-            if (slotData != null)
+            if (slotData is { emoteItem: not null })
             {
                 emoteWheelSlot.button.onClick.AddListener(() => onEmoteClicked?.Invoke(slotData.emoteItem.id));
 
