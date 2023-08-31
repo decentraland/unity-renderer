@@ -44,7 +44,6 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
     [SerializeField] internal GameObject noResults;
     [SerializeField] private TMP_Text noPlacesText;
     [SerializeField] private TMP_Text noWorldsText;
-    [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
 
     internal PlaceCardComponentView placeModal;
@@ -203,7 +202,6 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         {
             noResults.SetActive(true);
             minimalFavoriteList.SetActive(false);
-            noResultsText.text = $"No results found'";
         }
         else
         {
