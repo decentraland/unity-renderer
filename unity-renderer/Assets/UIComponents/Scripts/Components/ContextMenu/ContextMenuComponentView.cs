@@ -40,9 +40,9 @@ namespace UIComponents.ContextMenu
             Vector3 offset = Vector3.zero;
 
             offset.x -= Mathf.Min(0f, bounds.min.x);
-            offset.y -= Mathf.Min(0f, bounds.min.y);
+            offset.y -= Mathf.Min(0f, bounds.max.y);
             offset.x -= Mathf.Max(0f, bounds.max.x - Screen.width);
-            offset.y -= Mathf.Max(0f, bounds.max.y - Screen.height);
+            offset.y -= Mathf.Max(0f, bounds.min.y - Screen.height);
 
             rectTransform.position += offset;
         }
