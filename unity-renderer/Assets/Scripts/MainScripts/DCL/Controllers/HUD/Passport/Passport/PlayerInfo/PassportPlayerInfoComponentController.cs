@@ -84,7 +84,7 @@ namespace DCL.Social.Passports
 
         private void JumpInUser()
         {
-            socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport);
+            socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport, currentPlayerId.Get().playerId);
             OnClosePassport?.Invoke();
         }
 
@@ -269,7 +269,7 @@ namespace DCL.Social.Passports
                     ownUserProfile.Block(userId);
                     view.SetIsBlocked(true);
                     passportApiBridge.SendBlockPlayer(userId);
-                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.Passport);
+                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.Passport, currentPlayerId.Get().playerId);
                 }), true);
         }
 
@@ -280,19 +280,19 @@ namespace DCL.Social.Passports
             ownUserProfile.Unblock(userId);
             view.SetIsBlocked(false);
             passportApiBridge.SendUnblockPlayer(userId);
-            socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.Passport, currentPlayerId.Get().playerId);
         }
 
         private void ReportUser()
         {
             passportApiBridge.SendReportPlayer(currentPlayerId.Get().playerId, name);
-            socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport, currentPlayerId.Get().playerId);
         }
 
         private void WhisperUser(string userId)
         {
             dataStore.HUDs.openChat.Set(userId, true);
-            socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
+            socialAnalytics.SendStartedConversation(PlayerActionSource.Passport, currentPlayerId.Get().playerId);
             OnClosePassport?.Invoke();
         }
 

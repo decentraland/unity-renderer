@@ -17,6 +17,7 @@ reviewGroups:
   qa:
     - kwssbocian
     - kwsskulinski
+    - anicalbano
 
 filterLabels:
   exclude:

@@ -241,7 +241,7 @@ public class UserContextMenu : ContextMenuComponentView
     {
         OnReport?.Invoke(userId);
         WebInterface.SendReportPlayer(userId, UserProfileController.userProfilesCatalog.Get(userId)?.userName);
-        GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.ProfileContextMenu);
+        GetSocialAnalytics().SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.ProfileContextMenu, userId);
         Hide();
     }
 
@@ -333,14 +333,14 @@ public class UserContextMenu : ContextMenuComponentView
                 () =>
                 {
                     WebInterface.SendBlockPlayer(userId);
-                    GetSocialAnalytics().SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+                    GetSocialAnalytics().SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu, userId);
                     OnBlock?.Invoke(userId, blockUser);
                 }), true);
         }
         else
         {
             WebInterface.SendUnblockPlayer(userId);
-            GetSocialAnalytics().SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu);
+            GetSocialAnalytics().SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.ProfileContextMenu, userId);
             OnBlock?.Invoke(userId, blockUser);
         }
 
@@ -350,7 +350,7 @@ public class UserContextMenu : ContextMenuComponentView
     private void OnMentionButtonPressed()
     {
         DataStore.i.mentions.someoneMentionedFromContextMenu.Set($"@{userName.text}", true);
-        GetSocialAnalytics().SendMentionCreated(MentionCreationSource.ProfileContextMenu);
+        GetSocialAnalytics().SendMentionCreated(MentionCreationSource.ProfileContextMenu, userId);
         Hide();
     }
 
