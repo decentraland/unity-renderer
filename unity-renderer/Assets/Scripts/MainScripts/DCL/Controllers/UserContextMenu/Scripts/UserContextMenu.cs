@@ -97,7 +97,6 @@ public class UserContextMenu : MonoBehaviour
     private bool isFromMentionContextMenu;
     private IFriendsController friendsControllerInternal;
     private IClipboard clipboardInternal;
-    private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
     private IFriendsController friendsController
@@ -265,16 +264,8 @@ public class UserContextMenu : MonoBehaviour
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        if (isNewFriendRequestsEnabled)
-        {
-            DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
-            DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
-        }
-        else
-        {
-            friendsController.RequestFriendship(userId);
-            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu, "");
-        }
+        DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
+        DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
@@ -285,31 +276,20 @@ public class UserContextMenu : MonoBehaviour
 
     private async UniTaskVoid CancelFriendRequestAsync(string userId, CancellationToken cancellationToken = default)
     {
-        if (isNewFriendRequestsEnabled)
+        try
         {
-            try
-            {
-                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
-
-                GetSocialAnalytics()
-                   .SendFriendRequestCancelled(request.From, request.To,
-                        PlayerActionSource.ProfileContextMenu.ToString(), request.FriendRequestId);
-            }
-            catch (Exception e) when (e is not OperationCanceledException)
-            {
-                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
-                    friendsController, socialAnalytics);
-
-                throw;
-            }
-        }
-        else
-        {
-            friendsController.CancelRequestByUserId(userId);
+            FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
             GetSocialAnalytics()
-               .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
-                    PlayerActionSource.ProfileContextMenu.ToString(), "");
+               .SendFriendRequestCancelled(request.From, request.To,
+                    PlayerActionSource.ProfileContextMenu.ToString(), request.FriendRequestId);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.ProfileContextMenu.ToString(),
+                friendsController, socialAnalytics);
+
+            throw;
         }
     }
 

@@ -21,7 +21,6 @@ namespace DCL.Social.Passports
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
-        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
         private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
         public event Action OnClosePassport;
         private CancellationTokenSource cancellationTokenSource;
@@ -146,7 +145,7 @@ namespace DCL.Social.Passports
             return dataStore.settings.profanityChatFilteringEnabled.Get();
         }
 
-        internal void AddPlayerAsFriend()
+        private void AddPlayerAsFriend()
         {
             if (userProfileBridge.GetOwn().isGuest)
             {
@@ -155,14 +154,7 @@ namespace DCL.Social.Passports
             }
 
             string userId = currentPlayerId.Get().playerId;
-
-            if (isNewFriendRequestsEnabled)
-                dataStore.HUDs.sendFriendRequest.Set(userId, true);
-            else
-            {
-                friendsController.RequestFriendship(userId);
-                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, PlayerActionSource.Passport, "");
-            }
+            dataStore.HUDs.sendFriendRequest.Set(userId, true);
         }
 
         private void RemoveFriend()
@@ -190,30 +182,20 @@ namespace DCL.Social.Passports
         {
             string userId = currentPlayerId.Get().playerId;
 
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    var friendRequest = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
-                    dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
-
-                    socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
-                        PlayerActionSource.Passport.ToString(), friendRequest.FriendRequestId);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
-            }
-            else
-            {
-                friendsController.CancelRequestByUserId(userId);
+                var friendRequest = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
+                dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
 
                 socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
-                    PlayerActionSource.Passport.ToString(), "");
+                    PlayerActionSource.Passport.ToString(), friendRequest.FriendRequestId);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
+                    friendsController, socialAnalytics);
+
+                throw;
             }
         }
 
@@ -229,31 +211,21 @@ namespace DCL.Social.Passports
         {
             string userId = currentPlayerId.Get().playerId;
 
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
-                    dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
-
-                    socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                        request.HasBodyMessage, request.FriendRequestId);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
-            }
-            else
-            {
-                friendsController.AcceptFriendship(userId);
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+                await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
+                dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
                 socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                    false, "");
+                    request.HasBodyMessage, request.FriendRequestId);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
+                    friendsController, socialAnalytics);
+
+                throw;
             }
         }
 
