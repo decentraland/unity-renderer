@@ -82,6 +82,7 @@ namespace DCL.Emotes
                     audioSource.minDistance = 3;
                     audioSource.maxDistance = 30;
                     audioSource.spatialBlend = 1;
+                    audioSource.playOnAwake = false;
                 }
 
                 break;

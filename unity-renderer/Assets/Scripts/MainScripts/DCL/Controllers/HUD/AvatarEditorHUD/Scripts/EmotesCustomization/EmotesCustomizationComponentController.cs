@@ -289,7 +289,11 @@ namespace DCL.EmotesCustomization
 
         internal void OnSellEmoteClicked(string emoteId) { onEmoteSell?.Invoke(emoteId); }
 
-        internal void OnSlotSelected(string emoteId, int slotNumber) { onEmotePreviewed?.Invoke(emoteId); }
+        internal void OnSlotSelected(string emoteId, int slotNumber, bool playEmote)
+        {
+            if (playEmote)
+                onEmotePreviewed?.Invoke(emoteId);
+        }
 
         internal void ConfigureShortcuts()
         {

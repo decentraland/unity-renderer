@@ -8,7 +8,7 @@ namespace AvatarSystem
     {
         void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes);
 
-        void PlayEmote(string emoteId, long timestamps);
+        void PlayEmote(string emoteId, long timestamps, bool spatialSound = true);
 
         void EquipEmote(string emoteId, IEmoteReference emoteReference);
 

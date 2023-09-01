@@ -300,14 +300,14 @@ namespace DCL.EmotesCustomization.Tests
 
             string selectedSlotEmoteID = "";
             int selectedSlotNumber = -1;
-            emotesCustomizationComponent.onSlotSelected += (emoteId, slotNumber) =>
+            emotesCustomizationComponent.onSlotSelected += (emoteId, slotNumber, playEmote) =>
             {
                 selectedSlotEmoteID = emoteId;
                 selectedSlotNumber = slotNumber;
             };
 
             // Act
-            emotesCustomizationComponent.OnSlotSelected(slotNumber, testEventCardModel.id);
+            emotesCustomizationComponent.OnSlotSelected(slotNumber, testEventCardModel.id, false);
 
             // Assert
             Assert.IsTrue(testEventCard.model.isAssignedInSelectedSlot);

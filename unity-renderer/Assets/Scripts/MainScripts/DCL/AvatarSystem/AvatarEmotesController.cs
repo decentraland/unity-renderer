@@ -64,14 +64,14 @@ namespace AvatarSystem
             }
         }
 
-        public void PlayEmote(string emoteId, long timestamps)
+        public void PlayEmote(string emoteId, long timestamps, bool spatialSound)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
 
             (string bodyShapeId, string emoteId) emoteKey = (bodyShapeId, emoteId);
 
             if (emotes.ContainsKey(emoteKey))
-                animator.PlayEmote(emoteId, timestamps);
+                animator.PlayEmote(emoteId, timestamps, spatialSound);
         }
 
         public void EquipEmote(string emoteId, IEmoteReference emoteReference)

@@ -273,7 +273,7 @@ namespace DCL.EmotesCustomization.Tests
             emotesCustomizationComponentController.onEmotePreviewed += (id) => { receivedId = id; };
 
             // Act
-            emotesCustomizationComponentController.OnSlotSelected(emoteId, 0);
+            emotesCustomizationComponentController.OnSlotSelected(emoteId, 0, false);
 
             // Assert
             Assert.AreEqual(emoteId, receivedId);

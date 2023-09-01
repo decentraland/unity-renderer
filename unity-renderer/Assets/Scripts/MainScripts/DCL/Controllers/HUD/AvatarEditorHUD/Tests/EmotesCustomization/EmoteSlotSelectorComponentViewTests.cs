@@ -56,7 +56,7 @@ namespace DCL.EmotesCustomization.Tests
 
             int slotNumberReceived = -1;
             string emoteIdReceived = "";
-            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId) =>
+            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId, playEmote) =>
             {
                 slotNumberReceived = slotNumber;
                 emoteIdReceived = emoteId;
@@ -92,7 +92,7 @@ namespace DCL.EmotesCustomization.Tests
 
             int slotNumberReceived = -1;
             string emoteIdReceived = "";
-            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId) =>
+            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId, playEmote) =>
             {
                 slotNumberReceived = slotNumber;
                 emoteIdReceived = emoteId;
