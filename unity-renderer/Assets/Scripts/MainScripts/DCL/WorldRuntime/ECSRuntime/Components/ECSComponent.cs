@@ -14,13 +14,13 @@ namespace DCL.ECSRuntime
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
         private readonly Func<object, ModelType> deserializer;
 
-        private readonly IECSComponentPool<ModelType> iecsComponentPool;
+        private readonly IECSComponentPool<ModelType> iEcsComponentPool;
 
         // FD:: Constructor with pooling
-        public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iecsComponentPool)
+        public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iEcsComponentPool)
         {
             this.handlerBuilder = handlerBuilder;
-            this.iecsComponentPool = iecsComponentPool;
+            this.iEcsComponentPool = iEcsComponentPool;
         }
 
         // FD:: Constructor for deserialization (without pooling)
@@ -48,7 +48,7 @@ namespace DCL.ECSRuntime
             var handler = handlerBuilder?.Invoke();
 
             // FD:: Use pooled component if available, otherwise create a new one (re-check this)
-            ModelType modelInstance = iecsComponentPool != null ? iecsComponentPool.Get() : default(ModelType);
+            ModelType modelInstance = iEcsComponentPool != null ? iEcsComponentPool.Get() : default(ModelType);
 
             componentData.Add(scene, entityId, new ECSComponentData<ModelType>
             (
@@ -74,8 +74,8 @@ namespace DCL.ECSRuntime
                 return false;
 
             // FD:: Release the component back to the pool if applicable
-            if (iecsComponentPool != null)
-                iecsComponentPool.Release(data.model);
+            if (iEcsComponentPool != null)
+                iEcsComponentPool.Release(data.model);
 
             data.handler?.OnComponentRemoved(scene, entity);
             componentData.Remove(scene, entity.entityId);
@@ -169,6 +169,4 @@ namespace DCL.ECSRuntime
             return componentData.Pairs;
         }
     }
-
-    // FD:: new interfaces
 }
