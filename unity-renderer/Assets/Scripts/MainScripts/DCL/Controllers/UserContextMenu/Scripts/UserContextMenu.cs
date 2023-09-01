@@ -6,6 +6,7 @@ using DCL.Tasks;
 using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Threading;
 using TMPro;
@@ -139,7 +140,9 @@ public class UserContextMenu : ContextMenuComponentView
             SetConfirmationDialog(confirmationDialog);
 
         gameObject.SetActive(true);
-        ClampPositionToScreenBorders(transform.position);
+        // wait until the layout is rebuilt, otherwise there is an undesired offset
+        StartCoroutine(ClampPositionToScreenBordersOnNextFrame());
+
         OnShowMenu?.Invoke();
     }
 
@@ -512,6 +515,12 @@ public class UserContextMenu : ContextMenuComponentView
         nameCopiedToast.gameObject.SetActive(true);
         nameCopiedToast.ShowDelayHide(3);
         copyPasteAnalyticsService.Copy("name");
+    }
+
+    private IEnumerator ClampPositionToScreenBordersOnNextFrame()
+    {
+        yield return null;
+        ClampPositionToScreenBorders(transform.position);
     }
 
 #if UNITY_EDITOR
