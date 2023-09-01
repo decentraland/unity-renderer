@@ -1,3 +1,4 @@
+using DCL.Interface;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -16,8 +17,15 @@ namespace DCL
 
         public event System.Action OnCriticalMemory;
 
+        private const string DISABLE_MEMORY_MANAGER = "DISABLE_MEMORY_MANAGER";
         public MemoryManager(long memoryThresholdForCleanup, float cleanupInterval)
         {
+            if (WebInterface.CheckURLParam(DISABLE_MEMORY_MANAGER))
+            {
+                Debug.Log("PRAVS - DISABLED MEMORY MANAGER");
+                return;
+            }
+
             this.memoryThresholdForCleanup = memoryThresholdForCleanup;
             this.cleanupInterval = cleanupInterval;
             autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
@@ -25,6 +33,12 @@ namespace DCL
 
         public MemoryManager()
         {
+            if (WebInterface.CheckURLParam(DISABLE_MEMORY_MANAGER))
+            {
+                Debug.Log("PRAVS - DISABLED MEMORY MANAGER");
+                return;
+            }
+
             this.memoryThresholdForCleanup = MAX_USED_MEMORY;
             this.cleanupInterval = TIME_FOR_NEW_MEMORY_CHECK;
             autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
@@ -49,7 +63,7 @@ namespace DCL
 
             bool returnValue = usedMemory >= this.memoryThresholdForCleanup;
             if(returnValue)
-                Debug.Log($"PRAVS - CALLING MEMORY CLEANUP - used memory: {usedMemory} / {this.memoryThresholdForCleanup}");
+                Debug.Log($"PRAVS - MEMORY MANAGER CLEANUP - used memory: {usedMemory} / {this.memoryThresholdForCleanup}");
 
             return returnValue;
         }
