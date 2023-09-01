@@ -114,7 +114,7 @@ commands:
           name: Save target to file
           command: |
             echo $DCL_OUTPUT_NAME > /tmp/target
-      - restore_cache:
+      - restore_cache: &RESTORE_BUILD_CACHE
           keys:
             - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
             - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev-2022.3.6f1
@@ -139,11 +139,11 @@ commands:
           command: cat ${PROJECT_PATH}/build-logs.txt
           when: always
 
-      - save_cache:
+      - save_cache: &SAVE_BUILD_CACHE
           name: Store build cache
           key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
           paths: *CACHED_PATHS
-      - save_cache:
+      - save_cache: &SAVE_LIBRARY_CACHE
           name: Store library
           key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-2022.3.6f1
           paths:
@@ -276,16 +276,13 @@ jobs:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: playmode
     steps:
       - <<: *attach_root
-      - run: &HASH_UNITY_FILES
-          name: Get the hash of source files
-          command: ./scripts/hash-unity-files.sh
+      - run: *HASH_UNITY_FILES
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_BUILD_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare test image
@@ -323,25 +320,22 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - save_cache:
-          name: Store test cache
-          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts: &STORE_VISUAL_TESTS
+      - store_artifacts:
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests
+      - save_cache: *SAVE_BUILD_CACHE
+      - save_cache: *SAVE_LIBRARY_CACHE
   test-unity-editmode:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: editmode
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_BUILD_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
@@ -374,10 +368,8 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/editmode-results.xml
-      - save_cache:
-          name: Store test cache
-          key: unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
+      - save_cache: *SAVE_BUILD_CACHE
+      - save_cache: *SAVE_LIBRARY_CACHE
   publish-desktop-artifacts:
     <<: *working_directory_root
     docker:

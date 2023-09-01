@@ -1,4 +1,4 @@
-import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, SSO_URL } from 'config/index'
+import { ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, getSSOUrl } from 'config/index'
 import { WebSocketProvider } from 'eth-connect'
 import { IDecentralandKernel, IEthereumProvider, KernelOptions, KernelResult, LoginState } from '@dcl/kernel-interface'
 import * as SingleSignOn from '@dcl/single-sign-on-client'
@@ -7,6 +7,7 @@ import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { resolveBaseUrl } from 'lib/decentraland/url/resolveBaseUrl'
 import { storeCondition } from 'lib/redux/storeCondition'
+import { defaultLogger } from 'lib/logger'
 import { initShared } from 'shared'
 import { sendHomeScene } from 'shared/atlas/actions'
 import { homePointKey } from 'shared/atlas/utils'
@@ -32,7 +33,14 @@ import { isWebGLCompatible } from './validations'
 declare const globalThis: { DecentralandKernel: IDecentralandKernel }
 globalThis.DecentralandKernel = {
   async initKernel(options: KernelOptions): Promise<KernelResult> {
-    SingleSignOn.init(SSO_URL)
+    try {
+      let sso = getSSOUrl()
+      if (sso) {
+        SingleSignOn.init(sso)
+      }
+    } catch (err) {
+      defaultLogger.error('Error initializing SingleSignOn', err)
+    }
 
     await setupBaseUrl(options)
 
