@@ -193,39 +193,37 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         async UniTaskVoid GetPlacesAssociatedToEventsAsync((List<EventFromAPIModel> eventsFromAPI, int total) searchData, CancellationToken ct)
         {
             // Land's events
-            var coordsList = searchData.eventsFromAPI
-                            .Where(e => !e.world)
-                            .Select(e => new Vector2Int(e.coordinates[0], e.coordinates[1]));
-
+            var landEventsFromAPI = searchData.eventsFromAPI.Where(e => !e.world).ToList();
+            var coordsList = landEventsFromAPI.Select(e => new Vector2Int(e.coordinates[0], e.coordinates[1]));
             var places = await placesAPIService.GetPlacesByCoordsList(coordsList, ct);
 
-            foreach (IHotScenesController.PlaceInfo place in places)
+            foreach (EventFromAPIModel landEventFromAPI in landEventsFromAPI)
             {
-                foreach (EventFromAPIModel eventFromAPI in searchData.eventsFromAPI)
+                Vector2Int landEventCoords = new Vector2Int(landEventFromAPI.coordinates[0], landEventFromAPI.coordinates[1]);
+                foreach (IHotScenesController.PlaceInfo place in places)
                 {
-                    Vector2Int eventCoords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
-                    if (!place.Positions.Contains(eventCoords))
+                    if (!place.Positions.Contains(landEventCoords))
                         continue;
 
-                    eventFromAPI.scene_name = place.title;
+                    landEventFromAPI.scene_name = place.title;
+                    break;
                 }
             }
 
             // World's events
-            var worldNamesList = searchData.eventsFromAPI
-                                .Where(e => e.world)
-                                .Select(e => e.server);
-
+            var worldEventsFromAPI = searchData.eventsFromAPI.Where(e => e.world).ToList();
+            var worldNamesList = worldEventsFromAPI.Select(e => e.server);
             var worlds = await worldsAPIService.GetWorldsByNamesList(worldNamesList, ct);
 
-            foreach (WorldsResponse.WorldInfo world in worlds)
+            foreach (EventFromAPIModel worldEventFromAPI in worldEventsFromAPI)
             {
-                foreach (EventFromAPIModel eventFromAPI in searchData.eventsFromAPI)
+                foreach (WorldsResponse.WorldInfo world in worlds)
                 {
-                    if (world.world_name != eventFromAPI.server)
+                    if (world.world_name != worldEventFromAPI.server)
                         continue;
 
-                    eventFromAPI.scene_name = world.title;
+                    worldEventFromAPI.scene_name = world.title;
+                    break;
                 }
             }
 
