@@ -144,10 +144,39 @@ public class EventsSubSectionComponentControllerTests
         int numberOfEvents = 2;
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
+        List<IHotScenesController.PlaceInfo> testPlaces = new ()
+        {
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId1",
+                title = "place_1",
+                Positions = new []{ new Vector2Int(1,1) },
+            },
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId2",
+                title = "place_2",
+                Positions = new []{ new Vector2Int(eventsSubSectionComponentController.eventsFromAPI[0].coordinates[0],eventsSubSectionComponentController.eventsFromAPI[0].coordinates[1]) },
+            },
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId3",
+                title = "place_3",
+                Positions = new []{ new Vector2Int(3,3) },
+            },
+        };
+
+        placesAPIService.Configure()
+                        .GetPlacesByCoordsList(Arg.Any<IEnumerable<Vector2Int>>(), Arg.Any<CancellationToken>())
+                        .Returns(new UniTask<List<IHotScenesController.PlaceInfo>>(testPlaces));
+
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated(eventsSubSectionComponentController.eventsFromAPI);
 
         // Assert
+        foreach (var testEvent in eventsSubSectionComponentController.eventsFromAPI)
+            Assert.AreEqual("place_2", testEvent.scene_name);
+
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetEvents(Arg.Any<List<EventCardComponentModel>>());
         eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(eventsSubSectionComponentController.availableUISlots < numberOfEvents);
