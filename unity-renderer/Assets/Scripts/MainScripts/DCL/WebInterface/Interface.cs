@@ -911,8 +911,18 @@ namespace DCL.Interface
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
-        public static bool CheckURLParam(string targetParam) { return false; }
-        public static string GetURLParam(string targetParam) { return String.Empty; }
+
+        public static bool CheckURLParam(string targetParam)
+        {
+            Debug.Log("WebInterface.CheckURLParam(string targetParam) is only available on a web build.");
+            return false;
+        }
+
+        public static string GetURLParam(string targetParam)
+        {
+            Debug.Log("WebInterface.GetURLParam(string targetParam) is only available on a web build.");
+            return String.Empty;
+        }
 
         public static void MessageFromEngine(string type, string message)
         {
