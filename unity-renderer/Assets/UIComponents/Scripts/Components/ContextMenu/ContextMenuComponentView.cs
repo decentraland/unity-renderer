@@ -32,25 +32,19 @@ namespace UIComponents.ContextMenu
         public void ClampPositionToScreenBorders(Vector2 position)
         {
             rectTransform.position = position;
-            ClampPositionIntoScreenBorders();
-        }
-
-        private void ClampPositionIntoScreenBorders()
-        {
             rectTransform.GetWorldCorners(corners);
 
-            var sizeDelta = rectTransform.sizeDelta;
+            Bounds bounds = new Bounds();
+            bounds.SetMinMax(corners[1], corners[3]);
 
-            float minX = sizeDelta.x * 0.5f;
-            float maxX = Screen.width - (sizeDelta.x * 0.5f);
-            float minY = sizeDelta.y * 0.5f;
-            float maxY = Screen.height - (sizeDelta.y * 0.5f);
+            Vector3 offset = Vector3.zero;
 
-            Vector3 newPosition = rectTransform.position;
-            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
-            newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+            offset.x -= Mathf.Min(0f, bounds.min.x);
+            offset.y -= Mathf.Min(0f, bounds.min.y);
+            offset.x -= Mathf.Max(0f, bounds.max.x - Screen.width);
+            offset.y -= Mathf.Max(0f, bounds.max.y - Screen.height);
 
-            rectTransform.position = newPosition;
+            rectTransform.position += offset;
         }
 
         private void HideIfClickedOutside()
