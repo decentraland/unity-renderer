@@ -18873,7 +18873,7 @@ PrefabInstance:
     - target: {fileID: 6496376759467236775, guid: 01095a78852393446834e68bf8628274,
         type: 3}
       propertyPath: m_text
-      value: Search places and events
+      value: Search Genesis City and Worlds
       objectReference: {fileID: 0}
     - target: {fileID: 6501104011959572831, guid: 01095a78852393446834e68bf8628274,
         type: 3}
