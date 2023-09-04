@@ -24,10 +24,10 @@ namespace DCL
         public MemoryManager(long memoryThresholdForCleanup, float cleanupInterval)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE))
+            if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE) && float.TryParse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE), out float result))
             {
-                Debug.Log("PRAVS - OVERRIDING TIMESCALE...");
-                Time.timeScale = float.Parse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE));
+                Debug.Log($"PRAVS - OVERRIDING TIMESCALE...{result}");
+                Time.timeScale = result;
             }
             if (WebInterface.CheckURLParam(DISABLE_MEMORY_MANAGER))
             {
@@ -44,10 +44,10 @@ namespace DCL
         public MemoryManager()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE))
+            if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE) && float.TryParse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE), out float result))
             {
-                Debug.Log("PRAVS - OVERRIDING TIMESCALE...");
-                Time.timeScale = float.Parse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE));
+                Debug.Log($"PRAVS - OVERRIDING TIMESCALE...{result}");
+                Time.timeScale = result;
             }
             if (WebInterface.CheckURLParam(DISABLE_MEMORY_MANAGER))
             {
