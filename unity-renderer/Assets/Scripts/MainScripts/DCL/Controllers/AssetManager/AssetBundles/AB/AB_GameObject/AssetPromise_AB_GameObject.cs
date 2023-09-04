@@ -11,8 +11,6 @@ namespace DCL
 {
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
-        private static readonly Shader URP_LIT = Shader.Find("Universal Render Pipeline/Lit");
-
         public AssetPromiseSettings_Rendering settings = new ();
         private AssetPromise_AB subPromise;
         private Coroutine loadingCoroutine;
@@ -166,8 +164,9 @@ namespace DCL
 
         private void OptimizeMaterials(HashSet<Material> materials)
         {
+            var urpLit = Shader.Find("Universal Render Pipeline/Lit");
             foreach (Material material in materials)
-                material.shader = URP_LIT;
+                material.shader = urpLit;
         }
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)

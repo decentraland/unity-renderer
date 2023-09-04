@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ShaderVariantsData
   m_EditorClassIdentifier: 
   collections:
+  - {fileID: 20000000, guid: bf818631bea375546b96fd93b04b1c9e, type: 2}
   - {fileID: 20000000, guid: 05155a166b369cd45942d304cd642652, type: 2}
   - {fileID: 20000000, guid: eb52176fedb24bf4cba6e7b120b23fec, type: 2}
   - {fileID: 20000000, guid: 8840bf56131a8ed449cdf72149e05625, type: 2}
