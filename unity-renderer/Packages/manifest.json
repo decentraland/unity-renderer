@@ -6,7 +6,7 @@
     "com.coffee.ui-particle": "4.1.6",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.decentraland.rpc-csharp": "https://github.com/decentraland/rpc-csharp.git?path=rpc-csharp/src",
-    "com.decentraland.unity-shared-dependencies": "https://github.com/decentraland/unity-shared-dependencies.git",
+    "com.decentraland.unity-shared-dependencies": "https://github.com/decentraland/unity-shared-dependencies.git#test/fix-ab",
     "com.decentraland.videoplayer": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
     "com.decentraland.webgl-ime-input": "https://github.com/decentraland/webgl-ime-input.git",
     "com.madsbangh.easybuttons": "1.3.0",
