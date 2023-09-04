@@ -65,6 +65,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlaceInfo : ISerializationCallbackReceiver
         {
@@ -156,6 +157,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             }
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIResponse : PaginatedResponse
         {
@@ -164,6 +166,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public List<PlaceInfo> data;
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIGetParcelResponse
         {

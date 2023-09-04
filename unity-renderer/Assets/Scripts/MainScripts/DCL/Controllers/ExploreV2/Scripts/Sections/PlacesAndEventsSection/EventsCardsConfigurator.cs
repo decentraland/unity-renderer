@@ -148,11 +148,41 @@ public static class EventsCardsConfigurator
     internal static string FormatEventStartDateFromTo(EventFromAPIModel eventFromAPI)
     {
         CultureInfo cultureInfo = new CultureInfo("en-US");
-        DateTime eventStartDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
-        DateTime eventEndDateTime = Convert.ToDateTime(eventFromAPI.finish_at).ToUniversalTime();
+        string formattedDate = string.Empty;
 
-        string formattedDate = $"From {eventStartDateTime.ToString("dddd", cultureInfo)}, {eventStartDateTime.Day} {eventStartDateTime.ToString("MMM", cultureInfo)}" +
-                               $" to {eventEndDateTime.ToString("dddd", cultureInfo)}, {eventEndDateTime.Day} {eventEndDateTime.ToString("MMM", cultureInfo)} UTC";
+        DateTime startTimeDT = Convert.ToDateTime(eventFromAPI.start_at).ToLocalTime();
+        var startTime12Hour = startTimeDT.ToString("hh:mmtt", CultureInfo.InvariantCulture);
+        startTime12Hour = startTime12Hour.Replace("AM", "am").Replace("PM", "pm");
+
+        DateTime endTimeDT = Convert.ToDateTime(eventFromAPI.finish_at).ToLocalTime();
+        var endTime12Hour = endTimeDT.ToString("hh:mmtt", CultureInfo.InvariantCulture);
+        endTime12Hour = endTime12Hour.Replace("AM", "am").Replace("PM", "pm");
+
+        TimeSpan startUtcOffset = TimeZoneInfo.Local.GetUtcOffset(startTimeDT);
+
+        for (var i = 0; i < eventFromAPI.recurrent_dates.Length; i++)
+        {
+            DateTime recurrentDateDT = Convert.ToDateTime(eventFromAPI.recurrent_dates[i]).ToLocalTime();
+
+            if (recurrentDateDT < DateTime.Today)
+                continue;
+
+            var formattedRecurrentDate = $"{recurrentDateDT.ToString("dddd", cultureInfo)}, {recurrentDateDT.ToString("MMM", cultureInfo)} {recurrentDateDT.Day:00}";
+            if (i == eventFromAPI.recurrent_dates.Length - 1 && endTimeDT.DayOfYear > recurrentDateDT.DayOfYear)
+            {
+                var formattedEndDate = $"{endTimeDT.ToString("dddd", cultureInfo)}, {endTimeDT.ToString("MMM", cultureInfo)} {endTimeDT.Day:00}";
+
+                formattedDate = string.Concat(
+                    formattedDate,
+                    $"{formattedRecurrentDate} from {startTime12Hour} to {formattedEndDate} at {endTime12Hour} (UTC{(startUtcOffset >= TimeSpan.Zero ? "+" : "-")}{startUtcOffset.Hours})\n");
+            }
+            else
+            {
+                formattedDate = string.Concat(
+                    formattedDate,
+                    $"{formattedRecurrentDate} from {startTime12Hour} to {endTime12Hour} (UTC{(startUtcOffset >= TimeSpan.Zero ? "+" : "-")}{startUtcOffset.Hours})\n");
+            }
+        }
 
         return formattedDate;
     }

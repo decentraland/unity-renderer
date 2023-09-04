@@ -31,6 +31,7 @@ public class EventFromAPIModel
     public bool recurrent;
     public double duration;
     public string start_at;
+    public string[] recurrent_dates;
     public bool world;
 }
 
