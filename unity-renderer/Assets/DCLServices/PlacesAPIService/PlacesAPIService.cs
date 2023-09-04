@@ -20,6 +20,8 @@ namespace DCLServices.PlacesAPIService
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct, bool renewCache = false);
 
+        UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(IEnumerable<Vector2Int> coordsList, CancellationToken ct, bool renewCache = false);
+
         UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
@@ -114,6 +116,40 @@ namespace DCLServices.PlacesAPIService
             var place = await client.GetPlace(placeUUID, ct);
             CachePlace(place);
             return place;
+        }
+
+        public async UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(IEnumerable<Vector2Int> coordsList, CancellationToken ct, bool renewCache = false)
+        {
+            List<IHotScenesController.PlaceInfo> alreadyCachedPlaces = new ();
+            List<Vector2Int> coordsToRequest = new ();
+
+            foreach (Vector2Int coords in coordsList)
+            {
+                if (renewCache)
+                {
+                    placesByCoords.Remove(coords);
+                    coordsToRequest.Add(coords);
+                }
+                else
+                {
+                    if (placesByCoords.TryGetValue(coords, out var placeInfo))
+                        alreadyCachedPlaces.Add(placeInfo);
+                    else
+                        coordsToRequest.Add(coords);
+                }
+            }
+
+            var places = new List<IHotScenesController.PlaceInfo>();
+            if (coordsToRequest.Count > 0)
+            {
+                places = await client.GetPlacesByCoordsList(coordsToRequest, ct);
+                foreach (var place in places)
+                    CachePlace(place);
+            }
+
+            places.AddRange(alreadyCachedPlaces);
+
+            return places;
         }
 
         public async UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(CancellationToken ct, bool renewCache = false)

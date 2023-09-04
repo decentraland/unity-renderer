@@ -70,7 +70,7 @@ namespace DCLServices.WearablesCatalogService
 
             BaseVariable<FeatureFlag> featureFlags = new BaseVariable<FeatureFlag>();
             featureFlags.Set(new FeatureFlag());
-            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, featureFlags);
+            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, featureFlags, new DataStore());
             service.Initialize();
         }
 

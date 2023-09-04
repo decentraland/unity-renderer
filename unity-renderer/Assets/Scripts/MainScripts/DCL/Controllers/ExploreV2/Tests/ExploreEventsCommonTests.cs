@@ -153,6 +153,7 @@ public class ExploreEventsCommonTests
                 recurrent = false,
                 duration = 7200000,
                 start_at = "2023-07-18T23:00:00.000Z",
+                recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
                 world = false,
             }
         };
@@ -181,6 +182,7 @@ public class ExploreEventsCommonTests
             recurrent = false,
             duration = 7200000,
             start_at = "2023-07-18T23:00:00.000Z",
+            recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
             world = isWorld,
         };
     }

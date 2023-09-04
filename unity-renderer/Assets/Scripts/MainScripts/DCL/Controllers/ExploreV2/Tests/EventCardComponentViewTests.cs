@@ -79,6 +79,8 @@ public class EventCardComponentViewTests
                 recurrent = false,
                 duration = 7200000,
                 start_at = "2023-07-18T23:00:00.000Z",
+                recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
+                world = false,
             }
         };
 
@@ -295,7 +297,7 @@ public class EventCardComponentViewTests
         Assert.AreEqual(newNumberOfUsers, eventCardComponent.model.subscribedUsers, "The event card subscribedUsers does not match in the model.");
         if (!isEventCardModal)
         {
-            Assert.AreEqual(newNumberOfUsers.ToString() + " going", eventCardComponent.subscribedUsersText.text);
+            Assert.AreEqual(newNumberOfUsers.ToString() + " interested", eventCardComponent.subscribedUsersText.text);
         }
         else
         {
