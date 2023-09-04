@@ -11,17 +11,16 @@ namespace DCL
 {
     public class AssetPromise_AB_GameObject : AssetPromise_WithUrl<Asset_AB_GameObject>
     {
+        private static readonly Shader URP_LIT = Shader.Find("Universal Render Pipeline/Lit");
+
         public AssetPromiseSettings_Rendering settings = new ();
-        AssetPromise_AB subPromise;
-        Coroutine loadingCoroutine;
+        private AssetPromise_AB subPromise;
+        private Coroutine loadingCoroutine;
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
         private const string FEATURE_AB_MESH_GPU = "ab-mesh-gpu";
 
-        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
-        {
-
-        }
+        public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash) { }
 
         protected override void OnLoad(Action OnSuccess, Action<Exception> OnFail)
         {
@@ -75,19 +74,14 @@ namespace DCL
             AssetPromiseKeeper_AB.i.Forget(subPromise);
         }
 
-        public override string ToString()
-        {
-            if (subPromise != null)
-                return $"{subPromise} ... AB_GameObject state = {state}";
-
-            return $"subPromise == null? state = {state}";
-        }
+        public override string ToString() =>
+            subPromise != null ? $"{subPromise} ... AB_GameObject state = {state}" : $"subPromise == null? state = {state}";
 
         private IEnumerator LoadingCoroutine(Action OnSuccess, Action<Exception> OnFail)
         {
             PerformanceAnalytics.ABTracker.TrackLoading();
             subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
-            bool success = false;
+            var success = false;
             Exception loadingException = null;
             subPromise.OnSuccessEvent += (x) => success = true;
 
@@ -127,9 +121,9 @@ namespace DCL
 
         private IEnumerator InstantiateABGameObjects()
         {
-            var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
+            var gameObjects = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
 
-            if (goList.Count == 0)
+            if (gameObjects.Count == 0)
             {
                 if (asset.container != null)
                     UnityEngine.Object.Destroy(asset.container);
@@ -141,7 +135,7 @@ namespace DCL
                 yield break;
             }
 
-            for (int i = 0; i < goList.Count; i++)
+            foreach (var gameObject in gameObjects)
             {
                 if (loadingCoroutine == null)
                     break;
@@ -149,32 +143,31 @@ namespace DCL
                 if (asset.container == null)
                     break;
 
-                GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i], asset.container.transform);
+                GameObject bundledGameObject = UnityEngine.Object.Instantiate(gameObject, asset.container.transform);
 
-                asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(assetBundleModelGO);
+                asset.renderers = MeshesInfoUtils.ExtractUniqueRenderers(bundledGameObject);
                 asset.materials = MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers);
                 asset.SetTextures(MeshesInfoUtils.ExtractUniqueTextures(asset.materials));
                 OptimizeMaterials(MeshesInfoUtils.ExtractUniqueMaterials(asset.renderers));
                 UploadMeshesToGPU(MeshesInfoUtils.ExtractUniqueMeshes(asset.renderers));
                 asset.totalTriangleCount = MeshesInfoUtils.ComputeTotalTriangles(asset.renderers, asset.meshToTriangleCount);
 
-                var animators = MeshesInfoUtils.ExtractUniqueAnimations(assetBundleModelGO);
+                var animators = MeshesInfoUtils.ExtractUniqueAnimations(bundledGameObject);
                 asset.animationClipSize = subPromise.asset.metrics.animationsEstimatedSize;
                 asset.meshDataSize = subPromise.asset.metrics.meshesEstimatedSize;
 
                 foreach (var animator in animators) { animator.cullingType = AnimationCullingType.AlwaysAnimate; }
 
 #if UNITY_EDITOR
-                assetBundleModelGO.name = subPromise.asset.GetName();
+                bundledGameObject.name = subPromise.asset.GetName();
 #endif
-
             }
         }
 
         private void OptimizeMaterials(HashSet<Material> materials)
         {
             foreach (Material material in materials)
-                SRPBatchingHelper.OptimizeMaterial(material);
+                material.shader = URP_LIT;
         }
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)
@@ -191,7 +184,7 @@ namespace DCL
 
                 if (!uploadMesh) continue;
 
-                bool isCollider = mesh.name.Contains("_collider", StringComparison.InvariantCultureIgnoreCase);
+                bool isCollider = mesh.name.Contains("_collider", StringComparison.OrdinalIgnoreCase);
 
                 // colliders will fail to be created if they are not readable on WebGL
                 if (!isCollider)
@@ -202,13 +195,8 @@ namespace DCL
             }
         }
 
-        protected override Asset_AB_GameObject GetAsset(object id)
-        {
-            if (settings.forceNewInstance)
-                return ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id);
-
-            return base.GetAsset(id);
-        }
+        protected override Asset_AB_GameObject GetAsset(object id) =>
+            settings.forceNewInstance ? ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id) : base.GetAsset(id);
 
         private bool IsUploadMeshToGPUEnabled() =>
             featureFlags.Get().IsFeatureEnabled(FEATURE_AB_MESH_GPU);
