@@ -13,7 +13,8 @@
         "ServiceProvidersInterfaces",
         "CatalystInterfaces",
         "FeatureFlagData",
-        "Utils"
+        "Utils",
+        "DataStore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
