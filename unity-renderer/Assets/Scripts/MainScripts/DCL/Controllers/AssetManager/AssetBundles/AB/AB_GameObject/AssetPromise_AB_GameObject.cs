@@ -164,9 +164,9 @@ namespace DCL
 
         private void OptimizeMaterials(HashSet<Material> materials)
         {
-            var urpLit = Shader.Find("Universal Render Pipeline/Lit");
+            var litMat = Resources.Load<Material>("LitMaterial");
             foreach (Material material in materials)
-                material.shader = urpLit;
+                material.shader = litMat.shader;
         }
 
         private void UploadMeshesToGPU(HashSet<Mesh> meshesList)

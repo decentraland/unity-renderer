@@ -32,10 +32,12 @@ namespace DCL
 
         private static IDeferAgent staticDeferAgent;
         private bool isLoading = false;
+        private static Material LIT_MATERIAL;
 
         public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null)
             : base(contentUrl, hash)
         {
+            LIT_MATERIAL ??= Resources.Load<Material>("LitMaterial");
             this.contentProvider = contentProvider;
             assetDirectoryPath = GetDirectoryName(contentUrl);
 
@@ -48,7 +50,7 @@ namespace DCL
             string baseUrl = contentProvider is null ? string.Empty : contentProvider.baseUrl;
             gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl, AssetPromiseKeeper_Texture.i);
             cancellationSource = new CancellationTokenSource();
-            gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
+            gltFastMaterialGenerator = new DecentralandMaterialGenerator(LIT_MATERIAL.shader);
             consoleLogger = new GltfastEditorLogger();
         }
 

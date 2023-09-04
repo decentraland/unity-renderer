@@ -54,7 +54,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "a5242f67c53becf254576b0c59a03569977fbf01"
+      "hash": "801d63494cc9a58ee3203b9e36d4042c6ac7b220"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
