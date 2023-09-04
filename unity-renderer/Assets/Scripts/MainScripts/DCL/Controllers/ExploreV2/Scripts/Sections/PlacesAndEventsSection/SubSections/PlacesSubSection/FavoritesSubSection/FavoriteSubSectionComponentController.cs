@@ -23,7 +23,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     public event Action OnCloseExploreV2;
 
     private CancellationTokenSource minimalListCts;
-    private CancellationTokenSource fullSearchCts;
+    private CancellationTokenSource fullFavoriteListCts;
 
     public FavoriteSubSectionComponentController(
         IFavoriteSubSectionComponentView view,
@@ -61,12 +61,12 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
             if (isUpvote != null)
             {
                 if (isUpvote.Value)
-                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
                 else
-                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
             }
             else
-                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
 
             placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
         }
@@ -79,9 +79,9 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         else
         {
             if(isFavorite)
-                placesAnalytics.AddFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                placesAnalytics.AddFavorite(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
             else
-                placesAnalytics.RemoveFavorite(placeId, IPlacesAnalytics.ActionSource.FromSearch);
+                placesAnalytics.RemoveFavorite(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
 
             placesAPIService.SetPlaceFavorite(placeId, isFavorite, default).Forget();
         }
@@ -91,19 +91,19 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     {
         OnCloseExploreV2?.Invoke();
         PlacesSubSectionComponentController.JumpInToPlace(place);
-        exploreV2Analytics.SendPlaceTeleport(place.id, place.title, Utils.ConvertStringToVector(place.base_position), ActionSource.FromSearch);
+        exploreV2Analytics.SendPlaceTeleport(place.id, place.title, Utils.ConvertStringToVector(place.base_position), ActionSource.FromFavorites);
     }
 
     private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel, int index)
     {
         view.ShowPlaceModal(placeModel);
-        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromFavorites);
     }
 
     private void OpenWorldDetailsModal(PlaceCardComponentModel placeModel, int index)
     {
         view.ShowWorldModal(placeModel);
-        exploreV2Analytics.SendClickOnWorldInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnWorldInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromFavorites);
     }
 
     private void RequestFavorites()
@@ -120,26 +120,25 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     private void RequestAllFavoritePlaces(int pageNumber)
     {
         view.SetHeaderEnabled(true);
-        fullSearchCts.SafeCancelAndDispose();
-        fullSearchCts = new CancellationTokenSource();
-        RequestFavoritePlaces(pageNumber, 18, fullSearchCts.Token, true).Forget();
+        fullFavoriteListCts.SafeCancelAndDispose();
+        fullFavoriteListCts = new CancellationTokenSource();
+        RequestFavoritePlaces(pageNumber, 18, fullFavoriteListCts.Token, true).Forget();
     }
 
     private void RequestAllFavoriteWorlds(int pageNumber)
     {
         view.SetHeaderEnabled(true);
-        fullSearchCts.SafeCancelAndDispose();
-        fullSearchCts = new CancellationTokenSource();
-        RequestFavoriteWorlds(pageNumber, 18, fullSearchCts.Token, true).Forget();
+        fullFavoriteListCts.SafeCancelAndDispose();
+        fullFavoriteListCts = new CancellationTokenSource();
+        RequestFavoriteWorlds(pageNumber, 18, fullFavoriteListCts.Token, true).Forget();
     }
 
-    private async UniTaskVoid RequestFavoritePlaces(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
+    private async UniTaskVoid RequestFavoritePlaces(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullList = false)
     {
         var results = await placesAPIService.GetFavorites(pageNumber, pageSize, cancellationToken, true);
         List<PlaceCardComponentModel> places = PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(results);
-        //exploreV2Analytics.SendSearchPlaces(searchText, places.Select(p=>p.coords).ToArray(), places.Select(p=>p.placeInfo.id).ToArray());
 
-        if (isFullSearch)
+        if (isFullList)
         {
             view.ShowAllPlaces(places, (pageNumber + 1) * pageSize < results.Count);
         }
@@ -149,13 +148,12 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         }
     }
 
-    private async UniTaskVoid RequestFavoriteWorlds(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
+    private async UniTaskVoid RequestFavoriteWorlds(int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullList = false)
     {
         var results = await worldsAPIService.GetFavorites(pageNumber, pageSize, cancellationToken);
         List<PlaceCardComponentModel> worlds = PlacesAndEventsCardsFactory.ConvertWorldsResponseToModel(results);
-        //exploreV2Analytics.SendSearchWorlds(searchText, worlds.Select(p=>p.placeInfo.id).ToArray());
 
-        if (isFullSearch)
+        if (isFullList)
         {
             view.ShowAllWorlds(worlds, false);
         }
