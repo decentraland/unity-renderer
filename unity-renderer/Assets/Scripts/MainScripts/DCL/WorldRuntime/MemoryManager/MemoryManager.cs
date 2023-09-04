@@ -23,7 +23,7 @@ namespace DCL
         private const string OVERRIDE_TIMESCALE = "OVERRIDE_TIMESCALE";
         public MemoryManager(long memoryThresholdForCleanup, float cleanupInterval)
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
+// #if UNITY_WEBGL && !UNITY_EDITOR
             if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE) && float.TryParse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE), out float result))
             {
                 Debug.Log($"PRAVS - OVERRIDING TIMESCALE...{result}");
@@ -34,7 +34,7 @@ namespace DCL
                 Debug.Log("PRAVS - DISABLED MEMORY MANAGER...");
                 return;
             }
-#endif
+// #endif
 
             this.memoryThresholdForCleanup = memoryThresholdForCleanup;
             this.cleanupInterval = cleanupInterval;
@@ -43,7 +43,7 @@ namespace DCL
 
         public MemoryManager()
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
+// #if UNITY_WEBGL && !UNITY_EDITOR
             if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE) && float.TryParse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE), out float result))
             {
                 Debug.Log($"PRAVS - OVERRIDING TIMESCALE...{result}");
@@ -54,7 +54,7 @@ namespace DCL
                 Debug.Log("PRAVS - DISABLED MEMORY MANAGER...");
                 return;
             }
-#endif
+// #endif
 
             this.memoryThresholdForCleanup = MAX_USED_MEMORY;
             this.cleanupInterval = TIME_FOR_NEW_MEMORY_CHECK;
