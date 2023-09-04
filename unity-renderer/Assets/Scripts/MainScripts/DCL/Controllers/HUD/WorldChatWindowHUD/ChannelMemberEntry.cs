@@ -28,8 +28,8 @@ namespace DCL.Social.Chat
 
             optionsButton.onClick.AddListener(() =>
             {
-                userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
+                userContextMenu.Show(model.userId);
             });
         }
 
