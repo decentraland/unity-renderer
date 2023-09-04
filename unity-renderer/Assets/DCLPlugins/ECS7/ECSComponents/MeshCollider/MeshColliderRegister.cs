@@ -9,11 +9,8 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public MeshColliderRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents, SystemsContext systemsContext = null) // FD:: change this optional
+        public MeshColliderRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents) // FD:: change this optional
         {
-            // FD:: wrapping
-            var meshColliderPoolWrapper = new ECSReferenceTypeIecsComponentPool<PBMeshCollider>(systemsContext.MeshColliderPool);
-
             factory.AddOrReplaceComponent(componentId,
                 () => new MeshColliderHandler(internalComponents.onPointerColliderComponent, internalComponents.physicColliderComponent, internalComponents.customLayerColliderComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBMeshCollider>(componentId, ProtoSerialization.Serialize);

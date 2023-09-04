@@ -51,6 +51,8 @@ namespace DCL.ECS7
 
             componentWriter = new ECSComponentWriter();
 
+            componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
+
             SystemsContext systemsContext = new SystemsContext(
                 componentWriters,
                 internalEcsComponents,
@@ -89,8 +91,6 @@ namespace DCL.ECS7
             );
 
             systemsController = new ECSSystemsController(systemsContext);
-
-            componentsComposer = new ECS7ComponentsComposer(componentsFactory, componentWriter, internalEcsComponents);
 
             sceneNumberMapping = new Dictionary<int, IParcelScene>(MAX_EXPECTED_SCENES); // Scene Load Radius 4 -> max scenes 81
 

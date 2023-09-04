@@ -9,12 +9,9 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public MeshRendererRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents, SystemsContext systemsContext = null) // FD:: change this optional
+        public MeshRendererRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
-
-            // FD:: wrapping
-            var meshRendererPoolWrapper = new ECSReferenceTypeIecsComponentPool<PBMeshRenderer>(systemsContext.MeshRendererPool);
 
             factory.AddOrReplaceComponent(componentId,
                 () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent));
