@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -19,11 +20,12 @@ namespace DCL.Social.Passports
         private readonly IClipboard clipboard;
         private readonly IPassportApiBridge passportApiBridge;
 
+        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource removeFriendCancellationToken;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
         private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
         public event Action OnClosePassport;
-        private CancellationTokenSource cancellationTokenSource;
 
         public PassportPlayerInfoComponentController(
             IPassportPlayerInfoComponentView view,
@@ -165,7 +167,8 @@ namespace DCL.Social.Passports
                 UserProfileController.userProfilesCatalog.Get(userId)?.userName,
                 () =>
                 {
-                    friendsController.RemoveFriend(userId);
+                    removeFriendCancellationToken = removeFriendCancellationToken.SafeRestart();
+                    friendsController.RemoveFriendAsync(userId, removeFriendCancellationToken.Token);
                     socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.Passport);
                 }), true);
         }
