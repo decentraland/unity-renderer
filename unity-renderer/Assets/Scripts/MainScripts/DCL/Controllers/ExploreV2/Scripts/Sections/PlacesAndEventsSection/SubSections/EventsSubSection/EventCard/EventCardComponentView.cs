@@ -134,7 +134,7 @@ public interface IEventCardComponentView
 
 public class EventCardComponentView : BaseComponentView, IEventCardComponentView, IComponentModelConfig<EventCardComponentModel>
 {
-    internal const string USERS_CONFIRMED_MESSAGE = "{0} going";
+    internal const string USERS_CONFIRMED_MESSAGE = "{0} interested";
     internal const string NOBODY_CONFIRMED_MESSAGE = "Nobody confirmed yet";
     private const string NO_DESCRIPTION_TEXT = "No description.";
     private const int EVENT_TITLE_LENGTH_LIMIT = 65;
@@ -530,7 +530,7 @@ public class EventCardComponentView : BaseComponentView, IEventCardComponentView
 
         if (!isEventCardModal)
         {
-            subscribedUsersText.text = $"{newNumberOfUsers.ToString()} going";
+            subscribedUsersText.text = $"{newNumberOfUsers.ToString()} interested";
             subscribedUsersText.gameObject.SetActive(!model.isLive);
         }
         else

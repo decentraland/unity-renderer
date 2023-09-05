@@ -138,8 +138,20 @@ namespace DCLServices.WearablesCatalogService
                 foreach (string collectionId in thirdPartyCollectionIds)
                     queryParams.Add(("thirdPartyCollectionId", collectionId));
 
-            string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
-            string explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
+            string explorerUrl;
+            string contentUrl;
+
+            if (IsLocalPreview())
+            {
+                explorerUrl = "https://peer.decentraland.org/explorer/";
+                contentUrl = "https://peer.decentraland.org/content/contents/";
+            }
+            else
+            {
+                string lambdasUrl = await catalyst.GetLambdaUrl(cancellationToken);
+                explorerUrl = lambdasUrl.Replace("/lambdas", "/explorer");
+                contentUrl = $"{catalyst.contentUrl}/contents/";
+            }
 
             (WearableWithEntityResponseDto response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
                 $"{explorerUrl}/:userId/wearables",
@@ -151,7 +163,7 @@ namespace DCLServices.WearablesCatalogService
                 throw new Exception($"The request of wearables for '{userId}' failed!");
 
             List<WearableItem> wearables = ValidateWearables(response.elements,
-                $"{catalyst.contentUrl}/contents/",
+                contentUrl,
                 assetBundlesUrl);
 
             AddWearablesToCatalog(wearables);
@@ -676,5 +688,8 @@ namespace DCLServices.WearablesCatalogService
 
             return false;
         }
+
+        private bool IsLocalPreview() =>
+            dataStore.realm.playerRealm.Get()?.serverName?.Equals("LocalPreview", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 }
