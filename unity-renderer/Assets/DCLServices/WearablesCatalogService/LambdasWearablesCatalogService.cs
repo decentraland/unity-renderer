@@ -362,7 +362,7 @@ namespace DCLServices.WearablesCatalogService
             {
                 string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
 
-                (WearableWithoutDefinitionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<WearableWithoutDefinitionResponse>(
+                (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     TEMPLATE_URL, url,
                     isSigned: true,
                     signUrl: $"https://builder-api.decentraland.org/collections/{collectionId}/items",
@@ -372,8 +372,11 @@ namespace DCLServices.WearablesCatalogService
                 if (!success)
                     throw new Exception($"The request for collection of wearables from builder '{collectionId}' failed!");
 
-                List<WearableItem> ws = response.wearables;
-                MapLambdasDataIntoWearableItem(ws);
+                List<WearableItem> ws = response.data.results
+                                                .Select(bw => bw.ToWearableItem(
+                                                     "https://builder-api.decentraland.org/v1/storage/contents/",
+                                                     assetBundlesUrl))
+                                                .ToList();
                 AddWearablesToCatalog(ws);
 
                 wearables.AddRange(ws);
