@@ -29,7 +29,7 @@ public static partial class UtilsScene
         {
             for (int i = 0; i < allowedDomains.Count; i++)
             {
-                if (String.Equals(allowedDomains[i], uri.Host, StringComparison.CurrentCultureIgnoreCase))
+                if (String.Equals(allowedDomains[i], uri.Host, StringComparison.OrdinalIgnoreCase))
                     return true;
             }
         }

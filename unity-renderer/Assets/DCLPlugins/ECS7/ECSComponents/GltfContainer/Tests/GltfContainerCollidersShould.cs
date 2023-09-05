@@ -315,7 +315,7 @@ namespace Tests
 
         private static bool HasColliderName(Collider collider)
         {
-            const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
+            const StringComparison IGNORE_CASE = StringComparison.OrdinalIgnoreCase;
 
             return collider.name.Contains("_collider", IGNORE_CASE)
                    || collider.transform.parent.name.Contains("_collider", IGNORE_CASE);
