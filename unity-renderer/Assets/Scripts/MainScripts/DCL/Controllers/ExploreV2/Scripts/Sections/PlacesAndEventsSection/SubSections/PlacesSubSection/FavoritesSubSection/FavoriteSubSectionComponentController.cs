@@ -111,8 +111,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     private void RequestFavorites()
     {
         view.SetHeaderEnabled(false);
-        minimalListCts.SafeCancelAndDispose();
-        minimalListCts = new CancellationTokenSource();
+        minimalListCts = minimalListCts.SafeRestart();
 
         view.SetAllAsLoading();
         RequestFavoritePlaces(cancellationToken: minimalListCts.Token).Forget();
