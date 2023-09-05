@@ -173,7 +173,7 @@ public class WorldsSubSectionComponentControllerTests
         IHotScenesController.PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
-        worldsSubSectionComponentController.OnJumpInToWorld(testPlaceFromAPI);
+        worldsSubSectionComponentController.JumpInToWorld(testPlaceFromAPI);
 
         // Assert
         worldsSubSectionComponentView.Received().HideWorldModal();
