@@ -67,27 +67,7 @@ namespace DCL.ECS7
                 new WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBGltfContainerLoadingState>(new PBGltfContainerLoadingState())),
                 new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo())),
                 new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation())),
-                new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult())),
-                new WrappedComponentPool<IWrappedComponent<PBMeshRenderer>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBMeshRenderer>(new PBMeshRenderer())),
-                new WrappedComponentPool<IWrappedComponent<PBMeshCollider>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBMeshCollider>(new PBMeshCollider())),
-                new WrappedComponentPool<IWrappedComponent<PBMaterial>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBMaterial>(new PBMaterial())),
-                new WrappedComponentPool<IWrappedComponent<PBAnimator>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBAnimator>(new PBAnimator())),
-                new WrappedComponentPool<IWrappedComponent<PBAudioSource>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBAudioSource>(new PBAudioSource())),
-                new WrappedComponentPool<IWrappedComponent<PBAudioStream>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBAudioStream>(new PBAudioStream())),
-                new WrappedComponentPool<IWrappedComponent<PBAvatarShape>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBAvatarShape>(new PBAvatarShape())),
-                new WrappedComponentPool<IWrappedComponent<PBBillboard>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBBillboard>(new PBBillboard())),
-                new WrappedComponentPool<IWrappedComponent<PBGltfContainer>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBGltfContainer>(new PBGltfContainer())),
-                new WrappedComponentPool<IWrappedComponent<PBNftShape>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBNftShape>(new PBNftShape())),
-                new WrappedComponentPool<IWrappedComponent<PBPointerEvents>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEvents>(new PBPointerEvents())),
-                new WrappedComponentPool<IWrappedComponent<PBRaycast>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBRaycast>(new PBRaycast())),
-                new WrappedComponentPool<IWrappedComponent<PBTextShape>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBTextShape>(new PBTextShape())),
-                new WrappedComponentPool<IWrappedComponent<PBUiBackground>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBUiBackground>(new PBUiBackground())),
-                new WrappedComponentPool<IWrappedComponent<PBUiDropdown>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBUiDropdown>(new PBUiDropdown())),
-                new WrappedComponentPool<IWrappedComponent<PBUiInput>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBUiInput>(new PBUiInput())),
-                new WrappedComponentPool<IWrappedComponent<PBUiText>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBUiText>(new PBUiText())),
-                new WrappedComponentPool<IWrappedComponent<PBUiTransform>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBUiTransform>(new PBUiTransform())),
-                new WrappedComponentPool<IWrappedComponent<PBVideoPlayer>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBVideoPlayer>(new PBVideoPlayer())),
-                new WrappedComponentPool<IWrappedComponent<PBVisibilityComponent>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBVisibilityComponent>(new PBVisibilityComponent()))
+                new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult()))
             );
 
             systemsController = new ECSSystemsController(systemsContext);

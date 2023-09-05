@@ -37,27 +37,8 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> gltfContainerLoadingStatePool,
         WrappedComponentPool<IWrappedComponent<PBEngineInfo>> engineInfoPool,
         WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool,
-        WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool,
-        WrappedComponentPool<IWrappedComponent<PBMeshRenderer>> meshRendererPool,
-        WrappedComponentPool<IWrappedComponent<PBMeshCollider>> meshColliderPool,
-        WrappedComponentPool<IWrappedComponent<PBMaterial>> materialPool,
-        WrappedComponentPool<IWrappedComponent<PBAnimator>> animatorPool,
-        WrappedComponentPool<IWrappedComponent<PBAudioSource>> audioSourcePool,
-        WrappedComponentPool<IWrappedComponent<PBAudioStream>> audioStreamPool,
-        WrappedComponentPool<IWrappedComponent<PBAvatarShape>> avatarShapePool,
-        WrappedComponentPool<IWrappedComponent<PBBillboard>> billboardPool,
-        WrappedComponentPool<IWrappedComponent<PBGltfContainer>> gltfContainerPool,
-        WrappedComponentPool<IWrappedComponent<PBNftShape>> nftShapePool,
-        WrappedComponentPool<IWrappedComponent<PBPointerEvents>> pointerEventsPool,
-        WrappedComponentPool<IWrappedComponent<PBRaycast>> raycastPool,
-        WrappedComponentPool<IWrappedComponent<PBTextShape>> textShapePool,
-        WrappedComponentPool<IWrappedComponent<PBUiBackground>> uiBackgroundPool,
-        WrappedComponentPool<IWrappedComponent<PBUiDropdown>> uiDropdownPool,
-        WrappedComponentPool<IWrappedComponent<PBUiInput>> uiInputPool,
-        WrappedComponentPool<IWrappedComponent<PBUiText>> uiTextPool,
-        WrappedComponentPool<IWrappedComponent<PBUiTransform>> uiTransformPool,
-        WrappedComponentPool<IWrappedComponent<PBVideoPlayer>> videoPlayerPool,
-        WrappedComponentPool<IWrappedComponent<PBVisibilityComponent>> visibilityComponentPool)
+        WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool
+        )
     {
         this.InternalEcsComponents = internalEcsComponents;
         this.ComponentGroups = componentGroups;
