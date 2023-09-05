@@ -350,9 +350,7 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         if (isActive)
             OnEnable();
         else
-        {
             OnDisable();
-        }
     }
 
     public override void OnEnable()
