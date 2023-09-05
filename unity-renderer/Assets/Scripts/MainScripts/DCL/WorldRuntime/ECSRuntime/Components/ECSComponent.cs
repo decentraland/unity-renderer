@@ -48,7 +48,9 @@ namespace DCL.ECSRuntime
             var handler = handlerBuilder?.Invoke();
 
             // FD:: Use pooled component if available, otherwise create a new one (re-check this)
-            ModelType modelInstance = iEcsComponentPool != null ? iEcsComponentPool.Get() : default(ModelType);
+            ModelType modelInstance = default;
+            if (iEcsComponentPool != null)
+                modelInstance = iEcsComponentPool.Get();
 
             componentData.Add(scene, entityId, new ECSComponentData<ModelType>
             (

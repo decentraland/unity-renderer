@@ -1,3 +1,4 @@
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
 
 namespace DCL.ECSRuntime
@@ -13,7 +14,11 @@ namespace DCL.ECSRuntime
 
         public ModelType Get()
         {
-            return (ModelType)internalPool.Get().WrappedComponentBase;
+            PooledWrappedComponent<IWrappedComponent<ModelType>> pooledWrappedComponent = internalPool.Get();
+            ModelType wrappedComponent = pooledWrappedComponent.WrappedComponent.Model;
+            // FD:: <<---- nasty error here
+            // return (ModelType)internalPool.Get().WrappedComponentBase;
+            return wrappedComponent;
         }
 
         public void Release(ModelType item)
