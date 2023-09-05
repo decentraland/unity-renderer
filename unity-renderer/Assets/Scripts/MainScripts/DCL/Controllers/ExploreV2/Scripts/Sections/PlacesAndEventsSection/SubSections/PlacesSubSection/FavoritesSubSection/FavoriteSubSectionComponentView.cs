@@ -376,6 +376,12 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         ClearFullWorldsPool();
     }
 
+    public void HideWorldModal()
+    {
+        if(worldModal != null)
+            worldModal.Hide();
+    }
+
     private void ClearPlacesPool()
     {
         foreach (var pooledEvent in pooledPlaces)

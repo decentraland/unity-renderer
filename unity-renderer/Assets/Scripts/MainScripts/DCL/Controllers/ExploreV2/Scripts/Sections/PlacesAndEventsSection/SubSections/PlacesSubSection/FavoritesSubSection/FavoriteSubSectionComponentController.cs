@@ -9,6 +9,7 @@ using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Threading;
+using Environment = DCL.Environment;
 
 public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponentController
 {
@@ -48,6 +49,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         view.OnWorldInfoClicked += OpenWorldDetailsModal;
         view.OnVoteChanged += ChangeVote;
         view.OnPlaceJumpInClicked += JumpInToPlace;
+        view.OnWorldJumpInClicked += JumpInToWorld;
         view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
         view.OnRequestFavorites += RequestFavorites;
     }
@@ -163,12 +165,24 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
         }
     }
 
+    internal void JumpInToWorld(IHotScenesController.PlaceInfo worldFromAPI)
+    {
+        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
+        view.HideWorldModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
+        OnCloseExploreV2?.Invoke();
+        exploreV2Analytics.SendWorldTeleport(worldFromAPI.id, worldFromAPI.title);
+    }
+
     public void Dispose()
     {
         view.OnRequestAllPlaces -= RequestAllFavoritePlaces;
         view.OnRequestAllWorlds -= RequestAllFavoriteWorlds;
         view.OnPlaceInfoClicked -= OpenPlaceDetailsModal;
+        view.OnWorldInfoClicked -= OpenWorldDetailsModal;
+        view.OnVoteChanged -= ChangeVote;
         view.OnPlaceJumpInClicked -= JumpInToPlace;
+        view.OnWorldJumpInClicked -= JumpInToWorld;
         view.OnPlaceFavoriteChanged -= ChangePlaceFavorite;
         view.OnRequestFavorites -= RequestFavorites;
     }

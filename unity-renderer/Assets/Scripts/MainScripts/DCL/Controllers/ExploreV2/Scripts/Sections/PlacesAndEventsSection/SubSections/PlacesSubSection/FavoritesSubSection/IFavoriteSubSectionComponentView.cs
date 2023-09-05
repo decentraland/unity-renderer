@@ -20,5 +20,6 @@ public interface IFavoriteSubSectionComponentView : IPlacesAndEventsSubSectionCo
     void ShowAllWorlds(List<PlaceCardComponentModel> worlds, bool showMoreButton);
     void ShowPlaceModal(PlaceCardComponentModel placeModel);
     void ShowWorldModal(PlaceCardComponentModel placeModel);
+    void HideWorldModal();
     void SetHeaderEnabled(bool isFullHeaderActive);
 }

@@ -20,6 +20,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private GameObject fullSearchSection;
     [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject searchHeader;
+    [SerializeField] private GameObject favoritesHeader;
     [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text searchTerm;
 
@@ -67,6 +68,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnWorldJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnPlaceFavoriteChanged;
     public event Action<string> OnSubscribeEventClicked;
@@ -332,9 +334,15 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.OnVoteChanged -= ViewOnVoteChanged;
         view.onInfoClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onBackgroundClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
-        view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
+        view.onJumpInClick.AddListener(()=>OnWorldJumpInClicked?.Invoke(model.placeInfo));
         view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
         view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
+    public void HideWorldModal()
+    {
+        if (worldModal != null)
+            worldModal.Hide();
     }
 
     private void ViewOnVoteChanged(string arg1, bool? arg2)
@@ -362,7 +370,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public void ShowWorldModal(PlaceCardComponentModel placeModel)
     {
         worldModal.Show();
-        PlacesCardsConfigurator.Configure(worldModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
+        PlacesCardsConfigurator.Configure(worldModal, placeModel, null, OnWorldJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
@@ -456,6 +464,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         normalHeader.SetActive(string.IsNullOrEmpty(searchText));
         searchHeader.SetActive(!string.IsNullOrEmpty(searchText));
+        favoritesHeader.SetActive(false);
         searchTerm.text = $"\"{searchText}\"";
     }
 

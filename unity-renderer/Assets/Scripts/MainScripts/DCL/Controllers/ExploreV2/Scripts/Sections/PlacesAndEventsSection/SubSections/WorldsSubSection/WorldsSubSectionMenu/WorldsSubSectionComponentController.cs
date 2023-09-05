@@ -56,7 +56,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         this.view.OnReady += FirstLoading;
 
         this.view.OnInfoClicked += ShowWorldDetailedInfo;
-        this.view.OnJumpInClicked += OnJumpInToWorld;
+        this.view.OnJumpInClicked += JumpInToWorld;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMoreWorldsClicked += ShowMoreWorlds;
@@ -89,7 +89,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowWorldDetailedInfo;
-        view.OnJumpInClicked -= OnJumpInToWorld;
+        view.OnJumpInClicked -= JumpInToWorld;
         view.OnFavoriteClicked -= View_OnFavoritesClicked;
         view.OnVoteChanged -= View_OnVoteChanged;
         view.OnWorldsSubSectionEnable -= OpenTab;
@@ -220,9 +220,9 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToWorld(PlaceInfo worldFromAPI)
+    internal void JumpInToWorld(PlaceInfo worldFromAPI)
     {
-        JumpInToWorld(worldFromAPI);
+        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
         view.HideWorldModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
@@ -249,8 +249,4 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     private void OpenWorldsInfo() =>
         WebInterface.OpenURL(WORLDS_DOCS_LINK);
 
-    public static void JumpInToWorld(PlaceInfo worldFromAPI)
-    {
-        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
-    }
 }
