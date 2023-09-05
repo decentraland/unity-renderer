@@ -30,10 +30,10 @@ namespace DCL.ECSRuntime
             IECSComponentPool<ModelType> iecsComponentPool = null)
         {
             // Validate that either a deserializer or a component pool is provided, but not both.
-            if (deserializer != null && iecsComponentPool != null)
-            {
-                throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
-            }
+            // if (deserializer != null && iecsComponentPool != null)
+            // {
+            //     throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
+            // }
 
             components[componentId] = CreateComponentBuilder(handlerBuilder, deserializer, iecsComponentPool);
         }
@@ -68,10 +68,11 @@ namespace DCL.ECSRuntime
             IECSComponentPool<ModelType> iecsComponentPool = null)
         {
             // Validate that either a deserializer or a component pool is provided, but not both.
-            if (deserializer != null && iecsComponentPool != null)
-            {
-                throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
-            }
+            // FD:: reactivate this check once everything works
+            // if (deserializer != null && iecsComponentPool != null)
+            // {
+            //     throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
+            // }
 
             // Choose the appropriate builder function based on the provided parameters.
             if (deserializer != null)

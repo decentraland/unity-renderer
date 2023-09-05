@@ -22,7 +22,7 @@ namespace DCLPlugins.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => new RaycastComponentHandler(internalComponents.raycastComponent),
-                // ProtoSerialization.Deserialize<PBRaycast> // FD::
+                ProtoSerialization.Deserialize<PBRaycast>, // FD::
                 iecsComponentPool: poolWrapper
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBRaycast>(componentId, ProtoSerialization.Serialize);

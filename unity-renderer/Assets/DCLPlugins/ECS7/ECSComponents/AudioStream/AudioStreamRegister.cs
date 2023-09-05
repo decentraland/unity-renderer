@@ -20,8 +20,8 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new ECSAudioStreamComponentHandler(),
+                ProtoSerialization.Deserialize<PBAudioStream>,// FD::
                 iecsComponentPool: poolWrapper
-                //ProtoSerialization.Deserialize<PBAudioStream> // FD::
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBAudioStream>(componentId, ProtoSerialization.Serialize);
 

@@ -23,7 +23,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new AvatarModifierAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player, modifierFactory),
-                // AvatarModifierAreaSerializer.Deserialize // FD::
+                AvatarModifierAreaSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

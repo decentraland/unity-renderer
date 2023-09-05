@@ -31,7 +31,7 @@ namespace DCL.ECSComponents
                     internalComponents.GltfContainerLoadingStateComponent,
                     dataStoreEcs7,
                     featureFlags),
-                // ProtoSerialization.Deserialize<PBGltfContainer> // FD::
+                ProtoSerialization.Deserialize<PBGltfContainer>, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

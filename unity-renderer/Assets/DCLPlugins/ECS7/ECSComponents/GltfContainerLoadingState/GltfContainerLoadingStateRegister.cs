@@ -20,6 +20,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 null,
+                ProtoSerialization.Deserialize<PBGltfContainerLoadingState>, // FD::
                 iecsComponentPool: poolWrapper // FD:: changed
                 );
 

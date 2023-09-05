@@ -21,7 +21,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => new AvatarAttachComponentHandler(Environment.i.platform.updateEventHandler, internalComponents.sceneBoundsCheckComponent),
-                // AvatarAttachSerializer.Deserialize // FD::
+                AvatarAttachSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

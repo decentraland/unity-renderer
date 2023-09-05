@@ -22,7 +22,8 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => new ECSVisibilityComponentHandler(internalComponents.visibilityComponent),
-                iecsComponentPool: poolWrapper // FD:: changed
+                ProtoSerialization.Deserialize<PBVisibilityComponent>,// FD:: changed
+                iecsComponentPool: poolWrapper
                 );
 
             componentWriter.AddOrReplaceComponentSerializer<PBVisibilityComponent>(componentId, ProtoSerialization.Serialize);

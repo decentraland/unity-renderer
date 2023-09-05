@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new AnimatorComponentHandler(DataStore.i.ecs7),
-                // AnimatorSerializer.Deserialize // FD::
+                AnimatorSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

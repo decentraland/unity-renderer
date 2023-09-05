@@ -23,6 +23,7 @@ namespace DCL.ECSComponents
                 () => new VideoPlayerHandler(
                     internalComponents.videoPlayerComponent,
                     DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD),
+                    ProtoSerialization.Deserialize<PBVideoPlayer>, // FD::
                     iecsComponentPool: poolWrapper // FD:: changed
                 );
 

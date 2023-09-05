@@ -21,6 +21,7 @@ namespace DCLPlugins.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 null,
+                ProtoSerialization.Deserialize<PBVideoEvent>, // FD::
                 iecsComponentPool: poolWrapper // FD:: changed
                 );
 

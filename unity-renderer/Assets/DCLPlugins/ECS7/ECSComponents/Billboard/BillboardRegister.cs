@@ -21,7 +21,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 null,
-                // BillboardSerializer.Deserialize // FD::
+                BillboardSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

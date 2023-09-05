@@ -21,6 +21,7 @@ namespace DCLPlugins.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 null,
+                ProtoSerialization.Deserialize<PBUiCanvasInformation>, // FD::
                 iecsComponentPool: poolWrapper // FD:: changed
                 );
 

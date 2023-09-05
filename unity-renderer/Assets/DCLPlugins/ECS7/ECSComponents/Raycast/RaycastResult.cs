@@ -20,7 +20,7 @@ namespace DCLPlugins.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 null,
-                // ProtoSerialization.Deserialize<PBRaycastResult> // FD::
+                ProtoSerialization.Deserialize<PBRaycastResult>, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

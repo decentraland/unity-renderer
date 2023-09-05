@@ -22,6 +22,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => null,
+                PointerLockSerializer.Deserialize,
                 iecsComponentPool: poolWrapper // FD:: changed
             );
 

@@ -27,7 +27,7 @@ namespace DCL.ECSComponents
                     CommonScriptableObjects.sceneNumber,
                     internalComponents.audioSourceComponent,
                     internalComponents.sceneBoundsCheckComponent),
-                // AudioSourceSerializer.Deserialize // FD::
+                AudioSourceSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBAudioSource>(componentId, AudioSourceSerializer.Serialize);

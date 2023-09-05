@@ -21,6 +21,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent),
+                ProtoSerialization.Deserialize<PBMeshRenderer>, // FD::
                 iecsComponentPool: poolWrapper);
             componentWriter.AddOrReplaceComponentSerializer<PBMeshRenderer>(componentId, ProtoSerialization.Serialize);
 

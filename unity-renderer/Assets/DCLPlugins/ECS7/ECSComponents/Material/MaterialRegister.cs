@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new MaterialHandler(internalComponents.materialComponent, internalComponents.videoMaterialComponent),
-                // ProtoSerialization.Deserialize<PBMaterial> // FD::
+                ProtoSerialization.Deserialize<PBMaterial>, // FD::
                 iecsComponentPool: poolWrapper
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBMaterial>(componentId, ProtoSerialization.Serialize);

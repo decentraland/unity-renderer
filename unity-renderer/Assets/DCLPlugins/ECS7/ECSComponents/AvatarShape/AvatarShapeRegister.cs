@@ -30,7 +30,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new AvatarShapeComponentHandler(pool, internalComponents.renderersComponent),
-                // AvatarShapeSerializer.Deserialize // FD::
+                AvatarShapeSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

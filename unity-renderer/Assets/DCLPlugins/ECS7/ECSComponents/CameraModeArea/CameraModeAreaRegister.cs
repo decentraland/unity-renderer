@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new CameraModeAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player),
-                // CameraModeAreaSerializer.Deserialize // FD::
+                CameraModeAreaSerializer.Deserialize, // FD::
                 iecsComponentPool: poolWrapper
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBCameraModeArea>(componentId, CameraModeAreaSerializer.Serialize);
