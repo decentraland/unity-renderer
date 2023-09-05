@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 
@@ -11,7 +13,17 @@ namespace DCLPlugins.ECSComponents
 
         public UiCanvasInformationRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, null, ProtoSerialization.Deserialize<PBUiCanvasInformation>);
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBUiCanvasInformation>(
+                new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(10,
+                    () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation()))
+            );
+
+            factory.AddOrReplaceComponent(
+                componentId,
+                null,
+                iecsComponentPool: poolWrapper // FD:: changed
+                );
+
             componentWriter.AddOrReplaceComponentSerializer<PBUiCanvasInformation>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

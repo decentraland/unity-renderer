@@ -20,27 +20,8 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<PBEngineInfo>> EngineInfoPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> UiCanvasInformationPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> PointerEventsResultPool;
-    // FD:: add here pools -->
-    public readonly WrappedComponentPool<IWrappedComponent<PBMeshRenderer>> MeshRendererPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBMeshCollider>> MeshColliderPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBMaterial>> MaterialPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBAnimator>> AnimatorPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBAudioSource>> AudioSourcePool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBAudioStream>> AudioStreamPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBAvatarShape>> AvatarShapePool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBBillboard>> BillboardPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBGltfContainer>> GltfContainerPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBNftShape>> NftShapePool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBPointerEvents>> PointerEventsPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBRaycast>> RaycastPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBTextShape>> TextShapePool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBUiBackground>> UIBackgroundPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBUiDropdown>> UIDropdownPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBUiInput>> UIInputPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBUiText>> UITextPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBUiTransform>> UITransformPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBVideoPlayer>> VideoPlayerPool;
-    public readonly WrappedComponentPool<IWrappedComponent<PBVisibilityComponent>> VisibilityComponentPool;
+
+
 
     public SystemsContext(
         IReadOnlyDictionary<int, ComponentWriter> componentWriters,
@@ -92,25 +73,5 @@ public record SystemsContext
         this.EngineInfoPool = engineInfoPool;
         this.UiCanvasInformationPool = uiCanvasInformationPool;
         this.PointerEventsResultPool = pointerEventsResultPool;
-        this.MeshRendererPool = meshRendererPool;
-        this.MeshColliderPool = meshColliderPool;
-        this.MaterialPool = materialPool;
-        this.AnimatorPool = animatorPool;
-        this.AudioSourcePool = audioSourcePool;
-        this.AudioStreamPool = audioStreamPool;
-        this.AvatarShapePool = avatarShapePool;
-        this.BillboardPool = billboardPool;
-        this.GltfContainerPool = gltfContainerPool;
-        this.NftShapePool = nftShapePool;
-        this.PointerEventsPool = pointerEventsPool;
-        this.RaycastPool = raycastPool;
-        this.TextShapePool = textShapePool;
-        this.UIBackgroundPool = uiBackgroundPool;
-        this.UIDropdownPool = uiDropdownPool;
-        this.UIInputPool = uiInputPool;
-        this.UITextPool = uiTextPool;
-        this.UITransformPool = uiTransformPool;
-        this.VideoPlayerPool = videoPlayerPool;
-        this.VisibilityComponentPool = visibilityComponentPool;
     }
 }

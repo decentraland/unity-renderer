@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSRuntime;
 using System;
 
@@ -15,6 +17,11 @@ namespace DCL.ECSComponents
             var dataStoreEcs7 = DataStore.i.ecs7;
             var featureFlags = DataStore.i.featureFlags;
 
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBGltfContainer>(
+                new WrappedComponentPool<IWrappedComponent<PBGltfContainer>>(10,
+                    () => new ProtobufWrappedComponent<PBGltfContainer>(new PBGltfContainer()))
+            );
+
             factory.AddOrReplaceComponent(componentId,
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
@@ -23,7 +30,10 @@ namespace DCL.ECSComponents
                     internalComponents.renderersComponent,
                     internalComponents.GltfContainerLoadingStateComponent,
                     dataStoreEcs7,
-                    featureFlags), ProtoSerialization.Deserialize<PBGltfContainer>);
+                    featureFlags),
+                // ProtoSerialization.Deserialize<PBGltfContainer> // FD::
+                iecsComponentPool: poolWrapper
+                );
 
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);
 

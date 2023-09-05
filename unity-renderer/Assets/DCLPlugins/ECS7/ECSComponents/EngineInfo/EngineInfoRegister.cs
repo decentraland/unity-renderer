@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 
@@ -11,7 +13,17 @@ namespace DCLPlugins.ECSComponents
 
         public EngineInfoRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, null, ProtoSerialization.Deserialize<PBEngineInfo>);
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBEngineInfo>(
+                new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(10,
+                    () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo()))
+            );
+
+            factory.AddOrReplaceComponent(
+                componentId,
+                null,
+                iecsComponentPool: poolWrapper // FD:: changed
+                );
+
             componentWriter.AddOrReplaceComponentSerializer<PBEngineInfo>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

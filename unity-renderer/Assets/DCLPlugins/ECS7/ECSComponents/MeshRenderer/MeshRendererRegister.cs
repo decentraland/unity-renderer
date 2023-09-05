@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using System;
 using DCL.ECSRuntime;
 
@@ -12,9 +14,14 @@ namespace DCL.ECSComponents
         public MeshRendererRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBMeshRenderer>(
+                new WrappedComponentPool<IWrappedComponent<PBMeshRenderer>>(10,
+                    () => new ProtobufWrappedComponent<PBMeshRenderer>(new PBMeshRenderer()))
+                );
 
             factory.AddOrReplaceComponent(componentId,
-                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent));
+                () => new MeshRendererHandler(dataStoreEcs7, internalComponents.texturizableComponent, internalComponents.renderersComponent),
+                iecsComponentPool: poolWrapper);
             componentWriter.AddOrReplaceComponentSerializer<PBMeshRenderer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

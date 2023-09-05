@@ -1,4 +1,6 @@
-﻿using DCL.ECSRuntime;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using DCL.ECSRuntime;
 using UnityEngine;
 
 namespace DCL.ECSComponents
@@ -11,12 +13,20 @@ namespace DCL.ECSComponents
 
         public NFTShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBNftShape>(
+                new WrappedComponentPool<IWrappedComponent<PBNftShape>>(10,
+                    () => new ProtobufWrappedComponent<PBNftShape>(new PBNftShape()))
+            );
+
             var shapeFrameFactory = Resources.Load<NFTShapeFrameFactory>("NFTShapeFrameFactory");
             factory.AddOrReplaceComponent(componentId,
                 () => new ECSNFTShapeComponentHandler(shapeFrameFactory,
                     new NFTInfoRetriever(),
                     new NFTAssetRetriever(),
-                    internalComponents.renderersComponent), ProtoSerialization.Deserialize<PBNftShape>);
+                    internalComponents.renderersComponent),
+                // ProtoSerialization.Deserialize<PBNftShape> // FD::
+                iecsComponentPool: poolWrapper
+                );
             componentWriter.AddOrReplaceComponentSerializer<PBNftShape>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

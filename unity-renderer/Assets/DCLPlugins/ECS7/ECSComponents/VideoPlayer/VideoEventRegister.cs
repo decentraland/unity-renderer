@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 
@@ -11,7 +13,17 @@ namespace DCLPlugins.ECSComponents
 
         public VideoEventRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, null, ProtoSerialization.Deserialize<PBVideoEvent>);
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBVideoEvent>(
+                new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(10,
+                    () => new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent()))
+            );
+
+            factory.AddOrReplaceComponent(
+                componentId,
+                null,
+                iecsComponentPool: poolWrapper // FD:: changed
+                );
+
             componentWriter.AddOrReplaceComponentSerializer<PBVideoEvent>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

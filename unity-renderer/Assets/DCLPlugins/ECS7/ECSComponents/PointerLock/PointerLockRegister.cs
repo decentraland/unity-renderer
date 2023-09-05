@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using System;
 using DCL.ECSRuntime;
 
@@ -11,8 +13,18 @@ namespace DCL.ECSComponents
 
         public PointerLockRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBPointerLock>(
+                new WrappedComponentPool<IWrappedComponent<PBPointerLock>>(10,
+                    () => new ProtobufWrappedComponent<PBPointerLock>(new PBPointerLock()))
+            );
+
             // since this component travels only one way (from renderer to scene) we don't need a handler
-            factory.AddOrReplaceComponent(componentId, () => null, PointerLockSerializer.Deserialize);
+            factory.AddOrReplaceComponent(
+                componentId,
+                () => null,
+                iecsComponentPool: poolWrapper // FD:: changed
+            );
+
             componentWriter.AddOrReplaceComponentSerializer<PBPointerLock>(componentId, PointerLockSerializer.Serialize);
 
             this.factory = factory;

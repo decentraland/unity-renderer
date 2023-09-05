@@ -1,3 +1,5 @@
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using System;
@@ -13,10 +15,18 @@ namespace DCL.ECSComponents
         public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponent<InternalPointerEvents> internalPointerEvents)
         {
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBPointerEvents>(
+                new WrappedComponentPool<IWrappedComponent<PBPointerEvents>>(10,
+                    () => new ProtobufWrappedComponent<PBPointerEvents>(new PBPointerEvents()))
+            );
+
             var handler = new PointerEventsHandler(internalPointerEvents);
 
-            factory.AddOrReplaceComponent(componentId,
-                () => handler, ProtoSerialization.Deserialize<PBPointerEvents>);
+            factory.AddOrReplaceComponent(
+                componentId,
+                () => handler,
+                iecsComponentPool: poolWrapper // FD:: changed
+                );
 
             componentWriter.AddOrReplaceComponentSerializer<PBPointerEvents>(componentId, ProtoSerialization.Serialize);
 

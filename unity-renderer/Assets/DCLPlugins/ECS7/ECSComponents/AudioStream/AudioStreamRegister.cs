@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using System;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -11,8 +13,16 @@ namespace DCL.ECSComponents
 
         public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAudioStream>(
+                new WrappedComponentPool<IWrappedComponent<PBAudioStream>>(10,
+                    () => new ProtobufWrappedComponent<PBAudioStream>(new PBAudioStream()))
+            );
+
             factory.AddOrReplaceComponent(componentId,
-                () => new ECSAudioStreamComponentHandler(), ProtoSerialization.Deserialize<PBAudioStream>);
+                () => new ECSAudioStreamComponentHandler(),
+                iecsComponentPool: poolWrapper
+                //ProtoSerialization.Deserialize<PBAudioStream> // FD::
+                );
             componentWriter.AddOrReplaceComponentSerializer<PBAudioStream>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

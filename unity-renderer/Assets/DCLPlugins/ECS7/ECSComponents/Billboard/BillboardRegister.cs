@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using System;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -11,7 +13,18 @@ namespace DCL.ECSComponents
 
         public BillboardRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, null, BillboardSerializer.Deserialize);
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBBillboard>(
+                new WrappedComponentPool<IWrappedComponent<PBBillboard>>(10,
+                    () => new ProtobufWrappedComponent<PBBillboard>(new PBBillboard()))
+            );
+
+            factory.AddOrReplaceComponent(
+                componentId,
+                null,
+                // BillboardSerializer.Deserialize // FD::
+                iecsComponentPool: poolWrapper
+                );
+
             componentWriter.AddOrReplaceComponentSerializer<PBBillboard>(componentId, BillboardSerializer.Serialize);
 
             this.factory = factory;

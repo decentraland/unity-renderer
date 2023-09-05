@@ -1,4 +1,6 @@
-﻿using DCL.ECSComponents;
+﻿using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
+using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents.Raycast;
 
@@ -12,9 +14,17 @@ namespace DCLPlugins.ECSComponents
 
         public RaycastRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
+            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBRaycast>(
+                new WrappedComponentPool<IWrappedComponent<PBRaycast>>(10,
+                    () => new ProtobufWrappedComponent<PBRaycast>(new PBRaycast()))
+            );
+
             factory.AddOrReplaceComponent(
                 componentId,
-                () => new RaycastComponentHandler(internalComponents.raycastComponent), ProtoSerialization.Deserialize<PBRaycast>);
+                () => new RaycastComponentHandler(internalComponents.raycastComponent),
+                // ProtoSerialization.Deserialize<PBRaycast> // FD::
+                iecsComponentPool: poolWrapper
+                );
             componentWriter.AddOrReplaceComponentSerializer<PBRaycast>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
