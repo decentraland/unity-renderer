@@ -15,6 +15,7 @@ namespace DCL.Emotes
         public AudioSource audioSource { get; private set; }
 
         private AudioClip audioClip;
+        private AssetPromise_AudioClip audioClipPromise;
 
         public EmoteAnimationLoader(IWearableRetriever retriever)
         {
@@ -65,14 +66,8 @@ namespace DCL.Emotes
             {
                 if (!contentMap.file.EndsWith(".mp3")) continue; //do we need to support more of em?
 
-                try
-                {
-                    await AsyncLoadAudioClip(contentMap.file, contentProvider).ToUniTask(cancellationToken: ct);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
+                try { await AsyncLoadAudioClip(contentMap.file, contentProvider).ToUniTask(cancellationToken: ct); }
+                catch (Exception e) { Debug.LogError(e); }
 
                 if (audioClip != null)
                 {
@@ -91,7 +86,7 @@ namespace DCL.Emotes
 
         private IEnumerator AsyncLoadAudioClip(string file, ContentProvider contentProvider)
         {
-            var audioClipPromise = new AssetPromise_AudioClip(file, contentProvider);
+            audioClipPromise = new AssetPromise_AudioClip(file, contentProvider);
             audioClipPromise.OnSuccessEvent += asset => audioClip = asset.audioClip;
             audioClipPromise.OnFailEvent += (_, e) => throw e;
 
@@ -102,6 +97,7 @@ namespace DCL.Emotes
 
         public void Dispose()
         {
+            AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
             retriever?.Dispose();
         }
     }
