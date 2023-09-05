@@ -1825,7 +1825,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Your search query does not match any Events or Places in Decentraland.
+  m_text: Your search query does not match anything in Decentraland.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -3374,6 +3374,7 @@ MonoBehaviour:
   fullSearchSection: {fileID: 4458739024538960772}
   normalHeader: {fileID: 0}
   searchHeader: {fileID: 0}
+  favoritesHeader: {fileID: 0}
   backButton: {fileID: 0}
   searchTerm: {fileID: 0}
   canvas: {fileID: 7254015126755689928}
