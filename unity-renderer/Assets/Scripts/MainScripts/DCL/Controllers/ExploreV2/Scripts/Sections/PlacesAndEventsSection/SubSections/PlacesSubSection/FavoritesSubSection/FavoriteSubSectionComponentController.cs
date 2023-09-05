@@ -175,6 +175,8 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
 
     public void Dispose()
     {
+        minimalListCts.SafeCancelAndDispose();
+        fullFavoriteListCts.SafeCancelAndDispose();
         view.OnRequestAllPlaces -= RequestAllFavoritePlaces;
         view.OnRequestAllWorlds -= RequestAllFavoriteWorlds;
         view.OnPlaceInfoClicked -= OpenPlaceDetailsModal;

@@ -245,9 +245,9 @@ public class FavoriteSubSectionComponentView : BaseComponentView, IFavoriteSubSe
         view.OnVoteChanged += ViewOnVoteChanged;
     }
 
-    private void ViewOnVoteChanged(string arg1, bool? arg2)
+    private void ViewOnVoteChanged(string placeName, bool? isUpvoted)
     {
-        OnVoteChanged?.Invoke(arg1, arg2);
+        OnVoteChanged?.Invoke(placeName, isUpvoted);
     }
 
     private void ViewOnOnFavoriteChanged(string placeId, bool isFavorite)
