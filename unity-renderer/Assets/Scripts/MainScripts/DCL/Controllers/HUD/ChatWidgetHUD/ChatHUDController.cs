@@ -132,10 +132,8 @@ namespace DCL.Social.Chat
             addMessagesCancellationToken.SafeCancelAndDispose();
         }
 
-        private void OpenedContextMenu()
-        {
-            socialAnalytics.SendClickedMention();
-        }
+        private void OpenedContextMenu(string userId) =>
+            socialAnalytics.SendClickedMention(userId);
 
         public void SetVisibility(bool visible)
         {
@@ -387,8 +385,8 @@ namespace DCL.Social.Chat
                 return;
             }
 
-            if (MentionsUtils.TextContainsMention(message.body))
-                socialAnalytics.SendMessageWithMention();
+            foreach (string mention in MentionsUtils.GetAllMentions(message.body))
+                socialAnalytics.SendMessageWithMention(mention);
 
             ApplyWhisperAttributes(message);
 
@@ -516,7 +514,7 @@ namespace DCL.Social.Chat
         private void HandleMentionSuggestionSelected(string userId)
         {
             view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
-            socialAnalytics.SendMentionCreated(MentionCreationSource.SuggestionList);
+            socialAnalytics.SendMentionCreated(MentionCreationSource.SuggestionList, userId);
             HideMentionSuggestions();
         }
 

@@ -28,6 +28,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     private CancellationTokenSource minimalSearchCts;
     private CancellationTokenSource fullSearchCts;
+    private CancellationTokenSource getPlacesAssociatedToEventsCts;
 
     public SearchSubSectionComponentController(ISearchSubSectionComponentView view,
         SearchBarComponentView searchBarComponentView,
@@ -192,16 +193,54 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private async UniTaskVoid SearchEvents(string searchText, int pageNumber = 0, int pageSize = 6, CancellationToken cancellationToken = default, bool isFullSearch = false)
     {
         var results = await eventsAPI.SearchEvents(searchText, pageNumber,pageSize, cancellationToken);
-        List<EventCardComponentModel> searchedEvents = PlacesAndEventsCardsFactory.CreateEventsCards(results.Item1);
-        exploreV2Analytics.SendSearchEvents(searchText, searchedEvents.Select(e=>e.coords).ToArray(), searchedEvents.Select(p=>p.eventFromAPIInfo.id).ToArray());
 
-        if (isFullSearch)
+        getPlacesAssociatedToEventsCts = getPlacesAssociatedToEventsCts.SafeRestart();
+        GetPlacesAssociatedToEventsAsync(results, getPlacesAssociatedToEventsCts.Token).Forget();
+
+        async UniTaskVoid GetPlacesAssociatedToEventsAsync((List<EventFromAPIModel> eventsFromAPI, int total) searchData, CancellationToken ct)
         {
-            view.ShowAllEvents(searchedEvents, (pageNumber + 1) * pageSize < results.total);
-        }
-        else
-        {
-            view.ShowEvents(searchedEvents, searchText);
+            // Land's events
+            var landEventsFromAPI = searchData.eventsFromAPI.Where(e => !e.world).ToList();
+            var coordsList = landEventsFromAPI.Select(e => new Vector2Int(e.coordinates[0], e.coordinates[1]));
+            var places = await placesAPIService.GetPlacesByCoordsList(coordsList, ct);
+
+            foreach (EventFromAPIModel landEventFromAPI in landEventsFromAPI)
+            {
+                Vector2Int landEventCoords = new Vector2Int(landEventFromAPI.coordinates[0], landEventFromAPI.coordinates[1]);
+                foreach (IHotScenesController.PlaceInfo place in places)
+                {
+                    if (!place.Positions.Contains(landEventCoords))
+                        continue;
+
+                    landEventFromAPI.scene_name = place.title;
+                    break;
+                }
+            }
+
+            // World's events
+            var worldEventsFromAPI = searchData.eventsFromAPI.Where(e => e.world).ToList();
+            var worldNamesList = worldEventsFromAPI.Select(e => e.server);
+            var worlds = await worldsAPIService.GetWorldsByNamesList(worldNamesList, ct);
+
+            foreach (EventFromAPIModel worldEventFromAPI in worldEventsFromAPI)
+            {
+                foreach (WorldsResponse.WorldInfo world in worlds)
+                {
+                    if (world.world_name != worldEventFromAPI.server)
+                        continue;
+
+                    worldEventFromAPI.scene_name = world.title;
+                    break;
+                }
+            }
+
+            List<EventCardComponentModel> searchedEvents = PlacesAndEventsCardsFactory.CreateEventsCards(searchData.eventsFromAPI);
+            exploreV2Analytics.SendSearchEvents(searchText, searchedEvents.Select(e=>e.coords).ToArray(), searchedEvents.Select(p=>p.eventFromAPIInfo.id).ToArray());
+
+            if (isFullSearch)
+                view.ShowAllEvents(searchedEvents, (pageNumber + 1) * pageSize < searchData.total);
+            else
+                view.ShowEvents(searchedEvents, searchText);
         }
     }
 
@@ -239,6 +278,8 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
 
     public void Dispose()
     {
+        getPlacesAssociatedToEventsCts.SafeCancelAndDispose();
+
         view.OnRequestAllEvents -= SearchAllEvents;
         view.OnRequestAllPlaces -= SearchAllPlaces;
         view.OnRequestAllWorlds -= SearchAllWorlds;

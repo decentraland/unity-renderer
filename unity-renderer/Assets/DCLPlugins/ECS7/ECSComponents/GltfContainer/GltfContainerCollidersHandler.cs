@@ -144,7 +144,7 @@ namespace DCL.ECSComponents
         // Compatibility layer for old GLTF importer and GLTFast
         private static bool IsCollider(MeshFilter meshFilter)
         {
-            const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
+            const StringComparison IGNORE_CASE = StringComparison.OrdinalIgnoreCase;
             const string COLLIDER_SUFFIX = "_collider";
 
             return meshFilter.name.Contains(COLLIDER_SUFFIX, IGNORE_CASE)

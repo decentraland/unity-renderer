@@ -17,8 +17,9 @@ namespace DCLServices.PlacesAPIService
         UniTask<IHotScenesController.PlaceInfo> GetPlace(Vector2Int coords, CancellationToken ct);
 
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct);
-
         UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
+        UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(List<Vector2Int> coordsList, CancellationToken ct);
+
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
         UniTask SetPlaceVote(bool? isUpvote, string placeUUID, CancellationToken ct);
@@ -112,6 +113,28 @@ namespace DCLServices.PlacesAPIService
 
             if (response.data == null)
                 throw new Exception($"No place info retrieved:\n{result.downloadHandler.text}");
+
+            return response.data;
+        }
+
+        public async UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(List<Vector2Int> coordsList, CancellationToken ct)
+        {
+            if (coordsList.Count == 0)
+                return new List<IHotScenesController.PlaceInfo>();
+
+            var url = string.Concat(BASE_URL, "?");
+            foreach (Vector2Int coords in coordsList)
+                url = string.Concat(url, $"positions={coords.x},{coords.y}&with_realms_detail=true&");
+
+            var result = await webRequestController.GetAsync(url, cancellationToken: ct, isSigned: true);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching places info:\n{result.error}");
+
+            var response = Utils.SafeFromJson<IHotScenesController.PlacesAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing places info:\n{result.downloadHandler.text}");
 
             return response.data;
         }
