@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
@@ -66,7 +67,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             exploreV2Analytics,
             placesAnalytics,
             dataStore,
-            userProfileBridge);
+            userProfileBridge,
+            new WebInterfaceBrowserBridge());
         worldsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(

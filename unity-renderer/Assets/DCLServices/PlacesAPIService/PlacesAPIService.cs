@@ -21,7 +21,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<IHotScenesController.PlaceInfo> GetPlace(string placeUUID, CancellationToken ct, bool renewCache = false);
 
         UniTask<IReadOnlyList<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
-        
+
         UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(IEnumerable<Vector2Int> coordsList, CancellationToken ct, bool renewCache = false);
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
@@ -159,8 +159,16 @@ namespace DCLServices.PlacesAPIService
             // We need to pass the source to avoid conflicts with parallel calls forcing renewCache
             async UniTask RetrieveFavorites(UniTaskCompletionSource<List<IHotScenesController.PlaceInfo>> source)
             {
+                List<IHotScenesController.PlaceInfo> favorites;
                 // We dont use the ct param, otherwise the whole flow would be cancel if the first call is cancelled
-                var favorites = await client.GetFavorites(pageNumber, pageSize, disposeCts.Token);
+                if (pageNumber == -1 && pageSize == -1)
+                {
+                    favorites = await client.GetAllFavorites(ct);
+                }
+                else
+                {
+                    favorites = await client.GetFavorites(pageNumber, pageSize, disposeCts.Token);
+                }
                 foreach (IHotScenesController.PlaceInfo place in favorites)
                 {
                     CachePlace(place);
@@ -224,7 +232,7 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask<bool> IsFavoritePlace(IHotScenesController.PlaceInfo placeInfo, CancellationToken ct, bool renewCache = false)
         {
-            var favorites = await GetFavorites(0,1000, ct, renewCache);
+            var favorites = await GetFavorites(-1,-1, ct, renewCache);
 
             foreach (IHotScenesController.PlaceInfo favorite in favorites)
             {

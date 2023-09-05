@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Interface;
 using DCL.Social.Friends;
 using DCL.Tasks;
@@ -30,6 +31,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
+    internal readonly IBrowserBridge browserBridge;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
@@ -47,11 +49,13 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         IExploreV2Analytics exploreV2Analytics,
         IPlacesAnalytics placesAnalytics,
         DataStore dataStore,
-        IUserProfileBridge userProfileBridge)
+        IUserProfileBridge userProfileBridge,
+        IBrowserBridge browserBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         this.view = view;
+        this.browserBridge = browserBridge;
 
         this.view.OnReady += FirstLoading;
 
@@ -244,9 +248,9 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     }
 
     private void OpenWorldsDaoProposal() =>
-        WebInterface.OpenURL(DAO_PROPOSAL_LINK);
+        browserBridge.OpenUrl(DAO_PROPOSAL_LINK);
 
     private void OpenWorldsInfo() =>
-        WebInterface.OpenURL(WORLDS_DOCS_LINK);
+        browserBridge.OpenUrl(WORLDS_DOCS_LINK);
 
 }
