@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public record SystemsContext
 {
     public readonly IReadOnlyDictionary<int, ComponentWriter> ComponentWriters;
-    public readonly IInternalECSComponents InternalEcsComponents;
+    public readonly IInternalECSComponents internalEcsComponents;
     public readonly IComponentGroups ComponentGroups;
     public readonly ECSComponent<PBBillboard> Billboards;
     public readonly ECSComponent<ECSTransform> TransformComponent;
@@ -40,7 +40,7 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool
         )
     {
-        this.InternalEcsComponents = internalEcsComponents;
+        this.internalEcsComponents = internalEcsComponents;
         this.ComponentGroups = componentGroups;
         this.Billboards = billboards;
         this.TransformComponent = transformComponent;

@@ -43,8 +43,8 @@ public class ECSSystemsController : IDisposable
     {
         this.worldState = Environment.i.world.state;
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
-        this.internalComponentMarkDirtySystem = context.InternalEcsComponents.MarkDirtyComponentsUpdate;
-        this.internalComponentRemoveDirtySystem = context.InternalEcsComponents.ResetDirtyComponentsUpdate;
+        this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
+        this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
 
         var canvas = Resources.Load<GameObject>("ECSInteractionHoverCanvas");
         hoverCanvas = Object.Instantiate(canvas);
@@ -58,7 +58,7 @@ public class ECSSystemsController : IDisposable
 
         uiSystem = new ECSScenesUiSystem(
             scenesUiDocument,
-            context.InternalEcsComponents.uiContainerComponent,
+            context.internalEcsComponents.uiContainerComponent,
             DataStore.i.ecs7.scenes,
             Environment.i.world.state,
             CommonScriptableObjects.allUIHidden,
@@ -68,9 +68,9 @@ public class ECSSystemsController : IDisposable
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.Billboards, DataStore.i.camera);
 
         ECSVideoPlayerSystem videoPlayerSystem = new ECSVideoPlayerSystem(
-            context.InternalEcsComponents.videoPlayerComponent,
-            context.InternalEcsComponents.videoMaterialComponent,
-            context.InternalEcsComponents.EngineInfo,
+            context.internalEcsComponents.videoPlayerComponent,
+            context.internalEcsComponents.videoMaterialComponent,
+            context.internalEcsComponents.EngineInfo,
             context.ComponentWriters,
             context.VideoEventPool);
 
@@ -83,39 +83,39 @@ public class ECSSystemsController : IDisposable
             DataStore.i.world.avatarTransform, CommonScriptableObjects.worldOffset);
 
         ECSUIInputSenderSystem uiInputSenderSystem = new ECSUIInputSenderSystem(
-            context.InternalEcsComponents.uiInputResultsComponent,
+            context.internalEcsComponents.uiInputResultsComponent,
             context.ComponentWriters);
 
         ECSRaycastSystem raycastSystem = new ECSRaycastSystem(
-            context.InternalEcsComponents.raycastComponent,
-            context.InternalEcsComponents.physicColliderComponent,
-            context.InternalEcsComponents.onPointerColliderComponent,
-            context.InternalEcsComponents.customLayerColliderComponent,
-            context.InternalEcsComponents.EngineInfo,
+            context.internalEcsComponents.raycastComponent,
+            context.internalEcsComponents.physicColliderComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.customLayerColliderComponent,
+            context.internalEcsComponents.EngineInfo,
             context.ComponentWriters,
             context.RaycastResultPool);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
-            context.InternalEcsComponents.sceneBoundsCheckComponent,
-            context.InternalEcsComponents.visibilityComponent,
-            context.InternalEcsComponents.renderersComponent,
-            context.InternalEcsComponents.onPointerColliderComponent,
-            context.InternalEcsComponents.physicColliderComponent,
+            context.internalEcsComponents.sceneBoundsCheckComponent,
+            context.internalEcsComponents.visibilityComponent,
+            context.internalEcsComponents.renderersComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.physicColliderComponent,
             DataStore.i.debugConfig.isDebugMode.Get());
 
         ECSUiPointerEventsSystem uiPointerEventsSystem = new ECSUiPointerEventsSystem(
-            context.InternalEcsComponents.RegisteredUiPointerEventsComponent,
-            context.InternalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.RegisteredUiPointerEventsComponent,
+            context.internalEcsComponents.inputEventResultsComponent,
             context.ComponentGroups.UnregisteredUiPointerEvents,
             context.ComponentGroups.RegisteredUiPointerEvents,
             context.ComponentGroups.RegisteredUiPointerEventsWithUiRemoved,
             context.ComponentGroups.RegisteredUiPointerEventsWithPointerEventsRemoved);
 
         ECSPointerInputSystem pointerInputSystem = new ECSPointerInputSystem(
-            context.InternalEcsComponents.onPointerColliderComponent,
-            context.InternalEcsComponents.inputEventResultsComponent,
-            context.InternalEcsComponents.PointerEventsComponent,
+            context.internalEcsComponents.onPointerColliderComponent,
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.PointerEventsComponent,
             interactionHoverCanvas,
             Environment.i.world.state,
             DataStore.i.ecs7);
@@ -123,12 +123,12 @@ public class ECSSystemsController : IDisposable
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.ComponentWriters,
             context.GltfContainerLoadingStatePool,
-            context.InternalEcsComponents.GltfContainerLoadingStateComponent);
+            context.internalEcsComponents.GltfContainerLoadingStateComponent);
 
         ECSEngineInfoSystem engineInfoSystem = new ECSEngineInfoSystem(
             context.ComponentWriters,
             context.EngineInfoPool,
-            context.InternalEcsComponents.EngineInfo);
+            context.internalEcsComponents.EngineInfo);
 
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
             context.ComponentWriters,
@@ -137,8 +137,8 @@ public class ECSSystemsController : IDisposable
         );
 
         ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
-            context.InternalEcsComponents.inputEventResultsComponent,
-            context.InternalEcsComponents.EngineInfo,
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.EngineInfo,
             context.ComponentWriters,
             context.PointerEventsResultPool,
             () => worldState.GetCurrentSceneNumber());
@@ -149,11 +149,11 @@ public class ECSSystemsController : IDisposable
         updateSystems = new ECS7System[]
         {
             engineInfoSystem.Update,
-            ECSTransformParentingSystem.CreateSystem(context.InternalEcsComponents.sceneBoundsCheckComponent),
+            ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
             ECSMaterialSystem.CreateSystem(context.ComponentGroups.texturizableGroup,
-                context.InternalEcsComponents.texturizableComponent, context.InternalEcsComponents.materialComponent),
+                context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.ComponentGroups.visibilityGroup,
-                context.InternalEcsComponents.renderersComponent, context.InternalEcsComponents.visibilityComponent),
+                context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,
