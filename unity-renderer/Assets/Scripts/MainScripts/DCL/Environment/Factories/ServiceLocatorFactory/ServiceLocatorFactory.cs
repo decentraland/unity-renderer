@@ -162,7 +162,8 @@ namespace DCL
             result.Register<IEmotesService>(() => new EmotesService(new EmoteAnimationLoaderFactory(),
                 result.Get<IEmotesCatalogService>(),
                 result.Get<IWearablesCatalogService>(),
-                result.Get<IServiceProviders>().catalyst));
+                result.Get<IServiceProviders>().catalyst,
+                addressableResourceProvider));
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));

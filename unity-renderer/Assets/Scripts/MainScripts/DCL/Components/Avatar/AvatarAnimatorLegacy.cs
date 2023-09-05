@@ -391,7 +391,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private void StopEmote(BlackBoard bb, bool immediate = false)
     {
-        if (bb.expressionTriggerId == null) return;
+        if (string.IsNullOrEmpty(bb.expressionTriggerId)) return;
+        if (animation.GetClip(bb.expressionTriggerId) == null) return;
 
         animation.Blend(bb.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
         bb.expressionTriggerId = null;

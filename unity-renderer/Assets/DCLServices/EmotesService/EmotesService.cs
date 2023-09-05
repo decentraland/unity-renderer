@@ -1,6 +1,7 @@
 ﻿using AvatarAssets;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
+using DCL.Providers;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
@@ -25,13 +26,17 @@ namespace DCL.Emotes
         private GameObject animationsModelsContainer;
 
         private readonly Dictionary<(string, string), IEmoteReference> embeddedEmotes = new ();
+        private IAddressableResourceProvider assetProvider;
+        private AudioContainer audioContainer;
 
         public EmotesService(
             EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
             IEmotesCatalogService emotesCatalogService,
             IWearablesCatalogService wearablesCatalogService,
-            ICatalyst catalyst)
+            ICatalyst catalyst,
+            IAddressableResourceProvider assetProvider)
         {
+            this.assetProvider = assetProvider;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
             this.emotesCatalogService = emotesCatalogService;
             this.wearablesCatalogService = wearablesCatalogService;
@@ -51,6 +56,11 @@ namespace DCL.Emotes
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
+            audioContainer = await assetProvider.GetAddressable<AudioContainer>("EmotesAudioContainer", cancellationToken);
+
+            if (audioContainer == null)
+                throw new Exception("EmotesAudioContainer is missing");
+
             EmbeddedEmotesSO embeddedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
 
             // early return for not configured emotesCatalogService substitutes in legacy test base
@@ -91,7 +101,7 @@ namespace DCL.Emotes
                 }
 
                 IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
-                await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, cancellationToken);
+                await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, audioContainer, cancellationToken);
 
                 if (animationLoader.mainClip == null)
                     Debug.LogError("Emote animation failed to load for emote " + emote.id);

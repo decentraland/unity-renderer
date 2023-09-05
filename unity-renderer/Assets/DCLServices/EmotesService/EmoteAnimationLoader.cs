@@ -21,7 +21,7 @@ namespace DCL.Emotes
             this.retriever = retriever;
         }
 
-        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
+        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, AudioContainer audioContainer, CancellationToken ct = default)
         {
             if (targetContainer == null)
                 throw new NullReferenceException("Container cannot be null");
@@ -78,10 +78,10 @@ namespace DCL.Emotes
                 {
                     audioSource = rendereable.container.AddComponent<AudioSource>();
                     audioSource.clip = audioClip;
-                    audioSource.rolloffMode = AudioRolloffMode.Linear;
-                    audioSource.minDistance = 3;
-                    audioSource.maxDistance = 30;
-                    audioSource.spatialBlend = 1;
+                    audioSource.outputAudioMixerGroup = audioContainer.audioMixerGroup;
+                    audioSource.minDistance = audioContainer.minDistance;
+                    audioSource.maxDistance = audioContainer.maxDistance;
+                    audioSource.spatialBlend = audioContainer.spatialBlend;
                     audioSource.playOnAwake = false;
                 }
 
