@@ -121,8 +121,7 @@ public class FavoriteSubSectionComponentController : IFavoriteSubSectionComponen
     private void RequestAllFavoritePlaces(int pageNumber)
     {
         view.SetHeaderEnabled(true);
-        fullFavoriteListCts.SafeCancelAndDispose();
-        fullFavoriteListCts = new CancellationTokenSource();
+        fullFavoriteListCts = fullFavoriteListCts.SafeRestart();
         RequestFavoritePlaces(pageNumber, 18, fullFavoriteListCts.Token, true).Forget();
     }
 
