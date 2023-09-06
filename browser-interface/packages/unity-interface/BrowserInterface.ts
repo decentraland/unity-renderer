@@ -1035,7 +1035,7 @@ export class BrowserInterface {
         const successMessage = `Welcome to realm ${serverName}!`
         notifyStatusThroughChat(successMessage)
         getUnityInstance().ConnectionToRealmSuccess(data)
-        TeleportController.goTo(x, y, successMessage).then(
+        TeleportController.goTo(x, y, false, successMessage).then(
           () => {},
           () => {}
         )

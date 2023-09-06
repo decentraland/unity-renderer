@@ -234,7 +234,7 @@ public class PlayerInfoCardHUDController : IHUD
         if (currentUserProfile == null)
         {
             if (playerInfoCardVisibleState.Get())
-                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
+                socialAnalytics.SendPassportClose(current, Time.realtimeSinceStartup - passportOpenStartTime);
 
             CommonScriptableObjects.playerInfoCardVisibleState.Set(false);
             view.SetCardActive(false);
@@ -252,7 +252,7 @@ public class PlayerInfoCardHUDController : IHUD
                           await AsyncSetUserProfile(currentUserProfile, setUserProfileCancellationToken.Token);
                           CommonScriptableObjects.playerInfoCardVisibleState.Set(true);
                           view.SetCardActive(true);
-                          socialAnalytics.SendPassportOpen();
+                          socialAnalytics.SendPassportOpen(current);
                       })
                      .Forget();
 
@@ -315,7 +315,7 @@ public class PlayerInfoCardHUDController : IHUD
                 ownUserProfile.Block(currentUserProfile.userId);
                 view.SetIsBlocked(true);
                 WebInterface.SendBlockPlayer(currentUserProfile.userId);
-                socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+                socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport, currentUserProfile.userId);
             }), true);
     }
 
@@ -325,13 +325,13 @@ public class PlayerInfoCardHUDController : IHUD
         ownUserProfile.Unblock(currentUserProfile.userId);
         view.SetIsBlocked(false);
         WebInterface.SendUnblockPlayer(currentUserProfile.userId);
-        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport);
+        socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(currentUserProfile.userId), PlayerActionSource.Passport, currentUserProfile.userId);
     }
 
     private void ReportPlayer()
     {
         WebInterface.SendReportPlayer(currentPlayerId, currentUserProfile?.name);
-        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+        socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport, currentPlayerId);
     }
 
     public void Dispose()

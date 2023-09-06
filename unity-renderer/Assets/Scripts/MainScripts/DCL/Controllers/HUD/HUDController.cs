@@ -51,7 +51,7 @@ public class HUDController : IHUDController
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
 
-        CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenOnOnChange;
+        CommonScriptableObjects.allUIHidden.OnChange += ToggleAllUIHiddenNotification;
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
 
@@ -133,16 +133,12 @@ public class HUDController : IHUDController
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
     }
 
-    private void AllUIHiddenOnOnChange(bool current, bool previous)
+    public void ToggleAllUIHiddenNotification(bool isHidden, bool _)
     {
-        if (current)
-        {
+        if (isHidden)
             NotificationsController.i?.ShowNotification(hiddenUINotification);
-        }
         else
-        {
             NotificationsController.i?.DismissAllNotifications(hiddenUINotification.groupID);
-        }
     }
 
     public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, CancellationToken cancellationToken = default,
@@ -451,7 +447,7 @@ public class HUDController : IHUDController
     public void Cleanup()
     {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;
-        CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenOnOnChange;
+        CommonScriptableObjects.allUIHidden.OnChange -= ToggleAllUIHiddenNotification;
 
         if (worldChatWindowHud != null)
         {
