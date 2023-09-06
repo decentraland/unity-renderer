@@ -8,38 +8,19 @@ namespace DCL
     public class MemoryManager : IMemoryManager
     {
         // TODO: Increase this since the top is now 4GB instead of 2?
-        private const long MAX_USED_MEMORY = 1300 * 1024 * 1024; // 1.3GB
+        private const ulong MAX_USED_MEMORY = (ulong)2600 * 1024 * 1024; // 2.6GB
 
         private const float TIME_FOR_NEW_MEMORY_CHECK = 60.0f;
 
         private Coroutine autoCleanupCoroutine;
 
-        private long memoryThresholdForCleanup = 0;
+        private ulong memoryThresholdForCleanup = 0;
         private float cleanupInterval;
 
         public event System.Action OnCriticalMemory;
 
         private const string DISABLE_MEMORY_MANAGER = "DISABLE_MEMORY_MANAGER";
         private const string OVERRIDE_TIMESCALE = "OVERRIDE_TIMESCALE";
-        public MemoryManager(long memoryThresholdForCleanup, float cleanupInterval)
-        {
-// #if UNITY_WEBGL && !UNITY_EDITOR
-            if (WebInterface.CheckURLParam(OVERRIDE_TIMESCALE) && float.TryParse(WebInterface.GetURLParam(OVERRIDE_TIMESCALE), out float result))
-            {
-                Debug.Log($"PRAVS - OVERRIDING TIMESCALE...{result}");
-                Time.timeScale = result;
-            }
-            if (WebInterface.CheckURLParam(DISABLE_MEMORY_MANAGER))
-            {
-                Debug.Log("PRAVS - DISABLED MEMORY MANAGER...");
-                return;
-            }
-// #endif
-
-            this.memoryThresholdForCleanup = memoryThresholdForCleanup;
-            this.cleanupInterval = cleanupInterval;
-            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
-        }
 
         public MemoryManager()
         {
@@ -73,10 +54,10 @@ namespace DCL
         {
         }
 
-        bool NeedsMemoryCleanup()
+        private bool NeedsMemoryCleanup()
         {
-            long usedMemory = Profiler.GetTotalAllocatedMemoryLong() + Profiler.GetMonoUsedSizeLong() +
-                              Profiler.GetAllocatedMemoryForGraphicsDriver();
+            ulong usedMemory = (ulong)Profiler.GetTotalAllocatedMemoryLong() + (ulong)Profiler.GetMonoUsedSizeLong() +
+                               (ulong)Profiler.GetAllocatedMemoryForGraphicsDriver();
 
             bool returnValue = usedMemory >= this.memoryThresholdForCleanup;
             if(returnValue)
@@ -85,7 +66,7 @@ namespace DCL
             return returnValue;
         }
 
-        IEnumerator AutoCleanup()
+        private IEnumerator AutoCleanup()
         {
             while (true)
             {
