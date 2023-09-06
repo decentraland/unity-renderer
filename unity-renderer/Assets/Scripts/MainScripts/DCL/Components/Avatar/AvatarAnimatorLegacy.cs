@@ -413,12 +413,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation.GetClip(emoteId) == null)
             return;
 
-        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId)
-                                   && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
+        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
+
+        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
+
         blackboard.expressionTriggerId = emoteId;
         blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
 
-        if (mustTriggerAnimation)
+        if (mustTriggerAnimation || loop)
         {
             StartEmote(emoteId, spatialSound);
 
@@ -428,7 +430,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 latestAnimationState = AvatarAnimation.IDLE;
             }
 
-            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
+            blackboard.shouldLoop = loop;
 
             CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
