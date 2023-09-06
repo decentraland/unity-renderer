@@ -133,7 +133,7 @@ namespace DCL.Backpack
             characterPreviewController.PlayEmote(emoteId, timestamp);
 
         public void ResetPreviewEmote() =>
-            PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
+            characterPreviewController.StopEmote();
 
         public void ResetPreviewRotation() =>
             characterPreviewController.ResetRotation();

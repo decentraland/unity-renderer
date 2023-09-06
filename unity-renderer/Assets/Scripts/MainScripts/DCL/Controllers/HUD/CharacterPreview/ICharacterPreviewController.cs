@@ -13,6 +13,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
 
         void PlayEmote(string emoteId, long timestamp);
+        void StopEmote();
         UniTask TryUpdateModelAsync(AvatarModel newModel, CancellationToken cancellationToken = default);
         void SetFocus(PreviewCameraFocus focus, bool useTransition = true);
         void SetEnabled(bool enabled);
@@ -26,5 +27,6 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         void SetCharacterShadowActive(bool isActive);
 
         IAvatarEmotesController GetEmotesController();
+
     }
 }

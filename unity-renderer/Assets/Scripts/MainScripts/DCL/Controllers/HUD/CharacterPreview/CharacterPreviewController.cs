@@ -230,6 +230,10 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             avatar.GetEmotesController().PlayEmote(emoteId, timestamp, false);
         }
 
+        public void StopEmote()
+        {
+            avatar.GetEmotesController().StopEmote();
+        }
 
         public void Dispose() =>
             Destroy(gameObject);

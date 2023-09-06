@@ -10,6 +10,8 @@ namespace AvatarSystem
 
         void PlayEmote(string emoteId, long timestamps, bool spatialSound = true);
 
+        void StopEmote();
+
         void EquipEmote(string emoteId, IEmoteReference emoteReference);
 
         void UnEquipEmote(string emoteId);

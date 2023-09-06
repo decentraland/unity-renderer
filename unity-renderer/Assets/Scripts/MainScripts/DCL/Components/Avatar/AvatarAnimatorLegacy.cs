@@ -370,7 +370,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         if (exitTransitionStarted)
-            StopEmote(bb);
+            StopEmoteInternal(false);
         else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
             animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
@@ -389,17 +389,22 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private void StopEmote(BlackBoard bb, bool immediate = false)
+    public void StopEmote()
     {
-        if (string.IsNullOrEmpty(bb.expressionTriggerId)) return;
-        if (animation.GetClip(bb.expressionTriggerId) == null) return;
+        StopEmoteInternal(true);
+    }
 
-        animation.Blend(bb.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
-        bb.expressionTriggerId = null;
-        bb.shouldLoop = false;
+    private void StopEmoteInternal(bool immediate)
+    {
+        if (string.IsNullOrEmpty(blackboard.expressionTriggerId)) return;
+        if (animation.GetClip(blackboard.expressionTriggerId) == null) return;
+
+        animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
+        blackboard.expressionTriggerId = null;
+        blackboard.shouldLoop = false;
         lastExtendedEmoteData?.Stop();
 
-        if (!immediate) OnUpdateWithDeltaTime(bb.deltaTime);
+        if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
     private void SetExpressionValues(string emoteId, long expressionTriggerTimestamp, bool spatialSound)
@@ -564,7 +569,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null)
             return;
 
-        StopEmote(blackboard, true);
+        StopEmoteInternal(true);
         CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, 0);
         currentState = State_Ground;
 

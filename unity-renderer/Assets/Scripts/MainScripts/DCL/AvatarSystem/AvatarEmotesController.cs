@@ -74,6 +74,11 @@ namespace AvatarSystem
                 animator.PlayEmote(emoteId, timestamps, spatialSound);
         }
 
+        public void StopEmote()
+        {
+            animator.StopEmote();
+        }
+
         public void EquipEmote(string emoteId, IEmoteReference emoteReference)
         {
             if (emotes.ContainsKey((bodyShapeId, emoteId)))
