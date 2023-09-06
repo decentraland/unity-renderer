@@ -112,6 +112,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private bool hasTarget;
     private EmoteClipData lastExtendedEmoteData;
     private string lastCrossFade;
+    private AnimationState currentEmote;
+    private int lastEmoteLoopCount;
 
     private void Awake()
     {
@@ -377,6 +379,16 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
         }
 
+        // If we reach the emote loop, we send the RPC message again to refresh new users
+        if (bb.shouldLoop && isOwnPlayer)
+        {
+            int emoteLoop = GetCurrentEmoteLoopCount();
+            if (emoteLoop != lastEmoteLoopCount)
+                UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true);
+
+            lastEmoteLoopCount = emoteLoop;
+        }
+
         return;
 
         bool ExpressionGroundTransitionCondition(AnimationState animationState)
@@ -388,6 +400,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return isAnimationOver || isMoving;
         }
     }
+
+    private int GetCurrentEmoteLoopCount() =>
+        Mathf.RoundToInt(currentEmote.time / currentEmote.length);
 
     public void StopEmote()
     {
@@ -422,6 +437,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
 
+        if (loop && blackboard.expressionTriggerId == emoteId)
+            return;
+
         blackboard.expressionTriggerId = emoteId;
         blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
 
@@ -439,6 +457,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
             CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
 
+            currentEmote = animation[emoteId];
+            lastEmoteLoopCount = GetCurrentEmoteLoopCount();
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
         }
