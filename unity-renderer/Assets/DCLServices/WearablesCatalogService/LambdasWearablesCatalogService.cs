@@ -311,9 +311,11 @@ namespace DCLServices.WearablesCatalogService
                     assetBundlesUrl),
             };
 
+            if (ws[0].IsEmote()) return null;
+
             AddWearablesToCatalog(ws);
 
-            return ws.Count > 0 ? ws[0] : null;
+            return ws[0];
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
@@ -380,6 +382,7 @@ namespace DCLServices.WearablesCatalogService
                                                 .Select(bw => bw.ToWearableItem(
                                                      "https://builder-api.decentraland.org/v1/storage/contents/",
                                                      assetBundlesUrl))
+                                                .Where(bw => !bw.IsEmote())
                                                 .ToList();
 
                 AddWearablesToCatalog(ws);

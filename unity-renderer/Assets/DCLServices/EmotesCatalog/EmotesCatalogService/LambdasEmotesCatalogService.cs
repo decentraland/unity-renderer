@@ -7,7 +7,7 @@ using DCL.Helpers;
 using DCL.Providers;
 using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
-using MainScripts.DCL.Helpers.Utils;
+using DCLServices.WearablesCatalogService;
 using System;
 using UnityEngine;
 
@@ -108,19 +108,24 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:emoteId";
         string url = TEMPLATE_URL.Replace(":emoteId", emoteId);
 
-        (EmoteEntityDto response, bool success) = await lambdasService.GetFromSpecificUrl<EmoteEntityDto>(
+        (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
             TEMPLATE_URL, url,
             isSigned: true,
-            signUrl: $"https://builder-api.decentraland.org/items/{emoteId}",
+            signUrl: url,
             cancellationToken: cancellationToken);
+
+        // var json = "{\"ok\":true,\"data\":{\"id\":\"5172973d-5bcb-4297-9b1d-b47bf84368c5\",\"name\":\"Quadradinho\",\"description\":\"\",\"eth_address\":\"0x43d803d72ba0a4a785f0e46d3b2366cd224e49df\",\"collection_id\":\"12651641-1b8f-4209-9cab-b1d4127bd9eb\",\"blockchain_item_id\":null,\"price\":null,\"beneficiary\":null,\"rarity\":\"uncommon\",\"type\":\"emote\",\"data\":{\"category\":\"fun\",\"loop\":false,\"tags\":[],\"representations\":[{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseMale\"],\"mainFile\":\"male/Quadradinho.glb\",\"contents\":[\"male/Quadradinho.glb\"]},{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseFemale\"],\"mainFile\":\"female/Quadradinho.glb\",\"contents\":[\"female/Quadradinho.glb\"]}]},\"created_at\":\"2023-09-05T20:10:45.984Z\",\"updated_at\":\"2023-09-05T20:10:45.984Z\",\"metrics\":{\"sequences\":1,\"duration\":9.100000381469727,\"frames\":274,\"fps\":30.109888847691092,\"props\":0},\"thumbnail\":\"thumbnail.png\",\"contents\":{\"thumbnail.png\":\"bafkreicoclgn2vocf57tq7ttzmz2mvbiqwe623c3yr5o4eu7rl2qxwj7pu\",\"male/Quadradinho.glb\":\"bafybeie2tl6j374xeecjiw42xmo33by5rarvjc2zrxqs4bga4yhekzam5q\",\"female/Quadradinho.glb\":\"bafybeie2tl6j374xeecjiw42xmo33by5rarvjc2zrxqs4bga4yhekzam5q\",\"image.png\":\"bafkreibgzxnggbrbkkwhp7bagih2ytqfm72autpmexzc6lhgibbjk2myni\"},\"total_supply\":0,\"local_content_hash\":null,\"video\":null,\"urn\":null,\"in_catalyst\":false,\"is_approved\":false,\"is_published\":false,\"content_hash\":null,\"catalyst_content_hash\":null}}";
+        // WearableItemResponseFromBuilder response = JsonConvert.DeserializeObject<WearableItemResponseFromBuilder>(json);
+        // var success = true;
 
         if (!success)
             throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
 
-        var contentUrl = $"{catalyst.contentUrl}contents/";
-        var wearable = response.ToWearableItem(contentUrl);
-        wearable.baseUrl = contentUrl;
-        wearable.baseUrlBundles = assetBundlesUrl;
+        WearableItem wearable = response.data.ToWearableItem(
+            "https://builder-api.decentraland.org/v1/storage/contents/",
+            assetBundlesUrl);
+
+        if (!wearable.IsEmote()) return null;
 
         OnEmoteReceived(wearable);
 
@@ -335,20 +340,26 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         {
             string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
 
-            (EmoteCollectionResponse response, bool success) = await lambdasService.GetFromSpecificUrl<EmoteCollectionResponse>(
+            (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                 TEMPLATE_URL, url,
                 cancellationToken: cancellationToken,
+                isSigned: true,
+                signUrl: url,
                 urlEncodedParams: queryParams);
+
+            // var json =
+            //     "{\"ok\":true,\"data\":{\"total\":2,\"limit\":5000,\"pages\":1,\"page\":1,\"results\":[{\"id\":\"5172973d-5bcb-4297-9b1d-b47bf84368c5\",\"name\":\"Quadradinho\",\"description\":\"\",\"eth_address\":\"0x43d803d72ba0a4a785f0e46d3b2366cd224e49df\",\"collection_id\":\"12651641-1b8f-4209-9cab-b1d4127bd9eb\",\"blockchain_item_id\":null,\"price\":null,\"beneficiary\":null,\"rarity\":\"uncommon\",\"type\":\"emote\",\"data\":{\"category\":\"fun\",\"loop\":false,\"tags\":[],\"representations\":[{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseMale\"],\"mainFile\":\"male/Quadradinho.glb\",\"contents\":[\"male/Quadradinho.glb\"]},{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseFemale\"],\"mainFile\":\"female/Quadradinho.glb\",\"contents\":[\"female/Quadradinho.glb\"]}]},\"created_at\":\"2023-09-05T20:10:45.984Z\",\"updated_at\":\"2023-09-05T20:10:45.984Z\",\"metrics\":{\"sequences\":1,\"duration\":9.100000381469727,\"frames\":274,\"fps\":30.109888847691092,\"props\":0},\"thumbnail\":\"thumbnail.png\",\"contents\":{\"thumbnail.png\":\"bafkreicoclgn2vocf57tq7ttzmz2mvbiqwe623c3yr5o4eu7rl2qxwj7pu\",\"male/Quadradinho.glb\":\"bafybeie2tl6j374xeecjiw42xmo33by5rarvjc2zrxqs4bga4yhekzam5q\",\"female/Quadradinho.glb\":\"bafybeie2tl6j374xeecjiw42xmo33by5rarvjc2zrxqs4bga4yhekzam5q\",\"image.png\":\"bafkreibgzxnggbrbkkwhp7bagih2ytqfm72autpmexzc6lhgibbjk2myni\"},\"total_supply\":0,\"local_content_hash\":null,\"video\":null,\"urn\":null,\"in_catalyst\":false,\"is_approved\":false,\"is_published\":false,\"content_hash\":null,\"catalyst_content_hash\":null},{\"id\":\"a0521d29-0036-431e-b511-7b86a63f200d\",\"name\":\"Macarena\",\"description\":\"\",\"eth_address\":\"0x43d803d72ba0a4a785f0e46d3b2366cd224e49df\",\"collection_id\":\"12651641-1b8f-4209-9cab-b1d4127bd9eb\",\"blockchain_item_id\":null,\"price\":null,\"beneficiary\":null,\"rarity\":\"rare\",\"type\":\"emote\",\"data\":{\"category\":\"dance\",\"loop\":true,\"tags\":[],\"representations\":[{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseMale\"],\"mainFile\":\"male/Macarena.glb\",\"contents\":[\"male/Macarena.glb\"]},{\"bodyShapes\":[\"urn:decentraland:off-chain:base-avatars:BaseFemale\"],\"mainFile\":\"female/Macarena.glb\",\"contents\":[\"female/Macarena.glb\"]}]},\"created_at\":\"2023-09-05T20:12:12.980Z\",\"updated_at\":\"2023-09-05T20:12:12.980Z\",\"metrics\":{\"sequences\":1,\"duration\":9.600000381469727,\"frames\":289,\"fps\":30.10416547043461,\"props\":0},\"thumbnail\":\"thumbnail.png\",\"contents\":{\"thumbnail.png\":\"bafkreicpanq6ar4g6dtjbl2m5rdpvwlw5khokkagwhirf7kgslo3xyd3ve\",\"male/Macarena.glb\":\"bafybeic3se4sezs6arcbe3eviqrmt65kopyt4qqk7ioqeckcm7p5jbqzqq\",\"female/Macarena.glb\":\"bafybeic3se4sezs6arcbe3eviqrmt65kopyt4qqk7ioqeckcm7p5jbqzqq\",\"image.png\":\"bafkreiaiczgxjphqmjgeksr6rxvbwqw22ynptq67q4p7pkzcrvllw33iom\"},\"total_supply\":0,\"local_content_hash\":null,\"video\":null,\"urn\":null,\"in_catalyst\":false,\"is_approved\":false,\"is_published\":false,\"content_hash\":null,\"catalyst_content_hash\":null}]}}";
+            // var response = JsonConvert.DeserializeObject<WearableCollectionResponseFromBuilder>(json);
+            // var success = true;
 
             if (!success)
                 throw new Exception($"The request for collection of emotes '{collectionId}' failed!");
 
-            foreach (EmoteEntityDto dto in response.entities)
+            foreach (BuilderWearable bw in response.data.results)
             {
-                var contentUrl = $"{catalyst.contentUrl}contents/";
-                var wearable = dto.ToWearableItem(contentUrl);
-                wearable.baseUrl = contentUrl;
-                wearable.baseUrlBundles = assetBundlesUrl;
+                var wearable = bw.ToWearableItem("https://builder-api.decentraland.org/v1/storage/contents/",
+                    assetBundlesUrl);
+                if (!wearable.IsEmote()) continue;
                 emotes.Add(wearable);
             }
         }
