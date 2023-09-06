@@ -327,7 +327,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         lastCrossFade = animationName;
         latestAnimationState = animationState;
-        animation.wrapMode = latestAnimationState.ShouldLoop() ? WrapMode.Loop : WrapMode.Once;
+        animation.wrapMode = latestAnimationState.ShouldLoop() || blackboard.shouldLoop ? WrapMode.Loop : WrapMode.Once;
         animation.CrossFade(lastCrossFade, runTransitionTime, playMode);
     }
 
@@ -427,7 +427,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 animation.Stop(emoteId);
                 latestAnimationState = AvatarAnimation.IDLE;
             }
-
 
             blackboard.shouldLoop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
 
