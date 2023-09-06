@@ -66,8 +66,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnPlaceFavoriteChanged;
-    public event Action<string> OnSubscribeEventClicked;
-    public event Action<string> OnUnsubscribeEventClicked;
+    public event Action<string, bool> OnSubscribeEventClicked;
+    public event Action<string, bool> OnUnsubscribeEventClicked;
 
     private UnityObjectPool<EventCardComponentView> eventsPool;
     internal List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
@@ -302,8 +302,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onSecondaryJumpInClick?.RemoveAllListeners();
         view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onBackgroundClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
-        view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
-        view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
+        view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId, !string.IsNullOrEmpty(model.worldAddress)));
+        view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId, !string.IsNullOrEmpty(model.worldAddress)));
         view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
         view.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
     }

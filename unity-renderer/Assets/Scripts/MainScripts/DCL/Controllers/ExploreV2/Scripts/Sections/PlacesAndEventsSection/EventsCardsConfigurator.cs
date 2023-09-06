@@ -22,8 +22,8 @@ public static class EventsCardsConfigurator
     /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
     /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
     /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
-    public static EventCardComponentView Configure(EventCardComponentView eventCard, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked,
-        Action<string> OnEventUnsubscribeEventClicked)
+    public static EventCardComponentView Configure(EventCardComponentView eventCard, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string, bool> OnEventSubscribeEventClicked,
+        Action<string, bool> OnEventUnsubscribeEventClicked)
     {
         eventCard.Configure(eventInfo);
 
@@ -35,8 +35,8 @@ public static class EventsCardsConfigurator
         eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
         eventCard.onSecondaryJumpInClick?.RemoveAllListeners();
         eventCard.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
-        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
-        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
+        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId, !string.IsNullOrEmpty(eventInfo.worldAddress)));
+        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId, !string.IsNullOrEmpty(eventInfo.worldAddress)));
 
         return eventCard;
     }

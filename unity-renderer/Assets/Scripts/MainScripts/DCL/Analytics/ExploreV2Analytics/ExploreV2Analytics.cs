@@ -8,14 +8,14 @@ namespace ExploreV2Analytics
     {
         void SendStartMenuVisibility(bool isVisible, ExploreUIVisibilityMethod method);
         void SendStartMenuSectionVisibility(ExploreSection section, bool isVisible);
-        void SendEventTeleport(string eventId, string eventName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
-        void SendClickOnEventInfo(string eventId, string eventName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
+        void SendEventTeleport(string eventId, string eventName, bool isWorld, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
+        void SendClickOnEventInfo(string eventId, string eventName, bool isWorld, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendPlaceTeleport(string placeId, string placeName, Vector2Int coords, ActionSource source = ActionSource.FromExplore);
         void SendWorldTeleport(string worldId, string worldName, ActionSource source = ActionSource.FromExplore);
         void SendClickOnPlaceInfo(string placeId, string placeName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
         void SendClickOnWorldInfo(string worldId, string worldName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore);
-        void SendParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
-        void SendRemoveParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore);
+        void SendParticipateEvent(string eventId, bool isWorld, ActionSource source = ActionSource.FromExplore);
+        void SendRemoveParticipateEvent(string eventId, bool isWorld, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
         void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
@@ -95,38 +95,42 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(START_MENU_SECTION_VISIBILITY, data);
         }
 
-        public void SendEventTeleport(string eventId, string eventName, Vector2Int coords, ActionSource source = ActionSource.FromExplore)
+        public void SendEventTeleport(string eventId, string eventName, bool isWorld, Vector2Int coords, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("event_id", eventId);
             data.Add("event_name", eventName);
+            data.Add("isWorld", isWorld.ToString());
             data.Add("event_coords_x", coords.x.ToString());
             data.Add("event_coords_y", coords.y.ToString());
             data.Add("source", source.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_EVENT_TELEPORT, data);
         }
 
-        public void SendParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore)
+        public void SendParticipateEvent(string eventId, bool isWorld, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("event_id", eventId);
+            data.Add("isWorld", isWorld.ToString());
             data.Add("source", source.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_PARTICIPATE_EVENT, data);
         }
 
-        public void SendRemoveParticipateEvent(string eventId, ActionSource source = ActionSource.FromExplore)
+        public void SendRemoveParticipateEvent(string eventId, bool isWorld, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("event_id", eventId);
+            data.Add("isWorld", isWorld.ToString());
             data.Add("source", source.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_REMOVE_PARTICIPATE_EVENT, data);
         }
 
-        public void SendClickOnEventInfo(string eventId, string eventName, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
+        public void SendClickOnEventInfo(string eventId, string eventName, bool isWorld, int resultPosition = -1, ActionSource source = ActionSource.FromExplore)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("event_id", eventId);
             data.Add("event_name", eventName);
+            data.Add("isWorld", isWorld.ToString());
             data.Add("source", source.ToString());
             data.Add("result_position", resultPosition.ToString());
             GenericAnalytics.SendAnalytic(EXPLORE_CLICK_EVENT_INFO, data);

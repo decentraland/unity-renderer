@@ -16,8 +16,8 @@ public interface ISearchSubSectionComponentView : IPlacesAndEventsSubSectionComp
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
     public event Action<string, bool> OnPlaceFavoriteChanged;
-    public event Action<string> OnSubscribeEventClicked;
-    public event Action<string> OnUnsubscribeEventClicked;
+    public event Action<string, bool> OnSubscribeEventClicked;
+    public event Action<string, bool> OnUnsubscribeEventClicked;
 
     void ShowEvents(List<EventCardComponentModel> events, string searchText);
     void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton);

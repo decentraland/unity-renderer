@@ -111,7 +111,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         OnCloseExploreV2?.Invoke();
         EventsSubSectionComponentController.JumpInToEvent(eventFromAPI);
-        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, eventFromAPI.world, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
     }
 
     private void JumpInToPlace(IHotScenesController.PlaceInfo place)
@@ -124,7 +124,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private void OpenEventDetailsModal(EventCardComponentModel eventModel, int index)
     {
         view.ShowEventModal(eventModel);
-        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, index, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, !string.IsNullOrEmpty(eventModel.worldAddress), index, ActionSource.FromSearch);
     }
 
     private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel, int index)
@@ -145,21 +145,21 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         SearchWorlds(searchText, cancellationToken: minimalSearchCts.Token).Forget();
     }
 
-    private void SubscribeToEvent(string eventId)
+    private void SubscribeToEvent(string eventId, bool isWorld)
     {
         if (userProfileBridge.GetOwn().isGuest)
             dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
-            exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
+            exploreV2Analytics.SendParticipateEvent(eventId, isWorld, ActionSource.FromSearch);
             eventsAPI.RegisterParticipation(eventId);
         }
     }
 
-    private void UnsubscribeToEvent(string eventId)
+    private void UnsubscribeToEvent(string eventId, bool isWorld)
     {
         eventsAPI.RemoveParticipation(eventId);
-        exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
+        exploreV2Analytics.SendParticipateEvent(eventId, isWorld, ActionSource.FromSearch);
     }
 
     private void SearchAllEvents(int pageNumber)
