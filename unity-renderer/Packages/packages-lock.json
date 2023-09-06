@@ -50,11 +50,11 @@
       "hash": "f2621a8b09b68f3a7639eea40a7aba18571f3f28"
     },
     "com.decentraland.unity-shared-dependencies": {
-      "version": "https://github.com/decentraland/unity-shared-dependencies.git#chore/srp-batching-helper-remove-forced-alphatest",
+      "version": "https://github.com/decentraland/unity-shared-dependencies.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c549da3318d19846abc126caee77e4eb5b5114c9"
+      "hash": "466eb3c8d7aa82e896434911ea15f15b59f2519c"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
