@@ -28,6 +28,9 @@ public interface IWorldsSubSectionComponentView : IPlacesAndEventsSubSectionComp
     /// </summary>
     event Action<PlaceCardComponentModel> OnInfoClicked;
 
+    event Action OnOpenWorldsInfo;
+    event Action OnOpenWorldsDaoProposal;
+
     /// <summary>
     /// It will be triggered when the JumpIn button is clicked.
     /// </summary>
