@@ -292,13 +292,13 @@ namespace DCLServices.WearablesCatalogService
                 return wearable;
             }
 
-            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:wearableId";
+            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:wearableId/";
             string url = TEMPLATE_URL.Replace(":wearableId", wearableId);
 
             (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
                 TEMPLATE_URL, url,
                 isSigned: true,
-                signUrl: $"https://builder-api.decentraland.org/items/{wearableId}",
+                signUrl: url,
                 cancellationToken: ct);
 
             if (!success)
@@ -354,7 +354,7 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
             CancellationToken cancellationToken)
         {
-            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items";
+            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items/";
 
             var wearables = new List<WearableItem>();
 
@@ -371,7 +371,7 @@ namespace DCLServices.WearablesCatalogService
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     TEMPLATE_URL, url,
                     isSigned: true,
-                    signUrl: $"https://builder-api.decentraland.org/collections/{collectionId}/items",
+                    signUrl: url,
                     urlEncodedParams: queryParams,
                     cancellationToken: cancellationToken);
 
