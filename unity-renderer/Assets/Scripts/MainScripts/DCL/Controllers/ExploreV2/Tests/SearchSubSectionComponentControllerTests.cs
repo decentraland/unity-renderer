@@ -122,6 +122,7 @@ public class SearchSubSectionComponentControllerTests
         searchSubSectionComponentController.OnCloseExploreV2 += () => onCloseExploreV2Triggered = true;
         const string TEST_EVENT_ID = "testEventId";
         const string TEST_EVENT_NAME = "testEventName";
+        const bool TEST_EVENT_IS_WORLD = false;
         Vector2Int testEventCoors = new Vector2Int(100, 100);
 
         // Act
@@ -129,12 +130,13 @@ public class SearchSubSectionComponentControllerTests
         {
             id = TEST_EVENT_ID,
             name = TEST_EVENT_NAME,
+            world = TEST_EVENT_IS_WORLD,
             coordinates = new[] {testEventCoors.x, testEventCoors.y},
         });
 
         // Assert
         Assert.IsTrue(onCloseExploreV2Triggered);
-        exploreV2Analytics.Received(1).SendEventTeleport(TEST_EVENT_ID, TEST_EVENT_NAME, testEventCoors, ActionSource.FromSearch);
+        exploreV2Analytics.Received(1).SendEventTeleport(TEST_EVENT_ID, TEST_EVENT_NAME, TEST_EVENT_IS_WORLD, testEventCoors, ActionSource.FromSearch);
     }
 
     [Test]
@@ -181,6 +183,7 @@ public class SearchSubSectionComponentControllerTests
         // Arrange
         const string TEST_EVENT_ID = "testEventId";
         const string TEST_EVENT_NAME = "testEventName";
+        const bool TEST_EVENT_IS_WORLD = false;
         EventCardComponentModel testEventCardComponentModel = new EventCardComponentModel
         {
             eventId = TEST_EVENT_ID,
@@ -193,7 +196,7 @@ public class SearchSubSectionComponentControllerTests
 
         // Assert
         searchSubSectionComponentView.Received(1).ShowEventModal(testEventCardComponentModel);
-        exploreV2Analytics.Received(1).SendClickOnEventInfo(TEST_EVENT_ID, TEST_EVENT_NAME, testIndex, ActionSource.FromSearch);
+        exploreV2Analytics.Received(1).SendClickOnEventInfo(TEST_EVENT_ID, TEST_EVENT_NAME, TEST_EVENT_IS_WORLD, testIndex, ActionSource.FromSearch);
     }
 
     [Test]
@@ -222,12 +225,13 @@ public class SearchSubSectionComponentControllerTests
     {
         // Arrange
         const string TEST_EVENT_ID = "testEventId";
+        const bool TEST_EVENT_IS_WORLD = false;
 
         // Act
-        searchSubSectionComponentView.OnSubscribeEventClicked += Raise.Event<Action<string>>(TEST_EVENT_ID);
+        searchSubSectionComponentView.OnSubscribeEventClicked += Raise.Event<Action<string, bool>>(TEST_EVENT_ID, TEST_EVENT_IS_WORLD);
 
         // Assert
-        exploreV2Analytics.Received(1).SendParticipateEvent(TEST_EVENT_ID, ActionSource.FromSearch);
+        exploreV2Analytics.Received(1).SendParticipateEvent(TEST_EVENT_ID, TEST_EVENT_IS_WORLD, ActionSource.FromSearch);
         eventsAPIController.Received(1).RegisterParticipation(TEST_EVENT_ID);
     }
 
@@ -236,13 +240,14 @@ public class SearchSubSectionComponentControllerTests
     {
         // Arrange
         const string TEST_EVENT_ID = "testEventId";
+        const bool TEST_EVENT_IS_WORLD = false;
 
         // Act
-        searchSubSectionComponentView.OnUnsubscribeEventClicked += Raise.Event<Action<string>>(TEST_EVENT_ID);
+        searchSubSectionComponentView.OnUnsubscribeEventClicked += Raise.Event<Action<string, bool>>(TEST_EVENT_ID, TEST_EVENT_IS_WORLD);
 
         // Assert
         eventsAPIController.Received(1).RemoveParticipation(TEST_EVENT_ID);
-        exploreV2Analytics.Received(1).SendParticipateEvent(TEST_EVENT_ID, ActionSource.FromSearch);
+        exploreV2Analytics.Received(1).SendParticipateEvent(TEST_EVENT_ID, TEST_EVENT_IS_WORLD, ActionSource.FromSearch);
     }
 
     [Test]
