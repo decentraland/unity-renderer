@@ -221,7 +221,11 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller.currentPlayerId.Set(null);
         controller.currentPlayerId.Set(IDS[4]);
 
-        socialAnalytics.Received(5).SendPassportOpen();
+        socialAnalytics.Received(1).SendPassportOpen(IDS[0]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[1]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[2]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[3]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[4]);
     }
 
     private void PrepareUsers()

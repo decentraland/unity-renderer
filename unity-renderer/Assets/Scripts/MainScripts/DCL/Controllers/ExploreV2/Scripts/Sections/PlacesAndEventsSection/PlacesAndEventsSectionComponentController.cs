@@ -3,6 +3,7 @@ using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
 using Environment = DCL.Environment;
 
@@ -22,6 +23,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
 
     internal IPlacesAndEventsSectionComponentView view;
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
+    internal IWorldsSubSectionComponentController worldsSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
     internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
     internal ISearchSubSectionComponentController searchSubSectionComponentController;
@@ -37,6 +39,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
         IUserProfileBridge userProfileBridge,
         IFriendsController friendsController,
         IPlacesAPIService placesAPIService,
+        IWorldsAPIService worldsAPIService,
         IPlacesAnalytics placesAnalytics
         )
     {
@@ -55,12 +58,25 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             userProfileBridge);
         placesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
+        worldsSubSectionComponentController = new WorldsSubSectionComponentController(
+            view.WorldsSubSectionView,
+            placesAPIService,
+            worldsAPIService,
+            friendsController,
+            exploreV2Analytics,
+            placesAnalytics,
+            dataStore,
+            userProfileBridge);
+        worldsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
+
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
             view.EventsSubSectionView,
             eventsAPI,
             exploreV2Analytics,
             dataStore,
-            userProfileBridge);
+            userProfileBridge,
+            placesAPIService,
+            worldsAPIService);
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(
@@ -77,6 +93,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             view.SearchBar,
             eventsAPI,
             placesAPIService,
+            worldsAPIService,
             userProfileBridge,
             exploreV2Analytics,
             placesAnalytics,
@@ -95,6 +112,9 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     {
         placesSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         placesSubSectionComponentController.Dispose();
+
+        worldsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
+        worldsSubSectionComponentController.Dispose();
 
         eventsSubSectionComponentController.OnCloseExploreV2 -= RequestExploreV2Closing;
         eventsSubSectionComponentController.Dispose();

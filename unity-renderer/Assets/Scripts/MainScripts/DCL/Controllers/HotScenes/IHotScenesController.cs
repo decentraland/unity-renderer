@@ -17,6 +17,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
     public interface IHotScenesController : IService
     {
         UniTask<IReadOnlyList<HotSceneInfo>> GetHotScenesListAsync(CancellationToken cancellationToken);
+        UniTask<IReadOnlyList<HotWorldInfo.WorldInfo>> GetHotWorldsListAsync(CancellationToken cancellationToken);
 
         [Serializable]
         class HotSceneInfo
@@ -43,6 +44,29 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         [Serializable]
+        class HotWorldInfo
+        {
+            [Serializable]
+            public class WorldInfo
+            {
+                public string worldName;
+                public int users;
+            }
+
+            [Serializable]
+            public class WorldData
+            {
+                public int totalUsers;
+                public WorldInfo[] perWorld;
+            }
+
+            public WorldData data;
+            public string lastUpdated;
+
+        }
+
+        // TODO: This class should be moved to the PlacesAPIService folder
+        [Serializable]
         public class PlaceInfo : ISerializationCallbackReceiver
         {
             [Serializable]
@@ -62,6 +86,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public string owner;
             public string[] tags;
             [SerializeField] private string[] positions;
+            public string world_name;
 
             public Vector2Int[] Positions;
 
@@ -132,6 +157,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             }
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIResponse : PaginatedResponse
         {
@@ -140,6 +166,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public List<PlaceInfo> data;
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIGetParcelResponse
         {

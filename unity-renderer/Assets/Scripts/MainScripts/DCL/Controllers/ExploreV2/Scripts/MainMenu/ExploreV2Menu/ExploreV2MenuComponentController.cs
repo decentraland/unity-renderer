@@ -2,6 +2,7 @@ using DCL;
 using DCL.Social.Friends;
 using DCL.Wallet;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ using Environment = DCL.Environment;
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     private readonly IPlacesAPIService placesAPIService;
+    private readonly IWorldsAPIService worldsAPIService;
     private readonly IPlacesAnalytics placesAnalytics;
 
     // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
@@ -69,9 +71,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
-    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
+    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics)
     {
         this.placesAPIService = placesAPIService;
+        this.worldsAPIService = worldsAPIService;
         this.placesAnalytics = placesAnalytics;
     }
 
@@ -232,7 +235,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(
             view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge(),
-            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService, placesAnalytics);
+            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService, worldsAPIService, placesAnalytics);
 
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }

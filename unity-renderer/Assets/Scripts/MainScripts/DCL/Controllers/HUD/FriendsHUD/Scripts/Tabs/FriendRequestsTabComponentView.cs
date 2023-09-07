@@ -354,9 +354,9 @@ public class FriendRequestsTabComponentView : BaseComponentView
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
+        friendEntry.Dock(contextMenuPanel);
         contextMenuPanel.Show(friendEntry.Model.userId);
         contextMenuPanel.SetFriendshipContentActive(false);
-        friendEntry.Dock(contextMenuPanel);
     }
 
     private void UpdateCounterLabel()

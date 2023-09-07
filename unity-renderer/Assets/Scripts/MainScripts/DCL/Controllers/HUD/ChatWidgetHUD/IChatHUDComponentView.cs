@@ -9,7 +9,7 @@ namespace DCL.Social.Chat
     {
         event Action<ChatMessage> OnSendMessage;
         event Action<string, int> OnMessageUpdated;
-        event Action OnOpenedContextMenu;
+        event Action<string> OnOpenedContextMenu;
         event Action OnShowMenu;
         event Action OnInputFieldSelected;
         event Action OnInputFieldDeselected;
