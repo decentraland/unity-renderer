@@ -127,6 +127,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
+        StopEmote();
+
         animation = container.gameObject.GetOrCreateComponent<Animation>();
         container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
@@ -522,15 +524,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         animation.AddClip(emoteClipData.AvatarClip, emoteId);
 
-        // Enhanced emotes setup
-
         if (emoteClipData.ExtraContent != null)
         {
-            emoteClipData.ExtraContent.transform.SetParent(animation.transform, false);
+            emoteClipData.ExtraContent.transform.SetParent(animation.transform.parent, false);
             emoteClipData.ExtraContent.transform.ResetLocalTRS();
+            emoteClipData.ExtraContent.transform.localPosition = animation.transform.localPosition;
         }
-
-        // TODO: Setup sound clip for this emote
     }
 
     public void UnequipEmote(string emoteId)
@@ -545,11 +544,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
         {
-            // Enhanced emotes setup
             if (emoteClipData.ExtraContent != null)
                 emoteClipData.ExtraContent.transform.SetParent(null, false);
-
-            // TODO: Setup sound clip for this emote
         }
     }
 

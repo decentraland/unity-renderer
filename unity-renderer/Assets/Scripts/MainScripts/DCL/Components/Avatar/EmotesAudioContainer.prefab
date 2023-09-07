@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instantiateEvents: 0
-  audioMixerGroup: {fileID: 4026341753330727387, guid: 97507d628c02bcf47859b9f108ab1823,
+  audioMixerGroup: {fileID: 4864224931565128906, guid: 97507d628c02bcf47859b9f108ab1823,
     type: 2}
   spatialBlend: 1
   overrideDefaults: 1
