@@ -50,7 +50,16 @@ namespace AvatarSystem
                 {
                     DateTime startLoadTime = DateTime.Now;
 
-                    var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
+                    var moreEmotes = new List<WearableItem>();
+
+                    foreach (string emoteId in emoteIds)
+                    {
+                        var emote = await emotesCatalog.RequestEmoteAsync(emoteId, ct);
+                        emote ??= await emotesCatalog.RequestEmoteFromBuilderAsync(emoteId, ct);
+
+                        if (emote != null)
+                            moreEmotes.Add(emote);
+                    }
 
                     var loadTimeDelta = DateTime.Now - startLoadTime;
 
