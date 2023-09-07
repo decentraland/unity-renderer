@@ -16,7 +16,7 @@ namespace DCL.ECSRuntime
         {
             PooledWrappedComponent<IWrappedComponent<ModelType>> pooledWrappedComponent = internalPool.Get();
             ModelType wrappedComponent = pooledWrappedComponent.WrappedComponent.Model;
-            // FD:: <<---- nasty error here
+            // FD:: <<---- nasty error does not happen anymore
             // return (ModelType)internalPool.Get().WrappedComponentBase;
             return wrappedComponent;
         }

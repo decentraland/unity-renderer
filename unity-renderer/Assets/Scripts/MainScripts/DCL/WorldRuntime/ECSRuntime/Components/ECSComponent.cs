@@ -12,15 +12,19 @@ namespace DCL.ECSRuntime
             new DualKeyValueSet<IParcelScene, long, ECSComponentData<ModelType>>(50);
 
         private readonly Func<IECSComponentHandler<ModelType>> handlerBuilder;
-        private readonly Func<object, ModelType> deserializer;
+        internal readonly Func<object, ModelType> deserializer;
 
-        private readonly IECSComponentPool<ModelType> iEcsComponentPool;
+        internal readonly IECSComponentPool<ModelType> iEcsComponentPool;
+
+        IEcsComponentImplementation implementation;
 
         // FD:: Constructor with pooling
         public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iEcsComponentPool)
         {
             this.handlerBuilder = handlerBuilder;
             this.iEcsComponentPool = iEcsComponentPool;
+
+            this.implementation = new PooledComponentImplementation<ModelType>(this);
         }
 
         // FD:: Constructor for deserialization (without pooling)
@@ -28,6 +32,8 @@ namespace DCL.ECSRuntime
         {
             this.deserializer = deserializer;
             this.handlerBuilder = handlerBuilder;
+
+            this.implementation = new InternalComponentImplementation<ModelType>(this);
         }
 
         /// <summary>
@@ -93,7 +99,8 @@ namespace DCL.ECSRuntime
         /// <param name="model">new model</param>
         public void SetModel(IParcelScene scene, IDCLEntity entity, ModelType model)
         {
-            SetModel(scene, entity.entityId, model);
+            // SetModel(scene, entity.entityId, model);
+            implementation.SetModel(scene, entity.entityId, model);
         }
 
         /// <summary>
@@ -122,7 +129,8 @@ namespace DCL.ECSRuntime
         /// <param name="message">message</param>
         public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
         {
-            SetModel(scene, entity, deserializer.Invoke(message));
+            // SetModel(scene, entity, deserializer.Invoke(message));
+            implementation.Deserialize(scene, entity, message);
         }
 
         /// <summary>
@@ -171,4 +179,83 @@ namespace DCL.ECSRuntime
             return componentData.Pairs;
         }
     }
+
+    internal interface IEcsComponentImplementation
+    {
+        void SetModel(IParcelScene scene, long entityId, object model);
+        void Deserialize(IParcelScene scene, IDCLEntity entity, object message);
+    }
+
+    // FD:: move elsewhere inside the DCL.ECSRuntime namespace
+
+    internal class PooledComponentImplementation<ModelType> : IEcsComponentImplementation
+    {
+        private readonly ECSComponent<ModelType> component;
+
+        public PooledComponentImplementation(ECSComponent<ModelType> component)
+        {
+            this.component = component;
+        }
+
+        public void SetModel(IParcelScene scene, long entityId, object model)
+        {
+            if(model is ModelType typedModel)
+            {
+                component.SetModel(scene, entityId, typedModel);
+            }
+            else
+            {
+                // Handle error
+                Debug.LogError($"Invalid model type for pooled component: {model?.GetType().Name ?? "null"}");
+            }
+        }
+
+        public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
+        {
+            // Since we are using pooling, we need to get an instance from the pool
+            var modelInstance = component.iEcsComponentPool.Get();
+            // Apply the deserialization logic specific to pooled components here
+            // For example, you may need to populate the fields of modelInstance based on the message
+
+            component.SetModel(scene, entity, modelInstance);
+        }
+    }
+
+    internal class InternalComponentImplementation<ModelType> : IEcsComponentImplementation
+    {
+        private readonly ECSComponent<ModelType> component;
+
+        public InternalComponentImplementation(ECSComponent<ModelType> component)
+        {
+            this.component = component;
+        }
+
+        public void SetModel(IParcelScene scene, long entityId, object model)
+        {
+            if(model is ModelType typedModel)
+            {
+                component.SetModel(scene, entityId, typedModel);
+            }
+            else
+            {
+                // Handle error
+                Debug.LogError($"Invalid model type for non-pooled component: {model?.GetType().Name ?? "null"}");
+            }
+        }
+
+        public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
+        {
+            if (component.deserializer != null)
+            {
+                var model = component.deserializer(message);
+                component.SetModel(scene, entity, model);
+            }
+            else
+            {
+                // Handle error
+                Debug.LogError("Deserializer is not set for non-pooled component");
+            }
+        }
+    }
+
 }
