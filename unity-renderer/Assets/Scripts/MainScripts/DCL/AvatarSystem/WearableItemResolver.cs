@@ -80,11 +80,10 @@ namespace AvatarSystem
                 if (wearablesRetrieved.ContainsKey(wearableId))
                     return wearablesRetrieved[wearableId];
 
-                WearableItem wearable;
                 // AttachExternalCancellation is needed because a CustomYieldInstruction requires a frame to operate
-                if (wearableId.StartsWith("urn"))
-                    wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token).AttachExternalCancellation(ct);
-                else
+                WearableItem wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, linkedCts.Token).AttachExternalCancellation(ct);
+
+                if (wearable == null && !wearableId.StartsWith("urn"))
                     wearable = await wearablesCatalogService.RequestWearableFromBuilderAsync(wearableId, linkedCts.Token).AttachExternalCancellation(ct);
 
                 // Cancelling is irrelevant at this point,
