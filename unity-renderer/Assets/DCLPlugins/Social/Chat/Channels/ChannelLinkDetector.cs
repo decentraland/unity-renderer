@@ -46,9 +46,7 @@ namespace DCL.Social.Chat
             if (textComponent == null) return;
 
             textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
-
-            if (true)
-                textComponent.OnPreRenderText += OnTextComponentPreRenderText;
+            textComponent.OnPreRenderText += OnTextComponentPreRenderText;
         }
 
         public void OnPointerClick(PointerEventData eventData)
