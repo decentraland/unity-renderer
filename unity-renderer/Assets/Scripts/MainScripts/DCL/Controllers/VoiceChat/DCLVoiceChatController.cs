@@ -10,7 +10,6 @@ namespace DCL
 {
     public class DCLVoiceChatController : MonoBehaviour
     {
-        [FormerlySerializedAs("voiceChatAction")]
         [Header("InputActions")]
         public InputAction_Hold voiceChatHoldAction;
         public InputAction_Trigger voiceChatLeaveOnShortcutTrigger;
