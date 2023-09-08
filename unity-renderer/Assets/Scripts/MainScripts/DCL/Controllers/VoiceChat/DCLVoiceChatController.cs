@@ -82,8 +82,6 @@ namespace DCL
 
         private void IsVoiceChatRecordingChanged(KeyValuePair<bool, bool> current, KeyValuePair<bool, bool> previous)
         {
-            Debug.Log("QUE CARAJO " + current.Key);
-
             if (!DataStore.i.voiceChat.isJoinedToVoiceChat.Get())
                 return;
 
