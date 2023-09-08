@@ -12,7 +12,7 @@ namespace DCL
     {
         [Header("InputActions")]
         public InputAction_Hold voiceChatHoldAction;
-        public InputAction_Trigger voiceChatLeaveOnShortcutTrigger;
+        public InputAction_Trigger voiceChatToggleAction;
 
         private bool firstTimeVoiceRecorded = true;
         private ISocialAnalytics socialAnalytics;
@@ -27,7 +27,7 @@ namespace DCL
 
             voiceChatHoldAction.OnStarted += VoiceChatHoldActionStart;
             voiceChatHoldAction.OnFinished += VoiceChatHoldActionFinish;
-            voiceChatLeaveOnShortcutTrigger.OnTriggered += VoiceChatTriggered;
+            voiceChatToggleAction.OnTriggered += VoiceChatTriggered;
 
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
@@ -63,7 +63,7 @@ namespace DCL
         {
             voiceChatHoldAction.OnStarted -= VoiceChatHoldActionStart;
             voiceChatHoldAction.OnFinished -= VoiceChatHoldActionFinish;
-            voiceChatLeaveOnShortcutTrigger.OnTriggered -= VoiceChatTriggered;
+            voiceChatToggleAction.OnTriggered -= VoiceChatTriggered;
 
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange -= IsVoiceChatRecordingChanged;
