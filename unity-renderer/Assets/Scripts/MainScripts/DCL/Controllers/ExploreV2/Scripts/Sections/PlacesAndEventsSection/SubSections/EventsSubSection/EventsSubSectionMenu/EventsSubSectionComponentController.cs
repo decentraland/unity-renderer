@@ -359,7 +359,7 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
     internal void ShowEventDetailedInfo(EventCardComponentModel eventModel)
     {
         view.ShowEventModal(eventModel);
-        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, !string.IsNullOrEmpty(eventModel.worldAddress));
     }
 
     internal void OnJumpInToEvent(EventFromAPIModel eventFromAPI)
@@ -368,24 +368,24 @@ public class EventsSubSectionComponentController : IEventsSubSectionComponentCon
         view.HideEventModal();
 
         OnCloseExploreV2?.Invoke();
-        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, eventFromAPI.world, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]));
     }
 
-    private void SubscribeToEvent(string eventId)
+    private void SubscribeToEvent(string eventId, bool isWorld)
     {
         if (userProfileBridge.GetOwn().isGuest)
             ConnectWallet();
         else
         {
             eventsAPIApiController.RegisterParticipation(eventId);
-            exploreV2Analytics.SendParticipateEvent(eventId);
+            exploreV2Analytics.SendParticipateEvent(eventId, isWorld);
         }
     }
 
-    private void UnsubscribeToEvent(string eventId)
+    private void UnsubscribeToEvent(string eventId, bool isWorld)
     {
         eventsAPIApiController.RemoveParticipation(eventId);
-        exploreV2Analytics.SendRemoveParticipateEvent(eventId);
+        exploreV2Analytics.SendRemoveParticipateEvent(eventId, isWorld);
     }
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
