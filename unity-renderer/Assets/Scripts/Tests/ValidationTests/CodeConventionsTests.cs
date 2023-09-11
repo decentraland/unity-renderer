@@ -6,21 +6,23 @@ using UnityEditor;
 
 namespace Tests.ValidationTests
 {
+    [Category("EditModeCI")]
     public class CodeConventionsTests
     {
         private static readonly string[] EXCLUDED_PATHS = { "/Editor/", "/Tests/", "/EditorTests/" };
 
         [Test]
-        public void AvoidUsingCurrentCultureIgnoreCase_SingleTest()
+        public void AvoidUsingCurrentCultureIgnoreCase()
         {
+            // Arrange
             foreach (string file in AllCSharpFiles())
             {
                 string fileContent = File.ReadAllText(file);
 
-                // Check if the file content contains the offending usage
+                // Act
                 bool foundOffendingUsage = fileContent.Contains("StringComparison.CurrentCultureIgnoreCase");
 
-                // Assert that there are no offending usages.
+                // Assert
                 Assert.IsFalse(foundOffendingUsage, $"File {Path.GetFileName(file)} uses StringComparison.CurrentCultureIgnoreCase. Please use StringComparison.OrdinalIgnoreCase instead.");
             }
         }
