@@ -298,7 +298,6 @@ namespace DCLServices.WearablesCatalogService
             (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
                 TEMPLATE_URL, url,
                 isSigned: true,
-                signUrl: url,
                 cancellationToken: ct);
 
             if (!success)
@@ -371,7 +370,6 @@ namespace DCLServices.WearablesCatalogService
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     TEMPLATE_URL, url,
                     isSigned: true,
-                    signUrl: url,
                     urlEncodedParams: queryParams,
                     cancellationToken: cancellationToken);
 

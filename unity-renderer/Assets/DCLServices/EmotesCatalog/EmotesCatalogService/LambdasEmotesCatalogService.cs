@@ -111,7 +111,6 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
             TEMPLATE_URL, url,
             isSigned: true,
-            signUrl: url,
             cancellationToken: cancellationToken);
 
         if (!success)
@@ -340,7 +339,6 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                 TEMPLATE_URL, url,
                 cancellationToken: cancellationToken,
                 isSigned: true,
-                signUrl: url,
                 urlEncodedParams: queryParams);
 
             if (!success)
