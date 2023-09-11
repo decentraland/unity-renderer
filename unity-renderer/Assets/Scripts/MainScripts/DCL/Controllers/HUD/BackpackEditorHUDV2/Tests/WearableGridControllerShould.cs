@@ -1121,11 +1121,11 @@ namespace DCL.Backpack
             };
 
             wearablesCatalogService.RequestWearableCollectionInBuilder(Arg.Is<IEnumerable<string>>(i => i.Count() == 1 && i.ElementAt(0) == "builder:collection"),
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(), Arg.Any<List<WearableItem>>())
                                    .Returns(UniTask.FromResult(nonPublishedWearableList));
 
             wearablesCatalogService.RequestWearableCollection(Arg.Is<IEnumerable<string>>(i => i.Count() == 1 && i.ElementAt(0) == "urn:collection"),
-                                        Arg.Any<CancellationToken>())
+                                        Arg.Any<CancellationToken>(), Arg.Any<List<WearableItem>>())
                                    .Returns(UniTask.FromResult(publishedWearableList));
 
             controller.LoadWearablesWithFilters();

@@ -164,9 +164,10 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         return promise.value;
     }
 
-    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
     {
-        List<WearableItem> emotes = new ();
+        List<WearableItem> emotes = emoteBuffer ?? new List<WearableItem>();
         var templateURL = $"{catalyst.contentUrl}entities/active/collections/:collectionId";
 
         foreach (string collectionId in collectionIds)
@@ -319,11 +320,12 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         return embeddedEmotesSo;
     }
 
-    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
     {
         const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items/";
 
-        var emotes = new List<WearableItem>();
+        var emotes = emoteBuffer ?? new List<WearableItem>();
 
         var queryParams = new[]
         {

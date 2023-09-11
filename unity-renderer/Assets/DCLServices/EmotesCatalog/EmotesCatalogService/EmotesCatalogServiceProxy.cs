@@ -56,6 +56,7 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
             emotesCatalogServiceInUse = webInterfaceEmotesCatalogService;
         else
             emotesCatalogServiceInUse = lambdasEmotesCatalogService;
+
         emotesCatalogServiceInUse.Initialize();
         isInitialized = true;
     }
@@ -72,6 +73,7 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
             emote = null;
             return false;
         }
+
         return emotesCatalogServiceInUse.TryGetLoadedEmote(id, out emote);
     }
 
@@ -87,10 +89,11 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
     public UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default) =>
         emotesCatalogServiceInUse.RequestOwnedEmotesAsync(userId, ct);
 
-    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
     {
         await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
-        return await lambdasEmotesCatalogService.RequestEmoteCollectionAsync(collectionIds, cancellationToken);
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionAsync(collectionIds, cancellationToken, emoteBuffer);
     }
 
     public Promise<WearableItem> RequestEmote(string id) =>
@@ -107,15 +110,17 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        if(!isInitialized)
+        if (!isInitialized)
             await UniTask.WaitUntil(() => isInitialized);
+
         return await emotesCatalogServiceInUse.GetEmbeddedEmotes();
     }
 
-    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken)
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
     {
         await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
-        return await lambdasEmotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionIds, cancellationToken);
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionIds, cancellationToken, emoteBuffer);
     }
 
     public void ForgetEmote(string id) =>

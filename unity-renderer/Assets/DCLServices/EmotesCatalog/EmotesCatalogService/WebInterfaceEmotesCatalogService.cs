@@ -174,7 +174,8 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             return promise.value;
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null) =>
             throw new NotImplementedException("Implemented in LambdasEmotesCatalogService");
 
         public Promise<WearableItem> RequestEmote(string id)
@@ -292,7 +293,8 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             return embeddedEmotesSO;
         }
 
-        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds, CancellationToken cancellationToken) =>
+        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null) =>
             throw new NotImplementedException("Implemented in LambdasEmotesCatalogService");
 
         public void Dispose()

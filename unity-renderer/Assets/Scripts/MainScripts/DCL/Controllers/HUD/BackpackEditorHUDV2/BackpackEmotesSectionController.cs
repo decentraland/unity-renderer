@@ -102,10 +102,10 @@ namespace DCL.Backpack
                     allEmotes.AddRange(embeddedEmotesSo.emotes);
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
-                    try { allEmotes.AddRange(await FetchCustomEmoteCollections(ct)); }
+                    try { await FetchCustomEmoteCollections(allEmotes, ct); }
                     catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
-                    try { allEmotes.AddRange(await FetchCustomEmoteItems(ct)); }
+                    try { await FetchCustomEmoteItems(allEmotes, ct); }
                     catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
                     dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
@@ -145,7 +145,8 @@ namespace DCL.Backpack
             WebInterface.OpenURL(ownedCollectible != null ? URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId) : URL_SELL_COLLECTIBLE_GENERIC);
         }
 
-        private async UniTask<IEnumerable<WearableItem>> FetchCustomEmoteItems(CancellationToken cancellationToken)
+        private async UniTask FetchCustomEmoteItems(List<WearableItem> emotes,
+            CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
@@ -154,8 +155,6 @@ namespace DCL.Backpack
 
             IEnumerable<string> itemsInBuilder = customItems
                .Where(nftId => !nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
-
-            List<WearableItem> emotes = new ();
 
             foreach (string nftId in publishedItems)
             {
@@ -182,11 +181,11 @@ namespace DCL.Backpack
 
                 emotes.Add(wearable);
             }
-
-            return emotes;
         }
 
-        private async UniTask<IEnumerable<WearableItem>> FetchCustomEmoteCollections(CancellationToken cancellationToken)
+        private async UniTask FetchCustomEmoteCollections(
+            List<WearableItem> emotes,
+            CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
@@ -197,12 +196,8 @@ namespace DCL.Backpack
             IEnumerable<string> collectionsInBuilder = customCollections
                .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
 
-            List<WearableItem> emotes = new ();
-
-            emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken));
-            emotes.AddRange(await emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken));
-
-            return emotes;
+            await emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken, emotes);
+            await emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken, emotes);
         }
     }
 }

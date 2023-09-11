@@ -318,9 +318,9 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null)
         {
-            List<WearableItem> wearables = new ();
+            List<WearableItem> wearables = collectionBuffer ?? new List<WearableItem>();
             var templateURL = $"{catalyst.contentUrl}entities/active/collections/:collectionId";
 
             foreach (string collectionId in collectionIds)
@@ -351,11 +351,11 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null)
         {
             const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items/";
 
-            var wearables = new List<WearableItem>();
+            var wearables = collectionBuffer ?? new List<WearableItem>();
 
             var queryParams = new[]
             {

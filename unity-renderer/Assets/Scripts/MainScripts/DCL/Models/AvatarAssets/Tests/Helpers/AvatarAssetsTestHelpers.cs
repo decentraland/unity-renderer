@@ -87,10 +87,10 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                     Arg.Any<CancellationToken>())
                .Returns(_ => UniTask.FromResult<(IReadOnlyList<WearableItem> wearables, int totalAmount)>((new List<WearableItem>(), 0)));
 
-            wearablesCatalogService.RequestWearableCollection(default, default)
+            wearablesCatalogService.RequestWearableCollection(default, default, default)
                                    .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<WearableItem>>(Array.Empty<WearableItem>()));
 
-            wearablesCatalogService.RequestWearableCollectionInBuilder(default, default)
+            wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
                                    .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<WearableItem>>(Array.Empty<WearableItem>()));
 
             return wearablesCatalogService;
