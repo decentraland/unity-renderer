@@ -69,6 +69,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform mapTooltipReference => view.currentMapTooltipReference;
     private RectTransform questTooltipReference => view.currentQuestTooltipReference;
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
+    private RectTransform cameraReelTooltipReference => view.cameraReelTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
     public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics)
@@ -129,6 +130,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
+        DataStore.i.exploreV2.cameraReelTooltipReference.Set(cameraReelTooltipReference);
 
         view.OnSectionOpen += OnSectionOpen;
 

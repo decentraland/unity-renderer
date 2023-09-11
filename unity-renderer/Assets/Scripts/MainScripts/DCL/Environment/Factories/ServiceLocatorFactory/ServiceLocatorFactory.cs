@@ -113,13 +113,12 @@ namespace DCL
 
             result.Register<IFriendsController>(() =>
             {
-                // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+                // TODO: remove when the all the friendship responsibilities are migrated to unity
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
-                return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
-                        webInterfaceFriendsApiBridge,
-                        RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                        DataStore.i), result.Get<ISocialApiBridge>(),
+                return new FriendsController(
+                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                    result.Get<ISocialApiBridge>(),
                     DataStore.i, userProfileWebInterfaceBridge);
             });
 
