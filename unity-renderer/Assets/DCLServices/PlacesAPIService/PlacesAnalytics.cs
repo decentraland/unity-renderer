@@ -9,7 +9,8 @@ namespace DCLServices.PlacesAPIService
             FromExplore,
             FromSearch,
             FromMinimap,
-            FromNavmap
+            FromNavmap,
+            FromFavorites,
         }
 
         public enum FilterType

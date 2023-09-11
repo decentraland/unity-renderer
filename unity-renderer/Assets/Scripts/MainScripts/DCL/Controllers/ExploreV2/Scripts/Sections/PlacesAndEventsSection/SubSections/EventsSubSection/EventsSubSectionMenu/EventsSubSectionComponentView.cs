@@ -92,8 +92,8 @@ public class EventsSubSectionComponentView : BaseComponentView, IEventsSubSectio
     public event Action OnReady;
     public event Action<EventCardComponentModel> OnInfoClicked;
     public event Action<EventFromAPIModel> OnJumpInClicked;
-    public event Action<string> OnSubscribeEventClicked;
-    public event Action<string> OnUnsubscribeEventClicked;
+    public event Action<string, bool> OnSubscribeEventClicked;
+    public event Action<string, bool> OnUnsubscribeEventClicked;
     public event Action OnShowMoreEventsClicked;
     public event Action OnConnectWallet;
     public event Action OnEventsSubSectionEnable;

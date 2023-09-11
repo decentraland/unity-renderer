@@ -11,6 +11,7 @@ public static class PlacesAndEventsCardsFactory
 {
     internal const string EVENT_CARD_MODAL_ID = "EventCard_Modal";
     internal const string PLACE_CARD_MODAL_ID = "PlaceCard_Modal";
+    internal const string WORLD_CARD_MODAL_ID = "WorldCard_Modal";
     internal const string ALL_ID = "all";
     internal const string ALL_TEXT = "All";
 
@@ -34,7 +35,7 @@ public static class PlacesAndEventsCardsFactory
         return pool;
     }
 
-    public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked, Action<string> OnEventUnsubscribeEventClicked) =>
+    public static EventCardComponentView CreateConfiguredEventCard(Pool pool, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string, bool> OnEventSubscribeEventClicked, Action<string, bool> OnEventUnsubscribeEventClicked) =>
         EventsCardsConfigurator.Configure(pool.Get<EventCardComponentView>(), eventInfo, OnEventInfoClicked, OnEventJumpInClicked, OnEventSubscribeEventClicked, OnEventUnsubscribeEventClicked);
 
     public static PlaceCardComponentView CreateConfiguredPlaceCard(Pool pool, PlaceCardComponentModel placeInfo, Action<PlaceCardComponentModel> OnPlaceInfoClicked, Action<PlaceInfo> OnPlaceJumpInClicked, Action<string, bool?> OnVoteChanged, Action<string, bool> OnFavoriteClicked) =>
@@ -47,6 +48,14 @@ public static class PlacesAndEventsCardsFactory
     /// <returns>An instance of a place card modal.</returns>
     public static PlaceCardComponentView GetPlaceCardTemplateHiddenLazy(PlaceCardComponentView placeCardModalPrefab) =>
         GetCardTemplateHiddenLazy(placeCardModalPrefab, PLACE_CARD_MODAL_ID);
+
+    /// <summary>
+    /// Instantiates (if does not already exists) a world card modal from the given prefab.
+    /// </summary>
+    /// <param name="worldCardModalPrefab">Prefab to instantiate.</param>
+    /// <returns>An instance of a world card modal.</returns>
+    public static PlaceCardComponentView GetWorldCardTemplateHiddenLazy(PlaceCardComponentView worldCardModalPrefab) =>
+        GetCardTemplateHiddenLazy(worldCardModalPrefab, WORLD_CARD_MODAL_ID);
 
     /// <summary>
     /// Instantiates (if does not already exists) a event card modal from the given prefab.

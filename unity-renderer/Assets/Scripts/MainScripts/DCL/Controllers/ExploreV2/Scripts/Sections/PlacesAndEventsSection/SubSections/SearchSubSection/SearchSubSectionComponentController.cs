@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class SearchSubSectionComponentController : ISearchSubSectionComponentController
 {
@@ -55,11 +56,13 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.OnRequestAllWorlds += SearchAllWorlds;
         view.OnEventInfoClicked += OpenEventDetailsModal;
         view.OnPlaceInfoClicked += OpenPlaceDetailsModal;
+        view.OnWorldInfoClicked += OpenWorldDetailsModal;
         view.OnVoteChanged += ChangeVote;
         view.OnSubscribeEventClicked += SubscribeToEvent;
         view.OnUnsubscribeEventClicked += UnsubscribeToEvent;
         view.OnEventJumpInClicked += JumpInToEvent;
         view.OnPlaceJumpInClicked += JumpInToPlace;
+        view.OnWorldJumpInClicked += JumpInToWorld;
         view.OnBackFromSearch += CloseSearchPanel;
         view.OnPlaceFavoriteChanged += ChangePlaceFavorite;
 
@@ -111,7 +114,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     {
         OnCloseExploreV2?.Invoke();
         EventsSubSectionComponentController.JumpInToEvent(eventFromAPI);
-        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
+        exploreV2Analytics.SendEventTeleport(eventFromAPI.id, eventFromAPI.name, eventFromAPI.world, new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]), ActionSource.FromSearch);
     }
 
     private void JumpInToPlace(IHotScenesController.PlaceInfo place)
@@ -124,12 +127,18 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
     private void OpenEventDetailsModal(EventCardComponentModel eventModel, int index)
     {
         view.ShowEventModal(eventModel);
-        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, index, ActionSource.FromSearch);
+        exploreV2Analytics.SendClickOnEventInfo(eventModel.eventId, eventModel.eventName, !string.IsNullOrEmpty(eventModel.worldAddress), index, ActionSource.FromSearch);
     }
 
     private void OpenPlaceDetailsModal(PlaceCardComponentModel placeModel, int index)
     {
         view.ShowPlaceModal(placeModel);
+        exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
+    }
+
+    private void OpenWorldDetailsModal(PlaceCardComponentModel placeModel, int index)
+    {
+        view.ShowWorldModal(placeModel);
         exploreV2Analytics.SendClickOnPlaceInfo(placeModel.placeInfo.id, placeModel.placeName, index, ActionSource.FromSearch);
     }
 
@@ -145,21 +154,21 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         SearchWorlds(searchText, cancellationToken: minimalSearchCts.Token).Forget();
     }
 
-    private void SubscribeToEvent(string eventId)
+    private void SubscribeToEvent(string eventId, bool isWorld)
     {
         if (userProfileBridge.GetOwn().isGuest)
             dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
-            exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
+            exploreV2Analytics.SendParticipateEvent(eventId, isWorld, ActionSource.FromSearch);
             eventsAPI.RegisterParticipation(eventId);
         }
     }
 
-    private void UnsubscribeToEvent(string eventId)
+    private void UnsubscribeToEvent(string eventId, bool isWorld)
     {
         eventsAPI.RemoveParticipation(eventId);
-        exploreV2Analytics.SendParticipateEvent(eventId, ActionSource.FromSearch);
+        exploreV2Analytics.SendParticipateEvent(eventId, isWorld, ActionSource.FromSearch);
     }
 
     private void SearchAllEvents(int pageNumber)
@@ -269,6 +278,15 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         }
     }
 
+    private void JumpInToWorld(IHotScenesController.PlaceInfo worldFromAPI)
+    {
+        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
+        view.HideWorldModal();
+        dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
+        OnCloseExploreV2?.Invoke();
+        exploreV2Analytics.SendWorldTeleport(worldFromAPI.id, worldFromAPI.title);
+    }
+
     public void Dispose()
     {
         getPlacesAssociatedToEventsCts.SafeCancelAndDispose();
@@ -283,6 +301,7 @@ public class SearchSubSectionComponentController : ISearchSubSectionComponentCon
         view.OnUnsubscribeEventClicked -= UnsubscribeToEvent;
         view.OnEventJumpInClicked -= JumpInToEvent;
         view.OnPlaceJumpInClicked -= JumpInToPlace;
+        view.OnWorldJumpInClicked -= JumpInToWorld;
         view.OnBackFromSearch -= CloseSearchPanel;
         view.OnPlaceFavoriteChanged -= ChangePlaceFavorite;
 
