@@ -42,7 +42,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             RenderTexture.ReleaseTemporary(initialRenderTexture);
             RenderTexture.ReleaseTemporary(finalRenderTexture);
 
-            onComplete?.Invoke(Application.isEditor ? FlipTextureVertically(screenshot) : screenshot);
+            onComplete?.Invoke(Application.platform == RuntimePlatform.WebGLPlayer ? screenshot : FlipTextureVertically(screenshot));
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
