@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Providers;
 using UnityEngine;
 
@@ -70,13 +71,18 @@ namespace DCL.Emotes
             {
                 if (!IsValidAudioClip(contentMap.file)) continue;
 
-                try { await AsyncLoadAudioClip(contentMap.file, contentProvider); }
-                catch (Exception e) { Debug.LogError(e); }
+                try { audioClip = await AsyncLoadAudioClip(contentMap.file, contentProvider); }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
 
                 if (audioClip != null)
                 {
-                    audioSource = await resourceProvider.Instantiate<AudioSource>(EMOTE_AUDIO_SOURCE, "EmoteAudioSource", rendereable.container.transform, ct);
+                    audioSource = await resourceProvider.Instantiate<AudioSource>(EMOTE_AUDIO_SOURCE, "EmoteAudioSource", cancellationToken: ct);
                     audioSource.clip = audioClip;
+                    audioSource.transform.SetParent(rendereable.container.transform, false);
+                    audioSource.transform.ResetLocalTRS();
                 }
 
                 // we only support one audio clip
