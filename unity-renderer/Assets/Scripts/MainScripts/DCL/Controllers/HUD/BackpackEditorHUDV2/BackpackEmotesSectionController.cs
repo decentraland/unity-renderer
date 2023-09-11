@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.Backpack
 {
@@ -145,41 +146,25 @@ namespace DCL.Backpack
             WebInterface.OpenURL(ownedCollectible != null ? URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId) : URL_SELL_COLLECTIBLE_GENERIC);
         }
 
-        private async UniTask FetchCustomEmoteItems(List<WearableItem> emotes,
+        private async UniTask FetchCustomEmoteItems(ICollection<WearableItem> emotes,
             CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
-            IEnumerable<string> publishedItems = customItems
-               .Where(nftId => nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+            WearableItem[] retrievedEmotes = await UniTask.WhenAll(customItems.Select(nftId =>
+                nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase)
+                    ? emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken)
+                    : emotesCatalogService.RequestEmoteFromBuilderAsync(nftId, cancellationToken)));
 
-            IEnumerable<string> itemsInBuilder = customItems
-               .Where(nftId => !nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
-
-            foreach (string nftId in publishedItems)
+            foreach (WearableItem emote in retrievedEmotes)
             {
-                WearableItem wearable = await emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken);
-
-                if (wearable == null)
+                if (emote == null)
                 {
-                    Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
+                    Debug.LogWarning("Custom emote item skipped is null");
                     continue;
                 }
 
-                emotes.Add(wearable);
-            }
-
-            foreach (string nftId in itemsInBuilder)
-            {
-                WearableItem wearable = await emotesCatalogService.RequestEmoteFromBuilderAsync(nftId, cancellationToken);
-
-                if (wearable == null)
-                {
-                    Debug.LogWarning($"Custom emote item skipped is null: {nftId}");
-                    continue;
-                }
-
-                emotes.Add(wearable);
+                emotes.Add(emote);
             }
         }
 
@@ -190,14 +175,22 @@ namespace DCL.Backpack
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            IEnumerable<string> publishedCollections = customCollections
-               .Where(collectionId => collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+            HashSet<string> publishedCollections = HashSetPool<string>.Get();
+            HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
 
-            IEnumerable<string> collectionsInBuilder = customCollections
-               .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+            foreach (string collectionId in customCollections)
+            {
+                if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
+                    publishedCollections.Add(collectionId);
+                else
+                    collectionsInBuilder.Add(collectionId);
+            }
 
-            await emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken, emotes);
-            await emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken, emotes);
+            await UniTask.WhenAll(emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken, emotes),
+                emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken, emotes));
+
+            HashSetPool<string>.Release(publishedCollections);
+            HashSetPool<string>.Release(collectionsInBuilder);
         }
     }
 }

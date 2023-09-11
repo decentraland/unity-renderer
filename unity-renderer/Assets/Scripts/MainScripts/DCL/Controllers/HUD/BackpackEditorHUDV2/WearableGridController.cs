@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.Backpack
 {
@@ -290,32 +291,19 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
-            IEnumerable<string> publishedItems = customItems
-               .Where(nftId => nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
-
-            IEnumerable<string> itemsInBuilder = customItems
-               .Where(nftId => !nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
-
-            foreach (string nftId in publishedItems)
+            WearableItem[] retrievedWearables = await UniTask.WhenAll(customItems.Select(nftId =>
             {
-                WearableItem wearable = await wearablesCatalogService.RequestWearableAsync(nftId, cancellationToken);
+                if (nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
+                    return wearablesCatalogService.RequestWearableAsync(nftId, cancellationToken);
 
+                return wearablesCatalogService.RequestWearableFromBuilderAsync(nftId, cancellationToken);
+            }));
+
+            foreach (WearableItem wearable in retrievedWearables)
+            {
                 if (wearable == null)
                 {
-                    Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
-                    continue;
-                }
-
-                wearables.Add(wearable);
-            }
-
-            foreach (string nftId in itemsInBuilder)
-            {
-                WearableItem wearable = await wearablesCatalogService.RequestWearableFromBuilderAsync(nftId, cancellationToken);
-
-                if (wearable == null)
-                {
-                    Debug.LogWarning($"Custom wearable item skipped is null: {nftId}");
+                    Debug.LogWarning("Custom wearable item skipped is null");
                     continue;
                 }
 
@@ -329,14 +317,22 @@ namespace DCL.Backpack
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            IEnumerable<string> publishedCollections = customCollections
-               .Where(collectionId => collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+            HashSet<string> publishedCollections = HashSetPool<string>.Get();
+            HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
 
-            IEnumerable<string> collectionsInBuilder = customCollections
-               .Where(collectionId => !collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase));
+            foreach (string collectionId in customCollections)
+            {
+                if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
+                    publishedCollections.Add(collectionId);
+                else
+                    collectionsInBuilder.Add(collectionId);
+            }
 
-            await wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer);
-            await wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer);
+            await UniTask.WhenAll(wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer),
+                wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer));
+
+            HashSetPool<string>.Release(publishedCollections);
+            HashSetPool<string>.Release(collectionsInBuilder);
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
