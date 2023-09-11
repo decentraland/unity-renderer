@@ -4,16 +4,15 @@ using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL
 {
     public class DCLVoiceChatController : MonoBehaviour
     {
         [Header("InputActions")]
-        public InputAction_Hold voiceChatAction;
-
-        private InputAction_Hold.Started voiceChatStartedDelegate;
-        private InputAction_Hold.Finished voiceChatFinishedDelegate;
+        public InputAction_Hold voiceChatHoldAction;
+        public InputAction_Trigger voiceChatToggleAction;
 
         private bool firstTimeVoiceRecorded = true;
         private ISocialAnalytics socialAnalytics;
@@ -26,14 +25,28 @@ namespace DCL
         {
             userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
-            voiceChatStartedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true));
-            voiceChatFinishedDelegate = (action) => DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
-            voiceChatAction.OnStarted += voiceChatStartedDelegate;
-            voiceChatAction.OnFinished += voiceChatFinishedDelegate;
+            voiceChatHoldAction.OnStarted += VoiceChatHoldActionStart;
+            voiceChatHoldAction.OnFinished += VoiceChatHoldActionFinish;
+            voiceChatToggleAction.OnTriggered += VoiceChatTriggered;
 
             KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
             KernelConfig.i.OnChange += OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange += IsVoiceChatRecordingChanged;
+        }
+
+        private void VoiceChatTriggered(DCLAction_Trigger action)
+        {
+            DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(!isRecording, true));
+        }
+
+        private void VoiceChatHoldActionStart(DCLAction_Hold _)
+        {
+            DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(true, true));
+        }
+
+        private void VoiceChatHoldActionFinish(DCLAction_Hold _)
+        {
+            DataStore.i.voiceChat.isRecording.Set(new KeyValuePair<bool, bool>(false, true));
         }
 
 
@@ -48,8 +61,10 @@ namespace DCL
 
         void OnDestroy()
         {
-            voiceChatAction.OnStarted -= voiceChatStartedDelegate;
-            voiceChatAction.OnFinished -= voiceChatFinishedDelegate;
+            voiceChatHoldAction.OnStarted -= VoiceChatHoldActionStart;
+            voiceChatHoldAction.OnFinished -= VoiceChatHoldActionFinish;
+            voiceChatToggleAction.OnTriggered -= VoiceChatTriggered;
+
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
             DataStore.i.voiceChat.isRecording.OnChange -= IsVoiceChatRecordingChanged;
         }

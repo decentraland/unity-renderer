@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
+using DCL.Browser;
+using DCL.Interface;
 using DCL.Social.Friends;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
@@ -8,8 +9,6 @@ using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
@@ -21,6 +20,8 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
+    private const string DAO_PROPOSAL_LINK = "https://governance.decentraland.org/proposal/?id=c3216070-e822-11ed-b8f1-75dbe089d333";
+    private const string WORLDS_DOCS_LINK = "https://decentraland.org/blog/announcements/introducing-decentraland-worlds-beta-your-own-3d-space-in-the-metaverse";
 
     internal readonly IWorldsSubSectionComponentView view;
     internal readonly IWorldsAPIService worldsAPIService;
@@ -30,6 +31,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
     private readonly IUserProfileBridge userProfileBridge;
+    internal readonly IBrowserBridge browserBridge;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
@@ -47,19 +49,23 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         IExploreV2Analytics exploreV2Analytics,
         IPlacesAnalytics placesAnalytics,
         DataStore dataStore,
-        IUserProfileBridge userProfileBridge)
+        IUserProfileBridge userProfileBridge,
+        IBrowserBridge browserBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
         this.view = view;
+        this.browserBridge = browserBridge;
 
         this.view.OnReady += FirstLoading;
 
         this.view.OnInfoClicked += ShowWorldDetailedInfo;
-        this.view.OnJumpInClicked += OnJumpInToWorld;
+        this.view.OnJumpInClicked += JumpInToWorld;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
         this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMoreWorldsClicked += ShowMoreWorlds;
+        this.view.OnOpenWorldsInfo += OpenWorldsInfo;
+        this.view.OnOpenWorldsDaoProposal += OpenWorldsDaoProposal;
 
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
 
@@ -87,13 +93,15 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
 
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowWorldDetailedInfo;
-        view.OnJumpInClicked -= OnJumpInToWorld;
+        view.OnJumpInClicked -= JumpInToWorld;
         view.OnFavoriteClicked -= View_OnFavoritesClicked;
         view.OnVoteChanged -= View_OnVoteChanged;
         view.OnWorldsSubSectionEnable -= OpenTab;
         view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMoreWorldsClicked -= ShowMoreWorlds;
+        this.view.OnOpenWorldsInfo -= OpenWorldsInfo;
+        this.view.OnOpenWorldsDaoProposal -= OpenWorldsDaoProposal;
 
         dataStore.channels.currentJoinChannelModal.OnChange -= OnChannelToJoinChanged;
 
@@ -216,9 +224,9 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.Places);
     }
 
-    internal void OnJumpInToWorld(PlaceInfo worldFromAPI)
+    internal void JumpInToWorld(PlaceInfo worldFromAPI)
     {
-        JumpInToWorld(worldFromAPI);
+        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
         view.HideWorldModal();
 
         dataStore.exploreV2.currentVisibleModal.Set(ExploreV2CurrentModal.None);
@@ -239,8 +247,10 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         OnCloseExploreV2?.Invoke();
     }
 
-    public static void JumpInToWorld(PlaceInfo worldFromAPI)
-    {
-        Environment.i.world.teleportController.JumpInWorld(worldFromAPI.world_name);
-    }
+    private void OpenWorldsDaoProposal() =>
+        browserBridge.OpenUrl(DAO_PROPOSAL_LINK);
+
+    private void OpenWorldsInfo() =>
+        browserBridge.OpenUrl(WORLDS_DOCS_LINK);
+
 }

@@ -21,7 +21,7 @@ public interface IPlacesAndEventsSectionComponentView
     /// <summary>
     /// Favorites sub-section component.
     /// </summary>
-    IFavoritesSubSectionComponentView FavoritesSubSectionView { get; }
+    IFavoriteSubSectionComponentView FavoritesSubSectionView { get; }
 
     /// <summary>
     /// Favorites sub-section component.
@@ -53,7 +53,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     internal const int FAVORITES_SUB_SECTION_INDEX = 3;
     internal const int SEARCH_SUB_SECTION_INDEX = 4;
 
-    internal const string WORLDS_SUBSECTION_FF = "enable_worlds_subsection";
+    internal const string WORLDS_SUBSECTION_FF = "worlds_subsection";
 
     [Header("Top Menu")]
     [SerializeField] internal SectionSelectorComponentView subSectionSelector;
@@ -62,7 +62,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     [SerializeField] internal PlacesSubSectionComponentView placesSubSection;
     [SerializeField] internal WorldsSubSectionComponentView worldsSubSection;
     [SerializeField] internal EventsSubSectionComponentView eventsSubSection;
-    [SerializeField] internal FavoritesSubSectionComponentView favoritesSubSection;
+    [SerializeField] internal FavoriteSubSectionComponentView favoritesSubSection;
     [SerializeField] internal SearchSubSectionComponentView searchSubSection;
     [SerializeField] internal SearchBarComponentView searchBar;
 
@@ -84,7 +84,7 @@ public class PlacesAndEventsSectionComponentView : BaseComponentView, IPlacesAnd
     public IPlacesSubSectionComponentView PlacesSubSectionView => placesSubSection;
     public IWorldsSubSectionComponentView WorldsSubSectionView => worldsSubSection;
     public IEventsSubSectionComponentView EventsSubSectionView => eventsSubSection;
-    public IFavoritesSubSectionComponentView FavoritesSubSectionView => favoritesSubSection;
+    public IFavoriteSubSectionComponentView FavoritesSubSectionView => favoritesSubSection;
     public ISearchSubSectionComponentView SearchSubSectionView => searchSubSection;
     public SearchBarComponentView SearchBar => searchBar;
 
