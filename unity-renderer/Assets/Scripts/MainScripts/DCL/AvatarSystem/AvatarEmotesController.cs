@@ -17,7 +17,7 @@ namespace AvatarSystem
         private string bodyShapeId = "";
         private readonly IAnimator animator;
         private readonly IEmotesService emotesService;
-        private readonly Dictionary<(string, string), IEmoteReference> emotes = new ();
+        private readonly Dictionary<EmoteBodyId, IEmoteReference> equippedEmotes = new ();
         private readonly CancellationTokenSource cts = new ();
 
         public AvatarEmotesController(IAnimator animator, IEmotesService emotesService)
@@ -27,7 +27,7 @@ namespace AvatarSystem
         }
 
         public bool TryGetEquippedEmote(string bodyShape, string emoteId, out IEmoteReference emoteReference) =>
-            emotes.TryGetValue((bodyShape, emoteId), out emoteReference);
+            equippedEmotes.TryGetValue(new EmoteBodyId(bodyShape, emoteId), out emoteReference);
 
         // ReSharper disable once PossibleMultipleEnumeration (its intended)
         public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes)
@@ -40,21 +40,21 @@ namespace AvatarSystem
 
         private void LoadEmote(string bodyShapeId, WearableItem emote)
         {
-            (string bodyShapeId, string id) emoteKey = (bodyShapeId, emote.id);
-            if (emotes.ContainsKey(emoteKey)) return;
-            emotes.Add(emoteKey, null);
+            var emoteKey = new EmoteBodyId(bodyShapeId, emote.id);
+            if (equippedEmotes.ContainsKey(emoteKey)) return;
+            equippedEmotes.Add(emoteKey, null);
             AsyncEmoteLoad(bodyShapeId, emote.id).Forget();
         }
 
         private async UniTask AsyncEmoteLoad(string bodyShapeId, string emoteId)
         {
-            (string bodyShapeId, string emoteId) emoteKey = (bodyShapeId, emoteId);
+            var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
             try
             {
-                IEmoteReference emoteReference = await emotesService.RequestEmote(bodyShapeId, emoteId, cts.Token);
+                IEmoteReference emoteReference = await emotesService.RequestEmote(emoteKey, cts.Token);
                 animator.EquipEmote(emoteId, emoteReference.GetData());
-                emotes[emoteKey] = emoteReference;
+                equippedEmotes[emoteKey] = emoteReference;
                 OnEmoteEquipped?.Invoke(emoteId, emoteReference);
             }
             catch (OperationCanceledException) { }
@@ -68,9 +68,9 @@ namespace AvatarSystem
         {
             if (string.IsNullOrEmpty(emoteId)) return;
 
-            (string bodyShapeId, string emoteId) emoteKey = (bodyShapeId, emoteId);
+            var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
-            if (emotes.ContainsKey(emoteKey))
+            if (equippedEmotes.ContainsKey(emoteKey))
                 animator.PlayEmote(emoteId, timestamps, spatialSound);
         }
 
@@ -81,27 +81,29 @@ namespace AvatarSystem
 
         public void EquipEmote(string emoteId, IEmoteReference emoteReference)
         {
-            if (emotes.ContainsKey((bodyShapeId, emoteId)))
+            var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
+
+            if (equippedEmotes.ContainsKey(emoteKey))
             {
                 // we avoid dangling references in case an emote was loaded twice
                 emoteReference.Dispose();
                 return;
             }
 
-            emotes.Add((bodyShapeId, emoteId), emoteReference);
+            equippedEmotes.Add(emoteKey, emoteReference);
             animator.EquipEmote(emoteId, emoteReference.GetData());
             OnEmoteEquipped?.Invoke(emoteId, emoteReference);
         }
 
         public void UnEquipEmote(string emoteId)
         {
-            (string bodyShapeId, string emoteId) emoteKey = (bodyShapeId, emoteId);
+            var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
-            if (emotes.ContainsKey(emoteKey))
+            if (equippedEmotes.ContainsKey(emoteKey))
             {
                 animator.UnequipEmote(emoteId);
-                emotes[emoteKey].Dispose();
-                emotes.Remove(emoteKey);
+                equippedEmotes[emoteKey].Dispose();
+                equippedEmotes.Remove(emoteKey);
             }
         }
 
@@ -110,10 +112,10 @@ namespace AvatarSystem
         {
             cts.SafeCancelAndDispose();
 
-            foreach (var kvp in emotes)
+            foreach (var kvp in equippedEmotes)
                 kvp.Value.Dispose();
 
-            emotes.Clear();
+            equippedEmotes.Clear();
         }
     }
 }

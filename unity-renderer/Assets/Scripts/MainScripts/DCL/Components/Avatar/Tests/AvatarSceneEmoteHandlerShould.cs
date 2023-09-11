@@ -35,8 +35,8 @@ namespace Tests
 
             await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
 
-            var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-            emotesService.Received(1).RequestEmote(emoteData.bodyshapeId, emoteData.emoteId, Arg.Any<CancellationToken>());
+            var emoteData = new EmoteBodyId(BODY_SHAPE, EMOTE_ID);
+            emotesService.Received(1).RequestEmote(emoteData, Arg.Any<CancellationToken>());
             emotesController.Received(1).EquipEmote(EMOTE_ID, emote);
             emotesController.Received(1).PlayEmote(EMOTE_ID, 0);
         }
@@ -47,12 +47,12 @@ namespace Tests
             const string BODY_SHAPE = "nogender";
             const string EMOTE_ID = "emoteId";
 
-            emotesService.RequestEmote(BODY_SHAPE, EMOTE_ID, Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
+            var emoteData = new EmoteBodyId(BODY_SHAPE, EMOTE_ID);
+            emotesService.RequestEmote(emoteData, Arg.Any<CancellationToken>()).Throws(new OperationCanceledException());
 
             await handler.LoadAndPlayEmote(BODY_SHAPE, EMOTE_ID);
 
-            var emoteData = (bodyshapeId: BODY_SHAPE, emoteId: EMOTE_ID);
-            emotesService.Received(1).RequestEmote(emoteData.bodyshapeId, emoteData.emoteId, Arg.Any<CancellationToken>());
+            emotesService.Received(1).RequestEmote(emoteData, Arg.Any<CancellationToken>());
             emotesController.DidNotReceive().EquipEmote(Arg.Any<string>(), Arg.Any<IEmoteReference>());
             emotesController.DidNotReceive().PlayEmote(Arg.Any<string>(), Arg.Any<long>());
         }
@@ -105,7 +105,8 @@ namespace Tests
         private IEmoteReference SetupEmoteService(string bodyShape, string emoteId)
         {
             var emote = Substitute.For<IEmoteReference>();
-            emotesService.RequestEmote(bodyShape, emoteId, Arg.Any<CancellationToken>()).Returns(_ => GetResult(emote));
+            var emoteData = new EmoteBodyId(bodyShape, emoteId);
+            emotesService.RequestEmote(emoteData, Arg.Any<CancellationToken>()).Returns(_ => GetResult(emote));
             return emote;
         }
 

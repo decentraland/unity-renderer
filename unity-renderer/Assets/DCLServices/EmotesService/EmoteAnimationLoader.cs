@@ -2,27 +2,30 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using System.Collections;
+using DCL.Providers;
 using UnityEngine;
 
 namespace DCL.Emotes
 {
     public class EmoteAnimationLoader : IEmoteAnimationLoader
     {
+        private const string EMOTE_AUDIO_SOURCE = "EmoteAudioSource";
         private readonly IWearableRetriever retriever;
-        public AnimationClip mainClip { get; internal set; }
+        private readonly AddressableResourceProvider resourceProvider;
+        public AnimationClip mainClip { get; private set; }
         public GameObject container { get; private set; }
         public AudioSource audioSource { get; private set; }
 
         private AudioClip audioClip;
         private AssetPromise_AudioClip audioClipPromise;
 
-        public EmoteAnimationLoader(IWearableRetriever retriever)
+        public EmoteAnimationLoader(IWearableRetriever retriever, AddressableResourceProvider resourceProvider)
         {
             this.retriever = retriever;
+            this.resourceProvider = resourceProvider;
         }
 
-        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, AudioContainer audioContainer, CancellationToken ct = default)
+        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
         {
             if (targetContainer == null)
                 throw new NullReferenceException("Container cannot be null");
@@ -56,43 +59,40 @@ namespace DCL.Emotes
                 return;
             }
 
-            //Setting animation name equal to emote id to avoid unity animation clip duplication on Animation.AddClip()
             this.mainClip = animationClip;
+
+            //Clip names should be unique because of the Legacy Animation string based usage
             animationClip.name = emote.id;
 
             var contentProvider = emote.GetContentProvider(bodyShapeId);
 
             foreach (var contentMap in contentProvider.contents)
             {
-                if (!contentMap.file.EndsWith(".mp3")) continue; //do we need to support more of em?
+                if (!IsValidAudioClip(contentMap.file)) continue;
 
-                try { await AsyncLoadAudioClip(contentMap.file, contentProvider).ToUniTask(cancellationToken: ct); }
+                try { await AsyncLoadAudioClip(contentMap.file, contentProvider); }
                 catch (Exception e) { Debug.LogError(e); }
 
                 if (audioClip != null)
                 {
-                    audioSource = rendereable.container.AddComponent<AudioSource>();
+                    audioSource = await resourceProvider.Instantiate<AudioSource>(EMOTE_AUDIO_SOURCE, "EmoteAudioSource", rendereable.container.transform, ct);
                     audioSource.clip = audioClip;
-                    audioSource.outputAudioMixerGroup = audioContainer.audioMixerGroup;
-                    audioSource.minDistance = audioContainer.minDistance;
-                    audioSource.maxDistance = audioContainer.maxDistance;
-                    audioSource.spatialBlend = audioContainer.spatialBlend;
-                    audioSource.playOnAwake = false;
                 }
 
+                // we only support one audio clip
                 break;
             }
         }
 
-        private IEnumerator AsyncLoadAudioClip(string file, ContentProvider contentProvider)
+        private bool IsValidAudioClip(string fileName) =>
+            fileName.EndsWith(".ogg") || fileName.EndsWith(".mp3");
+
+        private async UniTask<AudioClip> AsyncLoadAudioClip(string file, ContentProvider contentProvider)
         {
             audioClipPromise = new AssetPromise_AudioClip(file, contentProvider);
-            audioClipPromise.OnSuccessEvent += asset => audioClip = asset.audioClip;
-            audioClipPromise.OnFailEvent += (_, e) => throw e;
-
             AssetPromiseKeeper_AudioClip.i.Keep(audioClipPromise);
-
-            yield return audioClipPromise;
+            await audioClipPromise;
+            return audioClipPromise.asset.audioClip;
         }
 
         public void Dispose()

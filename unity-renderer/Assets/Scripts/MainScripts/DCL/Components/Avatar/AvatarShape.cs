@@ -236,8 +236,6 @@ namespace DCL
 
             sceneEmoteHandler.SetExpressionLamportTimestamp(model.expressionTriggerTimestamp);
 
-            Debug.Log($"{model.name} emote state: {model.expressionTriggerId}");
-
             if (sceneEmoteHandler.IsSceneEmote(model.expressionTriggerId))
             {
                 sceneEmoteHandler

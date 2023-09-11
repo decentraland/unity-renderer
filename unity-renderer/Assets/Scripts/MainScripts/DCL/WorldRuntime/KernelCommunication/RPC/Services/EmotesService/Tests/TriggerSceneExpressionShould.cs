@@ -29,7 +29,7 @@ namespace Tests
         private UserProfile userProfile;
         private BaseVariable<Player> ownPlayer;
 
-        private IDictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>> equippedEmotesByScene;
+        private IDictionary<IParcelScene, HashSet<EmoteBodyId>> equippedEmotesByScene;
         private IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources;
         private IClientEmotesRendererService client;
         private IEmotesService emotesService;
@@ -45,7 +45,7 @@ namespace Tests
             emotesService = Substitute.For<IEmotesService>();
             userProfile = UserProfile.GetOwnUserProfile();
             ownPlayer = new BaseVariable<Player>();
-            equippedEmotesByScene = new Dictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>>();
+            equippedEmotesByScene = new Dictionary<IParcelScene, HashSet<EmoteBodyId>>();
             cancellationTokenSources = new Dictionary<IParcelScene, CancellationTokenSource>();
             Environment.i.serviceLocator.Register<IRPC>(() => Substitute.For<IRPC>());
             client = await CreateRpcClient();
@@ -163,8 +163,8 @@ namespace Tests
 
             Assert.IsTrue(result.Success);
 
-            avatar.Received(1).EquipEmote(emoteData.emoteId, emoteReference);
-            Assert.AreEqual(userProfile.avatar.expressionTriggerId, emoteData.emoteId);
+            avatar.Received(1).EquipEmote(emoteData.EmoteId, emoteReference);
+            Assert.AreEqual(userProfile.avatar.expressionTriggerId, emoteData.EmoteId);
         }
 
         [Test]
@@ -183,8 +183,8 @@ namespace Tests
                 });
 
             Assert.IsTrue(result.Success);
-            avatar.Received(1).EquipEmote(emoteData.emoteId, emoteReference);
-            Assert.AreEqual(emoteData.emoteId, userProfile.avatar.expressionTriggerId);
+            avatar.Received(1).EquipEmote(emoteData.EmoteId, emoteReference);
+            Assert.AreEqual(emoteData.EmoteId, userProfile.avatar.expressionTriggerId);
             Assert.IsTrue(equippedEmotesByScene[scene].Contains(emoteData));
         }
 
@@ -208,7 +208,7 @@ namespace Tests
 
             Assert.IsFalse(result.Success);
             Assert.IsTrue(equippedEmotesByScene[scene].Count == 0);
-            avatar.Received(1).EquipEmote(emoteData.emoteId, emoteReference);
+            avatar.Received(1).EquipEmote(emoteData.EmoteId, emoteReference);
         }
 
         [Test]
@@ -270,7 +270,7 @@ namespace Tests
             Assert.AreEqual(scene.contentProvider.contents[0].hash, hash);
         }
 
-        private ((string bodyShape, string emoteId) emoteData, IParcelScene scene) SetUpWorkingEnvironment(int sceneNumber, string emotePath)
+        private (EmoteBodyId emoteData, IParcelScene scene) SetUpWorkingEnvironment(int sceneNumber, string emotePath)
         {
             const string BODY_SHAPE = "someBodyShape";
 
@@ -307,8 +307,8 @@ namespace Tests
 
             SceneEmoteHelper.TryGenerateEmoteId(scene, emotePath, false, out string emoteId);
             emoteReference = Substitute.For<IEmoteReference>();
-            emotesService.RequestEmote(BODY_SHAPE, emoteId, Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(emoteReference));
-            return (emoteData: (bodyShape: BODY_SHAPE, emoteId: emoteId), scene: scene);
+            emotesService.RequestEmote(new EmoteBodyId(BODY_SHAPE, emoteId), Arg.Any<CancellationToken>()).Returns(UniTask.FromResult(emoteReference));
+            return (emoteData: new EmoteBodyId(BODY_SHAPE, emoteId), scene);
         }
 
         private async UniTask<IClientEmotesRendererService> CreateRpcClient()

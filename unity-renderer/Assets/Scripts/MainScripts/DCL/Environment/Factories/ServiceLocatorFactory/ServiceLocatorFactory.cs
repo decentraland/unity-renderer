@@ -159,11 +159,10 @@ namespace DCL
 
             result.Register<ICustomNftCollectionService>(WebInterfaceCustomNftCatalogBridge.GetOrCreate);
 
-            result.Register<IEmotesService>(() => new EmotesService(new EmoteAnimationLoaderFactory(),
+            result.Register<IEmotesService>(() => new EmotesService(new EmoteAnimationLoaderFactory(addressableResourceProvider),
                 result.Get<IEmotesCatalogService>(),
                 result.Get<IWearablesCatalogService>(),
-                result.Get<IServiceProviders>().catalyst,
-                addressableResourceProvider));
+                result.Get<IServiceProviders>().catalyst));
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));

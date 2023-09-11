@@ -14,7 +14,7 @@ namespace DCL
     {
         private readonly IAvatarEmotesController emotesController;
         private readonly IEmotesService emotesService;
-        private readonly HashSet<(string bodyshapeId, string emoteId)> equippedEmotes;
+        private readonly HashSet<EmoteBodyId> equippedEmotes;
 
         private long lamportTimestamp;
         internal CancellationTokenSource cts;
@@ -23,7 +23,7 @@ namespace DCL
         {
             this.emotesController = emotesController;
             this.emotesService = emotesService;
-            this.equippedEmotes = new HashSet<(string bodyshapeId, string emoteId)>();
+            this.equippedEmotes = new HashSet<EmoteBodyId>();
         }
 
         public bool IsSceneEmote(string emoteId) =>
@@ -39,11 +39,11 @@ namespace DCL
             long timestamp = lamportTimestamp;
             cts ??= new CancellationTokenSource();
 
-            (string bodyShapeId, string emoteId) emoteKey = (bodyShapeId, emoteId);
+            var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
             try
             {
-                var loadedEmote = await emotesService.RequestEmote(bodyShapeId, emoteId, cts.Token);
+                var loadedEmote = await emotesService.RequestEmote(emoteKey, cts.Token);
 
                 emotesController.EquipEmote(emoteId, loadedEmote);
                 equippedEmotes.Add(emoteKey);
@@ -63,7 +63,7 @@ namespace DCL
             cts = null;
 
             foreach (var emoteData in equippedEmotes)
-                emotesController?.UnEquipEmote(emoteData.emoteId);
+                emotesController?.UnEquipEmote(emoteData.EmoteId);
 
             equippedEmotes.Clear();
         }

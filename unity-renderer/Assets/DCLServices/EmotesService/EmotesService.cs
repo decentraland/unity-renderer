@@ -1,11 +1,8 @@
 ﻿using AvatarAssets;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
-using DCL.Providers;
 using DCLServices.WearablesCatalogService;
-using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -25,18 +22,14 @@ namespace DCL.Emotes
         private readonly ICatalyst catalyst;
         private GameObject animationsModelsContainer;
 
-        private readonly Dictionary<(string, string), IEmoteReference> embeddedEmotes = new ();
-        private IAddressableResourceProvider assetProvider;
-        private AudioContainer audioContainer;
+        private readonly Dictionary<EmoteBodyId, IEmoteReference> embeddedEmotes = new ();
 
         public EmotesService(
             EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
             IEmotesCatalogService emotesCatalogService,
             IWearablesCatalogService wearablesCatalogService,
-            ICatalyst catalyst,
-            IAddressableResourceProvider assetProvider)
+            ICatalyst catalyst)
         {
-            this.assetProvider = assetProvider;
             this.emoteAnimationLoaderFactory = emoteAnimationLoaderFactory;
             this.emotesCatalogService = emotesCatalogService;
             this.wearablesCatalogService = wearablesCatalogService;
@@ -56,17 +49,12 @@ namespace DCL.Emotes
 
         public async UniTask InitializeAsync(CancellationToken cancellationToken)
         {
-            audioContainer = await assetProvider.GetAddressable<AudioContainer>("EmotesAudioContainer", cancellationToken);
-
-            if (audioContainer == null)
-                throw new Exception("EmotesAudioContainer is missing");
-
-            EmbeddedEmotesSO embeddedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
+            EmbeddedEmotesSO embedEmotes = await emotesCatalogService.GetEmbeddedEmotes();
 
             // early return for not configured emotesCatalogService substitutes in legacy test base
-            if (embeddedEmotes == null) return;
+            if (embedEmotes == null) return;
 
-            foreach (EmbeddedEmote embeddedEmote in embeddedEmotes.emotes)
+            foreach (EmbeddedEmote embeddedEmote in embedEmotes.emotes)
             {
                 if (embeddedEmote.maleAnimation != null)
                     SetupEmbeddedClip(embeddedEmote, embeddedEmote.maleAnimation, MALE);
@@ -75,54 +63,49 @@ namespace DCL.Emotes
                     SetupEmbeddedClip(embeddedEmote, embeddedEmote.femaleAnimation, FEMALE);
             }
 
-            wearablesCatalogService.AddEmbeddedWearablesToCatalog(embeddedEmotes.emotes);
+            wearablesCatalogService.AddEmbeddedWearablesToCatalog(embedEmotes.emotes);
         }
 
         private void SetupEmbeddedClip(EmbeddedEmote embeddedEmote, AnimationClip clip, string urnPrefix)
         {
             clip.name = embeddedEmote.id;
             var clipData = new EmoteClipData(clip, embeddedEmote.emoteDataV0?.loop ?? false);
-            embeddedEmotes.Add((urnPrefix, embeddedEmote.id), new EmbedEmoteReference(embeddedEmote, clipData));
+            embeddedEmotes.Add(new EmoteBodyId(urnPrefix, embeddedEmote.id), new EmbedEmoteReference(embeddedEmote, clipData));
         }
 
-        public async UniTask<IEmoteReference> RequestEmote(string bodyShapeId, string emoteId, CancellationToken cancellationToken = default)
+        public async UniTask<IEmoteReference> RequestEmote(EmoteBodyId emoteBodyId, CancellationToken cancellationToken = default)
         {
-            if (embeddedEmotes.ContainsKey((bodyShapeId, emoteId)))
-                return embeddedEmotes[(bodyShapeId, emoteId)];
+            if (embeddedEmotes.TryGetValue(emoteBodyId, out var value))
+                return value;
 
-            try
+            var emote = await FetchEmote(emoteBodyId, cancellationToken);
+
+            if (emote == null)
             {
-                var emote = await FetchEmote(bodyShapeId, emoteId, cancellationToken);
-
-                if (emote == null)
-                {
-                    Debug.LogError($"Unexpected null emote when requesting {bodyShapeId} {emoteId}");
-                    return null;
-                }
-
-                IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
-                await animationLoader.LoadEmote(animationsModelsContainer, emote, bodyShapeId, audioContainer, cancellationToken);
-
-                if (animationLoader.mainClip == null)
-                    Debug.LogError("Emote animation failed to load for emote " + emote.id);
-
-                bool loop = emote is EmoteItem newEmoteItem ? newEmoteItem.data.loop : emote.emoteDataV0?.loop ?? false;
-                IEmoteReference emoteReference = new NftEmoteReference(emote, animationLoader, loop);
-                return emoteReference;
+                Debug.LogError($"Unexpected null emote when requesting {emoteBodyId}");
+                return null;
             }
-            catch (Exception e)
-            {
-                ExceptionDispatchInfo.Capture(e).Throw();
-                throw;
-            }
+
+            // Loader disposal is being handled by the emote reference
+            IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
+            await animationLoader.LoadEmote(animationsModelsContainer, emote, emoteBodyId.BodyShapeId, cancellationToken);
+
+            if (animationLoader.mainClip == null)
+                Debug.LogError("Emote animation failed to load for emote " + emote.id);
+
+            bool loop = emote is EmoteItem newEmoteItem ? newEmoteItem.data.loop : emote.emoteDataV0?.loop ?? false;
+            IEmoteReference emoteReference = new NftEmoteReference(emote, animationLoader, loop);
+            return emoteReference;
         }
 
-        private UniTask<WearableItem> FetchEmote(string bodyShapeId, string emoteId, CancellationToken ct)
+        private UniTask<WearableItem> FetchEmote(EmoteBodyId emoteBodyId, CancellationToken ct)
         {
+            string emoteId = emoteBodyId.EmoteId;
+
             if (!SceneEmoteHelper.IsSceneEmote(emoteId))
                 return emotesCatalogService.RequestEmoteAsync(emoteId, ct);
 
-            WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(bodyShapeId, emoteId, emoteHash, catalyst.contentUrl, loop) : null;
+            WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(emoteId, emoteBodyId.BodyShapeId, emoteHash, catalyst.contentUrl, loop) : null;
 
             return new UniTask<WearableItem>(emoteItem);
         }

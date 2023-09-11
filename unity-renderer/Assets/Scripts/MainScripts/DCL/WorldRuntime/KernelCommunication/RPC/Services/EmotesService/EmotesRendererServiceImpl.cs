@@ -25,7 +25,7 @@ namespace RPC.Services
         private readonly BaseVariable<Player> ownPlayer;
         private readonly IEmotesService emotesService;
 
-        private readonly IDictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>> emotesByScene;
+        private readonly IDictionary<IParcelScene, HashSet<EmoteBodyId>> emotesByScene;
         private readonly IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources;
 
         private IAvatarEmotesController emotesController;
@@ -41,7 +41,7 @@ namespace RPC.Services
                     userProfile: UserProfile.GetOwnUserProfile(),
                     ownPlayer: DataStore.i.player.ownPlayer,
                     emotesService: Environment.i.serviceLocator.Get<IEmotesService>(),
-                    emotesByScene: new Dictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>>(),
+                    emotesByScene: new Dictionary<IParcelScene, HashSet<EmoteBodyId>>(),
                     cancellationTokenSources: new Dictionary<IParcelScene, CancellationTokenSource>()
                 ));
         }
@@ -53,7 +53,7 @@ namespace RPC.Services
             UserProfile userProfile,
             BaseVariable<Player> ownPlayer,
             IEmotesService emotesService,
-            IDictionary<IParcelScene, HashSet<(string bodyShape, string emoteId)>> emotesByScene,
+            IDictionary<IParcelScene, HashSet<EmoteBodyId>> emotesByScene,
             IDictionary<IParcelScene, CancellationTokenSource> cancellationTokenSources
         )
         {
@@ -101,9 +101,9 @@ namespace RPC.Services
             string userBodyShape = userProfile.avatar.bodyShape;
 
             // get hashset for scene emotes that are already equipped
-            if (!emotesByScene.TryGetValue(scene, out HashSet<(string bodyShape, string emoteId)> sceneEquippedEmotes))
+            if (!emotesByScene.TryGetValue(scene, out HashSet<EmoteBodyId> sceneEquippedEmotes))
             {
-                sceneEquippedEmotes = new HashSet<(string bodyShape, string emoteId)>();
+                sceneEquippedEmotes = new HashSet<EmoteBodyId>();
                 emotesByScene.Add(scene, sceneEquippedEmotes);
             }
 
@@ -121,11 +121,13 @@ namespace RPC.Services
             {
                 await UniTask.SwitchToMainThread(ct);
 
-                if (!emotesByScene[scene].Contains((userBodyShape, emoteId)))
+                var emoteKey = new EmoteBodyId(userBodyShape, emoteId);
+
+                if (!emotesByScene[scene].Contains(emoteKey))
                 {
-                    var result = await emotesService.RequestEmote(userBodyShape, emoteId, cancellationTokenSource.Token);
+                    var result = await emotesService.RequestEmote(emoteKey, cancellationTokenSource.Token);
                     emotesController.EquipEmote(emoteId, result);
-                    emotesByScene[scene].Add((userBodyShape, emoteId));
+                    emotesByScene[scene].Add(emoteKey);
                 }
 
                 userProfile.SetAvatarExpression(emoteId, UserProfile.EmoteSource.Command);
@@ -155,7 +157,7 @@ namespace RPC.Services
             if (!emotesByScene.TryGetValue(scene, out var equippedEmotes)) return;
 
             foreach (var emoteData in equippedEmotes)
-                emotesController?.UnEquipEmote(emoteData.emoteId);
+                emotesController?.UnEquipEmote(emoteData.EmoteId);
 
             emotesByScene.Remove(scene);
         }
