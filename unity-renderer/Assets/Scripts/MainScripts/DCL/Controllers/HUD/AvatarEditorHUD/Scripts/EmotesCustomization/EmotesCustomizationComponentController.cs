@@ -202,12 +202,13 @@ namespace DCL.EmotesCustomization
 
         internal void RefreshEmoteLoadingState(string emoteId)
         {
-            if (emotesController.TryGetEquippedEmote(bodyShapeId, emoteId, out IEmoteReference _))
+            if (emotesController.TryGetEquippedEmote(bodyShapeId, emoteId, out IEmoteReference emoteReference))
             {
                 emotesInLoadingState.TryGetValue(emoteId, out EmoteCardComponentView emoteCard);
                 if (emoteCard != null)
                 {
                     emoteCard.SetAsLoading(false);
+                    emoteCard.SetSoundIcon(emoteReference.GetData().AudioSource != null);
                     emotesInLoadingState.Remove(emoteId);
                 }
             }

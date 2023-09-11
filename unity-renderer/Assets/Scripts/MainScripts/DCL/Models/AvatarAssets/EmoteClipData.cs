@@ -14,7 +14,7 @@ namespace DCL.Emotes
 
         [CanBeNull] private Renderer[] renderers;
 
-        [CanBeNull] private AudioSource audioSource;
+        [CanBeNull] public AudioSource AudioSource { get; }
 
         public EmoteClipData(AnimationClip avatarClip, bool loop = false)
         {
@@ -27,7 +27,7 @@ namespace DCL.Emotes
             this.AvatarClip = mainClip;
             this.Loop = loop;
             this.ExtraContent = container;
-            this.audioSource = audioSource;
+            this.AudioSource = audioSource;
 
             if (ExtraContent == null) return;
 
@@ -64,11 +64,11 @@ namespace DCL.Emotes
                 animation.enabled = true;
             }
 
-            if (audioSource != null)
+            if (AudioSource != null)
             {
-                audioSource.spatialBlend = spatialSound ? 1 : 0;
-                audioSource.loop = Loop;
-                audioSource.Play();
+                AudioSource.spatialBlend = spatialSound ? 1 : 0;
+                AudioSource.loop = Loop;
+                AudioSource.Play();
             }
         }
 
@@ -93,8 +93,8 @@ namespace DCL.Emotes
                 animation.enabled = false;
             }
 
-            if (audioSource != null)
-                audioSource.Stop();
+            if (AudioSource != null)
+                AudioSource.Stop();
         }
     }
 }

@@ -356,7 +356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &587592046657593429
 RectTransform:
   m_ObjectHideFlags: 0
@@ -953,6 +953,7 @@ MonoBehaviour:
   rarityMark: {fileID: 5565824628307748902}
   emoteInfoAnchor: {fileID: 761347738224745034}
   loadingSpinnerGO: {fileID: 2317431530199778845}
+  soundIcon: {fileID: 3514777347215158055}
   defaultEmotePicture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2,
     type: 3}
   nonEmoteAssignedPicture: {fileID: 21300000, guid: 6b35c647bc47eb94486089adcb53c8b9,
