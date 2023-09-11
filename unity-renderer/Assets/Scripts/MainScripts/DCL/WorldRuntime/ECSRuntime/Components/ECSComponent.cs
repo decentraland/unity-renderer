@@ -16,7 +16,7 @@ namespace DCL.ECSRuntime
 
         internal readonly IECSComponentPool<ModelType> iEcsComponentPool;
 
-        IEcsComponentImplementation implementation;
+        IEcsComponentImplementation<ModelType> implementation;
 
         // FD:: Constructor with pooling
         public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iEcsComponentPool)
@@ -177,84 +177,6 @@ namespace DCL.ECSRuntime
         public IReadOnlyList<KeyValueSetTriplet<IParcelScene, long, ECSComponentData<ModelType>>> Get()
         {
             return componentData.Pairs;
-        }
-    }
-
-    internal interface IEcsComponentImplementation
-    {
-        void SetModel(IParcelScene scene, long entityId, object model);
-        void Deserialize(IParcelScene scene, IDCLEntity entity, object message);
-    }
-
-    // FD:: move elsewhere inside the DCL.ECSRuntime namespace
-
-    internal class PooledComponentImplementation<ModelType> : IEcsComponentImplementation
-    {
-        private readonly ECSComponent<ModelType> component;
-
-        public PooledComponentImplementation(ECSComponent<ModelType> component)
-        {
-            this.component = component;
-        }
-
-        public void SetModel(IParcelScene scene, long entityId, object model)
-        {
-            if(model is ModelType typedModel)
-            {
-                component.SetModel(scene, entityId, typedModel);
-            }
-            else
-            {
-                // Handle error
-                Debug.LogError($"Invalid model type for pooled component: {model?.GetType().Name ?? "null"}");
-            }
-        }
-
-        public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
-        {
-            // Since we are using pooling, we need to get an instance from the pool
-            var modelInstance = component.iEcsComponentPool.Get();
-            // Apply the deserialization logic specific to pooled components here
-            // For example, you may need to populate the fields of modelInstance based on the message
-
-            component.SetModel(scene, entity, modelInstance);
-        }
-    }
-
-    internal class InternalComponentImplementation<ModelType> : IEcsComponentImplementation
-    {
-        private readonly ECSComponent<ModelType> component;
-
-        public InternalComponentImplementation(ECSComponent<ModelType> component)
-        {
-            this.component = component;
-        }
-
-        public void SetModel(IParcelScene scene, long entityId, object model)
-        {
-            if(model is ModelType typedModel)
-            {
-                component.SetModel(scene, entityId, typedModel);
-            }
-            else
-            {
-                // Handle error
-                Debug.LogError($"Invalid model type for non-pooled component: {model?.GetType().Name ?? "null"}");
-            }
-        }
-
-        public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
-        {
-            if (component.deserializer != null)
-            {
-                var model = component.deserializer(message);
-                component.SetModel(scene, entity, model);
-            }
-            else
-            {
-                // Handle error
-                Debug.LogError("Deserializer is not set for non-pooled component");
-            }
         }
     }
 
