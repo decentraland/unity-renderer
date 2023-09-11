@@ -53,6 +53,8 @@ import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
+import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
+import { isBase64 } from 'lib/encoding/base64ToBlob'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -353,8 +355,9 @@ function* respondCommsProfileRequests() {
       }
       lastMessage = currentTimestamp
 
+      const newProfile = yield stripSnapshots(profile)
       const response: rfc4.ProfileResponse = {
-        serializedProfile: JSON.stringify(stripSnapshots(profile)),
+        serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer
       }
       yield apply(context, context.sendProfileResponse, [response])
@@ -370,18 +373,36 @@ function getInformationForCommsProfileRequest(state: RootState) {
   }
 }
 
-function stripSnapshots(profile: Avatar): Avatar {
+const snapshotsCache: Map<string, string> = new Map()
+
+async function getSnapshotFromCacheOrBuild(snapshot: string) {
+  let result = snapshotsCache.get(snapshot)
+  if (!result) {
+    result = (await buildSnapshotContent('any_selector_here', snapshot)).hash
+    snapshotsCache.set(snapshot, result)
+  }
+  return result
+}
+
+async function stripSnapshots(profile: Avatar): Promise<Avatar> {
   const newSnapshots: Record<string, string> = {}
   const currentSnapshots: Record<string, string> = profile.avatar.snapshots
 
   for (const snapshotKey of ['face256', 'body'] as const) {
     const snapshot = currentSnapshots[snapshotKey]
     const defaultValue = genericAvatarSnapshots[snapshotKey]
-    const newValue =
+    // check if snapshot is already an address or a valid IPFS v2 hash
+    let newValue =
       snapshot &&
       (snapshot.startsWith('/') || snapshot.startsWith('./') || isURL(snapshot) || IPFSv2.validate(snapshot))
         ? snapshot
         : null
+
+    // if newValue failed, check if the snapshot is a base64 value and retrieve it from cache or build it otherwise
+    if (!newValue && isBase64(snapshot)) {
+      newValue = await getSnapshotFromCacheOrBuild(snapshot)
+    }
+
     newSnapshots[snapshotKey] = newValue || defaultValue
   }
 
