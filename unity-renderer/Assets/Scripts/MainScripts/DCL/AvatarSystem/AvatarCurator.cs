@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Pool;
 
 namespace AvatarSystem
 {
@@ -52,7 +53,7 @@ namespace AvatarSystem
 
                     var emoteIdsList = emoteIds.ToList();
                     IReadOnlyList<WearableItem> resolvedEmotes = await emotesCatalog.RequestEmotesAsync(emoteIdsList, ct);
-                    List<WearableItem> nonPublishedEmotes = new List<WearableItem>();
+                    List<WearableItem> nonPublishedEmotes = ListPool<WearableItem>.Get();
 
                     foreach (string nonPublishedEmoteId in emoteIdsList)
                     {
@@ -94,6 +95,8 @@ namespace AvatarSystem
                         if (loadedEmotesFilter.Contains(emote.id)) continue;
                         emotes.Add(emote);
                     }
+
+                    ListPool<WearableItem>.Release(nonPublishedEmotes);
                 }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
