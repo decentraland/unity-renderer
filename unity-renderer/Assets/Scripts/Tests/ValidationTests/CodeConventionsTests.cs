@@ -31,24 +31,6 @@ namespace Tests.ValidationTests
             AssetDatabase.FindAssets("t:Script")
                          .Select(AssetDatabase.GUIDToAssetPath)
                          .Where(assetPath => Path.GetFileName(assetPath) != "AssemblyInfo.cs" && Path.GetExtension(assetPath) == ".cs" &&
-                                             !assetPath.StartsWith("Packages/") && !EXCLUDED_PATHS.Any(assetPath.Contains) && !IsInEditorAssembly(assetPath));
-
-        private static bool IsInEditorAssembly(string assetPath)
-        {
-            string directory = Path.GetDirectoryName(assetPath);
-
-            while (directory != null && directory.StartsWith("Assets"))
-            {
-                string[] asmdefFiles = Directory.GetFiles(directory, "*.asmdef");
-
-                if (asmdefFiles.Select(File.ReadAllText)
-                               .Any(asmdefContent => asmdefContent.Contains("\"platforms\": [\"Editor\"]")))
-                    return true;
-
-                directory = Path.GetDirectoryName(directory);
-            }
-
-            return false;
-        }
+                                             !assetPath.StartsWith("Packages/") && !EXCLUDED_PATHS.Any(assetPath.Contains));
     }
 }
