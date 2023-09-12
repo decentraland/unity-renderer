@@ -1,18 +1,22 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using System.Collections.Generic;
 using DCL.Emotes;
+using DCL.Helpers;
+using DCL.SettingsCommon;
 using DCL.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace AvatarSystem
 {
     public class AvatarEmotesController : IAvatarEmotesController
     {
+        private const float BASE_VOLUME = 0.6f;
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
-
 
         private string bodyShapeId = "";
         private readonly IAnimator animator;
@@ -64,14 +68,25 @@ namespace AvatarSystem
             }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatialSound)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
-
+            var volume = GetEmoteVolume();
             if (equippedEmotes.ContainsKey(emoteKey))
-                animator.PlayEmote(emoteId, timestamps, spatialSound);
+                animator.PlayEmote(emoteId, timestamps, spatial, volume);
+        }
+
+        // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
+        // Using AudioMixer does not work in WebGL so we calculate the volume manually
+        private float GetEmoteVolume()
+        {
+            // no cache since the data can change
+            AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
+            float baseVolume = BASE_VOLUME * Utils.ToVolumeCurve(audioSettingsData.avatarSFXVolume * audioSettingsData.masterVolume);
+            Debug.Log($"Total: {baseVolume} avatar:{audioSettingsData.avatarSFXVolume} master:{audioSettingsData.masterVolume} curve:{Utils.ToVolumeCurve(audioSettingsData.avatarSFXVolume * audioSettingsData.masterVolume)}");
+            return baseVolume;
         }
 
         public void StopEmote()

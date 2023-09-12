@@ -424,49 +424,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
-    private void SetExpressionValues(string emoteId, long expressionTriggerTimestamp, bool spatialSound)
-    {
-        if (animation == null)
-            return;
-
-        if (string.IsNullOrEmpty(emoteId))
-            return;
-
-        if (animation.GetClip(emoteId) == null)
-            return;
-
-        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
-
-        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
-
-        if (loop && blackboard.expressionTriggerId == emoteId)
-            return;
-
-        blackboard.expressionTriggerId = emoteId;
-        blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
-
-        if (mustTriggerAnimation || loop)
-        {
-            StartEmote(emoteId, spatialSound);
-
-            if (!string.IsNullOrEmpty(emoteId))
-            {
-                animation.Stop(emoteId);
-                latestAnimationState = AvatarAnimation.IDLE;
-            }
-
-            blackboard.shouldLoop = loop;
-
-            CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
-
-            currentEmote = animation[emoteId];
-            lastEmoteLoopCount = GetCurrentEmoteLoopCount();
-            currentState = State_Expression;
-            OnUpdateWithDeltaTime(Time.deltaTime);
-        }
-    }
-
-    private void StartEmote(string emoteId, bool spatialSound)
+    private void StartEmote(string emoteId, bool spatial, float volume)
     {
         if (!string.IsNullOrEmpty(emoteId))
         {
@@ -475,7 +433,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
-                emoteClipData.Play(gameObject.layer, spatialSound);
+                emoteClipData.Play(gameObject.layer, spatial, volume);
             }
         }
         else
@@ -495,9 +453,46 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
-    public void PlayEmote(string emoteId, long timestamps, bool spatialSound)
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume)
     {
-        SetExpressionValues(emoteId, timestamps, spatialSound);
+        if (animation == null)
+            return;
+
+        if (string.IsNullOrEmpty(emoteId))
+            return;
+
+        if (animation.GetClip(emoteId) == null)
+            return;
+
+        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
+
+        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != timestamps;
+
+        if (loop && blackboard.expressionTriggerId == emoteId)
+            return;
+
+        blackboard.expressionTriggerId = emoteId;
+        blackboard.expressionTriggerTimestamp = timestamps;
+
+        if (mustTriggerAnimation || loop)
+        {
+            StartEmote(emoteId, spatial, volume);
+
+            if (!string.IsNullOrEmpty(emoteId))
+            {
+                animation.Stop(emoteId);
+                latestAnimationState = AvatarAnimation.IDLE;
+            }
+
+            blackboard.shouldLoop = loop;
+
+            CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
+
+            currentEmote = animation[emoteId];
+            lastEmoteLoopCount = GetCurrentEmoteLoopCount();
+            currentState = State_Expression;
+            OnUpdateWithDeltaTime(Time.deltaTime);
+        }
     }
 
     public void EquipBaseClip(AnimationClip clip)

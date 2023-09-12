@@ -39,7 +39,7 @@ namespace DCL.Emotes
             renderers = ExtraContent.GetComponentsInChildren<Renderer>();
         }
 
-        public void Play(int gameObjectLayer, bool spatialSound)
+        public void Play(int gameObjectLayer, bool spatial, float volume)
         {
             if (renderers != null)
             {
@@ -66,7 +66,8 @@ namespace DCL.Emotes
 
             if (AudioSource != null)
             {
-                AudioSource.spatialBlend = spatialSound ? 1 : 0;
+                AudioSource.spatialBlend = spatial ? 1 : 0;
+                AudioSource.volume = volume;
                 AudioSource.loop = Loop;
                 AudioSource.Play();
             }
