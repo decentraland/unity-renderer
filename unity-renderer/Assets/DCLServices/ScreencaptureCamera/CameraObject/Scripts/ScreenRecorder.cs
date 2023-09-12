@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
 {
@@ -14,7 +15,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly float targetAspectRatio;
         private readonly RectTransform canvasRectTransform;
 
-        private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
+        // private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
         private RenderTexture originalBaseTargetTexture;
 
         public ScreenRecorder(RectTransform canvasRectTransform)
@@ -29,20 +30,27 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(CalculateCurrentScreenFrame());
+            const int WIDTH = 1920;
+            const int HEIGHT = 1080;
 
-            var initialRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, GraphicsFormat.R32G32B32A32_SFloat, 8, RenderTextureMemoryless.Depth);
+            var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, GraphicsFormat.R32G32B32A32_SFloat, 8, RenderTextureMemoryless.Depth);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            var finalRenderTexture = RenderTexture.GetTemporary(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
+            var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
             Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
-            CropCentralFrameToScreenshotTexture(finalRenderTexture, targetScreenFrame);
+            Texture2D screenshot = new (WIDTH, HEIGHT, TextureFormat.RGB24, false);
+
+            RenderTexture.active = finalRenderTexture;
+            screenshot.ReadPixels(new Rect(0, 0, WIDTH, HEIGHT), 0, 0);
+            screenshot.Apply(updateMipmaps: false);
+            RenderTexture.active = null;
+
+            onComplete?.Invoke(Application.platform == RuntimePlatform.WebGLPlayer ? screenshot : FlipTextureVertically(screenshot));
 
             RenderTexture.ReleaseTemporary(initialRenderTexture);
             RenderTexture.ReleaseTemporary(finalRenderTexture);
-
-            onComplete?.Invoke(Application.platform == RuntimePlatform.WebGLPlayer ? screenshot : FlipTextureVertically(screenshot));
+            Object.Destroy(screenshot);
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
@@ -76,8 +84,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Debug.Assert(corners.x + targetScreenFrame.FrameWidthInt <= finalRenderTexture.width, "Texture width is smaller than needed for target screenshot resolution");
             Debug.Assert(corners.y + targetScreenFrame.FrameHeightInt <= finalRenderTexture.height, "Texture height is smaller than needed for target screenshot resolution");
 
-            screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
-            screenshot.Apply(updateMipmaps: false);
+            // screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
+            // screenshot.Apply(updateMipmaps: false);
             RenderTexture.active = null;
         }
 
