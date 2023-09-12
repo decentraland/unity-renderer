@@ -8,6 +8,7 @@ using ECSSystems.ECSUiPointerEventsSystem;
 using ECSSystems.GltfContainerLoadingStateSystem;
 using ECSSystems.InputSenderSystem;
 using ECSSystems.MaterialSystem;
+using ECSSystems.MediaEnabledDetectionSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
@@ -35,6 +36,8 @@ public class ECSSystemsController : IDisposable
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly ECSUiCanvasInformationSystem uiCanvasInformationSystem;
+    private readonly MediaEnabledDetectionSystem mediaEnabledDetectionSystem;
+
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
     private readonly IWorldState worldState;
@@ -143,11 +146,15 @@ public class ECSSystemsController : IDisposable
             context.PointerEventsResultPool,
             () => worldState.GetCurrentSceneNumber());
 
+        mediaEnabledDetectionSystem = new MediaEnabledDetectionSystem(context.internalEcsComponents.MediaEnabledTagComponent,
+            DataStore.i.ecs7.scenes);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
         updateSystems = new ECS7System[]
         {
+            mediaEnabledDetectionSystem.Update,
             engineInfoSystem.Update,
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
@@ -183,6 +190,7 @@ public class ECSSystemsController : IDisposable
         playerTransformSystem.Dispose();
         sceneBoundsCheckerSystem.Dispose();
         uiCanvasInformationSystem.Dispose();
+        mediaEnabledDetectionSystem.Dispose();
         Object.Destroy(hoverCanvas);
         Object.Destroy(scenesUi);
     }
