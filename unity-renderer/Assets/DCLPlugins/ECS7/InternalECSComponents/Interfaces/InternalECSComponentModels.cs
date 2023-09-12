@@ -298,4 +298,9 @@ namespace DCL.ECS7.InternalComponents
             this.Results = results;
         }
     }
+
+    public struct InternalMediaEnabledTag : IInternalComponent
+    {
+        public bool dirty { get; set; }
+    }
 }
