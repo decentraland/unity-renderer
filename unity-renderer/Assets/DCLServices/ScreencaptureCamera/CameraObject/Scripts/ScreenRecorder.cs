@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using Object = UnityEngine.Object;
 
 namespace DCLFeatures.ScreencaptureCamera.CameraObject
@@ -30,8 +29,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            const int WIDTH = 1920;
-            const int HEIGHT = 1080;
+            ScreenFrameData screenAndFrameData = CalculateCurrentScreenFrame();
+            int WIDTH = screenAndFrameData.ScreenWidthInt;
+            int HEIGHT = screenAndFrameData.ScreenHeightInt;
 
             var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
