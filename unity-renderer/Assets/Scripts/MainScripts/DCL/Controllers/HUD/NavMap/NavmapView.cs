@@ -1,5 +1,8 @@
-﻿using DCLServices.PlacesAPIService;
-using System;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Map;
+using DCL.Tasks;
+using DCLServices.PlacesAPIService;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 
@@ -20,9 +23,11 @@ namespace DCL
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
 
         private RectTransform rectTransform;
+        private CancellationTokenSource updateSceneNameCancellationToken = new ();
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
+
         private void Start()
         {
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoom, toastView, navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
@@ -34,6 +39,8 @@ namespace DCL
         private void OnEnable()
         {
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
+            updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
+            UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
         }
 
@@ -69,6 +76,19 @@ namespace DCL
             const string format = "{0},{1}";
             currentSceneCoordsText.text = string.Format(format, current.x, current.y);
             currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
+        }
+
+        private async UniTaskVoid UpdateSceneNameAsync(Vector2Int current, CancellationToken cancellationToken)
+        {
+            MinimapMetadata.MinimapSceneInfo info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
+
+            if (info == null)
+            {
+                await WebInterfaceMinimapApiBridge.i.GetScenesInformationAroundParcel(current, 2, cancellationToken);
+                info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
+            }
+
+            currentSceneNameText.text = info?.name ?? "Unnamed";
         }
     }
 }
