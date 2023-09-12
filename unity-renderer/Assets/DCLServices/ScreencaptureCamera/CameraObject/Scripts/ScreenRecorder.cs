@@ -36,12 +36,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            // var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
-            // Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
+            var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
+            Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
             Texture2D screenshot = new (WIDTH, HEIGHT);
 
-            RenderTexture.active = initialRenderTexture;
+            RenderTexture.active = finalRenderTexture;
             screenshot.ReadPixels(new Rect(0, 0, WIDTH, HEIGHT), 0, 0);
             screenshot.Apply(updateMipmaps: false);
             RenderTexture.active = null;
@@ -49,7 +49,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             onComplete?.Invoke(screenshot);
 
             RenderTexture.ReleaseTemporary(initialRenderTexture);
-            // RenderTexture.ReleaseTemporary(finalRenderTexture);
+            RenderTexture.ReleaseTemporary(finalRenderTexture);
             Object.Destroy(screenshot);
         }
 
