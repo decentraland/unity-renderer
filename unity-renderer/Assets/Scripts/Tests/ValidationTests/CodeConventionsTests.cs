@@ -15,19 +15,28 @@ namespace Tests.ValidationTests
         public void AvoidUsingCurrentCultureIgnoreCase()
         {
             // Arrange
-            foreach (string file in AllCSharpFiles())
+            List<string> errorMessages = new List<string>();
+
+            foreach (string file in AllRuntimeCSharpFiles())
             {
-                string fileContent = File.ReadAllText(file);
+                string[] lines = File.ReadAllLines(file);
 
                 // Act
-                bool foundOffendingUsage = fileContent.Contains("StringComparison.CurrentCultureIgnoreCase");
+                for (var i = 0; i < lines.Length; i++)
+                {
+                    if (lines[i].Trim().StartsWith("//") || !lines[i].Contains("StringComparison.CurrentCultureIgnoreCase"))
+                        continue;
+
+                    errorMessages.Add($"File {Path.GetFileName(file)} on line {i + 1}");
+                }
 
                 // Assert
-                Assert.IsFalse(foundOffendingUsage, $"File {Path.GetFileName(file)} uses StringComparison.CurrentCultureIgnoreCase. Please use StringComparison.OrdinalIgnoreCase instead.");
+                Assert.AreEqual(0, errorMessages.Count, $"{errorMessages.Count} classes use StringComparison.CurrentCultureIgnoreCase. Please use StringComparison.OrdinalIgnoreCase instead.\n"
+                                                        + $"{string.Join(",\n", errorMessages)}");
             }
         }
 
-        private static IEnumerable<string> AllCSharpFiles() =>
+        private static IEnumerable<string> AllRuntimeCSharpFiles() =>
             AssetDatabase.FindAssets("t:Script")
                          .Select(AssetDatabase.GUIDToAssetPath)
                          .Where(assetPath => Path.GetFileName(assetPath) != "AssemblyInfo.cs" && Path.GetExtension(assetPath) == ".cs" &&
