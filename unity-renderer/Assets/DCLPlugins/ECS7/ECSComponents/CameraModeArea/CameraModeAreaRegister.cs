@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public CameraModeAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBCameraModeArea>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBCameraModeArea>(
                 new WrappedComponentPool<IWrappedComponent<PBCameraModeArea>>(10,
                     () => new ProtobufWrappedComponent<PBCameraModeArea>(new PBCameraModeArea()))
             );

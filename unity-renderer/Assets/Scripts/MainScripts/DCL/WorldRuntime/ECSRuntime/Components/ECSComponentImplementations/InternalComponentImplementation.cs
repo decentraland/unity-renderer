@@ -4,7 +4,7 @@ using DCL.Models;
 using System;
 using UnityEngine;
 
-public class InternalComponentImplementation<ModelType> : IEcsComponentImplementation<ModelType>
+public class InternalComponentImplementation<ModelType> : IECSComponentImplementation<ModelType>
 {
     private readonly ECSComponent<ModelType> component;
 

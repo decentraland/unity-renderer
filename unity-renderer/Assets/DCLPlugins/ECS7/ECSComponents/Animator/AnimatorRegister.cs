@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public AnimatorRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAnimator>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAnimator>(
                 new WrappedComponentPool<IWrappedComponent<PBAnimator>>(10,
                     () => new ProtobufWrappedComponent<PBAnimator>(new PBAnimator()))
             );
@@ -36,5 +36,6 @@ namespace DCL.ECSComponents
             factory.RemoveComponent(componentId);
             componentWriter.RemoveComponentSerializer(componentId);
         }
+        
     }
 }

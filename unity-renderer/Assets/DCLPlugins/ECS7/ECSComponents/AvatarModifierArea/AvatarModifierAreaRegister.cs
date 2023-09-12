@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
 
         public AvatarModifierAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAvatarModifierArea>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAvatarModifierArea>(
                 new WrappedComponentPool<IWrappedComponent<PBAvatarModifierArea>>(10,
                     () => new ProtobufWrappedComponent<PBAvatarModifierArea>(new PBAvatarModifierArea()))
             );

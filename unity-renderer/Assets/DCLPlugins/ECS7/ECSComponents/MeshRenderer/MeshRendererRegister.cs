@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
         public MeshRendererRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             DataStore_ECS7 dataStoreEcs7 = DataStore.i.ecs7;
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBMeshRenderer>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBMeshRenderer>(
                 new WrappedComponentPool<IWrappedComponent<PBMeshRenderer>>(10,
                     () => new ProtobufWrappedComponent<PBMeshRenderer>(new PBMeshRenderer()))
                 );

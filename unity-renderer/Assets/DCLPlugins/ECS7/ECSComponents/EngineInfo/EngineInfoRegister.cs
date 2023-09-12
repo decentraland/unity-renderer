@@ -13,7 +13,7 @@ namespace DCLPlugins.ECSComponents
 
         public EngineInfoRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBEngineInfo>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBEngineInfo>(
                 new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(10,
                     () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo()))
             );

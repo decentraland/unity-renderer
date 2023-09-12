@@ -14,7 +14,7 @@ namespace DCLPlugins.ECSComponents
 
         public PointerEventResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBPointerEventsResult>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBPointerEventsResult>(
                 new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(10,
                     () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult()))
             );

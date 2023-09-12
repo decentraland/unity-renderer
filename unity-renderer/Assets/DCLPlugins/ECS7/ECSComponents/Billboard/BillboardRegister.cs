@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public BillboardRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBBillboard>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBBillboard>(
                 new WrappedComponentPool<IWrappedComponent<PBBillboard>>(10,
                     () => new ProtobufWrappedComponent<PBBillboard>(new PBBillboard()))
             );

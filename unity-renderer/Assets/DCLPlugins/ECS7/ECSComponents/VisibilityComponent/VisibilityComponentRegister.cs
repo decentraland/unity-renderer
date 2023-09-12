@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
 
         public VisibilityComponentRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBVisibilityComponent>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBVisibilityComponent>(
                 new WrappedComponentPool<IWrappedComponent<PBVisibilityComponent>>(10,
                     () => new ProtobufWrappedComponent<PBVisibilityComponent>(new PBVisibilityComponent()))
             );

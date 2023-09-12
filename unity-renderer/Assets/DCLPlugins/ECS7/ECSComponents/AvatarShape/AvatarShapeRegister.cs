@@ -20,7 +20,7 @@ namespace DCL.ECSComponents
 
         public AvatarShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAvatarShape>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAvatarShape>(
                 new WrappedComponentPool<IWrappedComponent<PBAvatarShape>>(10,
                     () => new ProtobufWrappedComponent<PBAvatarShape>(new PBAvatarShape()))
             );

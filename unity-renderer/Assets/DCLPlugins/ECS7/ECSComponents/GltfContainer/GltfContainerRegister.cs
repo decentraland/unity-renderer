@@ -17,7 +17,7 @@ namespace DCL.ECSComponents
             var dataStoreEcs7 = DataStore.i.ecs7;
             var featureFlags = DataStore.i.featureFlags;
 
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBGltfContainer>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBGltfContainer>(
                 new WrappedComponentPool<IWrappedComponent<PBGltfContainer>>(10,
                     () => new ProtobufWrappedComponent<PBGltfContainer>(new PBGltfContainer()))
             );

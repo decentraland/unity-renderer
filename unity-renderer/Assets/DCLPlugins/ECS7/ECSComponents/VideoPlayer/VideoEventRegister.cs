@@ -13,7 +13,7 @@ namespace DCLPlugins.ECSComponents
 
         public VideoEventRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBVideoEvent>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBVideoEvent>(
                 new WrappedComponentPool<IWrappedComponent<PBVideoEvent>>(10,
                     () => new ProtobufWrappedComponent<PBVideoEvent>(new PBVideoEvent()))
             );

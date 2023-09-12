@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
 
         public VideoPlayerRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBVideoPlayer>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBVideoPlayer>(
                 new WrappedComponentPool<IWrappedComponent<PBVideoPlayer>>(10,
                     () => new ProtobufWrappedComponent<PBVideoPlayer>(new PBVideoPlayer()))
             );

@@ -4,7 +4,7 @@ using DCL.Models;
 using System;
 using UnityEngine;
 
-public class PooledComponentImplementation<ModelType> : IEcsComponentImplementation<ModelType>
+public class PooledComponentImplementation<ModelType> : IECSComponentImplementation<ModelType>
 {
     private readonly ECSComponent<ModelType> component;
 

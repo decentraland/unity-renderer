@@ -15,7 +15,7 @@ namespace DCL.ECSComponents
         public UITransformRegister(int componentId, ECSComponentsFactory factory,
             IECSComponentWriter componentWriter, IInternalECSComponent<InternalUiContainer> internalUiContainer)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBUiTransform>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBUiTransform>(
                 new WrappedComponentPool<IWrappedComponent<PBUiTransform>>(10,
                     () => new ProtobufWrappedComponent<PBUiTransform>(new PBUiTransform()))
             );

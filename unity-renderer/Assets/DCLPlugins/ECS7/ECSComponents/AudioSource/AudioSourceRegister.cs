@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
 
         public AudioSourceRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAudioSource>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAudioSource>(
                 new WrappedComponentPool<IWrappedComponent<PBAudioSource>>(10,
                     () => new ProtobufWrappedComponent<PBAudioSource>(new PBAudioSource()))
             );

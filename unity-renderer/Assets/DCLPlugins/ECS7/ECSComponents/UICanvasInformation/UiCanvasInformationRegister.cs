@@ -13,7 +13,7 @@ namespace DCLPlugins.ECSComponents
 
         public UiCanvasInformationRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBUiCanvasInformation>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBUiCanvasInformation>(
                 new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(10,
                     () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation()))
             );

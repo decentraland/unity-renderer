@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public NFTShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBNftShape>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBNftShape>(
                 new WrappedComponentPool<IWrappedComponent<PBNftShape>>(10,
                     () => new ProtobufWrappedComponent<PBNftShape>(new PBNftShape()))
             );

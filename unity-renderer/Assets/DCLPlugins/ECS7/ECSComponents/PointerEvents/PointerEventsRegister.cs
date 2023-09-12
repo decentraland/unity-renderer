@@ -15,7 +15,7 @@ namespace DCL.ECSComponents
         public PointerEventsRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponent<InternalPointerEvents> internalPointerEvents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBPointerEvents>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBPointerEvents>(
                 new WrappedComponentPool<IWrappedComponent<PBPointerEvents>>(10,
                     () => new ProtobufWrappedComponent<PBPointerEvents>(new PBPointerEvents()))
             );

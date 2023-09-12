@@ -22,7 +22,7 @@ namespace Tests
     {
         private Transform avatarTransform;
         private BaseList<IParcelScene> scenes;
-        private ECSReferenceTypeIecsComponentPool<ECSTransform> transformPool;
+        private ECSReferenceTypeIECSComponentPool<ECSTransform> transformPool;
         private WrappedComponentPool<IWrappedComponent<ECSTransform>> wrappedPool;
         private ECSComponent<ECSTransform> transformComponent;
         private IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
@@ -56,7 +56,7 @@ namespace Tests
 
             // FD:: new test:
             wrappedPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
-            transformPool = new ECSReferenceTypeIecsComponentPool<ECSTransform>(wrappedPool);
+            transformPool = new ECSReferenceTypeIECSComponentPool<ECSTransform>(wrappedPool);
 
             transformComponent = new ECSComponent<ECSTransform>(null, transformPool);
             // FD:: end

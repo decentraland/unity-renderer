@@ -16,7 +16,7 @@ namespace DCL.ECSRuntime
 
         internal readonly IECSComponentPool<ModelType> iEcsComponentPool;
 
-        IEcsComponentImplementation<ModelType> implementation;
+        IECSComponentImplementation<ModelType> implementation;
 
         // FD:: Constructor with pooling
         public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iEcsComponentPool)

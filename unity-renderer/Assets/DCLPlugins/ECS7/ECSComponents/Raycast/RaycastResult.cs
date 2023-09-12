@@ -13,7 +13,7 @@ namespace DCLPlugins.ECSComponents
 
         public RaycastResultRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBRaycastResult>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBRaycastResult>(
                 new WrappedComponentPool<IWrappedComponent<PBRaycastResult>>(10,
                     () => new ProtobufWrappedComponent<PBRaycastResult>(new PBRaycastResult()))
             );

@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public MaterialRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBMaterial>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBMaterial>(
                 new WrappedComponentPool<IWrappedComponent<PBMaterial>>(10,
                     () => new ProtobufWrappedComponent<PBMaterial>(new PBMaterial()))
             );

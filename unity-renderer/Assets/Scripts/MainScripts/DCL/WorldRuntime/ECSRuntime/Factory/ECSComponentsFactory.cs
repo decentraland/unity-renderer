@@ -29,21 +29,8 @@ namespace DCL.ECSRuntime
             Func<object, ModelType> deserializer = null,
             IECSComponentPool<ModelType> iecsComponentPool = null)
         {
-            // Validate that either a deserializer or a component pool is provided, but not both.
-            // if (deserializer != null && iecsComponentPool != null)
-            // {
-            //     throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
-            // }
-
             components[componentId] = CreateComponentBuilder(handlerBuilder, deserializer, iecsComponentPool);
         }
-        // public void AddOrReplaceComponent<ModelType>(
-        //     int componentId,
-        //     Func<IECSComponentHandler<ModelType>> handlerBuilder,
-        //     IECSComponentPool<ModelType> iecsComponentPool = null)
-        // {
-        //     components[componentId] = CreateComponentBuilder(handlerBuilder, iecsComponentPool);
-        // }
 
         /// <summary>
         /// Remove component to the components builder dictionary
@@ -67,13 +54,7 @@ namespace DCL.ECSRuntime
             Func<object, ModelType> deserializer = null,
             IECSComponentPool<ModelType> iecsComponentPool = null)
         {
-            // Validate that either a deserializer or a component pool is provided, but not both.
-            // FD:: reactivate this check once everything works
-            // if (deserializer != null && iecsComponentPool != null)
-            // {
-            //     throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
-            // }
-
+            // Note: This is done because ECSComponent handles both value types and reference types.
             // Choose the appropriate builder function based on the provided parameters.
             if (deserializer != null)
             {
@@ -88,20 +69,6 @@ namespace DCL.ECSRuntime
                 throw new ArgumentException("Either a deserializer or a component pool must be specified.");
             }
         }
-        // public static ECSComponentBuilder CreateComponentBuilder<ModelType>(
-        //     Func<IECSComponentHandler<ModelType>> handlerBuilder,
-        //     IECSComponentPool<ModelType> iecsComponentPool = null)
-        // {
-        //     if (iecsComponentPool != null)
-        //     {
-        //         return () => new ECSComponent<ModelType>(handlerBuilder, iecsComponentPool);
-        //     }
-        //     else
-        //     {
-        //         return () => new ECSComponent<ModelType>(handlerBuilder, null);
-        //     }
-        // }
-
         private static IECSComponent BuildInternalComponent<ModelType>(
             Func<IECSComponentHandler<ModelType>> handlerBuilder,
             Func<object, ModelType> deserializer)

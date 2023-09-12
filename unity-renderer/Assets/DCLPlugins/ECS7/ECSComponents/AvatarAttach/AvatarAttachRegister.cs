@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public AvatarAttachRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAvatarAttach>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAvatarAttach>(
                 new WrappedComponentPool<IWrappedComponent<PBAvatarAttach>>(10,
                     () => new ProtobufWrappedComponent<PBAvatarAttach>(new PBAvatarAttach()))
             );

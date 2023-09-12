@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBAudioStream>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBAudioStream>(
                 new WrappedComponentPool<IWrappedComponent<PBAudioStream>>(10,
                     () => new ProtobufWrappedComponent<PBAudioStream>(new PBAudioStream()))
             );

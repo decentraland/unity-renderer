@@ -12,7 +12,7 @@ namespace DCL.ECSComponents
 
         public GltfContainerLoadingStateRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBGltfContainerLoadingState>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBGltfContainerLoadingState>(
                 new WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>>(10,
                     () => new ProtobufWrappedComponent<PBGltfContainerLoadingState>(new PBGltfContainerLoadingState()))
             );

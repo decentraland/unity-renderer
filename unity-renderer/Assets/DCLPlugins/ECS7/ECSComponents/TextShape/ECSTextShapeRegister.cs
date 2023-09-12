@@ -14,7 +14,7 @@ namespace DCL.ECSComponents
         public ECSTextShapeRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponents internalComponents)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBTextShape>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBTextShape>(
                 new WrappedComponentPool<IWrappedComponent<PBTextShape>>(10,
                     () => new ProtobufWrappedComponent<PBTextShape>(new PBTextShape()))
             );

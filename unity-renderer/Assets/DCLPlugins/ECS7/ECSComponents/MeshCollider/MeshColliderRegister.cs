@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public MeshColliderRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents) // FD:: change this optional
         {
-            ECSReferenceTypeIecsComponentPool<PBMeshCollider> poolWrapper = new ECSReferenceTypeIecsComponentPool<PBMeshCollider>(
+            ECSReferenceTypeIECSComponentPool<PBMeshCollider> poolWrapper = new ECSReferenceTypeIECSComponentPool<PBMeshCollider>(
                 new WrappedComponentPool<IWrappedComponent<PBMeshCollider>>(10,
                     () => new ProtobufWrappedComponent<PBMeshCollider>(new PBMeshCollider()))
             );

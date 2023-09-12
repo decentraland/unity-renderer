@@ -13,7 +13,7 @@ namespace DCL.ECSComponents
 
         public PointerLockRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            var poolWrapper = new ECSReferenceTypeIecsComponentPool<PBPointerLock>(
+            var poolWrapper = new ECSReferenceTypeIECSComponentPool<PBPointerLock>(
                 new WrappedComponentPool<IWrappedComponent<PBPointerLock>>(10,
                     () => new ProtobufWrappedComponent<PBPointerLock>(new PBPointerLock()))
             );
