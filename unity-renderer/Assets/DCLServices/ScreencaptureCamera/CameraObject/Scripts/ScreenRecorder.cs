@@ -33,23 +33,23 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             const int WIDTH = 1920;
             const int HEIGHT = 1080;
 
-            var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, GraphicsFormat.R32G32B32A32_SFloat, 8, RenderTextureMemoryless.Depth);
+            var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
 
-            var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
-            Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
+            // var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
+            // Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
-            Texture2D screenshot = new (WIDTH, HEIGHT, TextureFormat.RGB24, false);
+            Texture2D screenshot = new (WIDTH, HEIGHT);
 
-            RenderTexture.active = finalRenderTexture;
+            RenderTexture.active = initialRenderTexture;
             screenshot.ReadPixels(new Rect(0, 0, WIDTH, HEIGHT), 0, 0);
             screenshot.Apply(updateMipmaps: false);
             RenderTexture.active = null;
 
-            onComplete?.Invoke(Application.platform == RuntimePlatform.WebGLPlayer ? screenshot : FlipTextureVertically(screenshot));
+            onComplete?.Invoke(screenshot);
 
             RenderTexture.ReleaseTemporary(initialRenderTexture);
-            RenderTexture.ReleaseTemporary(finalRenderTexture);
+            // RenderTexture.ReleaseTemporary(finalRenderTexture);
             Object.Destroy(screenshot);
         }
 
