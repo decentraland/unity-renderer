@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
                 ProtoSerialization.Deserialize<PBVideoPlayer>,
                 () => new VideoPlayerHandler(
                     internalComponents.videoPlayerComponent,
+                    internalComponents.MediaEnabledTagComponent,
                     DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD));
             componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 

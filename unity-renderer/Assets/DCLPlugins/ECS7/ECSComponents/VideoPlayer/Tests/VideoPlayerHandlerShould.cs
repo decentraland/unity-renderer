@@ -22,6 +22,7 @@ namespace Tests
         private Func<IVideoPluginWrapper> originalVideoPluginBuilder;
         private VideoPlayerHandler videoPlayerHandler;
         private IInternalECSComponent<InternalVideoPlayer> internalVideoPlayerComponent;
+        private IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent;
         private ICatalyst catalyst;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
@@ -41,8 +42,10 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
+            mediaEnabledTagComponent = internalComponents.MediaEnabledTagComponent;
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
+                mediaEnabledTagComponent,
                 loadingScreenDataStore.decoupledLoadingHUD);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);

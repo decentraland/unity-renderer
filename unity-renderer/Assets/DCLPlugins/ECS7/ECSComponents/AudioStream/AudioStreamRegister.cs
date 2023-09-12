@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL.ECS7.InternalComponents;
+using System;
 using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
@@ -9,10 +10,11 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public AudioStreamRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent)
         {
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBAudioStream>,
-                () => new ECSAudioStreamComponentHandler());
+                () => new ECSAudioStreamComponentHandler(mediaEnabledTagComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBAudioStream>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

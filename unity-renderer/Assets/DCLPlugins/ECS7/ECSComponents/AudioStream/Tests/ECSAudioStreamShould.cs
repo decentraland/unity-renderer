@@ -1,5 +1,6 @@
 ﻿using DCL;
 using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.Models;
 using DCL.SettingsCommon;
@@ -18,6 +19,7 @@ namespace Tests
         private ECSAudioStreamComponentHandler audioSourceComponentHandler;
         private LoadParcelScenesMessage.UnityParcelScene sceneData;
         private ContentProvider contentProvider;
+        private IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent;
 
         [SetUp]
         public void SetUp()
@@ -26,7 +28,8 @@ namespace Tests
 
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioStreamComponentHandler();
+            mediaEnabledTagComponent = Substitute.For<IInternalECSComponent<InternalMediaEnabledTag>>();
+            audioSourceComponentHandler = new ECSAudioStreamComponentHandler(mediaEnabledTagComponent);
 
             entity.entityId.Returns(1);
 

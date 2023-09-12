@@ -1,10 +1,14 @@
-﻿using DCL.Controllers;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using DCL.SettingsCommon;
 using System;
+using System.Collections;
+using System.Threading;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
@@ -26,6 +30,14 @@ namespace DCL.ECSComponents
         internal bool hadUserInteraction = false;
         internal bool isValidUrl = false;
 
+        private readonly IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent;
+        private CancellationTokenSource awaitMediaEnabledRoutineCancellationTokenSource;
+
+        public ECSAudioStreamComponentHandler(IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent)
+        {
+            this.mediaEnabledTagComponent = mediaEnabledTagComponent;
+        }
+
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
@@ -42,17 +54,20 @@ namespace DCL.ECSComponents
             isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
 
             // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
-            hadUserInteraction = Utils.IsCursorLocked;
+            hadUserInteraction = mediaEnabledTagComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).HasValue;
 
             if (!hadUserInteraction)
             {
-                Utils.OnCursorLockChanged += OnCursorLockChanged;
+                awaitMediaEnabledRoutineCancellationTokenSource = new CancellationTokenSource();
+                UniTask.RunOnThreadPool(AwaitMediaAllowedTask, false, awaitMediaEnabledRoutineCancellationTokenSource.Token);
             }
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
+            if (awaitMediaEnabledRoutineCancellationTokenSource != null)
+                awaitMediaEnabledRoutineCancellationTokenSource.Cancel(false);
+
             CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
@@ -175,13 +190,19 @@ namespace DCL.ECSComponents
             WebInterface.SendAudioStreamEvent(url, isPlaying, currentVolume);
         }
 
-        private void OnCursorLockChanged(bool isLocked)
+        private async UniTask AwaitMediaAllowedTask()
         {
-            if (!isLocked) return;
+            while (!hadUserInteraction)
+            {
+                hadUserInteraction = mediaEnabledTagComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).HasValue;
 
-            hadUserInteraction = true;
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            ConditionsToPlayChanged();
+                if (hadUserInteraction)
+                {
+                    ConditionsToPlayChanged();
+                }
+
+                await UniTask.Yield();
+            }
         }
     }
 }

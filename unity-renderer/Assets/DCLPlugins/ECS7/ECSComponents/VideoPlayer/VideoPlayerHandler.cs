@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Components.Video.Plugin;
 using DCL.Controllers;
@@ -7,6 +8,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DCL.ECSComponents
 {
@@ -23,14 +25,20 @@ namespace DCL.ECSComponents
         internal bool hadUserInteraction = false;
         internal bool isValidUrl = false;
 
+        private IParcelScene scene;
+        private readonly IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent;
+        private CancellationTokenSource awaitMediaEnabledRoutineCancellationTokenSource;
+
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
+            IInternalECSComponent<InternalMediaEnabledTag> mediaEnabledTagComponent,
             DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
+            this.mediaEnabledTagComponent = mediaEnabledTagComponent;
             this.loadingScreen = loadingScreen;
         }
 
@@ -38,18 +46,26 @@ namespace DCL.ECSComponents
         {
             isRendererActive = !loadingScreen.visible.Get();
 
+            this.scene = scene;
+
             // We need to check if the user interacted with the application before playing the video,
             // otherwise browsers won't play the video, ending up in a fake 'playing' state.
-            hadUserInteraction = Helpers.Utils.IsCursorLocked;
+            hadUserInteraction = mediaEnabledTagComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).HasValue;
 
             if (!hadUserInteraction)
-                Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
+            {
+                awaitMediaEnabledRoutineCancellationTokenSource = new CancellationTokenSource();
+                UniTask.RunOnThreadPool(AwaitMediaAllowedTask, false, awaitMediaEnabledRoutineCancellationTokenSource.Token);
+            }
+
             loadingScreen.visible.OnChange += OnLoadingScreenStateChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
+            if (awaitMediaEnabledRoutineCancellationTokenSource != null)
+                awaitMediaEnabledRoutineCancellationTokenSource.Cancel(false);
+
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
 
             // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
@@ -71,6 +87,7 @@ namespace DCL.ECSComponents
                 var id = entity.entityId.ToString();
 
                 VideoType videoType = VideoType.Common;
+
                 if (model.Src.StartsWith("livekit-video://"))
                     videoType = VideoType.LiveKit;
                 else if (!NO_STREAM_EXTENSIONS.Any(x => model.Src.EndsWith(x)))
@@ -81,10 +98,12 @@ namespace DCL.ECSComponents
                     : model.Src;
 
                 isValidUrl = !string.IsNullOrEmpty(videoUrl);
+
                 if (!isValidUrl)
                     return;
 
                 videoPlayer = new WebVideoPlayer(id, videoUrl, videoType, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
@@ -94,8 +113,10 @@ namespace DCL.ECSComponents
 
             // Apply model values except 'Playing'
             float lastPosition = lastModel?.GetPosition() ?? 0.0f;
+
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
+
             videoPlayer.SetVolume(model.GetVolume());
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
@@ -110,6 +131,7 @@ namespace DCL.ECSComponents
             if (lastModel == null) return;
 
             bool shouldBePlaying = lastModel.IsPlaying() && canVideoBePlayed;
+
             if (shouldBePlaying != videoPlayer.playing)
             {
                 if (shouldBePlaying)
@@ -119,13 +141,19 @@ namespace DCL.ECSComponents
             }
         }
 
-        private void OnCursorLockChanged(bool isLocked)
+        private async UniTask AwaitMediaAllowedTask()
         {
-            if (!isLocked) return;
+            while (!hadUserInteraction)
+            {
+                hadUserInteraction = mediaEnabledTagComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).HasValue;
 
-            hadUserInteraction = true;
-            Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            ConditionsToPlayVideoChanged();
+                if (hadUserInteraction)
+                {
+                    ConditionsToPlayVideoChanged();
+                }
+
+                await UniTask.Yield();
+            }
         }
 
         private void OnLoadingScreenStateChanged(bool isScreenEnabled, bool prevState)
