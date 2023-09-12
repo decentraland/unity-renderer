@@ -29,7 +29,7 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
           baseUrl,
           realmName: realmAdapter.about.configurations?.realmName ?? '',
           networkId: realmAdapter.about.configurations?.networkId ?? 1,
-          commsAdapter: realmAdapter.about.comms?.fixedAdapter ?? '',
+          commsAdapter: realmAdapter.about.comms?.adapter ?? '',
           isPreview: PREVIEW
         }
       }

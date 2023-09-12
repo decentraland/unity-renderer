@@ -11,6 +11,7 @@ import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { trackEvent } from 'shared/analytics/trackEvent'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -28,8 +29,22 @@ export async function createArchipelagoConnection(
 ): Promise<IRealmAdapter> {
   const logger = createLogger('Archipelago handshake: ')
   const address = identity.address
-  const url = new URL('/archipelago/ws', baseUrl).toString()
-  const wsUrl = url.replace(/^http/, 'ws')
+  const adapterStr = about.comms?.adapter
+  if (!adapterStr) {
+    throw new Error(`Protocol error: can not create connection to archipelago for undefined adapter`)
+  }
+
+  const [adapter, protocol, ...urlParts] = adapterStr.split(':')
+
+  if (!adapterStr || adapter !== 'archipelago' || protocol !== 'archipelago-v1') {
+    throw new Error(`Protocol error: can not create connection to archipelago for: ${adapterStr}`)
+  }
+
+  const wsUrl = urlParts.join(':')
+
+  trackEvent('DEFAULT_REALM', {
+    message: `wsUrl: ${JSON.stringify(wsUrl)}`
+  })
 
   const connected = future<void>()
   const ws = new WebSocket(wsUrl, 'archipelago')
@@ -98,7 +113,9 @@ export async function createArchipelagoConnection(
       if (!message || message.$case !== 'welcome') {
         throw new Error('Protocol error: server did not send a welcomeMessage')
       }
-
+      trackEvent('DEFAULT_REALM', {
+        message: `we are in`
+      })
       return new ArchipelagoConnection(baseUrl, about, ws, address)
     }
   } catch (err: any) {
@@ -141,6 +158,9 @@ export class ArchipelagoConnection implements IRealmAdapter {
 
       switch (message.$case) {
         case 'islandChanged': {
+          trackEvent('DEFAULT_REALM', {
+            message: `island changed: ${JSON.stringify(message.islandChanged)}`
+          })
           this.events.emit('setIsland', message.islandChanged)
           break
         }

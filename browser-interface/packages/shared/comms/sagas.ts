@@ -194,7 +194,9 @@ function* pingerProcess() {
 function* handleConnectToComms(action: ConnectToCommsAction) {
   try {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-
+    trackEvent('DEFAULT_REALM', {
+      message: `connStr: ${JSON.stringify(action.payload.event.connStr)}`
+    })
     yield put(setCommsIsland(action.payload.event.islandId))
 
     const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
@@ -222,6 +224,9 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
+  trackEvent('DEFAULT_REALM', {
+    message: `connecting to url: ${JSON.stringify(url)} with protocol: ${protocol}`
+  })
 
   // TODO: move this to a saga
   overrideCommsProtocol(protocol)
@@ -255,6 +260,9 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       }
 
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
+        trackEvent('DEFAULT_REALM', {
+          message: `fixed adapter: ${JSON.stringify(response)}`
+        })
         return connectAdapter(response.fixedAdapter, identity)
       }
 
@@ -292,7 +300,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         logger: commsLogger,
         url: theUrl.origin + theUrl.pathname,
         token,
-        globalAudioStream: await getGlobalAudioStream(),
+        globalAudioStream: await getGlobalAudioStream()
       })
 
       store.dispatch(setLiveKitAdapter(livekitAdapter))

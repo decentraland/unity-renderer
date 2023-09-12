@@ -35,7 +35,7 @@ export function* metaSaga(): any {
     ...config,
     featureFlagsV2: flagsAndVariants
   }
-
+  console.log(`CONFIG: ${config}`)
   yield put(metaConfigurationInitialized(merge))
 }
 
