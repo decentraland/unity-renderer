@@ -382,7 +382,7 @@ namespace RPC.Services
 
         private ScenePortableExperienceFeatureToggles ToScenePortableExperienceFeatureToggle(string str)
         {
-            if (string.Compare(str, "enabled", StringComparison.CurrentCultureIgnoreCase) == 0)
+            if (string.Compare(str, "enabled", StringComparison.OrdinalIgnoreCase) == 0)
                 return ScenePortableExperienceFeatureToggles.Enable;
             if (string.Compare(str, "disabled", StringComparison.OrdinalIgnoreCase) == 0)
                 return ScenePortableExperienceFeatureToggles.Disable;
