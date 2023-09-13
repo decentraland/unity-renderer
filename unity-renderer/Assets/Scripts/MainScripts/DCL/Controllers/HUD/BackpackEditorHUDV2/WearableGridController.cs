@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Tasks;
+using DCLServices.CustomNftCollection;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
@@ -322,7 +323,6 @@ namespace DCL.Backpack
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            Debug.Log($"WearableGridController.GetConfiguredCustomNftCollectionAsync: {customCollections}");
             Debug.Log("WearableGridController.HashSetPool<string>");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();

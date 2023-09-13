@@ -1,8 +1,9 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace DCL.Backpack
+namespace DCLServices.CustomNftCollection
 {
     public interface ICustomNftCollectionService : IService
     {

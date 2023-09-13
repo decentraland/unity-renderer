@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using JetBrains.Annotations;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Backpack
+namespace DCLServices.CustomNftCollection
 {
     public class WebInterfaceCustomNftCatalogBridge : MonoBehaviour, ICustomNftCollectionService
     {

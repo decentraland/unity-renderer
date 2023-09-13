@@ -3,6 +3,7 @@ using DCL.Emotes;
 using DCL.EmotesCustomization;
 using DCL.Interface;
 using DCL.Tasks;
+using DCLServices.CustomNftCollection;
 using System;
 using System.Collections.Generic;
 using System.Linq;

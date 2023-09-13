@@ -1,6 +1,5 @@
 ﻿using AvatarSystem;
 using Cysharp.Threading.Tasks;
-using DCL.Backpack;
 using DCL.Controllers;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
@@ -8,6 +7,7 @@ using DCL.Providers;
 using DCL.Rendering;
 using DCL.Social.Friends;
 using DCLServices.CopyPaste.Analytics;
+using DCLServices.CustomNftCollection;
 using DCLServices.PortableExperiences.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
