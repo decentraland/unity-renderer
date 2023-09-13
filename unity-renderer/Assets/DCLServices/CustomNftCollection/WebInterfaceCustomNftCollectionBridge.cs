@@ -14,8 +14,8 @@ namespace DCLServices.CustomNftCollection
 {
     public class WebInterfaceCustomNftCatalogBridge : MonoBehaviour, ICustomNftCollectionService
     {
-        private UniTaskCompletionSource<string[]> getCollectionsTask;
-        private UniTaskCompletionSource<string[]> getItemsTask;
+        private UniTaskCompletionSource<IReadOnlyList<string>> getCollectionsTask;
+        private UniTaskCompletionSource<IReadOnlyList<string>> getItemsTask;
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
@@ -31,7 +31,7 @@ namespace DCLServices.CustomNftCollection
         {
         }
 
-        public async UniTask<string[]> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
+        public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
         {
             Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftCollectionAsync");
 
@@ -42,7 +42,7 @@ namespace DCLServices.CustomNftCollection
                                                    .Timeout(TimeSpan.FromSeconds(30))
                                                    .AttachExternalCancellation(cancellationToken);
 
-                getCollectionsTask = new UniTaskCompletionSource<string[]>();
+                getCollectionsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
 
                 WebInterface.GetWithCollectionsUrlParam();
 
@@ -57,7 +57,7 @@ namespace DCLServices.CustomNftCollection
             }
         }
 
-        public async UniTask<string[]> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
+        public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
         {
             Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftItemsAsync");
 
@@ -68,7 +68,7 @@ namespace DCLServices.CustomNftCollection
                                              .Timeout(TimeSpan.FromSeconds(30))
                                              .AttachExternalCancellation(cancellationToken);
 
-                getItemsTask = new UniTaskCompletionSource<string[]>();
+                getItemsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
 
                 WebInterface.GetWithItemsUrlParam();
 
