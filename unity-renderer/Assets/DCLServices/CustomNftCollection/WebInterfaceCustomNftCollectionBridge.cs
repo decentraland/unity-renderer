@@ -33,8 +33,6 @@ namespace DCLServices.CustomNftCollection
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
         {
-            Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftCollectionAsync");
-
             try
             {
                 if (getCollectionsTask != null)
@@ -59,8 +57,6 @@ namespace DCLServices.CustomNftCollection
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
         {
-            Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftItemsAsync");
-
             try
             {
                 if (getItemsTask != null)
@@ -86,33 +82,36 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
         public void SetWithCollectionsParam(string json)
         {
-            Debug.Log($"WebInterfaceCustomNftCollectionBridge.SetWithCollectionsParam: {json}");
+            async UniTaskVoid SetResultInMainThread(string[] collectionIds)
+            {
+                await UniTask.SwitchToMainThread();
+
+                getCollectionsTask.TrySetResult(collectionIds);
+                getCollectionsTask = null;
+            }
+
             CollectionIdsPayload payload = JsonConvert.DeserializeObject<CollectionIdsPayload>(json);
             string[] collectionIds = payload.collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
 
-            Debug.Log(collectionIds);
-
-            foreach (string collectionId in collectionIds)
-                Debug.Log(collectionId);
-
-            getCollectionsTask.TrySetResult(collectionIds);
-            getCollectionsTask = null;
+            SetResultInMainThread(collectionIds).Forget();
         }
 
         [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
         public void SetWithItemsParam(string json)
         {
-            Debug.Log($"WebInterfaceCustomNftCollectionBridge.SetWithItemsParam: {json}");
+            async UniTaskVoid SetResultInMainThread(string[] itemIds)
+            {
+                await UniTask.SwitchToMainThread();
+
+                getItemsTask.TrySetResult(itemIds);
+                getItemsTask = null;
+            }
+
             ItemIdsPayload payload = JsonConvert.DeserializeObject<ItemIdsPayload>(json);
 
             string[] itemIds = payload.itemIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-            Debug.Log(itemIds);
 
-            foreach (string itemId in itemIds)
-                Debug.Log(itemId);
-
-            getItemsTask.TrySetResult(itemIds);
-            getItemsTask = null;
+            SetResultInMainThread(itemIds).Forget();
         }
 
         [Serializable]
