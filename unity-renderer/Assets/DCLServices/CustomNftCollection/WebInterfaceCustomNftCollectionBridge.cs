@@ -59,6 +59,8 @@ namespace DCLServices.CustomNftCollection
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
         {
+            Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftItemsAsync");
+
             try
             {
                 if (getItemsTask != null)
