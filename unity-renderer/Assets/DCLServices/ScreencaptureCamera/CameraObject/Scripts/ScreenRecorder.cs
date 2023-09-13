@@ -16,7 +16,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
 
-        // private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
         private RenderTexture originalBaseTargetTexture;
 
         private ScreenFrameData debugTargetScreenFrame;
