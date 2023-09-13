@@ -261,12 +261,12 @@ namespace DCL.Backpack
 
                 wearables.AddRange(ownedWearables);
 
-                try
-                {
-                    await FetchCustomWearableCollections(wearables, cancellationToken);
-                    await FetchCustomWearableItems(wearables, cancellationToken);
-                }
-                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
+                // try
+                // {
+                //     await FetchCustomWearableCollections(wearables, cancellationToken);
+                //     await FetchCustomWearableItems(wearables, cancellationToken);
+                // }
+                // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
 
                 view.SetLoadingActive(false);
 

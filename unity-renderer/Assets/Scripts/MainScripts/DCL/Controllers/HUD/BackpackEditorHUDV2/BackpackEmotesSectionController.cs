@@ -103,11 +103,11 @@ namespace DCL.Backpack
                     allEmotes.AddRange(embeddedEmotesSo.emotes);
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
-                    try { await FetchCustomEmoteCollections(allEmotes, ct); }
-                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
-
-                    try { await FetchCustomEmoteItems(allEmotes, ct); }
-                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    // try { await FetchCustomEmoteCollections(allEmotes, ct); }
+                    // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    //
+                    // try { await FetchCustomEmoteItems(allEmotes, ct); }
+                    // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
                     dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
                     emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
