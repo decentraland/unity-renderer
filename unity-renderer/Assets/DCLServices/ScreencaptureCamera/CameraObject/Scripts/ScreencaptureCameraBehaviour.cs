@@ -163,6 +163,7 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
             this.userMovementKeysBlocked = userMovementKeysBlocked;
             isScreencaptureCameraActive = isScreenshotCameraActive;
+            uploadPictureCancellationToken = new CancellationTokenSource();
         }
 
         public void CaptureScreenshot(string source)
@@ -181,7 +182,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
                 var metadata = ScreenshotMetadata.Create(Player, avatarsLODController, screenshotCamera);
-                uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
                 UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
             }
 

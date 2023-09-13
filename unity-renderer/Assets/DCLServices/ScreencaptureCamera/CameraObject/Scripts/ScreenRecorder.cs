@@ -14,6 +14,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         private readonly float targetAspectRatio;
         private readonly RectTransform canvasRectTransform;
 
+        private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
+
         // private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
         private RenderTexture originalBaseTargetTexture;
 
@@ -42,11 +44,12 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
             Texture2D upscaledFrameTexture = CropTexture2D(screenshotTexture, rescaledScreenFrame.CalculateFrameCorners(), rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
-            Texture2D finalTexture = ResizeTexture2D(upscaledFrameTexture, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
+            ResizeTexture2D(upscaledFrameTexture);
 
-            onComplete?.Invoke(finalTexture);
+            onComplete?.Invoke(screenshot);
 
-            Object.Destroy(finalTexture);
+            Object.Destroy(screenshotTexture);
+            Object.Destroy(upscaledFrameTexture);
 
             IsCapturing = false;
         }
@@ -62,25 +65,20 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return result;
         }
 
-        private static Texture2D ResizeTexture2D(Texture originalTexture, int width, int height)
+        private void ResizeTexture2D(Texture originalTexture)
         {
-            var rt = new RenderTexture(width, height, 24);
-            RenderTexture.active = rt;
+            var renderTexture = RenderTexture.GetTemporary(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, 0);
+            RenderTexture.active = renderTexture;
 
             // Copy and scale the original texture into the RenderTexture
-            Graphics.Blit(originalTexture, rt);
-
-            // Create a new Texture2D to hold the resized texture data
-            var resizedTexture = new Texture2D(width, height);
+            Graphics.Blit(originalTexture, renderTexture);
 
             // Read the pixel data from the RenderTexture into the Texture2D
-            resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            resizedTexture.Apply();
+            screenshot.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            screenshot.Apply();
 
             RenderTexture.active = null;
-            rt.Release();
-
-            return resizedTexture;
+            RenderTexture.ReleaseTemporary(renderTexture);
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
@@ -104,33 +102,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             }
 
             return screenFrameData;
-        }
-
-        private void CropCentralFrameToScreenshotTexture(RenderTexture finalRenderTexture, ScreenFrameData targetScreenFrame)
-        {
-            RenderTexture.active = finalRenderTexture;
-            Vector2Int corners = targetScreenFrame.CalculateFrameCorners();
-
-            Debug.Assert(corners.x + targetScreenFrame.FrameWidthInt <= finalRenderTexture.width, "Texture width is smaller than needed for target screenshot resolution");
-            Debug.Assert(corners.y + targetScreenFrame.FrameHeightInt <= finalRenderTexture.height, "Texture height is smaller than needed for target screenshot resolution");
-
-            // screenshot.ReadPixels(new Rect(corners.x, corners.y, targetScreenFrame.FrameWidthInt, targetScreenFrame.FrameHeightInt), 0, 0);
-            // screenshot.Apply(updateMipmaps: false);
-            RenderTexture.active = null;
-        }
-
-        private static Texture2D FlipTextureVertically(Texture2D original)
-        {
-            var flipped = new Texture2D(original.width, original.height);
-            int xN = original.width;
-            int yN = original.height;
-
-            for (var i = 0; i < xN; i++)
-            for (var j = 0; j < yN; j++)
-                flipped.SetPixel(i, yN - j - 1, original.GetPixel(i, j));
-
-            flipped.Apply(updateMipmaps: false);
-            return flipped;
         }
 
         private static (ScreenFrameData data, float targetRescale) CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
