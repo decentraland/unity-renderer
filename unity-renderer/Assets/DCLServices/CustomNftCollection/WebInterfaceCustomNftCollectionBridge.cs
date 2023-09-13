@@ -36,7 +36,9 @@ namespace DCLServices.CustomNftCollection
             try
             {
                 if (getCollectionsTask != null)
-                    return await getCollectionsTask.Task.AttachExternalCancellation(cancellationToken);
+                    return await getCollectionsTask.Task
+                                                   .Timeout(TimeSpan.FromSeconds(30))
+                                                   .AttachExternalCancellation(cancellationToken);
 
                 getCollectionsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
 
@@ -58,7 +60,9 @@ namespace DCLServices.CustomNftCollection
             try
             {
                 if (getItemsTask != null)
-                    return await getItemsTask.Task.AttachExternalCancellation(cancellationToken);
+                    return await getItemsTask.Task
+                                             .Timeout(TimeSpan.FromSeconds(30))
+                                             .AttachExternalCancellation(cancellationToken);
 
                 getItemsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
 
