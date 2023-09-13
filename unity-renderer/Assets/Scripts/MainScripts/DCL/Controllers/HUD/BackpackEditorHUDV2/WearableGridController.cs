@@ -289,7 +289,9 @@ namespace DCL.Backpack
 
         private async UniTask FetchCustomWearableItems(ICollection<WearableItem> wearables, CancellationToken cancellationToken)
         {
+            Debug.Log("WearableGridController.customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken)");
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+            Debug.Log("WearableGridController.foreach (string collectionId in customItems)");
 
             foreach (string collectionId in customItems)
                 Debug.Log($"Custom wearable item id: {collectionId}");
@@ -317,8 +319,10 @@ namespace DCL.Backpack
         private async UniTask FetchCustomWearableCollections(
             List<WearableItem> wearableBuffer, CancellationToken cancellationToken)
         {
+            Debug.Log("WearableGridController.customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken)");
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+            Debug.Log("WearableGridController.foreach (string collectionId in customCollections)");
 
             foreach (string collectionId in customCollections)
                 Debug.Log($"Custom wearable collection id: {collectionId}");
