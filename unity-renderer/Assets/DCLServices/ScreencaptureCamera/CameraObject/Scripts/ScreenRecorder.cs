@@ -40,27 +40,36 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             debugTargetScreenFrame = targetScreenFrame; // Store the value for debugging
 
-            int WIDTH = currentScreenFrame.ScreenWidthInt * 2;
-            int HEIGHT = currentScreenFrame.ScreenHeightInt * 2;
+            var widthCached = Screen.width;
+            var heightCached = Screen.height;
 
-            var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
-            ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
+            Screen.SetResolution(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, Screen.fullScreenMode);
+            yield return null;
+            yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
-            Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
+            int WIDTH = targetScreenFrame.ScreenWidthInt;
+            int HEIGHT = targetScreenFrame.ScreenHeightInt;
+
+
+            // var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
+            // ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
+            //
+            // var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
+            // Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
 
             Texture2D screenshot = new (WIDTH, HEIGHT);
 
-            RenderTexture.active = finalRenderTexture;
+            // RenderTexture.active = finalRenderTexture;
             screenshot.ReadPixels(new Rect(0, 0, WIDTH, HEIGHT), 0, 0);
             screenshot.Apply(updateMipmaps: false);
-            RenderTexture.active = null;
+            // RenderTexture.active = null;
 
             onComplete?.Invoke(screenshot);
 
-            RenderTexture.ReleaseTemporary(initialRenderTexture);
-            RenderTexture.ReleaseTemporary(finalRenderTexture);
+            // RenderTexture.ReleaseTemporary(initialRenderTexture);
+            // RenderTexture.ReleaseTemporary(finalRenderTexture);
             Object.Destroy(screenshot);
+            Screen.SetResolution(widthCached, heightCached, Screen.fullScreenMode);
 
             IsCapturing = false;
         }
@@ -69,10 +78,10 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         {
             GUILayout.BeginArea(new Rect(10, 10, 300, 120));
             GUILayout.Label("Debug Info:");
-            GUILayout.Label($"ScreenWidth: {debugTargetScreenFrame.ScreenWidth}");
-            GUILayout.Label($"ScreenHeight: {debugTargetScreenFrame.ScreenHeight}");
-            GUILayout.Label($"FrameWidth: {debugTargetScreenFrame.FrameWidth}");
-            GUILayout.Label($"FrameHeight: {debugTargetScreenFrame.FrameHeight}");
+            GUILayout.Label($"ScreenWidth: {debugTargetScreenFrame.ScreenWidthInt}");
+            GUILayout.Label($"ScreenHeight: {debugTargetScreenFrame.ScreenHeightInt}");
+            GUILayout.Label($"FrameWidth: {debugTargetScreenFrame.FrameWidthInt}");
+            GUILayout.Label($"FrameHeight: {debugTargetScreenFrame.FrameHeightInt}");
             GUILayout.EndArea();
         }
 
