@@ -1,6 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL.Browser;
-using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;

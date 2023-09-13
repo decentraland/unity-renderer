@@ -1,4 +1,5 @@
 using AvatarSystem;
+using DCL.Backpack;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
@@ -13,7 +14,6 @@ using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
 using DCLServices.CameraReelService;
 using DCLServices.CopyPaste.Analytics;
-using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
