@@ -114,11 +114,11 @@ export class UnityInterface implements IUnityInterface {
   }
 
   public SetWithCollectionsParam(collectionIds: string[]) {
-    this.SendMessageToUnity('Bridges', 'SetWithCollectionsParam', JSON.stringify(collectionIds))
+    this.SendMessageToUnity('Bridges', 'SetWithCollectionsParam', JSON.stringify({ collectionIds }))
   }
 
   public SetWithItemsParam(itemIds: string[]) {
-    this.SendMessageToUnity('Bridges', 'SetWithItemsParam', JSON.stringify(itemIds))
+    this.SendMessageToUnity('Bridges', 'SetWithItemsParam', JSON.stringify({ itemIds }))
   }
 
   public CreateGlobalScene(data: {

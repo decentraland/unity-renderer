@@ -19,11 +19,8 @@ namespace DCLServices.CustomNftCollection
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
-            var bridgeObj = SceneReferences.i?.bridgeGameObject;
-
-            return SceneReferences.i?.bridgeGameObject == null
-                ? new GameObject("Bridge").AddComponent<WebInterfaceCustomNftCatalogBridge>()
-                : bridgeObj.GetOrCreateComponent<WebInterfaceCustomNftCatalogBridge>();
+            var bridgeObj = SceneReferences.i.bridgeGameObject;
+            return bridgeObj.GetOrCreateComponent<WebInterfaceCustomNftCatalogBridge>();
         }
 
         public void Dispose()
@@ -81,17 +78,29 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
         public void SetWithCollectionsParam(string json)
         {
-            string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
-            getCollectionsTask.TrySetResult(collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
+            CollectionIdsPayload payload = JsonConvert.DeserializeObject<CollectionIdsPayload>(json);
+            getCollectionsTask.TrySetResult(payload.collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getCollectionsTask = null;
         }
 
         [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
         public void SetWithItemsParam(string json)
         {
-            string[] collectionIds = JsonConvert.DeserializeObject<string[]>(json);
-            getItemsTask.TrySetResult(collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
+            ItemIdsPayload payload = JsonConvert.DeserializeObject<ItemIdsPayload>(json);
+            getItemsTask.TrySetResult(payload.itemIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getItemsTask = null;
+        }
+
+        [Serializable]
+        private struct CollectionIdsPayload
+        {
+            public string[] collectionIds;
+        }
+
+        [Serializable]
+        private struct ItemIdsPayload
+        {
+            public string[] itemIds;
         }
     }
 }

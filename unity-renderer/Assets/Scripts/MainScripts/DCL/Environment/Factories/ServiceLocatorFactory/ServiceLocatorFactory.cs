@@ -154,7 +154,7 @@ namespace DCL
                 new WearablesWebInterfaceBridge(),
                 featureFlagsDataStore));
 
-            result.Register<ICustomNftCollectionService>(WebInterfaceCustomNftCatalogBridge.GetOrCreate);
+            result.Register<ICustomNftCollectionService>(() => WebInterfaceCustomNftCatalogBridge.GetOrCreate());
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
