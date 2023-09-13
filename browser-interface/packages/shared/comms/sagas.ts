@@ -247,6 +247,10 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         }
       )
 
+      trackEvent('DEFAULT_REALM', {
+        message: `signed-login ok...: ${JSON.stringify(result)}`
+      })
+
       const response: SignedLoginResult = result.json
       if (!result.ok || typeof response !== 'object') {
         throw new Error(
@@ -258,6 +262,10 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         fixedAdapter?: string
         message?: string
       }
+
+      trackEvent('DEFAULT_REALM', {
+        message: `response: ${JSON.stringify(response)}`
+      })
 
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
         trackEvent('DEFAULT_REALM', {
