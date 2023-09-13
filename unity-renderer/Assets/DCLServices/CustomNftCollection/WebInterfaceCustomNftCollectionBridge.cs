@@ -33,6 +33,8 @@ namespace DCLServices.CustomNftCollection
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
         {
+            Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftCollectionAsync");
+
             try
             {
                 if (getCollectionsTask != null)
@@ -82,6 +84,7 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
         public void SetWithCollectionsParam(string json)
         {
+            Debug.Log("WebInterfaceCustomNftCollectionBridge.SetWithCollectionsParam");
             CollectionIdsPayload payload = JsonConvert.DeserializeObject<CollectionIdsPayload>(json);
             getCollectionsTask.TrySetResult(payload.collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getCollectionsTask = null;
@@ -90,6 +93,7 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
         public void SetWithItemsParam(string json)
         {
+            Debug.Log("WebInterfaceCustomNftCollectionBridge.SetWithItemsParam");
             ItemIdsPayload payload = JsonConvert.DeserializeObject<ItemIdsPayload>(json);
             getItemsTask.TrySetResult(payload.itemIds.Where(s => !string.IsNullOrEmpty(s)).ToArray());
             getItemsTask = null;
