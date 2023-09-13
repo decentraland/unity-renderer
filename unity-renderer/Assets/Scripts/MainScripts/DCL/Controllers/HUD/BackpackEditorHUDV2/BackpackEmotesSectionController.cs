@@ -103,11 +103,12 @@ namespace DCL.Backpack
                     allEmotes.AddRange(embeddedEmotesSo.emotes);
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
-                    // try { await FetchCustomEmoteCollections(allEmotes, ct); }
-                    // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
-                    //
-                    // try { await FetchCustomEmoteItems(allEmotes, ct); }
-                    // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    try
+                    {
+                        await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
+                            FetchCustomEmoteItems(allEmotes, ct));
+                    }
+                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
                     dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
                     emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
@@ -151,6 +152,9 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
+            foreach (string collectionId in customItems)
+                Debug.Log($"Custom emote item id: {collectionId}");
+
             WearableItem[] retrievedEmotes = await UniTask.WhenAll(customItems.Select(nftId =>
                 nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase)
                     ? emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken)
@@ -174,6 +178,9 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+
+            foreach (string collectionId in customCollections)
+                Debug.Log($"Custom emote collection id: {collectionId}");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();

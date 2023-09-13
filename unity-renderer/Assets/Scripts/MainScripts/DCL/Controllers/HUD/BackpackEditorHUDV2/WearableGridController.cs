@@ -261,12 +261,12 @@ namespace DCL.Backpack
 
                 wearables.AddRange(ownedWearables);
 
-                // try
-                // {
-                //     await FetchCustomWearableCollections(wearables, cancellationToken);
-                //     await FetchCustomWearableItems(wearables, cancellationToken);
-                // }
-                // catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
+                try
+                {
+                    await UniTask.WhenAll(FetchCustomWearableCollections(wearables, cancellationToken),
+                        FetchCustomWearableItems(wearables, cancellationToken));
+                }
+                catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
 
                 view.SetLoadingActive(false);
 
@@ -290,6 +290,9 @@ namespace DCL.Backpack
         private async UniTask FetchCustomWearableItems(ICollection<WearableItem> wearables, CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+
+            foreach (string collectionId in customItems)
+                Debug.Log($"Custom wearable item id: {collectionId}");
 
             WearableItem[] retrievedWearables = await UniTask.WhenAll(customItems.Select(nftId =>
             {
@@ -316,6 +319,9 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+
+            foreach (string collectionId in customCollections)
+                Debug.Log($"Custom wearable collection id: {collectionId}");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
