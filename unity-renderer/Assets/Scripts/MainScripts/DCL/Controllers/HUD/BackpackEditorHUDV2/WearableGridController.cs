@@ -322,22 +322,25 @@ namespace DCL.Backpack
             Debug.Log("WearableGridController.customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken)");
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
-            Debug.Log("WearableGridController.foreach (string collectionId in customCollections)");
 
-            foreach (string collectionId in customCollections)
-                Debug.Log($"Custom wearable collection id: {collectionId}");
+            Debug.Log("WearableGridController.HashSetPool<string>");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
 
+            Debug.Log("WearableGridController.foreach (string collectionId in customCollections)");
+
             foreach (string collectionId in customCollections)
             {
+                Debug.Log($"Custom wearable collection id: {collectionId}");
+
                 if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
                     publishedCollections.Add(collectionId);
                 else
                     collectionsInBuilder.Add(collectionId);
             }
 
+            Debug.Log("WearableGridController.UniTask.WhenAll");
             await UniTask.WhenAll(wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer),
                 wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer));
 
