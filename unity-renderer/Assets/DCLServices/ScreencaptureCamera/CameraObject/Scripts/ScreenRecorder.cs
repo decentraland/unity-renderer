@@ -17,6 +17,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         // private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
         private RenderTexture originalBaseTargetTexture;
 
+        public bool IsCapturing { get; private set; }
+
         public ScreenRecorder(RectTransform canvasRectTransform)
         {
             targetAspectRatio = (float)TARGET_FRAME_WIDTH / TARGET_FRAME_HEIGHT;
@@ -27,11 +29,15 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public virtual IEnumerator CaptureScreenshot(Action<Texture2D> onComplete)
         {
+            IsCapturing = true;
+
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
             ScreenFrameData screenAndFrameData = CalculateCurrentScreenFrame();
-            int WIDTH = screenAndFrameData.ScreenWidthInt;
-            int HEIGHT = screenAndFrameData.ScreenHeightInt;
+            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(screenAndFrameData);
+
+            int WIDTH = targetScreenFrame.ScreenWidthInt;
+            int HEIGHT = targetScreenFrame.ScreenHeightInt;
 
             var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
@@ -51,6 +57,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             RenderTexture.ReleaseTemporary(initialRenderTexture);
             RenderTexture.ReleaseTemporary(finalRenderTexture);
             Object.Destroy(screenshot);
+
+            IsCapturing = false;
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()

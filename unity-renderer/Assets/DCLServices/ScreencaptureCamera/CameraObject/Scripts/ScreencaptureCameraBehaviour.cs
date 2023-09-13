@@ -167,12 +167,11 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
-            if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get()) return;
+            if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get() || screenRecorderLazy.IsCapturing) return;
 
             lastScreenshotTime = Time.time;
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
 
-            StopAllCoroutines();
             StartCoroutine(screenRecorderLazy.CaptureScreenshot(OnComplete));
             return;
 
