@@ -106,11 +106,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         private bool isOnCooldown => Time.time - lastScreenshotTime < SPLASH_FX_DURATION + IMAGE_TRANSITION_FX_DURATION + MIDDLE_PAUSE_FX_DURATION;
 
-        private void OnGUI()
-        {
-            screenRecorderLazyValue?.OnGUI();
-        }
-
         internal void Awake()
         {
             toggleScreenshotCameraAction = Resources.Load<InputAction_Trigger>("ToggleScreenshotCamera");

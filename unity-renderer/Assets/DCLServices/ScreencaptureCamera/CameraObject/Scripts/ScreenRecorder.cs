@@ -36,53 +36,51 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
             ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
-            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(currentScreenFrame);
+            (_, float targetRescale) = CalculateTargetScreenFrame(currentScreenFrame);
+            int roundedUpscale = Mathf.CeilToInt(targetRescale);
+            ScreenFrameData rescaledScreenFrame = CalculateRoundRescaledScreenFrame(currentScreenFrame, roundedUpscale);
 
-            debugTargetScreenFrame = targetScreenFrame; // Store the value for debugging
+            Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
+            Texture2D upscaledFrameTexture = CropTexture2D(screenshotTexture, rescaledScreenFrame.CalculateFrameCorners(), rescaledScreenFrame.FrameWidthInt, rescaledScreenFrame.FrameHeightInt);
+            Texture2D finalTexture = ResizeTexture2D(upscaledFrameTexture, TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT);
 
-            var widthCached = Screen.width;
-            var heightCached = Screen.height;
+            onComplete?.Invoke(finalTexture);
 
-            Screen.SetResolution(targetScreenFrame.ScreenWidthInt, targetScreenFrame.ScreenHeightInt, Screen.fullScreenMode);
-            yield return null;
-            yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
-
-            int WIDTH = targetScreenFrame.ScreenWidthInt;
-            int HEIGHT = targetScreenFrame.ScreenHeightInt;
-
-
-            // var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
-            // ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
-            //
-            // var finalRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8, RenderTextureMemoryless.Depth);
-            // Graphics.Blit(initialRenderTexture, finalRenderTexture); // we need to Blit to have HDR included on crop
-
-            Texture2D screenshot = new (WIDTH, HEIGHT);
-
-            // RenderTexture.active = finalRenderTexture;
-            screenshot.ReadPixels(new Rect(0, 0, WIDTH, HEIGHT), 0, 0);
-            screenshot.Apply(updateMipmaps: false);
-            // RenderTexture.active = null;
-
-            onComplete?.Invoke(screenshot);
-
-            // RenderTexture.ReleaseTemporary(initialRenderTexture);
-            // RenderTexture.ReleaseTemporary(finalRenderTexture);
-            Object.Destroy(screenshot);
-            Screen.SetResolution(widthCached, heightCached, Screen.fullScreenMode);
+            Object.Destroy(finalTexture);
 
             IsCapturing = false;
         }
 
-        public void OnGUI()
+        private static Texture2D CropTexture2D(Texture2D texture, Vector2Int startCorner, int width, int height)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 300, 120));
-            GUILayout.Label("Debug Info:");
-            GUILayout.Label($"ScreenWidth: {debugTargetScreenFrame.ScreenWidthInt}");
-            GUILayout.Label($"ScreenHeight: {debugTargetScreenFrame.ScreenHeightInt}");
-            GUILayout.Label($"FrameWidth: {debugTargetScreenFrame.FrameWidthInt}");
-            GUILayout.Label($"FrameHeight: {debugTargetScreenFrame.FrameHeightInt}");
-            GUILayout.EndArea();
+            Color[] pixels = texture.GetPixels(startCorner.x, startCorner.y, width, height);
+
+            var result = new Texture2D(width, height, TextureFormat.RGB24, false);
+            result.SetPixels(pixels);
+            result.Apply();
+
+            return result;
+        }
+
+        private static Texture2D ResizeTexture2D(Texture originalTexture, int width, int height)
+        {
+            var rt = new RenderTexture(width, height, 24);
+            RenderTexture.active = rt;
+
+            // Copy and scale the original texture into the RenderTexture
+            Graphics.Blit(originalTexture, rt);
+
+            // Create a new Texture2D to hold the resized texture data
+            var resizedTexture = new Texture2D(width, height);
+
+            // Read the pixel data from the RenderTexture into the Texture2D
+            resizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            resizedTexture.Apply();
+
+            RenderTexture.active = null;
+            rt.Release();
+
+            return resizedTexture;
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
@@ -135,13 +133,15 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             return flipped;
         }
 
-        private static ScreenFrameData CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
+        private static (ScreenFrameData data, float targetRescale) CalculateTargetScreenFrame(ScreenFrameData currentScreenFrameData)
         {
             var screenFrameData = new ScreenFrameData();
 
             float upscaleFrameWidth = TARGET_FRAME_WIDTH / currentScreenFrameData.FrameWidth;
             float upscaleFrameHeight = TARGET_FRAME_HEIGHT / currentScreenFrameData.FrameHeight;
             Debug.Assert(Math.Abs(upscaleFrameWidth - upscaleFrameHeight) < 0.01f, "Screenshot upscale factors should be the same");
+
+            float targetRescale = upscaleFrameWidth;
 
             screenFrameData.ScreenWidth = currentScreenFrameData.ScreenWidth * upscaleFrameWidth;
             screenFrameData.ScreenHeight = currentScreenFrameData.ScreenHeight * upscaleFrameWidth;
@@ -150,7 +150,16 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Debug.Assert(Math.Abs(screenFrameData.FrameWidth - TARGET_FRAME_WIDTH) < 0.1f, "Calculated screenshot width should be the same as target width");
             Debug.Assert(Math.Abs(screenFrameData.FrameHeight - TARGET_FRAME_HEIGHT) < 0.1f, "Calculated screenshot height should be the same as target height");
 
-            return screenFrameData;
+            return (screenFrameData, targetRescale);
         }
+
+        private static ScreenFrameData CalculateRoundRescaledScreenFrame(ScreenFrameData rescalingScreenFrame, int roundedRescaleFactor) =>
+            new ()
+            {
+                FrameWidth = rescalingScreenFrame.FrameWidth * roundedRescaleFactor,
+                FrameHeight = rescalingScreenFrame.FrameHeight * roundedRescaleFactor,
+                ScreenWidth = rescalingScreenFrame.ScreenWidth * roundedRescaleFactor,
+                ScreenHeight = rescalingScreenFrame.ScreenHeight * roundedRescaleFactor,
+            };
     }
 }
