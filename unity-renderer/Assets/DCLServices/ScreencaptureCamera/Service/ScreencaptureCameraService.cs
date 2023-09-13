@@ -28,7 +28,7 @@ namespace DCLServices.ScreencaptureCamera.Service
         private bool featureIsEnabled => featureFlags.Get().IsFeatureEnabled("camera_reel");
         private bool isGuest => userProfileBridge.GetOwn().isGuest;
 
-        private CancellationTokenSource cts;
+        private readonly CancellationTokenSource cts;
 
         public ScreencaptureCameraService(IAddressableResourceProvider resourceProvider, BaseVariable<FeatureFlag> featureFlags, DataStore_Player player, IUserProfileBridge userProfileBridge, ScreencaptureCameraExternalDependencies externalDependencies)
         {
@@ -37,11 +37,12 @@ namespace DCLServices.ScreencaptureCamera.Service
             this.player = player;
             this.userProfileBridge = userProfileBridge;
             this.externalDependencies = externalDependencies;
+
+            cts = new CancellationTokenSource();
         }
 
         public void Initialize()
         {
-            cts = new CancellationTokenSource();
             InitializeInternalAsync(cts.Token).Forget();
         }
 
