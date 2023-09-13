@@ -18,7 +18,11 @@ namespace DCL.ECSRuntime
 
         IECSComponentImplementation<ModelType> implementation;
 
-        // FD:: Constructor with pooling
+        /// <summary>
+        /// Constructor handling pooling for reference types
+        /// </summary>
+        /// <param name="handlerBuilder"></param>
+        /// <param name="iEcsComponentPool"></param>
         public ECSComponent(Func<IECSComponentHandler<ModelType>> handlerBuilder, IECSComponentPool<ModelType> iEcsComponentPool)
         {
             this.handlerBuilder = handlerBuilder;
@@ -27,7 +31,11 @@ namespace DCL.ECSRuntime
             this.implementation = new PooledComponentImplementation<ModelType>(this);
         }
 
-        // FD:: Constructor for deserialization (without pooling)
+        /// <summary>
+        /// Constructor handling deserialization for value types
+        /// </summary>
+        /// <param name="deserializer"></param>
+        /// <param name="handlerBuilder"></param>
         public ECSComponent(Func<object, ModelType> deserializer, Func<IECSComponentHandler<ModelType>> handlerBuilder)
         {
             this.deserializer = deserializer;
@@ -53,7 +61,7 @@ namespace DCL.ECSRuntime
 
             var handler = handlerBuilder?.Invoke();
 
-            // FD:: Use pooled component if available, otherwise create a new one (re-check this)
+            // Use pooled component if available, otherwise create a new one
             ModelType modelInstance = default;
             if (iEcsComponentPool != null)
                 modelInstance = iEcsComponentPool.Get();
@@ -81,7 +89,7 @@ namespace DCL.ECSRuntime
             if (!componentData.TryGetValue(scene, entity.entityId, out ECSComponentData<ModelType> data))
                 return false;
 
-            // FD:: Release the component back to the pool if applicable
+            // Release pooled component only if it's a pooled reference type
             if (iEcsComponentPool != null)
                 iEcsComponentPool.Release(data.model);
 
@@ -99,7 +107,6 @@ namespace DCL.ECSRuntime
         /// <param name="model">new model</param>
         public void SetModel(IParcelScene scene, IDCLEntity entity, ModelType model)
         {
-            // SetModel(scene, entity.entityId, model);
             implementation.SetModel(scene, entity.entityId, model);
         }
 
@@ -129,7 +136,6 @@ namespace DCL.ECSRuntime
         /// <param name="message">message</param>
         public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
         {
-            // SetModel(scene, entity, deserializer.Invoke(message));
             implementation.Deserialize(scene, entity, message);
         }
 

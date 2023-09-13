@@ -50,16 +50,10 @@ namespace Tests
                 { 666, new ComponentWriter(outgoingMessages) }
             };
 
-            // FD:: old code
-            // transformPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
-            // transformComponent = new ECSComponent<ECSTransform>(null, null);
-
-            // FD:: new test:
             wrappedPool = new WrappedComponentPool<IWrappedComponent<ECSTransform>>(0, () => new TransformWrappedComponent(new ECSTransform()));
             transformPool = new ECSReferenceTypeIECSComponentPool<ECSTransform>(wrappedPool);
 
             transformComponent = new ECSComponent<ECSTransform>(null, transformPool);
-            // FD:: end
 
             avatarTransform = (new GameObject("GO")).transform;
             avatarTransform.position = new Vector3(ParcelSettings.PARCEL_SIZE, 0, 0);

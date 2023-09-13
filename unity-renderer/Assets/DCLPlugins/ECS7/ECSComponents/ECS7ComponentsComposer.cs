@@ -47,7 +47,7 @@ namespace DCL.ECSComponents
         private readonly EngineInfoRegister engineInfoRegister;
         private readonly UiCanvasInformationRegister uiCanvasInformationRegister;
 
-        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents) // FD:: check this signature
+        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
             transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter, internalComponents);
             audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
