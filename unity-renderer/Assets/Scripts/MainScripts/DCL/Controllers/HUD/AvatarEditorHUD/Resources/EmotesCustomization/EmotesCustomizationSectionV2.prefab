@@ -1953,7 +1953,7 @@ PrefabInstance:
     - target: {fileID: 4290547755063670293, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
       propertyPath: m_Padding.m_Left
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5345362429814289567, guid: cfed952f63812a44d86ff7609367aceb,
         type: 3}
