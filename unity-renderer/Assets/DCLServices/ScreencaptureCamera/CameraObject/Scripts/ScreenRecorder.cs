@@ -17,6 +17,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
         // private readonly Texture2D screenshot = new (TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT, TextureFormat.RGB24, false);
         private RenderTexture originalBaseTargetTexture;
 
+        private ScreenFrameData debugTargetScreenFrame;
+
         public bool IsCapturing { get; private set; }
 
         public ScreenRecorder(RectTransform canvasRectTransform)
@@ -33,11 +35,13 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             yield return new WaitForEndOfFrame(); // for UI to appear on screenshot. Converting to UniTask didn't work :(
 
-            ScreenFrameData screenAndFrameData = CalculateCurrentScreenFrame();
-            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(screenAndFrameData);
+            ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
+            ScreenFrameData targetScreenFrame = CalculateTargetScreenFrame(currentScreenFrame);
 
-            int WIDTH = targetScreenFrame.ScreenWidthInt;
-            int HEIGHT = targetScreenFrame.ScreenHeightInt;
+            debugTargetScreenFrame = targetScreenFrame; // Store the value for debugging
+
+            int WIDTH = currentScreenFrame.ScreenWidthInt * 2;
+            int HEIGHT = currentScreenFrame.ScreenHeightInt * 2;
 
             var initialRenderTexture = RenderTexture.GetTemporary(WIDTH, HEIGHT, 0);
             ScreenCapture.CaptureScreenshotIntoRenderTexture(initialRenderTexture);
@@ -59,6 +63,17 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             Object.Destroy(screenshot);
 
             IsCapturing = false;
+        }
+
+        public void OnGUI()
+        {
+            GUILayout.BeginArea(new Rect(10, 10, 300, 120));
+            GUILayout.Label("Debug Info:");
+            GUILayout.Label($"ScreenWidth: {debugTargetScreenFrame.ScreenWidth}");
+            GUILayout.Label($"ScreenHeight: {debugTargetScreenFrame.ScreenHeight}");
+            GUILayout.Label($"FrameWidth: {debugTargetScreenFrame.FrameWidth}");
+            GUILayout.Label($"FrameHeight: {debugTargetScreenFrame.FrameHeight}");
+            GUILayout.EndArea();
         }
 
         private ScreenFrameData CalculateCurrentScreenFrame()
