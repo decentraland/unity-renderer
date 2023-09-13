@@ -63,6 +63,8 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// </summary>
     RectTransform currentSettingsTooltipReference { get; }
 
+    RectTransform cameraReelTooltipReference { get; }
+
     /// <summary>
     /// Transform used to position the profile section tooltips.
     /// </summary>

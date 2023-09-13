@@ -63,9 +63,6 @@ namespace DCL.Chat.Notifications
                 userProfileBridge,
                 profanityFilter,
                 audioSettings);
-
-            // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
         }
 
         [TearDown]
@@ -403,7 +400,6 @@ namespace DCL.Chat.Notifications
         public void AddFriendRequestNotificationWhenIsApproved()
         {
             GivenProfile("friendId", "friendName");
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnSentFriendRequestApproved += Raise.Event<Action<FriendRequest>>(
                 new FriendRequest("friendRequestId", new DateTime(0), "ownId", "friendId", "hey"));
@@ -429,7 +425,6 @@ namespace DCL.Chat.Notifications
         public void AddFriendRequestNotificationWhenIsReceived()
         {
             GivenProfile("friendId", "friendName");
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_friend_requests"] = true } });
 
             friendsController.OnFriendRequestReceived += Raise.Event<Action<FriendRequest>>(
                 new FriendRequest("friendRequestId", new DateTime(100), "friendId", OWN_USER_ID, "hey!"));

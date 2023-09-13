@@ -80,7 +80,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2.3
+  m_PixelsPerUnitMultiplier: 2.5
 --- !u!114 &5538940608469524765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,10 +102,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 0.19607843}
-    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.3137255}
-    m_PressedColor: {r: 0, g: 0, b: 0, a: 0.39215687}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_NormalColor: {r: 0.84705883, g: 0.84313726, b: 0.8627451, a: 1}
+    m_HighlightedColor: {r: 0.76784444, g: 0.7745169, b: 0.8018868, a: 1}
+    m_PressedColor: {r: 0.6775098, g: 0.68066365, b: 0.7075472, a: 1}
+    m_SelectedColor: {r: 0.84705883, g: 0.84313726, b: 0.8627451, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1

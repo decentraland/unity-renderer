@@ -1,11 +1,12 @@
 using System;
 using TMPro;
+using UIComponents.ContextMenu;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL.Social.Chat
 {
-    public class ChannelContextualMenu : BaseComponentView
+    public class ChannelContextualMenu : ContextMenuComponentView
     {
         [Flags]
         internal enum Options
@@ -49,6 +50,7 @@ namespace DCL.Social.Chat
         {
             base.Show(instant);
             gameObject.SetActive(true);
+            ClampPositionToScreenBorders(transform.position);
         }
 
         public override void Hide(bool instant = false)

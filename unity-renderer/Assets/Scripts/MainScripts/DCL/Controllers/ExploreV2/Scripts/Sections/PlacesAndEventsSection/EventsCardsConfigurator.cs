@@ -22,8 +22,8 @@ public static class EventsCardsConfigurator
     /// <param name="OnEventJumpInClicked">Action to inform when the JumpIn button has been clicked.</param>
     /// <param name="OnEventSubscribeEventClicked">Action to inform when the Subscribe button has been clicked.</param>
     /// <param name="OnEventUnsubscribeEventClicked">Action to inform when the Unsubscribe button has been clicked.</param>
-    public static EventCardComponentView Configure(EventCardComponentView eventCard, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string> OnEventSubscribeEventClicked,
-        Action<string> OnEventUnsubscribeEventClicked)
+    public static EventCardComponentView Configure(EventCardComponentView eventCard, EventCardComponentModel eventInfo, Action<EventCardComponentModel> OnEventInfoClicked, Action<EventFromAPIModel> OnEventJumpInClicked, Action<string, bool> OnEventSubscribeEventClicked,
+        Action<string, bool> OnEventUnsubscribeEventClicked)
     {
         eventCard.Configure(eventInfo);
 
@@ -35,8 +35,8 @@ public static class EventsCardsConfigurator
         eventCard.onJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
         eventCard.onSecondaryJumpInClick?.RemoveAllListeners();
         eventCard.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(eventInfo.eventFromAPIInfo));
-        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId));
-        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId));
+        eventCard.onSubscribeClick?.AddListener(() => OnEventSubscribeEventClicked?.Invoke(eventInfo.eventId, !string.IsNullOrEmpty(eventInfo.worldAddress)));
+        eventCard.onUnsubscribeClick?.AddListener(() => OnEventUnsubscribeEventClicked?.Invoke(eventInfo.eventId, !string.IsNullOrEmpty(eventInfo.worldAddress)));
 
         return eventCard;
     }
@@ -58,7 +58,8 @@ public static class EventsCardsConfigurator
         cardModel.isSubscribed = false;
         cardModel.coords = new Vector2Int(eventFromAPI.coordinates[0], eventFromAPI.coordinates[1]);
         cardModel.eventFromAPIInfo = eventFromAPI;
-        cardModel.numberOfUsers = GetNumberOfUsersInCoords(cardModel.coords);
+        cardModel.numberOfUsers = eventFromAPI.world ? GetNumberOfUsersInWorld(eventFromAPI.server) : GetNumberOfUsersInCoords(cardModel.coords);
+        cardModel.worldAddress = eventFromAPI.world ? eventFromAPI.server : null;
 
         return cardModel;
     }
@@ -85,6 +86,25 @@ public static class EventsCardsConfigurator
 
             if (sceneFound)
                 break;
+        }
+
+        return numberOfUsers;
+    }
+
+    private static int GetNumberOfUsersInWorld(string worldName)
+    {
+        var numberOfUsers = 0;
+
+        if (hotScenesFetcher.Ref.WorldsInfo == null)
+            return numberOfUsers;
+
+        foreach (var worldInfo in hotScenesFetcher.Ref.WorldsInfo.Value)
+        {
+            if (worldInfo.worldName == worldName)
+            {
+                numberOfUsers = worldInfo.users;
+                break;
+            }
         }
 
         return numberOfUsers;
@@ -128,11 +148,41 @@ public static class EventsCardsConfigurator
     internal static string FormatEventStartDateFromTo(EventFromAPIModel eventFromAPI)
     {
         CultureInfo cultureInfo = new CultureInfo("en-US");
-        DateTime eventStartDateTime = Convert.ToDateTime(eventFromAPI.next_start_at).ToUniversalTime();
-        DateTime eventEndDateTime = Convert.ToDateTime(eventFromAPI.finish_at).ToUniversalTime();
+        string formattedDate = string.Empty;
 
-        string formattedDate = $"From {eventStartDateTime.ToString("dddd", cultureInfo)}, {eventStartDateTime.Day} {eventStartDateTime.ToString("MMM", cultureInfo)}" +
-                               $" to {eventEndDateTime.ToString("dddd", cultureInfo)}, {eventEndDateTime.Day} {eventEndDateTime.ToString("MMM", cultureInfo)} UTC";
+        DateTime startTimeDT = Convert.ToDateTime(eventFromAPI.start_at).ToLocalTime();
+        var startTime12Hour = startTimeDT.ToString("hh:mmtt", CultureInfo.InvariantCulture);
+        startTime12Hour = startTime12Hour.Replace("AM", "am").Replace("PM", "pm");
+
+        DateTime endTimeDT = Convert.ToDateTime(eventFromAPI.finish_at).ToLocalTime();
+        var endTime12Hour = endTimeDT.ToString("hh:mmtt", CultureInfo.InvariantCulture);
+        endTime12Hour = endTime12Hour.Replace("AM", "am").Replace("PM", "pm");
+
+        TimeSpan startUtcOffset = TimeZoneInfo.Local.GetUtcOffset(startTimeDT);
+
+        for (var i = 0; i < eventFromAPI.recurrent_dates.Length; i++)
+        {
+            DateTime recurrentDateDT = Convert.ToDateTime(eventFromAPI.recurrent_dates[i]).ToLocalTime();
+
+            if (recurrentDateDT < DateTime.Today)
+                continue;
+
+            var formattedRecurrentDate = $"{recurrentDateDT.ToString("dddd", cultureInfo)}, {recurrentDateDT.ToString("MMM", cultureInfo)} {recurrentDateDT.Day:00}";
+            if (i == eventFromAPI.recurrent_dates.Length - 1 && endTimeDT.DayOfYear > recurrentDateDT.DayOfYear)
+            {
+                var formattedEndDate = $"{endTimeDT.ToString("dddd", cultureInfo)}, {endTimeDT.ToString("MMM", cultureInfo)} {endTimeDT.Day:00}";
+
+                formattedDate = string.Concat(
+                    formattedDate,
+                    $"{formattedRecurrentDate} from {startTime12Hour} to {formattedEndDate} at {endTime12Hour} (UTC{(startUtcOffset >= TimeSpan.Zero ? "+" : "-")}{startUtcOffset.Hours})\n");
+            }
+            else
+            {
+                formattedDate = string.Concat(
+                    formattedDate,
+                    $"{formattedRecurrentDate} from {startTime12Hour} to {endTime12Hour} (UTC{(startUtcOffset >= TimeSpan.Zero ? "+" : "-")}{startUtcOffset.Hours})\n");
+            }
+        }
 
         return formattedDate;
     }

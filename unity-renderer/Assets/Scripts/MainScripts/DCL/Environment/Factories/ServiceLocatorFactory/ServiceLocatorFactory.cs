@@ -27,6 +27,7 @@ using DCLServices.PlacesAPIService;
 using DCLServices.PortableExperiences.Analytics;
 using DCLServices.ScreencaptureCamera.Service;
 using DCLServices.WearablesCatalogService;
+using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -111,13 +112,12 @@ namespace DCL
 
             result.Register<IFriendsController>(() =>
             {
-                // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+                // TODO: remove when the all the friendship responsibilities are migrated to unity
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
-                return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
-                        webInterfaceFriendsApiBridge,
-                        RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                        DataStore.i), result.Get<ISocialApiBridge>(),
+                return new FriendsController(
+                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                    result.Get<ISocialApiBridge>(),
                     DataStore.i, userProfileWebInterfaceBridge);
             });
 
@@ -144,7 +144,8 @@ namespace DCL
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
-                    featureFlagsDataStore),
+                    featureFlagsDataStore,
+                    DataStore.i),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
@@ -205,6 +206,7 @@ namespace DCL
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
+            result.Register<IWorldsAPIService>(() => new WorldsAPIService(new WorldsAPIClient(webRequestController)));
             result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
 
             var screencaptureCameraExternalDependencies = new ScreencaptureCameraExternalDependencies(CommonScriptableObjects.allUIHidden,

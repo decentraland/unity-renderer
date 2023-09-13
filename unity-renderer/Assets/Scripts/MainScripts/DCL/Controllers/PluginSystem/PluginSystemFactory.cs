@@ -15,7 +15,6 @@ using DCL.PortableExperiences.Confirmation;
 using DCL.PortableExperiencesToggle;
 using DCL.Providers;
 using DCL.Skybox;
-using DCL.Social.Chat;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
@@ -74,7 +73,7 @@ namespace DCL
             pluginSystem.Register<PortableExperiencesTogglePlugin>(() => new PortableExperiencesTogglePlugin());
             pluginSystem.Register<HidePortableExperiencesUiPlugin>(() => new HidePortableExperiencesUiPlugin());
 
-            pluginSystem.RegisterWithFlag<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin(), "new_friend_requests");
+            pluginSystem.Register<FriendRequestHUDPlugin>(() => new FriendRequestHUDPlugin());
             pluginSystem.RegisterWithFlag<RealmPlugin>(() => new RealmPlugin(DataStore.i), "realms_modifier_plugin");
 
             pluginSystem.RegisterWithFlag<TutorialController>(() => new TutorialController(DataStore.i.common, DataStore.i.settings, DataStore.i.exploreV2), "tutorial");
