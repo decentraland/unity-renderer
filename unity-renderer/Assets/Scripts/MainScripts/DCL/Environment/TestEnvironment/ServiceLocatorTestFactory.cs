@@ -42,9 +42,9 @@ namespace DCL
             {
                 ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
                 customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
-                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                                          .ReturnsForAnyArgs(UniTask.FromResult(Array.Empty<string>()));
                 customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
-                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                                          .ReturnsForAnyArgs(UniTask.FromResult(Array.Empty<string>()));
                 return customNftCollectionService;
             });
 

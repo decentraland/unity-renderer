@@ -73,10 +73,10 @@ namespace DCL.Backpack
             customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
 
             customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
-                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                                      .ReturnsForAnyArgs(UniTask.FromResult(Array.Empty<string>()));
 
             customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
-                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                                      .ReturnsForAnyArgs(UniTask.FromResult(Array.Empty<string>()));
 
             controller = new WearableGridController(view,
                 userProfileBridge,
@@ -1084,7 +1084,7 @@ namespace DCL.Backpack
         public IEnumerator IncludeCustomWearableCollection()
         {
             customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
-                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(new[] { "urn:collection", "builder:collection" }));
+                                      .ReturnsForAnyArgs(UniTask.FromResult(new[] { "urn:collection", "builder:collection" }));
 
             IReadOnlyList<WearableItem> publishedWearableList = new[]
             {

@@ -7,7 +7,7 @@ namespace DCLServices.CustomNftCollection
 {
     public interface ICustomNftCollectionService : IService
     {
-        UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken);
-        UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken);
+        UniTask<string[]> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken);
+        UniTask<string[]> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken);
     }
 }
