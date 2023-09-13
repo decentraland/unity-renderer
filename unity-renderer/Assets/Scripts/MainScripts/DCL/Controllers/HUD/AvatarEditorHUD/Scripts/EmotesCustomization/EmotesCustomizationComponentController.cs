@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Emotes;
+using DCL.Helpers;
 using DCL.Tasks;
 using System.Threading;
 using UnityEngine;
@@ -151,8 +152,12 @@ namespace DCL.EmotesCustomization
         private void ConfigureView(Transform parent, string viewPath)
         {
             view = CreateView(viewPath);
+
             if (view.viewTransform != null)
+            {
                 view.viewTransform.SetParent(parent, false);
+                view.viewTransform.ResetLocalTRS();
+            }
             view.onEmoteEquipped += OnEmoteEquipped;
             view.onEmoteUnequipped += OnEmoteUnequipped;
             view.onSellEmoteClicked += OnSellEmoteClicked;
