@@ -16,7 +16,8 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
     private IEmotesCatalogService emotesCatalogServiceInUse;
     private bool isInitialized;
 
-    public EmotesCatalogServiceProxy(LambdasEmotesCatalogService lambdasEmotesCatalogService, WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService,
+    public EmotesCatalogServiceProxy(LambdasEmotesCatalogService lambdasEmotesCatalogService,
+        WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService,
         BaseVariable<FeatureFlag> featureFlags, KernelConfig kernelCofig)
     {
         this.lambdasEmotesCatalogService = lambdasEmotesCatalogService;

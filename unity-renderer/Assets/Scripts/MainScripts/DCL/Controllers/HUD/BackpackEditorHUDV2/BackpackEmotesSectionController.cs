@@ -100,8 +100,10 @@ namespace DCL.Backpack
                 {
                     EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
                     List<WearableItem> allEmotes = new ();
-                    allEmotes.AddRange(embeddedEmotesSo.emotes);
-                    allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
+                    allEmotes.AddRange(embeddedEmotesSo.emotes.Where(emote => emote != null));
+
+                    allEmotes.AddRange((await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct))
+                                      .Where(emote => emote != null));
 
                     try { await FetchCustomEmoteCollections(allEmotes, ct); }
                     catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
