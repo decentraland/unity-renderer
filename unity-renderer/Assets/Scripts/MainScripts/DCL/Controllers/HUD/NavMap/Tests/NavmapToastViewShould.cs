@@ -1,13 +1,18 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Map;
 using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
 using DCLServices.PlacesAPIService;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -16,10 +21,13 @@ namespace Tests
         NavmapToastView navmapToastView;
         private NavmapView navmapView;
         private MinimapHUDController controller;
+        private WebInterfaceMinimapApiBridgeMock minimapApiBridge;
 
         protected override List<GameObject> SetUp_LegacySystems()
         {
             List<GameObject> result = new List<GameObject>();
+            minimapApiBridge = new GameObject("WebInterfaceMinimapApiBridge").AddComponent<WebInterfaceMinimapApiBridgeMock>();
+            result.Add(minimapApiBridge.gameObject);
             result.Add(MainSceneFactory.CreateNavMap());
             return result;
         }
@@ -138,6 +146,19 @@ namespace Tests
             Assert.IsTrue(navmapToastView.sceneOwnerText.gameObject.activeInHierarchy);
 
             CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
+        }
+
+        private class WebInterfaceMinimapApiBridgeMock : WebInterfaceMinimapApiBridge
+        {
+            public MinimapMetadata.MinimapSceneInfo[] ScenesInformationResult { get; set; } = Array.Empty<MinimapMetadata.MinimapSceneInfo>();
+
+            public async override UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate, int areaSize, CancellationToken cancellationToken)
+            {
+                foreach (MinimapMetadata.MinimapSceneInfo sceneInfo in ScenesInformationResult)
+                    MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
+
+                return ScenesInformationResult;
+            }
         }
     }
 }
