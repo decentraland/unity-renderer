@@ -6,6 +6,7 @@ using DCL.Map;
 using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
 using DCLServices.PlacesAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -45,11 +46,22 @@ namespace Tests
             yield return base.SetUp();
             yield return null;
 
+            IPlacesAPIService placesAPIService = Substitute.For<IPlacesAPIService>();
+
+            placesAPIService.GetPlace(default(Vector2Int), default, default)
+                            .ReturnsForAnyArgs(UniTask.FromResult(new IHotScenesController.PlaceInfo
+                             {
+                                 id = "placeId",
+                             }));
+
+            placesAPIService.IsFavoritePlace(default(IHotScenesController.PlaceInfo), default, default)
+                            .ReturnsForAnyArgs(UniTask.FromResult(false));
+
             controller = new MinimapHUDController(
                 Substitute.For<MinimapMetadataController>(),
                 Substitute.For<IHomeLocationController>(),
                 DCL.Environment.i,
-                Substitute.For<IPlacesAPIService>(),
+                placesAPIService,
                 Substitute.For<IPlacesAnalytics>(),
                 Substitute.For<IClipboard>(),
                 Substitute.For<ICopyPasteAnalyticsService>());
