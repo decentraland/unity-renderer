@@ -21,7 +21,7 @@ namespace DCLPlugins.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 null,
-                ProtoSerialization.Deserialize<PBEngineInfo>, // FD::
+                // ProtoSerialization.Deserialize<PBEngineInfo>, // FD::
                 iecsComponentPool: poolWrapper // FD:: changed
                 );
 

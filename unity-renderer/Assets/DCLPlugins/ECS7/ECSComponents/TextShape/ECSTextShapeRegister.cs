@@ -21,7 +21,7 @@ namespace DCL.ECSComponents
 
             factory.AddOrReplaceComponent(componentId,
                 () => new ECSTextShapeComponentHandler(AssetPromiseKeeper_Font.i, internalComponents.renderersComponent, internalComponents.sceneBoundsCheckComponent),
-                ProtoSerialization.Deserialize<PBTextShape>, // FD::
+                // ProtoSerialization.Deserialize<PBTextShape>, // FD::
                 iecsComponentPool: poolWrapper
                 );
 

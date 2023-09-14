@@ -25,7 +25,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => handler,
-                ProtoSerialization.Deserialize<PBUiTransform>, // FD::
+                // ProtoSerialization.Deserialize<PBUiTransform>, // FD::
                 iecsComponentPool: poolWrapper // FD:: changed
                 );
 

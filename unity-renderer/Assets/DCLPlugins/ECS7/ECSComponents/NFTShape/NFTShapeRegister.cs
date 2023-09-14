@@ -24,7 +24,7 @@ namespace DCL.ECSComponents
                     new NFTInfoRetriever(),
                     new NFTAssetRetriever(),
                     internalComponents.renderersComponent),
-                ProtoSerialization.Deserialize<PBNftShape>, // FD::
+                // ProtoSerialization.Deserialize<PBNftShape>, // FD::
                 iecsComponentPool: poolWrapper
                 );
             componentWriter.AddOrReplaceComponentSerializer<PBNftShape>(componentId, ProtoSerialization.Serialize);

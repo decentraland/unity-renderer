@@ -22,7 +22,7 @@ namespace DCL.ECSComponents
             factory.AddOrReplaceComponent(
                 componentId,
                 () => new ECSVisibilityComponentHandler(internalComponents.visibilityComponent),
-                ProtoSerialization.Deserialize<PBVisibilityComponent>,// FD:: changed
+                // ProtoSerialization.Deserialize<PBVisibilityComponent>,// FD:: changed
                 iecsComponentPool: poolWrapper
                 );
 
