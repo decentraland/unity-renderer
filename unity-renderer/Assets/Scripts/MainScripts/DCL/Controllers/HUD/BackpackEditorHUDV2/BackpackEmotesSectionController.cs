@@ -150,9 +150,12 @@ namespace DCL.Backpack
         private async UniTask FetchCustomEmoteItems(ICollection<WearableItem> emotes,
             CancellationToken cancellationToken)
         {
+            Debug.Log("BackpackEmotesSectionController.customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken)");
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+            Debug.Log("BackpackEmotesSectionController.foreach (string collectionId in customItems)");
 
-            Debug.Log($"BackpackEmotesSectionController.FetchCustomEmoteItems: {customItems}");
+            foreach (string collectionId in customItems)
+                Debug.Log($"Custom emote item id: {collectionId}");
 
             WearableItem[] retrievedEmotes = await UniTask.WhenAll(customItems.Select(nftId =>
                 nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase)
@@ -175,10 +178,13 @@ namespace DCL.Backpack
             List<WearableItem> emotes,
             CancellationToken cancellationToken)
         {
+            Debug.Log("BackpackEmotesSectionController.customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken)");
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+            Debug.Log("BackpackEmotesSectionController.foreach (string collectionId in customCollections)");
 
-            Debug.Log($"BackpackEmotesSectionController.FetchCustomEmoteCollections: {customCollections}");
+            foreach (string collectionId in customCollections)
+                Debug.Log($"Custom emote collection id: {collectionId}");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();

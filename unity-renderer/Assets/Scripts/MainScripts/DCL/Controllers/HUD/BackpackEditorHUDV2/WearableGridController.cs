@@ -289,9 +289,12 @@ namespace DCL.Backpack
 
         private async UniTask FetchCustomWearableItems(ICollection<WearableItem> wearables, CancellationToken cancellationToken)
         {
+            Debug.Log("WearableGridController.customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken)");
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+            Debug.Log("WearableGridController.foreach (string collectionId in customItems)");
 
-            Debug.Log($"WearableGridController.FetchCustomWearableItems: {customItems}");
+            foreach (string collectionId in customItems)
+                Debug.Log($"Custom wearable item id: {collectionId}");
 
             WearableItem[] retrievedWearables = await UniTask.WhenAll(customItems.Select(nftId =>
             {
@@ -316,22 +319,28 @@ namespace DCL.Backpack
         private async UniTask FetchCustomWearableCollections(
             List<WearableItem> wearableBuffer, CancellationToken cancellationToken)
         {
+            Debug.Log("WearableGridController.customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken)");
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            Debug.Log($"WearableGridController.FetchCustomWearableCollections: {customCollections}");
+            Debug.Log("WearableGridController.HashSetPool<string>");
 
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
 
+            Debug.Log("WearableGridController.foreach (string collectionId in customCollections)");
+
             foreach (string collectionId in customCollections)
             {
+                Debug.Log($"Custom wearable collection id: {collectionId}");
+
                 if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
                     publishedCollections.Add(collectionId);
                 else
                     collectionsInBuilder.Add(collectionId);
             }
 
+            Debug.Log("WearableGridController.UniTask.WhenAll");
             await UniTask.WhenAll(wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer),
                 wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer));
 
