@@ -16,6 +16,8 @@ namespace DCLServices.CustomNftCollection
     {
         private UniTaskCompletionSource<IReadOnlyList<string>> getCollectionsTask;
         private UniTaskCompletionSource<IReadOnlyList<string>> getItemsTask;
+        private string[] items;
+        private string[] collections;
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
@@ -35,6 +37,9 @@ namespace DCLServices.CustomNftCollection
         {
             try
             {
+                if (collections != null)
+                    return collections;
+
                 if (getCollectionsTask != null)
                     return await getCollectionsTask.Task
                                                    .Timeout(TimeSpan.FromSeconds(30))
@@ -57,10 +62,11 @@ namespace DCLServices.CustomNftCollection
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
         {
-            Debug.Log("WebInterfaceCustomNftCollectionBridge.GetConfiguredCustomNftItemsAsync");
-
             try
             {
+                if (items != null)
+                    return items;
+
                 if (getItemsTask != null)
                     return await getItemsTask.Task
                                              .Timeout(TimeSpan.FromSeconds(30))
@@ -84,15 +90,9 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
         public void SetWithCollectionsParam(string json)
         {
-            Debug.Log($"WebInterfaceCustomNftCollectionBridge.SetWithCollectionsParam: {json}");
             CollectionIdsPayload payload = JsonConvert.DeserializeObject<CollectionIdsPayload>(json);
             string[] collectionIds = payload.collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-
-            Debug.Log(collectionIds);
-
-            foreach (string collectionId in collectionIds)
-                Debug.Log(collectionId);
-
+            collections = collectionIds;
             getCollectionsTask.TrySetResult(collectionIds);
             getCollectionsTask = null;
         }
@@ -100,15 +100,10 @@ namespace DCLServices.CustomNftCollection
         [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
         public void SetWithItemsParam(string json)
         {
-            Debug.Log($"WebInterfaceCustomNftCollectionBridge.SetWithItemsParam: {json}");
             ItemIdsPayload payload = JsonConvert.DeserializeObject<ItemIdsPayload>(json);
 
             string[] itemIds = payload.itemIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-            Debug.Log(itemIds);
-
-            foreach (string itemId in itemIds)
-                Debug.Log(itemId);
-
+            items = itemIds;
             getItemsTask.TrySetResult(itemIds);
             getItemsTask = null;
         }
