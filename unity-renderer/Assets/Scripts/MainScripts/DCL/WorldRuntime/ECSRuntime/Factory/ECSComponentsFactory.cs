@@ -29,6 +29,12 @@ namespace DCL.ECSRuntime
             Func<object, ModelType> deserializer = null,
             IECSComponentPool<ModelType> iecsComponentPool = null)
         {
+            // FD:: temporarily disabled the check below
+            // Validate that either a deserializer or a component pool is provided, but not both.
+            // if (deserializer != null && iecsComponentPool != null)
+            // {
+            //     throw new ArgumentException("Cannot specify both a deserializer and a component pool.");
+            // }
             components[componentId] = CreateComponentBuilder(handlerBuilder, deserializer, iecsComponentPool);
         }
 
@@ -69,6 +75,7 @@ namespace DCL.ECSRuntime
                 throw new ArgumentException("Either a deserializer or a component pool must be specified.");
             }
         }
+
         private static IECSComponent BuildInternalComponent<ModelType>(
             Func<IECSComponentHandler<ModelType>> handlerBuilder,
             Func<object, ModelType> deserializer)

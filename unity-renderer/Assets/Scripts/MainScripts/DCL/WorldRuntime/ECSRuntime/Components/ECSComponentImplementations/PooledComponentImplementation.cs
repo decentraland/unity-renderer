@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECSRuntime;
 using DCL.Models;
 using System;
@@ -26,14 +27,47 @@ public class PooledComponentImplementation<ModelType> : IECSComponentImplementat
         }
     }
 
+    // public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
+    // {
+    //     // Since we are using pooling, we need to get an instance from the pool
+    //     ModelType modelInstance = component.iEcsComponentPool.Get();
+    //     Debug.Log($"FD:: Model instance type: {modelInstance?.GetType().Name ?? "null"}");
+    //
+    //     // Wrap our modelInstance in a ProtobufWrappedComponent for deserialization
+    //     var wrappedComponent = new ProtobufWrappedComponent<ModelType>(modelInstance);
+    //
+    //     // Check if the message is a byte array and then deserialize
+    //     if (message is byte[] byteArray)
+    //     {
+    //         wrappedComponent.DeserializeFrom(byteArray);
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError($"Unexpected message type: {message?.GetType().Name ?? "null"}. Expected byte array.");
+    //         return;
+    //     }
+    //
+    //     component.SetModel(scene, entity, modelInstance);
+    // }
+
     public void Deserialize(IParcelScene scene, IDCLEntity entity, object message)
     {
         // Since we are using pooling, we need to get an instance from the pool
         ModelType modelInstance = component.iEcsComponentPool.Get();
 
-        // FD:: do we need to do further deserialization here due to message?
+        if (message is byte[] byteArray)
+        {
+            // Use reflection to create a ProtobufWrappedComponent for the given ModelType
+            Type wrappedComponentType = typeof(ProtobufWrappedComponent<>).MakeGenericType(modelInstance.GetType());
+            object wrappedComponentInstance = Activator.CreateInstance(wrappedComponentType, modelInstance);
 
+            // Use reflection to call the DeserializeFrom method on the created instance
+            var method = wrappedComponentType.GetMethod("DeserializeFrom");
+
+            method.Invoke(wrappedComponentInstance, new object[] { byteArray });
+        }
 
         component.SetModel(scene, entity, modelInstance);
     }
+
 }
