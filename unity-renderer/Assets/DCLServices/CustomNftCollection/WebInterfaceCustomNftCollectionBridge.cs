@@ -14,8 +14,6 @@ namespace DCLServices.CustomNftCollection
 {
     public class WebInterfaceCustomNftCatalogBridge : MonoBehaviour, ICustomNftCollectionService
     {
-        private UniTaskCompletionSource<IReadOnlyList<string>> getCollectionsTask;
-        private UniTaskCompletionSource<IReadOnlyList<string>> getItemsTask;
         private string[] items;
         private string[] collections;
 
@@ -25,80 +23,38 @@ namespace DCLServices.CustomNftCollection
             return bridgeObj.GetOrCreateComponent<WebInterfaceCustomNftCatalogBridge>();
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 
-        public void Initialize()
-        {
-        }
+        public void Initialize() { }
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftCollectionAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                if (collections != null)
-                    return collections;
-
-                WebInterface.GetWithCollectionsUrlParam();
-
-                await UniTask.WaitUntil(() => collections != null, cancellationToken: cancellationToken)
-                             .Timeout(TimeSpan.FromSeconds(30));
-
+            if (collections != null)
                 return collections;
 
-                if (getCollectionsTask != null)
-                    return await getCollectionsTask.Task
-                                                   .Timeout(TimeSpan.FromSeconds(30))
-                                                   .AttachExternalCancellation(cancellationToken);
+            WebInterface.GetWithCollectionsUrlParam();
 
-                getCollectionsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
+            // Reworked into this approach. Using a UniTaskCompletionSource<IReadOnlyList<string>> emits an invalid string array
+            // on WebGL. Seems like a IL2CPP issue, not sure. This workaround is the only one i found to make it work on all platforms
+            await UniTask.WaitUntil(() => collections != null, cancellationToken: cancellationToken)
+                         .Timeout(TimeSpan.FromSeconds(30));
 
-                WebInterface.GetWithCollectionsUrlParam();
-
-                return await getCollectionsTask.Task
-                                                .Timeout(TimeSpan.FromSeconds(30))
-                                                .AttachExternalCancellation(cancellationToken);
-            }
-            catch (Exception)
-            {
-                getCollectionsTask = null;
-                throw;
-            }
+            return collections;
         }
 
         public async UniTask<IReadOnlyList<string>> GetConfiguredCustomNftItemsAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                if (items != null)
-                    return items;
-
-                WebInterface.GetWithItemsUrlParam();
-
-                await UniTask.WaitUntil(() => items != null, cancellationToken: cancellationToken)
-                             .Timeout(TimeSpan.FromSeconds(30));
-
+            if (items != null)
                 return items;
 
-                if (getItemsTask != null)
-                    return await getItemsTask.Task
-                                             .Timeout(TimeSpan.FromSeconds(30))
-                                             .AttachExternalCancellation(cancellationToken);
+            WebInterface.GetWithItemsUrlParam();
 
-                getItemsTask = new UniTaskCompletionSource<IReadOnlyList<string>>();
+            // Reworked into this approach. Using a UniTaskCompletionSource<IReadOnlyList<string>> emits an invalid string array
+            // on WebGL. Seems like a IL2CPP issue, not sure. This workaround is the only one i found to make it work on all platforms
+            await UniTask.WaitUntil(() => items != null, cancellationToken: cancellationToken)
+                         .Timeout(TimeSpan.FromSeconds(30));
 
-                WebInterface.GetWithItemsUrlParam();
-
-                return await getItemsTask.Task
-                                         .Timeout(TimeSpan.FromSeconds(30))
-                                         .AttachExternalCancellation(cancellationToken);
-            }
-            catch (Exception)
-            {
-                getItemsTask = null;
-                throw;
-            }
+            return items;
         }
 
         [PublicAPI("Kernel response for GetParametrizedCustomNftCollectionAsync")]
@@ -107,8 +63,6 @@ namespace DCLServices.CustomNftCollection
             CollectionIdsPayload payload = JsonConvert.DeserializeObject<CollectionIdsPayload>(json);
             string[] collectionIds = payload.collectionIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
             collections = collectionIds;
-            getCollectionsTask.TrySetResult(collectionIds);
-            getCollectionsTask = null;
         }
 
         [PublicAPI("Kernel response for GetConfiguredCustomNftItemsAsync")]
@@ -118,8 +72,6 @@ namespace DCLServices.CustomNftCollection
 
             string[] itemIds = payload.itemIds.Where(s => !string.IsNullOrEmpty(s)).ToArray();
             items = itemIds;
-            getItemsTask.TrySetResult(itemIds);
-            getItemsTask = null;
         }
 
         [Serializable]
