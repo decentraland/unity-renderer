@@ -6,12 +6,12 @@ using UnityEngine;
 
 public class AvatarModifierAreaFeedbackPlugin : IPlugin
 {
-    
+
     private AvatarModifierAreaFeedbackController avatarModifierAreaFeedbackController;
 
     public AvatarModifierAreaFeedbackPlugin()
     {
-        avatarModifierAreaFeedbackController = new AvatarModifierAreaFeedbackController(DataStore.i.HUDs.avatarAreaWarnings, AvatarModifierAreaFeedbackView.Create());
+        avatarModifierAreaFeedbackController = new AvatarModifierAreaFeedbackController(DataStore.i.HUDs.avatarAreaWarnings, AvatarModifierAreaFeedbackView.Create(), DataStore.i.common);
     }
 
     public void Dispose()
