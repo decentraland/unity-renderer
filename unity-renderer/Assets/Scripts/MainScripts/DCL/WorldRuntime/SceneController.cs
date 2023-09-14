@@ -193,7 +193,7 @@ namespace DCL
 
             else { res = false; }
 
-            sceneMessagesPool.Enqueue(msgObject);
+            // sceneMessagesPool.Enqueue(msgObject);
 
             return res;
         }
