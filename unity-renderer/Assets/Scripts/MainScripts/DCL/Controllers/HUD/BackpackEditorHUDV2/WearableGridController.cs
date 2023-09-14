@@ -272,6 +272,7 @@ namespace DCL.Backpack
                     totalAmount += customWearablesCount;
 
                     // clamp wearables size to page size
+                    // TODO: remove wearables that dont applies to the current filters
                     for (int i = wearables.Count - 1; i >= PAGE_SIZE; i--)
                         wearables.RemoveAt(i);
                 }
