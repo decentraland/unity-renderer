@@ -40,6 +40,13 @@ namespace DCLServices.CustomNftCollection
                 if (collections != null)
                     return collections;
 
+                WebInterface.GetWithCollectionsUrlParam();
+
+                await UniTask.WaitUntil(() => collections != null, cancellationToken: cancellationToken)
+                             .Timeout(TimeSpan.FromSeconds(30));
+
+                return collections;
+
                 if (getCollectionsTask != null)
                     return await getCollectionsTask.Task
                                                    .Timeout(TimeSpan.FromSeconds(30))
@@ -66,6 +73,13 @@ namespace DCLServices.CustomNftCollection
             {
                 if (items != null)
                     return items;
+
+                WebInterface.GetWithItemsUrlParam();
+
+                await UniTask.WaitUntil(() => items != null, cancellationToken: cancellationToken)
+                             .Timeout(TimeSpan.FromSeconds(30));
+
+                return items;
 
                 if (getItemsTask != null)
                     return await getItemsTask.Task
