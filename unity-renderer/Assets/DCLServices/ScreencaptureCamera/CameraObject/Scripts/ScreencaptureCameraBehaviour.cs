@@ -116,6 +116,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             toggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
 
             exitScreenshotModeAction.OnTriggered += CloseScreenshotCamera;
+
+            uploadPictureCancellationToken = new CancellationTokenSource();
         }
 
         private void Start()
@@ -132,6 +134,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void OnDestroy()
         {
+            uploadPictureCancellationToken?.Cancel();
+            uploadPictureCancellationToken?.Dispose();
+
             toggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             toggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
             exitScreenshotModeAction.OnTriggered -= CloseScreenshotCamera;
@@ -163,7 +168,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             this.featureKeyTriggersBlocked = featureKeyTriggersBlocked;
             this.userMovementKeysBlocked = userMovementKeysBlocked;
             isScreencaptureCameraActive = isScreenshotCameraActive;
-            uploadPictureCancellationToken = new CancellationTokenSource();
         }
 
         public void CaptureScreenshot(string source)
