@@ -263,8 +263,17 @@ namespace DCL.Backpack
 
                 try
                 {
+                    int customWearablesCount = wearables.Count;
+
                     await UniTask.WhenAll(FetchCustomWearableCollections(wearables, cancellationToken),
                         FetchCustomWearableItems(wearables, cancellationToken));
+
+                    customWearablesCount = wearables.Count - customWearablesCount;
+                    totalAmount += customWearablesCount;
+
+                    // clamp wearables size to page size
+                    for (int i = wearables.Count - 1; i >= PAGE_SIZE; i--)
+                        wearables.RemoveAt(i);
                 }
                 catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
 
