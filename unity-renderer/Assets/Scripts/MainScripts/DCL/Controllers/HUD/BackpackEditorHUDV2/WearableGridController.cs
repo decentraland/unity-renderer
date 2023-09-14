@@ -291,8 +291,6 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
-            Debug.Log($"FetchCustomWearableItems: {customItems}");
-
             WearableItem[] retrievedWearables = await UniTask.WhenAll(customItems.Select(nftId =>
             {
                 if (nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))

@@ -152,8 +152,6 @@ namespace DCL.Backpack
         {
             IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
 
-            Debug.Log($"GetConfiguredCustomNftItemsAsync: {customItems}");
-
             WearableItem[] retrievedEmotes = await UniTask.WhenAll(customItems.Select(nftId =>
                 nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase)
                     ? emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken)
