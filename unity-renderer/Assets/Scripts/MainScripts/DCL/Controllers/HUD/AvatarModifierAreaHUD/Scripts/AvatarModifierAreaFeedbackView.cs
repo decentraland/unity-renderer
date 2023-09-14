@@ -24,6 +24,7 @@ namespace DCL.AvatarModifierAreaFeedback
         [SerializeField] private RectTransform contentTransform;
         [SerializeField] private RectTransform containerForLandsTransform;
         [SerializeField] private RectTransform containerForWorldsTransform;
+        [SerializeField] private Canvas mainCanvas;
 
         internal bool isVisible;
         internal AvatarModifierAreaFeedbackState currentState;
@@ -66,6 +67,7 @@ namespace DCL.AvatarModifierAreaFeedback
             contentTransform.offsetMin = Vector2.zero;
             contentTransform.offsetMax = Vector2.zero;
             contentTransform.anchoredPosition = Vector2.zero;
+            mainCanvas.sortingOrder = isWorld ? 1 : 0;
         }
 
         private void RemovedWarning(AvatarModifierAreaID obj)

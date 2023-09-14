@@ -475,6 +475,7 @@ MonoBehaviour:
   contentTransform: {fileID: 1483900348370178711}
   containerForLandsTransform: {fileID: 6899800964194586478}
   containerForWorldsTransform: {fileID: 138476811516249217}
+  mainCanvas: {fileID: 5518088804749935907}
 --- !u!225 &1486261044637553431
 CanvasGroup:
   m_ObjectHideFlags: 0
