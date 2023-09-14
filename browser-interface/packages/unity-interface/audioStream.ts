@@ -13,20 +13,21 @@ export async function setAudioStream(url: string, play: boolean, volume: number)
   if (play && !isSameSrc) {
     audioStreamSource.src = url
   } else if (!play && isSameSrc) {
+    playToken++
     audioStreamSource.pause()
   }
 
   if (playSrc) {
-    playToken = playIntent(playToken)
+    playIntent()
   }
 }
 
 // audioStreamSource play might be requested without user interaction
 // i.e: spawning in world without clicking on the canvas
 // so me want to keep retrying on play exception until audio starts playing
-function playIntent(playIntentToken: number): number {
+function playIntent() {
   function tryPlay(token: number) {
-    if (playIntentToken !== token)
+    if (playToken !== token)
       return
 
     audioStreamSource.play()
@@ -34,6 +35,6 @@ function playIntent(playIntentToken: number): number {
         setTimeout(() => tryPlay(token), 500)
       })
   }
-  tryPlay(++playIntentToken)
-  return playIntentToken;
+  playToken++
+  tryPlay(playToken)
 }
