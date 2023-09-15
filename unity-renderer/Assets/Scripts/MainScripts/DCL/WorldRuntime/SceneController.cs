@@ -54,7 +54,7 @@ namespace DCL
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
-            // SetupDeferredRunners();
+            // SetupDeferredRunners(); // TODO: is this needed ?? (WebGL/Desktop appears to run OK without it)
 
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
