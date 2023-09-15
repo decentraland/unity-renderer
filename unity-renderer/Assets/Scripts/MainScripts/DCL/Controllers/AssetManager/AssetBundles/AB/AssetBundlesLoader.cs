@@ -110,8 +110,7 @@ namespace DCL
                     }
                     catch (Exception e)
                     {
-                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle is null"));
-                        return;
+                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle failed to load"));
                     }
 
                     if (IsLoadBudgetTimeReached(time))
@@ -132,8 +131,7 @@ namespace DCL
                     }
                     catch (Exception e)
                     {
-                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle is null"));
-                        return;
+                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle failed to load"));
                     }
 
                     if (IsLoadBudgetTimeReached(time))
