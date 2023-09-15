@@ -83,6 +83,26 @@ namespace DCL.Components
             }
 
             entity.gameObject.transform.localScale = DCLTransform.model.scale;
+
+            if (entity.gameObject.transform.localScale.x.Equals(0))
+            {
+                entity.gameObject.transform.localScale
+                    = new Vector3(0.01f, entity.gameObject.transform.localScale.y, entity.gameObject.transform.localScale.z);
+            }
+
+            if (entity.gameObject.transform.localScale.y.Equals(0))
+            {
+                entity.gameObject.transform.localScale
+                    = new Vector3(entity.gameObject.transform.localScale.x, 0.01f,entity.gameObject.transform.localScale.z);
+
+            }
+
+            if (entity.gameObject.transform.localScale.z.Equals(0))
+            {
+                entity.gameObject.transform.localScale
+                    = new Vector3(entity.gameObject.transform.localScale.x, entity.gameObject.transform.localScale.y,0.01f);
+
+            }
             entity.gameObject.transform.CapGlobalValuesToMax();
         }
 
