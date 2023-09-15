@@ -16,7 +16,7 @@ namespace DCL.AvatarModifierAreaFeedback
 
             this.commonDataStore = commonDataStore;
             commonDataStore.isWorld.OnChange += OnWorldModeChange;
-            OnWorldModeChange(DataStore.i.common.isWorld.Get(), false);
+            OnWorldModeChange(commonDataStore.isWorld.Get(), false);
         }
 
         private void OnWorldModeChange(bool isWorld, bool _) =>
