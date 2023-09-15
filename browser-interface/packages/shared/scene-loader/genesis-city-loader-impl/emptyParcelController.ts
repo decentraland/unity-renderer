@@ -42,7 +42,8 @@ export class EmptyParcelController {
         type: EntityType.SCENE,
         metadata,
         version: 'v3'
-      }
+      },
+      emptyParcel: true
     }
   }
 }
