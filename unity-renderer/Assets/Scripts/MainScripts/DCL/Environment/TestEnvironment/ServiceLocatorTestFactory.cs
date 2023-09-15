@@ -37,7 +37,36 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
-            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
+            result.Register<IWearablesCatalogService>(() =>
+            {
+                IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+
+                wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
+                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
+
+                wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
+                                       .ReturnsForAnyArgs(null);
+
+                wearablesCatalogService.RequestWearableCollection(default, default, default)
+                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+                return wearablesCatalogService;
+            });
+
+            result.Register<IEmotesCatalogService>(() =>
+            {
+                IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+
+                emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
+                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+
+                emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
+                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+
+                emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
+                                    .ReturnsForAnyArgs(null);
+
+                return emotesCatalogService;
+            });
             result.Register<ICustomNftCollectionService>(() =>
             {
                 ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
