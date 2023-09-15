@@ -103,7 +103,16 @@ namespace DCL
                     float time = Time.realtimeSinceStartup;
 
                     assetBundleInfoToLoad = highPriorityLoadQueue.Dequeue();
-                    await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
+
+                    try
+                    {
+                        await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
+                    }
+                    catch (Exception e)
+                    {
+                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle is null"));
+                        return;
+                    }
 
                     if (IsLoadBudgetTimeReached(time))
                     {
@@ -116,7 +125,16 @@ namespace DCL
                     float time = Time.realtimeSinceStartup;
 
                     assetBundleInfoToLoad = lowPriorityLoadQueue.Dequeue();
-                    await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
+
+                    try
+                    {
+                        await LoadAssetBundleAsync(assetBundleInfoToLoad, cancellationToken);
+                    }
+                    catch (Exception e)
+                    {
+                        assetBundleInfoToLoad.onFail?.Invoke(new Exception("Asset bundle is null"));
+                        return;
+                    }
 
                     if (IsLoadBudgetTimeReached(time))
                     {
