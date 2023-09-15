@@ -10,6 +10,7 @@ using PromiseAsyncExtensions = DCL.Helpers.PromiseAsyncExtensions;
 
 namespace DCLServices.EmotesCatalog.EmotesCatalogService
 {
+    [Obsolete("This service will be deprecated by LambdasEmotesCatalogService in the future.")]
     public class WebInterfaceEmotesCatalogService : IEmotesCatalogService
     {
         private EmotesCatalogBridge bridge;
