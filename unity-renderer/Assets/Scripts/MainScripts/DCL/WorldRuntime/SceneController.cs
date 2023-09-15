@@ -54,13 +54,10 @@ namespace DCL
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
-            SetupDeferredRunners();
+            // SetupDeferredRunners();
 
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
-
-            // TODO(Brian): Move this later to Main.cs
-            if (!EnvironmentSettings.RUNNING_TESTS) { PrewarmSceneMessagesPool(); }
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -74,16 +71,6 @@ namespace DCL
             CancellationToken tokenSourceToken = tokenSource.Token;
             TaskUtils.Run(async () => await WatchForNewChunksToDecode(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
 #endif
-        }
-
-        private void PrewarmSceneMessagesPool()
-        {
-            if (prewarmSceneMessagesPool)
-            {
-                for (int i = 0; i < SCENE_MESSAGES_PREWARM_COUNT; i++) { sceneMessagesPool.Enqueue(new QueuedSceneMessage_Scene()); }
-            }
-
-            if (prewarmEntitiesPool) { PoolManagerFactory.EnsureEntityPool(prewarmEntitiesPool); }
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -164,11 +151,9 @@ namespace DCL
             yieldInstruction = null;
 
             IParcelScene scene;
-            bool res = false;
-            IWorldState worldState = Environment.i.world.state;
             DebugConfig debugConfig = DataStore.i.debugConfig;
 
-            if (worldState.TryGetScene(sceneNumber, out scene))
+            if (Environment.i.world.state.TryGetScene(sceneNumber, out scene))
             {
 #if UNITY_EDITOR
                 if (debugConfig.soloScene && scene is GlobalScene && debugConfig.ignoreGlobalScenes) { return false; }
@@ -188,14 +173,10 @@ namespace DCL
                 OnMessageProcessInfoEnds?.Invoke(sceneNumber, method);
 #endif
 
-                res = true;
+                return true;
             }
 
-            else { res = false; }
-
-            sceneMessagesPool.Enqueue(msgObject);
-
-            return res;
+            return false;
         }
 
         private void ProcessMessage(ParcelScene scene, string method, object msgPayload, out CustomYieldInstruction yieldInstruction)
@@ -402,10 +383,7 @@ namespace DCL
 
             for (int i = 0; i < count; i++)
             {
-                bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
-
-                if (availableMessage) { EnqueueSceneMessage(Decode(payloads[i], freeMessage)); }
-                else { EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene())); }
+                EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
             }
         }
 
@@ -434,11 +412,7 @@ namespace DCL
 
                 for (int i = 0; i < count; i++)
                 {
-                    var payload = payloads[i];
-                    bool availableMessage = sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene freeMessage);
-
-                    if (availableMessage) { EnqueueSceneMessage(Decode(payload, freeMessage)); }
-                    else { EnqueueSceneMessage(Decode(payload, new QueuedSceneMessage_Scene())); }
+                    EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
                 }
             }
         }
@@ -900,9 +874,6 @@ namespace DCL
 
         //======================================================================
 
-        public ConcurrentQueue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new ConcurrentQueue<QueuedSceneMessage_Scene>();
-
-        public bool prewarmSceneMessagesPool { get; set; } = true;
         public bool prewarmEntitiesPool { get; set; } = true;
 
         private bool sceneSortDirty = false;
