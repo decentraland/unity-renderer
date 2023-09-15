@@ -9,7 +9,8 @@ namespace ExploreV2Analytics
     public enum ActionSource
     {
         FromExplore,
-        FromSearch
+        FromSearch,
+        FromFavorites,
     }
 
     public enum FilterType

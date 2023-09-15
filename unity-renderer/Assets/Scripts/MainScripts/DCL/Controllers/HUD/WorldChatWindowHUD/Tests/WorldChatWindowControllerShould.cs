@@ -7,6 +7,7 @@ using DCL.Chat.Channels;
 using DCL.Interface;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
@@ -67,7 +68,8 @@ namespace DCL.Social.Chat
                 browserBridge,
                 CommonScriptableObjects.rendererState,
                 new DataStore_Mentions(),
-                clipboard);
+                clipboard,
+                Substitute.For<ICopyPasteAnalyticsService>());
 
             view = Substitute.For<IWorldChatWindowView>();
         }

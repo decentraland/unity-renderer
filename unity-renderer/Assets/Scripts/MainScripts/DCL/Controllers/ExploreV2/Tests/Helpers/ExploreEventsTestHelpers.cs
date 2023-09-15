@@ -43,7 +43,7 @@ public static class ExploreEventsTestHelpers
                 live = true,
                 name = "Test Name",
                 next_start_at = "Test Start",
-                realm = "Test Realm",
+                server = "Test Realm",
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
@@ -52,6 +52,8 @@ public static class ExploreEventsTestHelpers
                 recurrent = false,
                 duration = 7200000,
                 start_at = "2023-07-18T23:00:00.000Z",
+                recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
+                world = false,
             }
         };
     }
@@ -82,7 +84,7 @@ public static class ExploreEventsTestHelpers
             live = true,
             name = "Test Name",
             next_start_at = "2021-09-30T11:11:00.000Z",
-            realm = null,
+            server = null,
             scene_name = "Test Scene Name",
             total_attendees = 100,
             trending = false,
@@ -91,6 +93,8 @@ public static class ExploreEventsTestHelpers
             recurrent = false,
             duration = 7200000,
             start_at = "2023-07-18T23:00:00.000Z",
+            recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
+            world = false,
         };
     }
 }

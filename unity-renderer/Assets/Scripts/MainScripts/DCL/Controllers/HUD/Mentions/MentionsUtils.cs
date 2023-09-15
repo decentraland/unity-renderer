@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DCL.Social.Chat.Mentions
@@ -21,6 +23,12 @@ namespace DCL.Social.Chat.Mentions
         {
             Match match = MENTION_REGEX.Match(text);
             return match.Success;
+        }
+
+        public static IEnumerable<string> GetAllMentions(string input)
+        {
+            MatchCollection matches = MENTION_REGEX.Matches(input);
+            return matches.Select(match => match.Value);
         }
 
         public static string ReplaceMentionPattern(string input, Func<string, string> replacementCallback)

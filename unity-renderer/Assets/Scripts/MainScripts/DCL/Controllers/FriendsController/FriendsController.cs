@@ -236,18 +236,6 @@ namespace DCL.Social.Friends
             return friendRequest;
         }
 
-        [Obsolete("Deprecated. Use RequestFriendshipAsync instead")]
-        public void RequestFriendship(string friendUserId)
-        {
-            if (useSocialApiBridge)
-            {
-                RequestFriendshipAsync(friendUserId, "", controllerCancellationTokenSource.Token)
-                   .Forget();
-                return;
-            }
-            apiBridge.RequestFriendship(friendUserId);
-        }
-
         public Dictionary<string, UserStatus> GetAllocatedFriends() =>
             new (friends);
 
@@ -286,19 +274,6 @@ namespace DCL.Social.Friends
             return request;
         }
 
-        [Obsolete("Deprecated. Use RejectFriendshipAsync instead")]
-        public void RejectFriendship(string friendUserId)
-        {
-            if (useSocialApiBridge)
-            {
-                FriendRequest friendRequest = GetAllocatedFriendRequestByUser(friendUserId);
-                RejectFriendshipAsync(friendRequest.FriendRequestId, controllerCancellationTokenSource.Token)
-                   .Forget();
-                return;
-            }
-            apiBridge.RejectFriendship(friendUserId);
-        }
-
         public async UniTask<FriendRequest> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -328,22 +303,14 @@ namespace DCL.Social.Friends
         public bool IsFriend(string userId) =>
             friends.ContainsKey(userId) && friends[userId].friendshipStatus == FriendshipStatus.FRIEND;
 
-        public void RemoveFriend(string friendId)
+        public async UniTask RemoveFriendAsync(string friendId, CancellationToken cancellationToken)
         {
-            if (useSocialApiBridge)
+            if (!useSocialApiBridge)
             {
-                socialApiBridge.DeleteFriendshipAsync(friendId)
-                               .ContinueWith(() => RemoveFriendFromCacheAndTriggerFriendshipUpdate(friendId));
-
+                apiBridge.RemoveFriend(friendId);
                 return;
             }
 
-            apiBridge.RemoveFriend(friendId);
-        }
-
-        public async UniTask RemoveFriendAsync(string friendId, CancellationToken cancellationToken)
-        {
-            if (!useSocialApiBridge) throw new NotImplementedException();
             await socialApiBridge.DeleteFriendshipAsync(friendId, cancellationToken);
             RemoveFriendFromCacheAndTriggerFriendshipUpdate(friendId);
         }
@@ -401,11 +368,6 @@ namespace DCL.Social.Friends
 
             return payload.friends;
         }
-
-        // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        [Obsolete("Deprecated. Use GetFriendRequestsAsync instead")]
-        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
-            apiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
         public async UniTask<IReadOnlyList<FriendRequest>> GetFriendRequestsAsync(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip, CancellationToken cancellationToken)
         {
@@ -563,41 +525,26 @@ namespace DCL.Social.Friends
 
             FriendRequest request = GetAllocatedFriendRequestByUser(friendUserId);
 
-            if (request != null)
-            {
-                if (useSocialApiBridge)
-                {
-                    await socialApiBridge.CancelFriendshipAsync(request.To, cancellationToken);
-                    RemoveFriendRequestAndUpdateFriendshipStatus(request.To, FriendshipAction.CANCELLED);
-                }
-                else
-                {
-                    await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
-
-                    friendRequests.Remove(request.FriendRequestId);
-
-                    UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                        { action = FriendshipAction.CANCELLED, userId = friendUserId });
-                }
-
-                return request;
-            }
+            if (request == null) throw new Exception($"No friend request for user: {friendUserId}");
 
             if (useSocialApiBridge)
-                throw new Exception($"No friend request for user: {friendUserId}");
+            {
+                await socialApiBridge.CancelFriendshipAsync(request.To, cancellationToken);
+                RemoveFriendRequestAndUpdateFriendshipStatus(request.To, FriendshipAction.CANCELLED);
+            }
+            else
+            {
+                await apiBridge.CancelRequestAsync(request.FriendRequestId, cancellationToken);
 
-            // TODO (FRIEND REQUESTS): this operation is deprecated and should be removed after the release of improved friend requests
-            await apiBridge.CancelRequestByUserIdAsync(friendUserId, cancellationToken);
+                friendRequests.Remove(request.FriendRequestId);
 
-            UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
-                { action = FriendshipAction.CANCELLED, userId = friendUserId });
+                UpdateFriendshipStatus(new FriendshipUpdateStatusMessage
+                    { action = FriendshipAction.CANCELLED, userId = friendUserId });
+            }
 
-            return new FriendRequest("", new DateTime(), "", friendUserId, "");
+            return request;
+
         }
-
-        [Obsolete("Deprecated. Use CancelRequestAsync instead")]
-        public void CancelRequestByUserId(string friendUserId) =>
-            apiBridge.CancelRequestByUserId(friendUserId);
 
         public async UniTask<FriendRequest> CancelRequestAsync(string friendRequestId, CancellationToken cancellationToken)
         {
@@ -628,9 +575,6 @@ namespace DCL.Social.Friends
 
             return friendRequest;
         }
-
-        public void AcceptFriendship(string friendUserId) =>
-            apiBridge.AcceptFriendship(friendUserId);
 
         private void HandlePeerDeletedFriendship(string friendId)
         {

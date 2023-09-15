@@ -33,8 +33,8 @@ namespace DCL.Social.Chat
             base.Awake();
             optionsButton.onClick.AddListener(() =>
             {
-                userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
+                userContextMenu.Show(model.userId);
             });
             openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
             onFocused += isFocused =>
