@@ -53,24 +53,11 @@ namespace DCL
             enabled = true;
 
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
-
-            // SetupDeferredRunners(); // TODO: is this needed ?? (WebGL/Desktop appears to run OK without it)
-
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
-        }
-
-        private void SetupDeferredRunners()
-        {
-#if UNITY_WEBGL
-            deferredDecodingCoroutine = CoroutineStarter.Start(DeferredDecodingAndEnqueue());
-#else
-            CancellationToken tokenSourceToken = tokenSource.Token;
-            TaskUtils.Run(async () => await WatchForNewChunksToDecode(tokenSourceToken), cancellationToken: tokenSourceToken).Forget();
-#endif
         }
 
         private void OnDebugModeSet(bool current, bool previous)
@@ -353,29 +340,6 @@ namespace DCL
             return queuedMessage;
         }
 
-        private IEnumerator DeferredDecodingAndEnqueue()
-        {
-            float start = Time.realtimeSinceStartup;
-            float maxTimeForDecode;
-
-            while (true)
-            {
-                maxTimeForDecode = CommonScriptableObjects.rendererState.Get() ? MAX_TIME_FOR_DECODE : float.MaxValue;
-
-                if (chunksToDecode.TryDequeue(out string chunk))
-                {
-                    EnqueueChunk(chunk);
-
-                    if (Time.realtimeSinceStartup - start < maxTimeForDecode)
-                        continue;
-                }
-
-                yield return null;
-
-                start = Time.unscaledTime;
-            }
-        }
-
         private void EnqueueChunk(string chunk)
         {
             string[] payloads = chunk.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -384,36 +348,6 @@ namespace DCL
             for (int i = 0; i < count; i++)
             {
                 EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
-            }
-        }
-
-        private async UniTask WatchForNewChunksToDecode(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    if (chunksToDecode.Count > 0) { ThreadedDecodeAndEnqueue(cancellationToken); }
-                }
-                catch (Exception e) { Debug.LogException(e); }
-
-                await UniTask.Yield();
-            }
-        }
-
-        private void ThreadedDecodeAndEnqueue(CancellationToken cancellationToken)
-        {
-            while (chunksToDecode.TryDequeue(out string chunk))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                string[] payloads = chunk.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                var count = payloads.Length;
-
-                for (int i = 0; i < count; i++)
-                {
-                    EnqueueSceneMessage(Decode(payloads[i], new QueuedSceneMessage_Scene()));
-                }
             }
         }
 
