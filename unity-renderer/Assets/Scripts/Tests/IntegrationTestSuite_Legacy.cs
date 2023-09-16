@@ -12,6 +12,7 @@ using DCL.SettingsCommon;
 using DCLServices.MapRendererV2;
 using DCLServices.WearablesCatalogService;
 using NSubstitute;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -19,7 +20,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 using MapRenderer = DCL.MapRenderer;
+using Object = UnityEngine.Object;
 
 public class IntegrationTestSuite_Legacy
 {
@@ -83,10 +86,23 @@ public class IntegrationTestSuite_Legacy
 
         IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
         emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
+        emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
+                            .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+
+        emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
+                            .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+        emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
+                            .ReturnsForAnyArgs(null);
         result.Register<IEmotesCatalogService>(() => emotesCatalogService);
 
         IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
         wearablesCatalogService.WearablesCatalog.Returns(new BaseDictionary<string, WearableItem>());
+        wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
+                               .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
+        wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
+                               .ReturnsForAnyArgs(null);
+        wearablesCatalogService.RequestWearableCollection(default, default, default)
+                               .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
         result.Register<IWearablesCatalogService>(() => wearablesCatalogService);
 
         result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());

@@ -8,6 +8,8 @@ using DCLServices.MapRendererV2;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.ECSComponents.Tests
@@ -53,6 +55,12 @@ namespace DCL.ECSComponents.Tests
             var result = ServiceLocatorFactory.CreateDefault();
 
             IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+            emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
+                                .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+            emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
+                                .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+            emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
+                                .ReturnsForAnyArgs(null);
             emotesCatalogService.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
             result.Register<IEmotesCatalogService>(() => emotesCatalogService);
             result.Register<IMapRenderer>(() => Substitute.For<IMapRenderer>());

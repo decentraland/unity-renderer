@@ -84,8 +84,6 @@ namespace DCL
                 return subs;
             });
 
-            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
-
             result.Register<IServiceProviders>(
                 () =>
                 {

@@ -19,6 +19,12 @@ namespace DCL.Backpack
         {
             backpackFiltersComponentView = Substitute.For<IBackpackFiltersComponentView>();
             wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+            wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
+                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
+            wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
+                                   .ReturnsForAnyArgs(null);
+            wearablesCatalogService.RequestWearableCollection(default, default, default)
+                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
             backpackFiltersController = new BackpackFiltersController(backpackFiltersComponentView, wearablesCatalogService);
         }
 

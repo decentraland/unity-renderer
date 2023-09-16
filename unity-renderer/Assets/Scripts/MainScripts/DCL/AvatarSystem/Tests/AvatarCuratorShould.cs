@@ -56,6 +56,12 @@ namespace Test.AvatarSystem
                      });
 
             emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+            emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
+                                .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+            emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
+                                .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+            emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
+                                .ReturnsForAnyArgs(null);
             curator = new AvatarCurator(resolver, emotesCatalogService);
         }
 
