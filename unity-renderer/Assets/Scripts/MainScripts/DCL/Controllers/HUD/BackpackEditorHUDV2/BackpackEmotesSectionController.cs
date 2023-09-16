@@ -105,8 +105,8 @@ namespace DCL.Backpack
 
                     try
                     {
-                        // await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
-                        //     FetchCustomEmoteItems(allEmotes, ct));
+                        await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
+                            FetchCustomEmoteItems(allEmotes, ct));
                     }
                     catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
 
