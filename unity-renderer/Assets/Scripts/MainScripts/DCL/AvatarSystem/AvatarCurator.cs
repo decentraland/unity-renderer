@@ -53,17 +53,17 @@ namespace AvatarSystem
 
                     var emoteIdsList = emoteIds.ToList();
                     IReadOnlyList<WearableItem> resolvedEmotes = await emotesCatalog.RequestEmotesAsync(emoteIdsList, ct);
-                    List<WearableItem> nonPublishedEmotes = ListPool<WearableItem>.Get();
-
-                    foreach (string nonPublishedEmoteId in emoteIdsList)
-                    {
-                        if (nonPublishedEmoteId.StartsWith("urn")) continue;
-                        bool wasResolved = resolvedEmotes?.Any(item => item?.id == nonPublishedEmoteId) ?? false;
-                        if (wasResolved) continue;
-                        WearableItem nonPublishedEmote = await emotesCatalog.RequestEmoteFromBuilderAsync(nonPublishedEmoteId, ct);
-                        if (nonPublishedEmote != null)
-                            nonPublishedEmotes.Add(nonPublishedEmote);
-                    }
+                    // List<WearableItem> nonPublishedEmotes = ListPool<WearableItem>.Get();
+                    //
+                    // foreach (string nonPublishedEmoteId in emoteIdsList)
+                    // {
+                    //     if (nonPublishedEmoteId.StartsWith("urn")) continue;
+                    //     bool wasResolved = resolvedEmotes?.Any(item => item?.id == nonPublishedEmoteId) ?? false;
+                    //     if (wasResolved) continue;
+                    //     WearableItem nonPublishedEmote = await emotesCatalog.RequestEmoteFromBuilderAsync(nonPublishedEmoteId, ct);
+                    //     if (nonPublishedEmote != null)
+                    //         nonPublishedEmotes.Add(nonPublishedEmote);
+                    // }
 
                     var loadTimeDelta = DateTime.Now - startLoadTime;
 
@@ -89,14 +89,14 @@ namespace AvatarSystem
                             }
                     }
 
-                    foreach (WearableItem emote in nonPublishedEmotes)
-                    {
-                        if (emote == null) continue;
-                        if (loadedEmotesFilter.Contains(emote.id)) continue;
-                        emotes.Add(emote);
-                    }
-
-                    ListPool<WearableItem>.Release(nonPublishedEmotes);
+                    // foreach (WearableItem emote in nonPublishedEmotes)
+                    // {
+                    //     if (emote == null) continue;
+                    //     if (loadedEmotesFilter.Contains(emote.id)) continue;
+                    //     emotes.Add(emote);
+                    // }
+                    //
+                    // ListPool<WearableItem>.Release(nonPublishedEmotes);
                 }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();
