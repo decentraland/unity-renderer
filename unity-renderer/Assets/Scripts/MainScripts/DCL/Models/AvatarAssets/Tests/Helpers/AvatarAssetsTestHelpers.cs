@@ -34,12 +34,6 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
         public static IWearablesCatalogService CreateTestCatalogLocal()
         {
             IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
-            wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
-                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
-            wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
-                                   .ReturnsForAnyArgs(null);
-            wearablesCatalogService.RequestWearableCollection(default, default, default)
-                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
             List<WearableItemDummy> dummyWearables = Object.Instantiate(
                 AssetDatabase.LoadAssetAtPath<WearableItemDummyListVariable>("Assets/Scripts/MainScripts/DCL/Models/AvatarAssets/Tests/Helpers/TestCatalogArrayLocalAssets.asset")).list;
             BaseDictionary<string, WearableItem> dummyCatalog = new ();

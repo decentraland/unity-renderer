@@ -1,16 +1,10 @@
-using Cysharp.Threading.Tasks;
 using DCL;
-using DCLServices.CustomNftCollection;
-using DCLServices.WearablesCatalogService;
 using System.Collections;
 using MainScripts.DCL.Analytics.PerformanceAnalytics;
 using MainScripts.DCL.Controllers.AssetManager;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Environment = DCL.Environment;
 
 namespace AssetPromiseKeeper_Tests
 {
@@ -25,48 +19,9 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            var serviceLocator = ServiceLocatorFactory.CreateDefault();
-
+            var serviceLocator = DCL.ServiceLocatorFactory.CreateDefault();
             serviceLocator.Register<IMemoryManager>(() => Substitute.For<IMemoryManager>());
-            serviceLocator.Register<IEmotesCatalogService>(() =>
-            {
-                IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
-                emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
-                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
-
-                emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
-                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
-
-                emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
-                                    .ReturnsForAnyArgs(null);
-                return emotesCatalogService;
-            });
-
-            serviceLocator.Register<ICustomNftCollectionService>(() =>
-            {
-                ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
-                customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
-                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
-                customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
-                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
-                return customNftCollectionService;
-            });
-
-            serviceLocator.Register<IWearablesCatalogService>(() =>
-            {
-                IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
-
-                wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
-                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
-
-                wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
-                                       .ReturnsForAnyArgs(null);
-
-                wearablesCatalogService.RequestWearableCollection(default, default, default)
-                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
-                return wearablesCatalogService;
-            });
-
+            serviceLocator.Register<IEmotesCatalogService>(() => Substitute.For<IEmotesCatalogService>());
             Environment.Setup(serviceLocator);
             keeper = new APKType();
             yield break;

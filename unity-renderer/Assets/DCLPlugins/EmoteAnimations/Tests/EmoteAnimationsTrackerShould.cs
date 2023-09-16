@@ -5,7 +5,6 @@ using DCLServices.WearablesCatalogService;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -26,25 +25,11 @@ namespace DCL.Emotes
         public void SetUp()
         {
             wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
-            wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
-                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
-            wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
-                                   .ReturnsForAnyArgs(null);
-            wearablesCatalogService.RequestWearableCollection(default, default, default)
-                                   .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
             dataStore = new DataStore_Emotes();
             loaderFactory = Substitute.ForPartsOf<EmoteAnimationLoaderFactory>();
             loaderFactory.Get().Returns(Substitute.For<IEmoteAnimationLoader>());
 
             emoteCatalog = Substitute.For<IEmotesCatalogService>();
-            emoteCatalog.RequestEmoteCollectionAsync(default, default, default)
-                        .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
-
-            emoteCatalog.RequestEmoteCollectionInBuilderAsync(default, default)
-                        .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
-
-            emoteCatalog.RequestEmoteFromBuilderAsync(default, default)
-                        .ReturnsForAnyArgs(null);
             emoteCatalog.GetEmbeddedEmotes().Returns(GetEmbeddedEmotesSO());
 
             tracker = new EmoteAnimationsTracker(dataStore, loaderFactory, emoteCatalog, wearablesCatalogService, Substitute.For<ICatalyst>());
