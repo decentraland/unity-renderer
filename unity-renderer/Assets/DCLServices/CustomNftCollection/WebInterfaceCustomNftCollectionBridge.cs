@@ -19,8 +19,11 @@ namespace DCLServices.CustomNftCollection
 
         public static WebInterfaceCustomNftCatalogBridge GetOrCreate()
         {
-            var bridgeObj = SceneReferences.i.bridgeGameObject;
-            return bridgeObj.GetOrCreateComponent<WebInterfaceCustomNftCatalogBridge>();
+            var bridgeObj = SceneReferences.i?.bridgeGameObject;
+
+            return SceneReferences.i?.bridgeGameObject == null
+                ? new GameObject("Bridge").AddComponent<WebInterfaceCustomNftCatalogBridge>()
+                : bridgeObj.GetOrCreateComponent<WebInterfaceCustomNftCatalogBridge>();
         }
 
         public void Dispose() { }
