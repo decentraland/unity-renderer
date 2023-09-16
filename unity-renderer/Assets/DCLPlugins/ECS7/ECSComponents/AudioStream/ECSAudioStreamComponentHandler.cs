@@ -23,7 +23,6 @@ namespace DCL.ECSComponents
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
         internal bool isRendererActive = false;
-        internal bool hadUserInteraction = false;
         internal bool isValidUrl = false;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -40,19 +39,10 @@ namespace DCL.ECSComponents
 
             isRendererActive = CommonScriptableObjects.rendererState.Get();
             isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
-
-            // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
-            hadUserInteraction = Utils.IsCursorLocked;
-
-            if (!hadUserInteraction)
-            {
-                Utils.OnCursorLockChanged += OnCursorLockChanged;
-            }
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
             CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
@@ -121,7 +111,7 @@ namespace DCL.ECSComponents
 
         private bool CanAudioStreamBePlayed()
         {
-            return isInsideScene && isRendererActive && hadUserInteraction;
+            return isInsideScene && isRendererActive;
         }
 
         private void OnSceneChanged(int sceneNumber, int prevSceneNumber)
@@ -173,15 +163,6 @@ namespace DCL.ECSComponents
         {
             isPlaying = play;
             WebInterface.SendAudioStreamEvent(url, isPlaying, currentVolume);
-        }
-
-        private void OnCursorLockChanged(bool isLocked)
-        {
-            if (!isLocked) return;
-
-            hadUserInteraction = true;
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            ConditionsToPlayChanged();
         }
     }
 }

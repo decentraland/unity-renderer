@@ -66,6 +66,9 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             // send the initialEntitiesTick0 (main.crdt) and the response.payload
             data: [initialEntitiesTick0, response.payload]
           }
+        },
+        async isServer(_req, _ctx) {
+          return { isServer: false }
         }
       }
     }

@@ -142,12 +142,11 @@ namespace DCLFeatures.ScreencaptureCamera.Tests
     {
         public ScreenRecorderDummy() : base(null) { }
 
-        public override IEnumerator CaptureScreenshot(Camera baseCamera, Action<Texture2D> onComplete)
+        public override IEnumerator CaptureScreenshot(Action<Texture2D> onComplete)
         {
             yield return null;
             onComplete.Invoke(new Texture2D(1, 1));
         }
-
     }
 
     public class ScreencaptureCameraHUDViewDummy : ScreencaptureCameraHUDView
