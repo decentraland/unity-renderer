@@ -3,11 +3,13 @@ using DCL.Emotes;
 using DCL.EmotesCustomization;
 using DCL.Interface;
 using DCL.Tasks;
+using DCLServices.CustomNftCollection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace DCL.Backpack
 {
@@ -24,6 +26,7 @@ namespace DCL.Backpack
         private readonly DataStore dataStore;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IEmotesCatalogService emotesCatalogService;
+        private readonly ICustomNftCollectionService customNftCollectionService;
         private readonly IEmotesCustomizationComponentController emotesCustomizationComponentController;
         private CancellationTokenSource loadEmotesCts = new ();
         private List<Nft> ownedNftCollectionsL1 = new ();
@@ -33,11 +36,13 @@ namespace DCL.Backpack
             DataStore dataStore,
             Transform emotesSectionTransform,
             IUserProfileBridge userProfileBridge,
-            IEmotesCatalogService emotesCatalogService)
+            IEmotesCatalogService emotesCatalogService,
+            ICustomNftCollectionService customNftCollectionService)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.emotesCatalogService = emotesCatalogService;
+            this.customNftCollectionService = customNftCollectionService;
 
             emotesCustomizationComponentController = new EmotesCustomizationComponentController(
                 dataStore.emotesCustomization,
@@ -94,18 +99,22 @@ namespace DCL.Backpack
                 try
                 {
                     EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
-                    var baseEmotes = embeddedEmotesSo.emotes;
-                    var ownedEmotes = await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct);
-                    var allEmotes = ownedEmotes == null ? baseEmotes : baseEmotes.Concat(ownedEmotes).ToArray();
-                    dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
-                    emotesCustomizationComponentController.SetEmotes(allEmotes);
+                    List<WearableItem> allEmotes = new ();
+                    allEmotes.AddRange(embeddedEmotesSo.emotes);
+                    allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
+                    try
+                    {
+                        await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
+                            FetchCustomEmoteItems(allEmotes, ct));
+                    }
+                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+
+                    dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
+                    emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
                 }
                 catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Error loading emotes: {e.Message}");
-                }
+                catch (Exception e) { Debug.LogError($"Error loading emotes: {e.Message}"); }
             }
 
             loadEmotesCts = loadEmotesCts.SafeRestart();
@@ -135,9 +144,54 @@ namespace DCL.Backpack
             var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == collectibleId) ??
                                    ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == collectibleId);
 
-            WebInterface.OpenURL(ownedCollectible != null ?
-                URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId) :
-                URL_SELL_COLLECTIBLE_GENERIC);
+            WebInterface.OpenURL(ownedCollectible != null ? URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId) : URL_SELL_COLLECTIBLE_GENERIC);
+        }
+
+        private async UniTask FetchCustomEmoteItems(ICollection<WearableItem> emotes,
+            CancellationToken cancellationToken)
+        {
+            IReadOnlyList<string> customItems = await customNftCollectionService.GetConfiguredCustomNftItemsAsync(cancellationToken);
+
+            WearableItem[] retrievedEmotes = await UniTask.WhenAll(customItems.Select(nftId =>
+                nftId.StartsWith("urn", StringComparison.OrdinalIgnoreCase)
+                    ? emotesCatalogService.RequestEmoteAsync(nftId, cancellationToken)
+                    : emotesCatalogService.RequestEmoteFromBuilderAsync(nftId, cancellationToken)));
+
+            foreach (WearableItem emote in retrievedEmotes)
+            {
+                if (emote == null)
+                {
+                    Debug.LogWarning("Custom emote item skipped is null");
+                    continue;
+                }
+
+                emotes.Add(emote);
+            }
+        }
+
+        private async UniTask FetchCustomEmoteCollections(
+            List<WearableItem> emotes,
+            CancellationToken cancellationToken)
+        {
+            IReadOnlyList<string> customCollections =
+                await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+
+            HashSet<string> publishedCollections = HashSetPool<string>.Get();
+            HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
+
+            foreach (string collectionId in customCollections)
+            {
+                if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
+                    publishedCollections.Add(collectionId);
+                else
+                    collectionsInBuilder.Add(collectionId);
+            }
+
+            await UniTask.WhenAll(emotesCatalogService.RequestEmoteCollectionAsync(publishedCollections, cancellationToken, emotes),
+                emotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionsInBuilder, cancellationToken, emotes));
+
+            HashSetPool<string>.Release(publishedCollections);
+            HashSetPool<string>.Release(collectionsInBuilder);
         }
     }
 }

@@ -45,7 +45,8 @@ namespace DCL
             int timeout = 0,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null,
-            bool isSigned = false);
+            bool isSigned = false,
+            string signUrl = null);
 
         UniTask<UnityWebRequest> PatchAsync(
             string url,

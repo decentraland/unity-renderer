@@ -1,4 +1,6 @@
-﻿using DCL.Browser;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
@@ -76,6 +78,12 @@ namespace DCL.Backpack
             ffBaseVariable.Get().Returns(featureFlags);
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
 
+            ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+            customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+            customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
@@ -83,7 +91,8 @@ namespace DCL.Backpack
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsService>());
+                Substitute.For<IBackpackAnalyticsService>(),
+                customNftCollectionService);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,

@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Pool;
 
 namespace AvatarSystem
 {
@@ -50,7 +51,19 @@ namespace AvatarSystem
                 {
                     DateTime startLoadTime = DateTime.Now;
 
-                    var moreEmotes = await emotesCatalog.RequestEmotesAsync(emoteIds.ToList(), ct);
+                    var emoteIdsList = emoteIds.ToList();
+                    IReadOnlyList<WearableItem> resolvedEmotes = await emotesCatalog.RequestEmotesAsync(emoteIdsList, ct);
+                    List<WearableItem> nonPublishedEmotes = ListPool<WearableItem>.Get();
+
+                    foreach (string nonPublishedEmoteId in emoteIdsList)
+                    {
+                        if (nonPublishedEmoteId.StartsWith("urn")) continue;
+                        bool wasResolved = resolvedEmotes?.Any(item => item?.id == nonPublishedEmoteId) ?? false;
+                        if (wasResolved) continue;
+                        WearableItem nonPublishedEmote = await emotesCatalog.RequestEmoteFromBuilderAsync(nonPublishedEmoteId, ct);
+                        if (nonPublishedEmote != null)
+                            nonPublishedEmotes.Add(nonPublishedEmote);
+                    }
 
                     var loadTimeDelta = DateTime.Now - startLoadTime;
 
@@ -60,13 +73,13 @@ namespace AvatarSystem
                         Debug.LogError("Curate: emotes load time is too high: " + (DateTime.Now - startLoadTime));
                     }
 
-                    if (moreEmotes != null)
-                    {
-                        //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
-                        var loadedEmotesFilter = new HashSet<string>();
-                        emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
+                    //this filter is needed to make sure there will be no duplicates coming from two sources of emotes
+                    var loadedEmotesFilter = new HashSet<string>();
+                    emotes.ForEach(e => loadedEmotesFilter.Add(e.id));
 
-                        foreach (var otherEmote in moreEmotes)
+                    if (resolvedEmotes != null)
+                    {
+                        foreach (var otherEmote in resolvedEmotes)
                             if (otherEmote != null)
                             {
                                 if (loadedEmotesFilter.Contains(otherEmote.id))
@@ -75,6 +88,15 @@ namespace AvatarSystem
                                 emotes.Add(otherEmote);
                             }
                     }
+
+                    foreach (WearableItem emote in nonPublishedEmotes)
+                    {
+                        if (emote == null) continue;
+                        if (loadedEmotesFilter.Contains(emote.id)) continue;
+                        emotes.Add(emote);
+                    }
+
+                    ListPool<WearableItem>.Release(nonPublishedEmotes);
                 }
 
                 Dictionary<string, WearableItem> wearablesByCategory = new Dictionary<string, WearableItem>();

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Providers;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
@@ -55,7 +56,8 @@ namespace DCL.Backpack
                 dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IEmotesCatalogService>());
+                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 
@@ -68,7 +70,8 @@ namespace DCL.Backpack
                 new WebInterfaceBrowserBridge(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                backpackAnalyticsService);
+                backpackAnalyticsService,
+                Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
             hudController = new BackpackEditorHUDController(
                 view,

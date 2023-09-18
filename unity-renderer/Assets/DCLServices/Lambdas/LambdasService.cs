@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Pool;
 
 namespace DCLServices.Lambdas
@@ -55,19 +56,34 @@ namespace DCLServices.Lambdas
             return await SendRequestAsync<TResponse>(wr, cancellationToken, endPoint, transaction);
         }
 
-        public UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
+        public async UniTask<(TResponse response, bool success)> GetFromSpecificUrl<TResponse>(
             string endPointTemplate,
             string url,
             int timeout = ILambdasService.DEFAULT_TIMEOUT,
             int attemptsNumber = ILambdasService.DEFAULT_ATTEMPTS_NUMBER,
+            bool isSigned = false,
+            string signUrl = null,
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             string urlWithParams = AppendQueryParamsToUrl(url, urlEncodedParams);
-            var wr = webRequestController.Ref.Get(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, disposeOnCompleted: false);
-            var transaction = urlTransactionMonitor.Ref.TrackWebRequest(wr, endPointTemplate, finishTransactionOnWebRequestFinish: false);
+            UnityWebRequest request = await webRequestController.Ref.GetAsync(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, isSigned: isSigned, signUrl: signUrl, cancellationToken: cancellationToken);
 
-            return SendRequestAsync<TResponse>(wr, cancellationToken, urlWithParams, transaction);
+            if (request.result != UnityWebRequest.Result.Success)
+                return (default(TResponse), false);
+
+            string text = request.downloadHandler.text;
+
+            try
+            {
+                var response = JsonConvert.DeserializeObject<TResponse>(text);
+                return (response, true);
+            }
+            catch (Exception e)
+            {
+                PrintError<TResponse>(url, e.Message);
+                return (default(TResponse), false);
+            }
         }
 
         public async UniTask<(TResponse response, bool success)> PostFromSpecificUrl<TResponse, TBody>(
