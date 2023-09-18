@@ -38,7 +38,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
             ScreenFrameData currentScreenFrame = CalculateCurrentScreenFrame();
             (_, float targetRescale) = CalculateTargetScreenFrame(currentScreenFrame);
-            int roundedUpscale = Mathf.CeilToInt(targetRescale);
+            int roundedUpscale = Application.platform == RuntimePlatform.OSXPlayer? 1 : Mathf.CeilToInt(targetRescale);
+
             ScreenFrameData rescaledScreenFrame = CalculateRoundRescaledScreenFrame(currentScreenFrame, roundedUpscale);
 
             Texture2D screenshotTexture = ScreenCapture.CaptureScreenshotAsTexture(roundedUpscale); // upscaled Screen Frame resolution
