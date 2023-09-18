@@ -20,7 +20,6 @@ import { checkValidRealm } from './sagas'
 import { Candidate, Parcel, ServerConnectionStatus } from './types'
 import { ask } from './utils/ping'
 import { getCatalystCandidates } from './selectors'
-import { trackEvent } from 'shared/analytics/trackEvent'
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -231,9 +230,7 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
   commsLogger.info('Connecting to realm', realmString)
 
   const newAdapter = await adapterForRealmConfig(realmConfig.baseUrl, realmConfig.about, identity)
-  trackEvent('DEFAULT_REALM', {
-    message: `adapter created ${JSON.stringify(newAdapter)}`
-  })
+  commsLogger.info(`adapter created ${JSON.stringify(newAdapter)}`)
   if (newAdapter) {
     store.dispatch(setRealmAdapter(newAdapter))
   } else {

@@ -22,7 +22,7 @@ import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { realmToConnectionString } from './resolver'
 import { hookConnectToFixedAdaptersIfNecessary } from './logic'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { commsLogger } from 'shared/comms/logger'
 
 const logger = createLogger('realm')
 
@@ -57,9 +57,8 @@ async function bindHandlersToAdapter(realm: IRealmAdapter, _address: string): Pr
   hookConnectToFixedAdaptersIfNecessary(realm)
   const realmName = realm.about.configurations?.realmName || realmToConnectionString(realm)
   notifyStatusThroughChat(`Welcome to realm ${realmName}!`)
-  trackEvent('DEFAULT_REALM', {
-    message: `realm name: ${realmName}`
-  })
+  commsLogger.info(`bindHandlersToAdapter: ${realmName}`)
+
   return async function unbind(): Promise<void> {
     logger.info('Unbinding adapter', realm)
 

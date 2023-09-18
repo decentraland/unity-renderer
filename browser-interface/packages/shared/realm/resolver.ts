@@ -4,7 +4,7 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { createArchipelagoConnection } from './connections/ArchipelagoConnection'
 import { localArchipelago } from './connections/LocalArchipelago'
 import { IRealmAdapter, OFFLINE_REALM } from './types'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { commsLogger } from 'shared/comms/logger'
 
 function normalizeUrl(url: string) {
   return url.replace(/^:\/\//, window.location.protocol + '//')
@@ -45,15 +45,16 @@ export async function adapterForRealmConfig(
     ...about.configurations
   }
 
-  trackEvent('DEFAULT_REALM', {
-    message: JSON.stringify(about)
-  })
+  commsLogger.info(`adapterForRealmConfig: ${JSON.stringify(about)}`)
 
-  if (about.comms?.healthy && about.comms.adapter.startsWith('archipelago:archipelago-v1')) {
-    trackEvent('DEFAULT_REALM', {
-      message:
-        'comms healthy creating archipelago connection, ahora esta harcodeado en healthy, entonces lo deberia crear'
-    })
+  if (
+    about.comms?.healthy &&
+    'adapter' in about.comms &&
+    about.comms.adapter.startsWith('archipelago:archipelago-v1')
+  ) {
+    commsLogger.info(
+      'comms healthy creating archipelago connection, ahora esta harcodeado en healthy, entonces lo deberia crear'
+    )
     return createArchipelagoConnection(baseUrl, about, identity)
   }
 

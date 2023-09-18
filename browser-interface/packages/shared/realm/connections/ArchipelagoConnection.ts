@@ -11,7 +11,7 @@ import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import { commsLogger } from 'shared/comms/logger'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -29,7 +29,17 @@ export async function createArchipelagoConnection(
 ): Promise<IRealmAdapter> {
   const logger = createLogger('Archipelago handshake: ')
   const address = identity.address
-  const adapterStr = about.comms?.adapter
+  let adapterStr
+
+  commsLogger.info(`reading adapter str...`)
+  if (about.comms?.fixedAdapter) {
+    adapterStr = about.comms.fixedAdapter
+  } else {
+    adapterStr = about.comms?.adapter
+  }
+
+  commsLogger.info(`adapter str: ${adapterStr}`)
+
   if (!adapterStr) {
     throw new Error(`Protocol error: can not create connection to archipelago for undefined adapter`)
   }
@@ -42,9 +52,7 @@ export async function createArchipelagoConnection(
 
   const wsUrl = urlParts.join(':')
 
-  trackEvent('DEFAULT_REALM', {
-    message: `wsUrl: ${JSON.stringify(wsUrl)}`
-  })
+  commsLogger.info(`createArchipelagoConnection: wsUrl: ${JSON.stringify(wsUrl)}`)
 
   const connected = future<void>()
   const ws = new WebSocket(wsUrl, 'archipelago')
@@ -113,9 +121,8 @@ export async function createArchipelagoConnection(
       if (!message || message.$case !== 'welcome') {
         throw new Error('Protocol error: server did not send a welcomeMessage')
       }
-      trackEvent('DEFAULT_REALM', {
-        message: `we are in`
-      })
+
+      commsLogger.info(`createArchipelagoConnection: we are in`)
       return new ArchipelagoConnection(baseUrl, about, ws, address)
     }
   } catch (err: any) {
@@ -158,9 +165,7 @@ export class ArchipelagoConnection implements IRealmAdapter {
 
       switch (message.$case) {
         case 'islandChanged': {
-          trackEvent('DEFAULT_REALM', {
-            message: `island changed: ${JSON.stringify(message.islandChanged)}`
-          })
+          commsLogger.info(`new ArchipelagoConnection: island changed: ${JSON.stringify(message.islandChanged)}`)
           this.events.emit('setIsland', message.islandChanged)
           break
         }

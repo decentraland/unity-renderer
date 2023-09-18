@@ -10,6 +10,7 @@ import { versionCatalystLink } from './versionCatalyst'
 import { forceCatalystLink } from './forceCatalyst'
 import { overloadedCatalystLink } from './overloadedCatalyst'
 import { trackEvent } from 'shared/analytics/trackEvent'
+import { commsLogger } from 'shared/comms/logger'
 
 function buildLink(linkConfig: AlgorithmLinkConfig) {
   switch (linkConfig.type) {
@@ -68,9 +69,7 @@ export function createAlgorithm(config: AlgorithmChainConfig) {
 
   return {
     pickCandidate(candidates: Candidate[], userParcel: Parcel) {
-      trackEvent('DEFAULT_REALM', {
-        message: `candidates: ${JSON.stringify(candidates)}`
-      })
+      commsLogger.info(`candidates: ${JSON.stringify(candidates)}`)
       if (candidates.length === 0) throw new Error('Cannot pick candidates from an empty list')
 
       let context: AlgorithmContext = { allCandidates: candidates, picked: candidates, userParcel }
