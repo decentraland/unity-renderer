@@ -105,6 +105,9 @@ namespace DCL.Emotes
             if (!SceneEmoteHelper.IsSceneEmote(emoteId))
                 return emotesCatalogService.RequestEmoteAsync(emoteId, ct);
 
+            if (!emoteId.StartsWith("urn"))
+                return emotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, ct);
+
             WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(emoteId, emoteBodyId.BodyShapeId, emoteHash, catalyst.contentUrl, loop) : null;
 
             return new UniTask<WearableItem>(emoteItem);
