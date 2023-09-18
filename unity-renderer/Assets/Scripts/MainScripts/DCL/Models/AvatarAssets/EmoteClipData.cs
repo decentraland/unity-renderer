@@ -54,14 +54,15 @@ namespace DCL.Emotes
             {
                 var layer = 0;
 
+                animation.enabled = true;
+
                 foreach (AnimationState state in animation)
                 {
                     if (state.clip == AvatarClip) continue;
                     state.layer = layer++;
+                    state.wrapMode = Loop ? WrapMode.Loop : WrapMode.Once;
                     animation.Play(state.clip.name);
                 }
-
-                animation.enabled = true;
             }
 
             if (AudioSource != null)

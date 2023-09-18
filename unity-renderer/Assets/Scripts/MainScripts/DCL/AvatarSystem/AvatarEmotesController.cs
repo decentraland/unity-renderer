@@ -85,7 +85,6 @@ namespace AvatarSystem
             // no cache since the data can change
             AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
             float baseVolume = BASE_VOLUME * Utils.ToVolumeCurve(audioSettingsData.avatarSFXVolume * audioSettingsData.masterVolume);
-            Debug.Log($"Total: {baseVolume} avatar:{audioSettingsData.avatarSFXVolume} master:{audioSettingsData.masterVolume} curve:{Utils.ToVolumeCurve(audioSettingsData.avatarSFXVolume * audioSettingsData.masterVolume)}");
             return baseVolume;
         }
 

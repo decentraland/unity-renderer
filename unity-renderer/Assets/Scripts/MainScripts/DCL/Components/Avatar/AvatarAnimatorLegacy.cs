@@ -385,6 +385,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (bb.shouldLoop && isOwnPlayer)
         {
             int emoteLoop = GetCurrentEmoteLoopCount();
+
             if (emoteLoop != lastEmoteLoopCount)
                 UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true);
 

@@ -41,6 +41,9 @@ namespace DCL.Emotes
 
             Rendereable rendereable = await retriever.Retrieve(targetContainer, emote, bodyShapeId, ct);
 
+            foreach (Renderer renderer in rendereable.renderers)
+                renderer.enabled = false;
+
             var animation = rendereable.container.GetComponentInChildren<Animation>();
 
             if (animation == null)
@@ -49,21 +52,31 @@ namespace DCL.Emotes
                 return;
             }
 
-            if (animation.GetClipCount() > 1) { this.container = rendereable.container; }
+            this.mainClip = animation.clip;
 
-            animation.enabled = false;
-            var animationClip = animation.clip;
+            if (animation.GetClipCount() > 1)
+            {
+                this.container = rendereable.container;
 
-            if (animationClip == null)
+                foreach (AnimationState state in animation)
+                {
+                    if (state.clip.name.Contains("avatar", StringComparison.OrdinalIgnoreCase) ||
+                        state.clip.name == emote.id) { this.mainClip = state.clip; }
+
+                    // There's a bug with the legacy animation where animations start ahead of time the first time
+                    // our workaround is to play every animation while we load the audio clip and then disable the animator
+                    animation.Play(state.clip.name);
+                }
+            }
+
+            if (mainClip == null)
             {
                 Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
                 return;
             }
 
-            this.mainClip = animationClip;
-
             //Clip names should be unique because of the Legacy Animation string based usage
-            animationClip.name = emote.id;
+            mainClip.name = emote.id;
 
             var contentProvider = emote.GetContentProvider(bodyShapeId);
 
@@ -88,6 +101,8 @@ namespace DCL.Emotes
                 // we only support one audio clip
                 break;
             }
+
+            animation.enabled = false;
         }
 
         private bool IsValidAudioClip(string fileName) =>
