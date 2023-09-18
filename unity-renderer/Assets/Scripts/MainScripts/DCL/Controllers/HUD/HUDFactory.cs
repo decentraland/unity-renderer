@@ -18,6 +18,7 @@ using Environment = DCL.Environment;
 using Analytics;
 using DCL.MyAccount;
 using DCL.Social.Chat;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.PlacesAPIService;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -31,6 +32,7 @@ public class HUDFactory : IHUDFactory
     private IAddressableResourceProvider assetsProviderRef;
 
     private IAddressableResourceProvider assetsProvider => assetsProviderRef ??= assetsProviderService.Ref;
+    private ICopyPasteAnalyticsService copyPasteAnalyticsService => Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>();
 
     protected HUDFactory()
     {
@@ -61,7 +63,8 @@ public class HUDFactory : IHUDFactory
                 return new MinimapHUDController(MinimapMetadataController.i,
                     new WebInterfaceHomeLocationController(), Environment.i,
                     Environment.i.serviceLocator.Get<IPlacesAPIService>(),
-                    new PlacesAnalytics(), Clipboard.Create());
+                    new PlacesAnalytics(), Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.PROFILE_HUD:
                 ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
 
@@ -111,7 +114,8 @@ public class HUDFactory : IHUDFactory
                     new WebInterfaceBrowserBridge(),
                     CommonScriptableObjects.rendererState,
                     DataStore.i.mentions,
-                    Clipboard.Create());
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 return new PrivateChatWindowController(
                     DataStore.i,
@@ -123,7 +127,8 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
                     new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
-                    Clipboard.Create());
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -135,7 +140,8 @@ public class HUDFactory : IHUDFactory
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
-                    Clipboard.Create());
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.CHANNELS_CHAT:
                 return new ChatChannelHUDController(
                     DataStore.i,
@@ -147,7 +153,8 @@ public class HUDFactory : IHUDFactory
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
                     new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
-                    Clipboard.Create());
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.CHANNELS_SEARCH:
                 return new SearchChannelsWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),

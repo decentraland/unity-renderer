@@ -1,4 +1,6 @@
-﻿using DCL.Browser;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
@@ -76,6 +78,12 @@ namespace DCL.Backpack
             ffBaseVariable.Get().Returns(featureFlags);
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
 
+            ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+            customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+            customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
@@ -83,7 +91,8 @@ namespace DCL.Backpack
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsService>());
+                Substitute.For<IBackpackAnalyticsService>(),
+                customNftCollectionService);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -390,6 +399,34 @@ namespace DCL.Backpack
             });
             for (int i = smrs.Count - 1; i >= 0; i--)
                 Object.Destroy(smrs[i].gameObject);
+        }
+
+        [Test]
+        public void FallbackIncompatibleWearablesWhenChangingBodyShape()
+        {
+            userProfile.avatar.bodyShape = WearableLiterals.BodyShapes.FEMALE;
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_sweater");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_jeans");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:sneakers");
+
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel
+            {
+                WearableId = WearableLiterals.BodyShapes.MALE,
+            }, EquipWearableSource.Wearable);
+
+            dataStore.HUDs.avatarEditorVisible.Set(false, true);
+
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:m_sweater_02"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:soccer_pants"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:sneakers"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_sweater"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_jeans"));
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

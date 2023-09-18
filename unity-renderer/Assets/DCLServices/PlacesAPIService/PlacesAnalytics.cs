@@ -9,7 +9,8 @@ namespace DCLServices.PlacesAPIService
             FromExplore,
             FromSearch,
             FromMinimap,
-            FromNavmap
+            FromNavmap,
+            FromFavorites,
         }
 
         public enum FilterType
@@ -24,13 +25,14 @@ namespace DCLServices.PlacesAPIService
             Best
         }
 
-        void AddFavorite(string placeUUID, ActionSource source);
-        void RemoveFavorite(string placeUUID, ActionSource source);
-        void Like(string placeUUID, IPlacesAnalytics.ActionSource source);
-        void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source);
-        void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source);
+        void AddFavorite(string placeUUID, ActionSource source, bool isWorld = false);
+        void RemoveFavorite(string placeUUID, ActionSource source, bool isWorld = false);
+        void Like(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
+        void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
+        void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
         void Filter(FilterType filterType);
         void Sort(IPlacesAnalytics.SortingType sortingType);
+        void SortWorlds(IPlacesAnalytics.SortingType sortingType);
     }
 
     public class PlacesAnalytics : IPlacesAnalytics
@@ -42,53 +44,59 @@ namespace DCLServices.PlacesAPIService
         private const string REMOVE_VOTE_PLACE = "player_remove_vote_place";
         private const string FILTER_PLACES = "player_filter_places";
         private const string SORT_PLACES = "player_sort_places";
+        private const string SORT_WORLDS = "player_sort_worlds";
 
-        public void AddFavorite(string placeUUID, IPlacesAnalytics.ActionSource source)
+        public void AddFavorite(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false)
         {
             var data = new Dictionary<string, string>
             {
                 ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
+                ["source"] = source.ToString(),
+                ["is_world"] = isWorld.ToString()
             };
             GenericAnalytics.SendAnalytic(ADD_FAVORITE_PLACE, data);
         }
 
-        public void RemoveFavorite(string placeUUID, IPlacesAnalytics.ActionSource source)
+        public void RemoveFavorite(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false)
         {
             var data = new Dictionary<string, string>
             {
                 ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
+                ["source"] = source.ToString(),
+                ["is_world"] = isWorld.ToString()
             };
             GenericAnalytics.SendAnalytic(REMOVE_FAVORITE_PLACE, data);
         }
 
-        public void Like(string placeUUID, IPlacesAnalytics.ActionSource source)
+        public void Like(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false)
         {
             var data = new Dictionary<string, string>
             {
                 ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
+                ["source"] = source.ToString(),
+                ["is_world"] = isWorld.ToString()
             };
             GenericAnalytics.SendAnalytic(LIKE_PLACE, data);
         }
 
-        public void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source)
+        public void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false)
         {
             var data = new Dictionary<string, string>
             {
                 ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
+                ["source"] = source.ToString(),
+                ["is_world"] = isWorld.ToString()
             };
             GenericAnalytics.SendAnalytic(DISLIKE_PLACE, data);
         }
 
-        public void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source)
+        public void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false)
         {
             var data = new Dictionary<string, string>
             {
                 ["place_id"] = placeUUID,
-                ["source"] = source.ToString()
+                ["source"] = source.ToString(),
+                ["is_world"] = isWorld.ToString()
             };
             GenericAnalytics.SendAnalytic(REMOVE_VOTE_PLACE, data);
         }
@@ -109,6 +117,15 @@ namespace DCLServices.PlacesAPIService
                 ["type"] = sortingType.ToString()
             };
             GenericAnalytics.SendAnalytic(SORT_PLACES, data);
+        }
+
+        public void SortWorlds(IPlacesAnalytics.SortingType sortingType)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = sortingType.ToString()
+            };
+            GenericAnalytics.SendAnalytic(SORT_WORLDS, data);
         }
     }
 }

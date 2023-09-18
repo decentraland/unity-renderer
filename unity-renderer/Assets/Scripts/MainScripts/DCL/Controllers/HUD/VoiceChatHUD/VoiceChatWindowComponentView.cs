@@ -207,6 +207,7 @@ public class VoiceChatWindowComponentView : BaseComponentView, IVoiceChatWindowC
             return;
 
         playersPool.Enqueue(elementView);
+        SetPlayerRecording(userId, false);
         currentPlayers.Remove(userId);
         SetNumberOfPlayers(currentPlayers.Count);
 

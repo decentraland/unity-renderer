@@ -4,6 +4,7 @@ using DCL.Interface;
 using DCL.ProfanityFiltering;
 using DCL.Social.Chat.Mentions;
 using DCL.Tasks;
+using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace DCL.Social.Chat
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IChatController chatController;
         private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private readonly Regex mentionRegex = new (@"(\B@\w+)|(\B@+)");
         private readonly Regex whisperRegex = new (@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
         private readonly Dictionary<string, ulong> temporarilyMutedSenders = new ();
@@ -72,6 +74,7 @@ namespace DCL.Social.Chat
             ISocialAnalytics socialAnalytics,
             IChatController chatController,
             IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService,
             IProfanityFilter profanityFilter = null)
         {
             this.dataStore = dataStore;
@@ -81,6 +84,7 @@ namespace DCL.Social.Chat
             this.socialAnalytics = socialAnalytics;
             this.chatController = chatController;
             this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
             this.profanityFilter = profanityFilter;
         }
 
@@ -128,10 +132,8 @@ namespace DCL.Social.Chat
             addMessagesCancellationToken.SafeCancelAndDispose();
         }
 
-        private void OpenedContextMenu()
-        {
-            socialAnalytics.SendClickedMention();
-        }
+        private void OpenedContextMenu(string userId) =>
+            socialAnalytics.SendClickedMention(userId);
 
         public void SetVisibility(bool visible)
         {
@@ -383,8 +385,8 @@ namespace DCL.Social.Chat
                 return;
             }
 
-            if (MentionsUtils.TextContainsMention(message.body))
-                socialAnalytics.SendMessageWithMention();
+            foreach (string mention in MentionsUtils.GetAllMentions(message.body))
+                socialAnalytics.SendMessageWithMention(mention);
 
             ApplyWhisperAttributes(message);
 
@@ -512,7 +514,7 @@ namespace DCL.Social.Chat
         private void HandleMentionSuggestionSelected(string userId)
         {
             view.AddMentionToInputField(mentionFromIndex, mentionLength, userId, mentionSuggestedProfiles[userId].userName);
-            socialAnalytics.SendMentionCreated(MentionCreationSource.SuggestionList);
+            socialAnalytics.SendMentionCreated(MentionCreationSource.SuggestionList, userId);
             HideMentionSuggestions();
         }
 
@@ -525,6 +527,7 @@ namespace DCL.Social.Chat
         private void HandleCopyMessageToClipboard(ChatEntryModel model)
         {
             clipboard.WriteText(ChatUtils.RemoveNoParse(model.bodyText));
+            copyPasteAnalyticsService.Copy("message");
         }
     }
 }

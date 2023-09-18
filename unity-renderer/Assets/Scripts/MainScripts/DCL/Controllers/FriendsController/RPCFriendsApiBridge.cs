@@ -97,9 +97,6 @@ namespace DCl.Social.Friends
             this.fallbackApiBridge = fallbackApiBridge;
         }
 
-        public void RejectFriendship(string userId) =>
-            fallbackApiBridge.RejectFriendship(userId);
-
         public async UniTask<RejectFriendshipPayload> RejectFriendshipAsync(string friendRequestId, CancellationToken cancellationToken)
         {
             try
@@ -140,9 +137,6 @@ namespace DCl.Social.Friends
 
         public UniTask<AddFriendsPayload> GetFriendsAsync(string usernameOrId, int limit, CancellationToken cancellationToken = default) =>
             fallbackApiBridge.GetFriendsAsync(usernameOrId, limit, cancellationToken);
-
-        public void GetFriendRequests(int sentLimit, int sentSkip, int receivedLimit, int receivedSkip) =>
-            fallbackApiBridge.GetFriendRequests(sentLimit, sentSkip, receivedLimit, receivedSkip);
 
         public async UniTask<AddFriendRequestsV2Payload> GetFriendRequestsAsync(int sentLimit, int sentSkip,
             int receivedLimit, int receivedSkip,
@@ -187,9 +181,6 @@ namespace DCl.Social.Friends
 
         public void GetFriendsWithDirectMessages(string usernameOrId, int limit, int skip) =>
             fallbackApiBridge.GetFriendsWithDirectMessages(usernameOrId, limit, skip);
-
-        public void RequestFriendship(string friendUserId) =>
-            fallbackApiBridge.RequestFriendship(friendUserId);
 
         public async UniTask<RequestFriendshipConfirmationPayload> RequestFriendshipAsync(string userId, string messageBody,
             CancellationToken cancellationToken)
@@ -259,16 +250,6 @@ namespace DCl.Social.Friends
             }
         }
 
-        public UniTask CancelRequestByUserIdAsync(string userId, CancellationToken cancellationToken) =>
-            fallbackApiBridge.CancelRequestByUserIdAsync(userId, cancellationToken);
-
-        public void CancelRequestByUserId(string userId) =>
-            fallbackApiBridge.CancelRequestByUserId(userId);
-
-        public void AcceptFriendship(string userId) =>
-            fallbackApiBridge.AcceptFriendship(userId);
-
-        [PublicAPI]
         public UniTask<ApproveFriendRequestReply> ApproveFriendRequest(ApproveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
             OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
@@ -280,7 +261,6 @@ namespace DCl.Social.Friends
             return UniTask.FromResult(new ApproveFriendRequestReply());
         }
 
-        [PublicAPI]
         public UniTask<RendererRejectFriendRequestReply> RejectFriendRequest(RendererRejectFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
             OnFriendshipStatusUpdated?.InvokeOnMainThread(new FriendshipUpdateStatusMessage
@@ -292,7 +272,6 @@ namespace DCl.Social.Friends
             return UniTask.FromResult(new RendererRejectFriendRequestReply());
         }
 
-        [PublicAPI]
         public async UniTask<RendererCancelFriendRequestReply> CancelFriendRequest(RendererCancelFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);
@@ -306,7 +285,6 @@ namespace DCl.Social.Friends
             return new RendererCancelFriendRequestReply();
         }
 
-        [PublicAPI]
         public async UniTask<ReceiveFriendRequestReply> ReceiveFriendRequest(ReceiveFriendRequestPayload request, RPCContext context, CancellationToken ct)
         {
             await UniTask.SwitchToMainThread(ct);

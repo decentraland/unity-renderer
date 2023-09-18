@@ -111,6 +111,6 @@ public class JumpInButton : MonoBehaviour
     {
         OnClick?.Invoke();
         Environment.i.world.teleportController.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
-        socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation);
+        socialAnalytics.SendPlayerJoin(PlayerActionSource.Conversation, currentUserId);
     }
 }

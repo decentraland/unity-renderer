@@ -14,9 +14,9 @@ namespace DCLFeatures.CameraReel.Section
         private const int LIMIT = 30;
 
         private readonly CameraReelModel cameraReelModel;
-        private readonly CameraReelSectionView sectionView;
-        private readonly CameraReelGalleryView galleryView;
-        private readonly CameraReelGalleryStorageView galleryStorageView;
+        private readonly ICameraReelSectionView sectionView;
+        private readonly ICameraReelGalleryView galleryView;
+        private readonly ICameraReelGalleryStorageView galleryStorageView;
         private readonly DataStore dataStore;
         private readonly ICameraReelStorageService storageService;
         private readonly Func<ScreenshotViewerController> screenshotViewerControllerFactory;
@@ -27,9 +27,9 @@ namespace DCLFeatures.CameraReel.Section
         private int offset;
         private CancellationTokenSource fetchScreenshotsCancellationToken;
 
-        public CameraReelSectionController(CameraReelSectionView sectionView,
-            CameraReelGalleryView galleryView,
-            CameraReelGalleryStorageView galleryStorageView,
+        public CameraReelSectionController(ICameraReelSectionView sectionView,
+            ICameraReelGalleryView galleryView,
+            ICameraReelGalleryStorageView galleryStorageView,
             DataStore dataStore,
             ICameraReelStorageService storageService,
             CameraReelModel cameraReelModel,

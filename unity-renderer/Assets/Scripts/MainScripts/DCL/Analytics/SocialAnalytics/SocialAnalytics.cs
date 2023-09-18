@@ -122,10 +122,13 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_CLICKED_ON_COLLECTIONS, new Dictionary<string, string>());
         }
 
-        public void SendStartedConversation(PlayerActionSource source)
+        public void SendStartedConversation(PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
-                { { "source", source.ToString() } };
+            {
+                { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
+            };
 
             analytics.SendAnalytic(PASSPORT_STARTED_CONVERSATION, data);
         }
@@ -170,10 +173,13 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_USERNAME_COPY, data);
         }
 
-        public void SendJumpInToPlayer(PlayerActionSource source)
+        public void SendJumpInToPlayer(PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
-                { { "source", source.ToString() } };
+            {
+                { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
+            };
 
             analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
         }
@@ -323,84 +329,99 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(FRIEND_DELETED, data);
         }
 
-        public void SendMessageWithMention()
+        public void SendMessageWithMention(string recipientId)
         {
-            analytics.SendAnalytic(MENTION_MESSAGE_SENT, new Dictionary<string, string>());
+            analytics.SendAnalytic(MENTION_MESSAGE_SENT, new Dictionary<string, string>
+            {
+                { "receiver_wallet_id", recipientId },
+            });
         }
 
-        public void SendClickedMention()
+        public void SendClickedMention(string recipientId)
         {
-            analytics.SendAnalytic(MENTION_CLICKED, new Dictionary<string, string>());
+            analytics.SendAnalytic(MENTION_CLICKED, new Dictionary<string, string>
+            {
+                { "receiver_wallet_id", recipientId },
+            });
         }
 
-        public void SendMentionCreated(MentionCreationSource source)
+        public void SendMentionCreated(MentionCreationSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(MENTION_CREATED, data);
         }
 
-        public void SendPassportOpen(bool found = true, AvatarOpenSource source = AvatarOpenSource.World)
+        public void SendPassportOpen(string recipientId, bool found = true, AvatarOpenSource source = AvatarOpenSource.World)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "source", source.ToString() },
-                { "found", found.ToString() }
+                { "found", found.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(PASSPORT_OPENED, data);
         }
 
-        public void SendPassportClose(double timeSpent)
+        public void SendPassportClose(string recipientId, double timeSpent)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
-                { { "time_spent", timeSpent.ToString() } };
+            {
+                { "time_spent", timeSpent.ToString() },
+                { "receiver_wallet_id", recipientId },
+            };
 
             analytics.SendAnalytic(PASSPORT_CLOSED, data);
         }
 
-        public void SendPlayerBlocked(bool isFriend, PlayerActionSource source)
+        public void SendPlayerBlocked(bool isFriend, PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "friend", isFriend.ToString() },
                 { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(PLAYER_BLOCKED, data);
         }
 
-        public void SendPlayerUnblocked(bool isFriend, PlayerActionSource source)
+        public void SendPlayerUnblocked(bool isFriend, PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "friend", isFriend.ToString() },
                 { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(PLAYER_UNBLOCKED, data);
         }
 
-        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source)
+        public void SendPlayerReport(PlayerReportIssueType issueType, double messageLength, PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "issue_type", issueType.ToString() },
                 { "text_length", messageLength.ToString() },
                 { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(PLAYER_REPORT, data);
         }
 
-        public void SendPlayerJoin(PlayerActionSource source)
+        public void SendPlayerJoin(PlayerActionSource source, string recipientId)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
                 { "source", source.ToString() },
+                { "receiver_wallet_id", recipientId },
             };
 
             analytics.SendAnalytic(PLAYER_JOIN, data);

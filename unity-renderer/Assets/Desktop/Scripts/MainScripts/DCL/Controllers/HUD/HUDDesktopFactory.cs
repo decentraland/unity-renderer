@@ -4,6 +4,7 @@ using DCL.Browser;
 using DCL.Controllers.HUD;
 using DCL.MyAccount;
 using DCL.SettingsCommon;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
@@ -52,10 +53,11 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new MinimapHUDControllerDesktop(
                     MinimapMetadataController.i,
                     new WebInterfaceHomeLocationController(),
-                    DCL.Environment.i,
-                    DCL.Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                    Environment.i,
+                    Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                     new PlacesAnalytics(),
-                    Clipboard.Create());
+                    Clipboard.Create(),
+                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>());
                 break;
 
             default:

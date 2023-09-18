@@ -45,7 +45,7 @@ namespace DCL.Social.Chat
         private bool isSortingDirty;
 
         public event Action<string, int> OnMessageUpdated;
-        public event Action OnOpenedContextMenu;
+        public event Action<string> OnOpenedContextMenu;
 
         public event Action OnShowMenu
         {
@@ -408,7 +408,7 @@ namespace DCL.Social.Chat
 
         private void OnOpenContextMenu(ChatEntry chatEntry)
         {
-            OnOpenedContextMenu?.Invoke();
+            OnOpenedContextMenu?.Invoke(chatEntry.Model.senderId);
             chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
             contextMenu.transform.parent = transform.parent;
             contextMenu.transform.SetAsLastSibling();

@@ -64,7 +64,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "https://sdk-team-cdn.decentraland.org/@dcl/protocol/branch//dcl-protocol-1.0.0-6226896990.commit-0150113.tgz",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "7.0.6-20230809174058.commit-2408927",
+    "@dcl/scene-runtime": "7.0.6-20230915161611.commit-59578a0",
     "@dcl/schemas": "^9.1.1",
     "@dcl/single-sign-on-client": "^0.0.12",
     "@dcl/urn-resolver": "^2.2.0",
