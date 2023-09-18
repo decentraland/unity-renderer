@@ -298,4 +298,23 @@ namespace DCL.ECS7.InternalComponents
             this.Results = results;
         }
     }
+
+    public struct InternalTween : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public readonly Transform transform;
+        public readonly Vector3[] tweenPoints;
+        public readonly float tweenDurationInSeconds;
+        public float currentInterpolationTime;
+
+        public InternalTween(Transform transform, Vector3[] tweenPoints, float tweenDurationInSeconds)
+        {
+            this.dirty = false;
+            this.transform = transform;
+            this.tweenPoints = tweenPoints;
+
+            this.currentInterpolationTime = 0;
+            this.tweenDurationInSeconds = tweenDurationInSeconds;
+        }
+    }
 }

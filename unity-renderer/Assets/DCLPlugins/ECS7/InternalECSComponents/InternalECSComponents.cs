@@ -28,6 +28,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalTween> TweenComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -196,6 +197,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
             crdtExecutors,
             this
         );
+
+        TweenComponent = new InternalECSComponent<InternalTween>(
+            InternalECSComponentsId.TWEEN,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
     }
 
     public void Dispose()
@@ -217,6 +227,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
+        TweenComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()
