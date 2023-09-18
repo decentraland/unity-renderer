@@ -45,7 +45,7 @@ namespace DCL
                                        .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
 
                 wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
-                                       .ReturnsForAnyArgs(null);
+                                       .ReturnsForAnyArgs(UniTask.FromResult<WearableItem>(null));
 
                 wearablesCatalogService.RequestWearableCollection(default, default, default)
                                        .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
@@ -63,7 +63,7 @@ namespace DCL
                                     .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
 
                 emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
-                                    .ReturnsForAnyArgs(null);
+                                    .ReturnsForAnyArgs(UniTask.FromResult<WearableItem>(null));
 
                 return emotesCatalogService;
             });
