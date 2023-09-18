@@ -19,6 +19,7 @@ namespace DCL.SettingsCommon
         public const string FIRST_PERSON_CAMERA_FOV = "firstPersonCameraFOV";
         public const string SHOW_AVATAR_NAMES = "showAvatarNames";
         public const string CAMERA_MOVEMENT_MODE = "cameraMovementMode";
+        public const string ADULT_SCENES_FILTERING = "adultScenesFiltering";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
@@ -61,6 +62,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(FIRST_PERSON_CAMERA_FOV, currentSettings.firstPersonCameraFOV);
             settingsByKey.SetBool(SHOW_AVATAR_NAMES, currentSettings.showAvatarNames);
             settingsByKey.SetBool(CAMERA_MOVEMENT_MODE, currentSettings.leftMouseButtonCursorLock);
+            settingsByKey.SetBool(ADULT_SCENES_FILTERING, currentSettings.adultScenesFiltering);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -71,8 +73,7 @@ namespace DCL.SettingsCommon
 
             try
             {
-                settings.profanityChatFiltering = settingsByKey.GetBool(PROFANITY_CHAT_FILTERING,
-                    defaultSettings.profanityChatFiltering);
+                settings.profanityChatFiltering = settingsByKey.GetBool(PROFANITY_CHAT_FILTERING, defaultSettings.profanityChatFiltering);
                 settings.mouseSensitivity = settingsByKey.GetFloat(MOUSE_SENSITIVITY, defaultSettings.mouseSensitivity);
                 settings.namesOpacity = settingsByKey.GetFloat(NAMES_OPACITY, defaultSettings.namesOpacity);
                 settings.scenesLoadRadius = settingsByKey.GetFloat(SCENES_LOAD_RADIUS, defaultSettings.scenesLoadRadius);
@@ -86,6 +87,7 @@ namespace DCL.SettingsCommon
                 settings.firstPersonCameraFOV = settingsByKey.GetFloat(FIRST_PERSON_CAMERA_FOV, defaultSettings.firstPersonCameraFOV);
                 settings.showAvatarNames = settingsByKey.GetBool(SHOW_AVATAR_NAMES, defaultSettings.showAvatarNames);
                 settings.leftMouseButtonCursorLock = settingsByKey.GetBool(CAMERA_MOVEMENT_MODE, defaultSettings.leftMouseButtonCursorLock);
+                settings.adultScenesFiltering = settingsByKey.GetBool(ADULT_SCENES_FILTERING, defaultSettings.adultScenesFiltering);
             }
             catch (Exception e)
             {
