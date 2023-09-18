@@ -27,8 +27,7 @@ namespace ECSSystems.TweenSystem
             {
                 InternalTween model = tweenComponentGroup[i].value.model;
 
-                float calculatedSpeed = CalculateSpeed(model.tweenPoints, model.tweenDurationInSeconds);
-                model.currentInterpolationTime += calculatedSpeed * Time.deltaTime;
+                model.currentInterpolationTime += model.calculatedSpeed * Time.deltaTime;
                 if (model.currentInterpolationTime > 1)
                     model.currentInterpolationTime = 1;
 
@@ -37,18 +36,6 @@ namespace ECSSystems.TweenSystem
 
                 // ...
             }
-        }
-
-        private float CalculateSpeed(Vector3[] tweenPoints, float durationInSeconds)
-        {
-            float distance = 0;
-            for (var i = 0; i < tweenPoints.Length; i++)
-            {
-                // TODO: Optimize with sqrMagnitude?
-                distance += tweenPoints[i].magnitude;
-            }
-
-            return distance / durationInSeconds;
         }
     }
 }

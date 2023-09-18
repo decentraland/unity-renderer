@@ -305,6 +305,7 @@ namespace DCL.ECS7.InternalComponents
         public readonly Transform transform;
         public readonly Vector3[] tweenPoints;
         public readonly float tweenDurationInSeconds;
+        public readonly float calculatedSpeed;
         public float currentInterpolationTime;
 
         public InternalTween(Transform transform, Vector3[] tweenPoints, float tweenDurationInSeconds)
@@ -315,6 +316,21 @@ namespace DCL.ECS7.InternalComponents
 
             this.currentInterpolationTime = 0;
             this.tweenDurationInSeconds = tweenDurationInSeconds;
+            this.calculatedSpeed = 0;
+
+            this.calculatedSpeed = CalculateSpeed(tweenPoints, tweenDurationInSeconds);
+        }
+
+        private float CalculateSpeed(Vector3[] tweenPoints, float durationInSeconds)
+        {
+            float distance = 0;
+            for (var i = 0; i < tweenPoints.Length; i++)
+            {
+                // TODO: Optimize with sqrMagnitude?
+                distance += tweenPoints[i].magnitude;
+            }
+
+            return distance / durationInSeconds;
         }
     }
 }
