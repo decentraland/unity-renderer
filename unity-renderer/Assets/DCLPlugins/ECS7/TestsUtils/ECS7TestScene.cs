@@ -24,6 +24,9 @@ public class ECS7TestScene : IParcelScene
     public bool IsInitMessageDone() =>
         true;
 
+    public void SetContentCategory(SceneContentCategory category) =>
+        throw new NotImplementedException();
+
     IDCLEntity IParcelScene.CreateEntity(long id)
     {
         return CreateEntity(id);
@@ -42,6 +45,8 @@ public class ECS7TestScene : IParcelScene
     IECSComponentsManagerLegacy IParcelScene.componentsManagerLegacy => throw new NotImplementedException();
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
+    public SceneContentCategory contentCategory => throw new NotImplementedException();
+
     IDCLEntity IParcelScene.GetEntityById(long entityId)
     {
         throw new NotImplementedException();

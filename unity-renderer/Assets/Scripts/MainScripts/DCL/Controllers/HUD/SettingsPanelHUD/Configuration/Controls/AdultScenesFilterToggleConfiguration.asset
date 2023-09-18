@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1beb2919801a5f49833bb7df5673e4e, type: 3}
   m_Name: AdultScenesFilterToggleConfiguration
   m_EditorClassIdentifier: 
-  title: ADULT SCENES FILTER
+  title: ADULT CONTENT FILTER
   controlPrefab: {fileID: 6580391891136655319, guid: 61fc2c179901ae844b48e21ae215a102,
     type: 3}
   controlController: {fileID: 11400000, guid: 39fd412327b47c84e8533c121f4f6f0f, type: 2}

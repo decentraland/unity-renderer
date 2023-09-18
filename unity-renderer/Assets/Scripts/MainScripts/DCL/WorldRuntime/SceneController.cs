@@ -13,6 +13,7 @@ using DCL.Components;
 using DCL.World.PortableExperiences;
 using DCLServices.PortableExperiences.Analytics;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -58,6 +59,7 @@ namespace DCL
 
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
+            DataStore.i.settings.adultScenesFilteringEnabled.OnChange += OnAdultScenesFilterChange;
 
             // TODO(Brian): Move this later to Main.cs
             if (!EnvironmentSettings.RUNNING_TESTS) { PrewarmSceneMessagesPool(); }
@@ -108,6 +110,7 @@ namespace DCL
 
             DataStore.i.player.playerGridPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
+            DataStore.i.settings.adultScenesFilteringEnabled.OnChange -= OnAdultScenesFilterChange;
 
             CommonScriptableObjects.sceneNumber.OnChange -= OnCurrentSceneNumberChange;
 
@@ -205,6 +208,19 @@ namespace DCL
 
             try
             {
+                if (method != MessagingTypes.INIT_DONE)
+                {
+                    switch (scene.contentCategory)
+                    {
+                        case SceneContentCategory.TEEN:
+                            break;
+
+                        case SceneContentCategory.RESTRICTED:
+                        case SceneContentCategory.ADULT when DataStore.i.settings.adultScenesFilteringEnabled.Get():
+                            return;
+                    }
+                }
+
                 switch (method)
                 {
                     case MessagingTypes.ENTITY_CREATE:
@@ -564,6 +580,23 @@ namespace DCL
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 await newScene.SetData(sceneToLoad);
+
+                // TODO (Santi): This is for debugging purposes. Call the places API to get the content category of the scene!!
+                switch (sceneToLoad.basePosition)
+                {
+                    case { x: 100, y: 100 }:
+                        newScene.SetContentCategory(SceneContentCategory.ADULT);
+                        break;
+                    case { x: 100, y: 101 }:
+                        newScene.SetContentCategory(SceneContentCategory.ADULT);
+                        break;
+                    case { x: 101, y: 100 }:
+                        newScene.SetContentCategory(SceneContentCategory.RESTRICTED);
+                        break;
+                    default:
+                        newScene.SetContentCategory(SceneContentCategory.TEEN);
+                        break;
+                }
 
                 if (debugConfig.isDebugMode.Get()) { newScene.InitializeDebugPlane(); }
 
@@ -940,6 +973,23 @@ namespace DCL
                 if (whitelistedPxs[i].StartsWith(pxId)) return true;
 
             return false;
+        }
+
+        private void OnAdultScenesFilterChange(bool isEnabled, bool previousIsEnabled)
+        {
+            if (isEnabled == previousIsEnabled)
+                return;
+
+            var loadedScenes = Environment.i.world.state.GetLoadedScenes();
+            foreach (KeyValuePair<int,IParcelScene> scene in loadedScenes)
+            {
+                if (scene.Value.contentCategory != SceneContentCategory.ADULT)
+                    continue;
+
+                // TODO (Santi): Request the scene reloading!!
+                //UnloadScene(scene.Key);
+                //WebInterface.ReportPosition(new Vector3(scene.Value.sceneData.basePosition.x, scene.Value.sceneData.basePosition.y, 0), Quaternion.identity, 1, Quaternion.identity);
+            }
         }
     }
 }
