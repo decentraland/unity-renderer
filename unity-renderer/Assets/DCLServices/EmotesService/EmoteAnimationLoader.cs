@@ -102,6 +102,7 @@ namespace DCL.Emotes
                 break;
             }
 
+            animation.Stop();
             animation.enabled = false;
         }
 
