@@ -57,13 +57,15 @@ namespace DCL
 
         private void FocusOnHomeLocation()
         {
-            mapCamera.SetPositionAndZoom(Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
-                navmapZoomViewController.ResetZoomToMidValue());
+            mapCamera.SetPositionAndZoom(DataStore.i.HUDs.homePoint.Get(), navmapZoomViewController.ResetZoomToMidValue());
+
+            // TODO: Open home card
         }
 
         private void CenterToPlayerLocation()
         {
-            mapCamera.SetPosition(Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()));
+            mapCamera.SetPositionAndZoom(Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
+                navmapZoomViewController.ResetZoomToMidValue());
         }
     }
 }
