@@ -425,7 +425,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
-    private void StartEmote(string emoteId, bool spatial, float volume)
+    private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
     {
         if (!string.IsNullOrEmpty(emoteId))
         {
@@ -434,7 +434,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
-                emoteClipData.Play(gameObject.layer, spatial, volume);
+                emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
             }
         }
         else
@@ -454,7 +454,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
-    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume)
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude)
     {
         if (animation == null)
             return;
@@ -477,7 +477,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (mustTriggerAnimation || loop)
         {
-            StartEmote(emoteId, spatial, volume);
+            StartEmote(emoteId, spatial, volume, occlude);
 
             if (!string.IsNullOrEmpty(emoteId))
             {

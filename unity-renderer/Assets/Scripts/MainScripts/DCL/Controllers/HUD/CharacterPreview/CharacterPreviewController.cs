@@ -227,7 +227,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public void PlayEmote(string emoteId, long timestamp)
         {
-            avatar.GetEmotesController().PlayEmote(emoteId, timestamp, false);
+            avatar.GetEmotesController().PlayEmote(emoteId, timestamp, false, false);
         }
 
         public void StopEmote()

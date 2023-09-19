@@ -39,7 +39,7 @@ namespace DCL.Emotes
             renderers = ExtraContent.GetComponentsInChildren<Renderer>();
         }
 
-        public void Play(int gameObjectLayer, bool spatial, float volume)
+        public void Play(int gameObjectLayer, bool spatial, float volume, bool occlude)
         {
             if (renderers != null)
             {
@@ -47,6 +47,7 @@ namespace DCL.Emotes
                 {
                     renderer.enabled = true;
                     renderer.gameObject.layer = gameObjectLayer;
+                    renderer.allowOcclusionWhenDynamic = occlude;
                 }
             }
 

@@ -68,14 +68,14 @@ namespace AvatarSystem
             }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
             var volume = GetEmoteVolume();
             if (equippedEmotes.ContainsKey(emoteKey))
-                animator.PlayEmote(emoteId, timestamps, spatial, volume);
+                animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude);
         }
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
