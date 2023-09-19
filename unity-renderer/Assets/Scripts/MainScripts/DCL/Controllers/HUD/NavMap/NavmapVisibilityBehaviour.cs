@@ -21,7 +21,7 @@ namespace DCL
 
         private readonly BaseVariable<bool> navmapVisible;
 
-        private readonly NavmapZoom zoom;
+        private readonly NavmapZoomView zoomView;
         private readonly NavmapRendererConfiguration rendererConfiguration;
 
         private readonly NavmapToastViewController navmapToastViewController;
@@ -35,19 +35,19 @@ namespace DCL
         private IMapCameraController cameraController;
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
-        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoom zoom, NavmapToastView toastView,
+        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView,
             NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
         {
             this.navmapVisible = navmapVisible;
 
-            this.zoom = zoom;
+            this.zoomView = zoomView;
             this.rendererConfiguration = rendererConfiguration;
 
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
-            navmapZoomViewController = new NavmapZoomViewController(zoom);
+            navmapZoomViewController = new NavmapZoomViewController(zoomView);
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
 
@@ -136,10 +136,10 @@ namespace DCL
                 cameraController = mapRenderer.Ref.RentCamera(
                     new MapCameraInput(
                         ACTIVE_MAP_LAYERS,
+                        rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
                         Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
                         navmapZoomViewController.ResetZoom(),
-                        rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                        zoom.zoomVerticalRange));
+                        zoomView.zoomVerticalRange));
 
                 SetRenderImageTransparency(false);
 

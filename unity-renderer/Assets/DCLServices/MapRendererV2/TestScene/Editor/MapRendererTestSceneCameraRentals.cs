@@ -45,9 +45,9 @@ namespace DCLServices.MapRendererV2.TestScene
                 var rent = mapRenderer.RentCamera(
                     new MapCameraInput(
                         (MapLayer)enabledLayers.value,
+                        texRes.value,
                         position.value,
                         zoom.value,
-                        texRes.value,
                         zoomThreshold.value));
 
                 mapCameraControllers.Add(rent);

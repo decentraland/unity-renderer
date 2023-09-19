@@ -11,7 +11,7 @@ namespace DCL
     {
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
 
-        private readonly NavmapZoom view;
+        private readonly NavmapZoomView view;
 
         private bool active;
 
@@ -26,7 +26,7 @@ namespace DCL
         private readonly AnimationCurve normalizedCurve;
         private readonly int zoomSteps;
 
-        public NavmapZoomViewController(NavmapZoom view)
+        public NavmapZoomViewController(NavmapZoomView view)
         {
             this.view = view;
 

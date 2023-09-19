@@ -3,6 +3,7 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using Utils = DCL.Helpers.Utils;
 
 namespace DCLServices.MapRendererV2.MapCameraController
@@ -19,7 +20,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public Camera Camera => mapCameraObject.mapCamera;
 
-        public float Zoom => Mathf.InverseLerp(zoomValues.y, zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+        public float Zoom => Mathf.InverseLerp(zoomValuesRangeInParcels.y, zoomValuesRangeInParcels.x, mapCameraObject.mapCamera.orthographicSize);
 
         public Vector2 LocalPosition => mapCameraObject.mapCamera.transform.localPosition;
 
@@ -33,7 +34,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private RenderTexture renderTexture;
 
         // Zoom Thresholds in Parcels
-        private Vector2Int zoomValues;
+        private Vector2Int zoomValuesRangeInParcels;
 
         private Rect cameraPositionBounds;
 
@@ -53,16 +54,19 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.mapCamera.orthographic = true;
         }
 
-        void IMapCameraControllerInternal.Initialize(Vector2Int textureResolution, Vector2Int zoomValues, MapLayer layers)
+        void IMapCameraControllerInternal.Initialize(Vector2Int textureResolution, Vector2Int zoomRange, MapLayer layers)
         {
             textureResolution = ClampTextureResolution(textureResolution);
-            renderTexture = new RenderTexture(textureResolution.x, textureResolution.y, 0, RenderTextureFormat.Default, 0);
+
+            renderTexture =
+                RenderTexture.GetTemporary(textureResolution.x, textureResolution.y, 0, GraphicsFormat.R8G8B8A8_UNorm, 8, RenderTextureMemoryless.Depth);
+
             // Bilinear and Trilinear make texture blurry
             renderTexture.filterMode = FilterMode.Point;
             renderTexture.autoGenerateMips = false;
             renderTexture.useMipMap = false;
 
-            this.zoomValues = zoomValues * coordsUtils.ParcelSize;
+            this.zoomValuesRangeInParcels = zoomRange * coordsUtils.ParcelSize;
 
             EnabledLayers = layers;
 
@@ -78,7 +82,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             if (!Camera) return;
 
             if (renderTexture.IsCreated())
-                renderTexture.Release();
+                RenderTexture.ReleaseTemporary(renderTexture);
 
             textureResolution = ClampTextureResolution(textureResolution);
             renderTexture.width = textureResolution.x;
@@ -148,7 +152,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private void SetCameraSize(float zoom)
         {
             zoom = Mathf.Clamp01(zoom);
-            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
+            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValuesRangeInParcels.y, zoomValuesRangeInParcels.x, zoom);
 
             CalculateCameraPositionBounds();
         }
