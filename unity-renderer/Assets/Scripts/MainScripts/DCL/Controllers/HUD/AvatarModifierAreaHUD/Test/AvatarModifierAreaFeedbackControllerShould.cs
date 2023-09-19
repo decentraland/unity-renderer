@@ -11,25 +11,26 @@ namespace Tests.AvatarModifierAreaFeedback
 {
     public class AvatarModifierAreaFeedbackControllerShould
     {
-   
+
         private AvatarModifierAreaFeedbackController hudController;
         private IAvatarModifierAreaFeedbackView hudView;
         private BaseRefCounter<AvatarModifierAreaID> warningMessageList => DataStore.i.HUDs.avatarAreaWarnings;
+        private readonly DataStore_Common commonDataStore = new ();
 
         [SetUp]
         public void SetUp()
         {
             hudView = Substitute.For<IAvatarModifierAreaFeedbackView>();
-            hudController = new AvatarModifierAreaFeedbackController(warningMessageList, hudView);
+            hudController = new AvatarModifierAreaFeedbackController(warningMessageList, hudView, commonDataStore);
         }
-        
+
         [Test]
         public void InitializeProperly()
         {
             Assert.AreEqual(hudView, hudController.view);
             hudController.view.Received().SetUp(warningMessageList);
         }
-        
+
 
         [TearDown]
         protected void TearDown()

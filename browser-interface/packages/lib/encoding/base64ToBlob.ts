@@ -26,3 +26,9 @@ export function base64ToBuffer(base64: string): Uint8Array {
 export function base64ToBlob(base64: string, type: string = 'image/jpeg'): Blob {
   return new Blob([base64ToBuffer(base64)], { type })
 }
+
+const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+
+export function isBase64(value: string): boolean {
+  return base64regex.test(value)
+}

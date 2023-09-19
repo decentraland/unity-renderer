@@ -25,5 +25,14 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 x = Mathf.RoundToInt((ScreenWidth - FrameWidth) / 2f),
                 y = Mathf.RoundToInt((ScreenHeight - FrameHeight) / 2f),
             };
+
+        public static ScreenFrameData operator *(ScreenFrameData frame, int factor) =>
+            new()
+            {
+                FrameWidth = frame.FrameWidth * factor,
+                FrameHeight = frame.FrameHeight * factor,
+                ScreenWidth = frame.ScreenWidth * factor,
+                ScreenHeight = frame.ScreenHeight * factor
+            };
     }
 }

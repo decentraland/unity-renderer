@@ -123,6 +123,17 @@ namespace DCLServices.WearablesCatalogService
             return await taskResult.Task.AttachExternalCancellation(ct);
         }
 
+        public UniTask<WearableItem> RequestWearableFromBuilderAsync(string wearableId, CancellationToken ct) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
+        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollection(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
+        public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null) =>
+            throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
+
         private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(
             string userId,
             string[] wearableIds,

@@ -171,9 +171,10 @@ namespace DCL.Emotes
         private UniTask<WearableItem> RequestEmote(string bodyShapeId, string emoteId, CancellationToken ct)
         {
             if (SceneEmoteHelper.IsSceneEmote(emoteId))
-            {
                 return new UniTask<WearableItem>(GenerateSceneEmoteItem(bodyShapeId, emoteId, catalyst.contentUrl));
-            }
+
+            if (!emoteId.StartsWith("urn"))
+                return emotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, ct);
 
             return emotesCatalogService.RequestEmoteAsync(emoteId, ct);
         }

@@ -95,7 +95,6 @@ public class UserContextMenu : ContextMenuComponentView
     private bool isFromMentionContextMenu;
     private IFriendsController friendsControllerInternal;
     private IClipboard clipboardInternal;
-    private bool isNewFriendRequestsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
     private bool isFriendsEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
     private IFriendsController friendsController
@@ -251,7 +250,8 @@ public class UserContextMenu : ContextMenuComponentView
             UserProfileController.userProfilesCatalog.Get(userId)?.userName,
             () =>
             {
-                friendsController.RemoveFriend(userId);
+                friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+                friendsController.RemoveFriendAsync(userId, friendOperationsCancellationToken.Token).Forget();
                 OnUnfriend?.Invoke(userId);
             }), true);
 
@@ -268,27 +268,13 @@ public class UserContextMenu : ContextMenuComponentView
             name = UserProfileController.userProfilesCatalog.Get(userId)?.userName
         });
 
-        if (isNewFriendRequestsEnabled)
-        {
-            DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
-            DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
-        }
-        else
-        {
-            friendsController.RequestFriendship(userId);
-            GetSocialAnalytics().SendFriendRequestSent(UserProfile.GetOwnUserProfile().userId, userId, 0, PlayerActionSource.ProfileContextMenu, "");
-        }
+        DataStore.i.HUDs.sendFriendRequest.Set(userId, true);
+        DataStore.i.HUDs.sendFriendRequestSource.Set((int)PlayerActionSource.ProfileContextMenu);
     }
 
     private void OnCancelFriendRequestButtonPressed()
     {
-        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
-        CancelFriendRequestAsync(userId, friendOperationsCancellationToken.Token).Forget();
-    }
-
-    private async UniTaskVoid CancelFriendRequestAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        if (isNewFriendRequestsEnabled)
+        async UniTaskVoid CancelFriendRequestAsync(string userId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -306,14 +292,9 @@ public class UserContextMenu : ContextMenuComponentView
                 throw;
             }
         }
-        else
-        {
-            friendsController.CancelRequestByUserId(userId);
 
-            GetSocialAnalytics()
-               .SendFriendRequestCancelled(UserProfile.GetOwnUserProfile().userId, userId,
-                    PlayerActionSource.ProfileContextMenu.ToString(), "");
-        }
+        friendOperationsCancellationToken = friendOperationsCancellationToken.SafeRestart();
+        CancelFriendRequestAsync(userId, friendOperationsCancellationToken.Token).Forget();
     }
 
     private void OnMessageButtonPressed()

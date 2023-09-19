@@ -87,10 +87,11 @@ namespace DCL
             int timeout = 0,
             CancellationToken cancellationToken = default,
             Dictionary<string, string> headers = null,
-            bool isSigned = false)
+            bool isSigned = false,
+            string signUrl = null)
         {
             return await SendWebRequest(getWebRequestFactory, url, downloadHandler, onSuccess, onfail, requestAttemps,
-                timeout, cancellationToken, headers, isSigned);
+                timeout, cancellationToken, headers, isSigned, signUrl);
         }
 
         public async UniTask<UnityWebRequest> PatchAsync(
@@ -224,7 +225,8 @@ namespace DCL
             int timeout,
             CancellationToken cancellationToken,
             Dictionary<string, string> headers = null,
-            bool isSigned = false) where T : IWebRequestFactory
+            bool isSigned = false,
+            string signUrl = null) where T : IWebRequestFactory
         {
             requestAttemps = Mathf.Max(1, requestAttemps);
 
@@ -242,7 +244,7 @@ namespace DCL
                     if (index >= 0)
                         url = url.Substring(0, index);
 
-                    SignBodyResponse signedFetchResponse = await rpcSignRequest.RequestSignedRequest(method, url, null, cancellationToken);
+                    SignBodyResponse signedFetchResponse = await rpcSignRequest.RequestSignedRequest(method, signUrl ?? url, null, cancellationToken);
 
                     await UniTask.SwitchToMainThread();
                     for (var j = 0; j < signedFetchResponse.AuthChain.Count; j++)

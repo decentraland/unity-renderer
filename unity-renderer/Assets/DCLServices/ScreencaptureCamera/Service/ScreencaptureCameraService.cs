@@ -28,6 +28,8 @@ namespace DCLServices.ScreencaptureCamera.Service
         private bool featureIsEnabled => featureFlags.Get().IsFeatureEnabled("camera_reel");
         private bool isGuest => userProfileBridge.GetOwn().isGuest;
 
+        private readonly CancellationTokenSource cts;
+
         public ScreencaptureCameraService(IAddressableResourceProvider resourceProvider, BaseVariable<FeatureFlag> featureFlags, DataStore_Player player, IUserProfileBridge userProfileBridge, ScreencaptureCameraExternalDependencies externalDependencies)
         {
             this.resourceProvider = resourceProvider;
@@ -35,12 +37,20 @@ namespace DCLServices.ScreencaptureCamera.Service
             this.player = player;
             this.userProfileBridge = userProfileBridge;
             this.externalDependencies = externalDependencies;
+
+            cts = new CancellationTokenSource();
         }
 
-        public void Initialize() { }
+        public void Initialize()
+        {
+            InitializeInternalAsync(cts.Token).Forget();
+        }
 
         public void Dispose()
         {
+            cts.Cancel();
+            cts.Dispose();
+
             externalDependencies.AllUIHidden.OnChange -= ToggleMainButtonVisibility;
 
             if(cameraBehaviour != null)
@@ -50,7 +60,7 @@ namespace DCLServices.ScreencaptureCamera.Service
                 Object.Destroy(enableCameraButtonCanvas.gameObject);
         }
 
-        public async UniTask InitializeAsync(CancellationToken cancellationToken)
+        private async UniTask InitializeInternalAsync(CancellationToken cancellationToken)
         {
             await UniTask.WaitUntil(() => featureFlags.Get().IsInitialized, cancellationToken: cancellationToken);
             if (!featureIsEnabled) return;
@@ -71,11 +81,6 @@ namespace DCLServices.ScreencaptureCamera.Service
             cameraBehaviour.SetExternalDependencies(externalDependencies.AllUIHidden,
                 externalDependencies.CameraModeInputLocked, externalDependencies.CameraLeftMouseButtonCursorLock, externalDependencies.CameraBlocked,
                 externalDependencies.FeatureKeyTriggersBlocked, externalDependencies.UserMovementKeysBlocked, externalDependencies.IsScreenshotCameraActive);
-        }
-
-        private void EnableScreencaptureCamera(DCLAction_Trigger action)
-        {
-            EnableScreenshotCameraFromButton();
         }
 
         private async Task InitializeMainHUDButton(CancellationToken cancellationToken)

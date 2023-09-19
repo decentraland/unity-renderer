@@ -8,16 +8,18 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Tooltip_StartMenu : TutorialStep_Tooltip
     {
-        internal const int TEACHER_CANVAS_SORT_ORDER_START = 4;
-        internal const string TUTORIAL_COMPLETED_STEP = "TutorialStep_TutorialCompleted";
-        internal const string TOP_MENU_STEP = "TutorialStep_StartMenuTooltip_TopMenu";
-        internal const string PLACES_AND_EVENTS_STEP = "TutorialStep_StartMenuTooltip_PlacesAndEventsSection";
-        internal const string BACKPACK_STEP = "TutorialStep_StartMenuTooltip_BackpackSection";
-        internal const string MAP_STEP = "TutorialStep_StartMenuTooltip_MapSection";
-        internal const string BUILDER_STEP = "TutorialStep_StartMenuTooltip_BuilderSection";
-        internal const string QUEST_STEP = "TutorialStep_StartMenuTooltip_QuestSection";
-        internal const string SETTINGS_STEP = "TutorialStep_StartMenuTooltip_SettingsSection";
-        internal int defaultTeacherCanvasSortOrder;
+        private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+        private const string TUTORIAL_COMPLETED_STEP = "TutorialStep_TutorialCompleted";
+        private const string TOP_MENU_STEP = "TutorialStep_StartMenuTooltip_TopMenu";
+        private const string PLACES_AND_EVENTS_STEP = "TutorialStep_StartMenuTooltip_PlacesAndEventsSection";
+        private const string BACKPACK_STEP = "TutorialStep_StartMenuTooltip_BackpackSection";
+        private const string MAP_STEP = "TutorialStep_StartMenuTooltip_MapSection";
+        private const string BUILDER_STEP = "TutorialStep_StartMenuTooltip_BuilderSection";
+        private const string QUEST_STEP = "TutorialStep_StartMenuTooltip_QuestSection";
+        private const string SETTINGS_STEP = "TutorialStep_StartMenuTooltip_SettingsSection";
+        private const string CAMERA_REEL_STEP = "TutorialStep_StartMenuTooltip_CameraReelSection";
+
+        private int defaultTeacherCanvasSortOrder;
 
         public override void OnStepStart()
         {
@@ -29,6 +31,7 @@ namespace DCL.Tutorial
             DataStore.i.HUDs.avatarEditorVisible.OnChange += AvatarEditorVisibleChanged;
             DataStore.i.HUDs.navmapVisible.OnChange += NavMapVisibleChanged;
             DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += BuilderProjectsPanelVisibleChanged;
+            DataStore.i.HUDs.cameraReelSectionVisible.OnChange += CameraReelVisibleChanged;
             DataStore.i.settings.settingsPanelVisible.OnChange += SettingsPanelVisibleChanged;
 
             if (tutorialController.configuration.teacherCanvas != null)
@@ -51,6 +54,7 @@ namespace DCL.Tutorial
             DataStore.i.HUDs.navmapVisible.OnChange -= NavMapVisibleChanged;
             DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= BuilderProjectsPanelVisibleChanged;
             DataStore.i.settings.settingsPanelVisible.OnChange -= SettingsPanelVisibleChanged;
+            DataStore.i.HUDs.cameraReelSectionVisible.OnChange -= CameraReelVisibleChanged;
         }
 
         public override void OnPointerDown(PointerEventData eventData)
@@ -89,13 +93,16 @@ namespace DCL.Tutorial
                 case SETTINGS_STEP:
                     startMenuTooltipTransform = DataStore.i.exploreV2.settingsTooltipReference.Get();
                     break;
+                case CAMERA_REEL_STEP:
+                    startMenuTooltipTransform = DataStore.i.exploreV2.cameraReelTooltipReference.Get();
+                    break;
             }
 
             if (startMenuTooltipTransform != null)
                 tooltipTransform.position = startMenuTooltipTransform.position;
         }
 
-        internal void ExploreV2IsOpenChanged(bool current, bool previous)
+        private void ExploreV2IsOpenChanged(bool current, bool previous)
         {
             if (current)
                 return;
@@ -103,7 +110,7 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(TUTORIAL_COMPLETED_STEP);
         }
 
-        internal void PlacesAndEventsVisibleChanged(bool current, bool previous)
+        private void PlacesAndEventsVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
@@ -111,7 +118,7 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(PLACES_AND_EVENTS_STEP);
         }
 
-        internal void AvatarEditorVisibleChanged(bool current, bool previous)
+        private void AvatarEditorVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
@@ -119,7 +126,7 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(BACKPACK_STEP);
         }
 
-        internal void NavMapVisibleChanged(bool current, bool previous)
+        private void NavMapVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
@@ -127,7 +134,7 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(MAP_STEP);
         }
 
-        internal void BuilderProjectsPanelVisibleChanged(bool current, bool previous)
+        private void BuilderProjectsPanelVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
@@ -135,7 +142,7 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(BUILDER_STEP);
         }
 
-        internal void QuestsPanelVisibleChanged(bool current, bool previous)
+        private void QuestsPanelVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
@@ -143,12 +150,20 @@ namespace DCL.Tutorial
             tutorialController.GoToSpecificStep(QUEST_STEP);
         }
 
-        internal void SettingsPanelVisibleChanged(bool current, bool previous)
+        private void SettingsPanelVisibleChanged(bool current, bool previous)
         {
             if (!current)
                 return;
 
             tutorialController.GoToSpecificStep(SETTINGS_STEP);
+        }
+
+        private void CameraReelVisibleChanged(bool current, bool previous)
+        {
+            if (!current)
+                return;
+
+            tutorialController.GoToSpecificStep(CAMERA_REEL_STEP);
         }
     }
 }
