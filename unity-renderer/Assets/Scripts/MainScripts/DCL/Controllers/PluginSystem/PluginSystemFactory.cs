@@ -15,7 +15,7 @@ using DCL.PortableExperiences.Confirmation;
 using DCL.PortableExperiencesToggle;
 using DCL.Providers;
 using DCL.Skybox;
-using DCL.Social.Chat.Channels;
+using DCL.Social.Chat;
 using DCL.Social.Friends;
 using DCL.Tutorial;
 using DCL.Wallet;
@@ -108,7 +108,6 @@ namespace DCL
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
             pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");
-            pluginSystem.RegisterWithFlag<ChatChannelsPlugin>(() => new ChatChannelsPlugin(), "matrix_channels_enabled");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

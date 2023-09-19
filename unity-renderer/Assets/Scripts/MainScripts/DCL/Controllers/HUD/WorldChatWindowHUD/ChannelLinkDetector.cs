@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
+using DCL.Chat;
 using DCL.Chat.Channels;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
@@ -9,10 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace DCL.Social.Chat
 {
-    public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler, IChannelLinkDetectorView
+    // TODO: refactor into MVC
+    public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
-        public static readonly BaseHashSet<ChannelLinkDetector> INSTANCES = new ();
-
         [SerializeField] internal TMP_Text textComponent;
 
         private readonly CancellationTokenSource cancellationToken = new ();
@@ -20,18 +19,25 @@ namespace DCL.Social.Chat
         internal string currentText;
         internal bool hasNoParseLabel;
         internal List<string> channelsFoundInText = new ();
-
-        public event Action<string> OnClicked;
+        private bool isAllowedToCreateChannels = true;
 
         private void Awake()
         {
-            INSTANCES.Add(this);
+            if (textComponent == null)
+                return;
+
+            textComponent.OnPreRenderText += OnTextComponentPreRenderText;
+
+            if (Environment.i != null
+                && Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>() != null)
+            {
+                var channelsFeatureFlagService = Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>();
+                isAllowedToCreateChannels = channelsFeatureFlagService.IsChannelsFeatureEnabled();
+            }
         }
 
         private void OnDestroy()
         {
-            INSTANCES.Remove(this);
-
             cancellationToken.Cancel();
             cancellationToken.Dispose();
 
@@ -41,26 +47,28 @@ namespace DCL.Social.Chat
             textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
         }
 
-        public void Enable()
-        {
-            if (textComponent == null) return;
-
-            textComponent.OnPreRenderText -= OnTextComponentPreRenderText;
-
-            if (true)
-                textComponent.OnPreRenderText += OnTextComponentPreRenderText;
-        }
-
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (!isAllowedToCreateChannels) return;
+
             if (eventData.button != PointerEventData.InputButton.Left) return;
             string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
-            OnClicked?.Invoke(clickedLink);
+
+            if (!ChannelUtils.IsAChannel(clickedLink)) return;
+
+            if (UserProfile.GetOwnUserProfile().isGuest)
+                DataStore.i.HUDs.connectWalletModalVisible.Set(true);
+            else
+            {
+                DataStore.i.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+                DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
+            }
         }
 
         private void OnTextComponentPreRenderText(TMP_TextInfo textInfo)
         {
             if (currentText == textComponent.text) return;
+            if (!isAllowedToCreateChannels) return;
 
             hasNoParseLabel = textInfo.textComponent.text.ToLower().Contains("<noparse>");
             RefreshChannelPatterns(cancellationToken.Token).Forget();
