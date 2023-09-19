@@ -53,8 +53,7 @@ namespace DCL
             positionDirty = true;
             lastSortFrame = 0;
             enabled = true;
-
-            //CommonScriptableObjects.contentModerationDeactivated.Set(!isContentModerationFeatureEnabled);
+            
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             SetupDeferredRunners();
