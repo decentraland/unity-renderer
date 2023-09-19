@@ -56,6 +56,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     public event Action<string> OnSearchText;
     public event Action<string> OnSubmit;
     public event Action<string> OnSearchValueChanged;
+    public event Action<bool> OnSelected;
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
@@ -69,6 +70,10 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(s => SubmitSearch(s));
         clearSearchButton.onClick.AddListener(() => ClearSearch());
+        inputField.onSelect.RemoveAllListeners();
+        inputField.onSelect.AddListener((text)=>OnSelected?.Invoke(true));
+        inputField.onDeselect.RemoveAllListeners();
+        inputField.onDeselect.AddListener((text)=>OnSelected?.Invoke(false));
 
         SetClearMode();
     }

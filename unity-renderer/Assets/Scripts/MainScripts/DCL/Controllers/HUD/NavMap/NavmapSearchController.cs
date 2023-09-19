@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 public class NavmapSearchController : IDisposable
 {
@@ -21,7 +22,7 @@ public class NavmapSearchController : IDisposable
         this.placesAPIService = placesAPIService;
         this.playerPrefs = playerPrefs;
 
-        view.OnFocusedSearchBar += OnFocusChange;
+        view.OnSelectedSearchBar += OnSelectedSearchbarChange;
         view.OnSearchedText += OnSearchedText;
     }
 
@@ -43,9 +44,9 @@ public class NavmapSearchController : IDisposable
         view.SetSearchResultRecords(searchPlaces.places);
     }
 
-    private void OnFocusChange(bool isFocused)
+    private void OnSelectedSearchbarChange(bool isSelected)
     {
-        if (isFocused)
+        if (isSelected)
         {
             GetAndShowPreviousSearches();
         }
@@ -57,10 +58,10 @@ public class NavmapSearchController : IDisposable
 
     private void GetAndShowPreviousSearches()
     {
-            string[] previousSearches = GetPreviousSearches();
+        string[] previousSearches = GetPreviousSearches();
 
-            if (previousSearches.Length > 0)
-                view.SetHistoryRecords(previousSearches);
+        if (previousSearches.Length > 0)
+            view.SetHistoryRecords(previousSearches);
     }
 
     public void Dispose()
@@ -69,9 +70,21 @@ public class NavmapSearchController : IDisposable
 
     private void AddToPreviousSearch(string searchToAdd)
     {
-        string[] previousSearches = playerPrefs.GetString(PREVIOUS_SEARCHES_KEY, "").Split('|');
+        string playerPrefsPreviousSearches = playerPrefs.GetString(PREVIOUS_SEARCHES_KEY);
+        string[] previousSearches = string.IsNullOrEmpty(playerPrefsPreviousSearches) ? Array.Empty<string>() : playerPrefsPreviousSearches.Split('|');
+        if (previousSearches.Length < 5)
+        {
+            playerPrefs.Set(PREVIOUS_SEARCHES_KEY, previousSearches.Length > 0 ? searchToAdd + "|" + string.Join("|", previousSearches) : searchToAdd);
+        }
+        else
+        {
+            playerPrefs.Set(PREVIOUS_SEARCHES_KEY, searchToAdd + "|" + string.Join("|", previousSearches.Take(4)));
+        }
     }
 
-    private string[] GetPreviousSearches() =>
-        playerPrefs.GetString(PREVIOUS_SEARCHES_KEY, "").Split('|');
+    private string[] GetPreviousSearches()
+    {
+        string previousSearches = playerPrefs.GetString(PREVIOUS_SEARCHES_KEY, "");
+        return string.IsNullOrEmpty(previousSearches) ? Array.Empty<string>() : previousSearches.Split('|');
+    }
 }

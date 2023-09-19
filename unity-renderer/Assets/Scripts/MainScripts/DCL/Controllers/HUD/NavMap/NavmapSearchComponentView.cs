@@ -12,7 +12,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     [SerializeField] internal SearchRecordComponentView recordPrefab;
     [SerializeField] internal Transform recordsParent;
 
-    public event Action<bool> OnFocusedSearchBar;
+    public event Action<bool> OnSelectedSearchBar;
     public event Action<string> OnSearchedText;
 
     private UnityObjectPool<SearchRecordComponentView> recordsPool;
@@ -20,7 +20,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
 
     public void Start()
     {
-        searchBar.onFocused += OnSearchBarFocused;
+        searchBar.OnSelected += OnSearchBarSelected;
         searchBar.OnSearchText += OnSearchText;
         searchBar.OnSearchValueChanged += OnSearchValueChanged;
 
@@ -38,14 +38,27 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
         OnSearchedText?.Invoke(searchText);
     }
 
-    private void OnSearchBarFocused(bool isOnFocus)
+    private void OnSearchBarSelected(bool isOnFocus)
     {
-        OnFocusedSearchBar?.Invoke(isOnFocus);
+        OnSelectedSearchBar?.Invoke(isOnFocus);
     }
 
     public void SetHistoryRecords(string[] previousSearches)
     {
         ClearResults();
+
+        for(int i = previousSearches.Length - 1; i >= 0; i--)
+        {
+            SearchRecordComponentView searchRecordComponentView = recordsPool.Get();
+            searchRecordComponentView.OnSelectedHistoryRecord -= OnSelectedHistoryRecord;
+            searchRecordComponentView.OnSelectedHistoryRecord += OnSelectedHistoryRecord;
+            searchRecordComponentView.SetModel(new SearchRecordComponentModel()
+            {
+                recordText = previousSearches[i],
+                isHistory = true
+            });
+            usedRecords.Add(searchRecordComponentView);
+        }
     }
 
     public void SetSearchResultRecords(IReadOnlyList<IHotScenesController.PlaceInfo> places)
@@ -64,6 +77,11 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
         }
     }
 
+    private void OnSelectedHistoryRecord(string searchText)
+    {
+        searchBar.SubmitSearch(searchText, true);
+    }
+
     public void ClearResults()
     {
         foreach (var pooledRecord in usedRecords)
@@ -80,7 +98,9 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     {
         base.Dispose();
 
-        searchBar.onFocused -= OnSearchBarFocused;
+        searchBar.onFocused -= OnSearchBarSelected;
+        searchBar.OnSearchText -= OnSearchText;
+        searchBar.OnSearchValueChanged -= OnSearchValueChanged;
 
         foreach (var pooledRecord in usedRecords)
             recordsPool.Release(pooledRecord);
