@@ -985,10 +985,8 @@ namespace DCL
             {
                 if (scene.Value.contentCategory != SceneContentCategory.ADULT)
                     continue;
-
-                // TODO (Santi): Request the scene reloading!!
-                //UnloadScene(scene.Key);
-                //WebInterface.ReportPosition(new Vector3(scene.Value.sceneData.basePosition.x, scene.Value.sceneData.basePosition.y, 0), Quaternion.identity, 1, Quaternion.identity);
+                
+                WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
             }
         }
     }
