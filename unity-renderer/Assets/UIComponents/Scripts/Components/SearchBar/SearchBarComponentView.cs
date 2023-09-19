@@ -55,6 +55,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     public event Action<string> OnSearchText;
     public event Action<string> OnSubmit;
+    public event Action<string> OnSearchValueChanged;
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
@@ -147,6 +148,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void OnValueChanged(string value)
     {
+        OnSearchValueChanged?.Invoke(value);
         AudioScriptableObjects.input.Play(true);
         if (model.idleTimeToTriggerSearch < 0)
             return;

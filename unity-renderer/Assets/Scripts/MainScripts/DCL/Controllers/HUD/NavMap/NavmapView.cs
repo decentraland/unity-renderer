@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
@@ -13,6 +14,7 @@ namespace DCL
         [Header("TEXT")]
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
+        [SerializeField] internal NavmapSearchComponentView searchView;
 
         [Space]
         [SerializeField] internal NavmapToastView toastView;
@@ -27,9 +29,11 @@ namespace DCL
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
+        private NavmapSearchController navmapSearchController;
 
         private void Start()
         {
+            navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoom, toastView, navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
