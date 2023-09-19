@@ -30,6 +30,7 @@ namespace DCL.ECSComponents
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
         private readonly VideoPlayerRegister videoPlayerRegister;
+        private readonly TweenRegister tweenRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -46,6 +47,7 @@ namespace DCL.ECSComponents
         private readonly GltfContainerLoadingStateRegister gltfContainerLoadingStateRegister;
         private readonly EngineInfoRegister engineInfoRegister;
         private readonly UiCanvasInformationRegister uiCanvasInformationRegister;
+        private readonly TweenStateRegister tweenStateRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
@@ -69,6 +71,7 @@ namespace DCL.ECSComponents
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
             videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
             videoEventRegister = new VideoEventRegister(ComponentID.VIDEO_EVENT, componentsFactory, componentsWriter);
+            tweenRegister = new TweenRegister(ComponentID.TWEEN, componentsFactory, componentsWriter, internalComponents);
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
@@ -87,6 +90,7 @@ namespace DCL.ECSComponents
             gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentsWriter);
             engineInfoRegister = new EngineInfoRegister(ComponentID.ENGINE_INFO, componentsFactory, componentsWriter);
             uiCanvasInformationRegister = new UiCanvasInformationRegister(ComponentID.UI_CANVAS_INFORMATION, componentsFactory, componentsWriter);
+            tweenStateRegister = new TweenStateRegister(ComponentID.TWEEN_STATE, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -110,6 +114,7 @@ namespace DCL.ECSComponents
             meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
             videoPlayerRegister.Dispose();
+            tweenRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();
@@ -127,6 +132,7 @@ namespace DCL.ECSComponents
             videoEventRegister.Dispose();
             engineInfoRegister.Dispose();
             uiCanvasInformationRegister.Dispose();
+            tweenStateRegister.Dispose();
         }
     }
 }

@@ -3,16 +3,16 @@ using DCL.ECSRuntime;
 
 namespace DCL.ECSComponents
 {
-    public class TweenRegister : IDisposable
+    public class TweenStateRegister : IDisposable
     {
         private readonly ECSComponentsFactory factory;
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public TweenRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
+        public TweenStateRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTween>, () => new ECSTweenHandler(internalComponents.TweenComponent));
-            componentWriter.AddOrReplaceComponentSerializer<PBTween>(componentId, ProtoSerialization.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTweenState>, null);
+            componentWriter.AddOrReplaceComponentSerializer<PBTweenState>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
