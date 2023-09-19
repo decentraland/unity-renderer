@@ -61,7 +61,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
             Vector2 bottomLeft = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, worldCorners[0]);
             Vector2 topRight = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, worldCorners[2]);
 
-            screenSpaceToLocalCameraPositionRatio = mapCameraController.GetVerticalSizeInLocalUnits() / (topRight - bottomLeft).y;
+            screenSpaceToLocalCameraPositionRatio = mapCameraController.VerticalSizeInLocalUnits / (topRight - bottomLeft).y;
 
             pointerPositionOnDragBegin = eventData.position;
             cameraPositionOnDragBegin = mapCameraController.LocalPosition;

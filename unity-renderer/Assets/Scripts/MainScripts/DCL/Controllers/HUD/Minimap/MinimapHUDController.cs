@@ -112,11 +112,13 @@ public class MinimapHUDController : IHUD
 
         mapCameraController = mapRenderer.Ref.RentCamera(
             new MapCameraInput(
-                RENDER_LAYERS,
-                view.pixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                Vector2Int.RoundToInt(MapRendererTrackPlayerPosition.GetPlayerCentricCoords(playerCoords.Get())),
-                1,
-                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)));
+                enabledLayers: RENDER_LAYERS,
+                textureResolution: view.pixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
+                zoomRange: new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels))
+            );
+
+        mapCameraController.SetPositionAndZoom(
+            Vector2Int.RoundToInt(MapRendererTrackPlayerPosition.GetPlayerCentricCoords(playerCoords.Get())), 1);
 
         mapRendererTrackPlayerPosition = new MapRendererTrackPlayerPosition(mapCameraController, DataStore.i.player.playerWorldPosition);
         view.mapRendererTargetImage.texture = mapCameraController.GetRenderTexture();

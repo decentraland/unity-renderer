@@ -78,9 +78,7 @@ namespace DCLServices.MapRendererV2
 
             var mapCameraController = mapCameraPool.Get();
             mapCameraController.OnReleasing += ReleaseCamera;
-
             mapCameraController.Initialize(cameraInput.TextureResolution, GetClampedZoomRange(cameraInput), cameraInput.EnabledLayers);
-            mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
 
             return mapCameraController;
         }

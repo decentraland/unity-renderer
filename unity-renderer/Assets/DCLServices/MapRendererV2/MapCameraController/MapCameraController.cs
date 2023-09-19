@@ -4,6 +4,7 @@ using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 using Utils = DCL.Helpers.Utils;
 
 namespace DCLServices.MapRendererV2.MapCameraController
@@ -20,7 +21,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public Camera Camera => mapCameraObject.mapCamera;
 
-        public float Zoom => Mathf.InverseLerp(zoomValuesRangeInParcels.y, zoomValuesRangeInParcels.x, mapCameraObject.mapCamera.orthographicSize);
+        public float Zoom => Mathf.InverseLerp(zoomRangeInParcels.y, zoomRangeInParcels.x, mapCameraObject.mapCamera.orthographicSize);
 
         public Vector2 LocalPosition => mapCameraObject.mapCamera.transform.localPosition;
 
@@ -34,9 +35,12 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private RenderTexture renderTexture;
 
         // Zoom Thresholds in Parcels
-        private Vector2Int zoomValuesRangeInParcels;
+        private Vector2Int zoomRangeInParcels;
 
         private Rect cameraPositionBounds;
+        public float VerticalSizeInLocalUnits => mapCameraObject.mapCamera.orthographicSize * 2;
+        public IMapInteractivityController InteractivityController => interactivityBehavior;
+        private RenderTextureDescriptor descriptor;
 
         public MapCameraController(
             IMapInteractivityControllerInternal interactivityBehavior,
@@ -58,15 +62,27 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             textureResolution = ClampTextureResolution(textureResolution);
 
-            renderTexture =
-                RenderTexture.GetTemporary(textureResolution.x, textureResolution.y, 0, GraphicsFormat.R8G8B8A8_UNorm, 8, RenderTextureMemoryless.Depth);
+            descriptor = new RenderTextureDescriptor
+            {
+                width = textureResolution.x,
+                height = textureResolution.y,
+                depthBufferBits = 0,
+                graphicsFormat = GraphicsFormat.R8G8B8A8_UNorm,
+                mipCount = 1,
+                memoryless = RenderTextureMemoryless.Depth,
+                autoGenerateMips = false,
+                useMipMap = false,
+                volumeDepth = 1,
+                msaaSamples = 1,
+                dimension = TextureDimension.Tex2D,
+            };
+
+            renderTexture = RenderTexture.GetTemporary(descriptor);
 
             // Bilinear and Trilinear make texture blurry
             renderTexture.filterMode = FilterMode.Point;
-            renderTexture.autoGenerateMips = false;
-            renderTexture.useMipMap = false;
 
-            this.zoomValuesRangeInParcels = zoomRange * coordsUtils.ParcelSize;
+            this.zoomRangeInParcels = zoomRange * coordsUtils.ParcelSize;
 
             EnabledLayers = layers;
 
@@ -82,26 +98,29 @@ namespace DCLServices.MapRendererV2.MapCameraController
             if (!Camera) return;
 
             if (renderTexture.IsCreated())
+            {
+                mapCameraObject.mapCamera.targetTexture = null;
                 RenderTexture.ReleaseTemporary(renderTexture);
+            }
 
             textureResolution = ClampTextureResolution(textureResolution);
-            renderTexture.width = textureResolution.x;
-            renderTexture.height = textureResolution.y;
-            renderTexture.Create();
+            descriptor.width = textureResolution.x;
+            descriptor.height = textureResolution.y;
+            renderTexture = RenderTexture.GetTemporary(descriptor);
+
+            mapCameraObject.mapCamera.targetTexture = renderTexture;
 
             Camera.ResetAspect();
 
             SetLocalPosition(mapCameraObject.transform.localPosition);
         }
 
-        private Vector2Int ClampTextureResolution(Vector2Int desiredRes)
+        private static Vector2Int ClampTextureResolution(Vector2Int desiredRes)
         {
             float factor = Mathf.Min(1, MAX_TEXTURE_SIZE / (float) Mathf.Max(desiredRes.x, desiredRes.y));
             return Vector2Int.FloorToInt((Vector2) desiredRes * factor);
         }
 
-        public float GetVerticalSizeInLocalUnits() =>
-            mapCameraObject.mapCamera.orthographicSize * 2;
 
         public RenderTexture GetRenderTexture()
         {
@@ -111,8 +130,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
             return renderTexture;
         }
 
-        public IMapInteractivityController GetInteractivityController() =>
-            interactivityBehavior;
 
         public void SetZoom(float value)
         {
@@ -140,9 +157,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
         }
 
-        public void SetPositionAndZoom(Vector2 coordinates, float value)
+        public void SetPositionAndZoom(Vector2 coordinates, float zoomValue)
         {
-            SetCameraSize(value);
+            SetCameraSize(zoomValue);
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
@@ -152,7 +169,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private void SetCameraSize(float zoom)
         {
             zoom = Mathf.Clamp01(zoom);
-            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValuesRangeInParcels.y, zoomValuesRangeInParcels.x, zoom);
+            mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomRangeInParcels.y, zoomRangeInParcels.x, zoom);
 
             CalculateCameraPositionBounds();
         }
@@ -203,7 +220,11 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public void Release()
         {
             cullingController.OnCameraRemoved(this);
-            renderTexture?.Release();
+
+            mapCameraObject.mapCamera.targetTexture = null;
+            if (renderTexture != null)
+                RenderTexture.ReleaseTemporary(renderTexture);
+
             interactivityBehavior.Release();
             OnReleasing?.Invoke(this);
         }
@@ -215,8 +236,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
             interactivityBehavior.Dispose();
 
-            renderTexture?.Release();
-            renderTexture = null;
+            mapCameraObject.mapCamera.targetTexture = null;
+            if (renderTexture != null)
+                RenderTexture.ReleaseTemporary(renderTexture);
         }
     }
 }

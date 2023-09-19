@@ -47,7 +47,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         public void Activate(Camera hudCamera, RenderTexture renderTexture, IMapCameraController mapCameraController)
         {
-            interactivityController = mapCameraController.GetInteractivityController();
+            interactivityController = mapCameraController.InteractivityController;
             this.highlightEnabled = interactivityController.HighlightEnabled;
             this.hudCamera = hudCamera;
 

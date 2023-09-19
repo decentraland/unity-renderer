@@ -42,13 +42,8 @@ namespace DCLServices.MapRendererV2.TestScene
 
             void CreateNewRent()
             {
-                var rent = mapRenderer.RentCamera(
-                    new MapCameraInput(
-                        (MapLayer)enabledLayers.value,
-                        texRes.value,
-                        position.value,
-                        zoom.value,
-                        zoomThreshold.value));
+                var rent = mapRenderer.RentCamera(new MapCameraInput( (MapLayer)enabledLayers.value, texRes.value,zoomThreshold.value));
+                rent.SetPositionAndZoom(position.value, zoom.value);
 
                 mapCameraControllers.Add(rent);
 
@@ -118,7 +113,7 @@ namespace DCLServices.MapRendererV2.TestScene
         {
             var elements = new VisualElement();
 
-            var interactivityController = mapCameraController.GetInteractivityController();
+            var interactivityController = mapCameraController.InteractivityController;
 
             var highlightEnabled = new Toggle("Highlight enabled");
             highlightEnabled.binding = new GetterBinding<bool>(highlightEnabled, () => interactivityController.HighlightEnabled);

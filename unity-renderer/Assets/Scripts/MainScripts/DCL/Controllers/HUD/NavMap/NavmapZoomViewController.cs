@@ -46,7 +46,7 @@ namespace DCL
             zoomSteps = keys.Length;
         }
 
-        public float ResetZoom()
+        public float ResetZoomToMidValue()
         {
             SetZoomLevel(Mathf.FloorToInt((zoomSteps - 1) / 2f));
             return targetNormalizedZoom;

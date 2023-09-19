@@ -135,11 +135,13 @@ namespace DCL
 
                 cameraController = mapRenderer.Ref.RentCamera(
                     new MapCameraInput(
-                        ACTIVE_MAP_LAYERS,
-                        rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                        Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
-                        navmapZoomViewController.ResetZoom(),
-                        zoomView.zoomVerticalRange));
+                        enabledLayers: ACTIVE_MAP_LAYERS,
+                        textureResolution: rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
+                        zoomRange: zoomView.zoomVerticalRange)
+                    );
+
+                cameraController.SetPositionAndZoom(
+                    Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()), navmapZoomViewController.ResetZoomToMidValue());
 
                 SetRenderImageTransparency(false);
 
