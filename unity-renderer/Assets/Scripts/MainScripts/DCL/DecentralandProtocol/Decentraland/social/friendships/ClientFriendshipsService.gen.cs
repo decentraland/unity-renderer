@@ -11,6 +11,8 @@ public interface IClientFriendshipsService
 {
   IUniTaskAsyncEnumerable<UsersResponse> GetFriends(Payload request);
 
+  IUniTaskAsyncEnumerable<UsersResponse> GetMutualFriends(MutualFriendsPayload request);
+
   UniTask<RequestEventsResponse> GetRequestEvents(Payload request);
 
   UniTask<UpdateFriendshipResponse> UpdateFriendshipEvent(UpdateFriendshipPayload request);
@@ -31,6 +33,11 @@ public class ClientFriendshipsService : IClientFriendshipsService
   public IUniTaskAsyncEnumerable<UsersResponse> GetFriends(Payload request)
   {
       return module.CallServerStream<UsersResponse>("GetFriends", request);
+  }
+
+  public IUniTaskAsyncEnumerable<UsersResponse> GetMutualFriends(MutualFriendsPayload request)
+  {
+      return module.CallServerStream<UsersResponse>("GetMutualFriends", request);
   }
 
   public UniTask<RequestEventsResponse> GetRequestEvents(Payload request)
