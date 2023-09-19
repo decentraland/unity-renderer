@@ -10,10 +10,13 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Components;
+using DCL.Tasks;
 using DCL.World.PortableExperiences;
+using DCLServices.PlacesAPIService;
 using DCLServices.PortableExperiences.Analytics;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -23,6 +26,7 @@ namespace DCL
     {
         private const bool VERBOSE = false;
         private const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
+        private const int REQUEST_PLACE_TIME_OUT = 3;
 
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
 
@@ -31,11 +35,13 @@ namespace DCL
         //TODO(Brian): Move to WorldRuntimePlugin later
         private Coroutine deferredDecodingCoroutine;
         private CancellationTokenSource tokenSource;
+        private CancellationTokenSource requestPlaceCts;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
         private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences => DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
         private IPortableExperiencesAnalyticsService portableExperiencesAnalytics => Environment.i.serviceLocator.Get<IPortableExperiencesAnalyticsService>();
+        private IPlacesAPIService placesAPIService => Environment.i.serviceLocator.Get<IPlacesAPIService>();
         private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
@@ -49,11 +55,12 @@ namespace DCL
         public void Initialize()
         {
             tokenSource = new CancellationTokenSource();
+            requestPlaceCts = requestPlaceCts.SafeRestart();
             sceneSortDirty = true;
             positionDirty = true;
             lastSortFrame = 0;
             enabled = true;
-            
+
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             SetupDeferredRunners();
@@ -102,6 +109,7 @@ namespace DCL
         {
             tokenSource.Cancel();
             tokenSource.Dispose();
+            requestPlaceCts.SafeCancelAndDispose();
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -211,15 +219,9 @@ namespace DCL
             {
                 if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
                 {
-                    switch (scene.contentCategory)
-                    {
-                        case SceneContentCategory.TEEN:
-                            break;
-
-                        case SceneContentCategory.RESTRICTED:
-                        case SceneContentCategory.ADULT when DataStore.i.settings.adultScenesFilteringEnabled.Get():
-                            return;
-                    }
+                    if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
+                        (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
+                        return;
                 }
 
                 switch (method)
@@ -581,26 +583,7 @@ namespace DCL
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 await newScene.SetData(sceneToLoad);
-
-                if (isContentModerationFeatureEnabled)
-                {
-                    // TODO (Santi): This is for debugging purposes. Call the places API to get the content category of the scene!!
-                    switch (sceneToLoad.basePosition)
-                    {
-                        case { x: 100, y: 100 }:
-                            newScene.SetContentCategory(SceneContentCategory.ADULT);
-                            break;
-                        case { x: 100, y: 101 }:
-                            newScene.SetContentCategory(SceneContentCategory.ADULT);
-                            break;
-                        case { x: 101, y: 100 }:
-                            newScene.SetContentCategory(SceneContentCategory.RESTRICTED);
-                            break;
-                        default:
-                            newScene.SetContentCategory(SceneContentCategory.TEEN);
-                            break;
-                    }
-                }
+                await RequestSceneContentCategory(newScene);
 
                 if (debugConfig.isDebugMode.Get()) { newScene.InitializeDebugPlane(); }
 
@@ -617,6 +600,43 @@ namespace DCL
             }
 
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
+        }
+
+        private async Task RequestSceneContentCategory(ParcelScene parcelScene)
+        {
+            if (!isContentModerationFeatureEnabled)
+                return;
+
+            try
+            {
+                var associatedPlace = await placesAPIService
+                                           .GetPlace(parcelScene.sceneData.basePosition, requestPlaceCts.Token)
+                                           .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
+
+                switch (associatedPlace.content_rating)
+                {
+                    case "A" or "M":
+                        parcelScene.SetContentCategory(SceneContentCategory.ADULT);
+                        break;
+                    case "R":
+                        parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
+                        break;
+                    default:
+                        parcelScene.SetContentCategory(SceneContentCategory.TEEN);
+                        break;
+                }
+
+                // TODO (Santi): Remove this code, this is just for testing purposes
+                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 } or { x: 100, y: 101 })
+                    parcelScene.SetContentCategory(SceneContentCategory.ADULT);
+                else if (parcelScene.sceneData.basePosition is { x: 101, y: 100 })
+                    parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
+            }
+            catch (TimeoutException)
+            {
+                Debug.LogWarning($"Timeout exceeded requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}). It will be set as TEEN (13+) by default.");
+                parcelScene.SetContentCategory(SceneContentCategory.TEEN);
+            }
         }
 
         public void UpdateParcelScenesExecute(string scenePayload)
