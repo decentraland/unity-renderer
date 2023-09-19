@@ -1,7 +1,9 @@
 ﻿using DCL.Helpers;
+using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace DCL
 {
@@ -9,15 +11,17 @@ namespace DCL
     {
         private readonly NavMapLocationControlsView view;
         private readonly NavmapZoomViewController navmapZoomViewController;
+        private readonly NavmapToastViewController toastViewController;
         private IMapCameraController mapCamera;
 
         private bool active;
         private CancellationTokenSource cts;
 
-        public NavMapLocationControlsController(NavMapLocationControlsView view, NavmapZoomViewController navmapZoomViewController)
+        public NavMapLocationControlsController(NavMapLocationControlsView view, NavmapZoomViewController navmapZoomViewController, NavmapToastViewController toastViewController)
         {
             this.view = view;
             this.navmapZoomViewController = navmapZoomViewController;
+            this.toastViewController = toastViewController;
         }
 
         public void Dispose()
@@ -59,6 +63,13 @@ namespace DCL
         {
             mapCamera.SetPositionAndZoom(DataStore.i.HUDs.homePoint.Get(), navmapZoomViewController.ResetZoomToMidValue());
 
+            var homeParcel = new MapRenderImage.ParcelClickData
+                {
+                    Parcel = DataStore.i.HUDs.homePoint.Get(),
+                    WorldPosition = Vector2Int.zero,
+                };
+
+            toastViewController.ShowPlaceToast(homeParcel);
             // TODO: Open home card
         }
 

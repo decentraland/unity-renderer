@@ -113,7 +113,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         private bool dragging => dragBehavior is { dragging: true };
 
-        private Vector2 GetParcelWorldPosition(Vector2Int parcel)
+        public Vector2 GetParcelWorldPosition(Vector2Int parcel)
         {
             var normalizedDiscretePosition = interactivityController.GetNormalizedPosition(parcel);
             return rectTransform.TransformPoint(rectTransform.rect.size * (normalizedDiscretePosition - rectTransform.pivot));
