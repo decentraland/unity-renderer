@@ -632,9 +632,9 @@ namespace DCL
                 else if (parcelScene.sceneData.basePosition is { x: 101, y: 100 })
                     parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
             }
-            catch (TimeoutException)
+            catch (Exception ex)
             {
-                Debug.LogWarning($"Timeout exceeded requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}). It will be set as TEEN (13+) by default.");
+                Debug.LogError($"An error occurred while requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {ex.Message}. It will be set as TEEN (13+) by default.");
                 parcelScene.SetContentCategory(SceneContentCategory.TEEN);
             }
         }
