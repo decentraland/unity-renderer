@@ -134,8 +134,7 @@ public class ECSSystemsController : IDisposable
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
             context.ComponentWriters,
             context.UiCanvasInformationPool,
-            DataStore.i.ecs7.scenes
-        );
+            DataStore.i.ecs7.scenes);
 
         ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
             context.internalEcsComponents.inputEventResultsComponent,
@@ -144,7 +143,10 @@ public class ECSSystemsController : IDisposable
             context.PointerEventsResultPool,
             () => worldState.GetCurrentSceneNumber());
 
-        ECSTweenSystem tweenSystem = new ECSTweenSystem(context.internalEcsComponents.TweenComponent, context.ComponentWriters);
+        ECSTweenSystem tweenSystem = new ECSTweenSystem(
+            context.internalEcsComponents.TweenComponent,
+            context.ComponentWriters,
+            context.TweenStatePool);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

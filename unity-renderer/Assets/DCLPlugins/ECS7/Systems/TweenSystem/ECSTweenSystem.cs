@@ -1,7 +1,9 @@
 
-
+using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,11 +13,15 @@ namespace ECSSystems.TweenSystem
     {
         private readonly IInternalECSComponent<InternalTween> tweenComponent;
         private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+        private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> componentPool;
 
-        public ECSTweenSystem(IInternalECSComponent<InternalTween> tweenComponent, IReadOnlyDictionary<int, ComponentWriter> componentsWriter)
+        public ECSTweenSystem(IInternalECSComponent<InternalTween> tweenComponent,
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBTweenState>> componentPool)
         {
             this.tweenComponent = tweenComponent;
             this.componentsWriter = componentsWriter;
+            this.componentPool = componentPool;
         }
 
         public void Update()
@@ -25,16 +31,33 @@ namespace ECSSystems.TweenSystem
 
             for (int i = 0; i < entitiesCount; i++)
             {
+                IParcelScene scene = tweenComponentGroup[i].key1;
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                    continue;
+
+                long entity = tweenComponentGroup[i].key2;
                 InternalTween model = tweenComponentGroup[i].value.model;
 
-                model.currentInterpolationTime += model.calculatedSpeed * Time.deltaTime;
-                if (model.currentInterpolationTime > 1)
-                    model.currentInterpolationTime = 1;
+                model.currentTime += model.calculatedSpeed * Time.deltaTime;
+                if (model.currentTime > 1)
+                    model.currentTime = 1;
 
-                // TODO: Support a collection and not only 2 points
-                Vector3.Lerp(model.tweenPoints[0], model.tweenPoints[1], model.currentInterpolationTime);
+                model.transform.position = Vector3.Lerp(model.startPosition, model.endPosition, model.currentTime);
 
-                // ...
+                // Update TweenState component (TODO: Should it be a GOVS or a LWW?);
+                var pooledComponent = componentPool.Get();
+                var pooledComponentModel = pooledComponent.WrappedComponent.Model;
+                pooledComponentModel.State = TweenState.TsActive;
+
+                // TODO: change when the protocol is fixed
+                pooledComponentModel.CurrentTime = (int)model.currentTime;
+
+                writer.Put(entity, ComponentID.TWEEN_STATE, pooledComponent);
+
+                // TODO: Update Transform component
+
+                // TODO: When is the state component removed?
+
             }
         }
     }

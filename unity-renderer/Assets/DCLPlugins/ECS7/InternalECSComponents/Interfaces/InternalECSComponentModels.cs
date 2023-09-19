@@ -303,34 +303,24 @@ namespace DCL.ECS7.InternalComponents
     {
         public bool dirty { get; set; }
         public readonly Transform transform;
-        public readonly Vector3[] tweenPoints;
-        public readonly float tweenDurationInSeconds;
+        public readonly Vector3 startPosition;
+        public readonly Vector3 endPosition;
+        public readonly float durationInSeconds;
         public readonly float calculatedSpeed;
-        public float currentInterpolationTime;
+        public float currentTime;
 
-        public InternalTween(Transform transform, Vector3[] tweenPoints, float tweenDurationInSeconds)
+        public InternalTween(Transform transform, Vector3 startPosition, Vector3 endPosition, float durationInMilliseconds, float currentTime = 0)
         {
             this.dirty = false;
             this.transform = transform;
-            this.tweenPoints = tweenPoints;
+            this.startPosition = startPosition;
+            this.endPosition = endPosition;
 
-            this.currentInterpolationTime = 0;
-            this.tweenDurationInSeconds = tweenDurationInSeconds;
-            this.calculatedSpeed = 0;
+            this.currentTime = currentTime;
+            this.durationInSeconds = durationInMilliseconds / 1000;
 
-            this.calculatedSpeed = CalculateSpeed(tweenPoints, tweenDurationInSeconds);
-        }
-
-        private float CalculateSpeed(Vector3[] tweenPoints, float durationInSeconds)
-        {
-            float distance = 0;
-            for (var i = 0; i < tweenPoints.Length; i++)
-            {
-                // TODO: Optimize with sqrMagnitude?
-                distance += tweenPoints[i].magnitude;
-            }
-
-            return distance / durationInSeconds;
+            // TODO: Optimize with sqrMagnitude??
+            this.calculatedSpeed = (endPosition - startPosition).magnitude / this.durationInSeconds;
         }
     }
 }
