@@ -76,6 +76,8 @@ namespace DCLServices.Lambdas
             string url,
             int timeout = DEFAULT_TIMEOUT,
             int attemptsNumber = DEFAULT_ATTEMPTS_NUMBER,
+            bool isSigned = false,
+            string signUrl = null,
             CancellationToken cancellationToken = default,
             params (string paramName, string paramValue)[] urlEncodedParams);
 

@@ -895,6 +895,8 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
+    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
+    [DllImport("__Internal")] public static extern string GetURLParam(string targetParam);
 
     public static System.Action<string, string> OnMessageFromEngine;
 #else
@@ -915,7 +917,11 @@ namespace DCL.Interface
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
+
+        // CheckURLParam() is only available on web builds.
         public static bool CheckURLParam(string targetParam) { return false; }
+
+        // GetURLParam() is only available on web builds.
         public static string GetURLParam(string targetParam) { return String.Empty; }
 
         public static void MessageFromEngine(string type, string message)
@@ -2021,6 +2027,16 @@ namespace DCL.Interface
         public static void SaveAdditionalInfo(SaveAdditionalInfoPayload payload)
         {
             SendMessage("SaveProfileAdditionalInfo", payload);
+        }
+
+        public static void GetWithCollectionsUrlParam()
+        {
+            SendMessage("GetWithCollectionsUrlParam");
+        }
+
+        public static void GetWithItemsUrlParam()
+        {
+            SendMessage("GetWithItemsUrlParam");
         }
     }
 }
