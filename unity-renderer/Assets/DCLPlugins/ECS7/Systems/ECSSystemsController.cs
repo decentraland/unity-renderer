@@ -11,6 +11,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.TweenSystem;
 using ECSSystems.UiCanvasInformationSystem;
 using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VideoPlayerSystem;
@@ -143,6 +144,8 @@ public class ECSSystemsController : IDisposable
             context.PointerEventsResultPool,
             () => worldState.GetCurrentSceneNumber());
 
+        ECSTweenSystem tweenSystem = new ECSTweenSystem(context.internalEcsComponents.TweenComponent, context.ComponentWriters);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -154,6 +157,7 @@ public class ECSSystemsController : IDisposable
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
+            tweenSystem.Update,
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,
