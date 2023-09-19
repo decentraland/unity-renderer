@@ -36,6 +36,7 @@ namespace DCL
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
         private IPortableExperiencesAnalyticsService portableExperiencesAnalytics => Environment.i.serviceLocator.Get<IPortableExperiencesAnalyticsService>();
+        private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
         public bool enabled { get; set; } = true;
@@ -53,6 +54,7 @@ namespace DCL
             lastSortFrame = 0;
             enabled = true;
 
+            //CommonScriptableObjects.contentModerationDeactivated.Set(!isContentModerationFeatureEnabled);
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
 
             SetupDeferredRunners();
@@ -208,7 +210,7 @@ namespace DCL
 
             try
             {
-                if (method != MessagingTypes.INIT_DONE)
+                if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
                 {
                     switch (scene.contentCategory)
                     {
@@ -581,21 +583,24 @@ namespace DCL
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 await newScene.SetData(sceneToLoad);
 
-                // TODO (Santi): This is for debugging purposes. Call the places API to get the content category of the scene!!
-                switch (sceneToLoad.basePosition)
+                if (isContentModerationFeatureEnabled)
                 {
-                    case { x: 100, y: 100 }:
-                        newScene.SetContentCategory(SceneContentCategory.ADULT);
-                        break;
-                    case { x: 100, y: 101 }:
-                        newScene.SetContentCategory(SceneContentCategory.ADULT);
-                        break;
-                    case { x: 101, y: 100 }:
-                        newScene.SetContentCategory(SceneContentCategory.RESTRICTED);
-                        break;
-                    default:
-                        newScene.SetContentCategory(SceneContentCategory.TEEN);
-                        break;
+                    // TODO (Santi): This is for debugging purposes. Call the places API to get the content category of the scene!!
+                    switch (sceneToLoad.basePosition)
+                    {
+                        case { x: 100, y: 100 }:
+                            newScene.SetContentCategory(SceneContentCategory.ADULT);
+                            break;
+                        case { x: 100, y: 101 }:
+                            newScene.SetContentCategory(SceneContentCategory.ADULT);
+                            break;
+                        case { x: 101, y: 100 }:
+                            newScene.SetContentCategory(SceneContentCategory.RESTRICTED);
+                            break;
+                        default:
+                            newScene.SetContentCategory(SceneContentCategory.TEEN);
+                            break;
+                    }
                 }
 
                 if (debugConfig.isDebugMode.Get()) { newScene.InitializeDebugPlane(); }
@@ -977,6 +982,9 @@ namespace DCL
 
         private void OnAdultScenesFilterChange(bool isEnabled, bool previousIsEnabled)
         {
+            if (!isContentModerationFeatureEnabled)
+                return;
+
             if (isEnabled == previousIsEnabled)
                 return;
 
@@ -985,7 +993,7 @@ namespace DCL
             {
                 if (scene.Value.contentCategory != SceneContentCategory.ADULT)
                     continue;
-                
+
                 WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
             }
         }
