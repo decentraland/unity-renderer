@@ -12,7 +12,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
     internal partial class MapCameraController : IMapCameraControllerInternal
     {
         private const float CAMERA_HEIGHT = 0;
-
         private const int MAX_TEXTURE_SIZE = 4096;
 
         public event Action<IMapCameraControllerInternal> OnReleasing;
@@ -121,7 +120,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
             return Vector2Int.FloorToInt((Vector2) desiredRes * factor);
         }
 
-
         public RenderTexture GetRenderTexture()
         {
             if (renderTexture == null)
@@ -130,40 +128,17 @@ namespace DCLServices.MapRendererV2.MapCameraController
             return renderTexture;
         }
 
-
-        public void SetZoom(float value)
+        public void SetLocalPosition(Vector2 localCameraPosition)
         {
-            SetCameraSize(value);
             // Clamp local position as boundaries are dependent on zoom
-            SetLocalPositionClamped(mapCameraObject.transform.localPosition);
+            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
             cullingController.SetCameraDirty(this);
         }
 
         public void SetPosition(Vector2 coordinates)
         {
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
-            cullingController.SetCameraDirty(this);
-        }
-
-        public void SetLocalPosition(Vector2 localCameraPosition)
-        {
-            SetLocalPositionClamped(localCameraPosition);
-            cullingController.SetCameraDirty(this);
-        }
-
-        private void SetLocalPositionClamped(Vector2 localCameraPosition)
-        {
-            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
-        }
-
-        public void SetPositionAndZoom(Vector2 coordinates, float zoomValue)
-        {
-            SetCameraSize(zoomValue);
-
-            Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
-            cullingController.SetCameraDirty(this);
+            SetLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
         }
 
         private void SetCameraSize(float zoom)
@@ -172,6 +147,18 @@ namespace DCLServices.MapRendererV2.MapCameraController
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomRangeInParcels.y, zoomRangeInParcels.x, zoom);
 
             CalculateCameraPositionBounds();
+        }
+
+        public void SetZoom(float value)
+        {
+            SetCameraSize(value);
+            SetLocalPosition(mapCameraObject.transform.localPosition);
+        }
+
+        public void SetPositionAndZoom(Vector2 coordinates, float zoomValue)
+        {
+            SetCameraSize(zoomValue);
+            SetPosition(coordinates);
         }
 
         private Vector3 ClampLocalPosition(Vector3 localPos)

@@ -26,6 +26,8 @@ namespace DCL
 
         private readonly NavmapToastViewController navmapToastViewController;
         private readonly NavmapZoomViewController navmapZoomViewController;
+        private readonly NavMapLocationControlsController locationControlsController;
+
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
 
         private Service<IMapRenderer> mapRenderer;
@@ -35,7 +37,7 @@ namespace DCL
         private IMapCameraController cameraController;
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
-        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView,
+        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavMapLocationControlsView locationControlsView,
             NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
         {
             this.navmapVisible = navmapVisible;
@@ -48,6 +50,7 @@ namespace DCL
 
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
             navmapZoomViewController = new NavmapZoomViewController(zoomView);
+            locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController);
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
 
@@ -147,6 +150,7 @@ namespace DCL
 
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
+                locationControlsController.Activate(cameraController);
                 rendererConfiguration.RenderImage.Activate(hudCamera, cameraController.GetRenderTexture(), cameraController);
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Activate(cameraController);
 
@@ -156,6 +160,8 @@ namespace DCL
             {
                 navmapToastViewController.Deactivate();
                 navmapZoomViewController.Deactivate();
+                locationControlsController.Deactivate();
+
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Deactivate();
                 rendererConfiguration.RenderImage.Deactivate();
 

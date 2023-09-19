@@ -122,7 +122,6 @@ namespace DCL
             EventSystem.current.SetSelectedGameObject(null);
 
             SetZoomLevel(currentZoomLevel + (action == DCLAction_Hold.ZoomIn ? 1 : -1));
-
             ScaleOverTime(cameraController.Zoom, targetNormalizedZoom, cts.Token).Forget();
 
             SetUiButtonsInteractivity();
