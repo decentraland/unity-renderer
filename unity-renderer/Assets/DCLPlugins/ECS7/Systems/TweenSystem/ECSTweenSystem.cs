@@ -1,4 +1,5 @@
 
+using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
@@ -42,7 +43,14 @@ namespace ECSSystems.TweenSystem
                 if (model.currentTime > 1)
                     model.currentTime = 1;
 
-                model.transform.position = Vector3.Lerp(model.startPosition, model.endPosition, model.currentTime);
+                // UtilsScene.GlobalToScenePosition()
+                Vector3 startPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene);
+                Vector3 endPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene);
+
+                model.transform.position = Vector3.Lerp(startPos, endPos, model.currentTime);
+
+                // Update internal component
+                tweenComponent.PutFor(scene, entity, model);
 
                 // Update TweenState component (TODO: Should it be a GOVS or a LWW?);
                 var pooledComponent = componentPool.Get();

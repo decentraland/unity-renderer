@@ -305,7 +305,6 @@ namespace DCL.ECS7.InternalComponents
         public readonly Transform transform;
         public readonly Vector3 startPosition;
         public readonly Vector3 endPosition;
-        public readonly float durationInSeconds;
         public readonly float calculatedSpeed;
         public float currentTime;
 
@@ -315,12 +314,10 @@ namespace DCL.ECS7.InternalComponents
             this.transform = transform;
             this.startPosition = startPosition;
             this.endPosition = endPosition;
-
             this.currentTime = currentTime;
-            this.durationInSeconds = durationInMilliseconds / 1000;
 
             // TODO: Optimize with sqrMagnitude??
-            this.calculatedSpeed = (endPosition - startPosition).magnitude / this.durationInSeconds;
+            this.calculatedSpeed = (endPosition - startPosition).magnitude / (durationInMilliseconds / 1000);
         }
     }
 }
