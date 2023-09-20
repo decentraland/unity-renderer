@@ -12,11 +12,12 @@ import { PBAvatarBase } from '../../../../protocol/decentraland/sdk/components/a
 import { PBPlayerIdentityData } from '../../../../protocol/decentraland/sdk/components/player_identity_data.gen'
 import { PBAvatarEquippedData } from '../../../../protocol/decentraland/sdk/components/avatar_equipped_data.gen'
 import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations'
+import { ReceiveUserExpressionMessage } from 'shared/comms/interface/types'
 
 const MAX_ENTITY_VERSION = 0xffff
 const AVATAR_RESERVED_ENTITY_NUMBER = { from: 10, to: 200 }
 
-const ComponentIds = {
+export const Sdk7ComponentIds = {
   TRANSFORM: 1,
   AVATAR_BASE: 1087,
   AVATAR_EMOTE_COMMAND: 1088,
@@ -95,16 +96,20 @@ export function createTinyEcs() {
     return componentsTimestamp.get(componentId)!
   }
 
-  function updateAvatarEmoteCommand(entity: Entity, data): Uint8Array {
-    const component = getComponentTimestamp(ComponentIds.AVATAR_EMOTE_COMMAND)
+  function updateAvatarEmoteCommand(entity: Entity, data: ReceiveUserExpressionMessage): Uint8Array {
+    const component = getComponentTimestamp(Sdk7ComponentIds.AVATAR_EMOTE_COMMAND)
 
-    // TODO: convert the data
-    const componentValue = data
-    const writer = PBAvatarEmoteCommand.encode(componentValue)
+    const writer = PBAvatarEmoteCommand.encode({
+      emoteCommand: {
+        emoteUrn: data.expressionId,
+        loop: false // TODO: how to know if is loopable
+      }
+    })
+
     const buffer = new Uint8Array(writer.finish(), 0, writer.len)
 
     const timestamp = (component.get(entity)?.ts || -1) + 1
-    AppendValueOperation.write(entity, timestamp, ComponentIds.AVATAR_EMOTE_COMMAND, buffer, crdtReusableBuffer)
+    AppendValueOperation.write(entity, timestamp, Sdk7ComponentIds.AVATAR_EMOTE_COMMAND, buffer, crdtReusableBuffer)
 
     // update timestamp
     component.set(entity, { ts: timestamp })
@@ -112,59 +117,67 @@ export function createTinyEcs() {
     return crdtReusableBuffer.toCopiedBinary()
   }
 
-  function updateAvatarBase(entity: Entity, data: NewProfileForRenderer): Uint8Array {
-    const component = getComponentTimestamp(ComponentIds.AVATAR_BASE)
+  function updateProfile(entity: Entity, data: NewProfileForRenderer): Uint8Array[] {
+    const msgs: Uint8Array[] = []
+    const playerIdentityComponent = getComponentTimestamp(Sdk7ComponentIds.PLAYER_IDENTITY_DATA)
+    const avatarBaseComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_BASE)
+    const avatarEquippedComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_EQUIPPED_DATA)
 
-    // TODO: convert the data
-    const componentValue = data as any
-    const writer = PBAvatarBase.encode(componentValue)
-    const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+    // Player identity is sent only once
+    if (playerIdentityComponent.get(entity) === undefined) {
+      crdtReusableBuffer.resetBuffer()
 
-    const timestamp = (component.get(entity)?.ts || -1) + 1
-    PutComponentOperation.write(entity, timestamp, ComponentIds.AVATAR_BASE, buffer, crdtReusableBuffer)
+      const writer = PBPlayerIdentityData.encode({
+        address: data.userId,
+        isGuest: data.hasConnectedWeb3
+      })
+      const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      const timestamp = (playerIdentityComponent.get(entity)?.ts || -1) + 1
+      PutComponentOperation.write(entity, timestamp, Sdk7ComponentIds.PLAYER_IDENTITY_DATA, buffer, crdtReusableBuffer)
+      playerIdentityComponent.set(entity, { ts: timestamp })
 
-    // update timestamp
-    component.set(entity, { ts: timestamp })
+      msgs.push(crdtReusableBuffer.toCopiedBinary())
+    }
 
-    return crdtReusableBuffer.toCopiedBinary()
-  }
+    // Update avatar base
+    {
+      crdtReusableBuffer.resetBuffer()
 
-  function updatePlayerIdentityData(entity: Entity, data): Uint8Array {
-    const component = getComponentTimestamp(ComponentIds.PLAYER_IDENTITY_DATA)
+      const writer = PBAvatarBase.encode({
+        skinColor: data.avatar.skinColor,
+        eyesColor: data.avatar.eyeColor,
+        hairColor: data.avatar.hairColor,
+        bodyShapeUrn: data.avatar.bodyShape,
+        name: data.name
+      })
+      const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      const timestamp = (avatarBaseComponent.get(entity)?.ts || -1) + 1
+      PutComponentOperation.write(entity, timestamp, Sdk7ComponentIds.AVATAR_BASE, buffer, crdtReusableBuffer)
+      avatarBaseComponent.set(entity, { ts: timestamp })
 
-    // TODO: convert the data
-    const componentValue = data
-    const writer = PBPlayerIdentityData.encode(componentValue)
-    const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      msgs.push(crdtReusableBuffer.toCopiedBinary())
+    }
 
-    const timestamp = (component.get(entity)?.ts || -1) + 1
-    PutComponentOperation.write(entity, timestamp, ComponentIds.PLAYER_IDENTITY_DATA, buffer, crdtReusableBuffer)
+    // Update avatar equipped data
+    {
+      crdtReusableBuffer.resetBuffer()
 
-    // update timestamp
-    component.set(entity, { ts: timestamp })
+      const writer = PBAvatarEquippedData.encode({
+        wearableUrns: data.avatar.wearables,
+        emotesUrns: (data.avatar.emotes || []).map(($) => $.urn)
+      })
+      const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      const timestamp = (avatarEquippedComponent.get(entity)?.ts || -1) + 1
+      PutComponentOperation.write(entity, timestamp, Sdk7ComponentIds.AVATAR_EQUIPPED_DATA, buffer, crdtReusableBuffer)
+      avatarEquippedComponent.set(entity, { ts: timestamp })
 
-    return crdtReusableBuffer.toCopiedBinary()
-  }
-
-  function updateAvatarEquippedData(entity: Entity, data): Uint8Array {
-    const component = getComponentTimestamp(ComponentIds.AVATAR_EQUIPPED_DATA)
-
-    // TODO: convert the data
-    const componentValue = data
-    const writer = PBAvatarEquippedData.encode(componentValue)
-    const buffer = new Uint8Array(writer.finish(), 0, writer.len)
-
-    const timestamp = (component.get(entity)?.ts || -1) + 1
-    PutComponentOperation.write(entity, timestamp, ComponentIds.AVATAR_EQUIPPED_DATA, buffer, crdtReusableBuffer)
-
-    // update timestamp
-    component.set(entity, { ts: timestamp })
-
-    return crdtReusableBuffer.toCopiedBinary()
+      msgs.push(crdtReusableBuffer.toCopiedBinary())
+    }
+    return msgs
   }
 
   function updateAvatarTransform(entity: Entity, data: rfc4.Position): { data: Uint8Array; ts: number } {
-    const component = getComponentTimestamp(ComponentIds.TRANSFORM)
+    const component = getComponentTimestamp(Sdk7ComponentIds.TRANSFORM)
     transformReusableBuffer.resetBuffer()
 
     transformReusableBuffer.setFloat32(0, data.positionX)
@@ -186,7 +199,7 @@ export function createTinyEcs() {
     PutComponentOperation.write(
       entity,
       timestamp,
-      ComponentIds.TRANSFORM,
+      Sdk7ComponentIds.TRANSFORM,
       transformReusableBuffer.toBinary(),
       crdtReusableBuffer
     )
@@ -198,9 +211,7 @@ export function createTinyEcs() {
     removeAvatarEntityId,
 
     updateAvatarTransform,
-    updateAvatarBase,
-    updateAvatarEquippedData,
-    updateAvatarEmoteCommand,
-    updatePlayerIdentityData
+    updateProfile,
+    updateAvatarEmoteCommand
   }
 }

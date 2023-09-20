@@ -35,15 +35,12 @@ avatarMessageObservable.add((evt) => {
       })
     }
 
-    // if (evt.profile) {
-    //   const avatarBase = avatarEcs.updateAvatarBase(avatarEntityId, evt.data)
-    //   avatarSdk7MessageObservable.emit('BinaryMessage', avatarBase)
-
-    //   if (evt.profile.avatar) {
-    //     const avatarEquippedData = avatarEcs.updateAvatarEquippedData(avatarEntityId, evt.data)
-    //     avatarSdk7MessageObservable.emit('BinaryMessage', avatarEquippedData)
-    //   }
-    // }
+    if (evt.profile) {
+      const avatarBase = avatarEcs.updateProfile(avatarEntityId, evt.profile)
+      for (const msg of avatarBase) {
+        avatarSdk7MessageObservable.emit('BinaryMessage', msg)
+      }
+    }
   } else if (evt.type === 'USER_EXPRESSION') {
     const avatarEmoteCommand = avatarEcs.updateAvatarEmoteCommand(avatarEntityId, evt)
     avatarSdk7MessageObservable.emit('BinaryMessage', avatarEmoteCommand)

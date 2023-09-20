@@ -6,40 +6,61 @@ import { EngineApiServiceDefinition } from 'shared/protocol/decentraland/kernel/
 import type { PortContext } from './context'
 
 import { avatarSdk7MessageObservable } from './sdk7/avatar'
+import { DeleteComponent } from './sdk7/serialization/crdt/deleteComponent'
+import { ReadWriteByteBuffer } from './sdk7/serialization/ByteBuffer'
+import { Sdk7ComponentIds } from './sdk7/avatar/ecs'
+
+function getParcelNumber(x: number, z: number) {
+  return z * 100e8 + x
+}
 
 export function registerEngineApiServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(
     port,
     EngineApiServiceDefinition,
     async (port, ctx): Promise<RpcServerModule<EngineApiServiceDefinition, PortContext>> => {
-      let avatarUpdates: Uint8Array[] = []
-      avatarSdk7MessageObservable.on('BinaryMessage', (message) => {
-        avatarUpdates.push(message)
-      })
+      let sdk7AvatarUpdates: Uint8Array[] = []
 
-      avatarSdk7MessageObservable.on('RemoveAvatar', (message) => {
-        avatarUpdates.push(message.data)
-        ctx.avatarEntityInsideScene.delete(message.entity)
-      })
-
-      avatarSdk7MessageObservable.on('ChangePosition', (message) => {
-        // TODO: Define how to know if an entity is inside the scene
-        const isInsideScene = true
-
-        const wasInsideScene = ctx.avatarEntityInsideScene.get(message.entity) || false
-
-        if (isInsideScene) {
-          avatarUpdates.push(message.data)
-
-          if (!wasInsideScene) {
-            ctx.avatarEntityInsideScene.set(message.entity, true)
-          }
-        } else if (wasInsideScene) {
-          ctx.avatarEntityInsideScene.set(message.entity, false)
-
-          // TODO: Send delete transform
+      if (ctx.sdk7) {
+        const tempReusableBuffer = new ReadWriteByteBuffer()
+        const parcels: Set<number> = new Set()
+        if (!ctx.sceneData.isGlobalScene) {
+          ctx.sceneData.entity.pointers.forEach((pointer) => {
+            const [x, z] = pointer.split(',').map((n) => parseInt(n, 10))
+            parcels.add(getParcelNumber(x, z))
+          })
         }
-      })
+
+        console.log({ parcels })
+
+        avatarSdk7MessageObservable.on('BinaryMessage', (message) => {
+          sdk7AvatarUpdates.push(message)
+        })
+
+        avatarSdk7MessageObservable.on('RemoveAvatar', (message) => {
+          sdk7AvatarUpdates.push(message.data)
+          ctx.avatarEntityInsideScene.delete(message.entity)
+        })
+
+        avatarSdk7MessageObservable.on('ChangePosition', (message) => {
+          const isInsideScene =
+            ctx.sceneData.isGlobalScene || parcels.has(getParcelNumber(message.parcel.x, message.parcel.z))
+          const wasInsideScene = ctx.avatarEntityInsideScene.get(message.entity) || false
+          if (isInsideScene) {
+            sdk7AvatarUpdates.push(message.data)
+
+            if (!wasInsideScene) {
+              ctx.avatarEntityInsideScene.set(message.entity, true)
+            }
+          } else if (wasInsideScene) {
+            ctx.avatarEntityInsideScene.set(message.entity, false)
+
+            tempReusableBuffer.resetBuffer()
+            DeleteComponent.write(message.entity, Sdk7ComponentIds.TRANSFORM, message.ts, tempReusableBuffer)
+            sdk7AvatarUpdates.push(tempReusableBuffer.toCopiedBinary())
+          }
+        })
+      }
 
       return {
         async sendBatch(_req: ManyEntityAction, ctx) {
@@ -76,8 +97,8 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             payload: req.data
           })
 
-          const avatarStates = avatarUpdates
-          avatarUpdates = []
+          const avatarStates = sdk7AvatarUpdates
+          sdk7AvatarUpdates = []
 
           return { data: [ret.payload, ...avatarStates] }
         },
