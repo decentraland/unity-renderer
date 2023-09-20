@@ -5,10 +5,11 @@ import type { EventData, ManyEntityAction } from 'shared/protocol/decentraland/k
 import { EngineApiServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
 import type { PortContext } from './context'
 
-import { avatarSdk7MessageObservable } from './sdk7/avatar'
-import { DeleteComponent } from './sdk7/serialization/crdt/deleteComponent'
-import { ReadWriteByteBuffer } from './sdk7/serialization/ByteBuffer'
-import { Sdk7ComponentIds } from './sdk7/avatar/ecs'
+import { avatarSdk7Ecs, avatarSdk7MessageObservable } from './runtime7/avatar'
+import { DeleteComponent } from './runtime7/serialization/crdt/deleteComponent'
+import { ReadWriteByteBuffer } from './runtime7/serialization/ByteBuffer'
+import { Sdk7ComponentIds } from './runtime7/avatar/ecs'
+import { buildAvatarTransformMessage } from './runtime7/serialization/transform'
 
 function getParcelNumber(x: number, z: number) {
   return z * 100e8 + x
@@ -31,7 +32,12 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           })
         }
 
-        console.log({ parcels })
+        const [baseX, baseZ] = ctx.sceneData.entity.metadata?.scene?.base?.split(',').map((n) => parseInt(n, 10)) ?? [
+          0, 0
+        ]
+        const offset = { x: baseX * 16.0, y: 0, z: baseZ * 16.0 }
+
+        sdk7AvatarUpdates = avatarSdk7Ecs.getState()
 
         avatarSdk7MessageObservable.on('BinaryMessage', (message) => {
           sdk7AvatarUpdates.push(message)
@@ -47,7 +53,7 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             ctx.sceneData.isGlobalScene || parcels.has(getParcelNumber(message.parcel.x, message.parcel.z))
           const wasInsideScene = ctx.avatarEntityInsideScene.get(message.entity) || false
           if (isInsideScene) {
-            sdk7AvatarUpdates.push(message.data)
+            sdk7AvatarUpdates.push(buildAvatarTransformMessage(message.entity, message.ts, message.data, offset))
 
             if (!wasInsideScene) {
               ctx.avatarEntityInsideScene.set(message.entity, true)
