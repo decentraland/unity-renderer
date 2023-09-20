@@ -1,11 +1,8 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using DCLServices.MapRendererV2.CoordsUtils;
+﻿using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DG.Tweening;
 using System;
-using System.Threading;
 using UnityEngine;
 using Utils = DCL.Helpers.Utils;
 
