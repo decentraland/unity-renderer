@@ -83,51 +83,14 @@ SpriteAtlas:
       enableAlphaDilation: 1
     secondaryTextureSettings: {}
     variantMultiplier: 1
-    packables:
-    - {fileID: 102900000, guid: 699893c80881d9d4183804b802d2ccbb, type: 3}
+    packables: []
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
-    packedSpriteRenderDataKeys:
-    - 90d262106259840f8aeaf1a330ea2b15: 21300000
-    - c48cc051b46944243bf7957e419bd404: 21300000
-    - a93e26264808f4d96a5b3d84ba1adb24: 21300000
-    - 6002f0b7deb60405bb7fa168d2a8ce06: 21300000
-    - 11f766998dd0ca24dbe445905db26bc9: 21300000
-    - dfa96dc92a2fe43f0a599dc990c5b013: 21300000
-    - 2e9c82cce96524947811e1994e049bb0: 21300000
-    - bae039dcaee004fd598ef0a16f343320: 21300000
-    - 4dbd3bfc7ef524d94b863558a742b258: 21300000
-    - a3437e4e4a6bcda44acdec2e496a71a0: 21300000
-    - db75ff7e9347f4689936c0134fba3049: 21300000
-    - a74e399ed1f484d92871d94dd18d0688: 21300000
+    packedSpriteRenderDataKeys: []
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites:
-  - {fileID: 21300000, guid: 90d262106259840f8aeaf1a330ea2b15, type: 3}
-  - {fileID: 21300000, guid: c48cc051b46944243bf7957e419bd404, type: 3}
-  - {fileID: 21300000, guid: a93e26264808f4d96a5b3d84ba1adb24, type: 3}
-  - {fileID: 21300000, guid: 6002f0b7deb60405bb7fa168d2a8ce06, type: 3}
-  - {fileID: 21300000, guid: 11f766998dd0ca24dbe445905db26bc9, type: 3}
-  - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
-  - {fileID: 21300000, guid: 2e9c82cce96524947811e1994e049bb0, type: 3}
-  - {fileID: 21300000, guid: bae039dcaee004fd598ef0a16f343320, type: 3}
-  - {fileID: 21300000, guid: 4dbd3bfc7ef524d94b863558a742b258, type: 3}
-  - {fileID: 21300000, guid: a3437e4e4a6bcda44acdec2e496a71a0, type: 3}
-  - {fileID: 21300000, guid: db75ff7e9347f4689936c0134fba3049, type: 3}
-  - {fileID: 21300000, guid: a74e399ed1f484d92871d94dd18d0688, type: 3}
-  m_PackedSpriteNamesToIndex:
-  - Compass
-  - LatestActivityIcn
-  - SatelliteViewIcn
-  - HomePin
-  - MapContainer12
-  - PoiIcn
-  - ParcelSelector
-  - FilterIcn
-  - ParcelsViewIcn
-  - MapEllipse
-  - HomeIcn
-  - CenterPlayerIcn
+  m_PackedSprites: []
+  m_PackedSpriteNamesToIndex: []
   m_RenderDataMap: {}
   m_Tag: MapRenderer
   m_IsVariant: 0
