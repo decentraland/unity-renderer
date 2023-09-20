@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DCL.Tasks;
 using UnityEngine;
 
 public class NavmapSearchController : IDisposable
@@ -16,12 +17,15 @@ public class NavmapSearchController : IDisposable
     private readonly INavmapSearchComponentView view;
     private readonly IPlayerPrefs playerPrefs;
 
+    private CancellationTokenSource searchCts;
+
     public NavmapSearchController(INavmapSearchComponentView view, IPlacesAPIService placesAPIService, IPlayerPrefs playerPrefs)
     {
         this.view = view;
         this.placesAPIService = placesAPIService;
         this.playerPrefs = playerPrefs;
 
+        searchCts = new CancellationTokenSource();
         view.OnSelectedSearchBar += OnSelectedSearchbarChange;
         view.OnSearchedText += OnSearchedText;
     }
@@ -35,12 +39,14 @@ public class NavmapSearchController : IDisposable
         }
 
         AddToPreviousSearch(searchText);
-        SearchAndDisplay(searchText).Forget();
+
+        searchCts = searchCts.SafeRestart();
+        SearchAndDisplay(searchText, searchCts).Forget();
     }
 
-    private async UniTaskVoid SearchAndDisplay(string searchText)
+    private async UniTaskVoid SearchAndDisplay(string searchText, CancellationTokenSource cts)
     {
-        (IReadOnlyList<IHotScenesController.PlaceInfo> places, int total) searchPlaces = await placesAPIService.SearchPlaces(searchText, 0, 5, CancellationToken.None);
+        (IReadOnlyList<IHotScenesController.PlaceInfo> places, int total) searchPlaces = await placesAPIService.SearchPlaces(searchText, 0, 5, cts.Token);
         view.SetSearchResultRecords(searchPlaces.places);
     }
 
@@ -58,6 +64,7 @@ public class NavmapSearchController : IDisposable
 
     private void GetAndShowPreviousSearches()
     {
+        searchCts = searchCts.SafeRestart();
         string[] previousSearches = GetPreviousSearches();
 
         if (previousSearches.Length > 0)
