@@ -541,7 +541,7 @@ namespace DCL
                 }
 
                 // TODO (Santi): Remove this code, this is just for testing purposes
-                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 })
+                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 } or { x: 100, y: 101 })
                     parcelScene.SetContentCategory(SceneContentCategory.ADULT);
                 else if (parcelScene.sceneData.basePosition is { x: 101, y: 100 })
                     parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
