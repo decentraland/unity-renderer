@@ -185,12 +185,15 @@ namespace DCL
 
             try
             {
-                // if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
-                // {
-                //     if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
-                //         (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
-                //         return;
-                // }
+                if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
+                {
+                    if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
+                        (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
+                    {
+                        Debug.Log($"[UNITY] [SANTI] {method.ToUpper()} IGNORED for: {scene.sceneData.basePosition.x},{scene.sceneData.basePosition.y}");
+                        return;
+                    }
+                }
 
                 switch (method)
                 {
@@ -267,18 +270,11 @@ namespace DCL
                     }
                     case MessagingTypes.INIT_DONE:
                     {
+                        if (scene.sceneData.basePosition.x == 100 && scene.sceneData.basePosition.y == 100)
+                            Debug.Log($"[UNITY] [SANTI] [3] INIT_DONE PROCESSED for: {scene.sceneData.basePosition.x},{scene.sceneData.basePosition.y}");
+
                         if (!scene.IsInitMessageDone())
                             scene.sceneLifecycleHandler.SetInitMessagesDone();
-
-                        if (isContentModerationFeatureEnabled)
-                        {
-                            if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
-                                (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
-                            {
-                                scene.gameObject.SetActive(false);
-                                Debug.Log($"[UNITY] [SANTI] [ProcessMessage] Scene DEACTIVATED: {scene.sceneData.basePosition.x},{scene.sceneData.basePosition.y}");
-                            }
-                        }
 
                         break;
                     }
@@ -531,8 +527,6 @@ namespace DCL
                                            .GetPlace(parcelScene.sceneData.basePosition, requestPlaceCts.Token)
                                            .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
 
-                Debug.Log($"[UNITY] [SANTI] [RequestSceneContentCategory] associatedPlace: {associatedPlace.base_position} | {associatedPlace.content_rating}");
-
                 switch (associatedPlace.content_rating)
                 {
                     case "A" or "M":
@@ -547,7 +541,7 @@ namespace DCL
                 }
 
                 // TODO (Santi): Remove this code, this is just for testing purposes
-                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 } or { x: 100, y: 101 } or { x: 95, y: 98 })
+                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 })
                     parcelScene.SetContentCategory(SceneContentCategory.ADULT);
                 else if (parcelScene.sceneData.basePosition is { x: 101, y: 100 })
                     parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
@@ -558,7 +552,7 @@ namespace DCL
                 parcelScene.SetContentCategory(SceneContentCategory.TEEN);
             }
 
-            Debug.Log($"[UNITY] [SANTI] [RequestSceneContentCategory] Content category associated to ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {parcelScene.contentCategory}");
+            Debug.Log($"[UNITY] [SANTI] [2] SET CONTENT CATEGORY for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {parcelScene.contentCategory}");
         }
 
         public void UpdateParcelScenesExecute(string scenePayload)
@@ -926,16 +920,13 @@ namespace DCL
             if (isEnabled == previousIsEnabled)
                 return;
 
-            Debug.Log($"[UNITY] [SANTI] [OnAdultScenesFilterChange] isEnabled: {isEnabled} | previousIsEnabled: {previousIsEnabled}");
             var loadedScenes = Environment.i.world.state.GetLoadedScenes();
-            Debug.Log($"[UNITY] [SANTI] [OnAdultScenesFilterChange] loadedScenes to RELOAD: {loadedScenes.Count()}");
             foreach (KeyValuePair<int,IParcelScene> scene in loadedScenes)
             {
-                Debug.Log($"[UNITY] [SANTI] [OnAdultScenesFilterChange] Trying to reload: {scene.Value.sceneData.basePosition.x},{scene.Value.sceneData.basePosition.y} | CATEGORY: {scene.Value.contentCategory}");
                 if (scene.Value.contentCategory != SceneContentCategory.ADULT)
                     continue;
 
-                Debug.Log($"[UNITY] [SANTI] [OnAdultScenesFilterChange] Reloading: {scene.Value.sceneData.basePosition.x},{scene.Value.sceneData.basePosition.y}");
+                Debug.Log($"[UNITY] [SANTI] [1] Send RELOAD SCENE for: {scene.Value.sceneData.basePosition.x},{scene.Value.sceneData.basePosition.y}");
                 WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
             }
         }
