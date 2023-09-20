@@ -8,8 +8,9 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
 {
     [SerializeField] private TMP_Text recordText;
     [SerializeField] private GameObject historyIcon;
-    [SerializeField] private GameObject regularIcon;
     [SerializeField] private Button recordButton;
+    [SerializeField] private GameObject playerCountParent;
+    [SerializeField] private TMP_Text playerCount;
 
     public event Action<string> OnSelectedHistoryRecord;
     public event Action<string> OnSelectedRegularRecord;
@@ -41,6 +42,7 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
 
         SetRecordText(model.recordText);
         SetIcon(model.isHistory);
+        SetPlayerCount(model.playerCount);
     }
 
     public void SetRecordText(string text)
@@ -53,6 +55,11 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
     {
         model.isHistory = isHistory;
         historyIcon.SetActive(isHistory);
-        regularIcon.SetActive(!isHistory);
+    }
+
+    public void SetPlayerCount(int count)
+    {
+        playerCountParent.SetActive(count > 0);
+        playerCount.text = count.ToString();
     }
 }

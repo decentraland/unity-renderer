@@ -5,4 +5,5 @@ public record SearchRecordComponentModel
 {
     public string recordText;
     public bool isHistory;
+    public int playerCount;
 }

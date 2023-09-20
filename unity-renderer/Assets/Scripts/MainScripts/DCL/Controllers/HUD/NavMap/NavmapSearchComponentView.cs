@@ -61,7 +61,8 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
             searchRecordComponentView.SetModel(new SearchRecordComponentModel()
             {
                 recordText = previousSearches[i],
-                isHistory = true
+                isHistory = true,
+                playerCount = 0
             });
             usedRecords.Add(searchRecordComponentView);
         }
@@ -79,7 +80,8 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
             searchRecordComponentView.SetModel(new SearchRecordComponentModel()
             {
                 recordText = placeInfo.title,
-                isHistory = false
+                isHistory = false,
+                playerCount = placeInfo.user_count
             });
             usedRecords.Add(searchRecordComponentView);
         }
