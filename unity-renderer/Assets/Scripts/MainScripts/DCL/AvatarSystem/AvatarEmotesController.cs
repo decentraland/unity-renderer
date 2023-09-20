@@ -54,6 +54,7 @@ namespace AvatarSystem
 
         private async UniTask AsyncEmoteLoad(string bodyShapeId, string emoteId)
         {
+            Debug.Log("Loading " + emoteId);
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
             try

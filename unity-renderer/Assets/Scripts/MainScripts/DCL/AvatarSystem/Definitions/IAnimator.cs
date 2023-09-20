@@ -1,4 +1,5 @@
 using DCL.Emotes;
+using DCLServices.EmotesService.Domain;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -9,7 +10,7 @@ namespace AvatarSystem
         void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
             bool ignoreTimestamp);
         void StopEmote();
-        void EquipEmote(string emoteId, EmoteClipData emoteClipData);
+        void EquipEmote(string emoteId, EmoteAnimationData emoteAnimationData);
         void UnequipEmote(string emoteId);
 
     }

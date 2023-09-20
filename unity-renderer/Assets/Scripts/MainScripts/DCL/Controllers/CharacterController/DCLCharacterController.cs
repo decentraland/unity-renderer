@@ -267,14 +267,13 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        if(!dataStorePlayer.canPlayerMove.Get())
-            return;
-
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);
             return;
         }
+
+        bool canMove = dataStorePlayer.canPlayerMove.Get();
 
         if (freeMovementController.IsActive())
         {
@@ -306,6 +305,9 @@ public class DCLCharacterController : MonoBehaviour
                 // Horizontal movement
                 var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
 
+                if (!canMove)
+                    speed = 0;
+
                 transform.forward = characterForward.Get().Value;
 
                 var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
@@ -336,7 +338,7 @@ public class DCLCharacterController : MonoBehaviour
 
             bool jumpButtonPressedWithGraceTime = jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f);
 
-            if (jumpButtonPressedWithGraceTime) // almost-grounded jump button press allowed time
+            if (jumpButtonPressedWithGraceTime && canMove) // almost-grounded jump button press allowed time
             {
                 bool justLeftGround = (Time.time - lastUngroundedTime) < 0.1f;
 
@@ -372,6 +374,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
+
         OnUpdateFinish?.Invoke(Time.deltaTime);
     }
 
