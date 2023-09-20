@@ -29,8 +29,10 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 #endif
             var transform = spriteRenderer.transform;
 
+            Debug.Log(spriteRenderer.gameObject.name, spriteRenderer.gameObject);
             transform.localScale = Vector3.one * PIXELS_PER_UNIT;
-            transform.localPosition = chunkLocalPosition;
+            Debug.Log(chunkLocalPosition);
+            transform.localPosition = chunkLocalPosition / 2;
         }
 
         private Dictionary<int, int> xMapping = new Dictionary<int, int>()

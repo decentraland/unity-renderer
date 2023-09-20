@@ -114,7 +114,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 }
 
                 var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, atlasChunkSize,
-                    coordsUtils, cullingController, CreateChunk);
+                    coordsUtils, cullingController, chunkBuilder: CreateChunk);
 
                 // initialize Atlas but don't block the flow (to accelerate loading time)
                 chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();

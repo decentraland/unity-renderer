@@ -62,7 +62,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
                     // Subtract half parcel size to displace the pivot, this allow easier PositionToCoords calculations.
                     Vector3 localPosition = new Vector3((parcelSize * i) - halfParcelSize, (parcelSize * j) - halfParcelSize, 0);
 
-                    var instance = chunkBuilder.Invoke(localPosition, coordsCenter, instantiationParent, linkedCt);
+                    var instance = chunkBuilder.Invoke(chunkLocalPosition: localPosition, coordsCenter, instantiationParent, linkedCt);
                     chunksCreating.Add(instance);
                 }
             }
