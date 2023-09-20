@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -32,9 +33,41 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             transform.localPosition = chunkLocalPosition;
         }
 
+        private Dictionary<int, int> xMapping = new Dictionary<int, int>()
+        {
+            {-150, 0},
+            {-99, 1},
+            {-48, 2},
+            {3, 3},
+            {54, 4},
+            {105, 5},
+            {156, 6},
+        };
+
+        private Dictionary<int, int> yMapping = new Dictionary<int, int>()
+        {
+            {-150, 0},
+            {-99, 1},
+            {-48, 2},
+            {3, 3},
+            {54, 4},
+            {105, 5},
+            {156, 6},
+        };
+
+        public Vector2Int ConvertToIndexedCoordinate(Vector2Int originalCoordinates)
+        {
+            int xIndex = xMapping.ContainsKey(originalCoordinates.x) ? xMapping[originalCoordinates.x] : -1;
+            int yIndex = yMapping.ContainsKey(originalCoordinates.y) ? yMapping[originalCoordinates.y] : -1;
+
+            return new Vector2Int(xIndex, yIndex);
+        }
+
         public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
-            string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
+            var newChunk = ConvertToIndexedCoordinate(mapPosition);
+            string url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{newChunk.x}%2C{newChunk.y}.jpg";
+            // string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
             var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
 
             var texture = CreateTexture(webRequest.downloadHandler.data);
