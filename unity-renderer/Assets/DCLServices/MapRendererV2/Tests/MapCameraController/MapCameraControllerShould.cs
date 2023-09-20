@@ -52,7 +52,7 @@ namespace DCLServices.MapRendererV2.Tests.MapCameraController
             Assert.AreEqual(30, mapCamera.RenderTexture.width);
             Assert.AreEqual(30, mapCamera.RenderTexture.height);
             Assert.AreEqual(MapLayer.Atlas, mapCamera.EnabledLayers);
-            Assert.AreEqual(new Vector2Int(100, 200), mapCamera.zoom);
+            Assert.AreEqual(new Vector2Int(100, 200), mapCamera.Zoom);
         }
 
         [Test]

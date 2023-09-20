@@ -47,7 +47,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         public void Activate(Camera hudCamera, RenderTexture renderTexture, IMapCameraController mapCameraController)
         {
-            interactivityController = mapCameraController.InteractivityController;
+            interactivityController = mapCameraController.GetInteractivityController();
             this.highlightEnabled = interactivityController.HighlightEnabled;
             this.hudCamera = hudCamera;
 
@@ -113,7 +113,7 @@ namespace DCLServices.MapRendererV2.ConsumerUtils
 
         private bool dragging => dragBehavior is { dragging: true };
 
-        public Vector2 GetParcelWorldPosition(Vector2Int parcel)
+        private Vector2 GetParcelWorldPosition(Vector2Int parcel)
         {
             var normalizedDiscretePosition = interactivityController.GetNormalizedPosition(parcel);
             return rectTransform.TransformPoint(rectTransform.rect.size * (normalizedDiscretePosition - rectTransform.pivot));

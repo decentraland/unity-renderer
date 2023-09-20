@@ -10,7 +10,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         internal ICoordsUtils CoordUtils => coordsUtils;
         internal MapCameraObject MapCameraObject => mapCameraObject;
         internal RenderTexture RenderTexture => renderTexture;
-        internal Vector2Int zoom => zoomRangeInParcels;
+        internal Vector2Int zoom => zoomValues;
 #endif
     }
 }
