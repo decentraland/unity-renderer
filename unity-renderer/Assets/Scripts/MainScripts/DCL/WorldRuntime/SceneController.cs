@@ -191,10 +191,7 @@ namespace DCL
                 {
                     if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
                         (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
-                    {
-                        Debug.Log($"[UNITY] [SANTI] {method.ToUpper()} IGNORED for: {scene.sceneData.basePosition.x},{scene.sceneData.basePosition.y}");
                         return;
-                    }
                 }
 
                 switch (method)
@@ -272,9 +269,6 @@ namespace DCL
                     }
                     case MessagingTypes.INIT_DONE:
                     {
-                        if (scene.sceneData.basePosition.x == 100 && scene.sceneData.basePosition.y == 100)
-                            Debug.Log($"[UNITY] [SANTI] [3] INIT_DONE PROCESSED for: {scene.sceneData.basePosition.x},{scene.sceneData.basePosition.y}");
-
                         if (!scene.IsInitMessageDone())
                             scene.sceneLifecycleHandler.SetInitMessagesDone();
 
@@ -553,8 +547,6 @@ namespace DCL
                 Debug.LogError($"An error occurred while requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {ex.Message}. It will be set as TEEN (13+) by default.");
                 parcelScene.SetContentCategory(SceneContentCategory.TEEN);
             }
-
-            Debug.Log($"[UNITY] [SANTI] [2] SET CONTENT CATEGORY for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {parcelScene.contentCategory}");
         }
 
         public void UpdateParcelScenesExecute(string scenePayload)
@@ -923,7 +915,6 @@ namespace DCL
                     if (scene.Value.contentCategory != SceneContentCategory.ADULT)
                         continue;
 
-                    Debug.Log($"[UNITY] [SANTI] [1] Send RELOAD SCENE for: {scene.Value.sceneData.basePosition.x},{scene.Value.sceneData.basePosition.y}");
                     WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
                     await Task.Delay(TimeSpan.FromSeconds(0.5f), ct);
 
