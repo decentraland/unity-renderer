@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class SearchRecordComponentView : BaseComponentView<SearchRecordComponentModel>, ISearchRecordComponentView
 {
-    [SerializeField] private TMP_Text recordText;
-    [SerializeField] private GameObject historyIcon;
+    [SerializeField] internal TMP_Text recordText;
+    [SerializeField] internal GameObject historyIcon;
     [SerializeField] private Button recordButton;
-    [SerializeField] private GameObject playerCountParent;
-    [SerializeField] private TMP_Text playerCount;
+    [SerializeField] internal GameObject playerCountParent;
+    [SerializeField] internal TMP_Text playerCount;
 
     public event Action<string> OnSelectedHistoryRecord;
     public event Action<string> OnSelectedRegularRecord;
