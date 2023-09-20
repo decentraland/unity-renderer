@@ -23,7 +23,7 @@ public interface ISearchBarComponentView
     /// Order a specific search.
     /// </summary>
     /// <param name="value">Text to search.</param>
-    void SubmitSearch(string value, bool notify = true);
+    void SubmitSearch(string value, bool notifyInputField = true, bool notify = true);
 
     /// <summary>
     /// Clear the search component.
@@ -100,11 +100,11 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         placeHolderText.text = value;
     }
 
-    public void SubmitSearch(string value, bool notify = true)
+    public void SubmitSearch(string value, bool notifyInputField = true, bool notify = true)
     {
         StopSearchCoroutine();
 
-        if (notify)
+        if (notifyInputField)
             inputField.text = value;
         else
             inputField.SetTextWithoutNotify(value);

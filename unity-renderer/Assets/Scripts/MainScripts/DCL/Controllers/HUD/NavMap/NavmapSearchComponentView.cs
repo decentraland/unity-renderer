@@ -51,6 +51,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     public void SetHistoryRecords(string[] previousSearches)
     {
         ClearResults();
+        noRecordsFound.SetActive(false);
         searchResultsContainer.SetActive(true);
 
         for(int i = previousSearches.Length - 1; i >= 0; i--)
@@ -89,7 +90,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
 
     private void OnSelectedHistoryRecord(string searchText)
     {
-        searchBar.SubmitSearch(searchText, true);
+        searchBar.SubmitSearch(searchText, true, false);
     }
 
     public void ClearResults()

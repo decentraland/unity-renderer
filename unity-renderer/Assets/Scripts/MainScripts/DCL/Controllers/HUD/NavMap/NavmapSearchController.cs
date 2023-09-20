@@ -18,6 +18,7 @@ public class NavmapSearchController : IDisposable
     private readonly IPlayerPrefs playerPrefs;
 
     private CancellationTokenSource searchCts;
+    private bool isAlreadySelected = false;
 
     public NavmapSearchController(INavmapSearchComponentView view, IPlacesAPIService placesAPIService, IPlayerPrefs playerPrefs)
     {
@@ -52,14 +53,14 @@ public class NavmapSearchController : IDisposable
 
     private void OnSelectedSearchbarChange(bool isSelected)
     {
+        if (isSelected == isAlreadySelected)
+            return;
+
+        isAlreadySelected = isSelected;
         if (isSelected)
-        {
             GetAndShowPreviousSearches();
-        }
         else
-        {
             view.ClearResults();
-        }
     }
 
     private void GetAndShowPreviousSearches()
