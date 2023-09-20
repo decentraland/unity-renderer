@@ -10,6 +10,7 @@ namespace DCL
 {
     public class NavMapLocationControlsController : IDisposable
     {
+        private const float TRANSLATION_DURATION = 0.5f;
         private readonly NavMapLocationControlsView view;
         private readonly NavmapZoomViewController navmapZoomViewController;
         private readonly NavmapToastViewController toastViewController;
@@ -75,8 +76,10 @@ namespace DCL
 
         private void CenterToPlayerLocation()
         {
-            mapCamera.SetPositionAndZoom(Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
-                navmapZoomViewController.ResetZoomToMidValue());
+            mapCamera.TranslateTo(
+                coordinates: Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
+                zoom: navmapZoomViewController.ResetZoomToMidValue(),
+                duration: TRANSLATION_DURATION);
         }
     }
 }

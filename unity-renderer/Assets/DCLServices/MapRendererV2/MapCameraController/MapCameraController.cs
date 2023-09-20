@@ -1,7 +1,11 @@
-﻿using DCLServices.MapRendererV2.CoordsUtils;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
+using DG.Tweening;
 using System;
+using System.Threading;
 using UnityEngine;
 using Utils = DCL.Helpers.Utils;
 
@@ -36,6 +40,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private Vector2Int zoomValues;
 
         private Rect cameraPositionBounds;
+        private Sequence translationSequence;
 
         public MapCameraController(
             IMapInteractivityControllerInternal interactivityBehavior,
@@ -120,6 +125,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void SetPosition(Vector2 coordinates)
         {
+            translationSequence.Kill();
+            translationSequence = null;
+
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
@@ -133,16 +141,38 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         private void SetLocalPositionClamped(Vector2 localCameraPosition)
         {
+            translationSequence.Kill();
+            translationSequence = null;
+
             mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
         }
 
-        public void SetPositionAndZoom(Vector2 coordinates, float value)
+        public void SetPositionAndZoom(Vector2 coordinates, float zoom)
         {
-            SetCameraSize(value);
+            translationSequence.Kill();
+            translationSequence = null;
+
+            SetCameraSize(zoom);
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
+        }
+
+        public void TranslateTo(Vector2 coordinates, float zoom, float duration)
+        {
+            translationSequence = DOTween.Sequence();
+
+            Vector3 targetPosition = ClampLocalPosition(new Vector3(coordinates.x, coordinates.y, CAMERA_HEIGHT));
+            zoom = Mathf.Lerp(zoomValues.y, zoomValues.x, Mathf.Clamp01(zoom));
+
+            translationSequence.Join(mapCameraObject.mapCamera.DOOrthoSize(zoom, duration).SetEase(Ease.OutQuart))
+                               .Join(mapCameraObject.transform.DOLocalMove(targetPosition, duration).SetEase(Ease.OutQuart))
+                               .OnComplete(() =>
+                                {
+                                    CalculateCameraPositionBounds();
+                                    cullingController.SetCameraDirty(this);
+                                });
         }
 
         private void SetCameraSize(float zoom)
@@ -206,6 +236,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void Dispose()
         {
+            translationSequence.Kill();
+            translationSequence = null;
+
             if (mapCameraObject != null)
                 Utils.SafeDestroy(mapCameraObject.gameObject);
 
