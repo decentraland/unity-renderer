@@ -4,8 +4,8 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
-using DCL.Emotes;
 using DCL.Helpers;
+using DCLServices.EmotesService.Domain;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -41,8 +41,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     const float WALK_RUN_SWITCH_TIME = 1.5f;
     const float JUMP_TRANSITION_TIME = 0.01f;
     const float FALL_TRANSITION_TIME = 0.5f;
-    const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
-    const float EXPRESSION_ENTER_TRANSITION_TIME = 0.1f;
     const float OTHER_PLAYER_MOVE_THRESHOLD = 0.02f;
 
     const float AIR_EXIT_TRANSITION_TIME = 0.2f;
@@ -96,7 +94,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private float lastOnAirTime = 0;
 
-    private Dictionary<string, EmoteClipData> emoteClipDataMap = new ();
+    private Dictionary<string, EmoteAnimationData> emoteClipDataMap = new ();
 
     private string runAnimationName;
     private string walkAnimationName;
@@ -110,10 +108,11 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private Ray rayCache;
     private bool hasTarget;
-    private EmoteClipData lastExtendedEmoteData;
+    private EmoteAnimationData lastExtendedEmoteData;
     private string lastCrossFade;
-    private AnimationState currentEmote;
     private int lastEmoteLoopCount;
+
+    private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
     private void Awake()
     {
@@ -367,22 +366,38 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             exitTransitionStarted = true;
         }
 
-        if (ExpressionGroundTransitionCondition(animationState: animation[bb.expressionTriggerId]))
+        if (IsEmoteFinished())
         {
-            currentState = State_Ground;
-            exitTransitionStarted = true;
+            bool canTransitionOut = lastExtendedEmoteData?.CanTransitionOut() ?? true;
+            bool isPlaying = lastExtendedEmoteData?.GetState() == EmoteState.PLAYING;
+
+            if (isPlaying && !canTransitionOut)
+            {
+                exitTransitionStarted = true;
+                dataStorePlayer.canPlayerMove.Set(false);
+            }
+
+            if (canTransitionOut)
+            {
+                dataStorePlayer.canPlayerMove.Set(true);
+                currentState = State_Ground;
+            }
         }
 
         if (exitTransitionStarted)
+        {
             StopEmoteInternal(false);
-        else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
+        }
+
+        // TODO: check why we have this condition here
+        /*else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
             animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
             animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
-        }
+        }*/
 
         // If we reach the emote loop, we send the RPC message again to refresh new users
-        if (bb.shouldLoop && isOwnPlayer)
+        if (bb.shouldLoop && isOwnPlayer && !IsEmoteFinished())
         {
             int emoteLoop = GetCurrentEmoteLoopCount();
 
@@ -394,18 +409,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         return;
 
-        bool ExpressionGroundTransitionCondition(AnimationState animationState)
+        bool IsEmoteFinished()
         {
-            float timeTillEnd = animationState == null ? 0 : animationState.length - animationState.time;
-            bool isAnimationOver = timeTillEnd < EXPRESSION_EXIT_TRANSITION_TIME && !bb.shouldLoop;
+            //bool emoteIsFinished = lastExtendedEmoteData?.IsFinished() ?? true;
+            //bool isAnimationOver = emoteIsFinished && !bb.shouldLoop;
             bool isMoving = isOwnPlayer ? DCLCharacterController.i.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
-
-            return isAnimationOver || isMoving;
+            bool emoteIsFinished = lastExtendedEmoteData?.IsFinished() ?? true;
+            bool isAnimationFinishing = lastExtendedEmoteData?.GetState() == EmoteState.STOPPING;
+            return isMoving || isAnimationFinishing || emoteIsFinished;
         }
     }
 
     private int GetCurrentEmoteLoopCount() =>
-        Mathf.RoundToInt(currentEmote.time / currentEmote.length);
+        lastExtendedEmoteData.GetLoopCount();
+
 
     public void StopEmote()
     {
@@ -414,33 +431,24 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private void StopEmoteInternal(bool immediate)
     {
-        if (string.IsNullOrEmpty(blackboard.expressionTriggerId)) return;
-        if (animation.GetClip(blackboard.expressionTriggerId) == null) return;
-
-        animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
         blackboard.expressionTriggerId = null;
-        blackboard.shouldLoop = false;
-        lastExtendedEmoteData?.Stop();
+        lastExtendedEmoteData?.Stop(immediate);
 
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
     private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
     {
-        if (!string.IsNullOrEmpty(emoteId))
-        {
-            lastExtendedEmoteData?.Stop();
+        lastExtendedEmoteData?.Stop(false);
 
-            if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
-            {
-                lastExtendedEmoteData = emoteClipData;
-                emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
-            }
-        }
-        else
-        {
-            lastExtendedEmoteData?.Stop();
-        }
+        if (string.IsNullOrEmpty(emoteId)) return;
+        if (!emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData)) return;
+
+        blackboard.expressionTriggerId = emoteId;
+        blackboard.shouldLoop = emoteClipData.IsLoop();
+
+        lastExtendedEmoteData = emoteClipData;
+        emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
     }
 
     public void Reset()
@@ -462,34 +470,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (string.IsNullOrEmpty(emoteId))
             return;
 
-        if (animation.GetClip(emoteId) == null)
-            return;
-
-        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
+        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.IsLoop();
 
         var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != timestamps;
 
         if (loop && blackboard.expressionTriggerId == emoteId)
             return;
 
-        blackboard.expressionTriggerId = emoteId;
-        blackboard.expressionTriggerTimestamp = timestamps;
 
         if (mustTriggerAnimation || loop)
         {
+            StopEmoteInternal(true);
             StartEmote(emoteId, spatial, volume, occlude);
+            blackboard.expressionTriggerTimestamp = timestamps;
 
-            if (!string.IsNullOrEmpty(emoteId))
-            {
-                animation.Stop(emoteId);
-                latestAnimationState = AvatarAnimation.IDLE;
-            }
-
-            blackboard.shouldLoop = loop;
-
-            CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
-
-            currentEmote = animation[emoteId];
             lastEmoteLoopCount = GetCurrentEmoteLoopCount();
             currentState = State_Expression;
             OnUpdateWithDeltaTime(Time.deltaTime);
@@ -508,24 +502,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.AddClip(clip, clipId);
     }
 
-    public void EquipEmote(string emoteId, EmoteClipData emoteClipData)
+    public void EquipEmote(string emoteId, EmoteAnimationData emoteAnimationData)
     {
         if (animation == null)
             return;
 
-        if (animation.GetClip(emoteId) != null)
-            animation.RemoveClip(emoteId);
-
-        emoteClipDataMap[emoteId] = emoteClipData;
-
-        animation.AddClip(emoteClipData.AvatarClip, emoteId);
-
-        if (emoteClipData.ExtraContent != null)
-        {
-            emoteClipData.ExtraContent.transform.SetParent(animation.transform.parent, false);
-            emoteClipData.ExtraContent.transform.ResetLocalTRS();
-            emoteClipData.ExtraContent.transform.localPosition = animation.transform.localPosition;
-        }
+        emoteClipDataMap[emoteId] = emoteAnimationData;
+        emoteAnimationData.Equip(animation);
     }
 
     public void UnequipEmote(string emoteId)
@@ -536,13 +519,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation.GetClip(emoteId) == null)
             return;
 
-        animation.RemoveClip(emoteId);
-
         if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
-        {
-            if (emoteClipData.ExtraContent != null)
-                emoteClipData.ExtraContent.transform.SetParent(null, false);
-        }
+            emoteClipData.UnEquip();
     }
 
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)

@@ -1,23 +1,24 @@
-﻿using System;
+﻿using DCLServices.EmotesService.Domain;
+using System;
 
 namespace DCL.Emotes
 {
     public class EmbedEmoteReference : IEmoteReference
     {
         private readonly WearableItem emoteItem;
-        private readonly EmoteClipData clipData;
+        private readonly EmoteAnimationData animationData;
 
-        public EmbedEmoteReference(WearableItem emoteItem, EmoteClipData clipData)
+        public EmbedEmoteReference(WearableItem emoteItem, EmoteAnimationData animationData)
         {
             this.emoteItem = emoteItem;
-            this.clipData = clipData;
+            this.animationData = animationData;
         }
 
         public WearableItem GetEntity() =>
             emoteItem;
 
-        public EmoteClipData GetData() =>
-            clipData;
+        public EmoteAnimationData GetData() =>
+            animationData;
 
         public void Dispose()
         {
