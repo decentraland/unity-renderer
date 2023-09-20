@@ -391,9 +391,14 @@ export class BrowserInterface {
   }
 
   public ReloadScene(data: {coords: Vector2}) {
-    const sceneToReload = getLoadedParcelSceneByParcel(encodeParcelPosition(data.coords))
+    console.log('[SANTI] [ReloadScene] coords: ' + data.coords.x + ', ' + data.coords.y)
+    const coordsAsString = encodeParcelPosition(data.coords)
+    console.log('[SANTI] [ReloadScene] coordsAsString: ' + coordsAsString)
+    const sceneToReload = getLoadedParcelSceneByParcel(coordsAsString)
     if (sceneToReload) {
+      console.log('[SANTI] [ReloadScene] sceneToReload received: ' + sceneToReload.loadableScene.id)
       reloadScene(sceneToReload.loadableScene.id)
+      console.log('[SANTI] [ReloadScene] Reloading scene: ' + sceneToReload.metadata.scene.base)
     }
   }
 
