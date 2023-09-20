@@ -66,11 +66,10 @@ namespace DCL
             var homeParcel = new MapRenderImage.ParcelClickData
                 {
                     Parcel = DataStore.i.HUDs.homePoint.Get(),
-                    WorldPosition = Vector2Int.zero,
+                    WorldPosition = new Vector2(Screen.width/2f, Screen.height/2f),
                 };
 
             toastViewController.ShowPlaceToast(homeParcel);
-            // TODO: Open home card
         }
 
         private void CenterToPlayerLocation()
