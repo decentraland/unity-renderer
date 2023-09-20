@@ -35,7 +35,8 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             entity.gameObject.transform,
             ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start),
             ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
-            model.Duration));
+            model.Duration,
+            !model.HasPlaying || model.Playing));
 
         lastModel = model;
     }

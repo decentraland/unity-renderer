@@ -307,14 +307,16 @@ namespace DCL.ECS7.InternalComponents
         public readonly Vector3 endPosition;
         public readonly float calculatedSpeed;
         public float currentTime;
+        public bool playing;
 
-        public InternalTween(Transform transform, Vector3 startPosition, Vector3 endPosition, float durationInMilliseconds, float currentTime = 0)
+        public InternalTween(Transform transform, Vector3 startPosition, Vector3 endPosition, float durationInMilliseconds, bool playing, float currentTime = 0)
         {
             this.dirty = false;
             this.transform = transform;
             this.startPosition = startPosition;
             this.endPosition = endPosition;
             this.currentTime = currentTime;
+            this.playing = playing;
 
             // TODO: Optimize with sqrMagnitude??
             this.calculatedSpeed = (endPosition - startPosition).magnitude / (durationInMilliseconds / 1000);
