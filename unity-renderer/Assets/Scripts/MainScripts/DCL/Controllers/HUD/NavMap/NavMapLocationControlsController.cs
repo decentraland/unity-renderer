@@ -4,6 +4,7 @@ using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL
 {
@@ -68,6 +69,7 @@ namespace DCL
 
         private void FocusOnHomeLocation()
         {
+            EventSystem.current.SetSelectedGameObject(null);
             toastViewController.CloseCurrentToast();
 
             mapCamera.TranslateTo(
@@ -79,6 +81,7 @@ namespace DCL
 
         private void CenterToPlayerLocation()
         {
+            EventSystem.current.SetSelectedGameObject(null);
             toastViewController.CloseCurrentToast();
 
             mapCamera.TranslateTo(
