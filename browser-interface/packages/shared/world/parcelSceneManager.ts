@@ -160,13 +160,13 @@ export async function reloadScene(sceneId: string) {
   await setDesiredParcelScenes(getDesiredParcelScenes())
 }
 
-export async function forceReloadScene(sceneId: string) {
+export async function reloadSpecificScene(sceneId: string) {
   unloadParcelSceneById(sceneId)
   const desiredParcelScenes = getDesiredParcelScenes()
   const sceneToReload = desiredParcelScenes.get(sceneId)
-  if (sceneToReload) {
-    await loadParcelSceneByIdIfMissing(sceneId, sceneToReload)
-  }
+  if (!sceneToReload) return
+  const sceneToReloadMap = new Map([[sceneId, sceneToReload]])
+  await setDesiredParcelScenes(sceneToReloadMap)
 }
 
 export function unloadParcelSceneById(sceneId: string) {
