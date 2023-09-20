@@ -70,9 +70,7 @@ namespace DCL
                     WorldPosition = new Vector2(Screen.width/2f, Screen.height/2f),
                 };
 
-            toastViewController.ShowPlaceToast(homeParcel);
-
-            Utils.CenterCursor().Forget();
+            toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true);
         }
 
         private void CenterToPlayerLocation()

@@ -66,7 +66,7 @@ namespace DCL
 
         private void OnHovered(Vector2 localPosition)
         {
-            if (!view.gameObject.activeSelf)
+            if (!view.gameObject.activeSelf || showUntilClick)
                 return;
 
             if (Vector2.SqrMagnitude(localPosition - lastClickPosition) >= sqrDistanceToCloseView)
@@ -78,11 +78,21 @@ namespace DCL
             if (!view.gameObject.activeSelf)
                 return;
 
+            showUntilClick = false;
             view.Close();
+        }
+
+        private bool showUntilClick;
+        public void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData, bool showUntilClick)
+        {
+            ShowPlaceToast(parcelClickData);
+            this.showUntilClick = showUntilClick;
         }
 
         public void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData)
         {
+            showUntilClick = false;
+
             lastClickPosition = parcelClickData.WorldPosition;
             currentParcel = parcelClickData.Parcel;
 

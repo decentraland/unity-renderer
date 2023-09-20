@@ -499,16 +499,6 @@ namespace DCL.Helpers
             EventSystem.current?.SetSelectedGameObject(null);
         }
 
-        /// <summary>
-        /// Center cursor to the screen center
-        /// </summary>
-        public static async UniTask CenterCursor()
-        {
-            LockCursor();
-            await UniTask.Yield(PlayerLoopTiming.Update);
-            UnlockCursor();
-        }
-
         public static void UnlockCursor()
         {
 #if WEB_PLATFORM
