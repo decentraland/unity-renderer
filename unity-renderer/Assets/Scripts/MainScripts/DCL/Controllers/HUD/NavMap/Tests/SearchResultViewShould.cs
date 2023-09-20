@@ -47,4 +47,11 @@ public class SearchResultViewShould
 
         Assert.False(searchRecordComponentView.playerCountParent.activeSelf, "Player count parent is active");
     }
+
+    [TearDown]
+    public void TearDown()
+    {
+        searchRecordComponentView.Dispose();
+        Object.Destroy(searchRecordComponentView.gameObject);
+    }
 }

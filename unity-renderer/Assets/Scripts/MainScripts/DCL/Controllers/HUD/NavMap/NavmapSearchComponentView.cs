@@ -20,10 +20,12 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     public event Action<string> OnSearchedText;
 
     private UnityObjectPool<SearchRecordComponentView> recordsPool;
-    private readonly List<SearchRecordComponentView> usedRecords = new ();
+    internal readonly List<SearchRecordComponentView> usedRecords = new ();
 
-    public void Start()
+    public override void Awake()
     {
+        base.Awake();
+
         searchBar.OnSelected += OnSearchBarSelected;
         searchBar.OnSearchText += OnSearchText;
         searchBar.OnSearchValueChanged += OnSearchValueChanged;
