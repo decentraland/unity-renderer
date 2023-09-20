@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
+using System;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -46,17 +47,28 @@ namespace DCL
             updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
             UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+
+            //Needed due to script execution order
+            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
+        }
+
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            //TODO Remove: Temporary to allow PR merging
+            searchView.gameObject.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap_header"));
         }
 
         private void OnDisable()
         {
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
         }
 
         private void OnDestroy()
         {
             navmapVisibilityBehaviour.Dispose();
+            navmapSearchController.Dispose();
         }
 
         private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)

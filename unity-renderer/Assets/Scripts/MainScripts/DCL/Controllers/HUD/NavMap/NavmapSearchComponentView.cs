@@ -11,6 +11,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
 
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] internal SearchRecordComponentView recordPrefab;
+    [SerializeField] internal GameObject noRecordsFound;
     [SerializeField] internal Transform recordsParent;
     [SerializeField] internal GameObject searchResultsContainer;
     [SerializeField] internal Button closeButtonArea;
@@ -70,6 +71,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     {
         ClearResults();
         searchResultsContainer.SetActive(true);
+        noRecordsFound.SetActive(places.Count == 0);
 
         foreach (IHotScenesController.PlaceInfo placeInfo in places)
         {
