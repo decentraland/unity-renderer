@@ -72,8 +72,6 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         clearSearchButton.onClick.AddListener(() => ClearSearch());
         inputField.onSelect.RemoveAllListeners();
         inputField.onSelect.AddListener((text)=>OnSelected?.Invoke(true));
-        inputField.onDeselect.RemoveAllListeners();
-        inputField.onDeselect.AddListener((text)=>OnSelected?.Invoke(false));
 
         SetClearMode();
     }

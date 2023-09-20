@@ -3,6 +3,7 @@ using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NavmapSearchComponentView : BaseComponentView, INavmapSearchComponentView
 {
@@ -11,6 +12,8 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     [SerializeField] private SearchBarComponentView searchBar;
     [SerializeField] internal SearchRecordComponentView recordPrefab;
     [SerializeField] internal Transform recordsParent;
+    [SerializeField] internal GameObject searchResultsContainer;
+    [SerializeField] internal Button closeButtonArea;
 
     public event Action<bool> OnSelectedSearchBar;
     public event Action<string> OnSearchedText;
@@ -23,7 +26,8 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
         searchBar.OnSelected += OnSearchBarSelected;
         searchBar.OnSearchText += OnSearchText;
         searchBar.OnSearchValueChanged += OnSearchValueChanged;
-
+        closeButtonArea.onClick.RemoveAllListeners();
+        closeButtonArea.onClick.AddListener(()=> OnSelectedSearchBar?.Invoke(false));
         recordsPool = new UnityObjectPool<SearchRecordComponentView>(recordPrefab, recordsParent);
         recordsPool.Prewarm(MAX_RECORDS_COUNT);
     }
@@ -46,6 +50,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     public void SetHistoryRecords(string[] previousSearches)
     {
         ClearResults();
+        searchResultsContainer.SetActive(true);
 
         for(int i = previousSearches.Length - 1; i >= 0; i--)
         {
@@ -64,6 +69,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     public void SetSearchResultRecords(IReadOnlyList<IHotScenesController.PlaceInfo> places)
     {
         ClearResults();
+        searchResultsContainer.SetActive(true);
 
         foreach (IHotScenesController.PlaceInfo placeInfo in places)
         {
@@ -84,6 +90,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
 
     public void ClearResults()
     {
+        searchResultsContainer.SetActive(false);
         foreach (var pooledRecord in usedRecords)
             recordsPool.Release(pooledRecord);
 
