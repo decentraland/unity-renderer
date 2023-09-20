@@ -109,7 +109,7 @@ import {
   getLoadedParcelSceneByParcel,
   getSceneWorkerBySceneID,
   getSceneWorkerBySceneNumber,
-  reloadSpecificScene
+  forceReloadScene
 } from 'shared/world/parcelSceneManager'
 import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
@@ -391,11 +391,9 @@ export class BrowserInterface {
   }
 
   public ReloadScene(data: {coords: Vector2}) {
-    console.log('[SANTI] [KERNEL] [ReloadScene] coords: ' + data.coords.x + ', ' + data.coords.y)
-    const sceneToReload = getLoadedParcelSceneByParcel(encodeParcelPosition(data.coords))
-    if (sceneToReload) {
-      reloadSpecificScene(sceneToReload.loadableScene.id)
-      console.log('[SANTI] [KERNEL] [ReloadScene] Reloading scene: ' + sceneToReload.metadata.scene.base)
+    const sceneWorkerToReload = getLoadedParcelSceneByParcel(encodeParcelPosition(data.coords))
+    if (sceneWorkerToReload) {
+      forceReloadScene(sceneWorkerToReload.loadableScene.id)
     }
   }
 
