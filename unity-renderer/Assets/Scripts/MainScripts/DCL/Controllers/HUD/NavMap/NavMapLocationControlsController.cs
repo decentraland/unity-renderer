@@ -1,4 +1,5 @@
-﻿using DCL.Helpers;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
@@ -70,6 +71,16 @@ namespace DCL
                 };
 
             toastViewController.ShowPlaceToast(homeParcel);
+
+            LockCursor().Forget();
+            return;
+
+            async UniTask LockCursor()
+            {
+                Utils.LockCursor();
+                await UniTask.Yield(PlayerLoopTiming.Update);
+                Utils.UnlockCursor();
+            }
         }
 
         private void CenterToPlayerLocation()
