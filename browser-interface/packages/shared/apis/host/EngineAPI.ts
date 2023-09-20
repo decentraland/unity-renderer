@@ -5,11 +5,42 @@ import type { EventData, ManyEntityAction } from 'shared/protocol/decentraland/k
 import { EngineApiServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/engine_api.gen'
 import type { PortContext } from './context'
 
+import { avatarSdk7MessageObservable } from './sdk7/avatar'
+
 export function registerEngineApiServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(
     port,
     EngineApiServiceDefinition,
-    async (): Promise<RpcServerModule<EngineApiServiceDefinition, PortContext>> => {
+    async (port, ctx): Promise<RpcServerModule<EngineApiServiceDefinition, PortContext>> => {
+      let avatarUpdates: Uint8Array[] = []
+      avatarSdk7MessageObservable.on('BinaryMessage', (message) => {
+        avatarUpdates.push(message)
+      })
+
+      avatarSdk7MessageObservable.on('RemoveAvatar', (message) => {
+        avatarUpdates.push(message.data)
+        ctx.avatarEntityInsideScene.delete(message.entity)
+      })
+
+      avatarSdk7MessageObservable.on('ChangePosition', (message) => {
+        // TODO: Define how to know if an entity is inside the scene
+        const isInsideScene = true
+
+        const wasInsideScene = ctx.avatarEntityInsideScene.get(message.entity) || false
+
+        if (isInsideScene) {
+          avatarUpdates.push(message.data)
+
+          if (!wasInsideScene) {
+            ctx.avatarEntityInsideScene.set(message.entity, true)
+          }
+        } else if (wasInsideScene) {
+          ctx.avatarEntityInsideScene.set(message.entity, false)
+
+          // TODO: Send delete transform
+        }
+      })
+
       return {
         async sendBatch(_req: ManyEntityAction, ctx) {
           // TODO: (2023/01/06) `sendBatch` is still used by sdk7 scenes to retreive
@@ -45,7 +76,10 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             payload: req.data
           })
 
-          return { data: [ret.payload] }
+          const avatarStates = avatarUpdates
+          avatarUpdates = []
+
+          return { data: [ret.payload, ...avatarStates] }
         },
 
         // @deprecated

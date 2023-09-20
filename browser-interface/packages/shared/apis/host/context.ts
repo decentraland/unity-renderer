@@ -6,6 +6,7 @@ import type { RpcClientPort } from '@dcl/rpc'
 import type { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/scene_controller.gen'
 import type { RpcClientModule } from '@dcl/rpc/dist/codegen'
 import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
+import type { Entity } from './sdk7/engine/entity'
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 
@@ -19,6 +20,8 @@ export type PortContext = {
   }
   subscribedEvents: Set<string>
   events: EventData[]
+
+  avatarEntityInsideScene: Map<Entity, boolean>
 
   // @deprecated
   sendBatch(actions: EntityAction[]): void
