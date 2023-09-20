@@ -105,6 +105,8 @@ namespace DCL
         {
             currentZoomLevel = Mathf.Clamp(zoomLevel, 0, zoomSteps - 1);
             targetNormalizedZoom = normalizedCurve.Evaluate(currentZoomLevel);
+
+            SetUiButtonsInteractivity();
         }
 
         private void Zoom(DCLAction_Hold action)

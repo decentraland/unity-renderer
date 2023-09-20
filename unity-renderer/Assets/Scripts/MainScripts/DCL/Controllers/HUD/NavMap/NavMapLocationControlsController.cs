@@ -68,6 +68,8 @@ namespace DCL
 
         private void FocusOnHomeLocation()
         {
+            toastViewController.CloseCurrentToast();
+
             mapCamera.TranslateTo(
                 coordinates: DataStore.i.HUDs.homePoint.Get(),
                 zoom: navmapZoomViewController.ResetZoomToMidValue(),
@@ -77,6 +79,8 @@ namespace DCL
 
         private void CenterToPlayerLocation()
         {
+            toastViewController.CloseCurrentToast();
+
             mapCamera.TranslateTo(
                 coordinates: Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
                 zoom: navmapZoomViewController.ResetZoomToMidValue(),

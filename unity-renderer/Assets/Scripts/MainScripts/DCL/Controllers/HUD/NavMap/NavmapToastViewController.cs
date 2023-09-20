@@ -65,6 +65,9 @@ namespace DCL
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
         }
 
+        public void CloseCurrentToast() =>
+            view.Close();
+
         private void OnHovered(Vector2 localPosition)
         {
             if (!view.gameObject.activeSelf || showUntilClick)
@@ -89,7 +92,7 @@ namespace DCL
             this.showUntilClick = showUntilClick;
         }
 
-        public void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData)
+        private void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData)
         {
             showUntilClick = false;
 
