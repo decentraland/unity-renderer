@@ -72,15 +72,7 @@ namespace DCL
 
             toastViewController.ShowPlaceToast(homeParcel);
 
-            LockCursor().Forget();
-            return;
-
-            async UniTask LockCursor()
-            {
-                Utils.LockCursor();
-                await UniTask.Yield(PlayerLoopTiming.Update);
-                Utils.UnlockCursor();
-            }
+            Utils.CenterCursor().Forget();
         }
 
         private void CenterToPlayerLocation()
