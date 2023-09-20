@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.MapLayers;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -49,7 +50,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         void SetPositionAndZoom(Vector2 coordinates, float zoom);
 
-        void TranslateTo(Vector2 coordinates, float zoom, float duration);
+        void TranslateTo(Vector2 coordinates, float zoom, float duration, Action onComplete = null);
 
         /// <summary>
         /// Pauses rendering without releasing

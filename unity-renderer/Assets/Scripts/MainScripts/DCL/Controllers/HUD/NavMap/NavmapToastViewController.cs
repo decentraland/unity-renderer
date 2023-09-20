@@ -22,6 +22,7 @@ namespace DCL
 
         private readonly CancellationTokenSource disposingCts = new ();
         private CancellationTokenSource retrievingFavoritesCts;
+        private bool showUntilClick;
 
         public NavmapToastViewController(
             MinimapMetadata minimapMetadata,
@@ -82,7 +83,6 @@ namespace DCL
             view.Close();
         }
 
-        private bool showUntilClick;
         public void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData, bool showUntilClick)
         {
             ShowPlaceToast(parcelClickData);

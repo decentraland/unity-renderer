@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
@@ -14,6 +13,12 @@ namespace DCL
         private readonly NavMapLocationControlsView view;
         private readonly NavmapZoomViewController navmapZoomViewController;
         private readonly NavmapToastViewController toastViewController;
+
+        private readonly MapRenderImage.ParcelClickData homeParcel = new ()
+        {
+            Parcel = DataStore.i.HUDs.homePoint.Get(),
+            WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f),
+        };
         private IMapCameraController mapCamera;
 
         private bool active;
@@ -63,15 +68,11 @@ namespace DCL
 
         private void FocusOnHomeLocation()
         {
-            mapCamera.SetPositionAndZoom(DataStore.i.HUDs.homePoint.Get(), navmapZoomViewController.ResetZoomToMidValue());
-
-            var homeParcel = new MapRenderImage.ParcelClickData
-                {
-                    Parcel = DataStore.i.HUDs.homePoint.Get(),
-                    WorldPosition = new Vector2(Screen.width/2f, Screen.height/2f),
-                };
-
-            toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true);
+            mapCamera.TranslateTo(
+                coordinates: DataStore.i.HUDs.homePoint.Get(),
+                zoom: navmapZoomViewController.ResetZoomToMidValue(),
+                duration: TRANSLATION_DURATION,
+                onComplete: () => toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true));
         }
 
         private void CenterToPlayerLocation()

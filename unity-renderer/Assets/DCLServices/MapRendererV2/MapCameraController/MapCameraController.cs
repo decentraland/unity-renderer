@@ -159,7 +159,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             cullingController.SetCameraDirty(this);
         }
 
-        public void TranslateTo(Vector2 coordinates, float zoom, float duration)
+        public void TranslateTo(Vector2 coordinates, float zoom, float duration, Action onComplete = null)
         {
             translationSequence = DOTween.Sequence();
 
@@ -172,6 +172,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
                                 {
                                     CalculateCameraPositionBounds();
                                     cullingController.SetCameraDirty(this);
+                                    onComplete?.Invoke();
                                 });
         }
 
