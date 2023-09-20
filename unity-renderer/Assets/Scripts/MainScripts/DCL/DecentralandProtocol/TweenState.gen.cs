@@ -27,7 +27,7 @@ namespace DCL.ECSComponents {
             "Ci1kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW5fc3RhdGUucHJv",
             "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJcCgxQQlR3ZWVuU3Rh",
             "dGUSNgoFc3RhdGUYASABKA4yJy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
-            "dHMuVHdlZW5TdGF0ZRIUCgxjdXJyZW50X3RpbWUYAiABKAUqPAoKVHdlZW5T",
+            "dHMuVHdlZW5TdGF0ZRIUCgxjdXJyZW50X3RpbWUYAiABKAIqPAoKVHdlZW5T",
             "dGF0ZRINCglUU19BQ1RJVkUQABIQCgxUU19DT01QTEVURUQQARINCglUU19Q",
             "QVVTRUQQAkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
@@ -111,13 +111,13 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "current_time" field.</summary>
     public const int CurrentTimeFieldNumber = 2;
-    private int currentTime_;
+    private float currentTime_;
     /// <summary>
     /// between 0 and 1
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CurrentTime {
+    public float CurrentTime {
       get { return currentTime_; }
       set {
         currentTime_ = value;
@@ -140,7 +140,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (State != other.State) return false;
-      if (CurrentTime != other.CurrentTime) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -149,7 +149,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (State != global::DCL.ECSComponents.TweenState.TsActive) hash ^= State.GetHashCode();
-      if (CurrentTime != 0) hash ^= CurrentTime.GetHashCode();
+      if (CurrentTime != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -172,9 +172,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteEnum((int) State);
       }
-      if (CurrentTime != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(CurrentTime);
+      if (CurrentTime != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(CurrentTime);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -190,9 +190,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(8);
         output.WriteEnum((int) State);
       }
-      if (CurrentTime != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(CurrentTime);
+      if (CurrentTime != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(CurrentTime);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -207,8 +207,8 @@ namespace DCL.ECSComponents {
       if (State != global::DCL.ECSComponents.TweenState.TsActive) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
       }
-      if (CurrentTime != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CurrentTime);
+      if (CurrentTime != 0F) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -225,7 +225,7 @@ namespace DCL.ECSComponents {
       if (other.State != global::DCL.ECSComponents.TweenState.TsActive) {
         State = other.State;
       }
-      if (other.CurrentTime != 0) {
+      if (other.CurrentTime != 0F) {
         CurrentTime = other.CurrentTime;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -247,8 +247,8 @@ namespace DCL.ECSComponents {
             State = (global::DCL.ECSComponents.TweenState) input.ReadEnum();
             break;
           }
-          case 16: {
-            CurrentTime = input.ReadInt32();
+          case 21: {
+            CurrentTime = input.ReadFloat();
             break;
           }
         }
@@ -270,8 +270,8 @@ namespace DCL.ECSComponents {
             State = (global::DCL.ECSComponents.TweenState) input.ReadEnum();
             break;
           }
-          case 16: {
-            CurrentTime = input.ReadInt32();
+          case 21: {
+            CurrentTime = input.ReadFloat();
             break;
           }
         }
