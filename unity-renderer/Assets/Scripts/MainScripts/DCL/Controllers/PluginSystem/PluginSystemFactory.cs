@@ -3,6 +3,7 @@ using DCL.Backpack;
 using DCL.Social.Chat;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
+using DCL.ContentModeration;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -107,6 +108,7 @@ namespace DCL
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
             pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");
+            pluginSystem.RegisterWithFlag<ContentModerationPlugin>(() => new ContentModerationPlugin(), "content_moderation");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 
