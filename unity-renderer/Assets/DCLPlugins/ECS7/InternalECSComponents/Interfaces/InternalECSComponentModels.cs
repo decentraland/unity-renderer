@@ -313,6 +313,7 @@ namespace DCL.ECS7.InternalComponents
 
         public void UpdateSpeedCalculation()
         {
+            // Debug.Log($"InternalTween struct - duration in milliseconds: {durationInMilliseconds}");
             // TODO: Optimize with sqrMagnitude??
             this.calculatedSpeed = (endPosition - startPosition).magnitude / (durationInMilliseconds / 1000);
         }

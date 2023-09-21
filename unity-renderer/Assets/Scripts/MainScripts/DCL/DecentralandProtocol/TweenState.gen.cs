@@ -25,14 +25,15 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci1kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW5fc3RhdGUucHJv",
-            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJcCgxQQlR3ZWVuU3Rh",
-            "dGUSNgoFc3RhdGUYASABKA4yJy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
-            "dHMuVHdlZW5TdGF0ZRIUCgxjdXJyZW50X3RpbWUYAiABKAIqPAoKVHdlZW5T",
-            "dGF0ZRINCglUU19BQ1RJVkUQABIQCgxUU19DT01QTEVURUQQARINCglUU19Q",
-            "QVVTRUQQAkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "dG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJiCgxQQlR3ZWVuU3Rh",
+            "dGUSPAoFc3RhdGUYASABKA4yLS5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
+            "dHMuVHdlZW5TdGF0ZVN0YXR1cxIUCgxjdXJyZW50X3RpbWUYAiABKAIqQgoQ",
+            "VHdlZW5TdGF0ZVN0YXR1cxINCglUU19BQ1RJVkUQABIQCgxUU19DT01QTEVU",
+            "RUQQARINCglUU19QQVVTRUQQAkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TweenState), }, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TweenStateStatus), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTweenState), global::DCL.ECSComponents.PBTweenState.Parser, new[]{ "State", "CurrentTime" }, null, null, null, null)
           }));
     }
@@ -40,7 +41,7 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
-  public enum TweenState {
+  public enum TweenStateStatus {
     [pbr::OriginalName("TS_ACTIVE")] TsActive = 0,
     [pbr::OriginalName("TS_COMPLETED")] TsCompleted = 1,
     [pbr::OriginalName("TS_PAUSED")] TsPaused = 2,
@@ -99,10 +100,10 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "state" field.</summary>
     public const int StateFieldNumber = 1;
-    private global::DCL.ECSComponents.TweenState state_ = global::DCL.ECSComponents.TweenState.TsActive;
+    private global::DCL.ECSComponents.TweenStateStatus state_ = global::DCL.ECSComponents.TweenStateStatus.TsActive;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.TweenState State {
+    public global::DCL.ECSComponents.TweenStateStatus State {
       get { return state_; }
       set {
         state_ = value;
@@ -148,7 +149,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (State != global::DCL.ECSComponents.TweenState.TsActive) hash ^= State.GetHashCode();
+      if (State != global::DCL.ECSComponents.TweenStateStatus.TsActive) hash ^= State.GetHashCode();
       if (CurrentTime != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -168,7 +169,7 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (State != global::DCL.ECSComponents.TweenState.TsActive) {
+      if (State != global::DCL.ECSComponents.TweenStateStatus.TsActive) {
         output.WriteRawTag(8);
         output.WriteEnum((int) State);
       }
@@ -186,7 +187,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (State != global::DCL.ECSComponents.TweenState.TsActive) {
+      if (State != global::DCL.ECSComponents.TweenStateStatus.TsActive) {
         output.WriteRawTag(8);
         output.WriteEnum((int) State);
       }
@@ -204,7 +205,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (State != global::DCL.ECSComponents.TweenState.TsActive) {
+      if (State != global::DCL.ECSComponents.TweenStateStatus.TsActive) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) State);
       }
       if (CurrentTime != 0F) {
@@ -222,7 +223,7 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.State != global::DCL.ECSComponents.TweenState.TsActive) {
+      if (other.State != global::DCL.ECSComponents.TweenStateStatus.TsActive) {
         State = other.State;
       }
       if (other.CurrentTime != 0F) {
@@ -244,7 +245,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            State = (global::DCL.ECSComponents.TweenState) input.ReadEnum();
+            State = (global::DCL.ECSComponents.TweenStateStatus) input.ReadEnum();
             break;
           }
           case 21: {
@@ -267,7 +268,7 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 8: {
-            State = (global::DCL.ECSComponents.TweenState) input.ReadEnum();
+            State = (global::DCL.ECSComponents.TweenStateStatus) input.ReadEnum();
             break;
           }
           case 21: {

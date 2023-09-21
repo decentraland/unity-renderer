@@ -1,11 +1,9 @@
-
 using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,11 +70,11 @@ namespace ECSSystems.TweenSystem
 
                     tweenComponent.PutFor(scene, entity, model);
 
-                    tweenStateComponentModel.State = model.currentTime.Equals(1f) ? TweenState.TsCompleted : TweenState.TsActive;
+                    tweenStateComponentModel.State = model.currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
                 }
                 else
                 {
-                    tweenStateComponentModel.State = TweenState.TsPaused;
+                    tweenStateComponentModel.State = TweenStateStatus.TsPaused;
                 }
 
                 //TODO: If we decide to make TweenState a GOVS component instead of LWW, we have to use Append() here
