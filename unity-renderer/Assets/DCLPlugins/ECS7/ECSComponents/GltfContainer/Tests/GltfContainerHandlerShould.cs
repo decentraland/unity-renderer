@@ -58,6 +58,7 @@ namespace Tests
                 customLayerColliderComponent,
                 renderersComponent,
                 gltfContainerLoadingStateComponent,
+                internalEcsComponents.Animation,
                 dataStoreEcs7,
                 new DataStore_FeatureFlag());
 
