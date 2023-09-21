@@ -155,11 +155,11 @@ public class ECSSystemsController : IDisposable
         {
             engineInfoSystem.Update,
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
+            tweenSystem.Update,
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
-            tweenSystem.Update,
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,

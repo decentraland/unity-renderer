@@ -302,22 +302,17 @@ namespace DCL.ECS7.InternalComponents
     public struct InternalTween : IInternalComponent
     {
         public bool dirty { get; set; }
-        public readonly Transform transform;
-        public readonly Vector3 startPosition;
-        public readonly Vector3 endPosition;
-        public readonly float calculatedSpeed;
+        public bool removed;
+        public Transform transform;
+        public Vector3 startPosition;
+        public Vector3 endPosition;
+        public float durationInMilliseconds;
+        public float calculatedSpeed;
         public float currentTime;
         public bool playing;
 
-        public InternalTween(Transform transform, Vector3 startPosition, Vector3 endPosition, float durationInMilliseconds, bool playing, float currentTime = 0)
+        public void UpdateSpeedCalculation()
         {
-            this.dirty = false;
-            this.transform = transform;
-            this.startPosition = startPosition;
-            this.endPosition = endPosition;
-            this.currentTime = currentTime;
-            this.playing = playing;
-
             // TODO: Optimize with sqrMagnitude??
             this.calculatedSpeed = (endPosition - startPosition).magnitude / (durationInMilliseconds / 1000);
         }

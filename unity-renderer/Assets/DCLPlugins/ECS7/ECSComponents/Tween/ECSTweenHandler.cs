@@ -18,34 +18,39 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
-        internalTweenComponent.RemoveFor(scene, entity);
-
-        // TODO: Should the state component be removed here?
+        internalTweenComponent.RemoveFor(scene, entity, new InternalTween()
+        {
+            removed = true
+        });
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTween model)
     {
-        if (lastModel != null && NewModelOnlyChangesPlayingState(lastModel, model))
-        {
-            // handle 'Playing' state change
-            return;
-        }
+        // by default it's playing
+        bool isPlaying = !model.HasPlaying || model.Playing;
 
-        internalTweenComponent.PutFor(scene, entity, new InternalTween(
-            entity.gameObject.transform,
-            ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start),
-            ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
-            model.Duration,
-            !model.HasPlaying || model.Playing));
+        var internalComponentModel = internalTweenComponent.GetFor(scene, entity)?.model ?? new InternalTween();
+
+        if (!IsSameAsLastModel(model))
+        {
+            internalComponentModel.currentTime = 0;
+            internalComponentModel.transform = entity.gameObject.transform;
+            internalComponentModel.startPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
+            internalComponentModel.endPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
+            internalComponentModel.durationInMilliseconds = model.Duration;
+        }
+        internalComponentModel.playing = isPlaying;
+        internalComponentModel.UpdateSpeedCalculation();
+        internalTweenComponent.PutFor(scene, entity, internalComponentModel);
 
         lastModel = model;
     }
 
-    private bool NewModelOnlyChangesPlayingState(PBTween oldModel, PBTween newModel)
+    private bool IsSameAsLastModel(PBTween targetModel)
     {
-        return newModel.Playing != oldModel.Playing
-               && newModel.Duration.Equals(oldModel.Duration)
-               && oldModel.Move.Start.Equals(newModel.Move.Start)
-               && oldModel.Move.End.Equals(newModel.Move.End);
+        return (lastModel != null
+                && lastModel.Duration.Equals(targetModel.Duration)
+                && lastModel.Move.Start.Equals(targetModel.Move.Start)
+                && lastModel.Move.End.Equals(targetModel.Move.End));
     }
 }

@@ -38,6 +38,13 @@ namespace ECSSystems.TweenSystem
 
                 long entity = tweenComponentGroup[i].key2;
                 InternalTween model = tweenComponentGroup[i].value.model;
+
+                if (model.removed)
+                {
+                    writer.Remove(entity, ComponentID.TWEEN_STATE);
+                    continue;
+                }
+
                 if (model.currentTime.Equals(1f))
                     continue;
 
