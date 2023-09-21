@@ -80,13 +80,16 @@ public class NavmapSearchController : IDisposable
     {
         string playerPrefsPreviousSearches = playerPrefs.GetString(PREVIOUS_SEARCHES_KEY);
         string[] previousSearches = string.IsNullOrEmpty(playerPrefsPreviousSearches) ? Array.Empty<string>() : playerPrefsPreviousSearches.Split('|');
-        if (previousSearches.Length < 5)
+        switch (previousSearches.Length)
         {
-            playerPrefs.Set(PREVIOUS_SEARCHES_KEY, previousSearches.Length > 0 ? searchToAdd + "|" + string.Join("|", previousSearches) : searchToAdd);
-        }
-        else
-        {
-            playerPrefs.Set(PREVIOUS_SEARCHES_KEY, searchToAdd + "|" + string.Join("|", previousSearches.Take(4)));
+            case > 0 when previousSearches[0] == searchToAdd:
+                return;
+            case < 5:
+                playerPrefs.Set(PREVIOUS_SEARCHES_KEY, previousSearches.Length > 0 ? searchToAdd + "|" + string.Join("|", previousSearches) : searchToAdd);
+                break;
+            default:
+                playerPrefs.Set(PREVIOUS_SEARCHES_KEY, searchToAdd + "|" + string.Join("|", previousSearches.Take(4)));
+                break;
         }
     }
 

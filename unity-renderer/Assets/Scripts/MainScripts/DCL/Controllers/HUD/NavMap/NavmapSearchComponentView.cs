@@ -56,7 +56,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
         noRecordsFound.SetActive(false);
         searchResultsContainer.SetActive(true);
 
-        for(int i = previousSearches.Length - 1; i >= 0; i--)
+        for(int i = 0; i <= previousSearches.Length - 1; i++)
         {
             SearchRecordComponentView searchRecordComponentView = recordsPool.Get();
             searchRecordComponentView.OnSelectedHistoryRecord -= OnSelectedHistoryRecord;
@@ -68,6 +68,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
                 playerCount = 0
             });
             usedRecords.Add(searchRecordComponentView);
+            searchRecordComponentView.transform.SetAsLastSibling();
         }
     }
 
