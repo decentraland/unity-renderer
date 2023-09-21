@@ -11,6 +11,7 @@ public record SystemsContext
     public readonly IComponentGroups componentGroups;
     public readonly ECSComponent<PBBillboard> billboards;
     public readonly ECSComponent<ECSTransform> TransformComponent;
+    public readonly ECSComponent<PBTweenState> TweenState;
     public readonly WrappedComponentPool<IWrappedComponent<PBCameraMode>> CameraModePool;
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerLock>> PointerLockPool;
     public readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> TransformPool;
@@ -28,6 +29,7 @@ public record SystemsContext
         IComponentGroups componentGroups,
         ECSComponent<PBBillboard> billboards,
         ECSComponent<ECSTransform> transformComponent,
+        ECSComponent<PBTweenState> tweenState,
         WrappedComponentPool<IWrappedComponent<PBCameraMode>> cameraModePool,
         WrappedComponentPool<IWrappedComponent<PBPointerLock>> pointerLockPool,
         WrappedComponentPool<IWrappedComponent<ECSTransform>> transformPool,
@@ -46,6 +48,7 @@ public record SystemsContext
         CameraModePool = cameraModePool;
         PointerLockPool = pointerLockPool;
         TransformPool = transformPool;
+        TweenState = tweenState;
         ComponentWriters = componentWriters;
         VideoEventPool = videoEventPool;
         RaycastResultPool = raycastResultPool;

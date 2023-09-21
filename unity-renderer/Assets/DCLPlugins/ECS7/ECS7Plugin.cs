@@ -59,6 +59,7 @@ namespace DCL.ECS7
                 new ComponentGroups(componentsManager),
                 (ECSComponent<PBBillboard>)componentsManager.GetOrCreateComponent(ComponentID.BILLBOARD),
                 (ECSComponent<ECSTransform>)componentsManager.GetOrCreateComponent(ComponentID.TRANSFORM),
+                (ECSComponent<PBTweenState>)componentsManager.GetOrCreateComponent(ComponentID.TWEEN_STATE),
                 new WrappedComponentPool<IWrappedComponent<PBCameraMode>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBCameraMode>(new PBCameraMode())),
                 new WrappedComponentPool<IWrappedComponent<PBPointerLock>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBPointerLock>(new PBPointerLock())),
                 new WrappedComponentPool<IWrappedComponent<ECSTransform>>(MAX_EXPECTED_SCENES * 2, () => new TransformWrappedComponent(new ECSTransform())),
