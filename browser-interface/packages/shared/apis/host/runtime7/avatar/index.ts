@@ -1,4 +1,6 @@
 import mitt from 'mitt'
+import { getProfileFromStore } from 'shared/profiles/selectors'
+import { store } from 'shared/store/isolatedStore'
 import { avatarMessageObservable } from '../../../../comms/peers'
 import * as rfc4 from '../../../../protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { Entity } from '../engine/entity'
@@ -37,12 +39,19 @@ avatarMessageObservable.add((evt) => {
         data: evt.data.position,
         ts: timestamp
       })
-    }
 
-    if (evt.profile) {
-      const avatarBase = avatarSdk7Ecs.updateProfile(avatarEntityId, evt.profile)
-      for (const msg of avatarBase) {
-        avatarSdk7MessageObservable.emit('BinaryMessage', msg)
+      if (evt.profile) {
+        const avatarBase = avatarSdk7Ecs.handleNewProfile(avatarEntityId, evt.profile, false)
+        for (const msg of avatarBase) {
+          avatarSdk7MessageObservable.emit('BinaryMessage', msg)
+        }
+      }
+    } else {
+      if (evt.profile) {
+        const avatarBase = avatarSdk7Ecs.handleNewProfile(avatarEntityId, evt.profile, true)
+        for (const msg of avatarBase) {
+          avatarSdk7MessageObservable.emit('BinaryMessage', msg)
+        }
       }
     }
   } else if (evt.type === 'USER_EXPRESSION') {
@@ -53,3 +62,14 @@ avatarMessageObservable.add((evt) => {
     avatarSdk7MessageObservable.emit('RemoveAvatar', { entity: avatarEntityId, data: avatarRemoveEntity })
   }
 })
+
+export function* avatarSdk7ProfileChanged(userId: string) {
+  const profile = getProfileFromStore(store.getState(), userId)
+
+  if (!profile?.data) {
+    return {}
+  }
+
+  const avatarEntityId = avatarSdk7Ecs.ensureAvatarEntityId(userId)
+  avatarSdk7Ecs.updateProfile(avatarEntityId, profile)
+}

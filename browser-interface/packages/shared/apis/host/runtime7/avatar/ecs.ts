@@ -1,5 +1,6 @@
 import { NewProfileForRenderer } from 'lib/decentraland/profiles/transformations'
 import { ReceiveUserExpressionMessage } from 'shared/comms/interface/types'
+import { ProfileUserInfo } from 'shared/profiles/types'
 import { PBAvatarBase } from '../../../../protocol/decentraland/sdk/components/avatar_base.gen'
 import { PBAvatarEmoteCommand } from '../../../../protocol/decentraland/sdk/components/avatar_emote_command.gen'
 import { PBAvatarEquippedData } from '../../../../protocol/decentraland/sdk/components/avatar_equipped_data.gen'
@@ -10,6 +11,8 @@ import { AppendValueOperation } from '../serialization/crdt/appendValue'
 import { DeleteEntity } from '../serialization/crdt/deleteEntity'
 import { PutComponentOperation } from '../serialization/crdt/putComponent'
 
+export { PBPointerEventsResult } from '../../../../protocol/decentraland/sdk/components/pointer_events_result.gen'
+
 const MAX_ENTITY_VERSION = 0xffff
 const AVATAR_RESERVED_ENTITY_NUMBER = { from: 10, to: 200 }
 
@@ -18,7 +21,8 @@ export const Sdk7ComponentIds = {
   AVATAR_BASE: 1087,
   AVATAR_EMOTE_COMMAND: 1088,
   PLAYER_IDENTITY_DATA: 1089,
-  AVATAR_EQUIPPED_DATA: 1091
+  AVATAR_EQUIPPED_DATA: 1091,
+  POINTER_EVENTS_RESULT: 1063
 }
 
 export function createTinyEcs() {
@@ -112,13 +116,10 @@ export function createTinyEcs() {
     return crdtReusableBuffer.toCopiedBinary()
   }
 
-  function updateProfile(entity: Entity, data: NewProfileForRenderer): Uint8Array[] {
+  function handleNewProfile(entity: Entity, data: NewProfileForRenderer, bypassEarlyExit: boolean): Uint8Array[] {
     const msgs: Uint8Array[] = []
     const playerIdentityComponent = getComponentTimestamp(Sdk7ComponentIds.PLAYER_IDENTITY_DATA)
-    const avatarBaseComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_BASE)
-    const avatarEquippedComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_EQUIPPED_DATA)
 
-    // Player identity is sent only once
     if (playerIdentityComponent.get(entity) === undefined) {
       crdtReusableBuffer.resetBuffer()
 
@@ -133,9 +134,13 @@ export function createTinyEcs() {
       const messageData = crdtReusableBuffer.toCopiedBinary()
       playerIdentityComponent.set(entity, { ts: timestamp, lastMessageData: messageData })
       msgs.push(messageData)
+    } else if (!bypassEarlyExit) {
+      return []
     }
 
-    // Update avatar base
+    const avatarBaseComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_BASE)
+    const avatarEquippedComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_EQUIPPED_DATA)
+
     {
       crdtReusableBuffer.resetBuffer()
 
@@ -155,7 +160,6 @@ export function createTinyEcs() {
       msgs.push(messageData)
     }
 
-    // Update avatar equipped data
     {
       crdtReusableBuffer.resetBuffer()
 
@@ -174,6 +178,47 @@ export function createTinyEcs() {
     return msgs
   }
 
+  function updateProfile(entity: Entity, profile: ProfileUserInfo): Uint8Array[] {
+    const msgs: Uint8Array[] = []
+    const avatarBaseComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_BASE)
+    const avatarEquippedComponent = getComponentTimestamp(Sdk7ComponentIds.AVATAR_EQUIPPED_DATA)
+
+    {
+      crdtReusableBuffer.resetBuffer()
+
+      const writer = PBAvatarBase.encode({
+        skinColor: profile.data.avatar.skin.color,
+        eyesColor: profile.data.avatar.eyes.color,
+        hairColor: profile.data.avatar.hair.color,
+        bodyShapeUrn: profile.data.avatar.bodyShape,
+        name: profile.data.name
+      })
+      const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      const timestamp = (avatarBaseComponent.get(entity)?.ts || 0) + 1
+      PutComponentOperation.write(entity, timestamp, Sdk7ComponentIds.AVATAR_BASE, buffer, crdtReusableBuffer)
+
+      const messageData = crdtReusableBuffer.toCopiedBinary()
+      avatarBaseComponent.set(entity, { ts: timestamp, lastMessageData: messageData })
+      msgs.push(messageData)
+    }
+
+    {
+      crdtReusableBuffer.resetBuffer()
+
+      const writer = PBAvatarEquippedData.encode({
+        wearableUrns: profile.data.avatar.wearables,
+        emotesUrns: (profile.data.avatar.emotes || []).map(($) => $.urn)
+      })
+      const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+      const timestamp = (avatarEquippedComponent.get(entity)?.ts || 0) + 1
+      PutComponentOperation.write(entity, timestamp, Sdk7ComponentIds.AVATAR_EQUIPPED_DATA, buffer, crdtReusableBuffer)
+
+      const messageData = crdtReusableBuffer.toCopiedBinary()
+      avatarEquippedComponent.set(entity, { ts: timestamp, lastMessageData: messageData })
+      msgs.push(messageData)
+    }
+    return msgs
+  }
   function computeNextAvatarTransformTimestamp(entity: Entity) {
     const transformComponent = getComponentTimestamp(Sdk7ComponentIds.TRANSFORM)
     const timestamp = (transformComponent.get(entity)?.ts || 0) + 1
@@ -224,8 +269,9 @@ export function createTinyEcs() {
     removeAvatarEntityId,
 
     computeNextAvatarTransformTimestamp,
-    updateProfile,
     appendAvatarEmoteCommand,
+    updateProfile,
+    handleNewProfile,
 
     getState
   }

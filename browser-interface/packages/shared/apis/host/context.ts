@@ -21,6 +21,8 @@ export type PortContext = {
   subscribedEvents: Set<string>
   events: EventData[]
 
+  tickNumber: number
+  sendBatchCalled: boolean
   avatarEntityInsideScene: Map<Entity, boolean>
 
   // @deprecated

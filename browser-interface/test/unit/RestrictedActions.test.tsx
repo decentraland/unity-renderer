@@ -140,6 +140,8 @@ describe('RestrictedActions tests', () => {
       subscribedEvents: new Set(),
       events: [],
       avatarEntityInsideScene: new Map(),
+      sendBatchCalled: false,
+      tickNumber: 0,
       sendProtoSceneEvent() {
         throw new Error('not implemented')
       },

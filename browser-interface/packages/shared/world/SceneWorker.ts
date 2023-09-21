@@ -166,6 +166,8 @@ export class SceneWorker {
       scenePort,
       rpcSceneControllerService,
       avatarEntityInsideScene: new Map(),
+      tickNumber: 0,
+      sendBatchCalled: false,
       sceneData: {
         isPortableExperience: false,
         useFPSThrottling: false,

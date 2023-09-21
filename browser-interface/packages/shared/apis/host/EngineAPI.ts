@@ -8,8 +8,10 @@ import type { PortContext } from './context'
 import { avatarSdk7Ecs, avatarSdk7MessageObservable } from './runtime7/avatar'
 import { DeleteComponent } from './runtime7/serialization/crdt/deleteComponent'
 import { ReadWriteByteBuffer } from './runtime7/serialization/ByteBuffer'
-import { Sdk7ComponentIds } from './runtime7/avatar/ecs'
+import { PBPointerEventsResult, Sdk7ComponentIds } from './runtime7/avatar/ecs'
 import { buildAvatarTransformMessage } from './runtime7/serialization/transform'
+import { AppendValueOperation } from './runtime7/serialization/crdt/appendValue'
+import { InputAction, PointerEventType } from 'shared/protocol/decentraland/sdk/components/common/input_action.gen'
 
 function getParcelNumber(x: number, z: number) {
   return z * 100e8 + x
@@ -66,6 +68,54 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             sdk7AvatarUpdates.push(tempReusableBuffer.toCopiedBinary())
           }
         })
+
+        ctx.subscribedEvents.add('playerClicked')
+      }
+
+      const crdtReusableBuffer = new ReadWriteByteBuffer()
+      let localTimestamp = 0
+      function getPlayerClickedEvents(): Uint8Array[] {
+        const msgs: Uint8Array[] = []
+        const playerClickedEvents = ctx.events.filter((value) => value.generic?.eventId === 'playerClicked')
+        for (const event of playerClickedEvents) {
+          event.generic?.eventData
+          const { userId, ray } = JSON.parse(event.generic!.eventData)
+          const { origin, direction, distance } = ray
+
+          localTimestamp++
+          const entityId = avatarSdk7Ecs.ensureAvatarEntityId(userId)
+
+          {
+            crdtReusableBuffer.resetBuffer()
+
+            const writer = PBPointerEventsResult.encode({
+              button: InputAction.IA_POINTER,
+              hit: {
+                position: origin,
+                globalOrigin: origin,
+                direction,
+                normalHit: undefined,
+                length: distance,
+                entityId: entityId
+              },
+              state: PointerEventType.PET_DOWN,
+              timestamp: localTimestamp,
+              tickNumber: ctx.tickNumber
+            })
+            const buffer = new Uint8Array(writer.finish(), 0, writer.len)
+            AppendValueOperation.write(
+              entityId,
+              localTimestamp,
+              Sdk7ComponentIds.POINTER_EVENTS_RESULT,
+              buffer,
+              crdtReusableBuffer
+            )
+
+            const messageData = crdtReusableBuffer.toCopiedBinary()
+            msgs.push(messageData)
+          }
+        }
+        return msgs
       }
 
       return {
@@ -79,7 +129,7 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           if (events.length) {
             ctx.events = []
           }
-
+          ctx.sendBatchCalled = true
           return { events }
         },
 
@@ -103,10 +153,19 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             payload: req.data
           })
 
-          const avatarStates = sdk7AvatarUpdates
-          sdk7AvatarUpdates = []
+          const avatarPointerEvents = getPlayerClickedEvents()
+          const data: Uint8Array[] = [ret.payload, ...avatarPointerEvents, ...sdk7AvatarUpdates]
 
-          return { data: [ret.payload, ...avatarStates] }
+          sdk7AvatarUpdates = []
+          ctx.tickNumber++
+
+          // If the sendBatch is not being called after 10 ticks, clean the events her (after getting data from playerClickedEvents)
+          // Corner case: if the player click other player in this windows of 10 ticks, it'll receive a bunch of times
+          if (!ctx.sendBatchCalled && ctx.tickNumber > 10) {
+            ctx.events = []
+          }
+
+          return { data }
         },
 
         // @deprecated

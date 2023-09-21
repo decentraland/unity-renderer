@@ -14,6 +14,7 @@ import { getCommsIsland } from '../comms/selectors'
 import { SAVE_DELTA_PROFILE_REQUEST } from '../profiles/actions'
 import { takeLatestByUserId } from '../profiles/sagas'
 import { allScenesEvent } from '../world/parcelSceneManager'
+import { avatarSdk7ProfileChanged } from 'shared/apis/host/runtime7/avatar'
 
 export function* sceneEventsSaga() {
   yield takeLatest([SET_COMMS_ISLAND, SET_ROOM_CONNECTION, SET_REALM_ADAPTER], islandChanged)
@@ -63,6 +64,8 @@ function* submitProfileToScenes() {
         version: profile.version
       }
     })
+
+    yield call(avatarSdk7ProfileChanged, profile.ethAddress)
   }
 }
 
