@@ -1,5 +1,6 @@
-﻿using System;
+﻿using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
+using System;
 
 namespace DCL.ECSComponents
 {
@@ -9,9 +10,11 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public AnimatorRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public AnimatorRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
+            IInternalECSComponent<InternalAnimationPlayer> internalAnimationPlayer)
         {
-            factory.AddOrReplaceComponent(componentId, AnimatorSerializer.Deserialize, () => new AnimatorComponentHandler(DataStore.i.ecs7));
+            var handler = new AnimatorHandler(internalAnimationPlayer);
+            factory.AddOrReplaceComponent(componentId, AnimatorSerializer.Deserialize, () => handler);
             componentWriter.AddOrReplaceComponentSerializer<PBAnimator>(componentId, AnimatorSerializer.Serialize);
 
             this.factory = factory;
