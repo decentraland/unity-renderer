@@ -410,7 +410,7 @@ async function stripSnapshots(profile: Avatar): Promise<Avatar> {
     ...profile,
     avatar: { ...profile.avatar, snapshots: newSnapshots as Snapshots },
     // THIS IS IMPORTANT, the blocked and muted sizes are too big for the network and are unnecesary
-    blocked: [],
+    // blocked: [],
     muted: []
   }
 }
