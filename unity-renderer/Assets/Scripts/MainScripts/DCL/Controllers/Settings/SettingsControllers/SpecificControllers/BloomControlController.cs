@@ -7,7 +7,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Bloom", fileName = "BloomControlController")]
     public class BloomControlController : ToggleSettingsControlController
     {
-        public override object GetStoredValue() { return currentQualitySetting.bloom; }
+        // TODO:: make it return the correct value when bloom is fixed
+        public override object GetStoredValue() { return false/*currentQualitySetting.bloom*/; }
 
         public override void UpdateSetting(object newValue)
         {
