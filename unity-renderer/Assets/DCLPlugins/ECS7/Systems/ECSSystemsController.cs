@@ -146,7 +146,9 @@ public class ECSSystemsController : IDisposable
         ECSTweenSystem tweenSystem = new ECSTweenSystem(
             context.internalEcsComponents.TweenComponent,
             context.ComponentWriters,
-            context.TweenStatePool);
+            context.TweenStatePool,
+            context.TransformPool,
+            CommonScriptableObjects.worldOffset);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

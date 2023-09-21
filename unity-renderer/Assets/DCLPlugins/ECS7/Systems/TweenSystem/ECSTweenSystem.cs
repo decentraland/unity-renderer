@@ -5,6 +5,7 @@ using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,15 +15,21 @@ namespace ECSSystems.TweenSystem
     {
         private readonly IInternalECSComponent<InternalTween> tweenComponent;
         private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
-        private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> componentPool;
+        private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool;
+        private readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> transformComponentPool;
+        private readonly Vector3Variable worldOffset;
 
         public ECSTweenSystem(IInternalECSComponent<InternalTween> tweenComponent,
             IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
-            WrappedComponentPool<IWrappedComponent<PBTweenState>> componentPool)
+            WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool,
+            WrappedComponentPool<IWrappedComponent<ECSTransform>> transformComponentPool,
+            Vector3Variable worldOffset)
         {
             this.tweenComponent = tweenComponent;
             this.componentsWriter = componentsWriter;
-            this.componentPool = componentPool;
+            this.tweenStateComponentPool = tweenStateComponentPool;
+            this.transformComponentPool = transformComponentPool;
+            this.worldOffset = worldOffset;
         }
 
         public void Update()
@@ -48,8 +55,7 @@ namespace ECSSystems.TweenSystem
                 if (model.currentTime.Equals(1f))
                     continue;
 
-                // Update TweenState component (TODO: Should it be a GOVS or a LWW?);
-                var tweenStateComponent = componentPool.Get();
+                var tweenStateComponent = tweenStateComponentPool.Get();
                 var tweenStateComponentModel = tweenStateComponent.WrappedComponent.Model;
 
                 if (model.playing)
@@ -72,12 +78,18 @@ namespace ECSSystems.TweenSystem
                 {
                     tweenStateComponentModel.State = TweenState.TsPaused;
                 }
+
+                //TODO: If we decide to make TweenState a GOVS component instead of LWW, we have to use Append() here
                 writer.Put(entity, ComponentID.TWEEN_STATE, tweenStateComponent);
 
-                // TODO: Update Transform component
-
-                // TODO: When is the state component removed?
-
+                // Update Transform component
+                // TODO: Update rotation and scale when we add support for that.
+                var transformComponent = transformComponentPool.Get();
+                var transformComponentModel = transformComponent.WrappedComponent.Model;
+                Vector3 currentWorldOffset = worldOffset.Get();
+                var newPosition = model.transform.position;
+                transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newPosition, ref currentWorldOffset);
+                writer.Put(entity, ComponentID.TRANSFORM, transformComponent);
             }
         }
     }
