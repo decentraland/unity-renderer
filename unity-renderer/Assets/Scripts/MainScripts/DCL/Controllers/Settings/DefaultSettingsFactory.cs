@@ -31,7 +31,7 @@ namespace DCL.SettingsCommon
             dynamicProceduralSkybox = true,
             skyboxTime = 0.0f,
             firstPersonCameraFOV = 60,
-            adultScenesFiltering = true,
+            adultContent = false,
         };
 
         private readonly AudioSettings defaultAudioSettings = new ()

@@ -65,7 +65,7 @@ namespace DCL
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
-            DataStore.i.settings.adultScenesFilteringEnabled.OnChange += OnAdultScenesFilterChange;
+            DataStore.i.settings.adultContentEnabled.OnChange += OnAdultContentSettingChange;
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -95,7 +95,7 @@ namespace DCL
 
             DataStore.i.player.playerGridPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
-            DataStore.i.settings.adultScenesFilteringEnabled.OnChange -= OnAdultScenesFilterChange;
+            DataStore.i.settings.adultContentEnabled.OnChange -= OnAdultContentSettingChange;
 
             CommonScriptableObjects.sceneNumber.OnChange -= OnCurrentSceneNumberChange;
 
@@ -190,7 +190,7 @@ namespace DCL
                 if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
                 {
                     if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
-                        (scene.contentCategory == SceneContentCategory.ADULT && DataStore.i.settings.adultScenesFilteringEnabled.Get()))
+                        (scene.contentCategory == SceneContentCategory.ADULT && !DataStore.i.settings.adultContentEnabled.Get()))
                         return;
                 }
 
@@ -906,7 +906,7 @@ namespace DCL
             return false;
         }
 
-        private void OnAdultScenesFilterChange(bool isEnabled, bool previousIsEnabled)
+        private void OnAdultContentSettingChange(bool isEnabled, bool previousIsEnabled)
         {
             async UniTaskVoid ReloadAdultScenesAsync(List<KeyValuePair<int, IParcelScene>> loadedScenes, CancellationToken ct)
             {

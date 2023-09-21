@@ -271,8 +271,8 @@ public static class CommonScriptableObjects
     private static BooleanVariable isScreenshotCameraActiveValue;
     public static BooleanVariable isScreenshotCameraActive => GetOrLoad(ref isScreenshotCameraActiveValue, "ScriptableObjects/IsScreenshotCameraActive");
 
-    private static BooleanVariable contentModerationSettingDeactivatedValue;
-    public static BooleanVariable contentModerationSettingDeactivated => GetOrLoad(ref contentModerationSettingDeactivatedValue, "ScriptableObjects/ContentModerationSettingDeactivated");
+    private static BooleanVariable adultContentSettingDeactivatedValue;
+    public static BooleanVariable adultContentSettingDeactivated => GetOrLoad(ref adultContentSettingDeactivatedValue, "ScriptableObjects/AdultContentSettingDeactivated");
 
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
@@ -318,6 +318,6 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(userMovementKeysBlockedValue);
         Resources.UnloadAsset(emailPromptActiveValue);
         Resources.UnloadAsset(voiceChatDisabledValue);
-        Resources.UnloadAsset(contentModerationSettingDeactivatedValue);
+        Resources.UnloadAsset(adultContentSettingDeactivatedValue);
     }
 }

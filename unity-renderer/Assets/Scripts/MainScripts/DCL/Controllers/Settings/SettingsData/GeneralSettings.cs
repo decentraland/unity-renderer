@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DCL.SettingsCommon
 {
@@ -23,7 +24,7 @@ namespace DCL.SettingsCommon
         public bool nightMode;
         public bool hideUI;
         public bool showAvatarNames;
-        public bool adultScenesFiltering;
+        public bool adultContent;
 
         public bool dynamicProceduralSkybox;
         public float useDynamicSkybox;

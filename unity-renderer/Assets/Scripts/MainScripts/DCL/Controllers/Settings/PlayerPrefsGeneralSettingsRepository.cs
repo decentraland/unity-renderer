@@ -19,7 +19,7 @@ namespace DCL.SettingsCommon
         public const string FIRST_PERSON_CAMERA_FOV = "firstPersonCameraFOV";
         public const string SHOW_AVATAR_NAMES = "showAvatarNames";
         public const string CAMERA_MOVEMENT_MODE = "cameraMovementMode";
-        public const string ADULT_SCENES_FILTERING = "adultScenesFiltering";
+        public const string ADULT_CONTENT = "adultContent";
 
         private readonly IPlayerPrefsSettingsByKey settingsByKey;
         private readonly GeneralSettings defaultSettings;
@@ -62,7 +62,7 @@ namespace DCL.SettingsCommon
             settingsByKey.SetFloat(FIRST_PERSON_CAMERA_FOV, currentSettings.firstPersonCameraFOV);
             settingsByKey.SetBool(SHOW_AVATAR_NAMES, currentSettings.showAvatarNames);
             settingsByKey.SetBool(CAMERA_MOVEMENT_MODE, currentSettings.leftMouseButtonCursorLock);
-            settingsByKey.SetBool(ADULT_SCENES_FILTERING, currentSettings.adultScenesFiltering);
+            settingsByKey.SetBool(ADULT_CONTENT, currentSettings.adultContent);
         }
 
         public bool HasAnyData() => !Data.Equals(defaultSettings);
@@ -87,7 +87,7 @@ namespace DCL.SettingsCommon
                 settings.firstPersonCameraFOV = settingsByKey.GetFloat(FIRST_PERSON_CAMERA_FOV, defaultSettings.firstPersonCameraFOV);
                 settings.showAvatarNames = settingsByKey.GetBool(SHOW_AVATAR_NAMES, defaultSettings.showAvatarNames);
                 settings.leftMouseButtonCursorLock = settingsByKey.GetBool(CAMERA_MOVEMENT_MODE, defaultSettings.leftMouseButtonCursorLock);
-                settings.adultScenesFiltering = settingsByKey.GetBool(ADULT_SCENES_FILTERING, defaultSettings.adultScenesFiltering);
+                settings.adultContent = settingsByKey.GetBool(ADULT_CONTENT, defaultSettings.adultContent);
             }
             catch (Exception e)
             {
