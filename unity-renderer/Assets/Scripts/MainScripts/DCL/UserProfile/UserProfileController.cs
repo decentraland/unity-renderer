@@ -1,13 +1,16 @@
 using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Interface;
 using DCL.UserProfiles;
 using DCLServices.WearablesCatalogService;
+using Decentraland.Bff;
 using System;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Variables.RealmsInfo;
 
 public class UserProfileController : MonoBehaviour
 {
@@ -45,6 +48,48 @@ public class UserProfileController : MonoBehaviour
     {
         i = this;
         ownUserProfile = UserProfile.GetOwnUserProfile();
+
+        // FD:: /about endpoint initialization
+        DataStore.i.realm.playerRealmAboutLambdas.OnChange += PlayerRealmAboutLambdasChanged;
+        DataStore.i.realm.playerRealmAboutConfiguration.OnChange += PlayerRealmAboutConfigurationChanged;
+        DataStore.i.realm.playerRealmAboutContent.OnChange += PlayerRealmAboutContentChanged;
+
+        DataStore.i.realm.realmsInfo.OnSet += RealmsInfoOnSet;
+    }
+
+    private void RealmsInfoOnSet(IEnumerable<RealmModel> obj)
+    {
+        foreach (var realmModel in obj)
+        {
+            Debug.Log($"FD:: realmModel: {realmModel}");
+        }
+    }
+
+    private void PlayerRealmAboutContentChanged(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous)
+    {
+        var playerRealmAboutContent = DataStore.i.realm.playerRealmAboutContent.Get();
+        string debugFieldsPlayerRealmAboutContent = playerRealmAboutContent.ToString();
+
+        // Debug.Log ("FD:: playerRealmAboutContent:\n" + debugFieldsPlayerRealmAboutContent);
+    }
+
+    private void PlayerRealmAboutConfigurationChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration previous)
+    {
+        var playerRealmAboutConfiguration = DataStore.i.realm.playerRealmAboutConfiguration.Get();
+        string debugFieldsPlayerRealmAboutConfiguration = playerRealmAboutConfiguration.ToString();
+
+        // Debug.Log ("FD:: playerRealmAboutConfiguration:\n" + debugFieldsPlayerRealmAboutConfiguration);
+    }
+
+    private void PlayerRealmAboutLambdasChanged(AboutResponse.Types.LambdasInfo current, AboutResponse.Types.LambdasInfo previous)
+    {
+        var playerRealmAboutLambdas = DataStore.i.realm.playerRealmAboutLambdas.Get();
+        string debugFieldsPlayerRealmAboutLambdas = playerRealmAboutLambdas.ToString();
+        // debugFieldsPlayerRealmAboutLambdas += "\n" + playerRealmAboutLambdas.Healthy;
+        // debugFieldsPlayerRealmAboutLambdas += "\n" + playerRealmAboutLambdas.Version;
+        // debugFieldsPlayerRealmAboutLambdas += "\n" + playerRealmAboutLambdas.CommitHash;
+
+        // Debug.Log ("FD:: playerRealmAboutLambdas:\n" + debugFieldsPlayerRealmAboutLambdas);
     }
 
     [PublicAPI]
@@ -229,5 +274,56 @@ public class UserProfileController : MonoBehaviour
         return task.Task
                    .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
                    .AttachExternalCancellation(cancellationToken);
+    }
+
+
+    // FD:: ============= Test stuff for profile validation =============
+
+    private string catalystPublicKey; // FD:: this needs to be fetched
+
+    // FD:: Verify the checksum against the profile data
+    private bool VerifyChecksum(UserProfileModel model, string checksum)
+    {
+        // Implement checksum logic here
+        string calculatedChecksum = CalculateChecksum(model.name, model.avatar.emotes, model.avatar.wearables);
+        return calculatedChecksum == checksum;
+    }
+
+    // FD:: Checksum calculation
+    private string CalculateChecksum(string name, List<AvatarModel.AvatarEmoteEntry> emotes, List<string> wearables)
+    {
+        // Calculate the checksum from the profile information
+        // FD:: this is a stupid example
+        return name + string.Join("", emotes) + string.Join("", wearables);
+    }
+
+    // New function to verify the signed message using the Catalyst's public key
+    private bool VerifySignature(string checksum, string signedChecksum)
+    {
+        // FD:: Implement the RSA verification logic
+        // Use the catalystPublicKey to verify the signedChecksum against the checksum
+        return true; // Placeholder
+    }
+
+    // FD:: Validate a user profile
+    public bool ValidateUserProfile(UserProfileModel model, string checksum, string signedChecksum, string catalystUrl)
+    {
+        if (IsTrustedCatalyst(catalystUrl))
+        {
+            if (VerifyChecksum(model, checksum) && VerifySignature(checksum, signedChecksum))
+            {
+                // Profile is valid
+                return true;
+            }
+        }
+        // Profile is invalid or the Catalyst is untrusted
+        return false;
+    }
+
+    // Function to check whether the Catalyst is trusted
+    private bool IsTrustedCatalyst(string catalystUrl)
+    {
+        // FD:: placeholder for Catalyst validation
+        return true;
     }
 }

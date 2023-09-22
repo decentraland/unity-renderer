@@ -94,6 +94,8 @@ public class UserProfileModel
     public List<Link> links;
     public AdditionalInfo AdditionalInfo { get; set; } = new ();
 
+    public string checksum;
+
     public static UserProfileModel FallbackModel(string name, int id)
     {
         var fallbackId = $"{name}_{id}";

@@ -62,6 +62,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     private int emoteLamportTimestamp = 1;
 
+    public string checksum;
+
     public void UpdateData(UserProfileModel newModel)
     {
         if (newModel == null)

@@ -60,4 +60,17 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
 
     public void LogOut() =>
         WebInterface.LogOut();
+
+    // FD:: New stuff for profile validation
+    public async UniTask<bool> RequestAndValidateUserProfileAsync(string userId, CancellationToken cancellationToken)
+    {
+        var modelProfile = await UserProfileController.i.RequestFullUserProfileAsync(userId, cancellationToken);
+
+        // FD:: these needs to be populated somehow
+        string checksum = "";
+        string signedChecksum = "";
+        string catalystUrl = "";
+
+        return UserProfileController.i.ValidateUserProfile(modelProfile.model, checksum, signedChecksum, catalystUrl);
+    }
 }
