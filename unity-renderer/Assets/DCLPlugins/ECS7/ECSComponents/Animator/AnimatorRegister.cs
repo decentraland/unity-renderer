@@ -14,8 +14,8 @@ namespace DCL.ECSComponents
             IInternalECSComponent<InternalAnimationPlayer> internalAnimationPlayer)
         {
             var handler = new AnimatorHandler(internalAnimationPlayer);
-            factory.AddOrReplaceComponent(componentId, AnimatorSerializer.Deserialize, () => handler);
-            componentWriter.AddOrReplaceComponentSerializer<PBAnimator>(componentId, AnimatorSerializer.Serialize);
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBAnimator>, () => handler);
+            componentWriter.AddOrReplaceComponentSerializer<PBAnimator>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;

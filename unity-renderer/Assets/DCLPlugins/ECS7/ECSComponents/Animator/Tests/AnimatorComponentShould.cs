@@ -1,162 +1,108 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-// using System.IO;
-// using System.Linq;
-// using DCL.Controllers;
-// using DCL.Models;
-// using Google.Protobuf;
-// using NSubstitute;
-// using NSubstitute.Extensions;
-// using NUnit.Framework;
-// using Tests;
-// using UnityEngine;
-// using UnityEngine.TestTools;
-//
-// namespace DCL.ECSComponents.Test
-// {
-//     public class AnimatorComponentShould
-//     {
-//         private IDCLEntity entity;
-//         private IParcelScene scene;
-//         private AnimatorComponentHandler componentHandler;
-//         private GameObject gameObject;
-//         private GameObject parentGameObject;
-//         private DataStore_ECS7 dataStoreEcs7;
-//
-//         [SetUp]
-//         protected void SetUp()
-//         {
-//             gameObject = new GameObject();
-//             parentGameObject = new GameObject();
-//             gameObject.transform.SetParent(parentGameObject.transform);
-//
-//             entity = Substitute.For<IDCLEntity>();
-//             scene = Substitute.For<IParcelScene>();
-//             dataStoreEcs7 = new DataStore_ECS7();
-//             componentHandler = new AnimatorComponentHandler(dataStoreEcs7);
-//
-//
-//             entity.entityId.Returns(1);
-//             entity.gameObject.Returns(gameObject);
-//
-//             LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-//             sceneData.sceneNumber = 1;
-//             scene.sceneData.Configure().Returns(sceneData);
-//             ContentProvider contentProvider = new ContentProvider();
-//             scene.Configure().contentProvider.Returns(contentProvider);
-//
-//             componentHandler.OnComponentCreated(scene, entity);
-//         }
-//
-//         [TearDown]
-//         protected void TearDown()
-//         {
-//             componentHandler.OnComponentRemoved(scene, entity);
-//             GameObject.Destroy(gameObject);
-//             GameObject.Destroy(parentGameObject);
-//         }
-//
-//         [Test]
-//         public void InitializeCorrectly()
-//         {
-//             // Arrange
-//             entity.gameObject.AddComponent<Animation>();
-//
-//             // Act
-//             componentHandler.Initialize(entity);
-//
-//             // Assert
-//             Assert.IsNotNull(componentHandler.animComponent);
-//         }
-//
-//         [Test]
-//         public void ReactToShapeReadyCorrectly()
-//         {
-//             // Arrange
-//             PBAnimator model = CreateModel();
-//             entity.gameObject.AddComponent<Animation>();
-//             componentHandler.animComponent = null;
-//             componentHandler.isShapeLoaded = false;
-//             componentHandler.OnComponentModelUpdated(scene,entity,model);
-//
-//             // Act
-//             dataStoreEcs7.AddShapeReady(entity.entityId,entity.gameObject);
-//
-//             // Assert
-//             Assert.IsNotNull(componentHandler.animComponent);
-//         }
-//
-//         [Test]
-//         public void InitializateCorrectly()
-//         {
-//             // Arrange
-//             entity.gameObject.AddComponent<Animation>();
-//
-//             // Act
-//             componentHandler.Initialize(entity);
-//
-//             // Assert
-//             Assert.IsNotNull(componentHandler.animComponent);
-//         }
-//
-//         [Test]
-//         public void SerializeCorrectly()
-//         {
-//             // Arrange
-//             PBAnimator model = CreateModel();
-//             byte[] byteArray;
-//
-//             // Act
-//             using(var memoryStream = new MemoryStream())
-//             {
-//                 model.WriteTo(memoryStream);
-//                 byteArray = memoryStream.ToArray();
-//             }
-//
-//             // Assert
-//             Assert.IsNotNull(byteArray);
-//         }
-//
-//         [Test]
-//         public void SerializeAndDeserialzeCorrectly()
-//         {
-//             // Arrange
-//             PBAnimator model = CreateModel();
-//
-//             // Act
-//             var newModel = SerializaAndDeserialize(model);
-//
-//             // Assert
-//             Assert.AreEqual(model.States, newModel.States);
-//         }
-//
-//         private PBAnimator SerializaAndDeserialize(PBAnimator pbBox)
-//         {
-//             byte[] serialized;
-//             using(var memoryStream = new MemoryStream())
-//             {
-//                 pbBox.WriteTo(memoryStream);
-//                 serialized = memoryStream.ToArray();
-//             }
-//
-//             return PBAnimator.Parser.ParseFrom((byte[])serialized);
-//         }
-//
-//         private PBAnimator CreateModel()
-//         {
-//             PBAnimator model = new PBAnimator();
-//             PBAnimationState animationState = new PBAnimationState();
-//             animationState.Clip = "Clip_0";
-//             animationState.Name = "Test";
-//             animationState.Loop = true;
-//             animationState.Playing = true;
-//             animationState.Speed = 1f;
-//             animationState.Weight = 1f;
-//
-//             model.States.Add(animationState);
-//
-//             return model;
-//         }
-//     }
-// }
+﻿using DCL.Controllers;
+using DCL.ECS7.InternalComponents;
+using DCL.ECSComponents;
+using DCL.ECSRuntime;
+using DCL.Models;
+using NSubstitute;
+using NUnit.Framework;
+using System.Collections.Generic;
 
+namespace Tests.Components.Animator
+{
+    public class AnimatorComponentShould
+    {
+        private IDCLEntity entity;
+        private IParcelScene scene;
+        private AnimatorHandler componentHandler;
+        private IInternalECSComponent<InternalAnimationPlayer> internalAnimationPlayer;
+
+        [SetUp]
+        protected void SetUp()
+        {
+            entity = Substitute.For<IDCLEntity>();
+            scene = Substitute.For<IParcelScene>();
+            internalAnimationPlayer = Substitute.For<IInternalECSComponent<InternalAnimationPlayer>>();
+            componentHandler = new AnimatorHandler(internalAnimationPlayer);
+        }
+
+        [Test]
+        public void CreateInternalComponent()
+        {
+            var model = new PBAnimator()
+            {
+                States =
+                {
+                    new PBAnimationState()
+                    {
+                        Clip = "someClip",
+                        Loop = false,
+                        Playing = false,
+                        Speed = 47,
+                        Weight = 666,
+                        ShouldReset = false
+                    }
+                }
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            internalAnimationPlayer.Received(1)
+                                   .PutFor(scene, entity, Arg.Is<InternalAnimationPlayer>(comp =>
+                                        comp.States[0].Clip == model.States[0].Clip
+                                        && comp.States[0].Weight == model.States[0].Weight
+                                        && comp.States[0].Loop == model.States[0].Loop
+                                        && comp.States[0].Playing == model.States[0].Playing
+                                        && comp.States[0].Speed == model.States[0].Speed
+                                        && comp.States[0].ShouldReset == model.States[0].ShouldReset
+                                    ));
+        }
+
+        [Test]
+        public void UpdateInternalComponent()
+        {
+            var model = new PBAnimator()
+            {
+                States =
+                {
+                    new PBAnimationState()
+                    {
+                        Clip = "someClip",
+                        Loop = false,
+                        Playing = false,
+                        Speed = 47,
+                        Weight = 666,
+                        ShouldReset = false
+                    }
+                }
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, new PBAnimator() { States = { new PBAnimationState() { Clip = "clip" } } });
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            internalAnimationPlayer.Received(1)
+                                   .PutFor(scene, entity, Arg.Is<InternalAnimationPlayer>(comp =>
+                                        comp.States[0].Clip == model.States[0].Clip
+                                        && comp.States[0].Weight == model.States[0].Weight
+                                        && comp.States[0].Loop == model.States[0].Loop
+                                        && comp.States[0].Playing == model.States[0].Playing
+                                        && comp.States[0].Speed == model.States[0].Speed
+                                        && comp.States[0].ShouldReset == model.States[0].ShouldReset
+                                    ));
+        }
+
+        [Test]
+        public void RemoveInternalComponent()
+        {
+            internalAnimationPlayer.GetFor(scene, entity)
+                                   .Returns(
+                                        new ECSComponentData<InternalAnimationPlayer>(
+                                            scene,
+                                            entity,
+                                            new InternalAnimationPlayer(new List<InternalAnimationPlayer.State>()),
+                                            null));
+
+            componentHandler.OnComponentRemoved(scene, entity);
+            internalAnimationPlayer.Received(1).RemoveFor(scene, entity);
+        }
+    }
+}
