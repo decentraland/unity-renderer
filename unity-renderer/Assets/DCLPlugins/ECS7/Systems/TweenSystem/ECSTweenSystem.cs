@@ -5,6 +5,7 @@ using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
+using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,9 @@ namespace ECSSystems.TweenSystem
         private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool;
         private readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> transformComponentPool;
         private readonly Vector3Variable worldOffset;
+
+        // TODO: Remove when polishing PR
+        private const string QUERY_PARAM_SYNC_TWEENSTATE = "SYNC_TWEENSTATE";
 
         public ECSTweenSystem(IInternalECSComponent<InternalTween> tweenInternalComponent,
             ECSComponent<PBTweenState> tweenStateComponent,
@@ -63,11 +67,13 @@ namespace ECSSystems.TweenSystem
                 float currentTime = model.currentTime;
 
                 // Configure a new Tween with previously existent TweenState (e.g. synched in multiplayer scene)
-                if (model.currentTime == 0 && tweenStateComponent.TryGet(scene, entity, out var existentTweenState))
+                if (WebInterface.CheckURLParam(QUERY_PARAM_SYNC_TWEENSTATE) &&
+                    model.currentTime == 0 &&
+                    tweenStateComponent.TryGet(scene, entity, out var existentTweenState))
                 {
-
                     playing = model.playing = existentTweenState.model.State != TweenStateStatus.TsPaused;
                     currentTime = model.currentTime = existentTweenState.model.CurrentTime;
+                    Debug.Log($"ENGINE TWEEN SYSTEM - Previous tween state applied to new Tween - current-time:{currentTime}; state-status:{existentTweenState.model.State}");
                     model.transform.position = Vector3.Lerp(
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene),
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene),
