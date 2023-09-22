@@ -21,6 +21,7 @@ public class SearchResultViewShould
         searchRecordComponentView.SetRecordText("test text");
 
         Assert.AreEqual("test text", searchRecordComponentView.recordText.text, "Record text does not match");
+        Assert.AreEqual("test text", searchRecordComponentView.recordTextNoPlayerCount.text, "Record text does not match");
     }
 
     [Test]

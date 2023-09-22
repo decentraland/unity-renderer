@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class SearchRecordComponentView : BaseComponentView<SearchRecordComponentModel>, ISearchRecordComponentView
 {
     [SerializeField] internal TMP_Text recordText;
+    [SerializeField] internal TMP_Text recordTextNoPlayerCount;
     [SerializeField] internal GameObject historyIcon;
     [SerializeField] private Button recordButton;
     [SerializeField] internal GameObject playerCountParent;
@@ -49,6 +50,7 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
     {
         model.recordText = text;
         recordText.text = text;
+        recordTextNoPlayerCount.text = text;
     }
 
     public void SetIcon(bool isHistory)
@@ -60,6 +62,8 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
     public void SetPlayerCount(int count)
     {
         playerCountParent.SetActive(count > 0);
+        recordText.gameObject.SetActive(count > 0);
+        recordTextNoPlayerCount.gameObject.SetActive(count == 0);
         playerCount.text = count.ToString();
     }
 }
