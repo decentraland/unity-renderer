@@ -59,12 +59,12 @@ public interface IEventsSubSectionComponentView: IPlacesAndEventsSubSectionCompo
     /// <summary>
     /// It will be triggered when the subscribe event button is clicked.
     /// </summary>
-    event Action<string> OnSubscribeEventClicked;
+    event Action<string, bool> OnSubscribeEventClicked;
 
     /// <summary>
     /// It will be triggered when the unsubscribe event button is clicked.
     /// </summary>
-    event Action<string> OnUnsubscribeEventClicked;
+    event Action<string, bool> OnUnsubscribeEventClicked;
 
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.

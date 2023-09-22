@@ -116,6 +116,8 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
             toggleCameraReelAction.OnTriggered += OpenCameraReelGallery;
 
             exitScreenshotModeAction.OnTriggered += CloseScreenshotCamera;
+
+            uploadPictureCancellationToken = new CancellationTokenSource();
         }
 
         private void Start()
@@ -132,6 +134,9 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         internal void OnDestroy()
         {
+            uploadPictureCancellationToken?.Cancel();
+            uploadPictureCancellationToken?.Dispose();
+
             toggleScreenshotCameraAction.OnTriggered -= ToggleScreenshotCamera;
             toggleCameraReelAction.OnTriggered -= OpenCameraReelGallery;
             exitScreenshotModeAction.OnTriggered -= CloseScreenshotCamera;
@@ -167,12 +172,13 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
 
         public void CaptureScreenshot(string source)
         {
-            if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get()) return;
+            if (isOnCooldown || !storageStatus.HasFreeSpace || !isScreencaptureCameraActive.Get() || screenRecorderLazy.IsCapturing) return;
 
             lastScreenshotTime = Time.time;
-
             screencaptureCameraHUDController.SetVisibility(false, storageStatus.HasFreeSpace);
-            StartCoroutine(screenRecorderLazy.CaptureScreenshot(SkyboxController.i.SkyboxCamera.BaseCamera, OnComplete));
+
+            StartCoroutine(screenRecorderLazy.CaptureScreenshot(OnComplete));
+            return;
 
             void OnComplete(Texture2D screenshot)
             {
@@ -180,7 +186,6 @@ namespace DCLFeatures.ScreencaptureCamera.CameraObject
                 screencaptureCameraHUDController.PlayScreenshotFX(screenshot, SPLASH_FX_DURATION, MIDDLE_PAUSE_FX_DURATION, IMAGE_TRANSITION_FX_DURATION);
 
                 var metadata = ScreenshotMetadata.Create(Player, avatarsLODController, screenshotCamera);
-                uploadPictureCancellationToken = uploadPictureCancellationToken.SafeRestart();
                 UploadScreenshotAsync(screenshot, metadata, source, uploadPictureCancellationToken.Token).Forget();
             }
 

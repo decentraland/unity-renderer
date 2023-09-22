@@ -62,19 +62,20 @@ namespace DCL.Emotes
         [Test]
         public void ReactToEquipEmotesIncreasingReference()
         {
+            const string EMOTE_ID = "urn:emote0";
             AnimationClip animClip = new AnimationClip();
-            EmoteItem emote = new EmoteItem() { id = "emote0", data = new WearableItem.Data() };
+            EmoteItem emote = new EmoteItem() { id = EMOTE_ID, data = new WearableItem.Data() };
             emoteCatalog.RequestEmoteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new UniTask<WearableItem>(emote));
             IEmoteAnimationLoader loader = Substitute.For<IEmoteAnimationLoader>();
             loader.loadedAnimationClip.Returns(animClip);
             loaderFactory.Get().Returns(loader);
 
-            dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
+            dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, EMOTE_ID));
 
             loaderFactory.Received(1).Get();
-            emoteCatalog.Received(1).RequestEmoteAsync("emote0", Arg.Any<CancellationToken>());
+            emoteCatalog.Received(1).RequestEmoteAsync(EMOTE_ID, Arg.Any<CancellationToken>());
             loader.Received(1).LoadEmote(tracker.animationsModelsContainer, emote, WearableLiterals.BodyShapes.FEMALE, Arg.Any<CancellationToken>());
-            var animKey = (WearableLiterals.BodyShapes.FEMALE, "emote0");
+            var animKey = (WearableLiterals.BodyShapes.FEMALE, EMOTE_ID);
             Assert.AreEqual(animClip, dataStore.animations[animKey]?.clip);
         }
 
@@ -111,7 +112,10 @@ namespace DCL.Emotes
             UniTask.ToCoroutine(async () =>
             {
                 // Arrange
-                EmoteItem emote = new EmoteItem() { id = "emote0", data = new WearableItem.Data() };
+                const string EMOTE_ID = "urn:emote0";
+
+                EmoteItem emote = new EmoteItem
+                    { id = EMOTE_ID, data = new WearableItem.Data() };
 
                 async UniTask<WearableItem> GetDelayedEmoteItem()
                 {
@@ -126,15 +130,15 @@ namespace DCL.Emotes
                 loaderFactory.Configure().Get().Returns(loader);
 
                 // Act
-                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
-                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, "emote0"));
+                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, EMOTE_ID));
+                dataStore.emotesOnUse.IncreaseRefCount((WearableLiterals.BodyShapes.FEMALE, EMOTE_ID));
                 await UniTask.DelayFrame(2); // Give time for GetDelayedEmoteItem to be performed.
 
                 // Assert
                 loaderFactory.Received(1).Get();
-                emoteCatalog.Received(1).RequestEmoteAsync("emote0", Arg.Any<CancellationToken>());
+                emoteCatalog.Received(1).RequestEmoteAsync(EMOTE_ID, Arg.Any<CancellationToken>());
                 loader.Received(1).LoadEmote(tracker.animationsModelsContainer, emote, WearableLiterals.BodyShapes.FEMALE, Arg.Any<CancellationToken>());
-                var animKey = (WearableLiterals.BodyShapes.FEMALE, "emote0");
+                var animKey = (WearableLiterals.BodyShapes.FEMALE, EMOTE_ID);
                 Assert.AreEqual(animClip, dataStore.animations[animKey]?.clip);
             });
     }

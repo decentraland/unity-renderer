@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Browser;
 using ExploreV2Analytics;
 using System;
 using DCL.Social.Friends;
@@ -25,7 +26,7 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
     internal IPlacesSubSectionComponentController placesSubSectionComponentController;
     internal IWorldsSubSectionComponentController worldsSubSectionComponentController;
     internal IEventsSubSectionComponentController eventsSubSectionComponentController;
-    internal IFavoritesSubSectionComponentController favoritesSubSectionComponentController;
+    internal IFavoriteSubSectionComponentController favoritesSubSectionComponentController;
     internal ISearchSubSectionComponentController searchSubSectionComponentController;
     private DataStore dataStore;
     private static Service<IHotScenesFetcher> hotScenesFetcher;
@@ -66,7 +67,8 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             exploreV2Analytics,
             placesAnalytics,
             dataStore,
-            userProfileBridge);
+            userProfileBridge,
+            new WebInterfaceBrowserBridge());
         worldsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         eventsSubSectionComponentController = new EventsSubSectionComponentController(
@@ -74,16 +76,19 @@ public class PlacesAndEventsSectionComponentController : IPlacesAndEventsSection
             eventsAPI,
             exploreV2Analytics,
             dataStore,
-            userProfileBridge);
+            userProfileBridge,
+            placesAPIService,
+            worldsAPIService);
         eventsSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
-        favoritesSubSectionComponentController = new FavoritesesSubSectionComponentController(
+        favoritesSubSectionComponentController = new FavoriteSubSectionComponentController(
             view.FavoritesSubSectionView,
             placesAPIService,
-            friendsController,
+            worldsAPIService,
+            userProfileBridge,
             exploreV2Analytics,
             placesAnalytics,
-            dataStore);
+            this.dataStore);
         favoritesSubSectionComponentController.OnCloseExploreV2 += RequestExploreV2Closing;
 
         searchSubSectionComponentController = new SearchSubSectionComponentController(

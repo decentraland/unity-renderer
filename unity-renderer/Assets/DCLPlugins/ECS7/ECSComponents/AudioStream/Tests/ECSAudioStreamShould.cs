@@ -64,7 +64,6 @@ namespace Tests
             // We prepare the componentHandler
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             // We prepare the models
             PBAudioStream model = CreateAudioStreamModel();
@@ -129,7 +128,6 @@ namespace Tests
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -151,8 +149,7 @@ namespace Tests
             model.Playing = true;
             model.Url = URL;
             audioSourceComponentHandler.isInsideScene = true;
-            audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = false;
+            audioSourceComponentHandler.isRendererActive = false;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -224,7 +221,6 @@ namespace Tests
 
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 

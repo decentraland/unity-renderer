@@ -11,7 +11,7 @@ using Utils = DCL.Helpers.Utils;
 public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectionComponentView
 {
     private const int MAX_POOL_COUNT = 6;
-    internal const string WORLDS_SUBSECTION_FF = "enable_worlds_subsection";
+    internal const string WORLDS_SUBSECTION_FF = "worlds_subsection";
 
     public int CurrentTilesPerRow { get; }
     public int CurrentGoingTilesPerRow { get; }
@@ -20,6 +20,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private GameObject fullSearchSection;
     [SerializeField] private GameObject normalHeader;
     [SerializeField] private GameObject searchHeader;
+    [SerializeField] private GameObject favoritesHeader;
     [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text searchTerm;
 
@@ -53,21 +54,25 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     [SerializeField] private TMP_Text noResultsText;
     [SerializeField] internal EventCardComponentView eventCardModalPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
+    [SerializeField] internal PlaceCardComponentView worldCardModalPrefab;
 
     internal EventCardComponentView eventModal;
     internal PlaceCardComponentView placeModal;
+    internal PlaceCardComponentView worldModal;
     public event Action<int> OnRequestAllEvents;
     public event Action<int> OnRequestAllPlaces;
     public event Action<int> OnRequestAllWorlds;
     public event Action OnBackFromSearch;
     public event Action<EventCardComponentModel, int> OnEventInfoClicked;
     public event Action<PlaceCardComponentModel, int> OnPlaceInfoClicked;
+    public event Action<PlaceCardComponentModel, int> OnWorldInfoClicked;
     public event Action<EventFromAPIModel> OnEventJumpInClicked;
     public event Action<IHotScenesController.PlaceInfo> OnPlaceJumpInClicked;
+    public event Action<IHotScenesController.PlaceInfo> OnWorldJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnPlaceFavoriteChanged;
-    public event Action<string> OnSubscribeEventClicked;
-    public event Action<string> OnUnsubscribeEventClicked;
+    public event Action<string, bool> OnSubscribeEventClicked;
+    public event Action<string, bool> OnUnsubscribeEventClicked;
 
     private UnityObjectPool<EventCardComponentView> eventsPool;
     internal List<EventCardComponentView> pooledEvents = new List<EventCardComponentView>();
@@ -92,9 +97,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         noPlaces.SetActive(false);
         eventModal = PlacesAndEventsCardsFactory.GetEventCardTemplateHiddenLazy(eventCardModalPrefab);
         placeModal = PlacesAndEventsCardsFactory.GetPlaceCardTemplateHiddenLazy(placeCardModalPrefab);
-
-        //Temporary until the full feature is released
-        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
+        worldModal = PlacesAndEventsCardsFactory.GetWorldCardTemplateHiddenLazy(worldCardModalPrefab);
     }
 
     private void InitialiseButtonEvents()
@@ -257,7 +260,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             placeCardComponentView.model = placeCardComponentModel;
             placeCardComponentView.RefreshControl();
             pooledWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         worldsParent.gameObject.SetActive(true);
         loadingWorlds.gameObject.SetActive(false);
@@ -302,8 +305,8 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onSecondaryJumpInClick?.RemoveAllListeners();
         view.onInfoClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
         view.onBackgroundClick.AddListener(() => OnEventInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
-        view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId));
-        view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId));
+        view.onSubscribeClick.AddListener(() => OnSubscribeEventClicked?.Invoke(model.eventId, !string.IsNullOrEmpty(model.worldAddress)));
+        view.onUnsubscribeClick.AddListener(() => OnUnsubscribeEventClicked?.Invoke(model.eventId, !string.IsNullOrEmpty(model.worldAddress)));
         view.onJumpInClick.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
         view.onSecondaryJumpInClick?.AddListener(() => OnEventJumpInClicked?.Invoke(model.eventFromAPIInfo));
     }
@@ -320,6 +323,26 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         view.onJumpInClick.AddListener(()=>OnPlaceJumpInClicked?.Invoke(model.placeInfo));
         view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
         view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
+    private void ConfigureWorldCardActions(PlaceCardComponentView view, PlaceCardComponentModel model)
+    {
+        view.onInfoClick.RemoveAllListeners();
+        view.onBackgroundClick.RemoveAllListeners();
+        view.onJumpInClick.RemoveAllListeners();
+        view.OnFavoriteChanged -= ViewOnOnFavoriteChanged;
+        view.OnVoteChanged -= ViewOnVoteChanged;
+        view.onInfoClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onBackgroundClick.AddListener(()=>OnWorldInfoClicked?.Invoke(model, view.transform.GetSiblingIndex()));
+        view.onJumpInClick.AddListener(()=>OnWorldJumpInClicked?.Invoke(model.placeInfo));
+        view.OnFavoriteChanged += ViewOnOnFavoriteChanged;
+        view.OnVoteChanged += ViewOnVoteChanged;
+    }
+
+    public void HideWorldModal()
+    {
+        if (worldModal != null)
+            worldModal.Hide();
     }
 
     private void ViewOnVoteChanged(string arg1, bool? arg2)
@@ -342,6 +365,12 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         placeModal.Show();
         PlacesCardsConfigurator.Configure(placeModal, placeModel, null, OnPlaceJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
+    }
+
+    public void ShowWorldModal(PlaceCardComponentModel placeModel)
+    {
+        worldModal.Show();
+        PlacesCardsConfigurator.Configure(worldModal, placeModel, null, OnWorldJumpInClicked, OnVoteChanged, OnPlaceFavoriteChanged);
     }
 
     public void ShowAllEvents(List<EventCardComponentModel> events, bool showMoreButton)
@@ -388,7 +417,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
             placeCardComponentView.OnLoseFocus();
             placeCardComponentView.transform.SetAsLastSibling();
             pooledFullWorlds.Add(placeCardComponentView);
-            ConfigurePlaceCardActions(placeCardComponentView, placeCardComponentModel);
+            ConfigureWorldCardActions(placeCardComponentView, placeCardComponentModel);
         }
         loadingAll.SetActive(false);
         Utils.ForceRebuildLayoutImmediate(fullWorldsParent);
@@ -435,6 +464,7 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
     {
         normalHeader.SetActive(string.IsNullOrEmpty(searchText));
         searchHeader.SetActive(!string.IsNullOrEmpty(searchText));
+        favoritesHeader.SetActive(false);
         searchTerm.text = $"\"{searchText}\"";
     }
 
@@ -450,6 +480,14 @@ public class SearchSubSectionComponentView : BaseComponentView, ISearchSubSectio
         {
             OnDisable();
         }
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+
+        //Temporary until the full feature is released
+        worldsSection.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled(WORLDS_SUBSECTION_FF));
     }
 
     public override void RefreshControl()

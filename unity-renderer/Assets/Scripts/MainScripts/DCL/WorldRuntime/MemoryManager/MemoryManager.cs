@@ -7,22 +7,15 @@ namespace DCL
 {
     public class MemoryManager : IMemoryManager
     {
-        private const long MAX_USED_MEMORY = 1300 * 1024 * 1024; // 1.3GB
+        private const ulong MAX_USED_MEMORY = (ulong)2600 * 1024 * 1024; // 2.6GB
         private const float TIME_FOR_NEW_MEMORY_CHECK = 60.0f;
 
         private Coroutine autoCleanupCoroutine;
 
-        private long memoryThresholdForCleanup = 0;
+        private ulong memoryThresholdForCleanup = 0;
         private float cleanupInterval;
 
         public event System.Action OnCriticalMemory;
-
-        public MemoryManager(long memoryThresholdForCleanup, float cleanupInterval)
-        {
-            this.memoryThresholdForCleanup = memoryThresholdForCleanup;
-            this.cleanupInterval = cleanupInterval;
-            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
-        }
 
         public MemoryManager()
         {
@@ -43,14 +36,14 @@ namespace DCL
         {
         }
 
-        bool NeedsMemoryCleanup()
+        private bool NeedsMemoryCleanup()
         {
-            long usedMemory = Profiler.GetTotalAllocatedMemoryLong() + Profiler.GetMonoUsedSizeLong() +
-                              Profiler.GetAllocatedMemoryForGraphicsDriver();
+            ulong usedMemory = (ulong)Profiler.GetTotalAllocatedMemoryLong() + (ulong)Profiler.GetMonoUsedSizeLong() +
+                              (ulong)Profiler.GetAllocatedMemoryForGraphicsDriver();
             return usedMemory >= this.memoryThresholdForCleanup;
         }
 
-        IEnumerator AutoCleanup()
+        private IEnumerator AutoCleanup()
         {
             while (true)
             {

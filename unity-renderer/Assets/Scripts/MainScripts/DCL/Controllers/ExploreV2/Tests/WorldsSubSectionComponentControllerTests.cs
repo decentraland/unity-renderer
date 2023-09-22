@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Helpers;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
@@ -39,7 +40,8 @@ public class WorldsSubSectionComponentControllerTests
             exploreV2Analytics,
             Substitute.For<IPlacesAnalytics>(),
             DataStore.i,
-            Substitute.For<IUserProfileBridge>());
+            Substitute.For<IUserProfileBridge>(),
+            Substitute.For<IBrowserBridge>());
     }
 
     [TearDown]
@@ -173,7 +175,7 @@ public class WorldsSubSectionComponentControllerTests
         IHotScenesController.PlaceInfo testPlaceFromAPI = ExplorePlacesTestHelpers.CreateTestHotSceneInfo("1");
 
         // Act
-        worldsSubSectionComponentController.OnJumpInToWorld(testPlaceFromAPI);
+        worldsSubSectionComponentController.JumpInToWorld(testPlaceFromAPI);
 
         // Assert
         worldsSubSectionComponentView.Received().HideWorldModal();
