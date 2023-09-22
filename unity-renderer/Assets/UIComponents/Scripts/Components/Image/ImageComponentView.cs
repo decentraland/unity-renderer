@@ -68,6 +68,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     internal string lastLoadedUri = null;
 
     public Image ImageComponent => image;
+    public bool UseLoadingIndicator { get; set; } = true;
 
     public void Start()
     {
@@ -148,7 +149,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
             return;
         }
 
-        SetLoadingIndicatorVisible(true);
+        if (UseLoadingIndicator)
+            SetLoadingIndicatorVisible(true);
+
         imageObserver.RefreshWithTexture(texture);
 
         lastLoadedUri = null;
@@ -165,7 +168,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
         if (!Application.isPlaying)
             return;
 
-        SetLoadingIndicatorVisible(true);
+        if (UseLoadingIndicator)
+            SetLoadingIndicatorVisible(true);
+
         if (!string.IsNullOrEmpty(uri))
         {
             currentUriLoading = uri;

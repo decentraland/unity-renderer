@@ -59,6 +59,10 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: 98bae2808161c4d678b3f5d109a5ee80, type: 3}
   - key: all
     value: {fileID: 21300000, guid: e568dcbc864c24ab1a9b731a66e362cb, type: 3}
+  - key: hands_wear
+    value: {fileID: 21300000, guid: 16866e729ce1061429170517e80ef313, type: 3}
+  - key: hands
+    value: {fileID: 21300000, guid: 1b8e5d35e0b2d46379b97bb7e7ab2c97, type: 3}
   nftColors:
   - key: rare
     value: {r: 0.23529412, g: 0.89411765, b: 0.5176471, a: 1}

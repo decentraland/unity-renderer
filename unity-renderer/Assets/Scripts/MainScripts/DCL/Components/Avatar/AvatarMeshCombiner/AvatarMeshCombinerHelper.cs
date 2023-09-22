@@ -20,8 +20,8 @@ namespace DCL
         public GameObject container { get; }
         public SkinnedMeshRenderer renderer { get; }
 
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true);
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose = true);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderersToCombine, bool keepPose = true);
+        public bool Combine(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderersToCombine, Material materialAsset, bool keepPose = true);
     }
 
     /// <summary>
@@ -59,7 +59,8 @@ namespace DCL
         /// </summary>
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
         /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, bool keepPose = true) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material"), keepPose); }
+        /// <param name="keepPose"></param>
+        public bool Combine(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderersToCombine, bool keepPose = true) { return Combine(bonesContainer, renderersToCombine, Resources.Load<Material>("Avatar Material"), keepPose); }
 
         /// <summary>
         /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
@@ -71,8 +72,9 @@ namespace DCL
         /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
         /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
         /// <param name="materialAsset">A material asset that will serve as the base of the combine result. A new materialAsset will be created for each combined sub-mesh.</param>
+        /// <param name="keepPose"></param>
         /// <returns>true if succeeded, false if not</returns>
-        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset, bool keepPose)
+        public bool Combine(SkinnedMeshRenderer bonesContainer, IReadOnlyList<SkinnedMeshRenderer> renderersToCombine, Material materialAsset, bool keepPose)
         {
             Profiler.BeginSample($"{nameof(AvatarMeshCombinerHelper)}.{nameof(Combine)}");
 
@@ -80,13 +82,16 @@ namespace DCL
             Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
             Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
 
-            SkinnedMeshRenderer[] renderers = renderersToCombine;
+            var renderers = renderersToCombine;
 
             // Sanitize renderers list
-            renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToArray();
+            renderers = renderers.Where( (x) => x != null && x.sharedMesh != null ).ToList();
 
-            if ( renderers.Length == 0 )
+            if ( renderers.Count == 0 )
+            {
+                Profiler.EndSample();
                 return false;
+            }
 
             bool success = CombineInternal(
                 bonesContainer,
@@ -95,7 +100,7 @@ namespace DCL
                 keepPose);
 
             // Disable original renderers
-            for ( int i = 0; i < renderers.Length; i++ )
+            for ( int i = 0; i < renderers.Count; i++ )
             {
                 renderers[i].enabled = false;
             }

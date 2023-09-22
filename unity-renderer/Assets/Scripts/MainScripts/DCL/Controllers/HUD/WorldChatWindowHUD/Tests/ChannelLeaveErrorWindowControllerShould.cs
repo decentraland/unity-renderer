@@ -3,7 +3,7 @@ using DCL.Chat.Channels;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelLeaveErrorWindowControllerShould
     {
@@ -35,7 +35,7 @@ namespace DCL.Chat.HUD
         public void HideWhenViewCloses()
         {
             view.OnClose += Raise.Event<Action>();
-            
+
             view.Received(1).Hide();
         }
 
@@ -44,9 +44,9 @@ namespace DCL.Chat.HUD
         {
             dataStore.channels.leaveChannelError.Set("randomChannel");
             view.ClearReceivedCalls();
-            
+
             view.OnRetry += Raise.Event<Action>();
-            
+
             chatController.Received(1).LeaveChannel("randomChannel");
             view.Received(1).Hide();
         }

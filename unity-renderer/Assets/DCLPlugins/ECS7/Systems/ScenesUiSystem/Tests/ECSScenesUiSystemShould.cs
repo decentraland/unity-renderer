@@ -93,7 +93,8 @@ namespace Tests
                 new BaseList<IParcelScene> { scene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -134,7 +135,8 @@ namespace Tests
                 uiContainerComponent,
                 uiDocument,
                 scene,
-                new BaseVariable<bool>(true)));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>()));
 
             // but should be applied when component exist
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
@@ -143,7 +145,8 @@ namespace Tests
                 uiContainerComponent,
                 uiDocument,
                 scene,
-                new BaseVariable<bool>(true)));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>()));
 
             Assert.AreEqual(1, uiDocument.rootVisualElement.childCount);
         }
@@ -242,7 +245,8 @@ namespace Tests
                 new BaseList<IParcelScene> { scene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -270,7 +274,8 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -314,7 +319,8 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for scenes
             InternalUiContainer rootScene1Container = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -394,7 +400,8 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for scene
             InternalUiContainer rootSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -425,7 +432,8 @@ namespace Tests
                 new BaseList<IParcelScene> { nonGlobalScene },
                 worldState,
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             // create root ui for global scene
             InternalUiContainer rootGlobalSceneContainer = new InternalUiContainer(SpecialEntityId.SCENE_ROOT_ENTITY);
@@ -650,7 +658,8 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 Substitute.For<IWorldState>(),
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             StyleEnum<DisplayStyle> style = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
             Assert.IsTrue(style == uiDocument.rootVisualElement.style.display);
@@ -668,7 +677,8 @@ namespace Tests
                 new BaseList<IParcelScene>(),
                 Substitute.For<IWorldState>(),
                 hideUiEventVariable,
-                new BaseVariable<bool>(true));
+                new BaseVariable<bool>(true),
+                new BaseDictionary<int, bool>());
 
             Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement.style.display);
 
@@ -682,7 +692,7 @@ namespace Tests
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetSceneUiVisibilityCorrectly(bool isVisible)
+        public void SetSceneUiVisibilityCorrectlyWhenApplying(bool isVisible)
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
             var visibility = new BaseVariable<bool>(isVisible);
@@ -693,14 +703,15 @@ namespace Tests
                 uiContainerComponent,
                 uiDocument,
                 scene,
-                visibility);
+                visibility,
+                new BaseDictionary<int, bool>());
 
             StyleEnum<DisplayStyle> style = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
             Assert.IsTrue(style == uiDocument.rootVisualElement[0].style.display);
         }
 
         [Test]
-        public void ToggleSceneUiVisibilityCorrectly()
+        public void ToggleCurrentSceneUiVisibilityCorrectly()
         {
             ECS7TestScene scene = sceneTestHelper.CreateScene(666);
 
@@ -718,7 +729,8 @@ namespace Tests
                 loadedScenes,
                 worldState,
                 hideUiEventVariable,
-                sceneVisibilityToggle);
+                sceneVisibilityToggle,
+                new BaseDictionary<int, bool>());
 
             uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalUiContainer(0));
 
@@ -732,6 +744,122 @@ namespace Tests
 
             sceneVisibilityToggle.Set(true);
             Assert.IsTrue(DisplayStyle.Flex == uiDocument.rootVisualElement[0].style.display);
+        }
+
+        [Test]
+        public void ToggleSceneUiVisibility()
+        {
+            const int SCENE_NUMBER = 666;
+            const int OTHER_SCENE_NUMBER = 777;
+
+            ECS7TestScene scene = sceneTestHelper.CreateScene(SCENE_NUMBER);
+            ECS7TestScene otherScene = sceneTestHelper.CreateScene(OTHER_SCENE_NUMBER);
+
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneNumber().Returns(OTHER_SCENE_NUMBER);
+
+            BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>
+                { scene, otherScene };
+
+            var isSceneUIEnabled = new BaseDictionary<int, bool>();
+
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                loadedScenes,
+                worldState,
+                hideUiEventVariable,
+                new BaseVariable<bool>(true),
+                isSceneUIEnabled);
+
+            InternalUiContainer sceneUiContainer = new (SpecialEntityId.SCENE_ROOT_ENTITY);
+            InternalUiContainer otherSceneUiContainer = new (SpecialEntityId.SCENE_ROOT_ENTITY);
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneUiContainer);
+            uiContainerComponent.PutFor(otherScene, SpecialEntityId.SCENE_ROOT_ENTITY, otherSceneUiContainer);
+
+            ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                scene,
+                new BaseVariable<bool>(false),
+                isSceneUIEnabled);
+
+            ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                otherScene,
+                new BaseVariable<bool>(true),
+                isSceneUIEnabled);
+
+            system.Update();
+
+            Assert.IsTrue(DisplayStyle.Flex == otherSceneUiContainer.rootElement.style.display);
+            Assert.IsTrue(DisplayStyle.None == sceneUiContainer.rootElement.style.display);
+
+            isSceneUIEnabled.AddOrSet(SCENE_NUMBER, true);
+            Assert.IsTrue(DisplayStyle.Flex == otherSceneUiContainer.rootElement.style.display);
+            Assert.IsTrue(DisplayStyle.Flex == sceneUiContainer.rootElement.style.display);
+
+            isSceneUIEnabled.AddOrSet(SCENE_NUMBER, false);
+            Assert.IsTrue(DisplayStyle.Flex == otherSceneUiContainer.rootElement.style.display);
+            Assert.IsTrue(DisplayStyle.None == sceneUiContainer.rootElement.style.display);
+        }
+
+        [Test]
+        public void KeepUiHiddenWhenCurrentSceneIsUiDisabled()
+        {
+            const int SCENE_NUMBER = 666;
+            const int CURRENT_SCENE_NUMBER = 777;
+
+            ECS7TestScene scene = sceneTestHelper.CreateScene(SCENE_NUMBER);
+            ECS7TestScene currentScene = sceneTestHelper.CreateScene(CURRENT_SCENE_NUMBER);
+            currentScene.sceneData.scenePortableExperienceFeatureToggles = ScenePortableExperienceFeatureToggles.HideUi;
+
+            IWorldState worldState = Substitute.For<IWorldState>();
+            worldState.GetCurrentSceneNumber().Returns(CURRENT_SCENE_NUMBER);
+            worldState.GetScene(CURRENT_SCENE_NUMBER).Returns(currentScene);
+
+            BaseList<IParcelScene> loadedScenes = new BaseList<IParcelScene>
+                { scene, currentScene };
+
+            var isSceneUIEnabled = new BaseDictionary<int, bool>();
+
+            var system = new ECSScenesUiSystem(
+                uiDocument,
+                uiContainerComponent,
+                loadedScenes,
+                worldState,
+                hideUiEventVariable,
+                new BaseVariable<bool>(true),
+                isSceneUIEnabled);
+
+            InternalUiContainer sceneUiContainer = new (SpecialEntityId.SCENE_ROOT_ENTITY);
+            InternalUiContainer currentSceneUiContainer = new (SpecialEntityId.SCENE_ROOT_ENTITY);
+            uiContainerComponent.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, sceneUiContainer);
+            uiContainerComponent.PutFor(currentScene, SpecialEntityId.SCENE_ROOT_ENTITY, currentSceneUiContainer);
+
+            ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                scene,
+                new BaseVariable<bool>(false),
+                isSceneUIEnabled);
+
+            ECSScenesUiSystem.ApplySceneUI(
+                uiContainerComponent,
+                uiDocument,
+                currentScene,
+                new BaseVariable<bool>(true),
+                isSceneUIEnabled);
+
+            system.Update();
+
+            Assert.IsTrue(DisplayStyle.Flex == currentSceneUiContainer.rootElement.style.display);
+            Assert.IsTrue(DisplayStyle.None == sceneUiContainer.rootElement.style.display);
+
+            isSceneUIEnabled.AddOrSet(SCENE_NUMBER, true);
+            Assert.IsTrue(DisplayStyle.Flex == currentSceneUiContainer.rootElement.style.display);
+            Assert.IsTrue(DisplayStyle.None == sceneUiContainer.rootElement.style.display);
         }
     }
 }

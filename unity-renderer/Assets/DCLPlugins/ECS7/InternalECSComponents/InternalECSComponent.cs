@@ -115,7 +115,16 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
     public ECSComponentData<T>? GetFor(IParcelScene scene, long entityId)
     {
         if (component.TryGet(scene, entityId, out var data))
+        {
+            if (markAsDirtyComponents.TryGetValue(scene.sceneData.sceneNumber, entityId, out var dirtyData))
+            {
+                T model = dirtyData.Data;
+                model.dirty = true;
+                return data.With(model);
+            }
+
             return data;
+        }
 
         return null;
     }

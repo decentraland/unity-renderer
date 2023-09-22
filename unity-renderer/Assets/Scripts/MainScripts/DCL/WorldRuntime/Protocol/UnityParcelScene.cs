@@ -8,6 +8,7 @@ namespace DCL.Models
     public static class ScenePermissionNames
     {
         public const string ALLOW_MEDIA_HOSTNAMES = "ALLOW_MEDIA_HOSTNAMES";
+        public const string OPEN_EXTERNAL_LINK = "OPEN_EXTERNAL_LINK";
     }
 
     [Serializable]
@@ -16,6 +17,7 @@ namespace DCL.Models
         public string id;
         public int sceneNumber;
         public string name;
+        public string description;
         public string baseUrl;
         public List<ContentServerUtils.MappingPair> contents;
         public string icon;
@@ -45,6 +47,8 @@ namespace DCL.Models
             public int sceneNumber;
             public string baseUrl;
             public string baseUrlBundles;
+            public string description;
+            public string iconUrl;
 
             public List<ContentServerUtils.MappingPair> contents;
 
@@ -57,6 +61,14 @@ namespace DCL.Models
             public string[] allowedMediaHostnames;
 
             public List<Hint> loadingScreenHints;
+            public ScenePortableExperienceFeatureToggles scenePortableExperienceFeatureToggles;
         }
+    }
+
+    public enum ScenePortableExperienceFeatureToggles
+    {
+        Enable,
+        Disable,
+        HideUi
     }
 }

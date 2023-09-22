@@ -8,8 +8,20 @@ message TriggerSelfUserExpressionRequest {
 
 message TriggerSelfUserExpressionResponse {}
 
+message TriggerSceneExpressionRequest {
+  string path = 1;
+  int32 scene_number = 2;
+  bool loop = 3;
+}
+
+message SuccessResponse {
+  bool success = 1;
+}
+
 // Service implemented in Renderer and used in Kernel
 service EmotesRendererService {
   // Triggers an expression in our own avatar (use example: SDK triggers a expression)
   rpc TriggerSelfUserExpression(TriggerSelfUserExpressionRequest) returns (TriggerSelfUserExpressionResponse) {}
+  // Triggers a scene's file expression in our own avatar (use example: SDK triggers a expression)
+  rpc TriggerSceneExpression(TriggerSceneExpressionRequest) returns (SuccessResponse) {}
 }

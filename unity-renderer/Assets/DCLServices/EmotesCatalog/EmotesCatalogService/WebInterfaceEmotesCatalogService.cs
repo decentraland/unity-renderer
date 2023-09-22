@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Providers;
@@ -7,20 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using Environment = DCL.Environment;
+using PromiseAsyncExtensions = DCL.Helpers.PromiseAsyncExtensions;
 
 namespace DCLServices.EmotesCatalog.EmotesCatalogService
 {
+    [Obsolete("This service will be deprecated by LambdasEmotesCatalogService in the future.")]
     public class WebInterfaceEmotesCatalogService : IEmotesCatalogService
     {
         private EmotesCatalogBridge bridge;
 
-        internal readonly Dictionary<string, WearableItem> emotes = new ();
-        internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
-        internal readonly Dictionary<string, int> emotesOnUse = new ();
-        internal readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new ();
+        private readonly Dictionary<string, WearableItem> emotes = new ();
+        private readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
+        private readonly Dictionary<string, int> emotesOnUse = new ();
+        private readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new ();
+        private readonly IAddressableResourceProvider addressableResourceProvider;
 
-        private IAddressableResourceProvider addressableResourceProvider;
         private EmbeddedEmotesSO embeddedEmotesSO;
         private CancellationTokenSource addressableCTS;
         private int retryCount = 3;
@@ -51,7 +51,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
 
                 Debug.LogWarning("Retrying embedded emotes addressables async request...");
                 DisposeCT();
-                InitializeAsyncEmbeddedEmotes();
+                InitializeAsyncEmbeddedEmotes().Forget();
             }
 
             EmbedEmotes();
@@ -59,7 +59,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
 
         public void Initialize()
         {
-            InitializeAsyncEmbeddedEmotes();
+            InitializeAsyncEmbeddedEmotes().Forget();
             bridge.OnEmotesReceived += OnEmotesReceived;
             bridge.OnEmoteRejected += OnEmoteRejected;
             bridge.OnOwnedEmotesReceived += OnOwnedEmotesReceived;
@@ -136,6 +136,9 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
 
         public bool TryGetLoadedEmote(string id, out WearableItem emote) { return emotes.TryGetValue(id, out emote); }
 
+        public UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken) =>
+            throw new NotImplementedException("Implemented in LambdasEmotesCatalogService");
+
         public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
         {
             var promise = new Promise<IReadOnlyList<WearableItem>>();
@@ -157,7 +160,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             {
                 ct.ThrowIfCancellationRequested();
                 var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-                await promise.WithCancellation(linkedCt.Token);
+                await PromiseAsyncExtensions.WithCancellation(promise, linkedCt.Token);
             }
             catch (OperationCanceledException e)
             {
@@ -171,6 +174,10 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
 
             return promise.value;
         }
+
+        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null) =>
+            throw new NotImplementedException("Implemented in LambdasEmotesCatalogService");
 
         public Promise<WearableItem> RequestEmote(string id)
         {
@@ -214,7 +221,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             try
             {
                 var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-                await promise.WithCancellation(linkedCt.Token);
+                await PromiseAsyncExtensions.WithCancellation(promise, linkedCt.Token);
             }
             catch (PromiseException ex)
             {
@@ -286,6 +293,10 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
                 await UniTask.WaitUntil(() => embeddedEmotesSO != null);
             return embeddedEmotesSO;
         }
+
+        public UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null) =>
+            throw new NotImplementedException("Implemented in LambdasEmotesCatalogService");
 
         public void Dispose()
         {

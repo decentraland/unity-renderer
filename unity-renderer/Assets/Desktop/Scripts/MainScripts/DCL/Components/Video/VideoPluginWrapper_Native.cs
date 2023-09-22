@@ -12,6 +12,11 @@ public class VideoPluginWrapper_Native : IVideoPluginWrapper
         videoPlayers.Add(id, new DCLVideoPlayer(url));
     }
 
+    public void Create(string id, string url, VideoType videoType)
+    {
+        Create(id, url, videoType == VideoType.Hls);
+    }
+
     public void Remove(string id)
     {
         videoPlayers[id].Dispose();

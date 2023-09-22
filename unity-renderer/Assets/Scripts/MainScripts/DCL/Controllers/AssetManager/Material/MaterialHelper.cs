@@ -47,12 +47,11 @@ namespace DCL
             material.SetColor(ShaderUtils.SpecColor, reflectivity);
         }
 
-        public static void SetUpProps(Material material, float metallic, float roughness, float glossiness,
+        public static void SetUpProps(Material material, float metallic, float roughness,
             float specularIntensity, float directIntensity)
         {
             material.SetFloat(ShaderUtils.Metallic, metallic);
             material.SetFloat(ShaderUtils.Smoothness, 1 - roughness);
-            material.SetFloat(ShaderUtils.EnvironmentReflections, glossiness);
             material.SetFloat(ShaderUtils.SpecularHighlights, specularIntensity * directIntensity);
         }
 

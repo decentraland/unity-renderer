@@ -361,10 +361,6 @@ MonoBehaviour:
     m_Address: CopyIconOutline
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 257bf8731440e4fa392f389916143102
-    m_Address: QuestOn
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 1aac5e83391d74318b6be345b5ca43aa
     m_Address: SelectedParcel
     m_ReadOnly: 0
@@ -495,10 +491,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 6fbdd825c58334612a3d1645eba6da25
     m_Address: ContainerShadowRadiusSix
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4e9a4135cdf6d42afb73b12a76bf53f2
-    m_Address: JumpInSquare
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 47acd065431664e80a9a8cdedf8acb31
@@ -655,10 +647,6 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 5f5d6367f6d5ebc4ab5480df6fb70c5f
     m_Address: WalletConnectLogo
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 87a25a674771b42209ef0ae9b6b6bce7
-    m_Address: CameraIconSmall
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: b22119773231a487caa76e1b94ae9af5
@@ -1367,6 +1355,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 270c3bffb7809438bbdcb901239beff2
     m_Address: MoreIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3c940a5c07400864db483f5212bd11dd
+    m_Address: FavouriteDisabled
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

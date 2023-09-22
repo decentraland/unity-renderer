@@ -1,8 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.Lambdas;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using UnityEngine;
 
@@ -15,6 +17,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
     public interface IHotScenesController : IService
     {
         UniTask<IReadOnlyList<HotSceneInfo>> GetHotScenesListAsync(CancellationToken cancellationToken);
+        UniTask<IReadOnlyList<HotWorldInfo.WorldInfo>> GetHotWorldsListAsync(CancellationToken cancellationToken);
 
         [Serializable]
         class HotSceneInfo
@@ -41,6 +44,29 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         [Serializable]
+        class HotWorldInfo
+        {
+            [Serializable]
+            public class WorldInfo
+            {
+                public string worldName;
+                public int users;
+            }
+
+            [Serializable]
+            public class WorldData
+            {
+                public int totalUsers;
+                public WorldInfo[] perWorld;
+            }
+
+            public WorldData data;
+            public string lastUpdated;
+
+        }
+
+        // TODO: This class should be moved to the PlacesAPIService folder
+        [Serializable]
         public class PlaceInfo : ISerializationCallbackReceiver
         {
             [Serializable]
@@ -60,6 +86,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public string owner;
             public string[] tags;
             [SerializeField] private string[] positions;
+            public string world_name;
 
             public Vector2Int[] Positions;
 
@@ -71,11 +98,11 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public string disabled_at;
             public string created_at;
             public string updated_at;
+            public string deployed_at;
             public int favorites;
             public int likes;
             public int dislikes;
             public string[] categories;
-            public int like_rate;
             public bool highlighted;
             public string highlighted_image;
             public bool featured;
@@ -86,6 +113,23 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public int user_count;
             public int user_visits;
             public Realm[] realms_detail;
+
+            public string like_rate;
+
+            [JsonIgnore]
+            public float? like_rate_as_float
+            {
+                get
+                {
+                    if (string.IsNullOrEmpty(like_rate))
+                        return null;
+
+                    if (float.TryParse(like_rate, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
+                        return result;
+
+                    return null;
+                }
+            }
 
             public void OnBeforeSerialize()
             {
@@ -113,6 +157,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             }
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIResponse : PaginatedResponse
         {
@@ -121,6 +166,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
             public List<PlaceInfo> data;
         }
 
+        // TODO: This class should be moved to the PlacesAPIService folder
         [Serializable]
         public class PlacesAPIGetParcelResponse
         {

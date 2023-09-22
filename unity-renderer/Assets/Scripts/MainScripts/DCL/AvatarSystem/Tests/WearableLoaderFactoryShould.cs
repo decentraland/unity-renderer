@@ -28,10 +28,11 @@ namespace Test.AvatarSystem
                     category = WearableLiterals.Categories.HAIR
                 }
             };
+
             IWearableLoader loader = wearableLoaderFactory.GetWearableLoader(wearableItem);
 
             Assert.NotNull(loader);
-            Assert.AreEqual(wearableItem, loader.wearable);
+            Assert.AreEqual(wearableItem, loader.bodyShape);
         }
 
         [Test]
@@ -48,17 +49,20 @@ namespace Test.AvatarSystem
         [Test]
         public void ReturnLoaderForBodyshape()
         {
-            WearableItem bodyshape = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } };
-            WearableItem eyes = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
-            WearableItem eyebrows = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
-            WearableItem mouth = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
-            IBodyshapeLoader loader = wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth);
+            BodyWearables bodyWearables = new (
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } }
+            );
+
+            IBodyshapeLoader loader = wearableLoaderFactory.GetBodyShapeLoader(bodyWearables);
 
             Assert.NotNull(loader);
-            Assert.AreEqual(bodyshape, loader.wearable);
-            Assert.AreEqual(eyes, loader.eyes);
-            Assert.AreEqual(eyebrows, loader.eyebrows);
-            Assert.AreEqual(mouth, loader.mouth);
+            Assert.AreEqual(bodyWearables.BodyShape, loader.bodyShape);
+            Assert.AreEqual(bodyWearables.Eyes, loader.eyes);
+            Assert.AreEqual(bodyWearables.Eyebrows, loader.eyebrows);
+            Assert.AreEqual(bodyWearables.Mouth, loader.mouth);
         }
 
         [Test]
@@ -67,11 +71,14 @@ namespace Test.AvatarSystem
         [TestCase(WearableLiterals.Categories.FEET)]
         public void ThrowsWhenRequestingBodyshapeLoaderWithNoBodyshape(string noBodyshape)
         {
-            WearableItem bodyshape = new WearableItem { data = new WearableItem.Data { category = noBodyshape } };
-            WearableItem eyes = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
-            WearableItem eyebrows = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
-            WearableItem mouth = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
-            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth));
+            BodyWearables bodyWearables = new (
+                new WearableItem { data = new WearableItem.Data { category = noBodyshape } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } }
+            );
+
+            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyShapeLoader(bodyWearables));
         }
 
         [Test]
@@ -79,11 +86,14 @@ namespace Test.AvatarSystem
         [TestCase(WearableLiterals.Categories.FEET)]
         public void ThrowsWhenRequestingBodyshapeLoaderWithWrongEyes(string wrongEyes)
         {
-            WearableItem bodyshape = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } };
-            WearableItem eyes = new WearableItem { data = new WearableItem.Data { category = wrongEyes } };
-            WearableItem eyebrows = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
-            WearableItem mouth = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
-            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth));
+            BodyWearables bodyWearables = new (
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } },
+                new WearableItem { data = new WearableItem.Data { category = wrongEyes } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } }
+            );
+
+            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyShapeLoader(bodyWearables));
         }
 
         [Test]
@@ -91,11 +101,14 @@ namespace Test.AvatarSystem
         [TestCase(WearableLiterals.Categories.FEET)]
         public void ThrowsWhenRequestingBodyshapeLoaderWithWrongEyebrows(string wrongEyebrows)
         {
-            WearableItem bodyshape = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } };
-            WearableItem eyes = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
-            WearableItem eyebrows = new WearableItem { data = new WearableItem.Data { category = wrongEyebrows } };
-            WearableItem mouth = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } };
-            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth));
+            BodyWearables bodyWearables = new (
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } },
+                new WearableItem { data = new WearableItem.Data { category = wrongEyebrows } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.MOUTH } }
+            );
+
+            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyShapeLoader(bodyWearables));
         }
 
         [Test]
@@ -103,11 +116,14 @@ namespace Test.AvatarSystem
         [TestCase(WearableLiterals.Categories.FEET)]
         public void ThrowsWhenRequestingBodyshapeLoaderWithWrongMouth(string wrongMouth)
         {
-            WearableItem bodyshape = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } };
-            WearableItem eyes = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } };
-            WearableItem eyebrows = new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } };
-            WearableItem mouth = new WearableItem { data = new WearableItem.Data { category = wrongMouth } };
-            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyshapeLoader(bodyshape, eyes, eyebrows, mouth));
+            BodyWearables bodyWearables = new (
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.BODY_SHAPE } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYES } },
+                new WearableItem { data = new WearableItem.Data { category = WearableLiterals.Categories.EYEBROWS } },
+                new WearableItem { data = new WearableItem.Data { category = wrongMouth } }
+            );
+
+            Assert.Throws<Exception>(() => wearableLoaderFactory.GetBodyShapeLoader(bodyWearables));
         }
     }
 }

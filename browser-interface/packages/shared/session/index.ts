@@ -1,3 +1,4 @@
+import * as SingleSignOn from '@dcl/single-sign-on-client'
 import {
   getFromPersistentStorage,
   getKeysFromPersistentStorage,
@@ -8,6 +9,7 @@ import { StoredSession } from './types'
 import { getProvider as getProviderSelector } from './selectors'
 import { now } from 'lib/javascript/now'
 import { store } from 'shared/store/isolatedStore'
+import { isSessionExpired } from 'lib/web3/provider'
 
 /**
  * Store a session into the current PersistentStorage
@@ -23,6 +25,8 @@ export const storeSession: (session: StoredSession) => Promise<void> = async (se
 export const deleteSession = async (userId?: string) => {
   if (userId) {
     await removeFromPersistentStorage(sessionKey(userId))
+
+    await SingleSignOn.clearIdentity(userId)
   }
 }
 
@@ -32,18 +36,35 @@ export const deleteSession = async (userId?: string) => {
 export const retrieveLastSessionByAddress: (address: string) => Promise<StoredSession | null> = async (
   address: string
 ) => {
-  const sessions = (await retrieveAllCurrentSessions()).filter(withAddress(address))
-
-  return sessions.length > 0 ? sessions[0] : null
+  return getSessionWithSSOIdentity((await retrieveAllCurrentSessions()).filter(withAddress(address)))
 }
 
 /**
  * Retrieve the last session stored that is a guest session
  */
 export const retrieveLastGuestSession: () => Promise<StoredSession | null> = async () => {
-  const sessions = (await retrieveAllCurrentSessions()).filter(isGuest).sort(byExpiration)
+  return getSessionWithSSOIdentity((await retrieveAllCurrentSessions()).filter(isGuest).sort(byExpiration))
+}
 
-  return sessions.length > 0 ? sessions[0] : null
+/**
+ * From a list of sessions return the first one with the SSO identity
+ */
+async function getSessionWithSSOIdentity(sessions: StoredSession[]) {
+  if (!sessions.length) {
+    return null
+  }
+
+  const session = sessions[0]
+
+  const ssoIdentity = await SingleSignOn.getIdentity(session.identity.address)
+
+  if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
+    return null
+  }
+
+  session.identity = { ...session.identity, ...ssoIdentity }
+
+  return session
 }
 
 /**

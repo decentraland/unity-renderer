@@ -2,6 +2,7 @@ using DCL;
 using DCL.Social.Friends;
 using DCL.Wallet;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ using Environment = DCL.Environment;
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
     private readonly IPlacesAPIService placesAPIService;
+    private readonly IWorldsAPIService worldsAPIService;
+    private readonly IPlacesAnalytics placesAnalytics;
 
     // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
 
@@ -39,10 +42,11 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
-
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    internal BaseVariable<bool> isCameraReelInitialized => DataStore.i.HUDs.isCameraReelInitialized;
+    internal BaseVariable<bool> cameraReelSectionVisible => DataStore.i.HUDs.cameraReelSectionVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
@@ -65,11 +69,14 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform mapTooltipReference => view.currentMapTooltipReference;
     private RectTransform questTooltipReference => view.currentQuestTooltipReference;
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
+    private RectTransform cameraReelTooltipReference => view.cameraReelTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
-    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService)
+    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics)
     {
         this.placesAPIService = placesAPIService;
+        this.worldsAPIService = worldsAPIService;
+        this.placesAnalytics = placesAnalytics;
     }
 
     public void Initialize()
@@ -80,6 +87,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
+            { ExploreSection.CameraReel, (isCameraReelInitialized, cameraReelSectionVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
             { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
             { ExploreSection.MyAccount, (isMyAccountInitialized, myAccountVisible) },
@@ -122,6 +130,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
+        DataStore.i.exploreV2.cameraReelTooltipReference.Set(cameraReelTooltipReference);
 
         view.OnSectionOpen += OnSectionOpen;
 
@@ -146,6 +155,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.CameraReel, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.MyAccount, DataStore.i.exploreV2.configureMyAccountSectionInFullscreenMenu);
 
@@ -227,7 +237,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(
             view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge(),
-            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService);
+            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService, worldsAPIService, placesAnalytics);
 
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
@@ -284,7 +294,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         {
             // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
             if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
-                view.SetSectionAsNew(ExploreSection.Backpack, true);
+                view.SetSectionAsNew(ExploreSection.Backpack, false);
 
             view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
 
@@ -341,8 +351,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
-        if(currentOpenSection == ExploreSection.Quest)
+        if (currentOpenSection == ExploreSection.Quest)
             view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+        if (currentOpenSection == ExploreSection.CameraReel)
+            DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
         ChangeVisibilityVarForSwitchedSections();
 

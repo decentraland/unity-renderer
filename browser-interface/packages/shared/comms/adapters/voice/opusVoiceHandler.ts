@@ -38,6 +38,7 @@ export const createOpusVoiceHandler = (): VoiceHandler => {
       } else {
         voiceCommunicator.pause()
       }
+      return Promise.resolve()
     },
     onUserTalking(cb) {
       voiceCommunicator.addStreamPlayingListener((streamId: string, playing: boolean) => {

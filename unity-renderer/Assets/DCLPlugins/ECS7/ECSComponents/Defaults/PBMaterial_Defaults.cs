@@ -83,14 +83,6 @@ namespace DCL.ECSComponents
             return 0.5f;
         }
 
-        public static float GetGlossiness(this PBMaterial self)
-        {
-            if (self.Pbr != null)
-                return self.Pbr.HasGlossiness ? self.Pbr.Glossiness : 1f;
-
-            return 1f;
-        }
-
         public static float GetSpecularIntensity(this PBMaterial self)
         {
             if (self.Pbr != null)

@@ -6,7 +6,6 @@ numberOfReviewers: 1
 useReviewGroups: true
 reviewGroups:
   techleads:
-    - AjimenezDCL
     - Kinerius
     - mikhail-dcl
   devs:    
@@ -18,6 +17,7 @@ reviewGroups:
   qa:
     - kwssbocian
     - kwsskulinski
+    - anicalbano
 
 filterLabels:
   exclude:

@@ -38,7 +38,7 @@ namespace DCL.Map
             task.TrySetResult(payload.scenesInfo);
         }
 
-        public UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate, int areaSize, CancellationToken cancellationToken)
+        public virtual UniTask<MinimapMetadata.MinimapSceneInfo[]> GetScenesInformationAroundParcel(Vector2Int coordinate, int areaSize, CancellationToken cancellationToken)
         {
             if (pendingTasks.TryGetValue(GET_SCENES_INFO_ID, out var pendingTask))
                 return ((UniTaskCompletionSource<MinimapMetadata.MinimapSceneInfo[]>) pendingTask)

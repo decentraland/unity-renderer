@@ -27,28 +27,29 @@ namespace Decentraland.Renderer.RendererServices {
             "CkBkZWNlbnRyYWxhbmQvcmVuZGVyZXIvcmVuZGVyZXJfc2VydmljZXMvcmVz",
             "dHJpY3RlZF9hY3Rpb25zLnByb3RvEidkZWNlbnRyYWxhbmQucmVuZGVyZXIu",
             "cmVuZGVyZXJfc2VydmljZXMaIWRlY2VudHJhbGFuZC9jb21tb24vdmVjdG9y",
-            "cy5wcm90byJMChFUZWxlcG9ydFRvUmVxdWVzdBI3ChF3b3JsZF9jb29yZGlu",
-            "YXRlcxgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMiI7ChZP",
-            "cGVuRXh0ZXJuYWxVcmxSZXF1ZXN0EgsKA3VybBgBIAEoCRIUCgxzY2VuZV9u",
-            "dW1iZXIYAiABKAUiIwoUT3Blbk5mdERpYWxvZ1JlcXVlc3QSCwoDdXJuGAEg",
-            "ASgJIiQKEU9wZW5Nb2RhbFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiFAoS",
-            "VGVsZXBvcnRUb1Jlc3BvbnNlMsYDChhSZXN0cmljdGVkQWN0aW9uc1NlcnZp",
-            "Y2UShwEKClRlbGVwb3J0VG8SOi5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVu",
-            "ZGVyZXJfc2VydmljZXMuVGVsZXBvcnRUb1JlcXVlc3QaOy5kZWNlbnRyYWxh",
-            "bmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuVGVsZXBvcnRUb1Jlc3Bv",
-            "bnNlIgASkAEKD09wZW5FeHRlcm5hbFVybBI/LmRlY2VudHJhbGFuZC5yZW5k",
-            "ZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5PcGVuRXh0ZXJuYWxVcmxSZXF1ZXN0",
-            "GjouZGVjZW50cmFsYW5kLnJlbmRlcmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9w",
-            "ZW5Nb2RhbFJlc3BvbnNlIgASjAEKDU9wZW5OZnREaWFsb2cSPS5kZWNlbnRy",
-            "YWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuT3Blbk5mdERpYWxv",
-            "Z1JlcXVlc3QaOi5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2Vy",
-            "dmljZXMuT3Blbk1vZGFsUmVzcG9uc2UiAGIGcHJvdG8z"));
+            "cy5wcm90byJiChFUZWxlcG9ydFRvUmVxdWVzdBI3ChF3b3JsZF9jb29yZGlu",
+            "YXRlcxgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMhIUCgxz",
+            "Y2VuZV9udW1iZXIYAiABKAUiOwoWT3BlbkV4dGVybmFsVXJsUmVxdWVzdBIL",
+            "CgN1cmwYASABKAkSFAoMc2NlbmVfbnVtYmVyGAIgASgFIjkKFE9wZW5OZnRE",
+            "aWFsb2dSZXF1ZXN0EgsKA3VybhgBIAEoCRIUCgxzY2VuZV9udW1iZXIYAiAB",
+            "KAUiJAoRT3Blbk1vZGFsUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIUChJU",
+            "ZWxlcG9ydFRvUmVzcG9uc2UyxgMKGFJlc3RyaWN0ZWRBY3Rpb25zU2Vydmlj",
+            "ZRKHAQoKVGVsZXBvcnRUbxI6LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5k",
+            "ZXJlcl9zZXJ2aWNlcy5UZWxlcG9ydFRvUmVxdWVzdBo7LmRlY2VudHJhbGFu",
+            "ZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5UZWxlcG9ydFRvUmVzcG9u",
+            "c2UiABKQAQoPT3BlbkV4dGVybmFsVXJsEj8uZGVjZW50cmFsYW5kLnJlbmRl",
+            "cmVyLnJlbmRlcmVyX3NlcnZpY2VzLk9wZW5FeHRlcm5hbFVybFJlcXVlc3Qa",
+            "Oi5kZWNlbnRyYWxhbmQucmVuZGVyZXIucmVuZGVyZXJfc2VydmljZXMuT3Bl",
+            "bk1vZGFsUmVzcG9uc2UiABKMAQoNT3Blbk5mdERpYWxvZxI9LmRlY2VudHJh",
+            "bGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2aWNlcy5PcGVuTmZ0RGlhbG9n",
+            "UmVxdWVzdBo6LmRlY2VudHJhbGFuZC5yZW5kZXJlci5yZW5kZXJlcl9zZXJ2",
+            "aWNlcy5PcGVuTW9kYWxSZXNwb25zZSIAYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TeleportToRequest), global::Decentraland.Renderer.RendererServices.TeleportToRequest.Parser, new[]{ "WorldCoordinates" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TeleportToRequest), global::Decentraland.Renderer.RendererServices.TeleportToRequest.Parser, new[]{ "WorldCoordinates", "SceneNumber" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest), global::Decentraland.Renderer.RendererServices.OpenExternalUrlRequest.Parser, new[]{ "Url", "SceneNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest), global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest.Parser, new[]{ "Urn" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest), global::Decentraland.Renderer.RendererServices.OpenNftDialogRequest.Parser, new[]{ "Urn", "SceneNumber" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.OpenModalResponse), global::Decentraland.Renderer.RendererServices.OpenModalResponse.Parser, new[]{ "Success" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Renderer.RendererServices.TeleportToResponse), global::Decentraland.Renderer.RendererServices.TeleportToResponse.Parser, null, null, null, null, null)
           }));
@@ -92,6 +93,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public TeleportToRequest(TeleportToRequest other) : this() {
       worldCoordinates_ = other.worldCoordinates_ != null ? other.worldCoordinates_.Clone() : null;
+      sceneNumber_ = other.sceneNumber_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -113,6 +115,18 @@ namespace Decentraland.Renderer.RendererServices {
       }
     }
 
+    /// <summary>Field number for the "scene_number" field.</summary>
+    public const int SceneNumberFieldNumber = 2;
+    private int sceneNumber_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int SceneNumber {
+      get { return sceneNumber_; }
+      set {
+        sceneNumber_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -129,6 +143,7 @@ namespace Decentraland.Renderer.RendererServices {
         return true;
       }
       if (!object.Equals(WorldCoordinates, other.WorldCoordinates)) return false;
+      if (SceneNumber != other.SceneNumber) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -137,6 +152,7 @@ namespace Decentraland.Renderer.RendererServices {
     public override int GetHashCode() {
       int hash = 1;
       if (worldCoordinates_ != null) hash ^= WorldCoordinates.GetHashCode();
+      if (SceneNumber != 0) hash ^= SceneNumber.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -159,6 +175,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(10);
         output.WriteMessage(WorldCoordinates);
       }
+      if (SceneNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(SceneNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -173,6 +193,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(10);
         output.WriteMessage(WorldCoordinates);
       }
+      if (SceneNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(SceneNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -185,6 +209,9 @@ namespace Decentraland.Renderer.RendererServices {
       int size = 0;
       if (worldCoordinates_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(WorldCoordinates);
+      }
+      if (SceneNumber != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(SceneNumber);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -203,6 +230,9 @@ namespace Decentraland.Renderer.RendererServices {
           WorldCoordinates = new global::Decentraland.Common.Vector2();
         }
         WorldCoordinates.MergeFrom(other.WorldCoordinates);
+      }
+      if (other.SceneNumber != 0) {
+        SceneNumber = other.SceneNumber;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -226,6 +256,10 @@ namespace Decentraland.Renderer.RendererServices {
             input.ReadMessage(WorldCoordinates);
             break;
           }
+          case 16: {
+            SceneNumber = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -246,6 +280,10 @@ namespace Decentraland.Renderer.RendererServices {
               WorldCoordinates = new global::Decentraland.Common.Vector2();
             }
             input.ReadMessage(WorldCoordinates);
+            break;
+          }
+          case 16: {
+            SceneNumber = input.ReadInt32();
             break;
           }
         }
@@ -516,6 +554,7 @@ namespace Decentraland.Renderer.RendererServices {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public OpenNftDialogRequest(OpenNftDialogRequest other) : this() {
       urn_ = other.urn_;
+      sceneNumber_ = other.sceneNumber_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -537,6 +576,18 @@ namespace Decentraland.Renderer.RendererServices {
       }
     }
 
+    /// <summary>Field number for the "scene_number" field.</summary>
+    public const int SceneNumberFieldNumber = 2;
+    private int sceneNumber_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int SceneNumber {
+      get { return sceneNumber_; }
+      set {
+        sceneNumber_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -553,6 +604,7 @@ namespace Decentraland.Renderer.RendererServices {
         return true;
       }
       if (Urn != other.Urn) return false;
+      if (SceneNumber != other.SceneNumber) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -561,6 +613,7 @@ namespace Decentraland.Renderer.RendererServices {
     public override int GetHashCode() {
       int hash = 1;
       if (Urn.Length != 0) hash ^= Urn.GetHashCode();
+      if (SceneNumber != 0) hash ^= SceneNumber.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -583,6 +636,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(10);
         output.WriteString(Urn);
       }
+      if (SceneNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(SceneNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -597,6 +654,10 @@ namespace Decentraland.Renderer.RendererServices {
         output.WriteRawTag(10);
         output.WriteString(Urn);
       }
+      if (SceneNumber != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(SceneNumber);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -609,6 +670,9 @@ namespace Decentraland.Renderer.RendererServices {
       int size = 0;
       if (Urn.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Urn);
+      }
+      if (SceneNumber != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(SceneNumber);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -624,6 +688,9 @@ namespace Decentraland.Renderer.RendererServices {
       }
       if (other.Urn.Length != 0) {
         Urn = other.Urn;
+      }
+      if (other.SceneNumber != 0) {
+        SceneNumber = other.SceneNumber;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -644,6 +711,10 @@ namespace Decentraland.Renderer.RendererServices {
             Urn = input.ReadString();
             break;
           }
+          case 16: {
+            SceneNumber = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -661,6 +732,10 @@ namespace Decentraland.Renderer.RendererServices {
             break;
           case 10: {
             Urn = input.ReadString();
+            break;
+          }
+          case 16: {
+            SceneNumber = input.ReadInt32();
             break;
           }
         }

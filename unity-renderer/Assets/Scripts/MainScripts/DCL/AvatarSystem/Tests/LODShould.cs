@@ -1,8 +1,10 @@
 ﻿using AvatarSystem;
+using DCL.Helpers;
 using DCL.Shaders;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using LOD = AvatarSystem.LOD;
 
 namespace Test.AvatarSystem
@@ -24,7 +26,7 @@ namespace Test.AvatarSystem
             lod = new LOD(impostorContainer, visibility, avatarMovementController);
         }
 
-        [Test]
+        [Test, RequiresPlayMode]
         public void EnsureImpostor()
         {
             Assert.Null(lod.impostorRenderer);
@@ -36,7 +38,7 @@ namespace Test.AvatarSystem
             Assert.NotNull(lod.impostorMeshFilter);
         }
 
-        [Test]
+        [Test, RequiresPlayMode]
         [TestCase(1, 0, 0)]
         [TestCase(0, 1, 0)]
         public void TintImpostor(float r, float g, float b)
@@ -49,7 +51,7 @@ namespace Test.AvatarSystem
             Assert.AreEqual(color, impostorColor);
         }
 
-        [Test]
+        [Test, RequiresPlayMode]
         public void MakeTheBillboardLookAt()
         {
             lod.EnsureImpostor();
@@ -62,10 +64,10 @@ namespace Test.AvatarSystem
 
             Assert.AreEqual(lod.impostorRenderer.transform.eulerAngles.y, 0);
 
-            Object.Destroy(lookAtTarget);
+            Utils.SafeDestroy(lookAtTarget);
         }
 
-        [Test]
+        [Test,RequiresPlayMode]
         [TestCase(0, true)]
         [TestCase(1, false)]
         [TestCase(2, false)]
@@ -73,10 +75,10 @@ namespace Test.AvatarSystem
         {
             lod.EnsureImpostor();
             var renderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<Renderer>();
-            
+
             // Default lit material has _SSAO_OFF as an invalid keyword
             renderer.sharedMaterial = Resources.Load<Material>("Avatar Material");
-            
+
             LOD.UpdateSSAO(renderer, lodIndex);
 
             for (var i = 0; i < renderer.sharedMaterials.Length; i++)
@@ -86,7 +88,7 @@ namespace Test.AvatarSystem
                 Assert.AreEqual(enabled, isSSAOEnabled);
             }
 
-            Object.Destroy(renderer.gameObject);
+            Utils.SafeDestroy(renderer.gameObject);
         }
 
         [Test]
@@ -100,7 +102,7 @@ namespace Test.AvatarSystem
             avatarMovementController.Received().SetMovementLerpWait(expected);
         }
 
-        [Test]
+        [Test, RequiresPlayMode]
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
@@ -118,11 +120,11 @@ namespace Test.AvatarSystem
             float impostorAlpha = impostorMaterial.GetColor(ShaderUtils.BaseColor).a;
             Assert.AreEqual(1f - avatarAlpha, impostorAlpha);
 
-            Object.Destroy(renderer.gameObject);
+            Utils.SafeDestroy(renderer.gameObject);
         }
 
         [TearDown]
-        public void TearDown() { Object.Destroy(impostorContainer); }
+        public void TearDown() { Utils.SafeDestroy(impostorContainer); }
     }
 
 }

@@ -1,6 +1,7 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
 import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import { now } from 'lib/javascript/now'
+import { isURL } from 'lib/javascript/isURL'
 import { store } from 'shared/store/isolatedStore'
 
 /**
@@ -20,15 +21,20 @@ export const GIF_WORKERS = location.search.includes('GIF_WORKERS')
 
 const qs = new URLSearchParams(location.search)
 
-function ensureQueryStringUrl(value: string | null): string | null {
-  if (!value) return null
-  if (typeof value === 'string') return addHttpsIfNoProtocolIsSet(value)
-  return addHttpsIfNoProtocolIsSet(value[0])
+function ensureQueryStringUrl(value: string | readonly string[] | null): string | null {
+  let url = ensureSingleString(value)
+  if (!url) {
+    return null
+  }
+
+  url = addHttpsIfNoProtocolIsSet(url)
+  return isURL(url) ? url : null
 }
-function ensureSingleString(value: string | string[] | null): string | null {
+
+function ensureSingleString(value: string | readonly string[] | null): string | null {
   if (!value) return null
   if (typeof value === 'string') return value
-  return value[0]
+  return value[0] ?? null
 }
 
 // Comms
@@ -75,6 +81,20 @@ export const QS_MAX_VISIBLE_PEERS =
 export const BUILDER_SERVER_URL =
   ensureSingleString(qs.get('BUILDER_SERVER_URL')) ?? 'https://builder-api.decentraland.org/v1'
 
+const SSO_URL = ensureQueryStringUrl(qs.get('SSO_URL')) ?? 'https://id.decentraland.org'
+export function getSSOUrl() {
+  const sso = new URL(SSO_URL)
+  const ssoHost = sso.hostname.split('.').reverse()
+  const currentHost = location.hostname.split('.').reverse()
+
+  // ensures the same top level domain for the SSO
+  if (ssoHost[0] === currentHost[0] && ssoHost[1] === currentHost[1]) {
+    return SSO_URL
+  }
+
+  return null
+}
+
 /**
  * Get the root URL and ensure not to end with slash
  * @returns Root URL with pathname where the index.html is served.
@@ -110,7 +130,7 @@ export const commConfigurations = {
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 'mainnet',
-  GOERLI = 'goerli'
+  SEPOLIA = 'sepolia'
 }
 
 const knownTLDs = ['zone', 'org', 'today']
@@ -194,17 +214,17 @@ export namespace ethereumConfigurations {
     CatalystProxy: assertValue(contractInfo.mainnet.CatalystProxy),
     MANAToken: assertValue(contractInfo.mainnet.MANAToken)
   }
-  export const goerli = {
-    wss: 'wss://rpc.decentraland.org/goerli',
-    http: 'https://rpc.decentraland.org/goerli',
-    etherscan: 'https://goerli.etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-goerli',
+  export const sepolia = {
+    wss: 'wss://rpc.decentraland.org/sepolia',
+    http: 'https://rpc.decentraland.org/sepolia',
+    etherscan: 'https://sepolia.etherscan.io',
+    names: 'https://api.studio.thegraph.com/query/49472/marketplace-sepolia/version/latest',
 
     // contracts
-    LANDProxy: assertValue(contractInfo.goerli.LANDProxy),
-    EstateProxy: assertValue(contractInfo.goerli.EstateProxy),
-    CatalystProxy: assertValue(contractInfo.goerli.CatalystProxy || contractInfo.goerli.Catalyst),
-    MANAToken: assertValue(contractInfo.goerli.MANAToken)
+    LANDProxy: assertValue(contractInfo.sepolia.LANDProxy),
+    EstateProxy: assertValue(contractInfo.sepolia.EstateProxy),
+    CatalystProxy: assertValue(contractInfo.sepolia.Catalyst),
+    MANAToken: assertValue(contractInfo.sepolia.MANAToken)
   }
 }
 

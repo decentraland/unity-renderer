@@ -12,7 +12,7 @@ references:
       at: *working_directory
 
   .unity_linux_image: &unity_linux_image
-    - image: unityci/editor:ubuntu-2021.3.22f1-linux-il2cpp-1.0.1
+    - image: unityci/editor:ubuntu-2022.3.6f1-linux-il2cpp-2.0.0
       environment:
         DCL_OUTPUT_NAME: linux
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -23,7 +23,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_mac_image: &unity_mac_image
-    - image: unityci/editor:ubuntu-2021.3.22f1-mac-mono-1.0.1
+    - image: unityci/editor:ubuntu-2022.3.6f1-mac-mono-2.0.0
       environment:
         DCL_OUTPUT_NAME: mac
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -34,7 +34,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_windows_image: &unity_windows_image
-    - image: unityci/editor:ubuntu-2021.3.22f1-windows-mono-1.0.1
+    - image: unityci/editor:ubuntu-2022.3.6f1-windows-mono-2.0.0
       environment:
         DCL_OUTPUT_NAME: windows
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -45,7 +45,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_webgl_image: &unity_webgl_image
-    - image: unityci/editor:2021.3.22f1-webgl-1
+    - image: unityci/editor:2022.3.6f1-webgl-2.0.0
       environment:
         DCL_OUTPUT_NAME: webgl
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -114,15 +114,15 @@ commands:
           name: Save target to file
           command: |
             echo $DCL_OUTPUT_NAME > /tmp/target
-      - restore_cache:
+      - restore_cache: &RESTORE_BUILD_CACHE
           keys:
-            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
-            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
+            - build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-dev-2022.3.6f1
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}
-            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-dev
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-2022.3.6f1
+            - library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-dev-2022.3.6f1
       - run:
           name: Build Unity Project
           no_output_timeout: 45m
@@ -139,13 +139,13 @@ commands:
           command: cat ${PROJECT_PATH}/build-logs.txt
           when: always
 
-      - save_cache:
+      - save_cache: &SAVE_BUILD_CACHE
           name: Store build cache
-          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}
+          key: build-{{ checksum "/tmp/target" }}-{{ checksum "../.unitysources-checksum" }}-{{ .Branch }}-2022.3.6f1
           paths: *CACHED_PATHS
-      - save_cache:
+      - save_cache: &SAVE_LIBRARY_CACHE
           name: Store library
-          key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}
+          key: library-{{ checksum "/tmp/target" }}-{{ .Environment.LIBRARY_CACHE_VERSION }}-{{ .Branch }}-2022.3.6f1
           paths:
             - ./unity-renderer/Library
       - run:
@@ -276,16 +276,13 @@ jobs:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: playmode
     steps:
       - <<: *attach_root
-      - run: &HASH_UNITY_FILES
-          name: Get the hash of source files
-          command: ./scripts/hash-unity-files.sh
+      - run: *HASH_UNITY_FILES
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_BUILD_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare test image
@@ -302,7 +299,7 @@ jobs:
                 bash ci-playmode-test.sh
                 exit $?
             fi;
-          no_output_timeout: 30m
+          no_output_timeout: 40m
       - run:
           name: nunit-to-junit
           when: always
@@ -323,25 +320,22 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - save_cache:
-          name: Store test cache
-          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
-      - store_artifacts: &STORE_VISUAL_TESTS
+      - store_artifacts:
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests
+      - save_cache: *SAVE_BUILD_CACHE
+      - save_cache: *SAVE_LIBRARY_CACHE
   test-unity-editmode:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_windows_image
+    environment:
+      DCL_OUTPUT_NAME: editmode
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
       - run: *STORE_TARGET
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_BUILD_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Prepare image
@@ -374,10 +368,8 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/editmode-results.xml
-      - save_cache:
-          name: Store test cache
-          key: unity-editmode-v2-{{ checksum "../.unitysources-checksum" }}
-          paths: *CACHED_PATHS
+      - save_cache: *SAVE_BUILD_CACHE
+      - save_cache: *SAVE_LIBRARY_CACHE
   publish-desktop-artifacts:
     <<: *working_directory_root
     docker:

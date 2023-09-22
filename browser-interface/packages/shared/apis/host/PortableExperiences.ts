@@ -1,7 +1,9 @@
 import {
   spawnScenePortableExperienceSceneFromUrn,
   getPortableExperiencesLoaded,
-  getRunningPortableExperience
+  getRunningPortableExperience,
+  spawnPortableExperienceFromEns,
+  ensPxMapping
 } from 'unity-interface/portableExperiencesUtils'
 import { store } from 'shared/store/isolatedStore'
 import { removeScenePortableExperience } from 'shared/portableExperiences/actions'
@@ -11,17 +13,26 @@ import type { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 
 import { PortableExperiencesServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/portable_experiences.gen'
+import { isDclEns } from '../../realm/resolver'
 
 export function registerPortableExperiencesServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, PortableExperiencesServiceDefinition, async () => ({
     /**
      * Starts a portable experience.
-     * @param  {SpawnPortableExperienceParameters} [pid] - Information to identify the PE
-     *
      * Returns the handle of the portable experience.
      */
     async spawn(req, ctx) {
-      return await spawnScenePortableExperienceSceneFromUrn(req.pid, ctx.sceneData.id)
+      if (!req.pid && !req.ens) throw new Error('Invalid Spawn params. Provide a URN or an ENS name.')
+
+      // Load via URN.
+      if (req.pid) {
+        const px = await spawnScenePortableExperienceSceneFromUrn(req.pid, ctx.sceneData.id)
+        return px
+      }
+      // Load via Worlds ENS url
+      if (!isDclEns(req.ens)) throw new Error('Invalid ens name')
+      const px = await spawnPortableExperienceFromEns(req.ens, ctx.sceneData.id)
+      return { ...px, ens: req.ens }
     },
 
     /**
@@ -31,7 +42,6 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
      */
     async kill(req, ctx) {
       const portableExperience = getRunningPortableExperience(req.pid)
-
       if (!!portableExperience && portableExperience.loadableScene.parentCid === ctx.sceneData.id) {
         store.dispatch(removeScenePortableExperience(req.pid))
         return { status: true }
@@ -56,7 +66,12 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
     async getPortableExperiencesLoaded() {
       const loaded = getPortableExperiencesLoaded()
       return {
-        loaded: Array.from(loaded).map(($) => ({ pid: $.loadableScene.id, parentCid: $.loadableScene.parentCid || '' }))
+        loaded: Array.from(loaded).map(($) => ({
+          pid: $.loadableScene.id,
+          parentCid: $.loadableScene.parentCid || '',
+          ens: ensPxMapping.get($.loadableScene.id) ?? '',
+          name: $.metadata.display?.title ?? ''
+        }))
       }
     }
   }))

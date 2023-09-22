@@ -4,6 +4,7 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +19,7 @@ namespace DCL.Backpack
         public event Action OnContinueSignup;
         public event Action OnAvatarUpdated;
         public event Action OnOutfitsOpened;
+        public event Action OnVRMExport;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -40,7 +42,10 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject outfitSection;
         [SerializeField] internal Button outfitButton;
         [SerializeField] internal Image outfitButtonIcon;
+        [SerializeField] internal Button vrmExportButton;
+        [SerializeField] internal RectTransform vrmExportedToast;
 
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
@@ -70,16 +75,21 @@ namespace DCL.Backpack
             IPreviewCameraZoomController avatarPreviewZoomController)
         {
             ConfigureSectionSelector();
+
             backpackPreviewPanel.Initialize(
                 characterPreviewFactory,
                 avatarPreviewRotationController,
                 avatarPreviewPanningController,
                 avatarPreviewZoomController);
+
             colorPickerComponentView.OnColorChanged += OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle += ColorPickerToggle;
 
             outfitButton.onClick.RemoveAllListeners();
             outfitButton.onClick.AddListener(ToggleOutfitSection);
+
+            vrmExportButton.onClick.RemoveAllListeners();
+            vrmExportButton.onClick.AddListener(() => OnVRMExport?.Invoke());
 
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
         }
@@ -90,9 +100,7 @@ namespace DCL.Backpack
         private void ToggleOutfitSection()
         {
             if (outfitSection.activeInHierarchy)
-            {
                 ToggleNormalSection();
-            }
             else
             {
                 normalSection.SetActive(false);
@@ -205,6 +213,7 @@ namespace DCL.Backpack
             {
                 ResetPreviewPanel();
                 await UniTask.Delay(MS_TO_RESET_PREVIEW_ANIMATION, cancellationToken: ct);
+
                 backpackPreviewPanel.TakeSnapshots(
                     (face256, body) => onSuccess?.Invoke(face256, body),
                     () => onFailed?.Invoke());
@@ -238,6 +247,21 @@ namespace DCL.Backpack
         public void HideContinueSignup() =>
             saveAvatarButton.gameObject.SetActive(false);
 
+        public void SetVRMButtonActive(bool enabled)
+        {
+            vrmExportButton.gameObject.SetActive(enabled);
+        }
+
+        public void SetVRMButtonEnabled(bool enabled)
+        {
+            vrmExportButton.enabled = enabled;
+        }
+
+        public void SetVRMSuccessToastActive(bool active)
+        {
+            vrmExportedToast.gameObject.SetActive(active);
+        }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.pointerPressRaycast.gameObject != colorPickerComponentView.gameObject)
@@ -246,20 +270,23 @@ namespace DCL.Backpack
 
         private void ConfigureSectionSelector()
         {
-            sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.AddListener((isSelected) =>
-            {
-                wearablesSection.SetActive(isSelected);
+            sectionSelector.GetSection(AVATAR_SECTION_INDEX)
+                           .onSelect.AddListener((isSelected) =>
+                            {
+                                wearablesSection.SetActive(isSelected);
 
-                if (isSelected)
-                    ResetPreviewPanel();
-            });
-            sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.AddListener((isSelected) =>
-            {
-                emotesSection.SetActive(isSelected);
+                                if (isSelected)
+                                    ResetPreviewPanel();
+                            });
 
-                if (isSelected)
-                    ResetPreviewPanel();
-            });
+            sectionSelector.GetSection(EMOTES_SECTION_INDEX)
+                           .onSelect.AddListener((isSelected) =>
+                            {
+                                emotesSection.SetActive(isSelected);
+
+                                if (isSelected)
+                                    ResetPreviewPanel();
+                            });
         }
 
         public void ResetPreviewPanel()
@@ -273,9 +300,14 @@ namespace DCL.Backpack
         {
             async UniTaskVoid UpdateAvatarAsync(CancellationToken ct)
             {
-                await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
-                backpackPreviewPanel.SetLoadingActive(false);
-                OnAvatarUpdated?.Invoke();
+                try
+                {
+                    await backpackPreviewPanel.TryUpdatePreviewModelAsync(avatarModelToUpdate, ct);
+                    backpackPreviewPanel.SetLoadingActive(false);
+                    OnAvatarUpdated?.Invoke();
+                }
+                catch (OperationCanceledException) { Debug.LogWarning("Update avatar preview cancelled"); }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             if (!isAvatarDirty)

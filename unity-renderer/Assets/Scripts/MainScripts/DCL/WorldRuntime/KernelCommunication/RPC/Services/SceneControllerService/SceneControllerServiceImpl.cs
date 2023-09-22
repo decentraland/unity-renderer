@@ -107,13 +107,14 @@ namespace RPC.Services
                     contents = parsedContent,
                     id = request.Entity.Id,
                     sdk7 = request.Sdk7,
-                    name = request.SceneName,
+                    name = parsedMetadata.display?.title ?? request.SceneName,
                     baseUrl = request.BaseUrl,
                     sceneNumber = sceneNumber,
                     isPortableExperience = request.IsPortableExperience,
                     requiredPermissions = parsedMetadata.requiredPermissions,
                     allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
-                    icon = string.Empty // TODO: add icon url!
+                    icon = parsedMetadata.display?.navmapThumbnail,
+                    description = parsedMetadata.display?.description,
                 };
 
                 try
@@ -138,7 +139,8 @@ namespace RPC.Services
                     parcels = parsedParcels,
                     contents = parsedContent,
                     requiredPermissions = parsedMetadata.requiredPermissions,
-                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames
+                    allowedMediaHostnames = parsedMetadata.allowedMediaHostnames,
+                    scenePortableExperienceFeatureToggles = ToScenePortableExperienceFeatureToggle(parsedMetadata.featureToggles?.portableExperiences),
                 };
 
                 try
@@ -376,6 +378,18 @@ namespace RPC.Services
                 if (clearMessages)
                     msgs.Clear();
             }
+        }
+
+        private ScenePortableExperienceFeatureToggles ToScenePortableExperienceFeatureToggle(string str)
+        {
+            if (string.Compare(str, "enabled", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.Enable;
+            if (string.Compare(str, "disabled", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.Disable;
+            if (string.Compare(str, "hideui", StringComparison.OrdinalIgnoreCase) == 0)
+                return ScenePortableExperienceFeatureToggles.HideUi;
+
+            return ScenePortableExperienceFeatureToggles.Enable;
         }
     }
 }

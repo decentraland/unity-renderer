@@ -6,25 +6,59 @@ import { store } from 'shared/store/isolatedStore'
 import { addScenePortableExperience, removeScenePortableExperience } from 'shared/portableExperiences/actions'
 import { defaultPortableExperiencePermissions } from 'shared/apis/host/Permissions'
 import { SceneWorker } from 'shared/world/SceneWorker'
+import { dclWorldUrl } from '../shared/realm/resolver'
+import { IRealmAdapter } from '../shared/realm/types'
+import { removeQueryParamsFromUrn } from '../shared/portableExperiences/selectors'
+import defaultLogger from '../lib/logger'
 
 export type PortableExperienceHandle = {
   pid: string
   parentCid: string
+  name: string
 }
 
-const currentPortableExperiences: Map<string, SceneWorker> = new Map()
+type PxPid = string
+type Ens = string
+const currentPortableExperiences: Map<PxPid, SceneWorker> = new Map()
+export const ensPxMapping: Map<PxPid, Ens> = new Map()
+
+export async function spawnPortableExperienceFromEns(ens: Ens, parentCid: string) {
+  try {
+    const worldUrl = dclWorldUrl(ens)
+    const worldAbout: IRealmAdapter['about'] = await (await fetch(worldUrl + '/about')).json()
+    const sceneUrn = worldAbout.configurations?.scenesUrn && worldAbout.configurations?.scenesUrn[0]
+
+    if (worldAbout.healthy && sceneUrn) {
+      const data = await spawnScenePortableExperienceSceneFromUrn(sceneUrn, parentCid)
+      ensPxMapping.set(data.pid, ens)
+      return data
+    } else {
+      throw new Error('Scene not available')
+    }
+  } catch (e) {
+    defaultLogger.error('Error fetching scene', e)
+    throw new Error('Error fetching scene')
+  }
+}
 
 export async function spawnScenePortableExperienceSceneFromUrn(
   sceneUrn: string,
   parentCid: string
 ): Promise<PortableExperienceHandle> {
-  const data = await getPortableExperienceFromUrn(sceneUrn)
+  const px = await getPortableExperienceFromUrn(sceneUrn)
+
+  const data = {
+    ...px,
+    id: removeQueryParamsFromUrn(px.id),
+    parentCid
+  }
 
   store.dispatch(addScenePortableExperience(data))
 
   return {
     parentCid,
-    pid: data.id
+    pid: data.id,
+    name: px.entity.metadata.display?.title ?? ''
   }
 }
 
@@ -54,7 +88,7 @@ export async function getPortableExperienceFromUrn(sceneUrn: string): Promise<Lo
   const baseUrl: string = resolvedEntity.baseUrl || new URL('.', resolvedUrl).toString()
 
   return {
-    id: sceneUrn,
+    id: removeQueryParamsFromUrn(sceneUrn),
     entity,
     baseUrl,
     parentCid: 'main'
@@ -73,7 +107,6 @@ export async function declareWantedPortableExperiences(pxs: LoadableScene[]) {
   const immutableListOfRunningPx = new Set(currentPortableExperiences.keys())
 
   const wantedIds = pxs.map(($) => $.id)
-
   // kill portable experiences that are outside our "desired" list
   for (const sceneUrn of immutableListOfRunningPx) {
     if (!wantedIds.includes(sceneUrn)) {
@@ -111,6 +144,5 @@ async function spawnPortableExperience(spawnData: LoadableScene): Promise<Portab
   defaultPortableExperiencePermissions.forEach(($) => scene.rpcContext.permissionGranted.add($))
 
   currentPortableExperiences.set(sceneId, scene)
-
-  return { pid: sceneId, parentCid: spawnData.parentCid || '' }
+  return { pid: sceneId, parentCid: spawnData.parentCid || '', name: scene.metadata.display?.title ?? '' }
 }

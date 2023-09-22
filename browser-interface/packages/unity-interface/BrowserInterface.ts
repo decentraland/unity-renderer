@@ -2,7 +2,14 @@ import { EcsMathReadOnlyQuaternion, EcsMathReadOnlyVector3 } from '@dcl/ecs-math
 
 import { Authenticator } from '@dcl/crypto'
 import { Avatar, generateLazyValidator, JSONSchema, Outfits, WearableCategory } from '@dcl/schemas'
-import { DEBUG, ethereumConfigurations, playerHeight, WORLD_EXPLORER } from 'config'
+import {
+  DEBUG,
+  ethereumConfigurations,
+  playerHeight,
+  WORLD_EXPLORER,
+  WITH_FIXED_COLLECTIONS,
+  WITH_FIXED_ITEMS
+} from 'config'
 import { isAddress } from 'eth-connect'
 import future, { IFuture } from 'fp-future'
 import { getSignedHeaders } from 'lib/decentraland/authentication/signedFetch'
@@ -89,7 +96,6 @@ import {
 import {
   joinVoiceChat,
   leaveVoiceChat,
-  requestToggleVoiceChatRecording,
   requestVoiceChatRecording,
   setAudioDevice,
   setVoiceChatPolicy,
@@ -637,6 +643,16 @@ export class BrowserInterface {
     store.dispatch(saveProfileDelta(changes))
   }
 
+  public GetWithCollectionsUrlParam() {
+    const collectionIds: string[] = WITH_FIXED_COLLECTIONS.split(',')
+    getUnityInstance().SetWithCollectionsParam(collectionIds)
+  }
+
+  public GetWithItemsUrlParam() {
+    const itemIds: string[] = WITH_FIXED_ITEMS.split(',')
+    getUnityInstance().SetWithItemsParam(itemIds)
+  }
+
   public GetFriends(getFriendsRequest: GetFriendsPayload) {
     getFriends(getFriendsRequest).catch(defaultLogger.error)
   }
@@ -744,8 +760,8 @@ export class BrowserInterface {
     store.dispatch(setWorldLoadingRadius(Math.max(Math.round(data.newRadius), 1)))
   }
 
-  public GetUnseenMessagesByUser() {
-    getUnseenMessagesByUser()
+  public async GetUnseenMessagesByUser() {
+    await getUnseenMessagesByUser()
   }
 
   public SetHomeScene(data: { sceneId: string; sceneCoords: string }) {
@@ -845,10 +861,6 @@ export class BrowserInterface {
 
   public LeaveVoiceChat() {
     store.dispatch(leaveVoiceChat())
-  }
-
-  public ToggleVoiceChatRecording() {
-    store.dispatch(requestToggleVoiceChatRecording())
   }
 
   public ApplySettings(settingsMessage: { voiceChatVolume: number; voiceChatAllowCategory: number }) {
@@ -1040,7 +1052,7 @@ export class BrowserInterface {
         const successMessage = `Welcome to realm ${serverName}!`
         notifyStatusThroughChat(successMessage)
         getUnityInstance().ConnectionToRealmSuccess(data)
-        TeleportController.goTo(x, y, successMessage).then(
+        TeleportController.goTo(x, y, false, successMessage).then(
           () => {},
           () => {}
         )

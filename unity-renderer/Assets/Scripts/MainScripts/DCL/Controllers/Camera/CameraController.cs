@@ -4,10 +4,8 @@ using System.Linq;
 using Cinemachine;
 using DCL.Helpers;
 using DCL.Interface;
-using DCL;
 using DCL.CameraTool;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 namespace DCL.Camera
 {
@@ -57,8 +55,9 @@ namespace DCL.Camera
 
         public CameraStateBase currentCameraState => cachedModeToVirtualCamera[CommonScriptableObjects.cameraMode];
 
-        [HideInInspector]
-        public Action<CameraMode.ModeId> onSetCameraMode;
+        public event Action<CameraMode.ModeId> OnSetCameraMode;
+
+        public bool CameraIsBlending => cameraBrain.IsBlending;
 
         private void Awake()
         {
@@ -179,7 +178,7 @@ namespace DCL.Camera
 
             WebInterface.ReportCameraChanged(current);
 
-            onSetCameraMode?.Invoke(current);
+            OnSetCameraMode?.Invoke(current);
         }
 
         public CameraStateBase GetCameraMode(CameraMode.ModeId mode) { return cameraModes.FirstOrDefault(x => x.cameraModeId == mode); }
@@ -188,6 +187,8 @@ namespace DCL.Camera
 
         private void Update()
         {
+            if (!camera.enabled) return;
+
             cameraForward.Set(cameraTransform.forward);
             cameraRight.Set(cameraTransform.right);
             DataStore.i.camera.rotation.Set(cameraTransform.rotation);
@@ -229,11 +230,12 @@ namespace DCL.Camera
 
         public Vector3 GetPosition() { return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition; }
 
-        public UnityEngine.Camera GetCamera() { return camera; }
+        public virtual UnityEngine.Camera GetCamera() =>
+            camera;
 
         private void SetInvertYAxis(bool current, bool previous) { thirdPersonCamera.m_YAxis.m_InvertInput = !current; }
 
-        private void SetCameraEnabledState(bool enabled)
+        public virtual void SetCameraEnabledState(bool enabled)
         {
             camera.enabled = enabled;
         }

@@ -1,8 +1,9 @@
+using DCL.Social.Chat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelMemberEntry : BaseComponentView, IComponentModelConfig<ChannelMemberEntryModel>
     {
@@ -27,8 +28,8 @@ namespace DCL.Chat.HUD
 
             optionsButton.onClick.AddListener(() =>
             {
-                userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
+                userContextMenu.Show(model.userId);
             });
         }
 

@@ -21,6 +21,9 @@ namespace MainScripts.DCL.Controllers.HotScenes
         private readonly AsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> scenes =
             new (Array.Empty<IHotScenesController.HotSceneInfo>());
 
+        private readonly AsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotWorldInfo.WorldInfo>> worlds =
+            new (Array.Empty<IHotScenesController.HotWorldInfo.WorldInfo>());
+
         public HotScenesFetcher(float foregroundUpdateInterval, float backgroundUpdateInterval)
         {
             this.foregroundUpdateInterval = foregroundUpdateInterval;
@@ -28,6 +31,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
         }
 
         public IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> ScenesInfo => scenes;
+        public IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotWorldInfo.WorldInfo>> WorldsInfo => worlds;
 
         public void Dispose()
         {
@@ -43,6 +47,7 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
             cts = new CancellationTokenSource();
             scenes.AddTo(cts.Token);
+            worlds.AddTo(cts.Token);
 
             updateInterval = backgroundUpdateInterval;
 
@@ -51,7 +56,10 @@ namespace MainScripts.DCL.Controllers.HotScenes
 
         public void SetUpdateMode(IHotScenesFetcher.UpdateMode mode)
         {
-            updateInterval = mode == IHotScenesFetcher.UpdateMode.BACKGROUND ? backgroundUpdateInterval : foregroundUpdateInterval;
+            if (mode is IHotScenesFetcher.UpdateMode.IMMEDIATELY_ONCE)
+                updateInterval = 0;
+            else
+                updateInterval = mode == IHotScenesFetcher.UpdateMode.BACKGROUND ? backgroundUpdateInterval : foregroundUpdateInterval;
         }
 
         private async UniTaskVoid UpdateLoop(CancellationToken ct)
@@ -67,6 +75,11 @@ namespace MainScripts.DCL.Controllers.HotScenes
                         await UniTask.NextFrame(ct);
 
                     scenes.Value = await hotScenesController.Ref.GetHotScenesListAsync(ct);
+                    worlds.Value = await hotScenesController.Ref.GetHotWorldsListAsync(ct);
+
+                    // We set back `updateInterval` to BACKGROUND after IMMEDIATELY_ONCE
+                    if (updateInterval == 0)
+                        updateInterval = backgroundUpdateInterval;
                 }
             }
             catch (OperationCanceledException) { }

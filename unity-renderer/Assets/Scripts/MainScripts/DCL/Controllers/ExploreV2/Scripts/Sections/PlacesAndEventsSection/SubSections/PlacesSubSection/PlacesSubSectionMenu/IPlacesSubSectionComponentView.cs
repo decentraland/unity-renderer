@@ -10,6 +10,9 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// </summary>
     Color[] currentFriendColors { get; }
 
+    string filter { get; }
+    string sort { get; }
+
     /// <summary>
     /// Number of places per row that fit with the current places grid configuration.
     /// </summary>
@@ -30,6 +33,8 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// </summary>
     event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
 
+    event Action<string, bool?> OnVoteChanged;
+
     /// <summary>
     /// It will be triggered when the favorite button is clicked.
     /// </summary>
@@ -44,6 +49,8 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// It will be triggered each time the view is enabled.
     /// </summary>
     event Action OnPlacesSubSectionEnable;
+    event Action OnFilterChanged;
+    event Action OnSortingChanged;
 
     /// <summary>
     /// It will be triggered when the "Show More" button is clicked.
@@ -91,4 +98,6 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     void ConfigurePools();
 
     void SetShowMoreButtonActive(bool isActive);
+
+    void SetPOICoords(List<string> poiList);
 }

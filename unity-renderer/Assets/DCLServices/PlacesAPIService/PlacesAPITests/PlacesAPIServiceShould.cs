@@ -36,7 +36,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Arrange
             var wholeCatalog = placesCatalog.Values.ToList();
 
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), "", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -48,7 +48,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             var result = await service.GetMostActivePlaces(pageNumber, pageSize, default);
 
             // Assert
-            client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
+            client.Received().GetMostActivePlaces(pageNumber, pageSize, "", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
@@ -60,7 +60,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         public async Task AddPlacesToCacheWhenCallingGetMostActivePlaces()
         {
             // Arrange
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), "", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -114,13 +114,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
             }, DateTime.Now));
-            service.activePlacesPagePointers.Add(pageSize, pagePointer);
+            service.activePlacesPagePointers.Add(pageSize.ToString(), pagePointer);
 
             // Act
             var result = await service.GetMostActivePlaces(pageNumber, pageSize, default);
 
             // Assert
-            client.DidNotReceiveWithAnyArgs().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+            client.DidNotReceiveWithAnyArgs().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(),"", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
@@ -136,7 +136,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
         {
             // Arrange
             var wholeCatalog = placesCatalog.Values.ToList();
-            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            client.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(),"", "", Arg.Any<CancellationToken>())
                   .Returns((x) => new UniTask<IHotScenesController.PlacesAPIResponse>(new IHotScenesController.PlacesAPIResponse
                    {
                        ok = true,
@@ -153,13 +153,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
                 totalAmount = pageSize,
                 data = wholeCatalog.Skip(pageSize * pageNumber).Take(pageSize).ToList(),
             }, DateTime.Now));
-            service.activePlacesPagePointers.Add(pageSize, pagePointer);
+            service.activePlacesPagePointers.Add(pageSize.ToString(), pagePointer);
 
             // Act
-            var result = await service.GetMostActivePlaces(pageNumber, pageSize, default, true);
+            var result = await service.GetMostActivePlaces(pageNumber, pageSize, "", "", default, true);
 
             // Assert
-            client.Received().GetMostActivePlaces(pageNumber, pageSize, Arg.Any<CancellationToken>());
+            client.Received().GetMostActivePlaces(pageNumber, pageSize, "", "", Arg.Any<CancellationToken>());
             Assert.AreEqual(pageSize, result.places.Count);
             for (int i = 0; i < pageSize; i++)
             {
@@ -266,10 +266,10 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Arrange
             var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
             var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
-            client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
+            client.GetFavorites(0, 10,Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
 
             // Act
-            var result = await service.GetFavorites(default);
+            var result = await service.GetFavorites(0,10,default);
 
             // Assert
             Assert.AreEqual(place0, result[0]);
@@ -294,7 +294,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             service.serverFavoritesCompletionSource.TrySetResult(new List<IHotScenesController.PlaceInfo>(){place0, place1});
 
             // Act
-            var result = await service.GetFavorites(default);
+            var result = await service.GetFavorites(0,10,default);
 
             // Assert
             Assert.AreEqual(place0, result[0]);
@@ -319,13 +319,13 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             service.serverFavoritesCompletionSource.TrySetResult(new List<IHotScenesController.PlaceInfo>(){place0, place1});
             var newPlace0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, description = "newTest0"};
             var newPlace1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, description = "newTest1"};
-            client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { newPlace0, newPlace1 }));
+            client.GetFavorites(0,10,Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { newPlace0, newPlace1 }));
 
             // Act
-            var result = await service.GetFavorites(default, true);
+            var result = await service.GetFavorites(0,10,default, true);
 
             // Assert
-            client.Received().GetFavorites(Arg.Any<CancellationToken>());
+            client.Received().GetFavorites(0,10,Arg.Any<CancellationToken>());
             Assert.AreEqual(newPlace0, result[0]);
             Assert.AreEqual(newPlace0, service.placesById[newPlace0.id]);
             Assert.AreEqual(newPlace0, service.placesByCoords[newPlace0.Positions[0]]);
@@ -344,10 +344,10 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             // Arrange
             var place0 = new IHotScenesController.PlaceInfo() { id = "test0", Positions = new[] { new Vector2Int(0, 0), new Vector2Int(0, 1) }, };
             var place1 = new IHotScenesController.PlaceInfo() { id = "test1", Positions = new[] { new Vector2Int(1, 0), new Vector2Int(1, 1) }, };
-            client.GetFavorites(Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
+            client.GetFavorites(0,10,Arg.Any<CancellationToken>()).Returns(x => new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>() { place0, place1 }));
 
             // Act
-            (IReadOnlyList<IHotScenesController.PlaceInfo> firstCall, IReadOnlyList<IHotScenesController.PlaceInfo> secondCall) = await UniTask.WhenAll(service.GetFavorites(default), service.GetFavorites(default));
+            (IReadOnlyList<IHotScenesController.PlaceInfo> firstCall, IReadOnlyList<IHotScenesController.PlaceInfo> secondCall) = await UniTask.WhenAll(service.GetFavorites(0,10,default), service.GetFavorites(0,10,default));
 
             // Assert
             Assert.AreEqual(place0,  firstCall[0]);
@@ -376,7 +376,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             service.composedFavoritesDirty = true;
 
             // Act
-            var places = await service.GetFavorites(default);
+            var places = await service.GetFavorites(0,10,default);
 
             // Assert
             Assert.AreEqual(2, places.Count);
@@ -396,7 +396,7 @@ namespace DCLServices.PlacesAPIService.PlacesAPITests
             service.composedFavorites.Add(new IHotScenesController.PlaceInfo{title = "checkMe"});
 
             // Act
-            var places = await service.GetFavorites(default);
+            var places = await service.GetFavorites(0,10,default);
 
             // Assert
             Assert.AreEqual(1, places.Count);

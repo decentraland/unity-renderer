@@ -12,7 +12,7 @@ namespace DCL.Social.Passports
     {
         private const string URL_COLLECTIBLE_NAME = "https://market.decentraland.org/accounts/{userId}?section=ens";
         private const string URL_COLLECTIBLE_LAND = "https://market.decentraland.org/accounts/{userId}?section=land";
-        private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}?utm_source=dcl_explorer";
+        private const string URL_BUY_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/items/{blockchainId}?utm_source=dcl_explorer";
         private const string URL_COLLECTIBLE_GENERIC = "https://market.decentraland.org?utm_source=dcl_explorer";
         private const string NAME_TYPE = "name";
         private const string PARCEL_TYPE = "parcel";
@@ -140,7 +140,7 @@ namespace DCL.Social.Passports
 
             if (currentUserProfile == null)
             {
-                socialAnalytics.SendPassportClose(Time.realtimeSinceStartup - passportOpenStartTime);
+                socialAnalytics.SendPassportClose(previous.playerId, Time.realtimeSinceStartup - passportOpenStartTime);
                 SetPassportPanelVisibility(false);
             }
             else
@@ -148,7 +148,7 @@ namespace DCL.Social.Passports
                 SetPassportPanelVisibility(true);
                 passportOpenStartTime = Time.realtimeSinceStartup;
                 Enum.TryParse(current.source, out AvatarOpenSource source);
-                socialAnalytics.SendPassportOpen(source: source);
+                socialAnalytics.SendPassportOpen(current.playerId, source: source);
                 QueryNftCollectionsAsync(currentUserProfile.userId).Forget();
                 userProfileBridge.RequestFullUserProfile(currentUserProfile.userId);
                 currentUserProfile.OnUpdate += UpdateUserProfile;
@@ -220,7 +220,7 @@ namespace DCL.Social.Passports
 
         private void OpenNftMarketUrl(Nft nft)
         {
-            passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{tokenId}", nft.tokenId));
+            passportApiBridge.OpenURL(URL_BUY_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", nft.collectionId).Replace("{blockchainId}", nft.blockchainId));
             //TODO: integrate ItemType itemType once new lambdas are active
             socialAnalytics.SendNftBuy(PlayerActionSource.Passport);
         }

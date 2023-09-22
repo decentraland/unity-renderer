@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -48,6 +49,7 @@ namespace DCL.Backpack
         [SerializeField] internal float smoothTime = 0.2f;
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => characterPreviewController?.originalVisibleRenderers;
 
         private ICharacterPreviewController characterPreviewController;
         private IPreviewCameraRotationController avatarPreviewRotationController;

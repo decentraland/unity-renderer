@@ -3,7 +3,7 @@ import * as rfc4 from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 export type VoiceHandler = {
   // UI Methods
   // setTalking is called from the UI or keyboard to broadcast audio
-  setRecording(recording: boolean): void
+  setRecording(recording: boolean): Promise<void>
 
   // used to know if a user is talking or not, for the UI
   onUserTalking(cb: (userId: string, talking: boolean) => void): void

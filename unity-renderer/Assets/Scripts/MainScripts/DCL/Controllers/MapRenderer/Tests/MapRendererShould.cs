@@ -84,6 +84,7 @@ namespace Tests
         // }
 
         [Test]
+        [Explicit]
         public void DisplayParcelOfInterestIconsProperly()
         {
             var sceneInfo = new MinimapMetadata.MinimapSceneInfo();
@@ -117,6 +118,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void DisplayParcelOfInterestIconsProperly2()
         {
             var sceneInfo = new MinimapMetadata.MinimapSceneInfo();

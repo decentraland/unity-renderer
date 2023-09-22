@@ -12,10 +12,9 @@ namespace DCL.Social.Chat.Mentions
     {
         private const string MENTION_URL_PREFIX = "mention://";
 
-        public event Action OnOwnPlayerMentioned;
+        public event Action OnPlayerMentioned;
 
         [SerializeField] internal TMP_Text textComponent;
-        [SerializeField] internal UserProfile ownUserProfile;
 
         internal bool isMentionsFeatureEnabled = true;
         internal string currentText;
@@ -70,7 +69,7 @@ namespace DCL.Social.Chat.Mentions
 
         private string GetUserNameByPointerPosition(Vector2 pointerPosition)
         {
-            if (textComponent == null)
+            if (textComponent == null || textComponent.canvas == null)
                 return null;
 
             int linkIndex = TMP_TextUtilities.FindIntersectingLink(textComponent, pointerPosition, textComponent.canvas.worldCamera);
@@ -107,7 +106,7 @@ namespace DCL.Social.Chat.Mentions
 
             hasNoParseLabel = textInfo.textComponent.text.Contains("<noparse>", StringComparison.OrdinalIgnoreCase);
             RefreshMentionPatterns(cancellationToken.Token).Forget();
-            CheckOwnPlayerMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
+            CheckMentionAsync(textInfo.textComponent, cancellationToken.Token).Forget();
         }
 
         private async UniTask RefreshMentionPatterns(CancellationToken cancellationToken)
@@ -126,15 +125,12 @@ namespace DCL.Social.Chat.Mentions
             currentText = textComponent.text;
         }
 
-        private async UniTask CheckOwnPlayerMentionAsync(TMP_Text textComp, CancellationToken ct)
+        private async UniTask CheckMentionAsync(TMP_Text textComp, CancellationToken ct)
         {
-            if (ownUserProfile == null)
-                return;
-
             await UniTask.WaitForEndOfFrame(this, ct);
 
-            if (MentionsUtils.IsUserMentionedInText(ownUserProfile.userName, textComp.text))
-                OnOwnPlayerMentioned?.Invoke();
+            if (MentionsUtils.TextContainsMention(textComp.text))
+                OnPlayerMentioned?.Invoke();
         }
 
         private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous) =>

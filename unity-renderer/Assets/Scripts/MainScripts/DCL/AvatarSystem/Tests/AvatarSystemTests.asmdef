@@ -23,9 +23,13 @@
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
         "GUID:c8ea72e806cd2ab47b539b37895b86b7",
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-        "GUID:68069f49d86442cd9618861b4d74b1aa"
+        "GUID:68069f49d86442cd9618861b4d74b1aa",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:6e6a87f97192ec947993f360104e75b7"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

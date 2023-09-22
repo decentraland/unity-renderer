@@ -37,9 +37,11 @@ public class ECSSystemsController : IDisposable
     private readonly ECSUiCanvasInformationSystem uiCanvasInformationSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
+    private readonly IWorldState worldState;
 
     public ECSSystemsController(SystemsContext context)
     {
+        this.worldState = Environment.i.world.state;
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
@@ -60,7 +62,8 @@ public class ECSSystemsController : IDisposable
             DataStore.i.ecs7.scenes,
             Environment.i.world.state,
             CommonScriptableObjects.allUIHidden,
-            DataStore.i.HUDs.isSceneUIEnabled);
+            DataStore.i.HUDs.isCurrentSceneUiEnabled,
+            DataStore.i.HUDs.isSceneUiEnabled);
 
         ECSBillboardSystem billboardSystem = new ECSBillboardSystem(context.billboards, DataStore.i.camera);
 
@@ -115,8 +118,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.PointerEventsComponent,
             interactionHoverCanvas,
             Environment.i.world.state,
-            DataStore.i.ecs7,
-            DataStore.i.rpc.context.restrictedActions);
+            DataStore.i.ecs7);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.ComponentWriters,
@@ -133,6 +135,13 @@ public class ECSSystemsController : IDisposable
             context.UiCanvasInformationPool,
             DataStore.i.ecs7.scenes
         );
+
+        ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.EngineInfo,
+            context.ComponentWriters,
+            context.PointerEventsResultPool,
+            () => worldState.GetCurrentSceneNumber());
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -156,11 +165,7 @@ public class ECSSystemsController : IDisposable
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(
-                context.internalEcsComponents.inputEventResultsComponent,
-                context.internalEcsComponents.EngineInfo,
-                context.ComponentWriters,
-                context.PointerEventsResultPool),
+            inputSenderSystem.Update,
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,

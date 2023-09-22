@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 [Serializable]
 public class EventCardComponentModel : BaseComponentModel
@@ -21,6 +20,8 @@ public class EventCardComponentModel : BaseComponentModel
     public int subscribedUsers;
     public bool isSubscribed;
     public Vector2Int coords;
+    public int numberOfUsers;
+    public string worldAddress;
 
     [HideInInspector]
     public EventFromAPIModel eventFromAPIInfo;

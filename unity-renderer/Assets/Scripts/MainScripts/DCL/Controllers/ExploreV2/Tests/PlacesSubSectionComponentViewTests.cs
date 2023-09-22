@@ -60,7 +60,7 @@ public class PlacesSubSectionComponentViewTests
         for (int i = 0; i < spritesAmount; i++)
             Assert.IsTrue(placesSubSectionComponent.places.instantiatedItems.Any(x => (x as PlaceCardComponentView)?.model == testPlaces[i]), $"The place {i} is not contained in the places grid");
 
-        Assert.AreEqual(spritesAmount == 0, placesSubSectionComponent.placesNoDataText.gameObject.activeSelf, "The placesNoDataText should not be visible when there are places.");
+        Assert.AreEqual(spritesAmount == 0, placesSubSectionComponent.placesNoDataContainer.activeSelf, "The placesNoDataText should not be visible when there are places.");
     }
 
     [UnityTest]
@@ -91,7 +91,7 @@ public class PlacesSubSectionComponentViewTests
         // Arrange
         placesSubSectionComponent.places.gameObject.GetComponent<Canvas>().enabled = isVisible;
         placesSubSectionComponent.placesLoading.SetActive(!isVisible);
-        placesSubSectionComponent.placesNoDataText.gameObject.SetActive(true);
+        placesSubSectionComponent.placesNoDataContainer.SetActive(true);
 
         // Act
         placesSubSectionComponent.SetPlacesAsLoading(isVisible);
@@ -101,7 +101,7 @@ public class PlacesSubSectionComponentViewTests
         Assert.AreEqual(isVisible, placesSubSectionComponent.placesLoading.activeSelf);
 
         if (isVisible)
-            Assert.IsFalse(placesSubSectionComponent.placesNoDataText.gameObject.activeSelf);
+            Assert.IsFalse(placesSubSectionComponent.placesNoDataContainer.activeSelf);
     }
 
     [TestCase(true)]
