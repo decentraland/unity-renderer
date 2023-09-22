@@ -26,18 +26,19 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CidkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW4ucHJvdG8SG2Rl",
             "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFsYW5kL2NvbW1v",
-            "bi92ZWN0b3JzLnByb3RvIrMBCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
+            "bi92ZWN0b3JzLnByb3RvIt8BCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
             "EkMKDnR3ZWVuX2Z1bmN0aW9uGAIgASgOMisuZGVjZW50cmFsYW5kLnNkay5j",
             "b21wb25lbnRzLkVhc2luZ0Z1bmN0aW9uEi8KBG1vdmUYAyABKAsyIS5kZWNl",
             "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuTW92ZRIUCgdwbGF5aW5nGAQgASgI",
-            "SACIAQFCCgoIX3BsYXlpbmciXgoETW92ZRIrCgVzdGFydBgBIAEoCzIcLmRl",
-            "Y2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIpCgNlbmQYAiABKAsyHC5kZWNl",
-            "bnRyYWxhbmQuY29tbW9uLlZlY3RvcjMqHwoORWFzaW5nRnVuY3Rpb24SDQoJ",
-            "VEZfTElORUFSEABCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "SACIAQESGQoMY3VycmVudF90aW1lGAUgASgCSAGIAQFCCgoIX3BsYXlpbmdC",
+            "DwoNX2N1cnJlbnRfdGltZSJeCgRNb3ZlEisKBXN0YXJ0GAEgASgLMhwuZGVj",
+            "ZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEikKA2VuZBgCIAEoCzIcLmRlY2Vu",
+            "dHJhbGFuZC5jb21tb24uVmVjdG9yMyofCg5FYXNpbmdGdW5jdGlvbhINCglU",
+            "Rl9MSU5FQVIQAEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.EasingFunction), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Playing" }, new[]{ "Playing" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Playing", "CurrentTime" }, new[]{ "Playing", "CurrentTime" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Move), global::DCL.ECSComponents.Move.Parser, new[]{ "Start", "End" }, null, null, null, null)
           }));
     }
@@ -95,6 +96,7 @@ namespace DCL.ECSComponents {
       tweenFunction_ = other.tweenFunction_;
       move_ = other.move_ != null ? other.move_.Clone() : null;
       playing_ = other.playing_;
+      currentTime_ = other.currentTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -174,6 +176,34 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~1;
     }
 
+    /// <summary>Field number for the "current_time" field.</summary>
+    public const int CurrentTimeFieldNumber = 5;
+    private float currentTime_;
+    /// <summary>
+    /// between 0 and 1
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float CurrentTime {
+      get { if ((_hasBits0 & 2) != 0) { return currentTime_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 2;
+        currentTime_ = value;
+      }
+    }
+    /// <summary>Gets whether the "current_time" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasCurrentTime {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "current_time" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearCurrentTime() {
+      _hasBits0 &= ~2;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -193,6 +223,7 @@ namespace DCL.ECSComponents {
       if (TweenFunction != other.TweenFunction) return false;
       if (!object.Equals(Move, other.Move)) return false;
       if (Playing != other.Playing) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -204,6 +235,7 @@ namespace DCL.ECSComponents {
       if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) hash ^= TweenFunction.GetHashCode();
       if (move_ != null) hash ^= Move.GetHashCode();
       if (HasPlaying) hash ^= Playing.GetHashCode();
+      if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -238,6 +270,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(32);
         output.WriteBool(Playing);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(45);
+        output.WriteFloat(CurrentTime);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -264,6 +300,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(32);
         output.WriteBool(Playing);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(45);
+        output.WriteFloat(CurrentTime);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -285,6 +325,9 @@ namespace DCL.ECSComponents {
       }
       if (HasPlaying) {
         size += 1 + 1;
+      }
+      if (HasCurrentTime) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -312,6 +355,9 @@ namespace DCL.ECSComponents {
       }
       if (other.HasPlaying) {
         Playing = other.Playing;
+      }
+      if (other.HasCurrentTime) {
+        CurrentTime = other.CurrentTime;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -347,6 +393,10 @@ namespace DCL.ECSComponents {
             Playing = input.ReadBool();
             break;
           }
+          case 45: {
+            CurrentTime = input.ReadFloat();
+            break;
+          }
         }
       }
     #endif
@@ -379,6 +429,10 @@ namespace DCL.ECSComponents {
           }
           case 32: {
             Playing = input.ReadBool();
+            break;
+          }
+          case 45: {
+            CurrentTime = input.ReadFloat();
             break;
           }
         }
