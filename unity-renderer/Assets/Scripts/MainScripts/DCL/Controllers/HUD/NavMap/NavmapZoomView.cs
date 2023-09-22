@@ -4,14 +4,11 @@ using UnityEngine.UI;
 
 namespace DCL
 {
-    public class NavmapZoom : MonoBehaviour
+    public class NavmapZoomView : MonoBehaviour
     {
-        [SerializeField] private InputAction_Measurable mouseWheelAction;
-        [SerializeField, Obsolete] private RectTransform containerRectTransform;
-        [SerializeField, Obsolete] private AnimationCurve zoomCurve;
-
         [SerializeField] private ZoomInput zoomIn;
         [SerializeField] private ZoomInput zoomOut;
+        [SerializeField] private InputAction_Measurable mouseWheelAction;
 
         [field: SerializeField] internal AnimationCurve normalizedZoomCurve { get; private set; }
         [field: SerializeField] internal Vector2Int zoomVerticalRange { get; private set; } = new (28, 50);
