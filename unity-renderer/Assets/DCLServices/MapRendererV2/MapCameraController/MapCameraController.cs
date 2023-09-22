@@ -160,7 +160,8 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             translationSequence = DOTween.Sequence();
 
-            Vector3 targetPosition = ClampLocalPosition(new Vector3(coordinates.x, coordinates.y, CAMERA_HEIGHT));
+            Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
+            Vector3 targetPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             zoom = Mathf.Lerp(zoomValues.y, zoomValues.x, Mathf.Clamp01(zoom));
 
             translationSequence.Join(mapCameraObject.mapCamera.DOOrthoSize(zoom, duration).SetEase(Ease.OutQuart))
