@@ -7,14 +7,22 @@ using UnityEngine.Networking;
 
 public interface IUserProfileAPIClient
 {
+    /// <summary>
+    /// Fetch user profile json
+    /// </summary>
+    /// <param name="userId">eth address</param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     UniTask<UserProfileModel> FetchUserProfile(string userId, CancellationToken ct);
     UniTask<string> FetchCatalystPublicKey(CancellationToken ct);
 }
 
 public class UserProfileAPIClient : IUserProfileAPIClient
 {
-    private const string URL_FETCH_USER_PROFILE = "https://peer.decentraland.zone/explorer/profiles/{id}"; // FD:: not the real URL
-    private const string URL_FETCH_PUBLIC_KEY = "https://peer.decentraland.zone/about"; // FD:: not the real URL
+    // https://peer.decentraland.zone/explorer/profiles/{id}
+    // https://peer.decentraland.zone/about
+    private const string URL_FETCH_USER_PROFILE = "https://peer.decentraland.zone/explorer/profiles/{user_id}"; // FD:: not the final URL
+    private const string URL_FETCH_PUBLIC_KEY = "https://peer.decentraland.zone/about"; // FD:: not the final URL
 
     private Service<IWebRequestController> webRequestController;
 
