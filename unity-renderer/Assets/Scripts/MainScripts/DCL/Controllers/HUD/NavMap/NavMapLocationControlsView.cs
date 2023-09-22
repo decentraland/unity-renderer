@@ -7,5 +7,15 @@ namespace DCL
     {
         [field: SerializeField] internal Button homeButton;
         [field: SerializeField] internal Button centerToPlayerButton;
+
+        [Space]
+        [SerializeField] private GameObject homeButtonRoot;
+        [SerializeField] private GameObject centerToPlayerButtonRoot;
+
+        public void Hide()
+        {
+            homeButtonRoot.SetActive(false);
+            centerToPlayerButtonRoot.SetActive(false);
+        }
     }
 }

@@ -148,7 +148,12 @@ namespace DCL
 
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
-                locationControlsController.Activate(cameraController);
+
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                    locationControlsController.Activate(cameraController);
+                else
+                    locationControlsController.Hide();
+
                 rendererConfiguration.RenderImage.Activate(hudCamera, cameraController.GetRenderTexture(), cameraController);
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Activate(cameraController);
 

@@ -53,6 +53,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   homeButton: {fileID: 7245873787949348520}
   centerToPlayerButton: {fileID: 2937852062900114134}
+  homeButtonRoot: {fileID: 8365935614551153753}
+  centerToPlayerButtonRoot: {fileID: 1903720420188510280}
 --- !u!1 &1342322109066702169
 GameObject:
   m_ObjectHideFlags: 0

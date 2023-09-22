@@ -67,6 +67,12 @@ namespace DCL
             active = false;
         }
 
+        public void Hide()
+        {
+            Deactivate();
+            view.Hide();
+        }
+
         private void FocusOnHomeLocation()
         {
             EventSystem.current.SetSelectedGameObject(null);
