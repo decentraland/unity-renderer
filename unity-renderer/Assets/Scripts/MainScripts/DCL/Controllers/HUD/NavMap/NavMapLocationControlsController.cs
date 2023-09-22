@@ -13,19 +13,23 @@ namespace DCL
     {
         public const float TRANSLATION_DURATION = 0.5f;
 
-        private readonly INavMapLocationControlsView view;
-        private readonly INavmapZoomViewController navmapZoomViewController;
-        private readonly INavmapToastViewController toastViewController;
-
         internal readonly BaseVariable<Vector2Int> homePoint;
         internal readonly BaseVariable<Vector3> playerPlayerWorldPosition;
 
-        private readonly MapRenderImage.ParcelClickData homeParcel;
+        private readonly INavMapLocationControlsView view;
+        private readonly INavmapZoomViewController navmapZoomViewController;
+        private readonly INavmapToastViewController toastViewController;
 
         private IMapCameraController mapCamera;
 
         private bool active;
         private CancellationTokenSource cts;
+
+        private MapRenderImage.ParcelClickData homeParcel => new()
+        {
+            Parcel = homePoint.Get(),
+            WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f),
+        };
 
         public NavMapLocationControlsController(INavMapLocationControlsView view, INavmapZoomViewController navmapZoomViewController,
             INavmapToastViewController toastViewController, BaseVariable<Vector2Int> homePoint, BaseVariable<Vector3> playerPlayerWorldPosition)
@@ -35,12 +39,6 @@ namespace DCL
             this.toastViewController = toastViewController;
             this.homePoint = homePoint;
             this.playerPlayerWorldPosition = playerPlayerWorldPosition;
-
-            homeParcel = new MapRenderImage.ParcelClickData
-            {
-                Parcel = homePoint.Get(),
-                WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f),
-            };
         }
 
         public void Dispose()
