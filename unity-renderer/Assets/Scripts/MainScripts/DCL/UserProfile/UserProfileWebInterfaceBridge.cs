@@ -71,6 +71,6 @@ public class UserProfileWebInterfaceBridge : IUserProfileBridge
         string signedChecksum = "";
         string catalystUrl = "";
 
-        return UserProfileController.i.ValidateUserProfile(modelProfile.model, checksum, signedChecksum, catalystUrl);
+        return UserProfileController.i.ProfileValidator.ValidateUserProfile(modelProfile.model, checksum, signedChecksum, catalystUrl);
     }
 }
