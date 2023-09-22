@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace DCL
 {
-    public class NavmapZoomViewController : IDisposable
+    public class NavmapZoomViewController : IDisposable, INavmapZoomViewController
     {
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
 

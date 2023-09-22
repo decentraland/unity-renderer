@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class NavmapToastViewController : IDisposable
+    public class NavmapToastViewController : IDisposable, INavmapToastViewController
     {
         private readonly MinimapMetadata minimapMetadata;
         private readonly NavmapToastView view;

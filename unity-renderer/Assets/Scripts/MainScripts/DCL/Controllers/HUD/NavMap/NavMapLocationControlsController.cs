@@ -11,26 +11,36 @@ namespace DCL
 {
     public class NavMapLocationControlsController : IDisposable
     {
-        private const float TRANSLATION_DURATION = 0.5f;
-        private readonly NavMapLocationControlsView view;
-        private readonly NavmapZoomViewController navmapZoomViewController;
-        private readonly NavmapToastViewController toastViewController;
+        public const float TRANSLATION_DURATION = 0.5f;
 
-        private readonly MapRenderImage.ParcelClickData homeParcel = new ()
-        {
-            Parcel = DataStore.i.HUDs.homePoint.Get(),
-            WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f),
-        };
+        private readonly INavMapLocationControlsView view;
+        private readonly INavmapZoomViewController navmapZoomViewController;
+        private readonly INavmapToastViewController toastViewController;
+
+        internal readonly BaseVariable<Vector2Int> homePoint;
+        internal readonly BaseVariable<Vector3> playerPlayerWorldPosition;
+
+        private readonly MapRenderImage.ParcelClickData homeParcel;
+
         private IMapCameraController mapCamera;
 
         private bool active;
         private CancellationTokenSource cts;
 
-        public NavMapLocationControlsController(NavMapLocationControlsView view, NavmapZoomViewController navmapZoomViewController, NavmapToastViewController toastViewController)
+        public NavMapLocationControlsController(INavMapLocationControlsView view, INavmapZoomViewController navmapZoomViewController,
+            INavmapToastViewController toastViewController, BaseVariable<Vector2Int> homePoint, BaseVariable<Vector3> playerPlayerWorldPosition)
         {
             this.view = view;
             this.navmapZoomViewController = navmapZoomViewController;
             this.toastViewController = toastViewController;
+            this.homePoint = homePoint;
+            this.playerPlayerWorldPosition = playerPlayerWorldPosition;
+
+            homeParcel = new MapRenderImage.ParcelClickData
+            {
+                Parcel = homePoint.Get(),
+                WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f),
+            };
         }
 
         public void Dispose()
@@ -48,8 +58,8 @@ namespace DCL
 
             mapCamera = mapCameraController;
 
-            view.homeButton.onClick.AddListener(FocusOnHomeLocation);
-            view.centerToPlayerButton.onClick.AddListener(CenterToPlayerLocation);
+            view.HomeButtonClicked += FocusOnHomeLocation;
+            view.CenterToPlayerButtonClicked += CenterToPlayerLocation;
 
             active = true;
         }
@@ -60,8 +70,8 @@ namespace DCL
 
             cts?.SafeRestart();
 
-            view.homeButton.onClick.RemoveListener(FocusOnHomeLocation);
-            view.centerToPlayerButton.onClick.RemoveListener(CenterToPlayerLocation);
+            view.HomeButtonClicked -= FocusOnHomeLocation;
+            view.CenterToPlayerButtonClicked -= CenterToPlayerLocation;
 
             active = false;
         }
@@ -74,11 +84,11 @@ namespace DCL
 
         private void FocusOnHomeLocation()
         {
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);
             toastViewController.CloseCurrentToast();
 
             mapCamera.TranslateTo(
-                coordinates: DataStore.i.HUDs.homePoint.Get(),
+                coordinates: homePoint.Get(),
                 zoom: navmapZoomViewController.ResetZoomToMidValue(),
                 duration: TRANSLATION_DURATION,
                 onComplete: () => toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true));
@@ -86,11 +96,11 @@ namespace DCL
 
         private void CenterToPlayerLocation()
         {
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);
             toastViewController.CloseCurrentToast();
 
             mapCamera.TranslateTo(
-                coordinates: Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
+                coordinates: Utils.WorldToGridPosition(playerPlayerWorldPosition.Get()),
                 zoom: navmapZoomViewController.ResetZoomToMidValue(),
                 duration: TRANSLATION_DURATION);
         }

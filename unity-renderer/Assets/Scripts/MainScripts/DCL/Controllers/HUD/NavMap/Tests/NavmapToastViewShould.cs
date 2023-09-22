@@ -13,6 +13,7 @@ using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
 namespace Tests
@@ -60,7 +61,7 @@ namespace Tests
             controller = new MinimapHUDController(
                 Substitute.For<MinimapMetadataController>(),
                 Substitute.For<IHomeLocationController>(),
-                DCL.Environment.i,
+                Environment.i,
                 placesAPIService,
                 Substitute.For<IPlacesAnalytics>(),
                 Substitute.For<IClipboard>(),
