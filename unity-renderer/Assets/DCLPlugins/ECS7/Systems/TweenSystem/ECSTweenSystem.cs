@@ -60,7 +60,10 @@ namespace ECSSystems.TweenSystem
                     continue;
                 }
 
-                if (model.currentTime.Equals(1f))
+                Vector3 startPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene);
+                Vector3 endPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene);
+
+                if (model.currentTime.Equals(1f) && model.transform.position == endPos)
                     continue;
 
                 bool playing = model.playing;
@@ -74,10 +77,7 @@ namespace ECSSystems.TweenSystem
                     playing = model.playing = existentTweenState.model.State != TweenStateStatus.TsPaused;
                     currentTime = model.currentTime = existentTweenState.model.CurrentTime;
                     Debug.Log($"ENGINE TWEEN SYSTEM - Previous tween state applied to new Tween - current-time:{currentTime}; state-status:{existentTweenState.model.State}");
-                    model.transform.position = Vector3.Lerp(
-                        WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene),
-                        WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene),
-                        currentTime);
+                    model.transform.position = Vector3.Lerp(startPos, endPos, currentTime);
 
                     // update internal component if tween is paused
                     if (!playing)
@@ -90,10 +90,7 @@ namespace ECSSystems.TweenSystem
                     if (currentTime > 1f)
                         currentTime = 1f;
 
-                    model.transform.position = Vector3.Lerp(
-                        WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene),
-                        WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene),
-                        currentTime);
+                    model.transform.position = Vector3.Lerp(startPos, endPos, currentTime);
                     model.currentTime = currentTime;
 
                     tweenInternalComponent.PutFor(scene, entity, model);

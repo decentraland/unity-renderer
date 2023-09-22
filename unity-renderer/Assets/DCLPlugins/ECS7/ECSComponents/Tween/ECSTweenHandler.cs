@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
@@ -33,7 +34,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
         if (!IsSameAsLastModel(model))
         {
-            internalComponentModel.currentTime = 0;
+            internalComponentModel.currentTime = model.CurrentTime;
             internalComponentModel.transform = entity.gameObject.transform;
             internalComponentModel.startPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
             internalComponentModel.endPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
@@ -49,6 +50,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
     private bool IsSameAsLastModel(PBTween targetModel)
     {
         return (lastModel != null
+                && lastModel.CurrentTime.Equals(targetModel.CurrentTime)
                 && lastModel.Duration.Equals(targetModel.Duration)
                 && lastModel.Move.Start.Equals(targetModel.Move.Start)
                 && lastModel.Move.End.Equals(targetModel.Move.End));
