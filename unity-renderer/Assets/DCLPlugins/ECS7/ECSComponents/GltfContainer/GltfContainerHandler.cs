@@ -38,7 +38,7 @@ namespace DCL.ECSComponents
         private readonly ActiveCollidersData visibleActiveColliders = new ActiveCollidersData();
         private readonly ActiveCollidersData invisibleActiveColliders = new ActiveCollidersData();
 
-        internal RendereableAssetLoadHelper gltfLoader;
+        public RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
 
         private IReadOnlyCollection<Renderer> renderers;

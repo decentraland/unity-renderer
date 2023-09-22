@@ -12,14 +12,14 @@ using UnityEngine.TestTools;
 
 namespace Tests.Components.GltfContainer
 {
-    public class GltfContainerRenderersShould
+    public class GltfContainerAnimationShould
     {
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
         private GltfContainerHandler handler;
 
-        private IInternalECSComponent<InternalRenderers> renderersComponent;
+        private IInternalECSComponent<InternalAnimation> animationComponent;
 
         [SetUp]
         public void SetUp()
@@ -41,15 +41,15 @@ namespace Tests.Components.GltfContainer
             scene.contentProvider.fileToHash.Add("palmtree", "PalmTree_01.glb");
             scene.contentProvider.fileToHash.Add("sharknado", "Shark/shark_anim.gltf");
 
-            renderersComponent = internalEcsComponents.renderersComponent;
+            animationComponent = internalEcsComponents.Animation;
 
             handler = new GltfContainerHandler(
                 internalEcsComponents.onPointerColliderComponent,
                 internalEcsComponents.physicColliderComponent,
                 internalEcsComponents.customLayerColliderComponent,
-                renderersComponent,
+                internalEcsComponents.renderersComponent,
                 internalEcsComponents.GltfContainerLoadingStateComponent,
-                internalEcsComponents.Animation,
+                animationComponent,
                 new DataStore_ECS7(),
                 new DataStore_FeatureFlag());
 
@@ -66,41 +66,34 @@ namespace Tests.Components.GltfContainer
         }
 
         [UnityTest]
-        public IEnumerator SetRenderersCorrectly()
+        public IEnumerator CreateInternalComponent()
         {
-            // test with several updates to make sure that changing gltf does not affect the expected result
+            // add gltf with animation
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
             yield return handler.gltfLoader.Promise;
 
-            IList<Renderer> renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            ECSComponentData<InternalRenderers> internalRenderers = renderersComponent.GetFor(scene, entity).Value;
+            Animation animation = handler.gameObject.GetComponentInChildren<Animation>();
+            ECSComponentData<InternalAnimation> internalAnimation = animationComponent.GetFor(scene, entity).Value;
 
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                Assert.IsTrue(internalRenderers.model.renderers.Contains(renderers[i]));
-            }
+            Assert.IsTrue(animation);
+            Assert.AreEqual(animation, internalAnimation.model.Animation);
+            Assert.IsFalse(internalAnimation.model.IsInitialized);
 
+            // add gltf without animation
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "palmtree" });
             yield return handler.gltfLoader.Promise;
 
-            renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            internalRenderers = renderersComponent.GetFor(scene, entity).Value;
+            Assert.IsFalse(animationComponent.GetFor(scene, entity).HasValue);
+        }
 
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                Assert.IsTrue(internalRenderers.model.renderers.Contains(renderers[i]));
-            }
-
+        [UnityTest]
+        public IEnumerator RemoveInternalComponent()
+        {
             handler.OnComponentModelUpdated(scene, entity, new PBGltfContainer() { Src = "sharknado" });
             yield return handler.gltfLoader.Promise;
 
-            renderers = handler.gameObject.GetComponentsInChildren<Renderer>();
-            internalRenderers = renderersComponent.GetFor(scene, entity).Value;
-
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                Assert.IsTrue(internalRenderers.model.renderers.Contains(renderers[i]));
-            }
+            handler.OnComponentRemoved(scene, entity);
+            Assert.IsFalse(animationComponent.GetFor(scene, entity).HasValue);
         }
     }
 }

@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
-namespace Tests
+namespace Tests.Components.GltfContainer
 {
     public class GltfContainerCollidersShould
     {
