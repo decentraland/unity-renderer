@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
@@ -34,8 +35,8 @@ namespace DCL
 
         public void Dispose()
         {
-            cts?.Cancel();
-            cts?.Dispose();
+            cts?.SafeCancelAndDispose();
+            cts = null;
         }
 
         public void Activate(IMapCameraController mapCameraController)
@@ -43,7 +44,7 @@ namespace DCL
             if (active && mapCamera == mapCameraController)
                 return;
 
-            cts = new CancellationTokenSource();
+            cts ??= new CancellationTokenSource();
 
             mapCamera = mapCameraController;
 
@@ -57,9 +58,7 @@ namespace DCL
         {
             if (!active) return;
 
-            cts.Cancel();
-            cts.Dispose();
-            cts = null;
+            cts?.SafeRestart();
 
             view.homeButton.onClick.RemoveListener(FocusOnHomeLocation);
             view.centerToPlayerButton.onClick.RemoveListener(CenterToPlayerLocation);
