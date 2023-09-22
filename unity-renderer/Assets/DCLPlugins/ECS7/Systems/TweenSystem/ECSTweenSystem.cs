@@ -62,16 +62,20 @@ namespace ECSSystems.TweenSystem
                 bool playing = model.playing;
                 float currentTime = model.currentTime;
 
-                // Configure a new Tween with previously existent TweenState
+                // Configure a new Tween with previously existent TweenState (e.g. synched in multiplayer scene)
                 if (model.currentTime == 0 && tweenStateComponent.TryGet(scene, entity, out var existentTweenState))
                 {
+
                     playing = model.playing = existentTweenState.model.State != TweenStateStatus.TsPaused;
                     currentTime = model.currentTime = existentTweenState.model.CurrentTime;
                     model.transform.position = Vector3.Lerp(
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene),
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene),
                         currentTime);
-                    tweenInternalComponent.PutFor(scene, entity, model); // in case the existent tween state is paused
+
+                    // update internal component if tween is paused
+                    if (!playing)
+                        tweenInternalComponent.PutFor(scene, entity, model);
                 }
 
                 if (playing)
@@ -79,15 +83,16 @@ namespace ECSSystems.TweenSystem
                     currentTime += model.calculatedSpeed * Time.deltaTime;
                     if (currentTime > 1f)
                         currentTime = 1f;
-                    tweenStateComponentModel.CurrentTime = currentTime;
 
                     model.transform.position = Vector3.Lerp(
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene),
                         WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene),
                         currentTime);
                     model.currentTime = currentTime;
+
                     tweenInternalComponent.PutFor(scene, entity, model);
 
+                    tweenStateComponentModel.CurrentTime = currentTime;
                     tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
                 }
                 else
@@ -98,7 +103,6 @@ namespace ECSSystems.TweenSystem
                 //TODO: If we decide to make TweenState a GOVS component instead of LWW, we have to use Append() here
                 writer.Put(entity, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
-                // Update Transform component
                 UpdateTransformComponent(scene, entity, writer, model);
             }
         }

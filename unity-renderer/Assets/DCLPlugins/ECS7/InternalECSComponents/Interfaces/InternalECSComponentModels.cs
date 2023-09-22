@@ -314,8 +314,10 @@ namespace DCL.ECS7.InternalComponents
         public void UpdateSpeedCalculation()
         {
             // Debug.Log($"InternalTween struct - duration in milliseconds: {durationInMilliseconds}");
-            // TODO: Optimize with sqrMagnitude??
-            this.calculatedSpeed = (endPosition - startPosition).magnitude / (durationInMilliseconds / 1000);
+            float distance = (endPosition - startPosition).magnitude;
+            // float durationInSeconds = durationInMilliseconds / 1000; // why the fuck doesn't this work correctly ???
+            float durationInSeconds = durationInMilliseconds / 100;
+            this.calculatedSpeed = distance / durationInSeconds;
         }
     }
 }
