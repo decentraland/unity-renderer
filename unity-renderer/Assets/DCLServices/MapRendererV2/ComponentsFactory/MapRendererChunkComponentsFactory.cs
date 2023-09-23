@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using DCL;
 using DCL.Providers;
 using DCLServices.MapRendererV2.CoordsUtils;
@@ -15,30 +14,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.ComponentsFactory
 {
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
-        private readonly int parcelSize;
-        private readonly int atlasChunkSize;
-        private readonly float cullingBounds;
-
         private const string ATLAS_CHUNK_ADDRESS = "AtlasChunk";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
         private const string MAP_CAMERA_OBJECT_ADDRESS = "MapCameraObject";
         private const string PARCEL_HIGHLIGHT_OBJECT_ADDRESS = "MapParcelHighlightMarker";
+        private readonly int parcelSize;
+        private readonly int atlasChunkSize;
+        private readonly float cullingBounds;
 
         private Service<IAddressableResourceProvider> addressablesProvider;
         private Service<IHotScenesFetcher> hotScenesFetcher;
-
-        public MapRendererChunkComponentsFactory(int parcelSize, int atlasChunkSize, float cullingBounds)
-        {
-            this.parcelSize = parcelSize;
-            this.atlasChunkSize = atlasChunkSize;
-            this.cullingBounds = cullingBounds;
-        }
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
         internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; }
@@ -48,45 +38,30 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
 
+        public MapRendererChunkComponentsFactory(int parcelSize, int atlasChunkSize, float cullingBounds)
+        {
+            this.parcelSize = parcelSize;
+            this.atlasChunkSize = atlasChunkSize;
+            this.cullingBounds = cullingBounds;
+        }
+
         async UniTask<MapRendererComponents> IMapRendererComponentsFactory.Create(CancellationToken cancellationToken)
         {
-            var configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken), new Vector3(10000, 10000, 0), Quaternion.identity);
+            MapRendererConfiguration configuration = Object.Instantiate(await AddressableProvider.GetAddressable<MapRendererConfiguration>(MAP_CONFIGURATION_ADDRESS, cancellationToken), new Vector3(10000, 10000, 0), Quaternion.identity);
             var coordsUtils = new ChunkCoordsUtils(parcelSize);
 
             IMapCullingController cullingController = new MapCullingController(new MapCullingRectVisibilityChecker(cullingBounds * parcelSize));
 
-            var highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
-
+            ParcelHighlightMarkerObject highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
             var highlightMarkersPool = new ObjectPool<IParcelHighlightMarker>(
-                () =>
-                {
-                    var obj = Object.Instantiate(highlightMarkerPrefab, configuration.ParcelHighlightRoot);
-                    obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
-                    obj.text.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
-                    coordsUtils.SetObjectScale(obj);
-                    return new ParcelHighlightMarker(obj);
-                },
-                _ => {},
+                () => CreateHighlightMarker(highlightMarkerPrefab, configuration, coordsUtils),
+                _ => { },
                 marker => marker.Deactivate(),
                 marker => marker.Dispose()
             );
-
             highlightMarkersPool.Prewarm(1);
 
-            var mapCameraObjectPrefab = await AddressableProvider.GetAddressable<MapCameraObject>(MAP_CAMERA_OBJECT_ADDRESS, cancellationToken);
-
-            IMapCameraControllerInternal CameraControllerBuilder()
-            {
-                var instance = Object.Instantiate(mapCameraObjectPrefab, configuration.MapCamerasRoot);
-
-                var interactivityController = new MapCameraInteractivityController(
-                    configuration.MapCamerasRoot,
-                    instance.mapCamera,
-                    highlightMarkersPool,
-                    coordsUtils);
-
-                return new MapCameraController.MapCameraController(interactivityController, instance, coordsUtils, cullingController);
-            }
+            MapCameraObject mapCameraObjectPrefab = await AddressableProvider.GetAddressable<MapCameraObject>(MAP_CAMERA_OBJECT_ADDRESS, cancellationToken);
 
             IObjectPool<IMapCameraControllerInternal> cameraControllersPool = new ObjectPool<IMapCameraControllerInternal>(
                 CameraControllerBuilder,
@@ -97,33 +72,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             var layers = new Dictionary<MapLayer, IMapLayerController>();
 
-            async UniTask CreateAtlas()
-            {
-                var atlasChunkPrefab = await GetAtlasChunkPrefab(cancellationToken);
-
-                async UniTask<IChunkController> CreateChunk(
-                    Vector3 chunkLocalPosition,
-                    Vector2Int coordsCenter,
-                    Transform parent,
-                    CancellationToken ct)
-                {
-                    var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
-                    chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
-                    await chunk.LoadImage(atlasChunkSize, parcelSize, coordsCenter, ct);
-                    return chunk;
-                }
-
-                var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkPrefab, atlasChunkSize,
-                    coordsUtils, cullingController, chunkBuilder: CreateChunk);
-
-                // initialize Atlas but don't block the flow (to accelerate loading time)
-                chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
-
-                layers.Add(MapLayer.Atlas, chunkAtlas);
-            }
-
             await UniTask.WhenAll(
-                CreateAtlas(),
+                CreateAtlas(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
@@ -132,12 +82,53 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 /* List of other creators that can be executed in parallel */);
 
             return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);
+
+            IMapCameraControllerInternal CameraControllerBuilder()
+            {
+                MapCameraObject instance = Object.Instantiate(mapCameraObjectPrefab, configuration.MapCamerasRoot);
+                var interactivityController = new MapCameraInteractivityController(configuration.MapCamerasRoot, instance.mapCamera, highlightMarkersPool, coordsUtils);
+
+                return new MapCameraController.MapCameraController(interactivityController, instance, coordsUtils, cullingController);
+            }
+        }
+
+        private async UniTask CreateAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
+        {
+            var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, atlasChunkSize, coordsUtils, cullingController, chunkBuilder: CreateChunk);
+
+            // initialize Atlas but don't block the flow (to accelerate loading time)
+            chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
+
+            layers.Add(MapLayer.Atlas, chunkAtlas);
+        }
+
+        private async UniTask<IChunkController> CreateChunk(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct)
+        {
+            SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
+
+            var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
+            chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
+            await chunk.LoadImage(atlasChunkSize, parcelSize, coordsCenter, ct);
+
+            return chunk;
+        }
+
+        private static IParcelHighlightMarker CreateHighlightMarker(ParcelHighlightMarkerObject highlightMarkerPrefab,
+            MapRendererConfiguration configuration, ICoordsUtils coordsUtils)
+        {
+            ParcelHighlightMarkerObject obj = Object.Instantiate(highlightMarkerPrefab, configuration.ParcelHighlightRoot);
+
+            obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
+            obj.text.sortingOrder = MapRendererDrawOrder.PARCEL_HIGHLIGHT;
+            coordsUtils.SetObjectScale(obj);
+
+            return new ParcelHighlightMarker(obj);
         }
 
         internal async Task<SpriteRenderer> GetAtlasChunkPrefab(CancellationToken cancellationToken) =>
             await AddressableProvider.GetAddressable<SpriteRenderer>(ATLAS_CHUNK_ADDRESS, cancellationToken);
 
-        internal async UniTask<ParcelHighlightMarkerObject> GetParcelHighlightMarkerPrefab(CancellationToken cancellationToken) =>
+        private async UniTask<ParcelHighlightMarkerObject> GetParcelHighlightMarkerPrefab(CancellationToken cancellationToken) =>
             await AddressableProvider.GetAddressable<ParcelHighlightMarkerObject>(PARCEL_HIGHLIGHT_OBJECT_ADDRESS, cancellationToken);
     }
 }

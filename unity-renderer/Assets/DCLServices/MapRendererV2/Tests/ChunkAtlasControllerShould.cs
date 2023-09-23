@@ -34,7 +34,7 @@ namespace DCLServices.MapRendererV2.Tests
 
             builder = Substitute.For<ChunkAtlasController.ChunkBuilder>();
 
-            atlasController = new ChunkAtlasController(null, null, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
+            atlasController = new ChunkAtlasController(null, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
 
             var parcelsInsideChunk = CHUNK_SIZE / PARCEL_SIZE;
 

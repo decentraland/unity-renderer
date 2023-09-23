@@ -16,7 +16,6 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         public const int CHUNKS_CREATED_PER_BATCH = 10;
 
-        private readonly SpriteRenderer prefab;
         private readonly int chunkSize;
         private readonly int parcelsInsideChunk;
         private readonly ChunkBuilder chunkBuilder;
@@ -24,11 +23,10 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private int parcelSize => coordsUtils.ParcelSize;
 
-        public ChunkAtlasController(Transform parent, SpriteRenderer prefab, int chunkSize,
+        public ChunkAtlasController(Transform parent, int chunkSize,
             ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
             : base(parent, coordsUtils, cullingController)
         {
-            this.prefab = prefab;
             this.chunkSize = chunkSize;
             this.chunkBuilder = chunkBuilder;
 

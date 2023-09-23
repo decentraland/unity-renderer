@@ -27,12 +27,10 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 #if UNITY_EDITOR
             spriteRenderer.gameObject.name = $"Chunk {coordsCenter.x},{coordsCenter.y}";
 #endif
-            var transform = spriteRenderer.transform;
 
-            Debug.Log(spriteRenderer.gameObject.name, spriteRenderer.gameObject);
+            var transform = spriteRenderer.transform;
             transform.localScale = Vector3.one * PIXELS_PER_UNIT;
-            Debug.Log(chunkLocalPosition);
-            transform.localPosition = chunkLocalPosition / 2;
+            transform.localPosition = chunkLocalPosition;
         }
 
         private Dictionary<int, int> xMapping = new Dictionary<int, int>()
@@ -67,9 +65,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
-            var newChunk = ConvertToIndexedCoordinate(mapPosition);
-            string url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{newChunk.x}%2C{newChunk.y}.jpg";
-            // string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
+            // var newChunk = ConvertToIndexedCoordinate(mapPosition);
+            // string url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{newChunk.x}%2C{newChunk.y}.jpg";
+            string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
             var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
 
             var texture = CreateTexture(webRequest.downloadHandler.data);
