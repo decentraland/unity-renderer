@@ -23,6 +23,7 @@ namespace DCL.EmotesCustomization
         [SerializeField] internal Image rarityMark;
         [SerializeField] internal Transform emoteInfoAnchor;
         [SerializeField] internal GameObject loadingSpinnerGO;
+        [SerializeField] internal GameObject soundIcon;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -32,7 +33,7 @@ namespace DCL.EmotesCustomization
 
         public Button.ButtonClickedEvent onMainClick => mainButton?.onClick;
         public Button.ButtonClickedEvent onInfoClick => infoButton?.onClick;
-        
+
         public event Action<string> onEmoteSelected;
 
         public override void Awake()
@@ -44,6 +45,8 @@ namespace DCL.EmotesCustomization
 
             if (cardSelectionFrame != null)
                 cardSelectionFrame.SetActive(false);
+
+            SetSoundIcon(false);
         }
 
         public void Configure(EmoteCardComponentModel newModel)
@@ -282,6 +285,11 @@ namespace DCL.EmotesCustomization
                 SetEmotePicture(sprite);
             else
                 SetEmotePicture(sprite: null);
+        }
+
+        public void SetSoundIcon(bool active)
+        {
+            soundIcon.gameObject.SetActive(active);
         }
     }
 }

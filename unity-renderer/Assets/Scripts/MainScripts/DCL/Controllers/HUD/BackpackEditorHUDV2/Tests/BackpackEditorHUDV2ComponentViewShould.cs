@@ -163,7 +163,7 @@ namespace DCL.Backpack
             backpackEditorHUDV2ComponentView.ResetPreviewPanel();
 
             // Assert
-            characterPreviewController.Received(1).PlayEmote("Idle", (long)Time.realtimeSinceStartup);
+            characterPreviewController.Received(1).StopEmote();
             characterPreviewController.Received(1).ResetRotation();
             characterPreviewController.Received(1).SetFocus(PreviewCameraFocus.DefaultEditing, false);
         }

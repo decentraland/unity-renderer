@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
 using GPUSkinning;
 using UnityEngine;
@@ -18,12 +19,11 @@ namespace AvatarSystem
             new Avatar(
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
-                animator,
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
                 serviceLocator.Get<IGPUSkinningThrottlerService>(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+                new AvatarEmotesController(animator, serviceLocator.Get<IEmotesService>())
             );
 
         public IAvatar CreateAvatarWithHologram(
@@ -37,12 +37,11 @@ namespace AvatarSystem
                 baseAvatar,
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
-                animator,
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
                 serviceLocator.Get<IGPUSkinningThrottlerService>(),
-                new EmoteAnimationEquipper(animator, DataStore.i.emotes)
+                new AvatarEmotesController(animator, serviceLocator.Get<IEmotesService>())
             );
 
         private Loader CreateLoader(GameObject avatarContainer) =>

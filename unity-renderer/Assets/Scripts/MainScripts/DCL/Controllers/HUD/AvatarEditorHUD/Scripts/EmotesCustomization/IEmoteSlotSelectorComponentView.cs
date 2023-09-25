@@ -13,7 +13,7 @@ namespace DCL.EmotesCustomization
         /// <summary>
         /// It will be triggered when a slot is selected. It returns the selected slot number and the assigned emote id.
         /// </summary>
-        event Action<int, string> onSlotSelected;
+        event Action<int, string, bool> onSlotSelected;
 
         /// <summary>
         /// Select a slot.
