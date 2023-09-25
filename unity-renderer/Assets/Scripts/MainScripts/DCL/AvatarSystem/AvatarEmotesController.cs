@@ -14,7 +14,7 @@ namespace AvatarSystem
 {
     public class AvatarEmotesController : IAvatarEmotesController
     {
-        private const float BASE_VOLUME = 0.6f;
+        private const float BASE_VOLUME = 0.4f;
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
 
@@ -34,9 +34,11 @@ namespace AvatarSystem
             equippedEmotes.TryGetValue(new EmoteBodyId(bodyShape, emoteId), out emoteReference);
 
         // ReSharper disable once PossibleMultipleEnumeration (its intended)
-        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes)
+        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes, GameObject container)
         {
             this.bodyShapeId = bodyShapeId;
+
+            animator.Prepare(bodyShapeId, container);
 
             foreach (WearableItem emote in newEmotes)
                 LoadEmote(bodyShapeId, emote);

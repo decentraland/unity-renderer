@@ -19,7 +19,6 @@ namespace AvatarSystem
             new Avatar(
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
-                animator,
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),
@@ -38,7 +37,6 @@ namespace AvatarSystem
                 baseAvatar,
                 CreateAvatarCurator(),
                 CreateLoader(avatarContainer),
-                animator,
                 visibility,
                 lod,
                 new SimpleGPUSkinning(),

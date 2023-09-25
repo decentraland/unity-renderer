@@ -21,7 +21,6 @@ namespace AvatarSystem
 
         protected readonly ILoader loader;
         protected readonly IVisibility visibility;
-        protected readonly IAnimator animator;
 
         private readonly IAvatarCurator avatarCurator;
         private readonly ILOD lod;
@@ -36,13 +35,12 @@ namespace AvatarSystem
         public event Action<Renderer> OnCombinedRendererUpdate;
         private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
-        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator,
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader,
             IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService,
             IAvatarEmotesController emotesController)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
-            this.animator = animator;
             this.visibility = visibility;
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
@@ -113,8 +111,7 @@ namespace AvatarSystem
                 container = parent != null ? parent : container;
             }
 
-            animator.Prepare(settings.bodyshapeId, container);
-            Prepare(settings, emotes, loader.bodyshapeContainer);
+            Prepare(settings, emotes, container);
             Bind();
             Inform(loader.combinedRenderer);
         }
@@ -142,12 +139,12 @@ namespace AvatarSystem
             return emotes;
         }
 
-        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes, GameObject loaderBodyshapeContainer)
+        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes, GameObject container)
         {
             //Scale the bounds due to the giant avatar not being skinned yet
             extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
-            emotesController.LoadEmotes(settings.bodyshapeId, emotes);
+            emotesController.LoadEmotes(settings.bodyshapeId, emotes, container);
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottlerService.Register(gpuSkinning);
         }

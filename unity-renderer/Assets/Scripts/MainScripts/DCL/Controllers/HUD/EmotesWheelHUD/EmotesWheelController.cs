@@ -92,19 +92,12 @@ namespace DCL.EmotesWheel
             if (current == null) return;
             emotesController = current.avatar.GetEmotesController();
             emotesController.OnEmoteEquipped += OnEmoteEquipped;
-            emotesController.OnEmoteUnequipped += OnEmoteUnequipped;
             UpdateEmoteSlots();
         }
 
         private void OnEmoteEquipped(string emoteId, IEmoteReference emoteReference)
         {
-            Debug.Log($"[EMOTE WHEEL] emote equipped {emoteId}");
             RefreshSlotLoadingState(emoteId);
-        }
-
-        private void OnEmoteUnequipped(string emoteId)
-        {
-            Debug.Log($"[EMOTE WHEEL] emote UNequipped {emoteId} :(");
         }
 
         public void SetVisibility(bool visible)
@@ -284,10 +277,7 @@ namespace DCL.EmotesWheel
             auxShortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
 
             if (emotesController != null)
-            {
                 emotesController.OnEmoteEquipped -= OnEmoteEquipped;
-                emotesController.OnEmoteUnequipped -= OnEmoteUnequipped;
-            }
 
             cts?.Cancel();
             cts?.Dispose();

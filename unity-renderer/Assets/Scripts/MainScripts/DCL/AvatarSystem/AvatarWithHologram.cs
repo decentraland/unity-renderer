@@ -13,9 +13,9 @@ namespace AvatarSystem
 
         private readonly IBaseAvatar baseAvatar;
 
-        internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IAnimator animator, IVisibility visibility,
+        internal AvatarWithHologram(IBaseAvatar baseAvatar, IAvatarCurator avatarCurator, ILoader loader, IVisibility visibility,
             ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService, IAvatarEmotesController emotesController)
-            : base(avatarCurator, loader, animator, visibility, lod, gpuSkinning, gpuSkinningThrottlerService, emotesController)
+            : base(avatarCurator, loader, visibility, lod, gpuSkinning, gpuSkinningThrottlerService, emotesController)
         {
             this.baseAvatar = baseAvatar;
         }
@@ -23,7 +23,6 @@ namespace AvatarSystem
         protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
-            animator.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.SkinnedMeshRenderer, linkedCt: linkedCt);
             Prepare(settings, emotes, baseAvatar.ArmatureContainer);
             Bind();

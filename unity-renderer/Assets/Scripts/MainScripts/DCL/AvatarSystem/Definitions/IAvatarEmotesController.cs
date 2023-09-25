@@ -1,12 +1,13 @@
 ﻿using DCL.Emotes;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AvatarSystem
 {
     public interface IAvatarEmotesController : IDisposable
     {
-        void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes);
+        void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes, GameObject container);
 
         void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true);
 

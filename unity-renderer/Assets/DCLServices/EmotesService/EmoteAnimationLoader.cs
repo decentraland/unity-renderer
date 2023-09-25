@@ -52,22 +52,36 @@ namespace DCL.Emotes
                 return;
             }
 
-            this.mainClip = animation.clip;
-
             if (animation.GetClipCount() > 1)
             {
                 this.container = rendereable.container;
 
+                // we cant use the animation order so we use the naming convention at /creator/emotes/props-and-sounds/
                 foreach (AnimationState state in animation)
                 {
-                    if (state.clip.name.Contains("avatar", StringComparison.OrdinalIgnoreCase) ||
-                        state.clip.name == emote.id) { this.mainClip = state.clip; }
+                    AnimationClip clip = state.clip;
+
+                    if (clip.name.Contains("_avatar", StringComparison.OrdinalIgnoreCase) || clip.name == emote.id)
+                        mainClip = clip;
 
                     // There's a bug with the legacy animation where animations start ahead of time the first time
                     // our workaround is to play every animation while we load the audio clip and then disable the animator
-                    animation.Play(state.clip.name);
+                    animation.Play(clip.name);
+                }
+
+                // in the case that the animation names are badly named, we just get the first animation that does not contain prop in its name
+                if (mainClip == null)
+                {
+                    foreach (AnimationState animationState in animation)
+                    {
+                        if (animationState.clip.name.Contains("prop", StringComparison.OrdinalIgnoreCase)) continue;
+                        mainClip = animationState.clip;
+                        break;
+                    }
                 }
             }
+            else
+                mainClip = animation.clip;
 
             if (mainClip == null)
             {
@@ -75,8 +89,11 @@ namespace DCL.Emotes
                 return;
             }
 
-            //Clip names should be unique because of the Legacy Animation string based usage
-            mainClip.name = emote.id;
+            // Clip names should be unique because of the Legacy Animation string based usage.
+            // In rare cases some animations might use the same GLB, thus causing this clip to be used by 2 different emotes
+            //     so we avoid renaming the clip again witch can cause problems as we use the clip names internally
+            if (!mainClip.name.Contains("urn"))
+                mainClip.name = emote.id;
 
             var contentProvider = emote.GetContentProvider(bodyShapeId);
 

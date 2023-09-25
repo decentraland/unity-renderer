@@ -47,7 +47,6 @@ namespace Test.AvatarSystem
             avatar = new Avatar(
                 curator,
                 loader,
-                animator,
                 visibility,
                 lod,
                 gpuSkinning,

@@ -50,7 +50,6 @@ namespace Test.AvatarSystem
                 baseAvatar,
                 curator,
                 loader,
-                animator,
                 visibility,
                 lod,
                 gpuSkinning,
