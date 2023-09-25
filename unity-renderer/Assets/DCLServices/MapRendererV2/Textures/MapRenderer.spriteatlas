@@ -31,6 +31,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 0
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     - serializedVersion: 3
@@ -43,6 +44,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 1
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     - serializedVersion: 3
@@ -55,6 +57,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 1
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     - serializedVersion: 3
@@ -67,6 +70,7 @@ SpriteAtlas:
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
       m_Overridden: 0
+      m_IgnorePlatformSupport: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
@@ -79,26 +83,14 @@ SpriteAtlas:
       enableAlphaDilation: 1
     secondaryTextureSettings: {}
     variantMultiplier: 1
-    packables:
-    - {fileID: 102900000, guid: 699893c80881d9d4183804b802d2ccbb, type: 3}
+    packables: []
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys: []
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites:
-  - {fileID: 21300000, guid: 1aac5e83391d74318b6be345b5ca43aa, type: 3}
-  - {fileID: 21300000, guid: 6002f0b7deb60405bb7fa168d2a8ce06, type: 3}
-  - {fileID: 21300000, guid: 11f766998dd0ca24dbe445905db26bc9, type: 3}
-  - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
-  - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
-  - {fileID: 21300000, guid: a3437e4e4a6bcda44acdec2e496a71a0, type: 3}
-  m_PackedSpriteNamesToIndex:
-  - SelectedParcel
-  - HomePin
-  - SceneOfInterestContainer12
-  - SceneOfInterestStar
-  - Compass
-  - UserMarkerEclipse128
+  m_PackedSprites: []
+  m_PackedSpriteNamesToIndex: []
   m_RenderDataMap: {}
   m_Tag: MapRenderer
   m_IsVariant: 0
