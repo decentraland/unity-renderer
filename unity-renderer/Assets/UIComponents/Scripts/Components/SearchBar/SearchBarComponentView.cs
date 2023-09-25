@@ -23,7 +23,7 @@ public interface ISearchBarComponentView
     /// Order a specific search.
     /// </summary>
     /// <param name="value">Text to search.</param>
-    void SubmitSearch(string value, bool notify = true);
+    void SubmitSearch(string value, bool notifyInputField = true, bool notify = true);
 
     /// <summary>
     /// Clear the search component.
@@ -55,6 +55,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     public event Action<string> OnSearchText;
     public event Action<string> OnSubmit;
+    public event Action<string> OnSearchValueChanged;
+    public event Action<bool> OnSelected;
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
@@ -68,6 +70,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         inputField.onValueChanged.AddListener(OnValueChanged);
         inputField.onSubmit.AddListener(s => SubmitSearch(s));
         clearSearchButton.onClick.AddListener(() => ClearSearch());
+        inputField.onSelect.RemoveAllListeners();
+        inputField.onSelect.AddListener((text)=>OnSelected?.Invoke(true));
 
         SetClearMode();
     }
@@ -96,11 +100,11 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         placeHolderText.text = value;
     }
 
-    public void SubmitSearch(string value, bool notify = true)
+    public void SubmitSearch(string value, bool notifyInputField = true, bool notify = true)
     {
         StopSearchCoroutine();
 
-        if (notify)
+        if (notifyInputField)
             inputField.text = value;
         else
             inputField.SetTextWithoutNotify(value);
@@ -147,6 +151,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void OnValueChanged(string value)
     {
+        OnSearchValueChanged?.Invoke(value);
         AudioScriptableObjects.input.Play(true);
         if (model.idleTimeToTriggerSearch < 0)
             return;

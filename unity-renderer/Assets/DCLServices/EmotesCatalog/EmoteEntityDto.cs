@@ -1,7 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Emotes;
+﻿using DCL.Emotes;
 using System;
-using UnityEngine;
 
 namespace DCLServices.EmotesCatalog
 {

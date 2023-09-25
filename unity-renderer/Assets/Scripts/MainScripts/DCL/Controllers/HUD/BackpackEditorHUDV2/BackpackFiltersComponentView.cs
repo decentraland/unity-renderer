@@ -91,7 +91,7 @@ namespace DCL.Backpack
         }
 
         public void SetSearchText(string text, bool notify) =>
-            searchBar.SubmitSearch(text, notify);
+            searchBar.SubmitSearch(text, notify, notify);
 
         public void SetOnlyCollectiblesToggleIsOn(bool isOn, bool notify)
         {

@@ -13,6 +13,7 @@ using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
 using DCLServices.CameraReelService;
 using DCLServices.CopyPaste.Analytics;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
@@ -129,7 +130,8 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     featureFlagsDataStore);
-                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
+                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider,
+                    result.Get<IServiceProviders>().catalyst, result.Get<ILambdasService>(), DataStore.i);
                 var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
                 return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, featureFlagsDataStore, KernelConfig.i);
             });
@@ -151,6 +153,8 @@ namespace DCL
                 KernelConfig.i,
                 new WearablesWebInterfaceBridge(),
                 featureFlagsDataStore));
+
+            result.Register<ICustomNftCollectionService>(WebInterfaceCustomNftCatalogBridge.GetOrCreate);
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
