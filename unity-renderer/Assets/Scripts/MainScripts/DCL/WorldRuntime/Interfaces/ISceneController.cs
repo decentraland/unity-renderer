@@ -2,8 +2,6 @@
 using System;
 using DCL.Controllers;
 using DCL.Models;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace DCL
 {

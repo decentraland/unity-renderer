@@ -212,11 +212,7 @@ public class NativeBridgeCommunication : IKernelCommunication
 
         QueuedSceneMessage_Scene GetSceneMessageInstance()
         {
-            ConcurrentQueue<QueuedSceneMessage_Scene> sceneMessagesPool = queueHandler.sceneMessagesPool;
-
-            if (!sceneMessagesPool.TryDequeue(out QueuedSceneMessage_Scene message))
-                message = new QueuedSceneMessage_Scene();
-
+            var message = new QueuedSceneMessage_Scene();
             message.sceneNumber = currentSceneNumber;
             message.tag = currentTag;
             message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
