@@ -4,8 +4,6 @@ public class ProfileValidator
 {
     private string catalystPublicKey; // FD:: this needs to be fetched
 
-    public string CatalystPublicKey { get; set; }
-
     /// <summary>
     /// Calls appropriate functions to validate the profile
     /// </summary>

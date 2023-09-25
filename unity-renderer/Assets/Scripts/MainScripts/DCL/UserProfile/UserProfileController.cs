@@ -27,8 +27,7 @@ public class UserProfileController : MonoBehaviour
     private readonly List<WebInterface.SaveLinksPayload.Link> linkList = new ();
     private bool baseWearablesAlreadyRequested;
 
-    private readonly IUserProfileAPIClient userProfileAPIClient = new UserProfileAPIClient();
-    public ProfileValidator ProfileValidator { get; private set; }
+    private ProfileValidator profileValidator;
 
     public static UserProfileDictionary userProfilesCatalog
     {
@@ -47,6 +46,10 @@ public class UserProfileController : MonoBehaviour
 
     public UserProfileDictionary AllProfiles => userProfilesCatalog;
 
+    public ProfileValidator ProfileValidator
+    {
+        get { return profileValidator; }
+    }
 
     public void Awake()
     {
@@ -54,12 +57,10 @@ public class UserProfileController : MonoBehaviour
         ownUserProfile = UserProfile.GetOwnUserProfile();
 
         // FD:: Initialize validator
-        ProfileValidator = new ProfileValidator();
+        profileValidator = new ProfileValidator();
         // FD:: Subscribe for /about endpoint initialization
         DataStore.i.realm.playerRealmAboutConfiguration.OnChange += PlayerRealmAboutConfigurationChanged;
 
-        // FD:: Fetch Catalyst public key
-        FetchCatalystPublicKey(CancellationToken.None).Forget();
     }
 
     private void PlayerRealmAboutConfigurationChanged(AboutResponse.Types.AboutConfiguration current, AboutResponse.Types.AboutConfiguration previous)
@@ -253,65 +254,6 @@ public class UserProfileController : MonoBehaviour
         return task.Task
                    .Timeout(TimeSpan.FromSeconds(REQUEST_TIMEOUT))
                    .AttachExternalCancellation(cancellationToken);
-    }
-
-    // =================================================================
-    // FD:: ========== New test stuff for profile validation ===========
-
-    private async UniTask FetchCatalystPublicKey(CancellationToken ct)
-    {
-        try
-        {
-            string publicKey = await userProfileAPIClient.FetchCatalystPublicKey(ct);
-            ProfileValidator.CatalystPublicKey = publicKey;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Failed to fetch Catalyst public key: {e.Message}");
-        }
-    }
-
-
-    private async UniTask<UserProfileModel> FetchAndUpdateUserProfile(string ethAddress, CancellationToken ct)
-    {
-        try
-        {
-            UserProfileModel userProfileModel = await userProfileAPIClient.FetchUserProfile(ethAddress, ct);
-
-            // Update the profile
-            ownUserProfile.UpdateData(userProfileModel);
-            return userProfileModel;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Failed to update user profile: {e.Message}");
-            return null;
-        }
-    }
-
-    private string CatalystUrlFromAboutEndpoint
-    {
-        get
-        {
-            var playerRealmAboutConfiguration = DataStore.i.realm.playerRealmAboutConfiguration.Get();
-            string catalystUrl = playerRealmAboutConfiguration.ToString(); // FD:: catalystUrl field not present yet in this /about implementation
-            return catalystUrl;
-        }
-    }
-
-    public async UniTask<bool> ValidateUserProfile(string ethAddress, CancellationToken ct)
-    {
-        UserProfileModel model = await FetchAndUpdateUserProfile(ethAddress, ct);
-
-        if (model == null)
-        {
-            return false;
-        }
-
-        string checksum = model.checksum;
-        string signedChecksum = model.checksum; // FD:: signedChecksum does not exists yet
-
-        return ProfileValidator.ValidateUserProfile(model, checksum, signedChecksum, CatalystUrlFromAboutEndpoint);
     }
 
 }
