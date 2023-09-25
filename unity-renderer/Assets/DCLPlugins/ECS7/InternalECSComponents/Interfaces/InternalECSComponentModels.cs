@@ -1,6 +1,8 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECSComponents;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -303,21 +305,9 @@ namespace DCL.ECS7.InternalComponents
     {
         public bool dirty { get; set; }
         public bool removed;
-        public Transform transform;
-        public Vector3 startPosition;
-        public Vector3 endPosition;
-        public float durationInMilliseconds;
-        public float calculatedSpeed;
-        public float currentTime;
         public bool playing;
-
-        public void UpdateSpeedCalculation()
-        {
-            // Debug.Log($"InternalTween struct - duration in milliseconds: {durationInMilliseconds}");
-            float distance = (endPosition - startPosition).magnitude;
-            // float durationInSeconds = durationInMilliseconds / 1000; // why the fuck doesn't this work correctly ???
-            float durationInSeconds = durationInMilliseconds / 100;
-            this.calculatedSpeed = distance / durationInSeconds;
-        }
+        public float currentTime;
+        public Transform transform;
+        public TweenerCore<Vector3, Vector3, VectorOptions> tweener;
     }
 }

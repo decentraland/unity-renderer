@@ -3,6 +3,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DG.Tweening;
 using UnityEngine;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
@@ -34,17 +35,39 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
         if (!IsSameAsLastModel(model))
         {
+            Transform entityTransform = entity.gameObject.transform;
+            float durationInSeconds = model.Duration / 1000;
+
+            internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
-            internalComponentModel.transform = entity.gameObject.transform;
-            internalComponentModel.startPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
-            internalComponentModel.endPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
-            internalComponentModel.durationInMilliseconds = model.Duration;
+
+            // TODO: Evaluate if we need local values instead of global...
+            // Move to start position
+            entityTransform.position = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
+            var tweener = entityTransform.DOMove(
+                ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
+                durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+
+            tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
+
+            internalComponentModel.tweener = tweener;
         }
+
         internalComponentModel.playing = isPlaying;
-        internalComponentModel.UpdateSpeedCalculation();
         internalTweenComponent.PutFor(scene, entity, internalComponentModel);
 
         lastModel = model;
+    }
+
+    private Ease SDKEasingFunctinToDOTweenEaseType(EasingFunction easingFunction)
+    {
+        switch (easingFunction)
+        {
+            case EasingFunction.TfLinear:
+            default:
+                return Ease.Linear;
+                break;
+        }
     }
 
     private bool IsSameAsLastModel(PBTween targetModel)
@@ -53,6 +76,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 && lastModel.CurrentTime.Equals(targetModel.CurrentTime)
                 && lastModel.Duration.Equals(targetModel.Duration)
                 && lastModel.Move.Start.Equals(targetModel.Move.Start)
-                && lastModel.Move.End.Equals(targetModel.Move.End));
+                && lastModel.Move.End.Equals(targetModel.Move.End)
+                && lastModel.TweenFunction.Equals(targetModel.TweenFunction));
     }
 }

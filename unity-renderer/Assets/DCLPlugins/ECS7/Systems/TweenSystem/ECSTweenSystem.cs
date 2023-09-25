@@ -6,6 +6,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,45 +57,31 @@ namespace ECSSystems.TweenSystem
 
                 if (model.removed)
                 {
+                    model.tweener.Kill();
                     writer.Remove(entity, ComponentID.TWEEN_STATE);
                     continue;
                 }
 
-                Vector3 startPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.startPosition, scene);
-                Vector3 endPos = WorldStateUtils.ConvertPointInSceneToUnityPosition(model.endPosition, scene);
-
-                if (model.currentTime.Equals(1f) && model.transform.position == endPos)
+                float currentTime = model.tweener.ElapsedPercentage();
+                if (currentTime.Equals(1f) && model.currentTime.Equals(1f))
                     continue;
 
                 bool playing = model.playing;
-                float currentTime = model.currentTime;
 
-                // Configure a new Tween with previously existent TweenState (e.g. synched in multiplayer scene)
+                // TODO: Remove if we don't need it...
                 if (WebInterface.CheckURLParam(QUERY_PARAM_SYNC_TWEENSTATE) &&
                     model.currentTime == 0 &&
                     tweenStateComponent.TryGet(scene, entity, out var existentTweenState))
                 {
                     playing = model.playing = existentTweenState.model.State != TweenStateStatus.TsPaused;
                     currentTime = model.currentTime = existentTweenState.model.CurrentTime;
-                    Debug.Log($"ENGINE TWEEN SYSTEM - Previous tween state applied to new Tween - current-time:{currentTime}; state-status:{existentTweenState.model.State}");
-                    model.transform.position = Vector3.Lerp(startPos, endPos, currentTime);
 
-                    // update internal component if tween is paused
-                    if (!playing)
-                        tweenInternalComponent.PutFor(scene, entity, model);
+                    Debug.Log($"ENGINE TWEEN SYSTEM - Previous tween state applied to new Tween - current-time:{currentTime}; state-status:{existentTweenState.model.State}");
+                    model.tweener.Goto(currentTime * model.tweener.Duration(), playing);
                 }
 
                 if (playing)
                 {
-                    currentTime += model.calculatedSpeed * Time.deltaTime;
-                    if (currentTime > 1f)
-                        currentTime = 1f;
-
-                    model.transform.position = Vector3.Lerp(startPos, endPos, currentTime);
-                    model.currentTime = currentTime;
-
-                    tweenInternalComponent.PutFor(scene, entity, model);
-
                     tweenStateComponentModel.CurrentTime = currentTime;
                     tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
                 }
@@ -107,6 +94,9 @@ namespace ECSSystems.TweenSystem
                 writer.Put(entity, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
                 UpdateTransformComponent(scene, entity, writer, model);
+
+                model.currentTime = currentTime;
+                tweenInternalComponent.PutFor(scene, entity, model);
             }
         }
 
