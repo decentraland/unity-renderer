@@ -13,7 +13,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
     public class SatelliteChunkController: IChunkController
     {
         private const int PIXELS_PER_UNIT = 50;
-        private const string CHUNKS_API = "https://api.decentraland.org/v1/map.png";
+        private const string CHUNKS_API = "https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/";
 
         private readonly Vector2 Vector2_OneHalf = new (0.5f, 0.5f);
 
@@ -33,9 +33,9 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             transform.localPosition = chunkLocalPosition;
         }
 
-        public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
+        public async UniTask LoadImage(Vector2Int chunkId, CancellationToken ct)
         {
-            var url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{mapPosition.x}%2C{mapPosition.y}.jpg";
+            var url = $"{CHUNKS_API}{chunkId.x}%2C{chunkId.y}.jpg";
             var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
 
             var texture = CreateTexture(webRequest.downloadHandler.data);

@@ -21,6 +21,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
         const int ATLAS_CHUNK_SIZE = 1020;
+        private const int SATELLITE_CHUNK_SIZE = 512;
+
         const int PARCEL_SIZE = 20;
         // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
         const float CULLING_BOUNDS_IN_PARCELS = 10;
@@ -86,8 +88,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             }
         }
 
-        private const int SATELLITE_CHUNK_SIZE = 512;
-
         private async UniTask CreateSatelliteAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
             var chunkAtlas = new SatelliteChunkAtlasController(configuration.SatelliteAtlasRoot, SATELLITE_CHUNK_SIZE, coordsUtils, cullingController, chunkBuilder: CreateSatelliteChunk);
@@ -98,13 +98,13 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             layers.Add(MapLayer.SatelliteAtlas, chunkAtlas);
         }
 
-        private async UniTask<IChunkController> CreateSatelliteChunk(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct)
+        private async UniTask<IChunkController> CreateSatelliteChunk(Vector3 chunkLocalPosition, Vector2Int chunkId, Transform parent, CancellationToken ct)
         {
             SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
 
-            var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
+            var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent);
             chunk.SetDrawOrder(MapRendererDrawOrder.SATELLITE_ATLAS);
-            await chunk.LoadImage(SATELLITE_CHUNK_SIZE, PARCEL_SIZE, coordsCenter, ct);
+            await chunk.LoadImage(chunkId, ct);
 
             return chunk;
         }
