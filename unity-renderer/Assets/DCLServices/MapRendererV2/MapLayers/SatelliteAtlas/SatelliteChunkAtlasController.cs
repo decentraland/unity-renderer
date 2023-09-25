@@ -45,12 +45,12 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 
             for (var i = 0; i < 8; i++)
             {
-                float x = -2511.94f + (798.72f * i);
+                float x = -2655.94f + (798.72f * i);
                     // (-152 * parcelSize) + (i * parcelsInsideChunk * parcelSize) - halfParcelSize;
 
                 for (var j = 0; j < 8; j++)
                 {
-                    float y = 2443.241f - (798.72f * j);
+                    float y = 2637.241f - (798.72f * j);
 
                     if (chunksCreating.Count >= CHUNKS_CREATED_PER_BATCH)
                     {
