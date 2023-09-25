@@ -9,10 +9,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 {
     internal class ChunkAtlasController : MapLayerControllerBase, IAtlasController
     {
-        public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition,
-            Vector2Int coordsCenter,
-            Transform parent,
-            CancellationToken ct);
+        public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct);
 
         public const int CHUNKS_CREATED_PER_BATCH = 10;
 

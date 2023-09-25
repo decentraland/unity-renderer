@@ -7,12 +7,13 @@ namespace DCLServices.MapRendererV2.MapLayers
     {
         None,
         Atlas = 1,
-        HomePoint = 1 << 1,
-        ScenesOfInterest = 1 << 2,
-        PlayerMarker = 1 << 3,
-        HotUsersMarkers = 1 << 4,
-        ColdUsersMarkers = 1 << 5,
-        ParcelHoverHighlight = 1 << 6
+        SatelliteAtlas = 1 << 1,
+        HomePoint = 1 << 2,
+        ScenesOfInterest = 1 << 3,
+        PlayerMarker = 1 << 4,
+        HotUsersMarkers = 1 << 5,
+        ColdUsersMarkers = 1 << 6,
+        ParcelHoverHighlight = 1 << 7
         // Add yours
     }
 }

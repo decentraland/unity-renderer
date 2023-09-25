@@ -1,15 +1,16 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using System;
+using DCLServices.MapRendererV2.MapLayers.Atlas;
+using System.Collections.Generic;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using Object = UnityEngine.Object;
 
-namespace DCLServices.MapRendererV2.MapLayers.Atlas
+namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 {
-    public class ChunkController : IChunkController
+    public class SatelliteChunkController: IChunkController
     {
         private const int PIXELS_PER_UNIT = 50;
         private const string CHUNKS_API = "https://api.decentraland.org/v1/map.png";
@@ -20,24 +21,25 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private Service<IWebRequestController> webRequestController;
 
-        public ChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
+        public SatelliteChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
         {
             spriteRenderer = Object.Instantiate(prefab, parent);
 #if UNITY_EDITOR
             spriteRenderer.gameObject.name = $"Chunk {coordsCenter.x},{coordsCenter.y}";
 #endif
-            var transform = spriteRenderer.transform;
 
-            transform.localScale = Vector3.one * PIXELS_PER_UNIT;
+            var transform = spriteRenderer.transform;
+            transform.localScale = Vector3.one * 78;
             transform.localPosition = chunkLocalPosition;
         }
 
         public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
-            string url = $"{CHUNKS_API}?center={mapPosition.x},{mapPosition.y}&width={chunkSize}&height={chunkSize}&size={parcelSize}";
-            var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
+            // string url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{mapPosition.x}%2C{mapPosition.y}.jpg";
+            // var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
 
-            var texture = CreateTexture(webRequest.downloadHandler.data);
+            string assetPath = $"Assets/DCLServices/MapRendererV2/MapLayers/SatelliteAtlas/3/{mapPosition.x},{mapPosition.y}.jpg";
+            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
             texture.wrapMode = TextureWrapMode.Clamp;
 
             spriteRenderer.sprite =
