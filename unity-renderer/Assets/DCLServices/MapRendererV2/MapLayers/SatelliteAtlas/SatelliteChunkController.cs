@@ -35,12 +35,12 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 
         public async UniTask LoadImage(int chunkSize, int parcelSize, Vector2Int mapPosition, CancellationToken ct)
         {
-            // string url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{mapPosition.x}%2C{mapPosition.y}.jpg";
-            // var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
+            var url = $"https://media.githubusercontent.com/media/genesis-city/genesis.city/master/map/latest/3/{mapPosition.x}%2C{mapPosition.y}.jpg";
+            var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
 
-            string assetPath = $"Assets/DCLServices/MapRendererV2/MapLayers/SatelliteAtlas/3/{mapPosition.x},{mapPosition.y}.jpg";
-            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+            var texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
+
 
             spriteRenderer.sprite =
                 Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
