@@ -1,16 +1,19 @@
-import { call } from 'redux-saga/effects'
-import { trackEvent } from 'shared/analytics/trackEvent'
+import {call} from 'redux-saga/effects'
+import {trackEvent} from 'shared/analytics/trackEvent'
 import defaultLogger from 'lib/logger'
-import { validateAvatar } from 'shared/profiles/schemaValidation'
-import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import { RemoteProfile, REMOTE_AVATAR_IS_INVALID } from 'shared/profiles/types'
-import { cachedRequest } from './cachedRequest'
+import {validateAvatar} from 'shared/profiles/schemaValidation'
+import {ensureAvatarCompatibilityFormat} from 'lib/decentraland/profiles/transformations/profileToServerFormat'
+import {REMOTE_AVATAR_IS_INVALID, RemoteProfileWithHash} from 'shared/profiles/types'
+import {cachedRequest} from './cachedRequest'
+import {isImpostor} from "../../impostorValidation";
+import {waitForRealm} from "../../../realm/waitForRealmAdapter";
+import {IRealmAdapter} from "../../../realm/types";
 
 export function* fetchCatalystProfile(userId: string, version?: number) {
   try {
-    const remoteProfile: RemoteProfile = yield call(cachedRequest, userId, version)
+    const remoteProfile: RemoteProfileWithHash = yield call(cachedRequest, userId, version)
 
-    let avatar = remoteProfile.avatars[0]
+    let avatar = remoteProfile.profile.avatars[0]
 
     if (avatar) {
       avatar = ensureAvatarCompatibilityFormat(avatar)
@@ -25,6 +28,13 @@ export function* fetchCatalystProfile(userId: string, version?: number) {
       // old lambdas profiles don't have claimed names if they don't have the "name" property
       avatar.hasClaimedName = !!avatar.name && avatar.hasClaimedName
       avatar.hasConnectedWeb3 = true
+
+      const realmAdapter: IRealmAdapter = yield call(waitForRealm)
+
+      if (yield call(isImpostor, remoteProfile, realmAdapter.about.lambdas.address)) {
+        defaultLogger.warn(`Remote avatar impostor detected.`, userId, remoteProfile)
+        return null;
+      }
 
       return avatar
     }

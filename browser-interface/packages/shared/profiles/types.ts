@@ -32,3 +32,9 @@ export interface RemoteProfile {
   timestamp: number
   avatars: Avatar[]
 }
+
+export interface RemoteProfileWithHash {
+  profile: RemoteProfile
+  hash: string
+  signedHash: string
+}

@@ -14,7 +14,7 @@ import {
   sendProfileToRenderer
 } from '../actions'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
-import type { RemoteProfile } from '../types'
+import type {RemoteProfileWithHash} from '../types'
 import { createFakeName } from 'lib/decentraland/profiles/names/fakeName'
 import { takeLatestById } from './takeLatestById'
 import { fetchProfile } from './fetchProfile'
@@ -83,12 +83,12 @@ export async function generateRandomUserProfile(userId: string, reason: string):
 
   let profile: Avatar | undefined = undefined
   try {
-    const profiles: RemoteProfile | null = await cachedRequest(`default${_number}`)
+    const profiles: RemoteProfileWithHash | null = await cachedRequest(`default${_number}`)
     if (!profiles) {
       throw new Error('Could not request default avatars!')
     }
-    if (profiles?.avatars.length !== 0) {
-      profile = profiles.avatars[0]
+    if (profiles?.profile?.avatars.length !== 0) {
+      profile = profiles.profile.avatars[0]
     }
   } catch (e: any) {
     // in case something fails keep going and use backup profile

@@ -1,7 +1,7 @@
-import type { RemoteProfile } from 'shared/profiles/types'
-import { requestProfile } from './requestProfile'
+import type {RemoteProfileWithHash} from 'shared/profiles/types'
+import {requestProfile} from './requestProfile'
 
-export const cachedRequests = new Map<string, Promise<RemoteProfile | null>>()
+export const cachedRequests = new Map<string, Promise<RemoteProfileWithHash | null>>()
 
 export function requestCacheKey(userId: string, version?: number) {
   if (userId.startsWith('default')) return userId
@@ -9,7 +9,7 @@ export function requestCacheKey(userId: string, version?: number) {
   return null
 }
 
-export function cachedRequest(userId: string, version?: number): Promise<RemoteProfile | null> {
+export function cachedRequest(userId: string, version?: number): Promise<RemoteProfileWithHash | null> {
   const key = requestCacheKey(userId, version)
 
   if (key !== null && cachedRequests.has(key)) {
@@ -28,7 +28,7 @@ export function cachedRequest(userId: string, version?: number): Promise<RemoteP
         cachedRequests.delete(key)
       }
       // TODO: Document why are we returning an empty response instead of null
-      return { avatars: [], timestamp: Date.now() }
+      return {profile: {avatars: [], timestamp: Date.now()}, hash: "", signedHash: ""}
     } else {
       return _
     }
