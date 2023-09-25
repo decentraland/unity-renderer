@@ -33,8 +33,21 @@ namespace DCL.ECSComponents {
             "SACIAQESGQoMY3VycmVudF90aW1lGAUgASgCSAGIAQFCCgoIX3BsYXlpbmdC",
             "DwoNX2N1cnJlbnRfdGltZSJeCgRNb3ZlEisKBXN0YXJ0GAEgASgLMhwuZGVj",
             "ZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEikKA2VuZBgCIAEoCzIcLmRlY2Vu",
-            "dHJhbGFuZC5jb21tb24uVmVjdG9yMyofCg5FYXNpbmdGdW5jdGlvbhINCglU",
-            "Rl9MSU5FQVIQAEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "dHJhbGFuZC5jb21tb24uVmVjdG9yMyrnBAoORWFzaW5nRnVuY3Rpb24SDQoJ",
+            "VEZfTElORUFSEAASEQoNVEZfRUFTRUlOUVVBRBABEhIKDlRGX0VBU0VPVVRR",
+            "VUFEEAISDwoLVEZfRUFTRVFVQUQQAxIRCg1URl9FQVNFSU5TSU5FEAQSEgoO",
+            "VEZfRUFTRU9VVFNJTkUQBRIPCgtURl9FQVNFU0lORRAGEhEKDVRGX0VBU0VJ",
+            "TkVYUE8QBxISCg5URl9FQVNFT1VURVhQTxAIEg8KC1RGX0VBU0VFWFBPEAkS",
+            "FAoQVEZfRUFTRUlORUxBU1RJQxAKEhUKEVRGX0VBU0VPVVRFTEFTVElDEAsS",
+            "EgoOVEZfRUFTRUVMQVNUSUMQDBITCg9URl9FQVNFSU5CT1VOQ0UQDRIUChBU",
+            "Rl9FQVNFT1VUQk9VTkNFEA4SEQoNVEZfRUFTRUJPVU5DRRAPEhIKDlRGX0VB",
+            "U0VJTkNVQklDEBASEwoPVEZfRUFTRU9VVENVQklDEBESEAoMVEZfRUFTRUNV",
+            "QklDEBISEgoOVEZfRUFTRUlOUVVBUlQQExITCg9URl9FQVNFT1VUUVVBUlQQ",
+            "FBIQCgxURl9FQVNFUVVBUlQQFRISCg5URl9FQVNFSU5RVUlOVBAWEhMKD1RG",
+            "X0VBU0VPVVRRVUlOVBAXEhAKDFRGX0VBU0VRVUlOVBAYEhEKDVRGX0VBU0VJ",
+            "TkNJUkMQGRISCg5URl9FQVNFT1VUQ0lSQxAaEg8KC1RGX0VBU0VDSVJDEBsS",
+            "EQoNVEZfRUFTRUlOQkFDSxAcEhIKDlRGX0VBU0VPVVRCQUNLEB0SDwoLVEZf",
+            "RUFTRUJBQ0sQHkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.EasingFunction), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -46,11 +59,45 @@ namespace DCL.ECSComponents {
 
   }
   #region Enums
+  /// <summary>
+  /// Implementation guidelines for these easing functions can be found 
+  /// at https://github.com/ai/easings.net/blob/6fcd5f852a470bf1a7890e8178afa0f471d5f2ec/src/easings/easingsFunctions.ts
+  /// </summary>
   public enum EasingFunction {
     /// <summary>
     /// default
     /// </summary>
     [pbr::OriginalName("TF_LINEAR")] TfLinear = 0,
+    [pbr::OriginalName("TF_EASEINQUAD")] TfEaseinquad = 1,
+    [pbr::OriginalName("TF_EASEOUTQUAD")] TfEaseoutquad = 2,
+    [pbr::OriginalName("TF_EASEQUAD")] TfEasequad = 3,
+    [pbr::OriginalName("TF_EASEINSINE")] TfEaseinsine = 4,
+    [pbr::OriginalName("TF_EASEOUTSINE")] TfEaseoutsine = 5,
+    [pbr::OriginalName("TF_EASESINE")] TfEasesine = 6,
+    [pbr::OriginalName("TF_EASEINEXPO")] TfEaseinexpo = 7,
+    [pbr::OriginalName("TF_EASEOUTEXPO")] TfEaseoutexpo = 8,
+    [pbr::OriginalName("TF_EASEEXPO")] TfEaseexpo = 9,
+    [pbr::OriginalName("TF_EASEINELASTIC")] TfEaseinelastic = 10,
+    [pbr::OriginalName("TF_EASEOUTELASTIC")] TfEaseoutelastic = 11,
+    [pbr::OriginalName("TF_EASEELASTIC")] TfEaseelastic = 12,
+    [pbr::OriginalName("TF_EASEINBOUNCE")] TfEaseinbounce = 13,
+    [pbr::OriginalName("TF_EASEOUTBOUNCE")] TfEaseoutbounce = 14,
+    [pbr::OriginalName("TF_EASEBOUNCE")] TfEasebounce = 15,
+    [pbr::OriginalName("TF_EASEINCUBIC")] TfEaseincubic = 16,
+    [pbr::OriginalName("TF_EASEOUTCUBIC")] TfEaseoutcubic = 17,
+    [pbr::OriginalName("TF_EASECUBIC")] TfEasecubic = 18,
+    [pbr::OriginalName("TF_EASEINQUART")] TfEaseinquart = 19,
+    [pbr::OriginalName("TF_EASEOUTQUART")] TfEaseoutquart = 20,
+    [pbr::OriginalName("TF_EASEQUART")] TfEasequart = 21,
+    [pbr::OriginalName("TF_EASEINQUINT")] TfEaseinquint = 22,
+    [pbr::OriginalName("TF_EASEOUTQUINT")] TfEaseoutquint = 23,
+    [pbr::OriginalName("TF_EASEQUINT")] TfEasequint = 24,
+    [pbr::OriginalName("TF_EASEINCIRC")] TfEaseincirc = 25,
+    [pbr::OriginalName("TF_EASEOUTCIRC")] TfEaseoutcirc = 26,
+    [pbr::OriginalName("TF_EASECIRC")] TfEasecirc = 27,
+    [pbr::OriginalName("TF_EASEINBACK")] TfEaseinback = 28,
+    [pbr::OriginalName("TF_EASEOUTBACK")] TfEaseoutback = 29,
+    [pbr::OriginalName("TF_EASEBACK")] TfEaseback = 30,
   }
 
   #endregion
