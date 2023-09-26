@@ -81,7 +81,7 @@ namespace DCL.ContentModeration
 
         private void OnAgeConfirmationAccepted()
         {
-            contentModerationDataStore.adultContentSettingEnabled.Set(true);
+            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.ACCEPTED, true);
             settingsDataStore.settingsPanelVisible.Set(false);
             adultContentEnabledNotificationComponentView.ShowNotification();
             HideNotificationAfterDelay(5).Forget();
@@ -96,13 +96,12 @@ namespace DCL.ContentModeration
 
         private void OnAgeConfirmationRejected()
         {
-            contentModerationDataStore.adultContentSettingEnabled.Set(false, false);
-            contentModerationDataStore.resetAdultContentSetting.Set(true, true);
+            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.REJECTED, true);
         }
 
-        private void OnAdultContentSettingChanged(bool current, bool previous)
+        private void OnAdultContentSettingChanged(bool isEnabled, bool _)
         {
-            if (!current)
+            if (!isEnabled)
                 adultContentEnabledNotificationComponentView.HideNotification();
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);

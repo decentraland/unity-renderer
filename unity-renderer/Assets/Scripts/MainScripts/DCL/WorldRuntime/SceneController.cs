@@ -908,6 +908,17 @@ namespace DCL
 
         private void OnAdultContentSettingChange(bool isEnabled, bool previousIsEnabled)
         {
+            if (!isContentModerationFeatureEnabled)
+                return;
+
+            if (isEnabled == previousIsEnabled)
+                return;
+
+            var loadedScenes = Environment.i.world.state.GetLoadedScenes();
+            realodAdultScenesCts = realodAdultScenesCts.SafeRestart();
+            ReloadAdultScenesAsync(loadedScenes.ToList(), realodAdultScenesCts.Token).Forget();
+            return;
+
             async UniTaskVoid ReloadAdultScenesAsync(List<KeyValuePair<int, IParcelScene>> loadedScenes, CancellationToken ct)
             {
                 foreach (KeyValuePair<int,IParcelScene> scene in loadedScenes)
@@ -922,16 +933,6 @@ namespace DCL
                         return;
                 }
             }
-
-            if (!isContentModerationFeatureEnabled)
-                return;
-
-            if (isEnabled == previousIsEnabled)
-                return;
-
-            var loadedScenes = Environment.i.world.state.GetLoadedScenes();
-            realodAdultScenesCts = realodAdultScenesCts.SafeRestart();
-            ReloadAdultScenesAsync(loadedScenes.ToList(), realodAdultScenesCts.Token).Forget();
         }
     }
 }

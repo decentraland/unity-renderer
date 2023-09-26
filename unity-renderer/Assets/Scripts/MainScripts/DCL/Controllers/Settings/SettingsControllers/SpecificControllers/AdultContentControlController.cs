@@ -11,14 +11,12 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
         {
             base.Initialize();
             CommonScriptableObjects.adultContentSettingDeactivated.Set(!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation"));
-            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange += OnAdultContentAgeConfirmationAccepted;
-            DataStore.i.contentModeration.resetAdultContentSetting.OnChange += OnAdultContentAgeConfirmationRejected;
+            DataStore.i.contentModeration.adultContentAgeConfirmationResult.OnChange += OnAdultContentAgeConfirmationResultChanged;
         }
 
         public override void OnDestroy()
         {
-            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange -= OnAdultContentAgeConfirmationAccepted;
-            DataStore.i.contentModeration.resetAdultContentSetting.OnChange -= OnAdultContentAgeConfirmationRejected;
+            DataStore.i.contentModeration.adultContentAgeConfirmationResult.OnChange -= OnAdultContentAgeConfirmationResultChanged;
             base.OnDestroy();
         }
 
@@ -29,28 +27,24 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
         {
             var value = (bool) newValue;
 
-            currentGeneralSettings.adultContent = false;
-
             if (value)
                 DataStore.i.contentModeration.adultContentAgeConfirmationVisible.Set(true, true);
             else
+            {
+                currentGeneralSettings.adultContent = false;
                 DataStore.i.contentModeration.adultContentSettingEnabled.Set(false, true);
+            }
         }
 
-        private void OnAdultContentAgeConfirmationAccepted(bool isAccepted, bool _)
+        private void OnAdultContentAgeConfirmationResultChanged(DataStore_ContentModeration.AdultContentAgeConfirmationResult result, DataStore_ContentModeration.AdultContentAgeConfirmationResult _)
         {
-            if (!isAccepted)
-                return;
-
-            currentGeneralSettings.adultContent = true;
-        }
-
-        private void OnAdultContentAgeConfirmationRejected(bool isRejected, bool _)
-        {
-            if (!isRejected)
-                return;
-
-            RaiseToggleValueChanged(false);
+            if (result == DataStore_ContentModeration.AdultContentAgeConfirmationResult.ACCEPTED)
+            {
+                currentGeneralSettings.adultContent = true;
+                DataStore.i.contentModeration.adultContentSettingEnabled.Set(true, true);
+            }
+            else
+                RaiseToggleValueChanged(false);
         }
     }
 }
