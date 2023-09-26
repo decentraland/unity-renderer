@@ -66,7 +66,7 @@ export async function fetchCatalystStatus(
     aboutResponse.status === ServerConnectionStatus.OK &&
     result &&
     result.comms &&
-    result.configurations && 
+    result.configurations &&
     result.configurations.realmName &&
     result.bff &&
     result.content &&
@@ -186,7 +186,9 @@ async function resolveOfflineRealmAboutFromConnectionString(
         healthy: true,
         lambdas: {
           healthy: true,
-          publicUrl: `${baseUrl}lambdas`
+          publicUrl: `${baseUrl}lambdas`,
+          publicKey: '',
+          address: ''
         },
         acceptingUsers: true
       },

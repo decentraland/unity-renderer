@@ -3,7 +3,7 @@ import {hashV1} from "@dcl/hashing";
 import {Avatar} from "@dcl/schemas";
 import {hash, recover} from "eth-crypto";
 
-export async function isImpostor(profile: RemoteProfileWithHash, catalystPublicKey: string): Promise<boolean> {
+export async function isImpostor(profile: RemoteProfileWithHash, catalystPublicKey: string | undefined): Promise<boolean> {
   let profileChecksum = await getProfileChecksum(profile.profile.avatars[0]);
   let signature = recover(profile.signedHash, hash.keccak256(profile.hash));
   return profileChecksum != profile.hash || signature != catalystPublicKey
