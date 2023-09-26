@@ -2,11 +2,11 @@
 using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
-using System.Collections.Generic;
+using System;
 using System.Threading;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 {
@@ -29,25 +29,60 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 #endif
 
             var transform = spriteRenderer.transform;
-            transform.localScale = Vector3.one * 78;
+            transform.localScale = Vector3.one * 78.1f;
             transform.localPosition = chunkLocalPosition;
+
+            internalCts = new CancellationTokenSource();
+        }
+
+        private CancellationTokenSource internalCts;
+        private CancellationTokenSource linkedCts;
+        private int webRequestAttempts;
+        private const int MAX_ATTEMPTS = 3;
+
+        private async UniTask<UnityWebRequest> GetTextureFromWebAsync(string url, CancellationToken ct)
+        {
+            UnityWebRequest webRequest;
+
+            try
+            {
+                webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken:  linkedCts.Token);
+            }
+            catch (Exception e)
+            {
+                if (webRequestAttempts < MAX_ATTEMPTS)
+                {
+                    webRequestAttempts++;
+                    webRequest = await GetTextureFromWebAsync(url, linkedCts.Token);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return webRequest;
         }
 
         public async UniTask LoadImage(Vector2Int chunkId, CancellationToken ct)
         {
+            webRequestAttempts = 0;
+            linkedCts = CancellationTokenSource.CreateLinkedTokenSource(internalCts.Token, ct);
+
             var url = $"{CHUNKS_API}{chunkId.x}%2C{chunkId.y}.jpg";
-            var webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: ct);
+            UnityWebRequest webRequest = await GetTextureFromWebAsync(url, linkedCts.Token);
 
             var texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
 
-            Debug.Log(texture.width);
-            Debug.Log(texture.height);
+            Debug.Log(texture.width + " " + texture.height);
 
-            spriteRenderer.sprite =
-                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, pixelsPerUnit: PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
+            spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, pixelsPerUnit: PIXELS_PER_UNIT,
+                0, SpriteMeshType.FullRect, Vector4.one, false);
 
             Debug.Log(GetScaledSpriteSize(spriteRenderer));
+            return;
+
             Texture2D CreateTexture(byte[] data)
             {
                 Texture2D texture2D = new Texture2D(1, 1);
@@ -56,10 +91,10 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             }
         }
 
-        public Vector2 GetScaledSpriteSize(SpriteRenderer spriteRenderer)
+        private static Vector2 GetScaledSpriteSize(SpriteRenderer spriteRenderer)
         {
             if (spriteRenderer == null || spriteRenderer.sprite == null)
-                return Vector2.zero; // Return zero if no SpriteRenderer or sprite is attached
+                return Vector2.zero;
 
             Vector2 spriteSize = spriteRenderer.sprite.bounds.size;
             Vector2 scaledSize = new Vector2(spriteSize.x * spriteRenderer.transform.localScale.x, spriteSize.y * spriteRenderer.transform.localScale.y);
@@ -69,6 +104,16 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 
         public void Dispose()
         {
+            internalCts?.Cancel();
+
+            // Dispose of the linked token source.
+            linkedCts?.Dispose();
+            linkedCts = null;
+
+            // Dispose of the internal token source.
+            internalCts?.Dispose();
+            internalCts = null;
+
             if (spriteRenderer)
                 Utils.SafeDestroy(spriteRenderer.gameObject);
         }

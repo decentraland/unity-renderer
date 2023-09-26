@@ -80,9 +80,16 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         UniTask IMapLayerController.Disable(CancellationToken cancellationToken)
         {
             Debug.Log("Disable satellite");
-
             instantiationParent.gameObject.SetActive(false);
             return UniTask.CompletedTask;
+        }
+
+        protected override void DisposeImpl()
+        {
+            foreach (IChunkController chunk in chunks)
+                chunk.Dispose();
+
+            chunks.Clear();
         }
     }
 }
