@@ -32,7 +32,6 @@ export function* fetchCatalystProfile(userId: string, version?: number) {
       const realmAdapter: IRealmAdapter = yield call(waitForRealm)
 
       if (yield call(isImpostor, remoteProfile, realmAdapter.about.lambdas?.address)) {
-      // if (yield call(isImpostor, remoteProfile, "")) {
         defaultLogger.warn(`Remote avatar impostor detected.`, userId, remoteProfile)
         return null;
       }

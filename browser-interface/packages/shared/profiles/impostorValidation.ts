@@ -8,7 +8,7 @@ export async function isImpostor(profile: RemoteProfileWithHash, signer: string 
   return checksum != profile.hash || getSigner(profile) != signer
 }
 
-async function getProfileChecksum(avatar: Avatar) {
+async function getProfileChecksum(avatar: Avatar): Promise<string> {
   const encoder = new TextEncoder()
   const payload = JSON.stringify([avatar.name, avatar.hasClaimedName, ...avatar.avatar.wearables])
   return await hashV1(encoder.encode(payload));
