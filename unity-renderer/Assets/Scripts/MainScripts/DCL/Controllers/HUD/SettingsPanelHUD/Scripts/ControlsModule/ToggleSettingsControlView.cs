@@ -31,7 +31,7 @@ namespace DCL.SettingsPanelHUD.Controls
 
         protected override void OnDestroy()
         {
-            if (toggleController != null
+            if (toggleController != null)
                 toggleController.ToggleValueChanged -= OverrideToggleValue;
 
             base.OnDestroy();
