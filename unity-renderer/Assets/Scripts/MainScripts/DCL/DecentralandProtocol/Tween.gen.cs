@@ -26,33 +26,42 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CidkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW4ucHJvdG8SG2Rl",
             "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFsYW5kL2NvbW1v",
-            "bi92ZWN0b3JzLnByb3RvIt8BCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
+            "bi92ZWN0b3JzLnByb3RvItUCCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
             "EkMKDnR3ZWVuX2Z1bmN0aW9uGAIgASgOMisuZGVjZW50cmFsYW5kLnNkay5j",
-            "b21wb25lbnRzLkVhc2luZ0Z1bmN0aW9uEi8KBG1vdmUYAyABKAsyIS5kZWNl",
-            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuTW92ZRIUCgdwbGF5aW5nGAQgASgI",
-            "SACIAQESGQoMY3VycmVudF90aW1lGAUgASgCSAGIAQFCCgoIX3BsYXlpbmdC",
-            "DwoNX2N1cnJlbnRfdGltZSJeCgRNb3ZlEisKBXN0YXJ0GAEgASgLMhwuZGVj",
-            "ZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEikKA2VuZBgCIAEoCzIcLmRlY2Vu",
-            "dHJhbGFuZC5jb21tb24uVmVjdG9yMyrnBAoORWFzaW5nRnVuY3Rpb24SDQoJ",
-            "VEZfTElORUFSEAASEQoNVEZfRUFTRUlOUVVBRBABEhIKDlRGX0VBU0VPVVRR",
-            "VUFEEAISDwoLVEZfRUFTRVFVQUQQAxIRCg1URl9FQVNFSU5TSU5FEAQSEgoO",
-            "VEZfRUFTRU9VVFNJTkUQBRIPCgtURl9FQVNFU0lORRAGEhEKDVRGX0VBU0VJ",
-            "TkVYUE8QBxISCg5URl9FQVNFT1VURVhQTxAIEg8KC1RGX0VBU0VFWFBPEAkS",
-            "FAoQVEZfRUFTRUlORUxBU1RJQxAKEhUKEVRGX0VBU0VPVVRFTEFTVElDEAsS",
-            "EgoOVEZfRUFTRUVMQVNUSUMQDBITCg9URl9FQVNFSU5CT1VOQ0UQDRIUChBU",
-            "Rl9FQVNFT1VUQk9VTkNFEA4SEQoNVEZfRUFTRUJPVU5DRRAPEhIKDlRGX0VB",
-            "U0VJTkNVQklDEBASEwoPVEZfRUFTRU9VVENVQklDEBESEAoMVEZfRUFTRUNV",
-            "QklDEBISEgoOVEZfRUFTRUlOUVVBUlQQExITCg9URl9FQVNFT1VUUVVBUlQQ",
-            "FBIQCgxURl9FQVNFUVVBUlQQFRISCg5URl9FQVNFSU5RVUlOVBAWEhMKD1RG",
-            "X0VBU0VPVVRRVUlOVBAXEhAKDFRGX0VBU0VRVUlOVBAYEhEKDVRGX0VBU0VJ",
-            "TkNJUkMQGRISCg5URl9FQVNFT1VUQ0lSQxAaEg8KC1RGX0VBU0VDSVJDEBsS",
-            "EQoNVEZfRUFTRUlOQkFDSxAcEhIKDlRGX0VBU0VPVVRCQUNLEB0SDwoLVEZf",
-            "RUFTRUJBQ0sQHkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "b21wb25lbnRzLkVhc2luZ0Z1bmN0aW9uEjEKBG1vdmUYAyABKAsyIS5kZWNl",
+            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuTW92ZUgAEjUKBnJvdGF0ZRgEIAEo",
+            "CzIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Sb3RhdGVIABIzCgVz",
+            "Y2FsZRgFIAEoCzIiLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5TY2Fs",
+            "ZUgAEhQKB3BsYXlpbmcYBiABKAhIAYgBARIZCgxjdXJyZW50X3RpbWUYByAB",
+            "KAJIAogBAUIGCgRtb2RlQgoKCF9wbGF5aW5nQg8KDV9jdXJyZW50X3RpbWUi",
+            "XgoETW92ZRIrCgVzdGFydBgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24u",
+            "VmVjdG9yMxIpCgNlbmQYAiABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZl",
+            "Y3RvcjMiZgoGUm90YXRlEi4KBXN0YXJ0GAEgASgLMh8uZGVjZW50cmFsYW5k",
+            "LmNvbW1vbi5RdWF0ZXJuaW9uEiwKA2VuZBgCIAEoCzIfLmRlY2VudHJhbGFu",
+            "ZC5jb21tb24uUXVhdGVybmlvbiJfCgVTY2FsZRIrCgVzdGFydBgBIAEoCzIc",
+            "LmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIpCgNlbmQYAiABKAsyHC5k",
+            "ZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMq5wQKDkVhc2luZ0Z1bmN0aW9u",
+            "Eg0KCVRGX0xJTkVBUhAAEhEKDVRGX0VBU0VJTlFVQUQQARISCg5URl9FQVNF",
+            "T1VUUVVBRBACEg8KC1RGX0VBU0VRVUFEEAMSEQoNVEZfRUFTRUlOU0lORRAE",
+            "EhIKDlRGX0VBU0VPVVRTSU5FEAUSDwoLVEZfRUFTRVNJTkUQBhIRCg1URl9F",
+            "QVNFSU5FWFBPEAcSEgoOVEZfRUFTRU9VVEVYUE8QCBIPCgtURl9FQVNFRVhQ",
+            "TxAJEhQKEFRGX0VBU0VJTkVMQVNUSUMQChIVChFURl9FQVNFT1VURUxBU1RJ",
+            "QxALEhIKDlRGX0VBU0VFTEFTVElDEAwSEwoPVEZfRUFTRUlOQk9VTkNFEA0S",
+            "FAoQVEZfRUFTRU9VVEJPVU5DRRAOEhEKDVRGX0VBU0VCT1VOQ0UQDxISCg5U",
+            "Rl9FQVNFSU5DVUJJQxAQEhMKD1RGX0VBU0VPVVRDVUJJQxAREhAKDFRGX0VB",
+            "U0VDVUJJQxASEhIKDlRGX0VBU0VJTlFVQVJUEBMSEwoPVEZfRUFTRU9VVFFV",
+            "QVJUEBQSEAoMVEZfRUFTRVFVQVJUEBUSEgoOVEZfRUFTRUlOUVVJTlQQFhIT",
+            "Cg9URl9FQVNFT1VUUVVJTlQQFxIQCgxURl9FQVNFUVVJTlQQGBIRCg1URl9F",
+            "QVNFSU5DSVJDEBkSEgoOVEZfRUFTRU9VVENJUkMQGhIPCgtURl9FQVNFQ0lS",
+            "QxAbEhEKDVRGX0VBU0VJTkJBQ0sQHBISCg5URl9FQVNFT1VUQkFDSxAdEg8K",
+            "C1RGX0VBU0VCQUNLEB5CFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.EasingFunction), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Playing", "CurrentTime" }, new[]{ "Playing", "CurrentTime" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Move), global::DCL.ECSComponents.Move.Parser, new[]{ "Start", "End" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Rotate", "Scale", "Playing", "CurrentTime" }, new[]{ "Mode", "Playing", "CurrentTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Move), global::DCL.ECSComponents.Move.Parser, new[]{ "Start", "End" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Rotate), global::DCL.ECSComponents.Rotate.Parser, new[]{ "Start", "End" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Scale), global::DCL.ECSComponents.Scale.Parser, new[]{ "Start", "End" }, null, null, null, null)
           }));
     }
     #endregion
@@ -141,9 +150,20 @@ namespace DCL.ECSComponents {
       _hasBits0 = other._hasBits0;
       duration_ = other.duration_;
       tweenFunction_ = other.tweenFunction_;
-      move_ = other.move_ != null ? other.move_.Clone() : null;
       playing_ = other.playing_;
       currentTime_ = other.currentTime_;
+      switch (other.ModeCase) {
+        case ModeOneofCase.Move:
+          Move = other.Move.Clone();
+          break;
+        case ModeOneofCase.Rotate:
+          Rotate = other.Rotate.Clone();
+          break;
+        case ModeOneofCase.Scale:
+          Scale = other.Scale.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -182,21 +202,42 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "move" field.</summary>
     public const int MoveFieldNumber = 3;
-    private global::DCL.ECSComponents.Move move_;
-    /// <summary>
-    /// TBD: oneof scale / rotation / position
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::DCL.ECSComponents.Move Move {
-      get { return move_; }
+      get { return modeCase_ == ModeOneofCase.Move ? (global::DCL.ECSComponents.Move) mode_ : null; }
       set {
-        move_ = value;
+        mode_ = value;
+        modeCase_ = value == null ? ModeOneofCase.None : ModeOneofCase.Move;
+      }
+    }
+
+    /// <summary>Field number for the "rotate" field.</summary>
+    public const int RotateFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.Rotate Rotate {
+      get { return modeCase_ == ModeOneofCase.Rotate ? (global::DCL.ECSComponents.Rotate) mode_ : null; }
+      set {
+        mode_ = value;
+        modeCase_ = value == null ? ModeOneofCase.None : ModeOneofCase.Rotate;
+      }
+    }
+
+    /// <summary>Field number for the "scale" field.</summary>
+    public const int ScaleFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.Scale Scale {
+      get { return modeCase_ == ModeOneofCase.Scale ? (global::DCL.ECSComponents.Scale) mode_ : null; }
+      set {
+        mode_ = value;
+        modeCase_ = value == null ? ModeOneofCase.None : ModeOneofCase.Scale;
       }
     }
 
     /// <summary>Field number for the "playing" field.</summary>
-    public const int PlayingFieldNumber = 4;
+    public const int PlayingFieldNumber = 6;
     private bool playing_;
     /// <summary>
     /// default true (pause or running)
@@ -224,7 +265,7 @@ namespace DCL.ECSComponents {
     }
 
     /// <summary>Field number for the "current_time" field.</summary>
-    public const int CurrentTimeFieldNumber = 5;
+    public const int CurrentTimeFieldNumber = 7;
     private float currentTime_;
     /// <summary>
     /// between 0 and 1
@@ -251,6 +292,28 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~2;
     }
 
+    private object mode_;
+    /// <summary>Enum of possible cases for the "mode" oneof.</summary>
+    public enum ModeOneofCase {
+      None = 0,
+      Move = 3,
+      Rotate = 4,
+      Scale = 5,
+    }
+    private ModeOneofCase modeCase_ = ModeOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ModeOneofCase ModeCase {
+      get { return modeCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearMode() {
+      modeCase_ = ModeOneofCase.None;
+      mode_ = null;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -269,8 +332,11 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Duration, other.Duration)) return false;
       if (TweenFunction != other.TweenFunction) return false;
       if (!object.Equals(Move, other.Move)) return false;
+      if (!object.Equals(Rotate, other.Rotate)) return false;
+      if (!object.Equals(Scale, other.Scale)) return false;
       if (Playing != other.Playing) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
+      if (ModeCase != other.ModeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -280,9 +346,12 @@ namespace DCL.ECSComponents {
       int hash = 1;
       if (Duration != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Duration);
       if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) hash ^= TweenFunction.GetHashCode();
-      if (move_ != null) hash ^= Move.GetHashCode();
+      if (modeCase_ == ModeOneofCase.Move) hash ^= Move.GetHashCode();
+      if (modeCase_ == ModeOneofCase.Rotate) hash ^= Rotate.GetHashCode();
+      if (modeCase_ == ModeOneofCase.Scale) hash ^= Scale.GetHashCode();
       if (HasPlaying) hash ^= Playing.GetHashCode();
       if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
+      hash ^= (int) modeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -309,16 +378,24 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(16);
         output.WriteEnum((int) TweenFunction);
       }
-      if (move_ != null) {
+      if (modeCase_ == ModeOneofCase.Move) {
         output.WriteRawTag(26);
         output.WriteMessage(Move);
       }
+      if (modeCase_ == ModeOneofCase.Rotate) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Rotate);
+      }
+      if (modeCase_ == ModeOneofCase.Scale) {
+        output.WriteRawTag(42);
+        output.WriteMessage(Scale);
+      }
       if (HasPlaying) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(48);
         output.WriteBool(Playing);
       }
       if (HasCurrentTime) {
-        output.WriteRawTag(45);
+        output.WriteRawTag(61);
         output.WriteFloat(CurrentTime);
       }
       if (_unknownFields != null) {
@@ -339,16 +416,24 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(16);
         output.WriteEnum((int) TweenFunction);
       }
-      if (move_ != null) {
+      if (modeCase_ == ModeOneofCase.Move) {
         output.WriteRawTag(26);
         output.WriteMessage(Move);
       }
+      if (modeCase_ == ModeOneofCase.Rotate) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Rotate);
+      }
+      if (modeCase_ == ModeOneofCase.Scale) {
+        output.WriteRawTag(42);
+        output.WriteMessage(Scale);
+      }
       if (HasPlaying) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(48);
         output.WriteBool(Playing);
       }
       if (HasCurrentTime) {
-        output.WriteRawTag(45);
+        output.WriteRawTag(61);
         output.WriteFloat(CurrentTime);
       }
       if (_unknownFields != null) {
@@ -367,8 +452,14 @@ namespace DCL.ECSComponents {
       if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TweenFunction);
       }
-      if (move_ != null) {
+      if (modeCase_ == ModeOneofCase.Move) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Move);
+      }
+      if (modeCase_ == ModeOneofCase.Rotate) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Rotate);
+      }
+      if (modeCase_ == ModeOneofCase.Scale) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Scale);
       }
       if (HasPlaying) {
         size += 1 + 1;
@@ -394,18 +485,33 @@ namespace DCL.ECSComponents {
       if (other.TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
         TweenFunction = other.TweenFunction;
       }
-      if (other.move_ != null) {
-        if (move_ == null) {
-          Move = new global::DCL.ECSComponents.Move();
-        }
-        Move.MergeFrom(other.Move);
-      }
       if (other.HasPlaying) {
         Playing = other.Playing;
       }
       if (other.HasCurrentTime) {
         CurrentTime = other.CurrentTime;
       }
+      switch (other.ModeCase) {
+        case ModeOneofCase.Move:
+          if (Move == null) {
+            Move = new global::DCL.ECSComponents.Move();
+          }
+          Move.MergeFrom(other.Move);
+          break;
+        case ModeOneofCase.Rotate:
+          if (Rotate == null) {
+            Rotate = new global::DCL.ECSComponents.Rotate();
+          }
+          Rotate.MergeFrom(other.Rotate);
+          break;
+        case ModeOneofCase.Scale:
+          if (Scale == null) {
+            Scale = new global::DCL.ECSComponents.Scale();
+          }
+          Scale.MergeFrom(other.Scale);
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -430,17 +536,37 @@ namespace DCL.ECSComponents {
             break;
           }
           case 26: {
-            if (move_ == null) {
-              Move = new global::DCL.ECSComponents.Move();
+            global::DCL.ECSComponents.Move subBuilder = new global::DCL.ECSComponents.Move();
+            if (modeCase_ == ModeOneofCase.Move) {
+              subBuilder.MergeFrom(Move);
             }
-            input.ReadMessage(Move);
+            input.ReadMessage(subBuilder);
+            Move = subBuilder;
             break;
           }
-          case 32: {
+          case 34: {
+            global::DCL.ECSComponents.Rotate subBuilder = new global::DCL.ECSComponents.Rotate();
+            if (modeCase_ == ModeOneofCase.Rotate) {
+              subBuilder.MergeFrom(Rotate);
+            }
+            input.ReadMessage(subBuilder);
+            Rotate = subBuilder;
+            break;
+          }
+          case 42: {
+            global::DCL.ECSComponents.Scale subBuilder = new global::DCL.ECSComponents.Scale();
+            if (modeCase_ == ModeOneofCase.Scale) {
+              subBuilder.MergeFrom(Scale);
+            }
+            input.ReadMessage(subBuilder);
+            Scale = subBuilder;
+            break;
+          }
+          case 48: {
             Playing = input.ReadBool();
             break;
           }
-          case 45: {
+          case 61: {
             CurrentTime = input.ReadFloat();
             break;
           }
@@ -468,17 +594,37 @@ namespace DCL.ECSComponents {
             break;
           }
           case 26: {
-            if (move_ == null) {
-              Move = new global::DCL.ECSComponents.Move();
+            global::DCL.ECSComponents.Move subBuilder = new global::DCL.ECSComponents.Move();
+            if (modeCase_ == ModeOneofCase.Move) {
+              subBuilder.MergeFrom(Move);
             }
-            input.ReadMessage(Move);
+            input.ReadMessage(subBuilder);
+            Move = subBuilder;
             break;
           }
-          case 32: {
+          case 34: {
+            global::DCL.ECSComponents.Rotate subBuilder = new global::DCL.ECSComponents.Rotate();
+            if (modeCase_ == ModeOneofCase.Rotate) {
+              subBuilder.MergeFrom(Rotate);
+            }
+            input.ReadMessage(subBuilder);
+            Rotate = subBuilder;
+            break;
+          }
+          case 42: {
+            global::DCL.ECSComponents.Scale subBuilder = new global::DCL.ECSComponents.Scale();
+            if (modeCase_ == ModeOneofCase.Scale) {
+              subBuilder.MergeFrom(Scale);
+            }
+            input.ReadMessage(subBuilder);
+            Scale = subBuilder;
+            break;
+          }
+          case 48: {
             Playing = input.ReadBool();
             break;
           }
-          case 45: {
+          case 61: {
             CurrentTime = input.ReadFloat();
             break;
           }
@@ -653,6 +799,494 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Move other) {
+      if (other == null) {
+        return;
+      }
+      if (other.start_ != null) {
+        if (start_ == null) {
+          Start = new global::Decentraland.Common.Vector3();
+        }
+        Start.MergeFrom(other.Start);
+      }
+      if (other.end_ != null) {
+        if (end_ == null) {
+          End = new global::Decentraland.Common.Vector3();
+        }
+        End.MergeFrom(other.End);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (start_ == null) {
+              Start = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(Start);
+            break;
+          }
+          case 18: {
+            if (end_ == null) {
+              End = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(End);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (start_ == null) {
+              Start = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(Start);
+            break;
+          }
+          case 18: {
+            if (end_ == null) {
+              End = new global::Decentraland.Common.Vector3();
+            }
+            input.ReadMessage(End);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class Rotate : pb::IMessage<Rotate>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<Rotate> _parser = new pb::MessageParser<Rotate>(() => new Rotate());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<Rotate> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::DCL.ECSComponents.TweenReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Rotate() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Rotate(Rotate other) : this() {
+      start_ = other.start_ != null ? other.start_.Clone() : null;
+      end_ = other.end_ != null ? other.end_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Rotate Clone() {
+      return new Rotate(this);
+    }
+
+    /// <summary>Field number for the "start" field.</summary>
+    public const int StartFieldNumber = 1;
+    private global::Decentraland.Common.Quaternion start_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Quaternion Start {
+      get { return start_; }
+      set {
+        start_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "end" field.</summary>
+    public const int EndFieldNumber = 2;
+    private global::Decentraland.Common.Quaternion end_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Quaternion End {
+      get { return end_; }
+      set {
+        end_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as Rotate);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(Rotate other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Start, other.Start)) return false;
+      if (!object.Equals(End, other.End)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (start_ != null) hash ^= Start.GetHashCode();
+      if (end_ != null) hash ^= End.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (start_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Start);
+      }
+      if (end_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(End);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (start_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Start);
+      }
+      if (end_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(End);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (start_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Start);
+      }
+      if (end_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(End);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(Rotate other) {
+      if (other == null) {
+        return;
+      }
+      if (other.start_ != null) {
+        if (start_ == null) {
+          Start = new global::Decentraland.Common.Quaternion();
+        }
+        Start.MergeFrom(other.Start);
+      }
+      if (other.end_ != null) {
+        if (end_ == null) {
+          End = new global::Decentraland.Common.Quaternion();
+        }
+        End.MergeFrom(other.End);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (start_ == null) {
+              Start = new global::Decentraland.Common.Quaternion();
+            }
+            input.ReadMessage(Start);
+            break;
+          }
+          case 18: {
+            if (end_ == null) {
+              End = new global::Decentraland.Common.Quaternion();
+            }
+            input.ReadMessage(End);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (start_ == null) {
+              Start = new global::Decentraland.Common.Quaternion();
+            }
+            input.ReadMessage(Start);
+            break;
+          }
+          case 18: {
+            if (end_ == null) {
+              End = new global::Decentraland.Common.Quaternion();
+            }
+            input.ReadMessage(End);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class Scale : pb::IMessage<Scale>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<Scale> _parser = new pb::MessageParser<Scale>(() => new Scale());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<Scale> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::DCL.ECSComponents.TweenReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Scale() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Scale(Scale other) : this() {
+      start_ = other.start_ != null ? other.start_.Clone() : null;
+      end_ = other.end_ != null ? other.end_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Scale Clone() {
+      return new Scale(this);
+    }
+
+    /// <summary>Field number for the "start" field.</summary>
+    public const int StartFieldNumber = 1;
+    private global::Decentraland.Common.Vector3 start_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 Start {
+      get { return start_; }
+      set {
+        start_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "end" field.</summary>
+    public const int EndFieldNumber = 2;
+    private global::Decentraland.Common.Vector3 end_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Decentraland.Common.Vector3 End {
+      get { return end_; }
+      set {
+        end_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as Scale);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(Scale other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Start, other.Start)) return false;
+      if (!object.Equals(End, other.End)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (start_ != null) hash ^= Start.GetHashCode();
+      if (end_ != null) hash ^= End.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (start_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Start);
+      }
+      if (end_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(End);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (start_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Start);
+      }
+      if (end_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(End);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (start_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Start);
+      }
+      if (end_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(End);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(Scale other) {
       if (other == null) {
         return;
       }
