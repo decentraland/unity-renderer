@@ -9,4 +9,5 @@ public interface IComponentGroups
     IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents, InternalRegisteredUiPointerEvents> RegisteredUiPointerEvents { get; }
     IECSReadOnlyComponentsGroup<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsWithUiRemoved { get; }
     IECSReadOnlyComponentsGroup<InternalUiContainer, InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsWithPointerEventsRemoved { get; }
+    IECSReadOnlyComponentsGroup<InternalAnimationPlayer, InternalAnimation> AnimationGroup { get; }
 }

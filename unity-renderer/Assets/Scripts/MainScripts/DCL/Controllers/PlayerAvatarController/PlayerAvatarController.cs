@@ -160,7 +160,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
-        avatar.PlayEmote(id, timestamp);
+        avatar.GetEmotesController().PlayEmote(id, timestamp);
 
         bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
 
@@ -228,7 +228,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
 
-                avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
+                avatar.GetEmotesController().PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
         catch (Exception e) when (e is not OperationCanceledException)

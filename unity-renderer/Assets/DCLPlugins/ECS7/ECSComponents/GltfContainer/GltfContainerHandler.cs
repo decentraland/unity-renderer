@@ -30,6 +30,7 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersComponent;
         private readonly IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent;
+        private readonly IInternalECSComponent<InternalAnimation> animationComponent;
 
         private readonly DataStore_ECS7 dataStoreEcs7;
         private readonly DataStore_FeatureFlag featureFlags;
@@ -37,7 +38,7 @@ namespace DCL.ECSComponents
         private readonly ActiveCollidersData visibleActiveColliders = new ActiveCollidersData();
         private readonly ActiveCollidersData invisibleActiveColliders = new ActiveCollidersData();
 
-        internal RendereableAssetLoadHelper gltfLoader;
+        public RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
 
         private IReadOnlyCollection<Renderer> renderers;
@@ -50,6 +51,7 @@ namespace DCL.ECSComponents
             IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
+            IInternalECSComponent<InternalAnimation> animationComponent,
             DataStore_ECS7 dataStoreEcs7,
             DataStore_FeatureFlag featureFlags)
         {
@@ -59,6 +61,7 @@ namespace DCL.ECSComponents
             this.customLayerColliderComponent = customLayerColliderComponent;
             this.renderersComponent = renderersComponent;
             this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
+            this.animationComponent = animationComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
         }
 
@@ -206,7 +209,7 @@ namespace DCL.ECSComponents
                 invisibleActiveColliders.PhysicColliders,
                 invisibleActiveColliders.CustomLayerColliders);
 
-            SetGltfLoaded(scene, entity, gameObject, model.Src, gltfContainerLoadingStateComponent, dataStoreEcs7);
+            SetGltfLoaded(scene, entity, gameObject, model.Src, gltfContainerLoadingStateComponent, animationComponent, dataStoreEcs7);
         }
 
         private void UnloadGltf(IParcelScene scene, IDCLEntity entity, string gltfSrc)
@@ -235,8 +238,7 @@ namespace DCL.ECSComponents
                 dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, gltfSrc);
             }
 
-            // TODO: modify Animator component to remove `RemoveShapeReady` usage
-            dataStoreEcs7.RemoveShapeReady(entity.entityId);
+            animationComponent.RemoveFor(scene, entity);
 
             collidersHandler.CleanUp();
 
@@ -430,13 +432,18 @@ namespace DCL.ECSComponents
             GameObject rootGameObject,
             string prevLoadedGltf,
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
+            IInternalECSComponent<InternalAnimation> animationComponent,
             DataStore_ECS7 dataStoreEcs7)
         {
             gltfContainerLoadingStateComponent.PutFor(scene, entity,
                 new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Finished });
 
-            // TODO: modify Animator component to remove `AddShapeReady` usage
-            dataStoreEcs7.AddShapeReady(entity.entityId, rootGameObject);
+            Animation animation = rootGameObject.GetComponentInChildren<Animation>(true);
+
+            if (animation)
+            {
+                animationComponent.PutFor(scene, entity, new InternalAnimation(animation));
+            }
 
             if (!string.IsNullOrEmpty(prevLoadedGltf))
             {

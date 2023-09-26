@@ -1,12 +1,11 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Helpers;
-using UnityEngine;
 using DCL.Shaders;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace AvatarSystem

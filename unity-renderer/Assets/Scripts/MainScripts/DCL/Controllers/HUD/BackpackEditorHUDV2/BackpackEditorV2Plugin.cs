@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
+using DCL.Emotes;
 using DCL.Providers;
 using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
@@ -24,7 +25,8 @@ namespace DCL.Backpack
             var assetsProvider = Environment.i.platform.serviceLocator.Get<IAddressableResourceProvider>();
             var vrmExporterReferences = await assetsProvider.Instantiate<VRMExporterReferences>("VRMExporter", "_VRMExporter");
 
-            IWearablesCatalogService wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
+            ServiceLocator serviceLocator = Environment.i.serviceLocator;
+            IWearablesCatalogService wearablesCatalogService = serviceLocator.Get<IWearablesCatalogService>();
             var userProfileBridge = new UserProfileWebInterfaceBridge();
 
             DataStore dataStore = DataStore.i;
@@ -32,7 +34,7 @@ namespace DCL.Backpack
             var view = BackpackEditorHUDV2ComponentView.Create();
 
             view.Initialize(
-                Environment.i.serviceLocator.Get<ICharacterPreviewFactory>(),
+                serviceLocator.Get<ICharacterPreviewFactory>(),
                 new PreviewCameraRotationController(),
                 new PreviewCameraPanningController(),
                 new PreviewCameraZoomController());
@@ -41,13 +43,13 @@ namespace DCL.Backpack
                 Environment.i.platform.serviceProviders.analytics,
                 new NewUserExperienceAnalytics(Environment.i.platform.serviceProviders.analytics));
 
-            view.OutfitsSectionComponentView.Initialize(Environment.i.serviceLocator.Get<ICharacterPreviewFactory>());
+            view.OutfitsSectionComponentView.Initialize(serviceLocator.Get<ICharacterPreviewFactory>());
 
             var outfitsController = new OutfitsController(
                 view.OutfitsSectionComponentView,
                 new LambdaOutfitsService(
-                    Environment.i.serviceLocator.Get<ILambdasService>(),
-                    Environment.i.serviceLocator.Get<IServiceProviders>()),
+                    serviceLocator.Get<ILambdasService>(),
+                    serviceLocator.Get<IServiceProviders>()),
                 userProfileBridge,
                 dataStore,
                 backpackAnalyticsService);
@@ -56,8 +58,10 @@ namespace DCL.Backpack
                 dataStore,
                 view.EmotesSectionTransform,
                 userProfileBridge,
-                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
-                Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
+                serviceLocator.Get<IEmotesCatalogService>(),
+                view.EmotesController,
+                Environment.i.serviceLocator.Get<ICustomNftCollectionService>()
+                );
 
             var backpackFiltersController = new BackpackFiltersController(view.BackpackFiltersComponentView, wearablesCatalogService);
 

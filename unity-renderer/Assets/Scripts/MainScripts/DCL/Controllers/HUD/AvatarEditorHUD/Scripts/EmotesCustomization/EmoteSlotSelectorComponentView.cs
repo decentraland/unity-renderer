@@ -15,7 +15,7 @@ namespace DCL.EmotesCustomization
 
         public int selectedSlot => model.selectedSlot;
 
-        public event Action<int, string> onSlotSelected;
+        public event Action<int, string, bool> onSlotSelected;
 
         public void Start()
         {
@@ -49,6 +49,8 @@ namespace DCL.EmotesCustomization
 
         public void SelectSlot(int slotNumber)
         {
+            bool isInitialized = model.selectedSlot < 0;
+
             model.selectedSlot = slotNumber;
 
             if (emotesSlots == null)
@@ -60,7 +62,8 @@ namespace DCL.EmotesCustomization
                 if (slot.model.slotNumber == slotNumber)
                 {
                     slot.SetEmoteAsSelected(true);
-                    onSlotSelected?.Invoke(slotNumber, slot.model.emoteId);
+
+                    onSlotSelected?.Invoke(slotNumber, slot.model.emoteId, !isInitialized);
                 }
                 else
                 {

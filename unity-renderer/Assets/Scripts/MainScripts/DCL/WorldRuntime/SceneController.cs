@@ -82,8 +82,8 @@ namespace DCL
 
         public void Dispose()
         {
-            tokenSource.Cancel();
-            tokenSource.Dispose();
+            tokenSource?.Cancel();
+            tokenSource?.Dispose();
             requestPlaceCts.SafeCancelAndDispose();
             realodAdultScenesCts.SafeCancelAndDispose();
 

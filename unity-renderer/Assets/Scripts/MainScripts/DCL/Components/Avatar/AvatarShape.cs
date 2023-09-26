@@ -59,6 +59,7 @@ namespace DCL
         private Service<IEmotesCatalogService> emotesCatalogService;
         public override string componentName => "avatarShape";
         private AvatarSceneEmoteHandler sceneEmoteHandler;
+        private IAvatarEmotesController emotesController;
 
         private void Awake()
         {
@@ -73,7 +74,8 @@ namespace DCL
             else
                 avatar = GetStandardAvatar();
 
-            sceneEmoteHandler = new AvatarSceneEmoteHandler(avatar, DataStore.i.emotes.animations, DataStore.i.emotes.emotesOnUse);
+            emotesController = avatar.GetEmotesController();
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
 
             if (avatarReporterController == null)
             {
@@ -242,7 +244,7 @@ namespace DCL
             }
             else
             {
-                avatar.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
+                emotesController.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;

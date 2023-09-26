@@ -22,7 +22,7 @@ namespace DCL.EmotesCustomization
         public event Action<string, int> onEmoteEquipped;
         public event Action<string, int> onEmoteUnequipped;
         public event Action<string> onSellEmoteClicked;
-        public event Action<string, int> onSlotSelected;
+        public event Action<string, int, bool> onSlotSelected;
 
         internal Pool emoteCardsPool;
 
@@ -214,7 +214,7 @@ namespace DCL.EmotesCustomization
             return emoteGO;
         }
 
-        internal void OnSlotSelected(int slotNumber, string emoteId)
+        internal void OnSlotSelected(int slotNumber, string emoteId, bool playEmote)
         {
             List<EmoteCardComponentView> currentEmoteCards = GetAllEmoteCards();
             foreach (var existingEmoteCard in currentEmoteCards)
@@ -223,7 +223,7 @@ namespace DCL.EmotesCustomization
             }
 
             SetEmoteInfoPanelActive(false);
-            onSlotSelected?.Invoke(emoteId, slotNumber);
+            onSlotSelected?.Invoke(emoteId, slotNumber, playEmote);
         }
 
         internal List<EmoteCardComponentView> GetAllEmoteCards()
