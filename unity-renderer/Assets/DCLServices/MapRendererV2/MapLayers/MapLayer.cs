@@ -12,7 +12,9 @@ namespace DCLServices.MapRendererV2.MapLayers
         PlayerMarker = 1 << 3,
         HotUsersMarkers = 1 << 4,
         ColdUsersMarkers = 1 << 5,
-        ParcelHoverHighlight = 1 << 6
+        ParcelHoverHighlight = 1 << 6,
+        Favorites = 1 << 7,
+        Friends = 1 << 8,
         // Add yours
     }
 }

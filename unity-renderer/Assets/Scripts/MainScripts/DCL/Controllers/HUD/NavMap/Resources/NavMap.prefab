@@ -2840,7 +2840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -15.000056, y: 56.000004}
+  m_AnchoredPosition: {x: -15, y: 56}
   m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &3295086073103147151
@@ -3059,6 +3059,7 @@ MonoBehaviour:
   currentSceneNameText: {fileID: 2734279282512924330}
   currentSceneCoordsText: {fileID: 8417015326604837885}
   searchView: {fileID: 5382576672961126580}
+  filterView: {fileID: 4978773432451457337}
   toastView: {fileID: 4118697293185831752}
   locationControlsView: {fileID: 8480774943751937224}
   zoomView: {fileID: 5334633561203563251}
@@ -4308,6 +4309,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1852768979286052977}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4978773432451457337 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6678402424700318024, guid: 19d4de07c27a6467e9177d9a3cf1dcf2,
+    type: 3}
+  m_PrefabInstance: {fileID: 1852768979286052977}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05088aca52af497c9f363d84628e1e3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5382576672961126580 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5982077070481797317, guid: 19d4de07c27a6467e9177d9a3cf1dcf2,

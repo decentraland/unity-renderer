@@ -16,6 +16,7 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapSearchComponentView searchView;
+        [SerializeField] internal NavmapFilterComponentView filterView;
 
         [Space]
         [SerializeField] internal NavmapToastView toastView;
@@ -32,12 +33,15 @@ namespace DCL
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
         private NavmapSearchController navmapSearchController;
+        private NavmapFilterComponentController navmapFilterComponentController;
 
         private void Start()
         {
+
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,
                 navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
