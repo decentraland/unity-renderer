@@ -32,14 +32,11 @@ namespace DCL
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
-        private NavmapSearchController navmapSearchController;
         private NavmapFilterComponentController navmapFilterComponentController;
 
         private void Start()
         {
-
-            navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
                 navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
             navmapFilterComponentController = new NavmapFilterComponentController(filterView);
 
@@ -74,7 +71,6 @@ namespace DCL
         private void OnDestroy()
         {
             navmapVisibilityBehaviour.Dispose();
-            navmapSearchController.Dispose();
         }
 
         private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
