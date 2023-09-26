@@ -59,6 +59,7 @@ namespace AvatarSystem
             try
             {
                 IEmoteReference emoteReference = await emotesService.RequestEmote(emoteKey, cts.Token);
+                if (emoteReference == null) return;
                 animator.EquipEmote(emoteId, emoteReference.GetData());
                 equippedEmotes[emoteKey] = emoteReference;
                 OnEmoteEquipped?.Invoke(emoteId, emoteReference);

@@ -108,23 +108,34 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:emoteId/";
         string url = TEMPLATE_URL.Replace(":emoteId", emoteId);
 
-        (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
-            TEMPLATE_URL, url,
-            isSigned: true,
-            cancellationToken: cancellationToken);
+        try
+        {
+            (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
+                TEMPLATE_URL, url,
+                isSigned: true,
+                cancellationToken: cancellationToken);
 
-        if (!success)
-            throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
+            if (!success)
+            {
+                Debug.LogException(new Exception($"The request of wearables from builder '{emoteId}' failed!"));
+                return null;
+            }
 
-        WearableItem wearable = response.data.ToWearableItem(
-            "https://builder-api.decentraland.org/v1/storage/contents/",
-            assetBundlesUrl);
+            WearableItem wearable = response.data.ToWearableItem(
+                "https://builder-api.decentraland.org/v1/storage/contents/",
+                assetBundlesUrl);
 
-        if (!wearable.IsEmote()) return null;
+            if (!wearable.IsEmote()) return null;
 
-        OnEmoteReceived(wearable);
+            OnEmoteReceived(wearable);
 
-        return wearable;
+            return wearable;
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            return null;
+        }
     }
 
     public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
