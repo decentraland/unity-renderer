@@ -1,23 +1,15 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using DCL.Map;
+﻿using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
 using System;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        [Header("TEXT")]
-        [SerializeField] internal TextMeshProUGUI currentSceneNameText;
-        [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapSearchComponentView searchView;
-
-        [Space]
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] private NavMapLocationControlsView locationControlsView;
         [SerializeField] private NavmapZoomView zoomView;
@@ -47,8 +39,6 @@ namespace DCL
         {
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
-            UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
-            CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
 
             //Needed due to script execution order
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
@@ -63,7 +53,6 @@ namespace DCL
         private void OnDisable()
         {
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
-            CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
         }
 
@@ -87,26 +76,6 @@ namespace DCL
             RectTransform.localPosition = Vector2.zero;
             RectTransform.offsetMax = Vector2.zero;
             RectTransform.offsetMin = Vector2.zero;
-        }
-
-        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int _)
-        {
-            const string format = "{0},{1}";
-            currentSceneCoordsText.text = string.Format(format, current.x, current.y);
-            currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
-        }
-
-        private async UniTaskVoid UpdateSceneNameAsync(Vector2Int current, CancellationToken cancellationToken)
-        {
-            MinimapMetadata.MinimapSceneInfo info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-
-            if (info == null)
-            {
-                await WebInterfaceMinimapApiBridge.i.GetScenesInformationAroundParcel(current, 2, cancellationToken);
-                info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-            }
-
-            currentSceneNameText.text = info?.name ?? "Unnamed";
         }
     }
 }
