@@ -1,11 +1,13 @@
 ﻿using DCL.Helpers;
 using DCLServices.MapRendererV2;
 using System;
+using UnityEngine.Device;
 
 namespace DCL
 {
     public class NavMapChunksLayersController : IDisposable
     {
+        private const string GENESIS_CITY_URL = "https://genesis.city/";
         private readonly NavMapChunksLayersView view;
         private readonly IMapRenderer mapRender;
 
@@ -15,6 +17,7 @@ namespace DCL
 
             this.view.ParcelsButtonClicked += EnableParcelsViewMode;
             this.view.SatelliteButtonClicked += EnableSatelliteViewMode;
+            this.view.HyperLinkClicked += OpenGenesisCityLink;
 
             mapRender = Environment.i.serviceLocator.Get<IMapRenderer>();
 
@@ -25,6 +28,7 @@ namespace DCL
         {
             view.ParcelsButtonClicked -= EnableParcelsViewMode;
             view.SatelliteButtonClicked -= EnableSatelliteViewMode;
+            this.view.HyperLinkClicked -= OpenGenesisCityLink;
 
             Utils.SafeDestroy(view.gameObject);
         }
@@ -40,5 +44,8 @@ namespace DCL
             view.SetState(satelliteViewActive: false);
             mapRender.SetSatelliteViewMode(false);
         }
+
+        private static void OpenGenesisCityLink() =>
+            Application.OpenURL(GENESIS_CITY_URL);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using TMPro;
+using UIComponents.Scripts.Components.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,11 +20,15 @@ namespace DCL
         [SerializeField] private Color activeTextColor = Color.white;
         [SerializeField] private Color inactiveTextColor = Color.black;
 
+        [Space]
+        [SerializeField] private TMPTextHyperLink tmpTextHyperLink;
+
         private Image satelliteLayerBackground;
         private Image parcelsLayerBackground;
 
         public event Action ParcelsButtonClicked;
         public event Action SatelliteButtonClicked;
+        public event Action HyperLinkClicked;
 
         private void Awake()
         {
@@ -35,18 +40,27 @@ namespace DCL
         {
             parcelsLayerButton.onClick.AddListener(() => ParcelsButtonClicked?.Invoke());
             satelliteLayerButton.onClick.AddListener(() => SatelliteButtonClicked?.Invoke());
+
+            tmpTextHyperLink.HyperLinkClicked += OnHyperLinkClicked;
         }
 
         private void OnDisable()
         {
             parcelsLayerButton.onClick.RemoveAllListeners();
             satelliteLayerButton.onClick.RemoveAllListeners();
+
+            tmpTextHyperLink.HyperLinkClicked -= OnHyperLinkClicked;
         }
+
+        private void OnHyperLinkClicked() =>
+            HyperLinkClicked?.Invoke();
 
         public void SetState(bool satelliteViewActive)
         {
             if (satelliteViewActive)
             {
+                tmpTextHyperLink.gameObject.SetActive(true);
+
                 satelliteLayerBackground.color = activeButtonColor;
                 parcelsLayerBackground.color = inactiveButtonColor;
 
@@ -55,6 +69,8 @@ namespace DCL
             }
             else
             {
+                tmpTextHyperLink.gameObject.SetActive(false);
+
                 satelliteLayerBackground.color = inactiveButtonColor;
                 parcelsLayerBackground.color = activeButtonColor;
 
