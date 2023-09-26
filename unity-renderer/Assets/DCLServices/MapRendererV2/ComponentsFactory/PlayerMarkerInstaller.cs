@@ -27,14 +27,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         {
             var prefab = await GetPrefab(cancellationToken);
 
-            IPlayerMarker CreateMarker(Transform parent)
-            {
-                var obj = Object.Instantiate(prefab, parent);
-                coordsUtils.SetObjectScale(obj);
-                obj.spriteRenderer.sortingOrder = MapRendererDrawOrder.PLAYER_MARKER;
-                return new PlayerMarker(obj);
-            }
-
             var controller = new PlayerMarkerController(
                 CreateMarker,
                 DataStore.i.player.playerWorldPosition,
@@ -45,7 +37,18 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             );
 
             controller.Initialize();
+
             writer.Add(MapLayer.PlayerMarker, controller);
+            return;
+
+            IPlayerMarker CreateMarker(Transform parent)
+            {
+                PlayerMarkerObject obj = Object.Instantiate(prefab, parent);
+                coordsUtils.SetObjectScale(obj);
+                obj.SetSortingOrder(MapRendererDrawOrder.PLAYER_MARKER);
+
+                return new PlayerMarker(obj);
+            }
         }
 
         internal async UniTask<PlayerMarkerObject> GetPrefab(CancellationToken cancellationToken) =>
