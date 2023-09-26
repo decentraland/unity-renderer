@@ -20,5 +20,7 @@ public enum InternalECSComponentsId
     RAYCAST = 18,
     GLTF_CONTAINER_LOADING_STATE = 19,
     ENGINE_INFO = 20,
-    TWEEN = 21
+    ANIMATION_PLAYER = 21,
+    ANIMATION = 22,
+    TWEEN = 23
 }

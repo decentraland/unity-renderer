@@ -21,11 +21,13 @@ namespace DCL
 
         private readonly BaseVariable<bool> navmapVisible;
 
-        private readonly NavmapZoom zoom;
+        private readonly NavmapZoomView zoomView;
         private readonly NavmapRendererConfiguration rendererConfiguration;
 
         private readonly NavmapToastViewController navmapToastViewController;
         private readonly NavmapZoomViewController navmapZoomViewController;
+        private readonly NavMapLocationControlsController locationControlsController;
+
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
 
         private Service<IMapRenderer> mapRenderer;
@@ -35,19 +37,20 @@ namespace DCL
         private IMapCameraController cameraController;
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
-        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoom zoom, NavmapToastView toastView,
+        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavMapLocationControlsView locationControlsView,
             NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
         {
             this.navmapVisible = navmapVisible;
 
-            this.zoom = zoom;
+            this.zoomView = zoomView;
             this.rendererConfiguration = rendererConfiguration;
 
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
-            navmapZoomViewController = new NavmapZoomViewController(zoom);
+            navmapZoomViewController = new NavmapZoomViewController(zoomView);
+            locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
 
@@ -137,14 +140,20 @@ namespace DCL
                     new MapCameraInput(
                         ACTIVE_MAP_LAYERS,
                         Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
-                        navmapZoomViewController.ResetZoom(),
+                        navmapZoomViewController.ResetZoomToMidValue(),
                         rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                        zoom.zoomVerticalRange));
+                        zoomView.zoomVerticalRange));
 
                 SetRenderImageTransparency(false);
 
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
+
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                    locationControlsController.Activate(cameraController);
+                else
+                    locationControlsController.Hide();
+
                 rendererConfiguration.RenderImage.Activate(hudCamera, cameraController.GetRenderTexture(), cameraController);
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Activate(cameraController);
 
@@ -154,6 +163,8 @@ namespace DCL
             {
                 navmapToastViewController.Deactivate();
                 navmapZoomViewController.Deactivate();
+                locationControlsController.Deactivate();
+
                 rendererConfiguration.PixelPerfectMapRendererTextureProvider.Deactivate();
                 rendererConfiguration.RenderImage.Deactivate();
 

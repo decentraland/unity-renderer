@@ -1,4 +1,5 @@
 using DCL;
+using ECSSystems.AnimationSystem;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSEngineInfoSystem;
@@ -143,6 +144,10 @@ public class ECSSystemsController : IDisposable
             context.PointerEventsResultPool,
             () => worldState.GetCurrentSceneNumber());
 
+        AnimationSystem animationSystem = new AnimationSystem(
+            context.componentGroups.AnimationGroup,
+            context.internalEcsComponents.Animation);
+
         ECSTweenSystem tweenSystem = new ECSTweenSystem(
             context.internalEcsComponents.TweenComponent,
             context.TweenState,
@@ -167,7 +172,8 @@ public class ECSSystemsController : IDisposable
             pointerInputSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update,
-            uiCanvasInformationSystem.Update
+            uiCanvasInformationSystem.Update,
+            animationSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]

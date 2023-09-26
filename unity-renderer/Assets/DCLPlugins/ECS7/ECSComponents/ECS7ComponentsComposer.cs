@@ -64,7 +64,7 @@ namespace DCL.ECSComponents
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentWriter, internalComponents);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentWriter, internalComponents);
             gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentWriter, internalComponents);
-            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentWriter, internalComponents.AnimationPlayer);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentWriter, internalComponents);
             avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentWriter);

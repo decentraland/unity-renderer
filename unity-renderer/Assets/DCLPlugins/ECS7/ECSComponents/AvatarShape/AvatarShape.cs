@@ -204,7 +204,7 @@ namespace DCL.ECSComponents
 
             // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
             if(model.HasExpressionTriggerId)
-                avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+                avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
 

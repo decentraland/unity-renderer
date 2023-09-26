@@ -28,6 +28,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
+    public IInternalECSComponent<InternalAnimation> Animation { get; }
     public IInternalECSComponent<InternalTween> TweenComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
@@ -198,6 +200,24 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
             this
         );
 
+        AnimationPlayer = new InternalECSComponent<InternalAnimationPlayer>(
+            InternalECSComponentsId.ANIMATION_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        Animation = new InternalECSComponent<InternalAnimation>(
+            InternalECSComponentsId.ANIMATION,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
         TweenComponent = new InternalECSComponent<InternalTween>(
             InternalECSComponentsId.TWEEN,
             componentsManager,
@@ -227,6 +247,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
+        AnimationPlayer.Dispose();
+        Animation.Dispose();
         TweenComponent.Dispose();
     }
 

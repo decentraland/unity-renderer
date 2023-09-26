@@ -9,6 +9,7 @@ public record ComponentGroups : IComponentGroups
     public IECSReadOnlyComponentsGroup<InternalUiContainer, InternalPointerEvents, InternalRegisteredUiPointerEvents> RegisteredUiPointerEvents { get; }
     public IECSReadOnlyComponentsGroup<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsWithUiRemoved { get; }
     public IECSReadOnlyComponentsGroup<InternalUiContainer, InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsWithPointerEventsRemoved { get; }
+    public IECSReadOnlyComponentsGroup<InternalAnimationPlayer, InternalAnimation> AnimationGroup { get; }
 
     public ComponentGroups(ECSComponentsManager componentsManager)
     {
@@ -36,5 +37,9 @@ public record ComponentGroups : IComponentGroups
         ((int)InternalECSComponentsId.UI_CONTAINER,
             (int)InternalECSComponentsId.REGISTERED_UI_POINTER_EVENTS,
             (int)InternalECSComponentsId.POINTER_EVENTS);
+
+        AnimationGroup = componentsManager.CreateComponentGroup<InternalAnimationPlayer, InternalAnimation>(
+            (int)InternalECSComponentsId.ANIMATION_PLAYER,
+            (int)InternalECSComponentsId.ANIMATION);
     }
 }

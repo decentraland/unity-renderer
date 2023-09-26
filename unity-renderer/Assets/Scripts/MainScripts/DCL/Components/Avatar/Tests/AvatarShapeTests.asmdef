@@ -2,7 +2,6 @@
     "name": "AvatarShapeTests",
     "rootNamespace": "",
     "references": [
-        "GUID:54b09a4a10c111e46a817873fcea53fe",
         "GUID:e65144cdbd5b744238fa03c40df6cd71",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:760a1d365aad58044916992b072cf2a6",
@@ -40,9 +39,12 @@
         "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
         "GUID:68069f49d86442cd9618861b4d74b1aa",
         "GUID:fbcc413e192ef9048811d47ab0aca0c0",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:0c0c18c12967b3944b844b79c47c2320"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -52,9 +54,7 @@
         "NSubstitute.dll"
     ],
     "autoReferenced": false,
-    "defineConstraints": [
-        "UNITY_INCLUDE_TESTS"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }
