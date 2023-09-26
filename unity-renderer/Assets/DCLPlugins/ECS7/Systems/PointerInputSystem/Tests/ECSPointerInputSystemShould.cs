@@ -1,5 +1,7 @@
 using DCL;
 using DCL.CRDT;
+using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
@@ -29,7 +31,9 @@ namespace Tests
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
 
             var componentsComposer = new ECS7ComponentsComposer(componentsFactory,
-                Substitute.For<IECSComponentWriter>(), internalComponents);
+                Substitute.For<IECSComponentWriter>(), internalComponents,
+                Substitute.For<WrappedComponentPool<IWrappedComponent<PBTweenState>>>(),
+                Substitute.For<IReadOnlyDictionary<int, ComponentWriter>>());
 
             var worldState = Substitute.For<IWorldState>();
             worldState.ContainsScene(Arg.Any<int>()).Returns(true);
