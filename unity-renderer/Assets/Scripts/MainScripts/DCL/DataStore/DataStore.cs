@@ -72,6 +72,7 @@ namespace DCL
         public DataStore_BackpackV2 backpackV2 => i.Get<DataStore_BackpackV2>();
         public DataStore_Wallet wallet => i.Get<DataStore_Wallet>();
         public DataStore_MyAccount myAccount => i.Get<DataStore_MyAccount>();
+        public DataStore_ContentModeration contentModeration => i.Get<DataStore_ContentModeration>();
     }
 
     public struct DataStoreRef<T> where T: class, new()

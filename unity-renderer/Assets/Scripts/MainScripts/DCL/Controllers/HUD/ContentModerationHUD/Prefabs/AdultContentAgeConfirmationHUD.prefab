@@ -147,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showHideAnimator: {fileID: 0}
+  backgroundButton: {fileID: 4741976768575773091}
   confirmAgeCheckbox: {fileID: 6266108481516503049}
   closeButton: {fileID: 6984726638332739466}
   cancelButton: {fileID: 7013573085594906718}
@@ -812,7 +813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.94117653, g: 0.9333334, b: 0.95686275, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

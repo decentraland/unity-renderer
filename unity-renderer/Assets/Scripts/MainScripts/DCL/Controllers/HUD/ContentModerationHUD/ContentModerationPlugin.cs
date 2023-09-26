@@ -29,7 +29,10 @@ namespace DCL.ContentModeration
             contentModerationHUDController = new ContentModerationHUDController(
                 adultContentSceneWarningComponentView,
                 adultContentAgeConfirmationComponentView,
-                adultContentEnabledNotificationComponentView);
+                adultContentEnabledNotificationComponentView,
+                Environment.i.world.state,
+                DataStore.i.settings,
+                DataStore.i.contentModeration);
         }
 
         public void Dispose()

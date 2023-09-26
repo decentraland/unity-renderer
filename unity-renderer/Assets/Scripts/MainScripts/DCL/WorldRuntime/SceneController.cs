@@ -26,7 +26,7 @@ namespace DCL
     {
         private const bool VERBOSE = false;
         private const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
-        private const int REQUEST_PLACE_TIME_OUT = 3;
+        private const int REQUEST_PLACE_TIME_OUT = 10;
 
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
 
@@ -65,7 +65,7 @@ namespace DCL
             DataStore.i.debugConfig.isDebugMode.OnChange += OnDebugModeSet;
             DataStore.i.player.playerGridPosition.OnChange += SetPositionDirty;
             CommonScriptableObjects.sceneNumber.OnChange += OnCurrentSceneNumberChange;
-            DataStore.i.settings.adultContentEnabled.OnChange += OnAdultContentSettingChange;
+            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange += OnAdultContentSettingChange;
 
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -95,7 +95,7 @@ namespace DCL
 
             DataStore.i.player.playerGridPosition.OnChange -= SetPositionDirty;
             DataStore.i.debugConfig.isDebugMode.OnChange -= OnDebugModeSet;
-            DataStore.i.settings.adultContentEnabled.OnChange -= OnAdultContentSettingChange;
+            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange -= OnAdultContentSettingChange;
 
             CommonScriptableObjects.sceneNumber.OnChange -= OnCurrentSceneNumberChange;
 
@@ -190,7 +190,7 @@ namespace DCL
                 if (isContentModerationFeatureEnabled && method != MessagingTypes.INIT_DONE)
                 {
                     if (scene.contentCategory == SceneContentCategory.RESTRICTED ||
-                        (scene.contentCategory == SceneContentCategory.ADULT && !DataStore.i.settings.adultContentEnabled.Get()))
+                        (scene.contentCategory == SceneContentCategory.ADULT && !DataStore.i.contentModeration.adultContentSettingEnabled.Get()))
                         return;
                 }
 

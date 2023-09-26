@@ -1,29 +1,32 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.ContentModeration
 {
     public class AdultContentSceneWarningComponentView : BaseComponentView, IAdultContentSceneWarningComponentView
     {
+        [SerializeField] internal Button backgroundButton;
         [SerializeField] internal ButtonComponentView closeButton;
-        [SerializeField] internal ButtonComponentView learnMoreButton;
+        [SerializeField] internal ButtonComponentView cancelButton;
         [SerializeField] internal ButtonComponentView goToSettingsButton;
 
-        public event Action OnLearnMoreClicked;
         public event Action OnGoToSettingsClicked;
 
         public override void Awake()
         {
             base.Awake();
-            closeButton.onClick.AddListener(() => Hide());
-            learnMoreButton.onClick.AddListener(() => OnLearnMoreClicked?.Invoke());
+            backgroundButton.onClick.AddListener(HideModal);
+            closeButton.onClick.AddListener(HideModal);
+            cancelButton.onClick.AddListener(HideModal);
             goToSettingsButton.onClick.AddListener(GoToSettings);
         }
 
         public override void Dispose()
         {
+            backgroundButton.onClick.RemoveAllListeners();
             closeButton.onClick.RemoveAllListeners();
-            learnMoreButton.onClick.RemoveAllListeners();
+            cancelButton.onClick.RemoveAllListeners();
             goToSettingsButton.onClick.RemoveAllListeners();
             base.Dispose();
         }
@@ -36,10 +39,7 @@ namespace DCL.ContentModeration
         public void HideModal() =>
             Hide();
 
-        private void GoToSettings()
-        {
-            Hide();
+        private void GoToSettings() =>
             OnGoToSettingsClicked?.Invoke();
-        }
     }
 }

@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.ContentModeration
 {
     public class AdultContentAgeConfirmationComponentView : BaseComponentView, IAdultContentAgeConfirmationComponentView
     {
+        [SerializeField] internal Button backgroundButton;
         [SerializeField] internal ToggleComponentView confirmAgeCheckbox;
         [SerializeField] internal ButtonComponentView closeButton;
         [SerializeField] internal ButtonComponentView cancelButton;
@@ -17,6 +19,7 @@ namespace DCL.ContentModeration
         {
             base.Awake();
             confirmAgeCheckbox.OnSelectedChanged += OnConfirmAgeCheckboxChanged;
+            backgroundButton.onClick.AddListener(Cancel);
             closeButton.onClick.AddListener(Cancel);
             cancelButton.onClick.AddListener(Cancel);
             confirmButton.onClick.AddListener(Confirm);
@@ -26,6 +29,7 @@ namespace DCL.ContentModeration
         public override void Dispose()
         {
             confirmAgeCheckbox.OnSelectedChanged -= OnConfirmAgeCheckboxChanged;
+            backgroundButton.onClick.RemoveAllListeners();
             closeButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
             confirmButton.onClick.RemoveAllListeners();

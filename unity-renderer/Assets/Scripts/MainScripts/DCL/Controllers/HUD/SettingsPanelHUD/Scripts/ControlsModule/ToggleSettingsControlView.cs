@@ -18,6 +18,7 @@ namespace DCL.SettingsPanelHUD.Controls
         public override void Initialize(SettingsControlModel model, SettingsControlController controller)
         {
             toggleController = (ToggleSettingsControlController)controller;
+            toggleController.ToggleValueChanged += OverrideToggleValue;
 
             base.Initialize(model, toggleController);
             toggleController.UpdateSetting(toggle.isOn);
@@ -28,6 +29,12 @@ namespace DCL.SettingsPanelHUD.Controls
             });
         }
 
+        protected override void OnDestroy()
+        {
+            toggleController.ToggleValueChanged -= OverrideToggleValue;
+            base.OnDestroy();
+        }
+
         public override void RefreshControl()
         {
             base.RefreshControl();
@@ -36,5 +43,8 @@ namespace DCL.SettingsPanelHUD.Controls
             if (toggle.isOn != newValue)
                 toggle.isOn = newValue;
         }
+
+        private void OverrideToggleValue(bool newValue) =>
+            toggle.isOn = newValue;
     }
 }
