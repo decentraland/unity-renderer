@@ -134,7 +134,7 @@ public class AvatarEditorHUDController : IHUD
 
         emotesCustomizationComponentController = new EmotesCustomizationComponentController(
             DataStore.i.emotesCustomization,
-            DataStore.i.emotes,
+            view.CharacterPreview.GetEmotesController(),
             DataStore.i.exploreV2,
             DataStore.i.HUDs,
             view.emotesSection.transform);

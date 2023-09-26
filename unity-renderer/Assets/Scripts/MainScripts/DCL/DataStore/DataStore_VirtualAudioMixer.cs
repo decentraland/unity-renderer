@@ -5,10 +5,10 @@ namespace DCL
     /// </summary>
     public class DataStore_VirtualAudioMixer
     {
-        public readonly BaseVariable<float> musicVolume = new BaseVariable<float>(1f);
-        public readonly BaseVariable<float> sceneSFXVolume = new BaseVariable<float>(1f);
-        public readonly BaseVariable<float> voiceChatVolume = new BaseVariable<float>(1f);
-        public readonly BaseVariable<float> uiSFXVolume = new BaseVariable<float>(1f);
-        public readonly BaseVariable<float> avatarSFXVolume = new BaseVariable<float>(1f);
+        public readonly BaseVariable<float> musicVolume = new (1f);
+        public readonly BaseVariable<float> sceneSFXVolume = new (1f);
+        public readonly BaseVariable<float> voiceChatVolume = new (1f);
+        public readonly BaseVariable<float> uiSFXVolume = new (1f);
+        public readonly BaseVariable<float> avatarSFXVolume = new (1f);
     }
 }

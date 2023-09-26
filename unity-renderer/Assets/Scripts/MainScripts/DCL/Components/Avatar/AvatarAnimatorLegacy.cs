@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
 using DCL.Emotes;
@@ -102,13 +103,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private string idleAnimationName;
     private string jumpAnimationName;
     private string fallAnimationName;
-    private AvatarAnimation latestAnimation;
+    private AvatarAnimation latestAnimationState;
     private AnimationState runAnimationState;
     private AnimationState walkAnimationState;
     private bool isUpdateRegistered = false;
 
     private Ray rayCache;
     private bool hasTarget;
+    private EmoteClipData lastExtendedEmoteData;
+    private string lastCrossFade;
+    private AnimationState currentEmote;
+    private int lastEmoteLoopCount;
 
     private void Awake()
     {
@@ -122,6 +127,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
+        StopEmote();
+
         animation = container.gameObject.GetOrCreateComponent<Animation>();
         container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
 
@@ -316,15 +323,16 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private void CrossFadeTo(AvatarAnimation avatarAnimation, string animationName,
+    private void CrossFadeTo(AvatarAnimation animationState, string animationName,
         float runTransitionTime, PlayMode playMode = PlayMode.StopSameLayer)
     {
-        if (latestAnimation == avatarAnimation)
+        if (latestAnimationState == animationState)
             return;
 
-        animation.wrapMode = avatarAnimation.ShouldLoop() ? WrapMode.Loop : WrapMode.Once;
-        animation.CrossFade(animationName, runTransitionTime, playMode);
-        latestAnimation = avatarAnimation;
+        lastCrossFade = animationName;
+        latestAnimationState = animationState;
+        animation.wrapMode = latestAnimationState.ShouldLoop() || blackboard.shouldLoop ? WrapMode.Loop : WrapMode.Once;
+        animation.CrossFade(lastCrossFade, runTransitionTime, playMode);
     }
 
     void State_Air(BlackBoard bb)
@@ -349,8 +357,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private void State_Expression(BlackBoard bb)
     {
-        var prevAnimation = latestAnimation;
-        CrossFadeTo(AvatarAnimation.EMOTE, bb.expressionTriggerId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
+        var prevAnimation = latestAnimationState;
 
         var exitTransitionStarted = false;
 
@@ -367,17 +374,22 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         if (exitTransitionStarted)
-        {
-            animation.Blend(bb.expressionTriggerId, 0, EXPRESSION_EXIT_TRANSITION_TIME);
-
-            bb.expressionTriggerId = null;
-            bb.shouldLoop = false;
-            OnUpdateWithDeltaTime(bb.deltaTime);
-        }
+            StopEmoteInternal(false);
         else if (prevAnimation != AvatarAnimation.EMOTE) // this condition makes Blend be called only in first frame of the state
         {
             animation.wrapMode = bb.shouldLoop ? WrapMode.Loop : WrapMode.Once;
             animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
+        }
+
+        // If we reach the emote loop, we send the RPC message again to refresh new users
+        if (bb.shouldLoop && isOwnPlayer)
+        {
+            int emoteLoop = GetCurrentEmoteLoopCount();
+
+            if (emoteLoop != lastEmoteLoopCount)
+                UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true);
+
+            lastEmoteLoopCount = emoteLoop;
         }
 
         return;
@@ -392,35 +404,42 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
-    private void SetExpressionValues(string expressionTriggerId, long expressionTriggerTimestamp)
+    private int GetCurrentEmoteLoopCount() =>
+        Mathf.RoundToInt(currentEmote.time / currentEmote.length);
+
+    public void StopEmote()
     {
-        if (animation == null)
-            return;
+        StopEmoteInternal(true);
+    }
 
-        if (string.IsNullOrEmpty(expressionTriggerId))
-            return;
+    private void StopEmoteInternal(bool immediate)
+    {
+        if (string.IsNullOrEmpty(blackboard.expressionTriggerId)) return;
+        if (animation.GetClip(blackboard.expressionTriggerId) == null) return;
 
-        if (animation.GetClip(expressionTriggerId) == null)
-            return;
+        animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
+        blackboard.expressionTriggerId = null;
+        blackboard.shouldLoop = false;
+        lastExtendedEmoteData?.Stop();
 
-        var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId)
-                                   && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
-        blackboard.expressionTriggerId = expressionTriggerId;
-        blackboard.expressionTriggerTimestamp = expressionTriggerTimestamp;
+        if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
+    }
 
-        if (mustTriggerAnimation)
+    private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
+    {
+        if (!string.IsNullOrEmpty(emoteId))
         {
-            if (!string.IsNullOrEmpty(expressionTriggerId))
+            lastExtendedEmoteData?.Stop();
+
+            if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
-                animation.Stop(expressionTriggerId);
-                latestAnimation = AvatarAnimation.IDLE;
+                lastExtendedEmoteData = emoteClipData;
+                emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
             }
-
-            blackboard.shouldLoop = emoteClipDataMap.TryGetValue(expressionTriggerId, out var clipData)
-                                    && clipData.loop;
-
-            currentState = State_Expression;
-            OnUpdateWithDeltaTime(Time.deltaTime);
+        }
+        else
+        {
+            lastExtendedEmoteData?.Stop();
         }
     }
 
@@ -435,9 +454,46 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
-    public void PlayEmote(string emoteId, long timestamps)
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude)
     {
-        SetExpressionValues(emoteId, timestamps);
+        if (animation == null)
+            return;
+
+        if (string.IsNullOrEmpty(emoteId))
+            return;
+
+        if (animation.GetClip(emoteId) == null)
+            return;
+
+        bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
+
+        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != timestamps;
+
+        if (loop && blackboard.expressionTriggerId == emoteId)
+            return;
+
+        blackboard.expressionTriggerId = emoteId;
+        blackboard.expressionTriggerTimestamp = timestamps;
+
+        if (mustTriggerAnimation || loop)
+        {
+            StartEmote(emoteId, spatial, volume, occlude);
+
+            if (!string.IsNullOrEmpty(emoteId))
+            {
+                animation.Stop(emoteId);
+                latestAnimationState = AvatarAnimation.IDLE;
+            }
+
+            blackboard.shouldLoop = loop;
+
+            CrossFadeTo(AvatarAnimation.EMOTE, emoteId, EXPRESSION_EXIT_TRANSITION_TIME, PlayMode.StopAll);
+
+            currentEmote = animation[emoteId];
+            lastEmoteLoopCount = GetCurrentEmoteLoopCount();
+            currentState = State_Expression;
+            OnUpdateWithDeltaTime(Time.deltaTime);
+        }
     }
 
     public void EquipBaseClip(AnimationClip clip)
@@ -457,18 +513,19 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null)
             return;
 
-        if (emoteClipData.clip == null)
-        {
-            Debug.LogError("Can't equip null animation clip for emote " + emoteId);
-            return;
-        }
-
         if (animation.GetClip(emoteId) != null)
             animation.RemoveClip(emoteId);
 
         emoteClipDataMap[emoteId] = emoteClipData;
 
-        animation.AddClip(emoteClipData.clip, emoteId);
+        animation.AddClip(emoteClipData.AvatarClip, emoteId);
+
+        if (emoteClipData.ExtraContent != null)
+        {
+            emoteClipData.ExtraContent.transform.SetParent(animation.transform.parent, false);
+            emoteClipData.ExtraContent.transform.ResetLocalTRS();
+            emoteClipData.ExtraContent.transform.localPosition = animation.transform.localPosition;
+        }
     }
 
     public void UnequipEmote(string emoteId)
@@ -480,6 +537,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
 
         animation.RemoveClip(emoteId);
+
+        if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
+        {
+            if (emoteClipData.ExtraContent != null)
+                emoteClipData.ExtraContent.transform.SetParent(null, false);
+        }
     }
 
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
@@ -510,10 +573,25 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
 
         animation.enabled = true;
+        SetIdleFrame();
     }
 
     private void OnDisable()
     {
+        if (animation == null)
+            return;
+
+        StopEmoteInternal(true);
+        CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, 0);
+        currentState = State_Ground;
+
+        AsyncAnimationStop().Forget();
+    }
+
+    private async UniTaskVoid AsyncAnimationStop()
+    {
+        await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+
         if (animation == null)
             return;
 

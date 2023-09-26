@@ -25,7 +25,7 @@ namespace Decentraland.Bff {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiFkZWNlbnRyYWxhbmQvcmVuZGVyZXIvYWJvdXQucHJvdG8SEGRlY2VudHJh",
-            "bGFuZC5iZmYimQ0KDUFib3V0UmVzcG9uc2USDwoHaGVhbHRoeRgBIAEoCBJK",
+            "bGFuZC5iZmYi5A0KDUFib3V0UmVzcG9uc2USDwoHaGVhbHRoeRgBIAEoCBJK",
             "Cg5jb25maWd1cmF0aW9ucxgCIAEoCzIyLmRlY2VudHJhbGFuZC5iZmYuQWJv",
             "dXRSZXNwb25zZS5BYm91dENvbmZpZ3VyYXRpb24SPAoHY29udGVudBgDIAEo",
             "CzIrLmRlY2VudHJhbGFuZC5iZmYuQWJvdXRSZXNwb25zZS5Db250ZW50SW5m",
@@ -49,20 +49,22 @@ namespace Decentraland.Bff {
             "bG9hZGVyX2NvbnRlbnRfc2VydmVyGn4KC0NvbnRlbnRJbmZvEg8KB2hlYWx0",
             "aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNo",
             "GAMgASgJSAGIAQESEgoKcHVibGljX3VybBgEIAEoCUIKCghfdmVyc2lvbkIO",
-            "CgxfY29tbWl0X2hhc2gafgoLTGFtYmRhc0luZm8SDwoHaGVhbHRoeRgBIAEo",
-            "CBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoLY29tbWl0X2hhc2gYAyABKAlI",
-            "AYgBARISCgpwdWJsaWNfdXJsGAQgASgJQgoKCF92ZXJzaW9uQg4KDF9jb21t",
-            "aXRfaGFzaBr6AQoJQ29tbXNJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoHdmVy",
-            "c2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQESFwoK",
-            "cHVibGljX3VybBgEIAEoCUgCiAEBEhAKCHByb3RvY29sGDIgASgJEhgKC3Vz",
-            "ZXJzX2NvdW50GDMgASgFSAOIAQESGgoNZml4ZWRfYWRhcHRlchg0IAEoCUgE",
-            "iAEBQgoKCF92ZXJzaW9uQg4KDF9jb21taXRfaGFzaEINCgtfcHVibGljX3Vy",
-            "bEIOCgxfdXNlcnNfY291bnRCEAoOX2ZpeGVkX2FkYXB0ZXIa1gEKB0JmZklu",
-            "Zm8SDwoHaGVhbHRoeRgBIAEoCBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoL",
-            "Y29tbWl0X2hhc2gYAyABKAlIAYgBARISCgpwdWJsaWNfdXJsGAQgASgJEhcK",
-            "CnVzZXJfY291bnQYMyABKAVIAogBARIdChBwcm90b2NvbF92ZXJzaW9uGDQg",
-            "ASgJSAOIAQFCCgoIX3ZlcnNpb25CDgoMX2NvbW1pdF9oYXNoQg0KC191c2Vy",
-            "X2NvdW50QhMKEV9wcm90b2NvbF92ZXJzaW9uQgYKBF9iZmZiBnByb3RvMw=="));
+            "CgxfY29tbWl0X2hhc2gayAEKC0xhbWJkYXNJbmZvEg8KB2hlYWx0aHkYASAB",
+            "KAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEBEhgKC2NvbW1pdF9oYXNoGAMgASgJ",
+            "SAGIAQESEgoKcHVibGljX3VybBgEIAEoCRIXCgpwdWJsaWNfa2V5GAUgASgJ",
+            "SAKIAQESFAoHYWRkcmVzcxgGIAEoCUgDiAEBQgoKCF92ZXJzaW9uQg4KDF9j",
+            "b21taXRfaGFzaEINCgtfcHVibGljX2tleUIKCghfYWRkcmVzcxr6AQoJQ29t",
+            "bXNJbmZvEg8KB2hlYWx0aHkYASABKAgSFAoHdmVyc2lvbhgCIAEoCUgAiAEB",
+            "EhgKC2NvbW1pdF9oYXNoGAMgASgJSAGIAQESFwoKcHVibGljX3VybBgEIAEo",
+            "CUgCiAEBEhAKCHByb3RvY29sGDIgASgJEhgKC3VzZXJzX2NvdW50GDMgASgF",
+            "SAOIAQESGgoNZml4ZWRfYWRhcHRlchg0IAEoCUgEiAEBQgoKCF92ZXJzaW9u",
+            "Qg4KDF9jb21taXRfaGFzaEINCgtfcHVibGljX3VybEIOCgxfdXNlcnNfY291",
+            "bnRCEAoOX2ZpeGVkX2FkYXB0ZXIa1gEKB0JmZkluZm8SDwoHaGVhbHRoeRgB",
+            "IAEoCBIUCgd2ZXJzaW9uGAIgASgJSACIAQESGAoLY29tbWl0X2hhc2gYAyAB",
+            "KAlIAYgBARISCgpwdWJsaWNfdXJsGAQgASgJEhcKCnVzZXJfY291bnQYMyAB",
+            "KAVIAogBARIdChBwcm90b2NvbF92ZXJzaW9uGDQgASgJSAOIAQFCCgoIX3Zl",
+            "cnNpb25CDgoMX2NvbW1pdF9oYXNoQg0KC191c2VyX2NvdW50QhMKEV9wcm90",
+            "b2NvbF92ZXJzaW9uQgYKBF9iZmZiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -70,7 +72,7 @@ namespace Decentraland.Bff {
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration), global::Decentraland.Bff.AboutResponse.Types.SkyboxConfiguration.Parser, new[]{ "FixedHour", "Textures" }, new[]{ "FixedHour" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration), global::Decentraland.Bff.AboutResponse.Types.AboutConfiguration.Parser, new[]{ "RealmName", "NetworkId", "GlobalScenesUrn", "ScenesUrn", "Minimap", "Skybox", "CityLoaderContentServer" }, new[]{ "RealmName", "Minimap", "Skybox", "CityLoaderContentServer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.ContentInfo), global::Decentraland.Bff.AboutResponse.Types.ContentInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.LambdasInfo), global::Decentraland.Bff.AboutResponse.Types.LambdasInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl" }, new[]{ "Version", "CommitHash" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.LambdasInfo), global::Decentraland.Bff.AboutResponse.Types.LambdasInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "PublicKey", "Address" }, new[]{ "Version", "CommitHash", "PublicKey", "Address" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.CommsInfo), global::Decentraland.Bff.AboutResponse.Types.CommsInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "Protocol", "UsersCount", "FixedAdapter" }, new[]{ "Version", "CommitHash", "PublicUrl", "UsersCount", "FixedAdapter" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Decentraland.Bff.AboutResponse.Types.BffInfo), global::Decentraland.Bff.AboutResponse.Types.BffInfo.Parser, new[]{ "Healthy", "Version", "CommitHash", "PublicUrl", "UserCount", "ProtocolVersion" }, new[]{ "Version", "CommitHash", "UserCount", "ProtocolVersion" }, null, null, null)})
           }));
@@ -1859,6 +1861,8 @@ namespace Decentraland.Bff {
           version_ = other.version_;
           commitHash_ = other.commitHash_;
           publicUrl_ = other.publicUrl_;
+          publicKey_ = other.publicKey_;
+          address_ = other.address_;
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -1943,6 +1947,54 @@ namespace Decentraland.Bff {
           }
         }
 
+        /// <summary>Field number for the "public_key" field.</summary>
+        public const int PublicKeyFieldNumber = 5;
+        private string publicKey_;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string PublicKey {
+          get { return publicKey_ ?? ""; }
+          set {
+            publicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+        /// <summary>Gets whether the "public_key" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasPublicKey {
+          get { return publicKey_ != null; }
+        }
+        /// <summary>Clears the value of the "public_key" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearPublicKey() {
+          publicKey_ = null;
+        }
+
+        /// <summary>Field number for the "address" field.</summary>
+        public const int AddressFieldNumber = 6;
+        private string address_;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string Address {
+          get { return address_ ?? ""; }
+          set {
+            address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+        /// <summary>Gets whether the "address" field is set</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public bool HasAddress {
+          get { return address_ != null; }
+        }
+        /// <summary>Clears the value of the "address" field</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public void ClearAddress() {
+          address_ = null;
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
@@ -1962,6 +2014,8 @@ namespace Decentraland.Bff {
           if (Version != other.Version) return false;
           if (CommitHash != other.CommitHash) return false;
           if (PublicUrl != other.PublicUrl) return false;
+          if (PublicKey != other.PublicKey) return false;
+          if (Address != other.Address) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -1973,6 +2027,8 @@ namespace Decentraland.Bff {
           if (HasVersion) hash ^= Version.GetHashCode();
           if (HasCommitHash) hash ^= CommitHash.GetHashCode();
           if (PublicUrl.Length != 0) hash ^= PublicUrl.GetHashCode();
+          if (HasPublicKey) hash ^= PublicKey.GetHashCode();
+          if (HasAddress) hash ^= Address.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -2007,6 +2063,14 @@ namespace Decentraland.Bff {
             output.WriteRawTag(34);
             output.WriteString(PublicUrl);
           }
+          if (HasPublicKey) {
+            output.WriteRawTag(42);
+            output.WriteString(PublicKey);
+          }
+          if (HasAddress) {
+            output.WriteRawTag(50);
+            output.WriteString(Address);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
@@ -2033,6 +2097,14 @@ namespace Decentraland.Bff {
             output.WriteRawTag(34);
             output.WriteString(PublicUrl);
           }
+          if (HasPublicKey) {
+            output.WriteRawTag(42);
+            output.WriteString(PublicKey);
+          }
+          if (HasAddress) {
+            output.WriteRawTag(50);
+            output.WriteString(Address);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
           }
@@ -2054,6 +2126,12 @@ namespace Decentraland.Bff {
           }
           if (PublicUrl.Length != 0) {
             size += 1 + pb::CodedOutputStream.ComputeStringSize(PublicUrl);
+          }
+          if (HasPublicKey) {
+            size += 1 + pb::CodedOutputStream.ComputeStringSize(PublicKey);
+          }
+          if (HasAddress) {
+            size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
           }
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
@@ -2078,6 +2156,12 @@ namespace Decentraland.Bff {
           }
           if (other.PublicUrl.Length != 0) {
             PublicUrl = other.PublicUrl;
+          }
+          if (other.HasPublicKey) {
+            PublicKey = other.PublicKey;
+          }
+          if (other.HasAddress) {
+            Address = other.Address;
           }
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
@@ -2110,6 +2194,14 @@ namespace Decentraland.Bff {
                 PublicUrl = input.ReadString();
                 break;
               }
+              case 42: {
+                PublicKey = input.ReadString();
+                break;
+              }
+              case 50: {
+                Address = input.ReadString();
+                break;
+              }
             }
           }
         #endif
@@ -2139,6 +2231,14 @@ namespace Decentraland.Bff {
               }
               case 34: {
                 PublicUrl = input.ReadString();
+                break;
+              }
+              case 42: {
+                PublicKey = input.ReadString();
+                break;
+              }
+              case 50: {
+                Address = input.ReadString();
                 break;
               }
             }

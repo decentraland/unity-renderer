@@ -298,4 +298,52 @@ namespace DCL.ECS7.InternalComponents
             this.Results = results;
         }
     }
+
+    public struct InternalAnimationPlayer : IInternalComponent
+    {
+        public bool dirty { get; set; }
+
+        public readonly struct State
+        {
+            public readonly string Clip;
+            public readonly bool Playing;
+            public readonly float Weight;
+            public readonly float Speed;
+            public readonly bool Loop;
+            public readonly bool ShouldReset;
+
+            public State(string clip, bool playing, float weight, float speed, bool loop,
+                bool shouldReset)
+            {
+                Clip = clip;
+                Playing = playing;
+                Weight = weight;
+                Speed = speed;
+                Loop = loop;
+                ShouldReset = shouldReset;
+            }
+        }
+
+        public readonly List<State> States;
+
+        public InternalAnimationPlayer(List<State> states)
+        {
+            States = states;
+            dirty = false;
+        }
+    }
+
+    public struct InternalAnimation : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public readonly Animation Animation;
+        public bool IsInitialized;
+
+        public InternalAnimation(Animation animation)
+        {
+            Animation = animation;
+            dirty = false;
+            IsInitialized = false;
+        }
+    }
 }

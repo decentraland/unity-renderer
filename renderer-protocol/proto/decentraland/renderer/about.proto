@@ -49,8 +49,8 @@ message AboutResponse {
     optional string version = 2;
     optional string commit_hash = 3;
     string public_url = 4;
-    string public_key = 5;
-    string address = 6;
+    optional string public_key = 5;
+    optional string address = 6;
   }
   message CommsInfo {
     // common properties
