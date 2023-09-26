@@ -20,7 +20,7 @@ namespace DCLServices.Lambdas
 
         private Service<IWebRequestController> webRequestController;
         private Service<IWebRequestMonitor> urlTransactionMonitor;
-        private readonly Dictionary<string, string> jsonHeaders = new() { { "Content-Type", "application/json" } };
+        private readonly Dictionary<string, string> jsonHeaders = new () { { "Content-Type", "application/json" } };
 
         public async UniTask<(TResponse response, bool success)> Post<TResponse, TBody>(
             string endPointTemplate,
@@ -67,15 +67,20 @@ namespace DCLServices.Lambdas
             params (string paramName, string paramValue)[] urlEncodedParams)
         {
             string urlWithParams = AppendQueryParamsToUrl(url, urlEncodedParams);
-            UnityWebRequest request = await webRequestController.Ref.GetAsync(urlWithParams, requestAttemps: attemptsNumber, timeout: timeout, isSigned: isSigned, signUrl: signUrl, cancellationToken: cancellationToken);
-
-            if (request.result != UnityWebRequest.Result.Success)
-                return (default(TResponse), false);
-
-            string text = request.downloadHandler.text;
 
             try
             {
+                UnityWebRequest request = await webRequestController.Ref.GetAsync(urlWithParams,
+                    requestAttemps: attemptsNumber,
+                    timeout: timeout,
+                    isSigned: isSigned,
+                    signUrl: signUrl,
+                    cancellationToken: cancellationToken);
+
+                if (request.result != UnityWebRequest.Result.Success)
+                    return (default(TResponse), false);
+
+                string text = request.downloadHandler.text;
                 var response = JsonConvert.DeserializeObject<TResponse>(text);
                 return (response, true);
             }
@@ -128,6 +133,7 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(lambdaUrl);
+
             if (!urlBuilder.ToString().EndsWith('/'))
                 urlBuilder.Append('/');
 
@@ -167,6 +173,7 @@ namespace DCLServices.Lambdas
             var urlBuilder = GenericPool<StringBuilder>.Get();
             urlBuilder.Clear();
             urlBuilder.Append(url);
+
             if (!urlBuilder.ToString().EndsWith('/'))
                 urlBuilder.Append('/');
 
