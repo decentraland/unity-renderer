@@ -2,6 +2,7 @@
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -12,43 +13,40 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
     {
         public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct);
 
-        public const int CHUNKS_CREATED_PER_BATCH = 10;
+        private const int CHUNKS_CREATED_PER_BATCH = 10;
+        private const int GRID_SIZE = 8;
+        private const int PARCELS_INSIDE_CHUNK = 40;
 
-        private readonly int chunkSize;
-        private readonly int parcelsInsideChunk;
         private readonly ChunkBuilder chunkBuilder;
         private readonly List<IChunkController> chunks;
 
-        private int parcelSize => coordsUtils.ParcelSize;
-
-        public SatelliteChunkAtlasController(Transform parent, int chunkSize,
-            ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder) //, Func<UniTask<IChunkController>> chunkBuilder)
+        public SatelliteChunkAtlasController(Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
             : base(parent, coordsUtils, cullingController)
         {
-            this.chunkSize = chunkSize;
             this.chunkBuilder = chunkBuilder;
 
             // var worldSize = ((Vector2)coordsUtils.WorldMaxCoords - coordsUtils.WorldMinCoords) * parcelSize;
-            var chunkAmounts = new Vector2Int(8, 8); //new Vector2Int(Mathf.CeilToInt(worldSize.x / this.chunkSize), Mathf.CeilToInt(worldSize.y / this.chunkSize));
+            var chunkAmounts = new Vector2Int(GRID_SIZE, GRID_SIZE);
+            // new Vector2Int(Mathf.CeilToInt(worldSize.x / this.chunkSize), Mathf.CeilToInt(worldSize.y / this.chunkSize));
             chunks = new List<IChunkController>(chunkAmounts.x * chunkAmounts.y);
-            parcelsInsideChunk = 38; //Mathf.Max(1, chunkSize / parcelSize);
-            Debug.Log($"parcelsInsideChunk {parcelsInsideChunk}");
         }
 
         public async UniTask Initialize(CancellationToken ct)
         {
+            int chunkSpriteSize = coordsUtils.ParcelSize * PARCELS_INSIDE_CHUNK;
+            Vector3 offset = SatelliteMapOffset();
+
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ctsDisposing.Token, ct).Token;
 
             var chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_BATCH);
 
-            for (var i = 0; i < 8; i++)
+            for (var i = 0; i < GRID_SIZE; i++)
             {
-                float x = -2655.5f + (798.72f * i);
-                    // (-152 * parcelSize) + (i * parcelsInsideChunk * parcelSize) - halfParcelSize;
+                float x = offset.x + (chunkSpriteSize * i);
 
-                for (var j = 0; j < 8; j++)
+                for (var j = 0; j < GRID_SIZE; j++)
                 {
-                    float y = 2637.24f - (798.72f * j);
+                    float y = offset.y - (chunkSpriteSize * j);
 
                     if (chunksCreating.Count >= CHUNKS_CREATED_PER_BATCH)
                     {
@@ -70,16 +68,24 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             }
         }
 
+        private Vector3 SatelliteMapOffset()
+        {
+            // World minimum plus half size of the chunk to get position in parcels for the center of first chunk
+            Vector2Int topLeftCornerChunkCenter = coordsUtils.WorldMinCoords + new Vector2Int(PARCELS_INSIDE_CHUNK / 2, PARCELS_INSIDE_CHUNK / 2);
+            // offset by 2 parcels because Satellite image has 2 parcels outside the world
+            topLeftCornerChunkCenter = new Vector2Int(topLeftCornerChunkCenter.x - 3, Math.Abs(topLeftCornerChunkCenter.y - 2));
+
+            return coordsUtils.CoordsToPosition(topLeftCornerChunkCenter);
+        }
+
         UniTask IMapLayerController.Enable(CancellationToken cancellationToken)
         {
-            Debug.Log("Enable satellite");
             instantiationParent.gameObject.SetActive(true);
             return UniTask.CompletedTask;
         }
 
         UniTask IMapLayerController.Disable(CancellationToken cancellationToken)
         {
-            Debug.Log("Disable satellite");
             instantiationParent.gameObject.SetActive(false);
             return UniTask.CompletedTask;
         }

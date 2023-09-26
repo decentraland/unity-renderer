@@ -121,8 +121,12 @@ namespace DCLServices.MapRendererV2
                 if (EnumUtils.HasFlag(mask, mapLayer)
                     && layers.TryGetValue(mapLayer, out var mapLayerStatus))
                 {
-                    if(isSatelliteViewMode && mapLayer == MapLayer.Atlas)
+                    if (isSatelliteViewMode && mapLayer == MapLayer.Atlas)
+                    {
+                        ResetCancellationSource(mapLayerStatus);
+                        mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                         continue;
+                    }
 
                     if (mapLayerStatus.ActivityOwners == 0)
                     {
@@ -140,15 +144,13 @@ namespace DCLServices.MapRendererV2
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer)
-                    && layers.TryGetValue(mapLayer, out var mapLayerStatus))
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out var mapLayerStatus)) continue;
+
+                if (--mapLayerStatus.ActivityOwners == 0)
                 {
-                    if (--mapLayerStatus.ActivityOwners == 0)
-                    {
-                        // Cancel activation flow
-                        ResetCancellationSource(mapLayerStatus);
-                        mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
+                    // Cancel activation flow
+                    ResetCancellationSource(mapLayerStatus);
+                    mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                 }
             }
         }

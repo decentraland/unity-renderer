@@ -20,12 +20,12 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 {
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
-        const int ATLAS_CHUNK_SIZE = 1020;
+        private const int ATLAS_CHUNK_SIZE = 1020;
         private const int SATELLITE_CHUNK_SIZE = 512;
 
-        const int PARCEL_SIZE = 20;
+        private const int PARCEL_SIZE = 20;
         // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
-        const float CULLING_BOUNDS_IN_PARCELS = 10;
+        private const float CULLING_BOUNDS_IN_PARCELS = 10;
 
         private const string ATLAS_CHUNK_ADDRESS = "AtlasChunk";
         private const string MAP_CONFIGURATION_ADDRESS = "MapRendererConfiguration";
@@ -90,24 +90,26 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private async UniTask CreateSatelliteAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
-            var chunkAtlas = new SatelliteChunkAtlasController(configuration.SatelliteAtlasRoot, SATELLITE_CHUNK_SIZE, coordsUtils, cullingController, chunkBuilder: CreateSatelliteChunk);
+            var chunkAtlas = new SatelliteChunkAtlasController(configuration.SatelliteAtlasRoot, coordsUtils, cullingController, chunkBuilder: CreateSatelliteChunk);
 
             // initialize Atlas but don't block the flow (to accelerate loading time)
             chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
 
             layers.Add(MapLayer.SatelliteAtlas, chunkAtlas);
+            return;
+
+            async UniTask<IChunkController> CreateSatelliteChunk(Vector3 chunkLocalPosition, Vector2Int chunkId, Transform parent, CancellationToken ct)
+            {
+                SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
+
+                var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent);
+                chunk.SetDrawOrder(MapRendererDrawOrder.SATELLITE_ATLAS);
+                await chunk.LoadImage(chunkId, ct);
+
+                return chunk;
+            }
         }
 
-        private async UniTask<IChunkController> CreateSatelliteChunk(Vector3 chunkLocalPosition, Vector2Int chunkId, Transform parent, CancellationToken ct)
-        {
-            SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
-
-            var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent);
-            chunk.SetDrawOrder(MapRendererDrawOrder.SATELLITE_ATLAS);
-            await chunk.LoadImage(chunkId, ct);
-
-            return chunk;
-        }
 
         private async UniTask CreateAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
@@ -117,17 +119,18 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
 
             layers.Add(MapLayer.Atlas, chunkAtlas);
-        }
+            return;
 
-        private async UniTask<IChunkController> CreateChunk(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct)
-        {
-            SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
+            async UniTask<IChunkController> CreateChunk(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct)
+            {
+                SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
 
-            var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
-            chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
-            await chunk.LoadImage(ATLAS_CHUNK_SIZE, PARCEL_SIZE, coordsCenter, ct);
+                var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
+                chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
+                await chunk.LoadImage(ATLAS_CHUNK_SIZE, PARCEL_SIZE, coordsCenter, ct);
 
-            return chunk;
+                return chunk;
+            }
         }
 
         private static IParcelHighlightMarker CreateHighlightMarker(ParcelHighlightMarkerObject highlightMarkerPrefab,

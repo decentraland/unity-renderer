@@ -1,10 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using System;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.MapLayers.Atlas

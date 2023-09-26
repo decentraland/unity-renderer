@@ -29,7 +29,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 #endif
 
             var transform = spriteRenderer.transform;
-            transform.localScale = Vector3.one * 78.1f;
+            transform.localScale = Vector3.one * 78.125f;
             transform.localPosition = chunkLocalPosition;
 
             internalCts = new CancellationTokenSource();
@@ -39,30 +39,6 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         private CancellationTokenSource linkedCts;
         private int webRequestAttempts;
         private const int MAX_ATTEMPTS = 3;
-
-        private async UniTask<UnityWebRequest> GetTextureFromWebAsync(string url, CancellationToken ct)
-        {
-            UnityWebRequest webRequest;
-
-            try
-            {
-                webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken:  linkedCts.Token);
-            }
-            catch (Exception e)
-            {
-                if (webRequestAttempts < MAX_ATTEMPTS)
-                {
-                    webRequestAttempts++;
-                    webRequest = await GetTextureFromWebAsync(url, linkedCts.Token);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return webRequest;
-        }
 
         public async UniTask LoadImage(Vector2Int chunkId, CancellationToken ct)
         {
@@ -91,6 +67,28 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             }
         }
 
+        private async UniTask<UnityWebRequest> GetTextureFromWebAsync(string url, CancellationToken ct)
+        {
+            UnityWebRequest webRequest;
+
+            try
+            {
+                webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken:  linkedCts.Token);
+            }
+            catch (Exception e)
+            {
+                if (webRequestAttempts < MAX_ATTEMPTS)
+                {
+                    webRequestAttempts++;
+                    webRequest = await GetTextureFromWebAsync(url, linkedCts.Token);
+                }
+                else
+                    throw;
+            }
+
+            return webRequest;
+        }
+
         private static Vector2 GetScaledSpriteSize(SpriteRenderer spriteRenderer)
         {
             if (spriteRenderer == null || spriteRenderer.sprite == null)
@@ -105,12 +103,9 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         public void Dispose()
         {
             internalCts?.Cancel();
-
-            // Dispose of the linked token source.
             linkedCts?.Dispose();
             linkedCts = null;
 
-            // Dispose of the internal token source.
             internalCts?.Dispose();
             internalCts = null;
 
