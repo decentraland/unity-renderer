@@ -1,4 +1,5 @@
-﻿using DCL.Controllers;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Controllers;
 using DCL.Helpers;
 
 namespace DCL.ContentModeration
@@ -82,6 +83,15 @@ namespace DCL.ContentModeration
         {
             contentModerationDataStore.adultContentSettingEnabled.Set(true);
             settingsDataStore.settingsPanelVisible.Set(false);
+            adultContentEnabledNotificationComponentView.ShowNotification();
+            HideNotificationAfterDelay(5).Forget();
+            return;
+
+            UniTask HideNotificationAfterDelay(int delayInSeconds)
+            {
+                return UniTask.Delay(delayInSeconds * 1000).ContinueWith(() =>
+                    adultContentEnabledNotificationComponentView.HideNotification());
+            }
         }
 
         private void OnAgeConfirmationRejected()
@@ -90,7 +100,12 @@ namespace DCL.ContentModeration
             contentModerationDataStore.resetAdultContentSetting.Set(true, true);
         }
 
-        private void OnAdultContentSettingChanged(bool current, bool previous) =>
+        private void OnAdultContentSettingChanged(bool current, bool previous)
+        {
+            if (!current)
+                adultContentEnabledNotificationComponentView.HideNotification();
+
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
+        }
     }
 }

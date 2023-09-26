@@ -22,5 +22,8 @@ namespace DCL.ContentModeration
 
         public void ShowNotification() =>
             Show();
+
+        public void HideNotification() =>
+            Hide();
     }
 }

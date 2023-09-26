@@ -11,12 +11,14 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
         {
             base.Initialize();
             CommonScriptableObjects.adultContentSettingDeactivated.Set(!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation"));
-            DataStore.i.contentModeration.resetAdultContentSetting.OnChange += OnResetAdultContentSetting;
+            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange += OnAdultContentAgeConfirmationAccepted;
+            DataStore.i.contentModeration.resetAdultContentSetting.OnChange += OnAdultContentAgeConfirmationRejected;
         }
 
         public override void OnDestroy()
         {
-            DataStore.i.contentModeration.resetAdultContentSetting.OnChange -= OnResetAdultContentSetting;
+            DataStore.i.contentModeration.adultContentSettingEnabled.OnChange -= OnAdultContentAgeConfirmationAccepted;
+            DataStore.i.contentModeration.resetAdultContentSetting.OnChange -= OnAdultContentAgeConfirmationRejected;
             base.OnDestroy();
         }
 
@@ -26,7 +28,8 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
         public override void UpdateSetting(object newValue)
         {
             var value = (bool) newValue;
-            currentGeneralSettings.adultContent = value;
+
+            currentGeneralSettings.adultContent = false;
 
             if (value)
                 DataStore.i.contentModeration.adultContentAgeConfirmationVisible.Set(true, true);
@@ -34,9 +37,17 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
                 DataStore.i.contentModeration.adultContentSettingEnabled.Set(false, true);
         }
 
-        private void OnResetAdultContentSetting(bool isReset, bool _)
+        private void OnAdultContentAgeConfirmationAccepted(bool isAccepted, bool _)
         {
-            if (!isReset)
+            if (!isAccepted)
+                return;
+
+            currentGeneralSettings.adultContent = true;
+        }
+
+        private void OnAdultContentAgeConfirmationRejected(bool isRejected, bool _)
+        {
+            if (!isRejected)
                 return;
 
             RaiseToggleValueChanged(false);

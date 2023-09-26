@@ -3,5 +3,6 @@
     public interface IAdultContentEnabledNotificationComponentView
     {
         void ShowNotification();
+        void HideNotification();
     }
 }
