@@ -53,7 +53,7 @@ import { futures } from './BrowserInterface'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { isWorldLoaderActive } from '../shared/realm/selectors'
 import { ensureRealmAdapter } from '../shared/realm/ensureRealmAdapter'
 
