@@ -41,16 +41,30 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             var texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
 
+            Debug.Log(texture.width);
+            Debug.Log(texture.height);
 
             spriteRenderer.sprite =
-                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
+                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, pixelsPerUnit: PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
 
+            Debug.Log(GetScaledSpriteSize(spriteRenderer));
             Texture2D CreateTexture(byte[] data)
             {
                 Texture2D texture2D = new Texture2D(1, 1);
                 texture2D.LoadImage(data);
                 return texture2D;
             }
+        }
+
+        public Vector2 GetScaledSpriteSize(SpriteRenderer spriteRenderer)
+        {
+            if (spriteRenderer == null || spriteRenderer.sprite == null)
+                return Vector2.zero; // Return zero if no SpriteRenderer or sprite is attached
+
+            Vector2 spriteSize = spriteRenderer.sprite.bounds.size;
+            Vector2 scaledSize = new Vector2(spriteSize.x * spriteRenderer.transform.localScale.x, spriteSize.y * spriteRenderer.transform.localScale.y);
+
+            return scaledSize;
         }
 
         public void Dispose()

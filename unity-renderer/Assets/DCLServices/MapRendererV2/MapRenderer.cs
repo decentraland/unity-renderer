@@ -98,17 +98,19 @@ namespace DCLServices.MapRendererV2
             mapCameraPool.Release(mapCameraController);
         }
 
+        private bool isSatelliteViewMode = true;
+
         public void SetSatelliteViewMode(bool isActive)
         {
             if (isActive)
             {
-                EnableLayers(MapLayer.SatelliteAtlas);
-                DisableLayers(MapLayer.Atlas);
+                layers[MapLayer.SatelliteAtlas].MapLayerController.Enable(default(CancellationToken));
+                layers[MapLayer.Atlas].MapLayerController.Disable(default(CancellationToken));
             }
             else
             {
-                EnableLayers(MapLayer.Atlas);
-                DisableLayers(MapLayer.SatelliteAtlas);
+                layers[MapLayer.SatelliteAtlas].MapLayerController.Disable(default(CancellationToken));
+                layers[MapLayer.Atlas].MapLayerController.Enable(default(CancellationToken));
             }
         }
 
@@ -119,6 +121,9 @@ namespace DCLServices.MapRendererV2
                 if (EnumUtils.HasFlag(mask, mapLayer)
                     && layers.TryGetValue(mapLayer, out var mapLayerStatus))
                 {
+                    if(isSatelliteViewMode && mapLayer == MapLayer.Atlas)
+                        continue;
+
                     if (mapLayerStatus.ActivityOwners == 0)
                     {
                         // Cancel deactivation flow

@@ -39,18 +39,16 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         {
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ctsDisposing.Token, ct).Token;
 
-            float halfParcelSize = parcelSize * 0.5f;
-
             var chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_BATCH);
 
             for (var i = 0; i < 8; i++)
             {
-                float x = -2655.94f + (798.72f * i);
+                float x = -2655.5f + (798.72f * i);
                     // (-152 * parcelSize) + (i * parcelsInsideChunk * parcelSize) - halfParcelSize;
 
                 for (var j = 0; j < 8; j++)
                 {
-                    float y = 2637.241f - (798.72f * j);
+                    float y = 2637.24f - (798.72f * j);
 
                     if (chunksCreating.Count >= CHUNKS_CREATED_PER_BATCH)
                     {
@@ -72,11 +70,19 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             }
         }
 
-        // Atlas is always enabled and can't be turned off/on
-        UniTask IMapLayerController.Enable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Enable(CancellationToken cancellationToken)
+        {
+            Debug.Log("Enable satellite");
+            instantiationParent.gameObject.SetActive(true);
+            return UniTask.CompletedTask;
+        }
 
-        UniTask IMapLayerController.Disable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Disable(CancellationToken cancellationToken)
+        {
+            Debug.Log("Disable satellite");
+
+            instantiationParent.gameObject.SetActive(false);
+            return UniTask.CompletedTask;
+        }
     }
 }

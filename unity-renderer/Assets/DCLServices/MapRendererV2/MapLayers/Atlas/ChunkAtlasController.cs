@@ -82,11 +82,16 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             ClearCurrentChunks();
         }
 
-        // Atlas is always enabled and can't be turned off/on
-        UniTask IMapLayerController.Enable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Enable(CancellationToken cancellationToken)
+        {
+            instantiationParent.gameObject.SetActive(true);
+            return UniTask.CompletedTask;
+        }
 
-        UniTask IMapLayerController.Disable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Disable(CancellationToken cancellationToken)
+        {
+            instantiationParent.gameObject.SetActive(false);
+            return UniTask.CompletedTask;
+        }
     }
 }

@@ -13,8 +13,8 @@ namespace DCL
         {
             this.view = view;
 
-            this.view.ParcelsButtonClicked += OnParcelsButtonClicked;
-            this.view.SatelliteButtonClicked += OnSatelliteButtonClicked;
+            this.view.ParcelsButtonClicked += EnableParcelsViewMode;
+            this.view.SatelliteButtonClicked += EnableSatelliteViewMode;
 
             mapRender = Environment.i.serviceLocator.Get<IMapRenderer>();
 
@@ -23,22 +23,22 @@ namespace DCL
 
         public void Dispose()
         {
-            view.ParcelsButtonClicked -= OnParcelsButtonClicked;
-            view.SatelliteButtonClicked -= OnSatelliteButtonClicked;
+            view.ParcelsButtonClicked -= EnableParcelsViewMode;
+            view.SatelliteButtonClicked -= EnableSatelliteViewMode;
 
             Utils.SafeDestroy(view.gameObject);
         }
 
-        private void OnParcelsButtonClicked()
-        {
-            view.SetState(satelliteViewActive: false);
-            mapRender.SetSatelliteViewMode(false);
-        }
-
-        private void OnSatelliteButtonClicked()
+        private void EnableSatelliteViewMode()
         {
             view.SetState(satelliteViewActive: true);
             mapRender.SetSatelliteViewMode(true);
+        }
+
+        private void EnableParcelsViewMode()
+        {
+            view.SetState(satelliteViewActive: false);
+            mapRender.SetSatelliteViewMode(false);
         }
     }
 }
