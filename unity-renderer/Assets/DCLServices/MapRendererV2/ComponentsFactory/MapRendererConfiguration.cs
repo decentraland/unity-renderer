@@ -20,6 +20,9 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         public Transform ScenesOfInterestMarkersRoot { get; private set; }
 
         [field: SerializeField]
+        public Transform FavoritesMarkersRoot { get; private set; }
+
+        [field: SerializeField]
         public Transform HomePointRoot { get; private set; }
 
         [field: SerializeField]

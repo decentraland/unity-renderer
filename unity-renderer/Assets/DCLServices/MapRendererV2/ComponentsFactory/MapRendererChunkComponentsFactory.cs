@@ -42,6 +42,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
         internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; }
+        internal FavoritesMarkersInstaller favoritesMarkersInstaller { get; }
         internal HomePointMarkerInstaller homePointMarkerInstaller { get; }
         internal HotUsersMarkersInstaller hotUsersMarkersInstaller { get; }
         internal PlayerMarkerInstaller playerMarkerInstaller { get; }
@@ -126,6 +127,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CreateAtlas(),
                 coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)

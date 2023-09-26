@@ -8,6 +8,7 @@
         internal const int HOT_USER_MARKERS = 11;
         internal const int PLAYER_MARKER = 12;
         internal const int SCENES_OF_INTEREST = 15;
+        internal const int FAVORITES = 17;
 
         internal const int PARCEL_HIGHLIGHT = 30;
 
