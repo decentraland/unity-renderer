@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
@@ -118,10 +119,9 @@ namespace DCLServices.MapRendererV2
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer)
-                    && layers.TryGetValue(mapLayer, out var mapLayerStatus))
+                if (EnumUtils.HasFlag(mask, mapLayer) && layers.TryGetValue(mapLayer, out var mapLayerStatus))
                 {
-                    if (isSatelliteViewMode && mapLayer == MapLayer.Atlas)
+                    if (mapLayer == MapLayer.Atlas && isSatelliteViewMode)
                     {
                         ResetCancellationSource(mapLayerStatus);
                         mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
@@ -138,6 +138,9 @@ namespace DCLServices.MapRendererV2
                     mapLayerStatus.ActivityOwners++;
                 }
             }
+
+            if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap-satellite-view"))
+                SetSatelliteViewMode(false);
         }
 
         private void DisableLayers(MapLayer mask)

@@ -1,7 +1,7 @@
 ﻿using DCL.Helpers;
 using DCLServices.MapRendererV2;
 using System;
-using UnityEngine.Device;
+using Application = UnityEngine.Device.Application;
 
 namespace DCL
 {
@@ -28,7 +28,7 @@ namespace DCL
         {
             view.ParcelsButtonClicked -= EnableParcelsViewMode;
             view.SatelliteButtonClicked -= EnableSatelliteViewMode;
-            this.view.HyperLinkClicked -= OpenGenesisCityLink;
+            view.HyperLinkClicked -= OpenGenesisCityLink;
 
             Utils.SafeDestroy(view.gameObject);
         }

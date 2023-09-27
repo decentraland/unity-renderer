@@ -38,6 +38,12 @@ namespace DCL
             tmpTextHyperLink.HyperLinkClicked -= OnHyperLinkClicked;
         }
 
+        public void Hide()
+        {
+            tmpTextHyperLink.gameObject.SetActive(false);
+            atlasLayerSectionSelector.gameObject.SetActive(false);
+        }
+
         private void OnHyperLinkClicked() =>
             HyperLinkClicked?.Invoke();
 
