@@ -14,35 +14,38 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct);
 
         private const int CHUNKS_CREATED_PER_BATCH = 10;
-        private const int GRID_SIZE = 8;
-        private const int PARCELS_INSIDE_CHUNK = 40;
+
+        private readonly int gridSize;
+        private readonly int parcelsInsideChunk;
 
         private readonly ChunkBuilder chunkBuilder;
         private readonly List<IChunkController> chunks;
 
-        public SatelliteChunkAtlasController(Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
+        public SatelliteChunkAtlasController(Transform parent, int gridSize, int parcelsInsideChunk, ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
             : base(parent, coordsUtils, cullingController)
         {
+            this.gridSize = gridSize;
+            this.parcelsInsideChunk = parcelsInsideChunk;
             this.chunkBuilder = chunkBuilder;
 
-            var chunkAmounts = new Vector2Int(GRID_SIZE, GRID_SIZE);
+            var chunkAmounts = new Vector2Int(gridSize, gridSize);
             chunks = new List<IChunkController>(chunkAmounts.x * chunkAmounts.y);
         }
 
         public async UniTask Initialize(CancellationToken ct)
         {
-            int chunkSpriteSize = PARCELS_INSIDE_CHUNK * coordsUtils.ParcelSize;
+            int chunkSpriteSize = parcelsInsideChunk * coordsUtils.ParcelSize;
             Vector3 offset = SatelliteMapOffset();
 
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ctsDisposing.Token, ct).Token;
 
             var chunksCreating = new List<UniTask<IChunkController>>(CHUNKS_CREATED_PER_BATCH);
 
-            for (var i = 0; i < GRID_SIZE; i++)
+            for (var i = 0; i < gridSize; i++)
             {
                 float x = offset.x + (chunkSpriteSize * i);
 
-                for (var j = 0; j < GRID_SIZE; j++)
+                for (var j = 0; j < gridSize; j++)
                 {
                     float y = offset.y - (chunkSpriteSize * j);
 
@@ -68,9 +71,9 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 
         private Vector3 SatelliteMapOffset()
         {
-            // World minimum plus half size of the chunk to get position in parcels for the center of first chunk
-            Vector2Int topLeftCornerChunkCenter = coordsUtils.WorldMinCoords + new Vector2Int(PARCELS_INSIDE_CHUNK / 2, PARCELS_INSIDE_CHUNK / 2);
-            // offset by 2 parcels because Satellite image has 2 parcels outside the world
+            // World minimum plus half size of the chunk to get position (in parcels units) for the center of first chunk
+            Vector2Int topLeftCornerChunkCenter = coordsUtils.WorldMinCoords + new Vector2Int(parcelsInsideChunk / 2, parcelsInsideChunk / 2);
+            // offset by (3,2) parcels because Satellite image has border parcels outside of the world
             topLeftCornerChunkCenter = new Vector2Int(topLeftCornerChunkCenter.x - 3, Math.Abs(topLeftCornerChunkCenter.y - 2));
 
             return coordsUtils.CoordsToPosition(topLeftCornerChunkCenter);

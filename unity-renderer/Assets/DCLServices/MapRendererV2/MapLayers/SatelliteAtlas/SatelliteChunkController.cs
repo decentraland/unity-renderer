@@ -49,7 +49,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
                 Utils.SafeDestroy(spriteRenderer.gameObject);
         }
 
-        public async UniTask LoadImage(Vector2Int chunkId, CancellationToken ct)
+        public async UniTask LoadImage(Vector2Int chunkId, float chunkWorldSize, CancellationToken ct)
         {
             webRequestAttempts = 0;
             linkedCts = CancellationTokenSource.CreateLinkedTokenSource(internalCts.Token, ct);
@@ -60,11 +60,12 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             Texture2D texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
 
-            spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2Ext.OneHalf, pixelsPerUnit: 0.64f,
+            float pixelsPerUnit = texture.width / chunkWorldSize;
+
+            spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2Ext.OneHalf, pixelsPerUnit,
                 0, SpriteMeshType.FullRect, Vector4.one, false);
 
             return;
-
             Texture2D CreateTexture(byte[] data)
             {
                 var texture2D = new Texture2D(1, 1);

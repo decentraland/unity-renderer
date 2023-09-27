@@ -1,5 +1,4 @@
 ﻿using System;
-using TMPro;
 using UIComponents.Scripts.Components.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,17 +7,10 @@ namespace DCL
 {
     public class NavMapChunksLayersView : MonoBehaviour
     {
-        [SerializeField] private Button satelliteLayerButton;
-        [SerializeField] private Button parcelsLayerButton;
+        private const int SATELLITE_SECTION = 0;
+        private const int PARCELS_SECTION = 1;
 
-        [SerializeField] private TMP_Text satelliteLayerText;
-        [SerializeField] private TMP_Text parcelsLayerText;
-
-        [SerializeField] private Color activeButtonColor;
-        [SerializeField] private Color inactiveButtonColor = Color.white;
-
-        [SerializeField] private Color activeTextColor = Color.white;
-        [SerializeField] private Color inactiveTextColor = Color.black;
+        [SerializeField] private SectionSelectorComponentView atlasLayerSectionSelector;
 
         [Space]
         [SerializeField] private TMPTextHyperLink tmpTextHyperLink;
@@ -30,24 +22,18 @@ namespace DCL
         public event Action SatelliteButtonClicked;
         public event Action HyperLinkClicked;
 
-        private void Awake()
+        private void Start()
         {
-            satelliteLayerBackground = satelliteLayerButton.GetComponent<Image>();
-            parcelsLayerBackground = parcelsLayerButton.GetComponent<Image>();
-        }
-
-        private void OnEnable()
-        {
-            parcelsLayerButton.onClick.AddListener(() => ParcelsButtonClicked?.Invoke());
-            satelliteLayerButton.onClick.AddListener(() => SatelliteButtonClicked?.Invoke());
+            atlasLayerSectionSelector.GetSection(SATELLITE_SECTION).onSelect.AddListener(isActive => SatelliteButtonClicked?.Invoke());
+            atlasLayerSectionSelector.GetSection(PARCELS_SECTION).onSelect.AddListener(isActive => ParcelsButtonClicked?.Invoke());
 
             tmpTextHyperLink.HyperLinkClicked += OnHyperLinkClicked;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            parcelsLayerButton.onClick.RemoveAllListeners();
-            satelliteLayerButton.onClick.RemoveAllListeners();
+            atlasLayerSectionSelector.GetSection(SATELLITE_SECTION).onSelect.RemoveAllListeners();
+            atlasLayerSectionSelector.GetSection(PARCELS_SECTION).onSelect.RemoveAllListeners();
 
             tmpTextHyperLink.HyperLinkClicked -= OnHyperLinkClicked;
         }
@@ -55,28 +41,7 @@ namespace DCL
         private void OnHyperLinkClicked() =>
             HyperLinkClicked?.Invoke();
 
-        public void SetState(bool satelliteViewActive)
-        {
-            if (satelliteViewActive)
-            {
-                tmpTextHyperLink.gameObject.SetActive(true);
-
-                satelliteLayerBackground.color = activeButtonColor;
-                parcelsLayerBackground.color = inactiveButtonColor;
-
-                satelliteLayerText.color = activeTextColor;
-                parcelsLayerText.color = inactiveTextColor;
-            }
-            else
-            {
-                tmpTextHyperLink.gameObject.SetActive(false);
-
-                satelliteLayerBackground.color = inactiveButtonColor;
-                parcelsLayerBackground.color = activeButtonColor;
-
-                satelliteLayerText.color = inactiveTextColor;
-                parcelsLayerText.color = activeTextColor;
-            }
-        }
+        public void SetState(bool satelliteViewActive) =>
+            tmpTextHyperLink.gameObject.SetActive(satelliteViewActive);
     }
 }

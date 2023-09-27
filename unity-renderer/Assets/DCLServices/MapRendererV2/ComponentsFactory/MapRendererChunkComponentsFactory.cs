@@ -21,8 +21,6 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     public class MapRendererChunkComponentsFactory : IMapRendererComponentsFactory
     {
         private const int ATLAS_CHUNK_SIZE = 1020;
-        private const int SATELLITE_CHUNK_SIZE = 512;
-
         private const int PARCEL_SIZE = 20;
         // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
         private const float CULLING_BOUNDS_IN_PARCELS = 10;
@@ -90,7 +88,10 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private async UniTask CreateSatelliteAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
-            var chunkAtlas = new SatelliteChunkAtlasController(configuration.SatelliteAtlasRoot, coordsUtils, cullingController, chunkBuilder: CreateSatelliteChunk);
+            const int GRID_SIZE = 8; // satellite images are provided by 8x8 grid.
+            const int PARCELS_INSIDE_CHUNK = 40; // One satellite image contains 40 parcels.
+
+            var chunkAtlas = new SatelliteChunkAtlasController(configuration.SatelliteAtlasRoot, GRID_SIZE, PARCELS_INSIDE_CHUNK, coordsUtils, cullingController, chunkBuilder: CreateSatelliteChunk);
 
             // initialize Atlas but don't block the flow (to accelerate loading time)
             chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
@@ -103,12 +104,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
 
                 var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent, MapRendererDrawOrder.SATELLITE_ATLAS);
-                await chunk.LoadImage(chunkId, ct);
+                await chunk.LoadImage(chunkId, PARCELS_INSIDE_CHUNK * coordsUtils.ParcelSize, ct);
 
                 return chunk;
             }
         }
-
 
         private async UniTask CreateAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
