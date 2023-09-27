@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
 using DCLServices.WearablesCatalogService;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -97,24 +98,32 @@ namespace DCL.Emotes
                 return new NftEmoteReference(extendedEmote, loader, extendedEmote.emoteDataV0?.loop ?? false);
             }
 
-            var emote = await FetchEmote(emoteBodyId, cancellationToken);
-
-            if (emote == null)
+            try
             {
-                Debug.LogError($"Unexpected null emote when requesting {emoteBodyId}");
+                var emote = await FetchEmote(emoteBodyId, cancellationToken);
+
+                if (emote == null)
+                {
+                    Debug.LogError($"Unexpected null emote when requesting {emoteBodyId}");
+                    return null;
+                }
+
+                // Loader disposal is being handled by the emote reference
+                IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
+                await animationLoader.LoadRemoteEmote(animationsModelsContainer, emote, emoteBodyId.BodyShapeId, cancellationToken);
+
+                if (animationLoader.mainClip == null)
+                    Debug.LogError("Emote animation failed to load for emote " + emote.id);
+
+                bool loop = emote is EmoteItem newEmoteItem ? newEmoteItem.data.loop : emote.emoteDataV0?.loop ?? false;
+                IEmoteReference emoteReference = new NftEmoteReference(emote, animationLoader, loop);
+                return emoteReference;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
                 return null;
             }
-
-            // Loader disposal is being handled by the emote reference
-            IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
-            await animationLoader.LoadRemoteEmote(animationsModelsContainer, emote, emoteBodyId.BodyShapeId, cancellationToken);
-
-            if (animationLoader.mainClip == null)
-                Debug.LogError("Emote animation failed to load for emote " + emote.id);
-
-            bool loop = emote is EmoteItem newEmoteItem ? newEmoteItem.data.loop : emote.emoteDataV0?.loop ?? false;
-            IEmoteReference emoteReference = new NftEmoteReference(emote, animationLoader, loop);
-            return emoteReference;
         }
 
         private UniTask<WearableItem> FetchEmote(EmoteBodyId emoteBodyId, CancellationToken ct)

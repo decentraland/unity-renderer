@@ -8,7 +8,6 @@ using DCL.Providers;
 using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
-using NSubstitute.ClearExtensions;
 using System;
 using UnityEngine;
 
@@ -117,10 +116,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                 cancellationToken: cancellationToken);
 
             if (!success)
-            {
-                Debug.LogException(new Exception($"The request of wearables from builder '{emoteId}' failed!"));
-                return null;
-            }
+                throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
 
             WearableItem wearable = response.data.ToWearableItem(
                 "https://builder-api.decentraland.org/v1/storage/contents/",
@@ -131,6 +127,15 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             OnEmoteReceived(wearable);
 
             return wearable;
+        }
+        catch (UnityWebRequestException ex)
+        {
+            if (ex.ResponseCode == 404)
+                Debug.LogWarning($"Emote with id: {emoteId} does not exist");
+            else
+                Debug.LogException(ex);
+
+            return null;
         }
         catch (Exception e)
         {
@@ -259,6 +264,11 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
             await promise.WithCancellation(linkedCt.Token);
         }
+        catch (UnityWebRequestException ex)
+        {
+            Debug.LogWarning($"Emote with id:{id} does not exist or connection failed");
+            return null;
+        }
         catch (PromiseException ex)
         {
             Debug.LogWarning($"Emote with id:{id} was rejected");
@@ -274,6 +284,11 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                     promises.Remove(id);
             }
 
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
             return null;
         }
         finally
