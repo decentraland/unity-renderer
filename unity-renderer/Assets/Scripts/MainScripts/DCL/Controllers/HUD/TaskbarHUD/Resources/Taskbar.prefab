@@ -649,7 +649,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 80, y: 0}
+  m_SizeDelta: {x: 75, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3470199863794589297
 CanvasRenderer:
@@ -716,6 +716,10 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   contentModerationButton: {fileID: 4718488674161969505}
   contentModerationRatingText: {fileID: 457030712040419999}
+  contentModerationRatingBackground: {fileID: 6884206930884978461}
+  backgroundColorForTeen: {r: 0.21176472, g: 0.8313726, b: 0.1137255, a: 1}
+  backgroundColorForAdult: {r: 1, g: 0.78823537, b: 0.35686275, a: 1}
+  backgroundColorForRestricted: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
 --- !u!114 &4718488674161969505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1542,6 +1546,10 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   contentModerationButton: {fileID: 6832325096302936748}
   contentModerationRatingText: {fileID: 3902808279478684175}
+  contentModerationRatingBackground: {fileID: 0}
+  backgroundColorForTeen: {r: 0, g: 0, b: 0, a: 0}
+  backgroundColorForAdult: {r: 0, g: 0, b: 0, a: 0}
+  backgroundColorForRestricted: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &3080350646182386195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1699,7 +1707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E
+  m_text: T
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
@@ -3103,14 +3111,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.78823537, b: 0.35686275, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6067442b4b5ee49e68ff2720d1aedddd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3119,7 +3127,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 2
 --- !u!1 &6078035226367418338
 GameObject:
   m_ObjectHideFlags: 0

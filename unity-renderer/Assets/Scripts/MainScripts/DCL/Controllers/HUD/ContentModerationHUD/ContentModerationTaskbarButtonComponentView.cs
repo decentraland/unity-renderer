@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCL.Controllers;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,10 @@ namespace DCL.ContentModeration
     {
         [SerializeField] internal Button contentModerationButton;
         [SerializeField] internal TMP_Text contentModerationRatingText;
+        [SerializeField] internal Image contentModerationRatingBackground;
+        [SerializeField] internal Color backgroundColorForTeen;
+        [SerializeField] internal Color backgroundColorForAdult;
+        [SerializeField] internal Color backgroundColorForRestricted;
 
         public event Action OnContentModerationPressed;
 
@@ -26,7 +31,24 @@ namespace DCL.ContentModeration
 
         public override void RefreshControl() { }
 
-        public void SetContentModerationRating(string rating) =>
-            contentModerationRatingText.text = rating;
+        public void SetContentCategory(SceneContentCategory contentCategory)
+        {
+            switch (contentCategory)
+            {
+                case SceneContentCategory.ADULT:
+                    contentModerationRatingText.text = "A";
+                    contentModerationRatingBackground.color = backgroundColorForAdult;
+                    break;
+                case SceneContentCategory.RESTRICTED:
+                    contentModerationRatingText.text = "R";
+                    contentModerationRatingBackground.color = backgroundColorForRestricted;
+                    break;
+                case SceneContentCategory.TEEN:
+                default:
+                    contentModerationRatingText.text = "T";
+                    contentModerationRatingBackground.color = backgroundColorForTeen;
+                    break;
+            }
+        }
     }
 }

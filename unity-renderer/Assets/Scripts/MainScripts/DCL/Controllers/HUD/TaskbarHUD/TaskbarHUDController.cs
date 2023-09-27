@@ -156,19 +156,7 @@ public class TaskbarHUDController : IHUD
         if (!worldState.TryGetScene(currentSceneNumber, out IParcelScene currentParcelScene))
             return;
 
-        switch (currentParcelScene.contentCategory)
-        {
-            case SceneContentCategory.ADULT:
-                view.contentModerationTaskbarButton.SetContentModerationRating("A");
-                break;
-            case SceneContentCategory.RESTRICTED:
-                view.contentModerationTaskbarButton.SetContentModerationRating("R");
-                break;
-            case SceneContentCategory.TEEN:
-            default:
-                view.contentModerationTaskbarButton.SetContentModerationRating("T");
-                break;
-        }
+        view.contentModerationTaskbarButton.SetContentCategory(currentParcelScene.contentCategory);
     }
 
     private void OpenIntercom()
