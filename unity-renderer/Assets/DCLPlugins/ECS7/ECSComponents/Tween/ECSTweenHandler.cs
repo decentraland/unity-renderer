@@ -69,7 +69,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     break;
                 case PBTween.ModeOneofCase.Scale:
                     entityTransform.localScale = ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start);
-                    tweener = entityTransform.DOMove(
+                    tweener = entityTransform.DOScale(
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
                         durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
                     break;
