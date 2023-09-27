@@ -11,5 +11,6 @@
         public readonly BaseVariable<bool> adultContentSettingEnabled = new (false);
         public readonly BaseVariable<bool> adultContentAgeConfirmationVisible = new (false);
         public readonly BaseVariable<AdultContentAgeConfirmationResult> adultContentAgeConfirmationResult = new (AdultContentAgeConfirmationResult.ACCEPTED);
+        public readonly BaseVariable<bool> reportingScenePanelVisible = new (false);
     }
 }
