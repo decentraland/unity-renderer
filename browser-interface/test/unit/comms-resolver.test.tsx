@@ -36,8 +36,6 @@ describe('Comms resolver', () => {
         lambdas: {
           healthy: true,
           publicUrl: 'https://peer.decentraland.org/lambdas',
-          publicKey: '8850b41b0b5d9db7a283eac0eae90c1b59692d665633d511ea4e695019557441bfe78a1f9fe1fff8db898fa1a6d3c93fadcc657862bb0d2e0171b813b8441ed3',
-          address: '0x981152C2D36c2e5414A493ecc4Ba26aAEC263DCA'
         },
         acceptingUsers: true
       },
@@ -67,8 +65,6 @@ describe('Comms resolver', () => {
         lambdas: {
           healthy: true,
           publicUrl: 'https://peer.decentraland.zone/lambdas',
-          publicKey: '8850b41b0b5d9db7a283eac0eae90c1b59692d665633d511ea4e695019557441bfe78a1f9fe1fff8db898fa1a6d3c93fadcc657862bb0d2e0171b813b8441ed3',
-          address: '0x981152C2D36c2e5414A493ecc4Ba26aAEC263DCA'
         },
         acceptingUsers: true
       },
@@ -97,8 +93,6 @@ describe('Comms resolver', () => {
         lambdas: {
           healthy: true,
           publicUrl: 'https://peer.decentraland.zone/lambdas',
-          publicKey: '8850b41b0b5d9db7a283eac0eae90c1b59692d665633d511ea4e695019557441bfe78a1f9fe1fff8db898fa1a6d3c93fadcc657862bb0d2e0171b813b8441ed3',
-          address: '0x981152C2D36c2e5414A493ecc4Ba26aAEC263DCA'
         },
         acceptingUsers: true
       },
@@ -127,8 +121,6 @@ describe('Comms resolver', () => {
         lambdas: {
           healthy: true,
           publicUrl: 'http://peer.decentraland.zone/lambdas',
-          publicKey: '8850b41b0b5d9db7a283eac0eae90c1b59692d665633d511ea4e695019557441bfe78a1f9fe1fff8db898fa1a6d3c93fadcc657862bb0d2e0171b813b8441ed3',
-          address: '0x981152C2D36c2e5414A493ecc4Ba26aAEC263DCA'
         },
         acceptingUsers: true
       },
