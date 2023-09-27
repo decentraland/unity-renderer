@@ -51,6 +51,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
         if (!IsSameAsLastModel(model))
         {
+            if (internalComponentModel.tweener != null)
+                internalComponentModel.tweener.Goto(0f, false);
+
             Transform entityTransform = entity.gameObject.transform;
             float durationInSeconds = model.Duration / 1000;
 
@@ -127,12 +130,28 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     private bool IsSameAsLastModel(PBTween targetModel)
     {
-        return (lastModel != null
-                && lastModel.CurrentTime.Equals(targetModel.CurrentTime)
-                && lastModel.Duration.Equals(targetModel.Duration)
-                && lastModel.Move.Start.Equals(targetModel.Move.Start)
-                && lastModel.Move.End.Equals(targetModel.Move.End)
-                && lastModel.TweenFunction.Equals(targetModel.TweenFunction));
+        if (lastModel == null)
+            return false;
+
+        if (lastModel.ModeCase != targetModel.ModeCase
+            && lastModel.TweenFunction != targetModel.TweenFunction
+            && !lastModel.CurrentTime.Equals(targetModel.CurrentTime)
+            && !lastModel.Duration.Equals(targetModel.Duration))
+            return false;
+
+        switch (targetModel.ModeCase)
+        {
+            case PBTween.ModeOneofCase.Scale:
+                return lastModel.Scale.Start.Equals(targetModel.Scale.Start)
+                       && lastModel.Scale.End.Equals(targetModel.Scale.End);
+            case PBTween.ModeOneofCase.Rotate:
+                return lastModel.Rotate.Start.Equals(targetModel.Rotate.Start)
+                       && lastModel.Rotate.End.Equals(targetModel.Rotate.End);
+            case PBTween.ModeOneofCase.Move:
+            default:
+                return lastModel.Move.Start.Equals(targetModel.Move.Start)
+                       && lastModel.Move.End.Equals(targetModel.Move.End);
+        }
     }
 
     private Ease SDKEasingFunctinToDOTweenEaseType(EasingFunction easingFunction)
