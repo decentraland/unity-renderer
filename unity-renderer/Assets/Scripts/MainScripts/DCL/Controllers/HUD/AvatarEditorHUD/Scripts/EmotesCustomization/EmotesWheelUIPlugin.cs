@@ -1,3 +1,4 @@
+using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
 
 namespace DCL.EmotesWheel
@@ -13,7 +14,7 @@ namespace DCL.EmotesWheel
         {
             emotesWheelController = new EmotesWheelController(
                 UserProfile.GetOwnUserProfile(),
-                Environment.i.serviceLocator.Get<IEmotesCatalogService>(),
+                Environment.i.serviceLocator.Get<IEmotesService>(),
                 Environment.i.serviceLocator.Get<IWearablesCatalogService>());
         }
 

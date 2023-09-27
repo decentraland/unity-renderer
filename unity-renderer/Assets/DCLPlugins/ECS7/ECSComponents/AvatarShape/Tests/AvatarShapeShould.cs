@@ -2,7 +2,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Controllers;
 using DCL.Emotes;
-using DCL.Helpers;
 using DCL.Models;
 using DCLServices.MapRendererV2;
 using NSubstitute;
@@ -21,6 +20,7 @@ namespace DCL.ECSComponents.Tests
         private IParcelScene scene;
         private AvatarShape avatarShape;
         private GameObject gameObject;
+        private IAvatarEmotesController emotesController;
 
         [SetUp]
         public void SetUp()
@@ -29,13 +29,15 @@ namespace DCL.ECSComponents.Tests
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
             avatar = Substitute.For<IAvatar>();
+            emotesController = Substitute.For<IAvatarEmotesController>();
+            avatar.GetEmotesController().Returns(emotesController);
             avatarReporterController = Substitute.For<IAvatarReporterController>();
             movementController = Substitute.For<IAvatarMovementController>();
 
             Environment.Setup(InitializeServiceLocator());
 
             AvatarShape avatarShapePrefab = Resources.Load<AvatarShape>("NewAvatarShape");
-            avatarShape = GameObject.Instantiate(avatarShapePrefab);
+            avatarShape = Object.Instantiate(avatarShapePrefab);
             avatarShape.OnPoolGet();
             avatarShape.avatar = avatar;
             avatarShape.avatarReporterController = avatarReporterController;
@@ -70,8 +72,8 @@ namespace DCL.ECSComponents.Tests
         [TearDown]
         protected void TearDown()
         {
-            GameObject.Destroy(gameObject);
-            GameObject.Destroy(avatarShape.gameObject);
+            Helpers.Utils.SafeDestroy(gameObject);
+            Helpers.Utils.SafeDestroy(avatarShape.gameObject);
         }
 
         [Test]
@@ -84,11 +86,11 @@ namespace DCL.ECSComponents.Tests
             avatarShape.ApplyModel(scene, entity, model);
 
             // Assert
-            Assert.AreEqual(entity,avatarShape.entity);
+            Assert.AreEqual(entity, avatarShape.entity);
             Assert.IsTrue(avatarShape.initializedPosition);
 
-            avatar.Received(1).PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
-            movementController.Received(1).OnTransformChanged(Arg.Any<UnityEngine.Vector3>(), Arg.Any<Quaternion>(), Arg.Any<bool>());
+            emotesController.Received(1).PlayEmote(model.ExpressionTriggerId, model.ExpressionTriggerTimestamp);
+            movementController.Received(1).OnTransformChanged(Arg.Any<Vector3>(), Arg.Any<Quaternion>(), Arg.Any<bool>());
         }
 
         [Test]
@@ -101,12 +103,12 @@ namespace DCL.ECSComponents.Tests
             avatarShape.UpdatePlayerStatus(entity, model);
 
             // Assert
-            Assert.AreEqual(model.Id,avatarShape.player.id);
-            Assert.AreEqual(model.Name,avatarShape.player.name);
-            Assert.AreEqual(model.Talking,avatarShape.player.isTalking);
-            Assert.AreEqual(avatar,avatarShape.player.avatar);
+            Assert.AreEqual(model.Id, avatarShape.player.id);
+            Assert.AreEqual(model.Name, avatarShape.player.name);
+            Assert.AreEqual(model.Talking, avatarShape.player.isTalking);
+            Assert.AreEqual(avatar, avatarShape.player.avatar);
             Assert.AreEqual(avatarShape.avatarCollider, avatarShape.player.collider);
-            Assert.AreEqual(avatarShape.onPointerDown,avatarShape.player.onPointerDownCollider);
+            Assert.AreEqual(avatarShape.onPointerDown, avatarShape.player.onPointerDownCollider);
         }
 
         [Test]

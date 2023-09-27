@@ -435,7 +435,7 @@ namespace DCLServices.WearablesCatalogService
             }
         }
 
-        public void EmbedWearables(IEnumerable<WearableItem> wearables)
+        public void AddEmbeddedWearablesToCatalog(IEnumerable<WearableItem> wearables)
         {
             foreach (WearableItem wearableItem in wearables)
             {

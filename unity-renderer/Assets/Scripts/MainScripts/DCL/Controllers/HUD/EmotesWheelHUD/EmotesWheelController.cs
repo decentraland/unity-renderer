@@ -1,6 +1,8 @@
+using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using DCL.Emotes;
+using DCL.Helpers;
 using DCLServices.WearablesCatalogService;
 using System.Linq;
 using System.Threading;
@@ -19,7 +21,6 @@ namespace DCL.EmotesWheel
         private BaseVariable<bool> canStartMenuBeOpened => DataStore.i.exploreV2.isSomeModalOpen;
         private bool shortcutsCanBeUsed => !isStartMenuOpen.Get();
         private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
-        private BaseDictionary<(string bodyshapeId, string emoteId), EmoteClipData> emoteAnimations => DataStore.i.emotes.animations;
 
         private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
         private InputAction_Trigger closeWindow;
@@ -44,18 +45,22 @@ namespace DCL.EmotesWheel
         private InputAction_Trigger auxShortcut7InputAction;
         private InputAction_Trigger auxShortcut8InputAction;
         private InputAction_Trigger auxShortcut9InputAction;
-        private UserProfile userProfile;
-        private readonly IEmotesCatalogService emoteCatalog;
+        private readonly UserProfile userProfile;
         private readonly IWearablesCatalogService wearablesCatalogService;
-        private bool ownedWearablesAlreadyRequested = false;
-        private BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new BaseDictionary<string, EmoteWheelSlot>();
-        private CancellationTokenSource loadOwnedWearablesCTS = new CancellationTokenSource();
+        private bool ownedWearablesAlreadyRequested;
+        private readonly BaseDictionary<string, EmoteWheelSlot> slotsInLoadingState = new ();
+        private CancellationTokenSource cts = new ();
+        private readonly IEmotesCatalogService emoteCatalog;
+        private readonly IEmotesService emotesService;
+        private IAvatar avatar;
+        private IAvatarEmotesController emotesController;
 
         public EmotesWheelController(
             UserProfile userProfile,
-            IEmotesCatalogService emoteCatalog,
+            IEmotesService emotesService,
             IWearablesCatalogService wearablesCatalogService)
         {
+            this.emotesService = emotesService;
             closeWindow = Resources.Load<InputAction_Trigger>("CloseWindow");
             closeWindow.OnTriggered += OnCloseWindowPressed;
 
@@ -71,15 +76,28 @@ namespace DCL.EmotesWheel
             isStartMenuOpen.OnChange += IsStartMenuOpenChanged;
 
             this.userProfile = userProfile;
-            this.emoteCatalog = emoteCatalog;
             this.wearablesCatalogService = wearablesCatalogService;
             emotesCustomizationDataStore.equippedEmotes.OnSet += OnEquippedEmotesSet;
-            OnEquippedEmotesSet(emotesCustomizationDataStore.equippedEmotes.Get());
-            emoteAnimations.OnAdded += OnAnimationAdded;
 
             ConfigureShortcuts();
 
             emotesCustomizationDataStore.isWheelInitialized.Set(true);
+
+            DataStore.i.player.ownPlayer.OnChange += OnPlayerSet;
+            OnPlayerSet(DataStore.i.player.ownPlayer.Get(), null);
+        }
+
+        private void OnPlayerSet(Player current, Player previous)
+        {
+            if (current == null) return;
+            emotesController = current.avatar.GetEmotesController();
+            emotesController.OnEmoteEquipped += OnEmoteEquipped;
+            UpdateEmoteSlots();
+        }
+
+        private void OnEmoteEquipped(string emoteId, IEmoteReference emoteReference)
+        {
+            RefreshSlotLoadingState(emoteId);
         }
 
         public void SetVisibility(bool visible)
@@ -102,6 +120,7 @@ namespace DCL.EmotesWheel
 
         private void UpdateEmoteSlots()
         {
+            if (emotesController == null) return;
             List<EmotesWheelView.EmoteSlotData> emotesToSet = new List<EmotesWheelView.EmoteSlotData>();
 
             var equippedEmotes = ListPool<EquippedEmoteData>.Get();
@@ -111,25 +130,38 @@ namespace DCL.EmotesWheel
             {
                 if (equippedEmoteData != null)
                 {
-                    emoteCatalog.TryGetLoadedEmote(equippedEmoteData.id, out var emoteItem);
-
-                    if (emoteItem != null)
+                    if (emotesController.TryGetEquippedEmote(userProfile.avatar.bodyShape, equippedEmoteData.id, out var emote))
                     {
-                        emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                        var entity = emote?.GetEntity();
+
+                        if (entity == null) // emote exists but its not loaded yet
                         {
-                            emoteItem = emoteItem,
-                            thumbnailSprite = emoteItem.thumbnailSprite != null ? emoteItem.thumbnailSprite : equippedEmoteData.cachedThumbnail
-                        });
+                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                            {
+                                emoteId = equippedEmoteData.id,
+                                emoteItem = null,
+                                thumbnailSprite = equippedEmoteData.cachedThumbnail,
+                            });
+                        }
+                        else
+                        {
+                            emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                            {
+                                emoteId = equippedEmoteData.id,
+                                emoteItem = entity,
+                                thumbnailSprite = entity.thumbnailSprite != null ? entity.thumbnailSprite : equippedEmoteData.cachedThumbnail,
+                            });
+                        }
                     }
                     else
-                    {
-                        emotesToSet.Add(null);
-                    }
-                }
-                else
-                {
+                        emotesToSet.Add(new EmotesWheelView.EmoteSlotData
+                        {
+                            emoteId = equippedEmoteData.id,
+                            emoteItem = null,
+                            thumbnailSprite = equippedEmoteData.cachedThumbnail,
+                        });
+                } else
                     emotesToSet.Add(null);
-                }
             }
 
             ListPool<EquippedEmoteData>.Release(equippedEmotes);
@@ -151,18 +183,21 @@ namespace DCL.EmotesWheel
             }
         }
 
-        private void OnAnimationAdded((string bodyshapeId, string emoteId) values, EmoteClipData emoteClipData) { RefreshSlotLoadingState(values.emoteId); }
-
         private void RefreshSlotLoadingState(string emoteId)
         {
-            if (emoteAnimations.ContainsKey((userProfile.avatar.bodyShape, emoteId)))
+            if (emotesController.TryGetEquippedEmote(userProfile.avatar.bodyShape, emoteId, out var emote))
             {
                 slotsInLoadingState.TryGetValue(emoteId, out EmoteWheelSlot slot);
-                if (slot != null)
+                if (slot == null) return;
+                var entity = emote.GetEntity();
+                view.SetupEmoteWheelSlot(slot, new EmotesWheelView.EmoteSlotData
                 {
-                    slot.SetAsLoading(false);
-                    slotsInLoadingState.Remove(emoteId);
-                }
+                    emoteId = emoteId,
+                    emoteItem = entity,
+                    thumbnailSprite = entity.thumbnailSprite,
+                });
+                slot.SetAsLoading(false);
+                slotsInLoadingState.Remove(emoteId);
             }
         }
 
@@ -195,16 +230,16 @@ namespace DCL.EmotesWheel
 
             if (visible)
             {
-                DCL.Helpers.Utils.UnlockCursor();
+                Helpers.Utils.UnlockCursor();
 
                 if (userProfile != null &&
                     !string.IsNullOrEmpty(userProfile.userId) &&
                     !ownedWearablesAlreadyRequested)
                 {
-                    loadOwnedWearablesCTS?.Cancel();
-                    loadOwnedWearablesCTS?.Dispose();
-                    loadOwnedWearablesCTS = new CancellationTokenSource();
-                    RequestOwnedWearablesAsync(loadOwnedWearablesCTS.Token).Forget();
+                    cts?.Cancel();
+                    cts?.Dispose();
+                    cts = new CancellationTokenSource();
+                    RequestOwnedWearablesAsync(cts.Token).Forget();
                 }
             }
 
@@ -220,7 +255,6 @@ namespace DCL.EmotesWheel
             ownUserProfile.OnAvatarEmoteSet -= OnAvatarEmoteSet;
             emotesVisible.OnChange -= OnEmoteVisibleChanged;
             emotesCustomizationDataStore.equippedEmotes.OnSet -= OnEquippedEmotesSet;
-            emoteAnimations.OnAdded -= OnAnimationAdded;
             shortcut0InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut1InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             shortcut2InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
@@ -242,14 +276,17 @@ namespace DCL.EmotesWheel
             auxShortcut8InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
             auxShortcut9InputAction.OnTriggered -= OnNumericShortcutInputActionTriggered;
 
-            loadOwnedWearablesCTS?.Cancel();
-            loadOwnedWearablesCTS?.Dispose();
-            loadOwnedWearablesCTS = null;
+            if (emotesController != null)
+                emotesController.OnEmoteEquipped -= OnEmoteEquipped;
+
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = null;
 
             if (view != null)
             {
                 view.CleanUp();
-                UnityEngine.Object.Destroy(view.gameObject);
+                Utils.SafeDestroy(view.gameObject);
             }
         }
 

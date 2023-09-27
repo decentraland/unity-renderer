@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
@@ -39,15 +40,14 @@ namespace AvatarEditorHUD_Tests
 
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>()
-                        { }
                 }
             });
 

@@ -13,8 +13,8 @@ namespace AvatarSystem
     {
         public GameObject bodyshapeContainer => bodyshapeLoader?.rendereable?.container;
         public SkinnedMeshRenderer combinedRenderer { get; private set; }
-        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers  => originalVisibleRenderersValue;
-        public List<SkinnedMeshRenderer> originalVisibleRenderersValue { get; private set; } = new List<SkinnedMeshRenderer>();
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => originalVisibleRenderersValue;
+        public List<SkinnedMeshRenderer> originalVisibleRenderersValue { get; private set; } = new ();
         public List<Renderer> facialFeaturesRenderers { get; private set; }
         public ILoader.Status status { get; private set; } = ILoader.Status.Idle;
 
@@ -22,7 +22,7 @@ namespace AvatarSystem
         private readonly GameObject container;
 
         internal IBodyshapeLoader bodyshapeLoader;
-        internal readonly Dictionary<string, IWearableLoader> loaders = new Dictionary<string, IWearableLoader>();
+        internal readonly Dictionary<string, IWearableLoader> loaders = new ();
         private readonly IAvatarMeshCombinerHelper avatarMeshCombiner;
 
         public Loader(IWearableLoaderFactory wearableLoaderFactory, GameObject container, IAvatarMeshCombinerHelper avatarMeshCombiner)
@@ -40,27 +40,23 @@ namespace AvatarSystem
             cancellationToken.ThrowIfCancellationRequested();
 
             List<IWearableLoader> toCleanUp = new List<IWearableLoader>();
+
             try
             {
                 status = ILoader.Status.Loading;
                 await LoadBodyshape(settings, bodyWearables, toCleanUp, cancellationToken);
                 await LoadWearables(wearables, settings, toCleanUp, cancellationToken);
                 SkinnedMeshRenderer skinnedContainer = bonesContainer == null ? bodyshapeLoader.upperBodyRenderer : bonesContainer;
+
                 // Update Status accordingly
                 status = ComposeStatus(loaders);
+
                 if (status == ILoader.Status.Failed_Major)
                     throw new Exception($"Couldnt load (nor fallback) wearables with required category: {string.Join(", ", ConstructRequiredFailedWearablesList(loaders.Values))}");
 
+                foreach (IWearableLoader wearableLoader in loaders.Values) { wearableLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones); }
 
-                foreach (IWearableLoader wearableLoader in loaders.Values)
-                {
-                    wearableLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones);
-                }
-
-                if (bodyshapeLoader.rendereable != null)
-                {
-                    bodyshapeLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones);
-                }
+                if (bodyshapeLoader.rendereable != null) { bodyshapeLoader.SetBones(skinnedContainer.rootBone, skinnedContainer.bones); }
 
                 var activeBodyParts = AvatarSystemUtils.GetActiveBodyPartsRenderers(bodyshapeLoader, settings.bodyshapeId, wearables);
                 originalVisibleRenderersValue = activeBodyParts.Union(loaders.Values.SelectMany(x => x.rendereable.renderers.OfType<SkinnedMeshRenderer>())).ToList();
@@ -74,11 +70,13 @@ namespace AvatarSystem
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyesRenderer);
                         originalVisibleRenderersValue.Add(bodyshapeLoader.eyesRenderer);
                     }
+
                     if (bodyWearables.Eyebrows != null)
                     {
                         facialFeaturesRenderers.Add(bodyshapeLoader.eyebrowsRenderer);
                         originalVisibleRenderersValue.Add(bodyshapeLoader.eyebrowsRenderer);
                     }
+
                     if (bodyWearables.Mouth != null)
                     {
                         facialFeaturesRenderers.Add(bodyshapeLoader.mouthRenderer);
@@ -87,7 +85,7 @@ namespace AvatarSystem
                 }
                 else
                 {
-                    if(bodyshapeLoader != null)
+                    if (bodyshapeLoader != null)
                         bodyshapeLoader.DisableFacialRenderers();
                 }
             }
@@ -108,6 +106,7 @@ namespace AvatarSystem
                 {
                     if (toCleanUp[i] == null)
                         continue;
+
                     toCleanUp[i].Dispose();
                 }
             }
@@ -143,6 +142,7 @@ namespace AvatarSystem
             (List<IWearableLoader> notReusableLoaders, List<IWearableLoader> newLoaders) = GetNewLoaders(wearables, loaders, wearableLoaderFactory);
             loadersToCleanUp.AddRange(notReusableLoaders);
             loaders.Clear();
+
             for (int i = 0; i < newLoaders.Count; i++)
             {
                 IWearableLoader loader = newLoaders[i];
@@ -172,6 +172,7 @@ namespace AvatarSystem
                         continue;
                     }
                 }
+
                 newLoaders.Add(wearableLoaderFactory.GetWearableLoader(wearable));
             }
 
@@ -194,11 +195,13 @@ namespace AvatarSystem
             avatarMeshCombiner.useCullOpaqueHeuristic = true;
             avatarMeshCombiner.enableCombinedMesh = false;
             bool success = avatarMeshCombiner.Combine(bonesContainer, renderers);
+
             if (!success)
             {
                 status = ILoader.Status.Failed_Major;
                 throw new Exception("Couldnt merge avatar");
             }
+
             avatarMeshCombiner.container.transform.SetParent(container.transform, true);
             avatarMeshCombiner.container.transform.localPosition = Vector3.zero;
             avatarMeshCombiner.container.transform.localScale = Vector3.one;
@@ -208,6 +211,7 @@ namespace AvatarSystem
         internal static ILoader.Status ComposeStatus(Dictionary<string, IWearableLoader> loaders)
         {
             ILoader.Status composedStatus = ILoader.Status.Succeeded;
+
             foreach ((string category, IWearableLoader loader) in loaders)
             {
                 if (loader.status == IWearableLoader.Status.Defaulted)
@@ -216,19 +220,20 @@ namespace AvatarSystem
                 {
                     if (AvatarSystemUtils.IsCategoryRequired(category))
                         return ILoader.Status.Failed_Major;
+
                     composedStatus = ILoader.Status.Failed_Minor;
                 }
             }
+
             return composedStatus;
         }
 
         private void ClearLoaders()
         {
             bodyshapeLoader?.Dispose();
-            foreach (IWearableLoader wearableLoader in loaders.Values)
-            {
-                wearableLoader.Dispose();
-            }
+
+            foreach (IWearableLoader wearableLoader in loaders.Values) { wearableLoader.Dispose(); }
+
             loaders.Clear();
         }
 

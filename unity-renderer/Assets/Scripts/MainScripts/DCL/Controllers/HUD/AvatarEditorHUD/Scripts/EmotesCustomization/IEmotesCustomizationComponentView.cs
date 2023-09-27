@@ -24,7 +24,7 @@ namespace DCL.EmotesCustomization
         /// <summary>
         /// It will be triggered when a slot is selected.
         /// </summary>
-        event Action<string, int> onSlotSelected;
+        event Action<string, int, bool> onSlotSelected;
 
         /// <summary>
         /// It represents the container transform of the component.

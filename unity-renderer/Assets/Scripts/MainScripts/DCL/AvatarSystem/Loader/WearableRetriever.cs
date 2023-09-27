@@ -39,7 +39,7 @@ namespace AvatarSystem
                 if (IsNewAssetBundleFlagEnabled())
                 {
                     if (string.IsNullOrEmpty(wearable.entityId))
-                        Debug.LogError(mainFile + " has no entity ID, check where this wearable was loaded from");
+                        Debug.LogWarning(mainFile + " has no entity ID, ignore this message if you are on a testnet");
                     else
                     {
                         var sceneAb = await FetchSceneAssetBundles(wearable.entityId, contentProvider.assetBundlesBaseUrl);

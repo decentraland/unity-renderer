@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
-namespace Tests
+namespace Tests.Components.GltfContainer
 {
     public class GltfContainerComponentLifeCycleShould
     {

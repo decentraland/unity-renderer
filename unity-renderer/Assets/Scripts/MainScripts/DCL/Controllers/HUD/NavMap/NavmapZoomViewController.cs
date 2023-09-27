@@ -7,11 +7,11 @@ using UnityEngine.EventSystems;
 
 namespace DCL
 {
-    public class NavmapZoomViewController : IDisposable
+    public class NavmapZoomViewController : IDisposable, INavmapZoomViewController
     {
         private const float MOUSE_WHEEL_THRESHOLD = 0.04f;
 
-        private readonly NavmapZoom view;
+        private readonly NavmapZoomView view;
 
         private bool active;
 
@@ -26,7 +26,7 @@ namespace DCL
         private readonly AnimationCurve normalizedCurve;
         private readonly int zoomSteps;
 
-        public NavmapZoomViewController(NavmapZoom view)
+        public NavmapZoomViewController(NavmapZoomView view)
         {
             this.view = view;
 
@@ -46,7 +46,7 @@ namespace DCL
             zoomSteps = keys.Length;
         }
 
-        public float ResetZoom()
+        public float ResetZoomToMidValue()
         {
             SetZoomLevel(Mathf.FloorToInt((zoomSteps - 1) / 2f));
             return targetNormalizedZoom;
@@ -105,6 +105,8 @@ namespace DCL
         {
             currentZoomLevel = Mathf.Clamp(zoomLevel, 0, zoomSteps - 1);
             targetNormalizedZoom = normalizedCurve.Evaluate(currentZoomLevel);
+
+            SetUiButtonsInteractivity();
         }
 
         private void Zoom(DCLAction_Hold action)
@@ -122,7 +124,6 @@ namespace DCL
             EventSystem.current.SetSelectedGameObject(null);
 
             SetZoomLevel(currentZoomLevel + (action == DCLAction_Hold.ZoomIn ? 1 : -1));
-
             ScaleOverTime(cameraController.Zoom, targetNormalizedZoom, cts.Token).Forget();
 
             SetUiButtonsInteractivity();

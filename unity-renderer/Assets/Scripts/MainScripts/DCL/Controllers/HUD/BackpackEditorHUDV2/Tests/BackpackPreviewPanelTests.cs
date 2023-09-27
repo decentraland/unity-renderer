@@ -119,7 +119,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.ResetPreviewEmote();
 
             // Assert
-            characterPreviewController.Received(1).PlayEmote("Idle", (long)Time.realtimeSinceStartup);
+            characterPreviewController.Received(1).StopEmote();
         }
 
         [Test]
