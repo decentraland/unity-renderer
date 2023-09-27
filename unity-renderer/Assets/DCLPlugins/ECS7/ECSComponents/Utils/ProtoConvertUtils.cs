@@ -6,6 +6,7 @@ using Google.Protobuf.Collections;
 using JetBrains.Annotations;
 using Decentraland.Common;
 using UnityEngine;
+using Quaternion = Decentraland.Common.Quaternion;
 using Vector3 = Decentraland.Common.Vector3;
 
 namespace DCL.ECSComponents
@@ -63,6 +64,16 @@ namespace DCL.ECSComponents
             vector.y = original.Y;
             vector.z = original.Z;
             return vector;
+        }
+
+        public static UnityEngine.Quaternion PBQuaternionToUnityQuaternion(Quaternion original)
+        {
+            UnityEngine.Quaternion quaternion = new UnityEngine.Quaternion();
+            quaternion.x = original.X;
+            quaternion.y = original.Y;
+            quaternion.z = original.Z;
+            quaternion.w = original.W;
+            return quaternion;
         }
 
         public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraType mode)

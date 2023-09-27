@@ -1,8 +1,7 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECSComponents;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -356,6 +355,6 @@ namespace DCL.ECS7.InternalComponents
         public bool playing;
         public float currentTime;
         public Transform transform;
-        public TweenerCore<Vector3, Vector3, VectorOptions> tweener;
+        public Tweener tweener;
     }
 }

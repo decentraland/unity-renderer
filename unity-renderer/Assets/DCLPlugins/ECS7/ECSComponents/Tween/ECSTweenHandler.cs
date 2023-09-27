@@ -6,6 +6,7 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DG.Tweening;
+using DG.Tweening.Core;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,6 +41,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTween model)
     {
+        if (model.ModeCase == PBTween.ModeOneofCase.None)
+            return;
+
         // by default it's playing
         bool isPlaying = !model.HasPlaying || model.Playing;
 
@@ -53,15 +57,32 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
 
-            // TODO: Evaluate if we need local values instead of global...
-            // Move to start position
-            entityTransform.position = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
-            var tweener = entityTransform.DOMove(
-                ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
-                durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+            // TODO: Evaluate if we need to use local or global values...
+            Tweener tweener;
+            switch (model.ModeCase)
+            {
+                case PBTween.ModeOneofCase.Rotate:
+                    entityTransform.localRotation = ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start);
+                    tweener = entityTransform.DOLocalRotateQuaternion(
+                        ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
+                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                    break;
+                case PBTween.ModeOneofCase.Scale:
+                    entityTransform.localScale = ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start);
+                    tweener = entityTransform.DOMove(
+                        ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
+                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                    break;
+                case PBTween.ModeOneofCase.Move:
+                default:
+                    entityTransform.localPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
+                    tweener = entityTransform.DOLocalMove(
+                        ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
+                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                    break;
+            }
 
             tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
-
             internalComponentModel.tweener = tweener;
 
             if (componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
@@ -88,10 +109,19 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 //     ECSComponentWriteType.SEND_TO_SCENE);
             }
         }
+        else if (internalComponentModel.playing == isPlaying)
+        {
+            return;
+        }
 
         internalComponentModel.playing = isPlaying;
-        internalTweenComponent.PutFor(scene, entity, internalComponentModel);
 
+        if (isPlaying)
+            internalComponentModel.tweener.Play();
+        else
+            internalComponentModel.tweener.Pause();
+
+        internalTweenComponent.PutFor(scene, entity, internalComponentModel);
         lastModel = model;
     }
 
