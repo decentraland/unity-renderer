@@ -10,7 +10,7 @@ namespace DCL.Emotes
         public bool Loop { get; }
 
         [CanBeNull] private Animation animation;
-        [CanBeNull] public GameObject ExtraContent { get; }
+        [CanBeNull] public GameObject ExtraContent { get; set; }
 
         [CanBeNull] private Renderer[] renderers;
 

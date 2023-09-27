@@ -23,6 +23,7 @@ namespace DCL.Emotes
         private GameObject animationsModelsContainer;
 
         private readonly Dictionary<EmoteBodyId, IEmoteReference> embeddedEmotes = new ();
+        private readonly Dictionary<EmoteBodyId, ExtendedEmote> extendedEmotes = new ();
 
         public EmotesService(
             EmoteAnimationLoaderFactory emoteAnimationLoaderFactory,
@@ -54,7 +55,7 @@ namespace DCL.Emotes
             // early return for not configured emotesCatalogService substitutes in legacy test base
             if (embedEmotes == null) return;
 
-            foreach (EmbeddedEmote embeddedEmote in embedEmotes.emotes)
+            foreach (EmbeddedEmote embeddedEmote in embedEmotes.GetEmbeddedEmotes())
             {
                 if (embeddedEmote.maleAnimation != null)
                     SetupEmbeddedClip(embeddedEmote, embeddedEmote.maleAnimation, MALE);
@@ -63,7 +64,18 @@ namespace DCL.Emotes
                     SetupEmbeddedClip(embeddedEmote, embeddedEmote.femaleAnimation, FEMALE);
             }
 
-            wearablesCatalogService.AddEmbeddedWearablesToCatalog(embedEmotes.emotes);
+            foreach (ExtendedEmote embeddedEmote in embedEmotes.GetExtendedEmbeddedEmotes())
+            {
+                SetupEmbeddedExtendedEmote(embeddedEmote);
+            }
+
+            wearablesCatalogService.AddEmbeddedWearablesToCatalog(embedEmotes.GetAllEmotes());
+        }
+
+        private void SetupEmbeddedExtendedEmote(ExtendedEmote embeddedEmote)
+        {
+            extendedEmotes.Add(new EmoteBodyId(MALE, embeddedEmote.id), embeddedEmote);
+            extendedEmotes.Add(new EmoteBodyId(FEMALE, embeddedEmote.id), embeddedEmote);
         }
 
         private void SetupEmbeddedClip(EmbeddedEmote embeddedEmote, AnimationClip clip, string urnPrefix)
@@ -78,6 +90,13 @@ namespace DCL.Emotes
             if (embeddedEmotes.TryGetValue(emoteBodyId, out var value))
                 return value;
 
+            if (extendedEmotes.TryGetValue(emoteBodyId, out var extendedEmote))
+            {
+                IEmoteAnimationLoader loader = emoteAnimationLoaderFactory.Get();
+                await loader.LoadLocalEmote(animationsModelsContainer, extendedEmote, cancellationToken);
+                return new NftEmoteReference(extendedEmote, loader, extendedEmote.emoteDataV0?.loop ?? false);
+            }
+
             var emote = await FetchEmote(emoteBodyId, cancellationToken);
 
             if (emote == null)
@@ -88,7 +107,7 @@ namespace DCL.Emotes
 
             // Loader disposal is being handled by the emote reference
             IEmoteAnimationLoader animationLoader = emoteAnimationLoaderFactory.Get();
-            await animationLoader.LoadEmote(animationsModelsContainer, emote, emoteBodyId.BodyShapeId, cancellationToken);
+            await animationLoader.LoadRemoteEmote(animationsModelsContainer, emote, emoteBodyId.BodyShapeId, cancellationToken);
 
             if (animationLoader.mainClip == null)
                 Debug.LogError("Emote animation failed to load for emote " + emote.id);

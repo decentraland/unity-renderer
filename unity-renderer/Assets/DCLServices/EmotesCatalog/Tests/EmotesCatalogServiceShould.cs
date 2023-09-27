@@ -34,7 +34,7 @@ public class EmotesCatalogServiceShould
     private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        embeddedEmotes.Clear();
         return embeddedEmotes;
     }
 
@@ -356,7 +356,7 @@ public class EmotesCatalogServiceShould
     private async UniTask<EmbeddedEmotesSO> GetExampleEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = embededEmotes;
+        embeddedEmotes.OverrideEmotes(embededEmotes);
         return embeddedEmotes;
     }
 

@@ -65,7 +65,7 @@ namespace DCL.ECSComponents.Tests
         private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
         {
             EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-            embeddedEmotes.emotes = new EmbeddedEmote[] { };
+            embeddedEmotes.Clear();
             return embeddedEmotes;
         }
 

@@ -45,7 +45,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
                 if (retryCount < 0)
                 {
                     embeddedEmotesSO = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-                    embeddedEmotesSO.emotes = new EmbeddedEmote[] { };
+                    embeddedEmotesSO.Clear();
                     throw new Exception("Embedded Emotes retry limit reached, they wont work correctly. Please check the Essentials group is set up correctly");
                 }
 
@@ -127,7 +127,7 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
 
         private void EmbedEmotes()
         {
-            foreach (WearableItem embeddedEmote in embeddedEmotesSO.emotes)
+            foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSO.GetAllEmotes())
             {
                 emotes[embeddedEmote.id] = embeddedEmote;
                 emotesOnUse[embeddedEmote.id] = 5000;

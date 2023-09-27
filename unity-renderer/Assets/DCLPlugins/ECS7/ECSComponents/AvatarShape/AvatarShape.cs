@@ -180,9 +180,9 @@ namespace DCL.ECSComponents
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
-            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            wearableItems.AddRange(embeddedEmotesSo.GetAllIds());
             HashSet<string> emotes = new HashSet<string>();
-            emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+            emotes.UnionWith(embeddedEmotesSo.GetAllIds());
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {

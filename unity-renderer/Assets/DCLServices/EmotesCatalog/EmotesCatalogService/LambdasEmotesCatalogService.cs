@@ -8,6 +8,7 @@ using DCL.Providers;
 using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
+using NSubstitute.ClearExtensions;
 using System;
 using UnityEngine;
 
@@ -70,7 +71,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             if (retryCount < 0)
             {
                 embeddedEmotesSo = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-                embeddedEmotesSo.emotes = new EmbeddedEmote[] { };
+                embeddedEmotesSo.Clear();
                 throw new Exception("Embedded Emotes retry limit reached, they wont work correctly. Please check the Essentials group is set up correctly");
             }
 
@@ -436,7 +437,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
     private void EmbedEmotes()
     {
-        foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSo.emotes)
+        foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSo.GetAllEmotes())
         {
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;

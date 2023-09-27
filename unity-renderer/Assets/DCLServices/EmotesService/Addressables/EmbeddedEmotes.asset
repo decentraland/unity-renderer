@@ -20,10 +20,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: wave
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -44,10 +46,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: fistpump
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -68,10 +72,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: robot
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -92,10 +98,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: raiseHand
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -116,10 +124,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: clap
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -140,10 +150,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: money
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -164,10 +176,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: kiss
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -188,10 +202,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: hammer
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -212,10 +228,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: tik
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -236,10 +254,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: tektonik
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -260,10 +280,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: dontsee
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -284,10 +306,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: handsair
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -308,10 +332,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: shrug
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -332,10 +358,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: disco
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -356,10 +384,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: dab
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -380,10 +410,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: headexplode
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -404,10 +436,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 1
     id: dance
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -428,10 +462,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: snowfall
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -452,10 +488,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: hohoho
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -476,10 +514,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Accessories_v01
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -500,10 +540,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Accessories_v02
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -524,10 +566,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Accessories_v03
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -548,10 +592,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Lower_v01
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -572,10 +618,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Lower_v02
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -596,10 +644,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Lower_v03
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -620,10 +670,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Shoes_v01
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -644,10 +696,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Shoes_v02
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -668,10 +722,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Upper_v01
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -692,10 +748,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Upper_v02
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -716,10 +774,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Outfit_Upper_v03
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -740,10 +800,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: Spawn_Pose_v01
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -764,10 +826,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: cry
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -788,10 +852,12 @@ MonoBehaviour:
       - base-wearable
       replaces: []
       hides: []
+      removesDefaultHiding: []
       loop: 0
     emoteDataV0:
       loop: 0
     id: hands_in_the_air
+    entityId: 
     baseUrl: 
     baseUrlBundles: 
     i18n:
@@ -804,4 +870,36 @@ MonoBehaviour:
     issuedId: 0
     femaleAnimation: {fileID: 7400000, guid: 5b477e0785418fc45a0c0a6cc0f080b0, type: 2}
     maleAnimation: {fileID: 7400000, guid: 81e0d8cf9d0386e47870900cd8f1514a, type: 2}
+    dontShowInBackpack: 0
+  extendedEmotes:
+  - data:
+      representations: []
+      category: 
+      tags:
+      - base-wearable
+      replaces: []
+      hides: []
+      removesDefaultHiding: []
+      loop: 0
+    emoteDataV0:
+      loop: 0
+    id: confetti_popper
+    entityId: 
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Confetti Popper
+    thumbnail: 
+    thumbnailSprite: {fileID: 21300000, guid: 52e4def7262db19429d325d7cb5f1a7a, type: 3}
+    rarity: 
+    description: confetti_popper
+    issuedId: 0
+    avatarAnimation: {fileID: 6297201911289309793, guid: d59501632670b8547a492c9f3ed2b4fa,
+      type: 3}
+    propAnimation: {fileID: -5213972264185098377, guid: d59501632670b8547a492c9f3ed2b4fa,
+      type: 3}
+    propPrefab: {fileID: 6457487775840516397, guid: 14ef1d15040b18949bd9fdda7c26496f,
+      type: 3}
+    clip: {fileID: 8300000, guid: 5caae9f69edac88479351686704e0c94, type: 3}
     dontShowInBackpack: 0
