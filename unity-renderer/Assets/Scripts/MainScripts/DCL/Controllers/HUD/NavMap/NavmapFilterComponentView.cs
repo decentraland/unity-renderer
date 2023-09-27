@@ -34,7 +34,11 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
         favoritesToggle.onValueChanged.AddListener((isOn) => OnFilterChanged?.Invoke(MapLayer.Favorites, isOn));
         poisToggle.onValueChanged.AddListener((isOn) => OnFilterChanged?.Invoke(MapLayer.ScenesOfInterest, isOn));
         friendsToggle.onValueChanged.AddListener((isOn) => OnFilterChanged?.Invoke(MapLayer.Friends, isOn));
-        peopleToggle.onValueChanged.AddListener((isOn) => OnFilterChanged?.Invoke(MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers, isOn));
+        peopleToggle.onValueChanged.AddListener((isOn) =>
+        {
+            OnFilterChanged?.Invoke(MapLayer.HotUsersMarkers, isOn);
+            OnFilterChanged?.Invoke(MapLayer.ColdUsersMarkers, isOn);
+        });
 
         filtersContainer.SetActive(false);
     }
