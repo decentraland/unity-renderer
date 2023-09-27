@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.PlacesAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,37 +19,30 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             IUnityObjectPool<FavoriteMarkerObject> objectsPool,
             IMapCullingController cullingController);
 
-        private readonly MinimapMetadata minimapMetadata;
+        private readonly IPlacesAPIService placesAPIService;
         private readonly IUnityObjectPool<FavoriteMarkerObject> objectsPool;
         private readonly FavoritesMarkerBuilder builder;
         private readonly int prewarmCount;
 
-        private readonly Dictionary<MinimapMetadata.MinimapSceneInfo, IFavoritesMarker> markers = new ();
+        private readonly Dictionary<IHotScenesController.PlaceInfo, IFavoritesMarker> markers = new ();
 
         private bool isEnabled;
 
-        public IReadOnlyDictionary<MinimapMetadata.MinimapSceneInfo, IFavoritesMarker> Markers => markers;
+        public IReadOnlyDictionary<IHotScenesController.PlaceInfo, IFavoritesMarker> Markers => markers;
 
-        public FavoritesMarkerController(MinimapMetadata minimapMetadata,
+        public FavoritesMarkerController(IPlacesAPIService placesAPIService,
             IUnityObjectPool<FavoriteMarkerObject> objectsPool, FavoritesMarkerBuilder builder,
             int prewarmCount, Transform instantiationParent, ICoordsUtils coordsUtils, IMapCullingController cullingController)
             : base(instantiationParent, coordsUtils, cullingController)
         {
-            this.minimapMetadata = minimapMetadata;
+            this.placesAPIService = placesAPIService;
             this.objectsPool = objectsPool;
             this.builder = builder;
             this.prewarmCount = prewarmCount;
         }
 
-        public UniTask Initialize(CancellationToken cancellationToken)
-        {
-            // non-blocking retrieval of favorites scenes happens independently on the minimap rendering
-            foreach (MinimapMetadata.MinimapSceneInfo sceneInfo in minimapMetadata.SceneInfos)
-                OnMinimapSceneInfoUpdated(sceneInfo);
-
-            minimapMetadata.OnSceneInfoUpdated += OnMinimapSceneInfoUpdated;
-            return objectsPool.PrewarmAsync(prewarmCount, PREWARM_PER_FRAME, LinkWithDisposeToken(cancellationToken).Token);
-        }
+        public UniTask Initialize(CancellationToken cancellationToken) =>
+            objectsPool.PrewarmAsync(prewarmCount, PREWARM_PER_FRAME, LinkWithDisposeToken(cancellationToken).Token);
 
         protected override void DisposeImpl()
         {
@@ -57,8 +52,6 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
                 marker.Dispose();
 
             markers.Clear();
-
-            minimapMetadata.OnSceneInfoUpdated -= OnMinimapSceneInfoUpdated;
         }
 
         public void OnMapObjectBecameVisible(IFavoritesMarker marker)
@@ -66,16 +59,21 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             marker.OnBecameVisible();
         }
 
+        private async UniTaskVoid GetFavorites(CancellationToken cancellationToken)
+        {
+            foreach (IHotScenesController.PlaceInfo placeInfo in await placesAPIService.GetFavorites(-1, -1, cancellationToken))
+                OnMinimapSceneInfoUpdated(placeInfo);
+        }
+
         public void OnMapObjectCulled(IFavoritesMarker marker)
         {
             marker.OnBecameInvisible();
         }
 
-        private void OnMinimapSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        private void OnMinimapSceneInfoUpdated(IHotScenesController.PlaceInfo sceneInfo)
         {
             // Markers are not really updated, they can be just reported several times with essentially the same data
-
-            if (!sceneInfo.isPOI)
+            if (!sceneInfo.user_favorite)
                 return;
 
             // if it was possible to update them then we need to cache by parcel coordinates instead
@@ -91,7 +89,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             var centerParcel = GetParcelsCenter(sceneInfo);
             var position = coordsUtils.CoordsToPosition(centerParcel, marker);
 
-            marker.SetData(sceneInfo.name, position);
+            marker.SetData(sceneInfo.title, position);
 
             markers.Add(sceneInfo, marker);
 
@@ -99,23 +97,23 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
                 mapCullingController.StartTracking(marker, this);
         }
 
-        private static Vector2Int GetParcelsCenter(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        private static Vector2Int GetParcelsCenter(IHotScenesController.PlaceInfo sceneInfo)
         {
             Vector2 centerTile = Vector2.zero;
 
-            for (var i = 0; i < sceneInfo.parcels.Count; i++)
+            for (var i = 0; i < sceneInfo.Positions.Length; i++)
             {
-                Vector2Int parcel = sceneInfo.parcels[i];
+                Vector2Int parcel = sceneInfo.Positions[i];
                 centerTile += parcel;
             }
 
-            centerTile /= sceneInfo.parcels.Count;
+            centerTile /= sceneInfo.Positions.Length;
             float distance = float.PositiveInfinity;
             Vector2Int centerParcel = Vector2Int.zero;
 
-            for (var i = 0; i < sceneInfo.parcels.Count; i++)
+            for (var i = 0; i < sceneInfo.Positions.Length; i++)
             {
-                var parcel = sceneInfo.parcels[i];
+                var parcel = sceneInfo.Positions[i];
 
                 if (Vector2.Distance(centerTile, parcel) < distance)
                 {
@@ -127,8 +125,8 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             return centerParcel;
         }
 
-        private static bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo) =>
-            sceneInfo.name is EMPTY_PARCEL_NAME;
+        private static bool IsEmptyParcel(IHotScenesController.PlaceInfo sceneInfo) =>
+            sceneInfo.title is EMPTY_PARCEL_NAME;
 
         public UniTask Disable(CancellationToken cancellationToken)
         {
@@ -146,6 +144,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
 
         public UniTask Enable(CancellationToken cancellationToken)
         {
+            GetFavorites(CancellationToken.None).Forget();
             foreach (IFavoritesMarker marker in markers.Values)
                 mapCullingController.StartTracking(marker, this);
 

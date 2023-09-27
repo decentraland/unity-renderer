@@ -5,6 +5,7 @@ using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Favorites;
+using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
 using System.Threading;
@@ -42,7 +43,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 defaultCapacity: PREWARM_COUNT);
 
             var controller = new FavoritesMarkerController(
-                MinimapMetadata.GetMetadata(),
+                Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                 objectsPool,
                 CreateMarker,
                 PREWARM_COUNT,
