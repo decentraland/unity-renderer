@@ -121,6 +121,8 @@ function buildCandidate(params: Partial<Candidate>): Candidate {
     version: { content: '1.0.0', lambdas: '1.0.0', bff: '1.0.0', comms: 'v3' },
     acceptingUsers: true,
     usersParcels: circularSlice(usersCount, someRandomParcels),
+    publicKey: '',
+    address: '',
     ...params
   }
 }

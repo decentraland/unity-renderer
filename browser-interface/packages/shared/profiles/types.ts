@@ -11,6 +11,12 @@ export type ProfileState = {
     [key: string]: ProfileUserInfo
   }
   lastSentProfileVersion: Map<string, number>
+  hashes: {
+    [key: string]: {
+      hash: string
+      signedHash: string
+    }
+  }
 }
 
 export type RootProfileState = {

@@ -32,6 +32,8 @@ import {
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
+import {isImpostor} from "../profiles/impostorValidation";
+import {getCatalystCandidates} from "../dao/selectors";
 
 type PingRequest = {
   alias: number
@@ -234,13 +236,22 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
   }
 }
 
-function processProfileResponse(message: Package<proto.ProfileResponse>) {
+async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
   profile.userId = message.address
   profile.ethAddress = message.address
   peerTrackingInfo.lastProfileVersion = profile.version
+
+  // TODO: solve catalyst address from message.data.baseUrl
+  const candidates = getCatalystCandidates(store.getState());
+
+  if (await isImpostor(profile, message.data.hash, message.data.signedHash, '')) {
+    console.warn('Impostor detected', message.address)
+    return
+  }
+
   if (!validateAvatar(profile)) {
     console.trace('Invalid avatar received', validateAvatar.errors)
     debugger

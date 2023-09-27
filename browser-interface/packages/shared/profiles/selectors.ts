@@ -42,6 +42,15 @@ export const getCurrentUserProfile = (store: RootProfileState & RootSessionState
   return userId ? getProfile(store, userId) : null
 }
 
+export const getCurrentProfileHash = (store: RootProfileState & RootSessionState) => {
+  const userId = selectCurrentUserId(store)
+  return userId ? getProfileHash(userId, store) : null
+}
+
+export const getProfileHash = (userId: string, store: RootProfileState & RootSessionState) => {
+  return store.profiles.hashes[userId.toLowerCase()]
+}
+
 export const getCurrentUserProfileDirty = (store: RootProfileState & RootSessionState): Avatar | null => {
   const currentUserId = selectCurrentUserId(store)
   if (!currentUserId) return null

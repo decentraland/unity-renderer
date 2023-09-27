@@ -246,7 +246,8 @@ function mockStoreCalls(
       },
       profiles: {
         userInfo,
-        lastSentProfileVersion: new Map()
+        lastSentProfileVersion: new Map(),
+        hashes: {}
       }
     }
 

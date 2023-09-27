@@ -18,7 +18,7 @@ import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors
 import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
 import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import {getCurrentProfileHash, getCurrentUserProfile} from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
@@ -339,7 +339,7 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const { context, profile, identity } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+    const { context, profile, identity, hash, signedHash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
       typeof getInformationForCommsProfileRequest
     >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
@@ -356,9 +356,12 @@ function* respondCommsProfileRequests() {
       lastMessage = currentTimestamp
 
       const newProfile = yield stripSnapshots(profile)
+
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
-        baseUrl: contentServer
+        baseUrl: contentServer,
+        hash: hash,
+        signedHash: signedHash
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
@@ -366,10 +369,13 @@ function* respondCommsProfileRequests() {
 }
 
 function getInformationForCommsProfileRequest(state: RootState) {
+  const hash = getCurrentProfileHash(state);
   return {
     context: getCommsRoom(state),
     profile: getCurrentUserProfile(state),
-    identity: getCurrentIdentity(state)
+    identity: getCurrentIdentity(state),
+    hash: hash!.hash,
+    signedHash: hash!.hash,
   }
 }
 

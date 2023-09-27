@@ -1,11 +1,10 @@
-import {RemoteProfileWithHash} from "./types";
 import {hashV1} from "@dcl/hashing";
 import {Avatar} from "@dcl/schemas";
 import {recoverAddressFromEthSignature} from "@dcl/crypto/dist/crypto";
 
-export async function isImpostor(profile: RemoteProfileWithHash, signer: string | undefined): Promise<boolean> {
-  let checksum = await getProfileChecksum(profile.profile.avatars[0]);
-  return checksum != profile.hash || getSigner(profile) != signer
+export async function isImpostor(avatar: Avatar, hash: string, signedHash: string, signer: string | undefined): Promise<boolean> {
+  let checksum = await getProfileChecksum(avatar);
+  return checksum != hash || getSigner(hash, signedHash) != signer
 }
 
 async function getProfileChecksum(avatar: Avatar): Promise<string> {
@@ -14,6 +13,6 @@ async function getProfileChecksum(avatar: Avatar): Promise<string> {
   return await hashV1(encoder.encode(payload));
 }
 
-function getSigner(profile: RemoteProfileWithHash): string {
-  return recoverAddressFromEthSignature(profile.signedHash, profile.hash)
+function getSigner(hash: string, signedHash: string): string {
+  return recoverAddressFromEthSignature(signedHash, hash)
 }

@@ -106,7 +106,9 @@ export async function fetchCatalystStatus(
       usersCount: bff.userCount || comms.usersCount || 0,
       acceptingUsers: result.acceptingUsers,
       maxUsers: 2000,
-      usersParcels
+      publicKey: result.lambdas.publicKey,
+      address: result.lambdas.address,
+      usersParcels,
     }
   }
 

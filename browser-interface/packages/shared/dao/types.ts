@@ -22,6 +22,8 @@ type BaseCandidate = {
   version: { bff: string; comms: string; lambdas: string; content: string }
   elapsed: number
   status: ServerConnectionStatus
+  publicKey: string
+  address: string
 }
 
 export type Candidate = {
