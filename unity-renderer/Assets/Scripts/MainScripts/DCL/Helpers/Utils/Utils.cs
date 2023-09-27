@@ -140,6 +140,9 @@ namespace DCL.Helpers
         {
             bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
             bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
+
+            //Extra check to prevent rendering artifacts when bloom is on
+            //More description: https://github.com/decentraland/unity-renderer/issues/5698
             bool scaleZAxisBelowMinimum = Mathf.Abs(transform.localScale.z) < MIN_TRANSFORM_SCALE_Z_VALUE;
 
             if (positionOutsideBoundaries || scaleOutsideBoundaries || scaleZAxisBelowMinimum)
