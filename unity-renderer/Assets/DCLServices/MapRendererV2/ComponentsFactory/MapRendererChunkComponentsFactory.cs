@@ -102,8 +102,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             {
                 SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
 
-                var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent);
-                chunk.SetDrawOrder(MapRendererDrawOrder.SATELLITE_ATLAS);
+                var chunk = new SatelliteChunkController(atlasChunkPrefab, chunkLocalPosition, chunkId, parent, MapRendererDrawOrder.SATELLITE_ATLAS);
                 await chunk.LoadImage(chunkId, ct);
 
                 return chunk;

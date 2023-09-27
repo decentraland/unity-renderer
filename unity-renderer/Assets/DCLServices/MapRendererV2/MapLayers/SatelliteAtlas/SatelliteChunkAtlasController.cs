@@ -25,15 +25,13 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
         {
             this.chunkBuilder = chunkBuilder;
 
-            // var worldSize = ((Vector2)coordsUtils.WorldMaxCoords - coordsUtils.WorldMinCoords) * parcelSize;
             var chunkAmounts = new Vector2Int(GRID_SIZE, GRID_SIZE);
-            // new Vector2Int(Mathf.CeilToInt(worldSize.x / this.chunkSize), Mathf.CeilToInt(worldSize.y / this.chunkSize));
             chunks = new List<IChunkController>(chunkAmounts.x * chunkAmounts.y);
         }
 
         public async UniTask Initialize(CancellationToken ct)
         {
-            int chunkSpriteSize = coordsUtils.ParcelSize * PARCELS_INSIDE_CHUNK;
+            int chunkSpriteSize = PARCELS_INSIDE_CHUNK * coordsUtils.ParcelSize;
             Vector3 offset = SatelliteMapOffset();
 
             CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ctsDisposing.Token, ct).Token;
