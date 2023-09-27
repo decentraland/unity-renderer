@@ -895,11 +895,9 @@ MonoBehaviour:
     rarity: 
     description: confetti_popper
     issuedId: 0
-    avatarAnimation: {fileID: 6297201911289309793, guid: d59501632670b8547a492c9f3ed2b4fa,
-      type: 3}
-    propAnimation: {fileID: -5213972264185098377, guid: d59501632670b8547a492c9f3ed2b4fa,
-      type: 3}
-    propPrefab: {fileID: 6457487775840516397, guid: 14ef1d15040b18949bd9fdda7c26496f,
+    femaleAnimation: {fileID: 0}
+    maleAnimation: {fileID: 0}
+    dontShowInBackpack: 0
+    propPrefab: {fileID: 3460472286760622397, guid: c7a4733cc5ffc1249ada6f436f6dd167,
       type: 3}
     clip: {fileID: 8300000, guid: 5caae9f69edac88479351686704e0c94, type: 3}
-    dontShowInBackpack: 0
