@@ -134,13 +134,15 @@ namespace DCL.Helpers
         }
 
         private const int MAX_TRANSFORM_VALUE = 10000;
+        private const float MIN_TRANSFORM_SCALE_Z_VALUE = 0.00001f;
 
         public static void CapGlobalValuesToMax(this Transform transform)
         {
             bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
             bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
+            bool scaleZAxisBelowMinimum = Mathf.Abs(transform.localScale.z) < MIN_TRANSFORM_SCALE_Z_VALUE;
 
-            if (positionOutsideBoundaries || scaleOutsideBoundaries)
+            if (positionOutsideBoundaries || scaleOutsideBoundaries || scaleZAxisBelowMinimum)
             {
                 Vector3 newPosition = transform.position;
 
@@ -158,7 +160,7 @@ namespace DCL.Helpers
 
                 Vector3 newScale = transform.lossyScale;
 
-                if (scaleOutsideBoundaries)
+                if (scaleOutsideBoundaries || scaleZAxisBelowMinimum)
                 {
                     if (Mathf.Abs(newScale.x) > MAX_TRANSFORM_VALUE)
                         newScale.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.x);
@@ -168,9 +170,11 @@ namespace DCL.Helpers
 
                     if (Mathf.Abs(newScale.z) > MAX_TRANSFORM_VALUE)
                         newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
+                    else if (scaleZAxisBelowMinimum)
+                        newScale.z = MIN_TRANSFORM_SCALE_Z_VALUE * Mathf.Sign(newScale.z == 0 ? 1 : newScale.z);
                 }
 
-                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
+                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries || scaleZAxisBelowMinimum);
             }
         }
 
