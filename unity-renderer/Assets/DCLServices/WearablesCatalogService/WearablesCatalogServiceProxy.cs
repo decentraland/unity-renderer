@@ -145,8 +145,8 @@ namespace DCLServices.WearablesCatalogService
         public void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove) =>
             wearablesCatalogServiceInUse?.RemoveWearablesInUse(wearablesInUseToRemove);
 
-        public void EmbedWearables(IEnumerable<WearableItem> wearables) =>
-            wearablesCatalogServiceInUse?.EmbedWearables(wearables);
+        public void AddEmbeddedWearablesToCatalog(IEnumerable<WearableItem> wearables) =>
+            wearablesCatalogServiceInUse?.AddEmbeddedWearablesToCatalog(wearables);
 
         public void Clear() =>
             wearablesCatalogServiceInUse?.Clear();

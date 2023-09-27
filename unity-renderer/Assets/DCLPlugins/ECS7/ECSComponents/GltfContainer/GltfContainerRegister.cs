@@ -22,6 +22,7 @@ namespace DCL.ECSComponents
                     internalComponents.customLayerColliderComponent,
                     internalComponents.renderersComponent,
                     internalComponents.GltfContainerLoadingStateComponent,
+                    internalComponents.Animation,
                     dataStoreEcs7,
                     featureFlags));
 

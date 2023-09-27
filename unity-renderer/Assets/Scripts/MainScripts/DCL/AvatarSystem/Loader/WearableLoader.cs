@@ -1,17 +1,18 @@
-using System;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCLServices.WearablesCatalogService;
+using System;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 namespace AvatarSystem
 {
     public class WearableLoader : IWearableLoader
     {
         // TODO: This should be a service
-        internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver(DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>());
+        internal static IWearableItemResolver defaultWearablesResolver = new WearableItemResolver(Environment.i.serviceLocator.Get<IWearablesCatalogService>());
         static WearableLoader()
         {
             // Prewarm default wearables

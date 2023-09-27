@@ -158,7 +158,6 @@ async function buildProtocol() {
     ...getProtofiles('decentraland/common/**/*.proto'),
     ...getProtofiles('decentraland/sdk/components/**/*.proto').filter((value) => !value.endsWith('id.proto')),
     ...getProtofiles('decentraland/sdk/ecs6/**/*.proto'),
-    ...getProtofiles('decentraland/bff/**/*.proto'),
     ...getProtofiles('decentraland/renderer/**/*.proto'),
     ...getProtofiles('decentraland/social/**/*.proto')
   ].join(' ')

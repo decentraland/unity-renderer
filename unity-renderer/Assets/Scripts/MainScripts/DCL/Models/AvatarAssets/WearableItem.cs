@@ -146,8 +146,8 @@ public class WearableItem
     public string description;
     public int issuedId;
 
-    private readonly Dictionary<string, string> cachedI18n = new ();
-    private readonly Dictionary<string, ContentProvider> cachedContentProviers = new ();
+    private Dictionary<string, string> cachedI18n = new ();
+    private Dictionary<string, ContentProvider> cachedContentProviers = new ();
 
     public bool TryGetRepresentation(string bodyshapeId, out Representation representation)
     {
@@ -174,6 +174,8 @@ public class WearableItem
 
         if (representation == null)
             return null;
+
+        cachedContentProviers ??= new Dictionary<string, ContentProvider>();
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
@@ -236,8 +238,10 @@ public class WearableItem
 
         // we apply this rule to hide the hands by default if the wearable is an upper body or hides the upper body
         bool isOrHidesUpperBody = hides.Contains(Categories.UPPER_BODY) || data.category == Categories.UPPER_BODY;
+
         // the rule is ignored if the wearable contains the removal of this default rule (newer upper bodies since the release of hands)
         bool removesHandDefault = data.removesDefaultHiding?.Contains(Categories.HANDS) ?? false;
+
         // why we do this? because old upper bodies contains the base hand mesh, and they might clip with the new handwear items
         if (isOrHidesUpperBody && !removesHandDefault)
             hides.UnionWith(UPPER_BODY_DEFAULT_HIDES);
@@ -301,8 +305,8 @@ public class WearableItem
 
     public string GetName(string langCode = "en")
     {
-        if (!cachedI18n.ContainsKey(langCode)) { cachedI18n.Add(langCode, i18n.FirstOrDefault(x => x.code == langCode)?.text); }
-
+        cachedI18n ??= new Dictionary<string, string>();
+        cachedI18n.TryAdd(langCode, i18n.FirstOrDefault(x => x.code == langCode)?.text);
         return cachedI18n[langCode];
     }
 
@@ -427,7 +431,36 @@ public class WearableItem
 }
 
 [Serializable]
-public class EmoteItem : WearableItem { }
+public class EmoteItem : WearableItem
+{
+    public EmoteItem(string bodyShapeId, string emoteId, string emoteHash, string contentUrl, bool loop)
+    {
+        data = new Data
+        {
+            representations = new[]
+            {
+                new Representation
+                {
+                    bodyShapes = new[] { bodyShapeId },
+                    contents = new[]
+                    {
+                        new MappingPair
+                        {
+                            hash = emoteHash, key = emoteHash
+                        },
+                    },
+                    mainFile = emoteHash,
+                },
+            },
+            loop = loop,
+        };
+
+        emoteDataV0 = new EmoteDataV0 { loop = loop };
+
+        id = emoteId;
+        baseUrl = $"{contentUrl}contents/";
+    }
+}
 
 [Serializable]
 public class WearablesRequestResponse

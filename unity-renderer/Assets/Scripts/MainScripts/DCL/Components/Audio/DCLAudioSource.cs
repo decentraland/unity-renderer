@@ -162,11 +162,9 @@ namespace DCL.Components
             // isOutOfBoundaries will always be false for global scenes.
             if (!isOutOfBoundaries)
             {
-                AudioSettings audioSettingsData =
-                    Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
-                newVolume = ((Model) model).volume * Utils.ToVolumeCurve(
-                    DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume *
-                    audioSettingsData.masterVolume);
+                AudioSettings audioSettingsData = Settings.i != null ? Settings.i.audioSettings.Data : new AudioSettings();
+                float baseVolume = ((Model) model).volume;
+                newVolume = baseVolume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettingsData.sceneSFXVolume * audioSettingsData.masterVolume);
             }
 
             if (scene != null)

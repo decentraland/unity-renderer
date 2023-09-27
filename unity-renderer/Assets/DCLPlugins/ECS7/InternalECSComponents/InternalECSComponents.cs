@@ -28,6 +28,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
+    public IInternalECSComponent<InternalAnimation> Animation { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -196,6 +198,24 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
             crdtExecutors,
             this
         );
+
+        AnimationPlayer = new InternalECSComponent<InternalAnimationPlayer>(
+            InternalECSComponentsId.ANIMATION_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        Animation = new InternalECSComponent<InternalAnimation>(
+            InternalECSComponentsId.ANIMATION,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
     }
 
     public void Dispose()
@@ -217,6 +237,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
+        AnimationPlayer.Dispose();
+        Animation.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

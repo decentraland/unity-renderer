@@ -720,7 +720,10 @@ public class AvatarEditorHUDView : MonoBehaviour, IAvatarEditorHUDView, IPointer
 
     public void PlayPreviewEmote(string emoteId) { CharacterPreview.PlayEmote(emoteId, (long)Time.realtimeSinceStartup); }
 
-    public void ResetPreviewEmote() { PlayPreviewEmote(RESET_PREVIEW_ANIMATION); }
+    public void ResetPreviewEmote()
+    {
+        CharacterPreview.StopEmote();
+    }
 
     public void ToggleThirdPartyCollection(string collectionId, bool isOn)
     {

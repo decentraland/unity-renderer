@@ -18,6 +18,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         Shortcut,
         Command,
         Backpack,
+        EmoteLoop,
     }
 
     private const string FALLBACK_NAME = "fallback";
@@ -61,6 +62,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         AvatarModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
 
     private int emoteLamportTimestamp = 1;
+    private ClientEmotesKernelService emotes => Environment.i.serviceLocator.Get<IRPC>().Emotes();
 
     public void UpdateData(UserProfileModel newModel)
     {
@@ -130,13 +132,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnUpdate?.Invoke(this);
     }
 
-    public void SetAvatarExpression(string id, EmoteSource source)
+    public void SetAvatarExpression(string id, EmoteSource source, bool rpcOnly = false)
     {
         int timestamp = emoteLamportTimestamp++;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = Environment.i.serviceLocator.Get<IRPC>().Emotes();
         // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
@@ -144,8 +145,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             Timestamp = timestamp
         });
 
-        OnUpdate?.Invoke(this);
-        OnAvatarEmoteSet?.Invoke(id, timestamp, source);
+        if (!rpcOnly)
+        {
+            OnUpdate?.Invoke(this);
+            OnAvatarEmoteSet?.Invoke(id, timestamp, source);
+        }
     }
 
     public void SetInventory(IEnumerable<string> inventoryIds)

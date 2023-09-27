@@ -148,3 +148,4 @@ If the local WebGL build always fails with the error `System.ComponentModel.Win3
 
 This repository is protected with a standard Apache 2 license. See the terms and conditions in
 the [LICENSE](https://github.com/decentraland/unity-renderer/blob/master/LICENSE) file.
+
