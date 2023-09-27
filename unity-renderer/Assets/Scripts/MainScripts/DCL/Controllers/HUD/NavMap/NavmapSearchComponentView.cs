@@ -99,6 +99,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
     private void OnSelectedRegularRecord(Vector2Int coordinates)
     {
         OnSelectedSearchRecord?.Invoke(coordinates);
+        searchBar.ClearSearch(false);
     }
 
     private void OnSelectedHistoryRecord(string searchText) =>
