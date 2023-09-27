@@ -126,7 +126,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             translationSequence = null;
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
+            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);//ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
         }
 
@@ -141,7 +141,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             translationSequence.Kill();
             translationSequence = null;
 
-            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
+            mapCameraObject.transform.localPosition = localCameraPosition;//ClampLocalPosition(localCameraPosition);
         }
 
         public void SetPositionAndZoom(Vector2 coordinates, float zoom)
@@ -152,7 +152,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             SetCameraSize(zoom);
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
+            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);//ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
         }
 
