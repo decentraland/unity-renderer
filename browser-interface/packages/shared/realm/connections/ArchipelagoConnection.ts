@@ -10,7 +10,7 @@ import { ClientPacket, ServerPacket } from 'shared/protocol/decentraland/kernel/
 import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 
 // shared writer to leverage pools
 const writer = new Writer()
