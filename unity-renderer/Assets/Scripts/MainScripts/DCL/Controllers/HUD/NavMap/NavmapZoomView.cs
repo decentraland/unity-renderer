@@ -18,6 +18,24 @@ namespace DCL
         internal ZoomInput ZoomOut => zoomOut;
         internal InputAction_Measurable MouseWheelAction => mouseWheelAction;
 
+        private void Awake()
+        {
+            if (DataStore.i.featureFlags.flags.Get().IsInitialized)
+            {
+                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                    zoomVerticalRange = new Vector2Int(zoomVerticalRange.x, 165);
+            }
+            else
+                DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
+        }
+
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                zoomVerticalRange = new Vector2Int(zoomVerticalRange.x, 165);
+        }
+
         [Serializable]
         internal class ZoomInput
         {

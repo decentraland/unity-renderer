@@ -765,7 +765,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  <zoomVerticalRange>k__BackingField: {x: 14, y: 175}
+  <zoomVerticalRange>k__BackingField: {x: 14, y: 40}
   <scaleDuration>k__BackingField: 0.2
 --- !u!1 &6075758885154517307
 GameObject:
