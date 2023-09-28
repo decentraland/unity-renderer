@@ -196,7 +196,6 @@ function* pingerProcess() {
 function* handleConnectToComms(action: ConnectToCommsAction) {
   try {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-    commsLogger.info(`connStr: ${JSON.stringify(action.payload.event.connStr)}`)
     yield put(setCommsIsland(action.payload.event.islandId))
 
     const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
@@ -224,7 +223,6 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
-  commsLogger.info(`connecting to url: ${JSON.stringify(url)} with protocol: ${protocol}`)
 
   // TODO: move this to a saga
   overrideCommsProtocol(protocol)
@@ -245,8 +243,6 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         }
       )
 
-      commsLogger.info(`signed-login ok...: ${JSON.stringify(result)}`)
-
       const response: SignedLoginResult = result.json
       if (!result.ok || typeof response !== 'object') {
         throw new Error(
@@ -259,10 +255,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         message?: string
       }
 
-      commsLogger.info(`response: ${JSON.stringify(response)}`)
-
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
-        commsLogger.info(`fixed adapter: ${JSON.stringify(response)}`)
         return connectAdapter(response.fixedAdapter, identity)
       }
 

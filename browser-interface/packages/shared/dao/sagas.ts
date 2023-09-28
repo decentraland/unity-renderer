@@ -41,7 +41,6 @@ import { getCatalystCandidates, getCatalystCandidatesReceived, getLastConnectedC
 import { Candidate, PingResult, Realm, ServerConnectionStatus } from './types'
 import { ask, ping } from './utils/ping'
 import { saveProfileDelta } from '../profiles/actions'
-import { commsLogger } from 'shared/comms/logger'
 
 const waitForExplorerIdentity = waitFor(getCurrentIdentity, USER_AUTHENTICATED)
 
@@ -109,9 +108,7 @@ function clearQsRealm() {
 
 function* tryConnectRealm(realm: string) {
   const realmConfig = yield call(resolveRealmConfigFromString, realm)
-  commsLogger.info(`realm config: ${JSON.stringify(realmConfig)}`)
   const lastConnectedCandidates = yield select(getLastConnectedCandidates)
-  commsLogger.info(`last candidates: ${JSON.stringify(lastConnectedCandidates)}`)
   lastConnectedCandidates.set(realmConfig.baseUrl, Date.now())
   yield put(setLastConnectedCandidates(lastConnectedCandidates))
 
@@ -164,8 +161,6 @@ function* selectRealm() {
     yield call(waitForCandidates)
   }
 
-  commsLogger.info(`realm qs: ${qsRealm()}`)
-
   const realm: string | undefined =
     // query param (dao candidates & cached)
     (yield call(qsRealm)) ||
@@ -177,8 +172,6 @@ function* selectRealm() {
     (yield call(pickCatalystRealm)) ||
     // cached in local storage
     (yield call(getRealmFromLocalStorage, network))
-
-  commsLogger.info(`realm: ${JSON.stringify(realm)}`)
 
   if (!realm) {
     BringDownClientAndReportFatalError(

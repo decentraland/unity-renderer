@@ -3,7 +3,6 @@ import defaultLogger from 'lib/logger'
 import { storeCondition } from 'lib/redux'
 import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromContract'
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
-import { commsLogger } from 'shared/comms/logger'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
@@ -143,7 +142,6 @@ export async function resolveRealmAboutFromBaseUrl(
   const candidates: Candidate[] = getCatalystCandidates(store.getState())
   const realmBaseUrl = resolveRealmBaseUrlFromRealmQueryParameter(realmString, candidates).replace(/\/+$/, '')
 
-  commsLogger.info('Resolve', realmBaseUrl)
   if (!realmBaseUrl) {
     throw new Error(`Can't resolve realm ${realmString}`)
   }
@@ -229,10 +227,7 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
 
   if (!identity) throw new Error('Cant change realm without a valid identity')
 
-  commsLogger.info('Connecting to realm', realmString)
-
   const newAdapter = await adapterForRealmConfig(realmConfig.baseUrl, realmConfig.about, identity)
-  commsLogger.info(`adapter created ${JSON.stringify(newAdapter)}`)
   if (newAdapter) {
     store.dispatch(setRealmAdapter(newAdapter))
   } else {
