@@ -4,7 +4,6 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { createArchipelagoConnection } from './connections/ArchipelagoConnection'
 import { localArchipelago } from './connections/LocalArchipelago'
 import { IRealmAdapter, OFFLINE_REALM } from './types'
-import { commsLogger } from 'shared/comms/logger'
 
 function normalizeUrl(url: string) {
   return url.replace(/^:\/\//, window.location.protocol + '//')
@@ -23,16 +22,17 @@ export async function adapterForRealmConfig(
   about: AboutResponse,
   identity: ExplorerIdentity
 ): Promise<IRealmAdapter> {
-  // about.content = {
-  //   healthy: false,
-  //   ...about.content,
-  //   publicUrl: `${about.content?.publicUrl}/asdf` || `${baseUrl}/bad`
-  // }
-  // about.lambdas = {
-  //   healthy: false,
-  //   ...about.lambdas,
-  //   publicUrl: about.lambdas?.publicUrl + 'asdf' || baseUrl + '/bad'
-  // }
+  // normalize about response
+  about.content = {
+    healthy: false,
+    publicUrl: baseUrl + '/content',
+    ...about.content
+  }
+  about.lambdas = {
+    healthy: false,
+    publicUrl: baseUrl + '/lambdas',
+    ...about.lambdas
+  }
   about.configurations = {
     networkId: 1,
     globalScenesUrn: [],
@@ -45,19 +45,22 @@ export async function adapterForRealmConfig(
     ...about.configurations
   }
 
-  commsLogger.info(`adapterForRealmConfig: ${JSON.stringify(about)}`)
-
   if (
     about.comms?.healthy &&
     'adapter' in about.comms &&
     about.comms.adapter.startsWith('archipelago:archipelago-v1')
   ) {
-    const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago-v1'.length)
-    commsLogger.info(
-      'comms healthy creating archipelago connection, ahora esta harcodeado en healthy, entonces lo deberia crear ' +
-        archipelagoUrl
-    )
-    return createArchipelagoConnection(baseUrl, archipelagoUrl, about, identity)
+  }
+
+  if (about.bff?.healthy) {
+    if (about.comms?.adapter && about.comms.adapter.startsWith('archipelago:archipelago')) {
+      const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago'.length)
+      return createArchipelagoConnection(baseUrl, archipelagoUrl, about, identity)
+    } else {
+      const url = baseUrl + 'archipelago/ws'
+      const wsUrl = url.replace(/^http/, 'ws')
+      return createArchipelagoConnection(baseUrl, wsUrl, about, identity)
+    }
   }
 
   // return a mocked Archipelago
