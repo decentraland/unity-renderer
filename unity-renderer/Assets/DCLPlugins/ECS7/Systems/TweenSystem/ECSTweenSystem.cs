@@ -1,4 +1,3 @@
-using DCL;
 using DCL.Controllers;
 using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;

@@ -6,7 +6,6 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DG.Tweening;
-using DG.Tweening.Core;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,17 +50,25 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
         if (!IsSameAsLastModel(model))
         {
-            if (internalComponentModel.tweener != null)
-                internalComponentModel.tweener.Goto(0f, false);
-
             Transform entityTransform = entity.gameObject.transform;
             float durationInSeconds = model.Duration / 1000;
+            Tweener tweener = internalComponentModel.tweener;
+
+            if (tweener == null)
+            {
+                var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+                if (transformTweens != null)
+                    transformTweens[0].Rewind();
+            }
+            else
+            {
+                tweener.Rewind();
+            }
 
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
 
             // TODO: Evaluate if we need to use local or global values...
-            Tweener tweener;
             switch (model.ModeCase)
             {
                 case PBTween.ModeOneofCase.Rotate:
@@ -134,9 +141,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             return false;
 
         if (lastModel.ModeCase != targetModel.ModeCase
-            && lastModel.TweenFunction != targetModel.TweenFunction
-            && !lastModel.CurrentTime.Equals(targetModel.CurrentTime)
-            && !lastModel.Duration.Equals(targetModel.Duration))
+            || lastModel.TweenFunction != targetModel.TweenFunction
+            || !lastModel.CurrentTime.Equals(targetModel.CurrentTime)
+            || !lastModel.Duration.Equals(targetModel.Duration))
             return false;
 
         switch (targetModel.ModeCase)
