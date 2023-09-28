@@ -6,15 +6,26 @@ import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading
 import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { fetchOwnedENS } from 'lib/web3/fetchOwnedENS'
-import { profileRequest, profileSuccess, saveProfileDelta } from '../actions'
+import {profileHashSuccess, profileRequest, profileSuccess, saveProfileDelta} from '../actions'
 import { fetchProfile } from './fetchProfile'
-import { fetchLocalProfile } from './local/index'
+import {fetchLocalProfile, fetchLocalProfileHash} from './local/index'
 import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
+
+  const hash = yield call(fetchLocalProfileHash)
+  if (hash) {
+    try {
+      yield put(profileHashSuccess(identity.address, hash))
+    }
+    catch (error) {
+      defaultLogger.log(`Invalid profile hash stored: ${JSON.stringify(hash, null, 2)}`)
+      return null
+    }
+  }
 
   let profile: Avatar | null = yield call(fetchLocalProfile)
   try {

@@ -44,3 +44,8 @@ export interface RemoteProfileWithHash {
   hash: string
   signedHash: string
 }
+
+export interface ProfileHash {
+  hash: string
+  signedHash: string
+}

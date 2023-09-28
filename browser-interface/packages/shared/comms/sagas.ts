@@ -339,12 +339,12 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const { context, profile, identity, hash, signedHash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+    const { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
       typeof getInformationForCommsProfileRequest
     >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
-    if (profile && context) {
+    if (profile && context && hash) {
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
@@ -360,8 +360,8 @@ function* respondCommsProfileRequests() {
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
-        hash: hash,
-        signedHash: signedHash
+        hash: hash.hash,
+        signedHash: hash.signedHash
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
@@ -369,13 +369,11 @@ function* respondCommsProfileRequests() {
 }
 
 function getInformationForCommsProfileRequest(state: RootState) {
-  const hash = getCurrentProfileHash(state);
   return {
     context: getCommsRoom(state),
     profile: getCurrentUserProfile(state),
     identity: getCurrentIdentity(state),
-    hash: hash!.hash,
-    signedHash: hash!.hash,
+    hash: getCurrentProfileHash(state)
   }
 }
 

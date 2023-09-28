@@ -11,7 +11,7 @@ import type { ProfileRequestAction } from 'shared/profiles/actions'
 import { profileFailure, profileSuccess } from 'shared/profiles/actions'
 import { isCurrentUserId, isGuestLogin as isGuestLoginSelector } from 'shared/session/selectors'
 import type { RootState } from 'shared/store/rootTypes'
-import { getProfileStatusAndData } from '../../selectors'
+import {getProfileHash, getProfileStatusAndData} from '../../selectors'
 import type { ProfileStatus } from '../../types'
 import { fetchPeerProfile } from '../comms'
 import { fetchCatalystProfile } from '../content'
@@ -129,8 +129,9 @@ export function getInformationToFetchProfileFromStore(state: RootState, action: 
   const isGuestLogin = isGuestLoginSelector(state)
 
   const [_, existingProfile]: [ProfileStatus?, Avatar?] = getProfileStatusAndData(state, userId)
+  const profileHash = getProfileHash(userId, state);
   const existingProfileWithCorrectVersion =
-    existingProfile && (!minimumVersion || existingProfile.version >= minimumVersion)
+    profileHash && existingProfile && (!minimumVersion || existingProfile.version >= minimumVersion)
   return {
     roomConnection,
     loadingCurrentUser,

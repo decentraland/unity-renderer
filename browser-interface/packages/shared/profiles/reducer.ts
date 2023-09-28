@@ -10,7 +10,7 @@ import {
   ADDED_PROFILES_TO_CATALOG,
   ProfileFailureAction,
   ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG,
-  AddProfileToLastSentProfileVersionAndCatalog, PROFILE_WITH_HASH_SUCCESS, ProfileWithHashSuccessAction
+  AddProfileToLastSentProfileVersionAndCatalog, PROFILE_HASH_SUCCESS, ProfileHashSuccessAction
 } from './actions'
 
 const INITIAL_PROFILES: ProfileState = {
@@ -48,15 +48,15 @@ export function profileReducer(state?: ProfileState, action?: AnyAction): Profil
           }
         }
       }
-    case PROFILE_WITH_HASH_SUCCESS:
-      const profileWithHashPayload = (action as ProfileWithHashSuccessAction).payload
+    case PROFILE_HASH_SUCCESS:
+      const profileHashPayload = (action as ProfileHashSuccessAction).payload
       return {
         ...state,
         hashes: {
           ...state.hashes,
-          [profileWithHashPayload.userId.toLowerCase()]: {
-            signedHash: profileWithHashPayload.profileWithHash.signedHash,
-            hash: profileWithHashPayload.profileWithHash.hash
+          [profileHashPayload.userId.toLowerCase()]: {
+            signedHash: profileHashPayload.profileHash.signedHash,
+            hash: profileHashPayload.profileHash.hash
           }
         }
       }

@@ -7,7 +7,7 @@ import { USER_AUTHENTICATED } from 'shared/session/actions'
 import type { ProfileSuccessAction } from '../actions'
 import {
   DEPLOY_OUTFITS_REQUEST,
-  DEPLOY_PROFILE_REQUEST,
+  DEPLOY_PROFILE_REQUEST, PROFILE_HASH_SUCCESS,
   PROFILE_REQUEST,
   PROFILE_SUCCESS,
   SAVE_DELTA_PROFILE_REQUEST,
@@ -21,7 +21,7 @@ import { fetchProfile } from './fetchProfile'
 import { handleCommsProfile, handleCommsVersionUpdates } from './handleCommsProfile'
 import { handleDeployProfile } from './handleDeployProfile'
 import { handleDeployOutfits } from './handleDeployOutfits'
-import { handleSaveLocalAvatar } from './handleSaveLocalAvatar'
+import {handleSaveLocalAvatar, saveLocalProfileHash} from './handleSaveLocalAvatar'
 import { initialRemoteProfileLoad } from './initialRemoteProfileLoad'
 import { cachedRequest } from './content/cachedRequest'
 
@@ -67,6 +67,8 @@ export function* profileSaga(): any {
    * Manage a request by the user to save the current user profile
    */
   yield takeEvery(SAVE_DELTA_PROFILE_REQUEST, handleSaveLocalAvatar)
+
+  yield takeEvery(PROFILE_HASH_SUCCESS, saveLocalProfileHash)
 }
 
 function* forwardProfileToRenderer(action: ProfileSuccessAction) {

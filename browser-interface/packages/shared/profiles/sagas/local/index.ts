@@ -6,7 +6,8 @@ import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/trans
 import { localProfilesRepo } from './localProfilesRepo'
 import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
 import defaultLogger from 'lib/logger'
-import { profileSuccess } from 'shared/profiles/actions'
+import {profileSuccess} from 'shared/profiles/actions'
+import {ProfileHash} from "../../types";
 
 export function* fetchLocalProfile() {
   const network: ETHEREUM_NETWORK = yield select(getCurrentNetwork)
@@ -23,4 +24,10 @@ export function* fetchLocalProfile() {
   } else {
     return null
   }
+}
+
+export function* fetchLocalProfileHash() {
+  const network: ETHEREUM_NETWORK = yield select(getCurrentNetwork)
+  const identity: ExplorerIdentity = yield select(getCurrentIdentity)
+  return (yield apply(localProfilesRepo, localProfilesRepo.getHash, [identity.address, network])) as ProfileHash | null
 }

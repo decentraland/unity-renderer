@@ -5,7 +5,7 @@ import {validateAvatar} from 'shared/profiles/schemaValidation'
 import {ensureAvatarCompatibilityFormat} from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import {REMOTE_AVATAR_IS_INVALID, RemoteProfileWithHash} from 'shared/profiles/types'
 import {cachedRequest} from './cachedRequest'
-import {profileWithHashSuccess} from "../../actions";
+import {profileHashSuccess} from "../../actions";
 
 export function* fetchCatalystProfile(userId: string, version?: number) {
   try {
@@ -28,7 +28,10 @@ export function* fetchCatalystProfile(userId: string, version?: number) {
       avatar.hasClaimedName = !!avatar.name && avatar.hasClaimedName
       avatar.hasConnectedWeb3 = true
 
-      yield put(profileWithHashSuccess(userId, remoteProfile))
+      yield put(profileHashSuccess(userId, {
+        hash: remoteProfile.hash,
+        signedHash: remoteProfile.signedHash
+      }))
 
       return avatar
     }

@@ -1,13 +1,13 @@
 import type { Avatar, Outfits } from '@dcl/schemas'
 import { action } from 'typesafe-actions'
-import {RemoteProfileWithHash} from "./types";
+import {ProfileHash} from "./types";
 
 // Profile fetching
 
 export const PROFILE_REQUEST = '[PROFILE] Fetch request'
 export const PROFILE_SUCCESS = '[PROFILE] Fetch succeeded'
 export const PROFILE_FAILURE = '[PROFILE] Fetch failed'
-export const PROFILE_WITH_HASH_SUCCESS = '[PROFILE] Fetch hash succeeded'
+export const PROFILE_HASH_SUCCESS = '[PROFILE] Fetch hash succeeded'
 
 export const SAVE_DELTA_PROFILE_REQUEST = '[Current User] Save Profile Requested'
 export const SAVE_PROFILE_SUCCESS = '[Current User] Save Profile Succeeded'
@@ -29,11 +29,11 @@ export const profileRequest = (userId: string, minimumVersion?: number) =>
  */
 export const profileSuccess = (profile: Avatar) => action(PROFILE_SUCCESS, { profile })
 export const profileFailure = (userId: string, error: any) => action(PROFILE_FAILURE, { userId, error })
-export const profileWithHashSuccess = (userId: string, profileWithHash: RemoteProfileWithHash) => action(PROFILE_WITH_HASH_SUCCESS, { userId, profileWithHash })
+export const profileHashSuccess = (userId: string, profileHash: ProfileHash) => action(PROFILE_HASH_SUCCESS, { userId, profileHash })
 
 export type ProfileRequestAction = ReturnType<typeof profileRequest>
 export type ProfileSuccessAction = ReturnType<typeof profileSuccess>
-export type ProfileWithHashSuccessAction = ReturnType<typeof profileWithHashSuccess>
+export type ProfileHashSuccessAction = ReturnType<typeof profileHashSuccess>
 export type ProfileFailureAction = ReturnType<typeof profileFailure>
 
 // Profile update
