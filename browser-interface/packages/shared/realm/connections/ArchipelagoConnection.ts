@@ -98,7 +98,6 @@ export async function createArchipelagoConnection(
         throw new Error('Protocol error: server did not send a welcomeMessage')
       }
 
-      commsLogger.info(`createArchipelagoConnection: we are in`)
       return new ArchipelagoConnection(baseUrl, about, ws, address)
     }
   } catch (err: any) {
@@ -141,7 +140,6 @@ export class ArchipelagoConnection implements IRealmAdapter {
 
       switch (message.$case) {
         case 'islandChanged': {
-          commsLogger.info(`new ArchipelagoConnection: island changed: ${JSON.stringify(message.islandChanged)}`)
           this.events.emit('setIsland', message.islandChanged)
           break
         }
