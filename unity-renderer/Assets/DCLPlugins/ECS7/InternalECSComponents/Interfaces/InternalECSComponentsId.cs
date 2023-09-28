@@ -19,5 +19,7 @@ public enum InternalECSComponentsId
     COLLIDER_CUSTOM = 17,
     RAYCAST = 18,
     GLTF_CONTAINER_LOADING_STATE = 19,
-    ENGINE_INFO = 20
+    ENGINE_INFO = 20,
+    ANIMATION_PLAYER = 21,
+    ANIMATION = 22
 }

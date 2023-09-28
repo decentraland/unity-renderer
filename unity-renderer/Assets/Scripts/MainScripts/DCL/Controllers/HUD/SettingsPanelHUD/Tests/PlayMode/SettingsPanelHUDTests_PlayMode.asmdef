@@ -16,7 +16,8 @@
     "SettingsControllers",
     "UIHelpers",
     "HUDInterfaces",
-    "BaseVariable"
+    "BaseVariable",
+    "ReorderableArray"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

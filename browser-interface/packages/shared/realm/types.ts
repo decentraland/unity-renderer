@@ -1,7 +1,7 @@
 import { Vector3 } from 'lib/math/Vector3'
 import { Emitter } from 'mitt'
 import { IslandChangedMessage } from 'shared/protocol/decentraland/kernel/comms/v3/archipelago.gen'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 
 export const OFFLINE_REALM = 'offline'
 

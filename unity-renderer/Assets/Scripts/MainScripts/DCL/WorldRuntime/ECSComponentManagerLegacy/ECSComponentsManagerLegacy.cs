@@ -537,7 +537,7 @@ namespace DCL
 
             switch (componentName)
             {
-                case "shape":
+                case ComponentNameLiterals.Shape:
                     if (entity.meshesInfo.currentShape is BaseShape baseShape)
                     {
                         baseShape.DetachFrom(entity);
@@ -591,7 +591,7 @@ namespace DCL
                         }
                     }
                     return;
-                case "transform":
+                case ComponentNameLiterals.Transform:
                     {
                         if (TryGetBaseComponent(entity, CLASS_ID_COMPONENT.AVATAR_ATTACH, out IEntityComponent component))
                         {

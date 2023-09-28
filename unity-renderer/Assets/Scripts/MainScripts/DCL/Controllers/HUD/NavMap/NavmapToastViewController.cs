@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class NavmapToastViewController : IDisposable
+    public class NavmapToastViewController : IDisposable, INavmapToastViewController
     {
         private readonly MinimapMetadata minimapMetadata;
         private readonly NavmapToastView view;
@@ -17,11 +17,12 @@ namespace DCL
 
         private Vector2 lastClickPosition;
         private Vector2Int currentParcel;
-        private IPlacesAPIService placesAPIService;
+        private readonly IPlacesAPIService placesAPIService;
         private readonly IPlacesAnalytics placesAnalytics;
 
-        private CancellationTokenSource disposingCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource disposingCts = new ();
         private CancellationTokenSource retrievingFavoritesCts;
+        private bool showUntilClick;
 
         public NavmapToastViewController(
             MinimapMetadata minimapMetadata,
@@ -44,7 +45,7 @@ namespace DCL
         {
             Unsubscribe();
 
-            mapRenderImage.ParcelClicked += OnParcelClicked;
+            mapRenderImage.ParcelClicked += ShowPlaceToast;
             mapRenderImage.Hovered += OnHovered;
             mapRenderImage.DragStarted += OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
@@ -58,15 +59,18 @@ namespace DCL
 
         private void Unsubscribe()
         {
-            mapRenderImage.ParcelClicked -= OnParcelClicked;
+            mapRenderImage.ParcelClicked -= ShowPlaceToast;
             mapRenderImage.Hovered -= OnHovered;
             mapRenderImage.DragStarted -= OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
         }
 
+        public void CloseCurrentToast() =>
+            view.Close();
+
         private void OnHovered(Vector2 localPosition)
         {
-            if (!view.gameObject.activeSelf)
+            if (!view.gameObject.activeSelf || showUntilClick)
                 return;
 
             if (Vector2.SqrMagnitude(localPosition - lastClickPosition) >= sqrDistanceToCloseView)
@@ -78,16 +82,24 @@ namespace DCL
             if (!view.gameObject.activeSelf)
                 return;
 
+            showUntilClick = false;
             view.Close();
         }
 
-        private void OnParcelClicked(MapRenderImage.ParcelClickData parcelClickData)
+        public void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData, bool showUntilClick)
         {
+            ShowPlaceToast(parcelClickData);
+            this.showUntilClick = showUntilClick;
+        }
+
+        private void ShowPlaceToast(MapRenderImage.ParcelClickData parcelClickData)
+        {
+            showUntilClick = false;
+
             lastClickPosition = parcelClickData.WorldPosition;
             currentParcel = parcelClickData.Parcel;
 
             // transform coordinates from rect coordinates to parent of view coordinates
-            //currentPosition = GetViewLocalPosition(lastClickPosition);
             view.Open(currentParcel, lastClickPosition);
             RetrieveFavoriteState();
         }

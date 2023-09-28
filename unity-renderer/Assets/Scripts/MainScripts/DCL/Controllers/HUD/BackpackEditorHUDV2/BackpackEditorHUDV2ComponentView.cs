@@ -1,3 +1,4 @@
+using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
@@ -46,12 +47,14 @@ namespace DCL.Backpack
         [SerializeField] internal RectTransform vrmExportedToast;
 
         public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
+        public IAvatarEmotesController EmotesController => backpackPreviewPanel?.EmotesController;
         public override bool isVisible => gameObject.activeInHierarchy;
         public Transform EmotesSectionTransform => emotesSection.transform;
         public WearableGridComponentView WearableGridComponentView => wearableGridComponentView;
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
         public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
         public OutfitsSectionComponentView OutfitsSectionComponentView => outfitsSectionComponentView;
+        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
 
         private Transform thisTransform;
         private bool isAvatarDirty;
@@ -134,6 +137,7 @@ namespace DCL.Backpack
 
             sectionSelector.GetSection(AVATAR_SECTION_INDEX).onSelect.RemoveAllListeners();
             sectionSelector.GetSection(EMOTES_SECTION_INDEX).onSelect.RemoveAllListeners();
+            emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange -= OnEmotesCustomizationSelected;
             backpackPreviewPanel.Dispose();
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
@@ -282,11 +286,21 @@ namespace DCL.Backpack
             sectionSelector.GetSection(EMOTES_SECTION_INDEX)
                            .onSelect.AddListener((isSelected) =>
                             {
+                                emotesCustomizationDataStore.isEmotesCustomizationSelected.Set(isSelected);
+
                                 emotesSection.SetActive(isSelected);
 
                                 if (isSelected)
                                     ResetPreviewPanel();
                             });
+
+            emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += OnEmotesCustomizationSelected;
+        }
+
+        private void OnEmotesCustomizationSelected(bool current, bool previous)
+        {
+            if (current)
+                sectionSelector.GetSection(EMOTES_SECTION_INDEX).SelectToggle();
         }
 
         public void ResetPreviewPanel()

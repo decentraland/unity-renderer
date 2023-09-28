@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,7 @@ namespace DCL.Backpack
 
         public delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
         public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => characterPreviewController?.originalVisibleRenderers;
+        public IAvatarEmotesController EmotesController => characterPreviewController.GetEmotesController();
 
         private ICharacterPreviewController characterPreviewController;
         private IPreviewCameraRotationController avatarPreviewRotationController;
@@ -131,7 +133,7 @@ namespace DCL.Backpack
             characterPreviewController.PlayEmote(emoteId, timestamp);
 
         public void ResetPreviewEmote() =>
-            PlayPreviewEmote(RESET_PREVIEW_ANIMATION);
+            characterPreviewController.StopEmote();
 
         public void ResetPreviewRotation() =>
             characterPreviewController.ResetRotation();

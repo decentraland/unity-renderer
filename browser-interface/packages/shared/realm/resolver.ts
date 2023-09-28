@@ -1,5 +1,5 @@
 import { Candidate, Realm } from 'shared/dao/types'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { ExplorerIdentity } from 'shared/session/types'
 import { createArchipelagoConnection } from './connections/ArchipelagoConnection'
 import { localArchipelago } from './connections/LocalArchipelago'

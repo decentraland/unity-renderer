@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
+using System;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -13,10 +15,12 @@ namespace DCL
         [Header("TEXT")]
         [SerializeField] internal TextMeshProUGUI currentSceneNameText;
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
+        [SerializeField] internal NavmapSearchComponentView searchView;
 
         [Space]
         [SerializeField] internal NavmapToastView toastView;
-        [SerializeField] private NavmapZoom zoom;
+        [SerializeField] private NavMapLocationControlsView locationControlsView;
+        [SerializeField] private NavmapZoomView zoomView;
 
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
 
@@ -27,10 +31,13 @@ namespace DCL
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
+        private NavmapSearchController navmapSearchController;
 
         private void Start()
         {
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoom, toastView, navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+            navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,
+                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
@@ -42,17 +49,28 @@ namespace DCL
             updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
             UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
             CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
+
+            //Needed due to script execution order
+            DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
+        }
+
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            //TODO Remove: Temporary to allow PR merging
+            searchView.gameObject.SetActive(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap_header"));
         }
 
         private void OnDisable()
         {
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
             CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
+            DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
         }
 
         private void OnDestroy()
         {
             navmapVisibilityBehaviour.Dispose();
+            navmapSearchController.Dispose();
         }
 
         private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)

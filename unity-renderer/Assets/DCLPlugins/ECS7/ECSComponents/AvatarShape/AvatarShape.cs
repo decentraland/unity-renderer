@@ -180,9 +180,9 @@ namespace DCL.ECSComponents
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
-            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            wearableItems.AddRange(embeddedEmotesSo.GetAllIds());
             HashSet<string> emotes = new HashSet<string>();
-            emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+            emotes.UnionWith(embeddedEmotesSo.GetAllIds());
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
@@ -204,7 +204,7 @@ namespace DCL.ECSComponents
 
             // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
             if(model.HasExpressionTriggerId)
-                avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+                avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
 
