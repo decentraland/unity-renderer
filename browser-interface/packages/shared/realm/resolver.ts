@@ -52,10 +52,12 @@ export async function adapterForRealmConfig(
     'adapter' in about.comms &&
     about.comms.adapter.startsWith('archipelago:archipelago-v1')
   ) {
+    const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago-v1'.length)
     commsLogger.info(
-      'comms healthy creating archipelago connection, ahora esta harcodeado en healthy, entonces lo deberia crear'
+      'comms healthy creating archipelago connection, ahora esta harcodeado en healthy, entonces lo deberia crear ' +
+        archipelagoUrl
     )
-    return createArchipelagoConnection(baseUrl, about, identity)
+    return createArchipelagoConnection(baseUrl, archipelagoUrl, about, identity)
   }
 
   // return a mocked Archipelago

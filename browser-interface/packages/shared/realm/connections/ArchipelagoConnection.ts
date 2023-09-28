@@ -24,38 +24,14 @@ function craftMessage(packet: ClientPacket): Uint8Array {
 
 export async function createArchipelagoConnection(
   baseUrl: string,
+  archipelagoUrl: string,
   about: AboutResponse,
   identity: ExplorerIdentity
 ): Promise<IRealmAdapter> {
   const logger = createLogger('Archipelago handshake: ')
   const address = identity.address
-  let adapterStr
-
-  commsLogger.info(`reading adapter str...`)
-  if (about.comms?.fixedAdapter) {
-    adapterStr = about.comms.fixedAdapter
-  } else {
-    adapterStr = about.comms?.adapter
-  }
-
-  commsLogger.info(`adapter str: ${adapterStr}`)
-
-  if (!adapterStr) {
-    throw new Error(`Protocol error: can not create connection to archipelago for undefined adapter`)
-  }
-
-  const [adapter, protocol, ...urlParts] = adapterStr.split(':')
-
-  if (!adapterStr || adapter !== 'archipelago' || protocol !== 'archipelago-v1') {
-    throw new Error(`Protocol error: can not create connection to archipelago for: ${adapterStr}`)
-  }
-
-  const wsUrl = urlParts.join(':')
-
-  commsLogger.info(`createArchipelagoConnection: wsUrl: ${JSON.stringify(wsUrl)}`)
-
   const connected = future<void>()
-  const ws = new WebSocket(wsUrl, 'archipelago')
+  const ws = new WebSocket(archipelagoUrl, 'archipelago')
   ws.binaryType = 'arraybuffer'
   ws.onopen = () => connected.resolve()
 

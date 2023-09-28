@@ -66,7 +66,7 @@ export async function fetchCatalystStatus(
     aboutResponse.status === ServerConnectionStatus.OK &&
     result &&
     result.comms &&
-    result.configurations && 
+    result.configurations &&
     result.configurations.realmName &&
     result.bff &&
     result.content &&
@@ -143,6 +143,7 @@ export async function resolveRealmAboutFromBaseUrl(
   const candidates: Candidate[] = getCatalystCandidates(store.getState())
   const realmBaseUrl = resolveRealmBaseUrlFromRealmQueryParameter(realmString, candidates).replace(/\/+$/, '')
 
+  commsLogger.info('Resolve', realmBaseUrl)
   if (!realmBaseUrl) {
     throw new Error(`Can't resolve realm ${realmString}`)
   }
