@@ -13,6 +13,9 @@ namespace DCL
 
         private readonly NavmapZoomView view;
 
+        private readonly AnimationCurve normalizedCurve;
+        private readonly int zoomSteps;
+
         private bool active;
 
         private CancellationTokenSource cts;
@@ -23,27 +26,50 @@ namespace DCL
 
         private IMapCameraController cameraController;
 
-        private readonly AnimationCurve normalizedCurve;
-        private readonly int zoomSteps;
-
         public NavmapZoomViewController(NavmapZoomView view)
         {
             this.view = view;
 
-            // Keys should be between [0;1]
-            var keys = view.normalizedZoomCurve.keys;
+            normalizedCurve = view.normalizedZoomCurve;
+            zoomSteps = normalizedCurve.length;
 
-            var firstKey = keys[0];
-            firstKey.time = 0;
-            firstKey.value = 0;
-            keys[0] = firstKey;
+            CurveClamp01();
+        }
 
-            var lastKey = keys[^1];
-            lastKey.value = 1;
-            keys[^1] = lastKey;
+        public void Dispose()
+        {
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
+        }
 
-            normalizedCurve = new AnimationCurve(keys);
-            zoomSteps = keys.Length;
+        private void CurveClamp01()
+        {
+            // Keys should be int for zoomSteps to work properly
+            for (var i = 0; i < normalizedCurve.keys.Length; i++)
+            {
+                Keyframe keyFrame = normalizedCurve.keys[i];
+
+                if (i == 0)
+                {
+                    keyFrame.time = 0;
+                    keyFrame.value = 0;
+                }
+                else if (i == normalizedCurve.length - 1)
+                {
+                    keyFrame.time = Mathf.FloorToInt(keyFrame.time);
+                    keyFrame.value = 1;
+                }
+                else
+                {
+                    keyFrame.time = Mathf.FloorToInt(keyFrame.time);
+                    keyFrame.value = keyFrame.value;
+                }
+
+                normalizedCurve.MoveKey(i, keyFrame);
+            }
         }
 
         public float ResetZoomToMidValue()
@@ -97,7 +123,7 @@ namespace DCL
             if (value == 0 || Mathf.Abs(value) < MOUSE_WHEEL_THRESHOLD)
                 return;
 
-            var zoomAction = value > 0 ? DCLAction_Hold.ZoomIn : DCLAction_Hold.ZoomOut;
+            DCLAction_Hold zoomAction = value > 0 ? DCLAction_Hold.ZoomIn : DCLAction_Hold.ZoomOut;
             Zoom(zoomAction);
         }
 
@@ -114,14 +140,14 @@ namespace DCL
             if (!active || isScaling)
                 return;
 
+            EventSystem.current.SetSelectedGameObject(null);
+
             switch (action)
             {
                 case DCLAction_Hold.ZoomIn when Mathf.Approximately(targetNormalizedZoom, 1f):
                 case DCLAction_Hold.ZoomOut when Mathf.Approximately(targetNormalizedZoom, 0f):
                     return;
             }
-
-            EventSystem.current.SetSelectedGameObject(null);
 
             SetZoomLevel(currentZoomLevel + (action == DCLAction_Hold.ZoomIn ? 1 : -1));
             ScaleOverTime(cameraController.Zoom, targetNormalizedZoom, cts.Token).Forget();
@@ -138,7 +164,7 @@ namespace DCL
         private async UniTaskVoid ScaleOverTime(float from, float to, CancellationToken ct)
         {
             isScaling = true;
-            var scaleDuration = view.scaleDuration;
+            float scaleDuration = view.scaleDuration;
 
             for (float timer = 0; timer < scaleDuration; timer += Time.deltaTime)
             {
@@ -152,15 +178,6 @@ namespace DCL
             }
 
             isScaling = false;
-        }
-
-        public void Dispose()
-        {
-            if (cts != null)
-            {
-                cts.Cancel();
-                cts.Dispose();
-            }
         }
     }
 }
