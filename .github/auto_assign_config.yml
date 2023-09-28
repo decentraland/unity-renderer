@@ -5,15 +5,14 @@ addReviewers: true
 numberOfReviewers: 1
 useReviewGroups: true
 reviewGroups:
-  techleads:
-    - Kinerius
-    - mikhail-dcl
   devs:    
     - sandrade-dcl    
     - lorux0
     - davidejensen
     - dalkia
-    - popuz    
+    - popuz
+    - Kinerius
+    - mikhail-dcl
   qa:
     - kwssbocian
     - kwsskulinski

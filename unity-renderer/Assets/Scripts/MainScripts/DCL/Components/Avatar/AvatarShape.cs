@@ -187,7 +187,7 @@ namespace DCL
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 UniTask<EmbeddedEmotesSO>.Awaiter embeddedEmotesTask = emotesCatalogService.Ref.GetEmbeddedEmotes().GetAwaiter();
                 yield return new WaitUntil(() => embeddedEmotesTask.IsCompleted);
-                var embeddedEmoteIds = embeddedEmotesTask.GetResult().emotes.Select(x => x.id);
+                var embeddedEmoteIds = embeddedEmotesTask.GetResult().GetAllIds();
 
                 //here we add emote ids to both new and old emote loading flow to merge the results later
                 //because some users might have emotes as wearables and others only as emotes
