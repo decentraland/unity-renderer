@@ -55,6 +55,7 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
+import {fetchCatalystProfile} from "../profiles/sagas/content";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -339,12 +340,21 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+    let { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
       typeof getInformationForCommsProfileRequest
     >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
-    if (profile && context && hash) {
+    if (profile && context) {
+      if (!hash && identity) {
+        // force to update profile hash
+        yield call(fetchCatalystProfile, identity.address, 0)
+        hash = yield select(getCurrentProfileHash)
+        if (!hash) {
+          continue
+        }
+      }
+
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
@@ -360,8 +370,8 @@ function* respondCommsProfileRequests() {
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
-        hash: hash.hash,
-        signedHash: hash.signedHash
+        hash: hash!.hash,
+        signedHash: hash!.signedHash
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
