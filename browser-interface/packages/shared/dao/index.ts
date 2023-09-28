@@ -3,6 +3,7 @@ import defaultLogger from 'lib/logger'
 import { storeCondition } from 'lib/redux'
 import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromContract'
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
+import { commsLogger } from 'shared/comms/logger'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
 import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
@@ -226,6 +227,8 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
   }
 
   if (!identity) throw new Error('Cant change realm without a valid identity')
+
+  commsLogger.info('Connecting to realm', realmString)
 
   const newAdapter = await adapterForRealmConfig(realmConfig.baseUrl, realmConfig.about, identity)
   if (newAdapter) {
