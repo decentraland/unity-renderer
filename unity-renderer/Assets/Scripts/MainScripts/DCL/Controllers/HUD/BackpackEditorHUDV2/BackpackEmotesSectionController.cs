@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using AvatarSystem;
+using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.EmotesCustomization;
 using DCL.Interface;
@@ -37,6 +38,7 @@ namespace DCL.Backpack
             Transform emotesSectionTransform,
             IUserProfileBridge userProfileBridge,
             IEmotesCatalogService emotesCatalogService,
+            IAvatarEmotesController emotesController,
             ICustomNftCollectionService customNftCollectionService)
         {
             this.dataStore = dataStore;
@@ -46,7 +48,7 @@ namespace DCL.Backpack
 
             emotesCustomizationComponentController = new EmotesCustomizationComponentController(
                 dataStore.emotesCustomization,
-                dataStore.emotes,
+                emotesController,
                 dataStore.exploreV2,
                 dataStore.HUDs,
                 emotesSectionTransform,
@@ -100,7 +102,7 @@ namespace DCL.Backpack
                 {
                     EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
                     List<WearableItem> allEmotes = new ();
-                    allEmotes.AddRange(embeddedEmotesSo.emotes);
+                    allEmotes.AddRange(embeddedEmotesSo.GetAllEmotes());
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
                     try
@@ -127,15 +129,19 @@ namespace DCL.Backpack
         public void SetEquippedBodyShape(string bodyShapeId) =>
             emotesCustomizationComponentController.SetEquippedBodyShape(bodyShapeId);
 
+        // TODO: Delete?
         private void NewEmoteAdded(string emoteId) =>
             OnNewEmoteAdded?.Invoke(emoteId);
 
+        // TODO: Delete?
         private void EmotePreviewed(string emoteId) =>
             OnEmotePreviewed?.Invoke(emoteId);
 
+        // TODO: Delete?
         private void EmoteEquipped(string emoteId) =>
             OnEmoteEquipped?.Invoke(emoteId);
 
+        // TODO: Delete?
         private void EmoteUnEquipped(string emoteId) =>
             OnEmoteUnEquipped?.Invoke(emoteId);
 

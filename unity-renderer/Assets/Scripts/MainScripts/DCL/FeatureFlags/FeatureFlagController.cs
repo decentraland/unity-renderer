@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using UnityEngine;
 
 public class FeatureFlagController : IFeatureFlagController
@@ -35,7 +36,7 @@ public class FeatureFlagController : IFeatureFlagController
 
     public void Dispose()
     {
-        Object.Destroy(bridgeGameObject);
+        Utils.SafeDestroy(bridgeGameObject);
         bridgeGameObject = null;
         featureFlagBridgeComponent = null;
     }

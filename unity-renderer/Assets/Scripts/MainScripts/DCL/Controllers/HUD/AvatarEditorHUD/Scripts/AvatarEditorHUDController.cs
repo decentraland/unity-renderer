@@ -134,12 +134,12 @@ public class AvatarEditorHUDController : IHUD
 
         emotesCustomizationComponentController = new EmotesCustomizationComponentController(
             DataStore.i.emotesCustomization,
-            DataStore.i.emotes,
+            view.CharacterPreview.GetEmotesController(),
             DataStore.i.exploreV2,
             DataStore.i.HUDs,
             view.emotesSection.transform);
         //Initialize with embedded emotes
-        emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.emotes);
+        emotesCustomizationComponentController.SetEmotes(embeddedEmotesSo.GetAllEmotes().ToArray());
         view.SetSectionActive(AvatarEditorHUDView.EMOTES_SECTION_INDEX, true);
 
         emotesCustomizationDataStore.isEmotesCustomizationSelected.OnChange += HandleEmotesCostumizationSelection;
@@ -274,7 +274,7 @@ public class AvatarEditorHUDController : IHUD
         try
         {
             EmbeddedEmotesSO embeddedEmoteTask = await emotesCatalogService.Ref.GetEmbeddedEmotes();
-            var embeddedEmotes = embeddedEmoteTask.emotes;
+            var embeddedEmotes = embeddedEmoteTask.GetAllEmotes();
             var emotes = await emotesCatalog.RequestOwnedEmotesAsync(userProfile.userId, ct);
             var emotesList = emotes == null ? embeddedEmotes.Cast<WearableItem>().ToList() : emotes.Concat(embeddedEmotes).ToList();
             var emotesFilter = new HashSet<string>();

@@ -1,9 +1,12 @@
+using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.EmotesCustomization.Tests
 {
+    [TestFixture, RequiresPlayMode]
     public class EmotesCustomizationComponentViewTests
     {
         private EmotesCustomizationComponentView emotesCustomizationComponent;
@@ -25,8 +28,8 @@ namespace DCL.EmotesCustomization.Tests
         {
             testEmoteSlotCard.Dispose();
             emotesCustomizationComponent.Dispose();
-            GameObject.Destroy(testTexture);
-            GameObject.Destroy(testSprite);
+            Utils.SafeDestroy(testTexture);
+            Utils.SafeDestroy(testSprite);
         }
 
         [Test]
@@ -297,14 +300,14 @@ namespace DCL.EmotesCustomization.Tests
 
             string selectedSlotEmoteID = "";
             int selectedSlotNumber = -1;
-            emotesCustomizationComponent.onSlotSelected += (emoteId, slotNumber) =>
+            emotesCustomizationComponent.onSlotSelected += (emoteId, slotNumber, playEmote) =>
             {
                 selectedSlotEmoteID = emoteId;
                 selectedSlotNumber = slotNumber;
             };
 
             // Act
-            emotesCustomizationComponent.OnSlotSelected(slotNumber, testEventCardModel.id);
+            emotesCustomizationComponent.OnSlotSelected(slotNumber, testEventCardModel.id, false);
 
             // Assert
             Assert.IsTrue(testEventCard.model.isAssignedInSelectedSlot);

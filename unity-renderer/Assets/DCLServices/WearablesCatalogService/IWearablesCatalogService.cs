@@ -33,7 +33,7 @@ namespace DCLServices.WearablesCatalogService
         void RemoveWearableFromCatalog(string wearableId);
         void RemoveWearablesInUse(IEnumerable<string> wearablesInUseToRemove);
         [Obsolete("Will be removed in the future, when emotes are in the content server.")]
-        void EmbedWearables(IEnumerable<WearableItem> wearables);
+        void AddEmbeddedWearablesToCatalog(IEnumerable<WearableItem> wearables);
         void Clear();
         bool IsValidWearable(string wearableId);
     }

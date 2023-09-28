@@ -100,10 +100,11 @@ public class InternalECSComponent<T> : IInternalECSComponent<T> where T: struct,
 
     public void RemoveFor(int sceneNumber, long entityId)
     {
+        markAsDirtyComponents.Remove(sceneNumber, entityId);
+
         if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
             return;
 
-        markAsDirtyComponents.Remove(sceneNumber, entityId);
         crdtExecutor.RemoveComponent(entityId, componentId);
     }
 

@@ -349,11 +349,18 @@ namespace DCL.Backpack
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
         {
-            if (!Enum.TryParse(wearable.rarity, true, out NftRarity rarity))
+            NftRarity rarity;
+
+            if (string.IsNullOrEmpty(wearable.rarity))
+                rarity = NftRarity.None;
+            else
+            if (!Enum.TryParse(wearable.rarity, true, out NftRarity result))
             {
                 rarity = NftRarity.None;
                 Debug.LogWarning($"Could not parse the rarity \"{wearable.rarity}\" of the wearable '{wearable.id}'. Fallback to common.");
             }
+            else
+                rarity = result;
 
             string currentBodyShapeId = dataStoreBackpackV2.previewBodyShape.Get();
 
