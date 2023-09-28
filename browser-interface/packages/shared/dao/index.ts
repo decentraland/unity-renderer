@@ -157,6 +157,18 @@ export async function resolveRealmAboutFromBaseUrl(
   return { about: res.result!, baseUrl: realmBaseUrl }
 }
 
+export function resolveRealmFromBaseUrl(baseUrl: string) {
+  const candidates: Candidate[] = getCatalystCandidates(store.getState())
+
+  for (const candidate of candidates) {
+    if (candidate.domain === baseUrl) {
+      return candidate
+    }
+  }
+
+  return undefined
+}
+
 async function resolveOfflineRealmAboutFromConnectionString(
   realmString: string
 ): Promise<{ about: AboutResponse; baseUrl: string } | undefined> {

@@ -33,7 +33,7 @@ import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import {isImpostor} from "../profiles/impostorValidation";
-import {getCatalystCandidates} from "../dao/selectors";
+import {resolveRealmFromBaseUrl} from "../dao";
 
 type PingRequest = {
   alias: number
@@ -236,7 +236,7 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
   }
 }
 
-async function processProfileResponse(message: Package<proto.ProfileResponse>) {
+async function* processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
@@ -244,10 +244,9 @@ async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   profile.ethAddress = message.address
   peerTrackingInfo.lastProfileVersion = profile.version
 
-  // TODO: solve catalyst address from message.data.baseUrl
-  const candidates = getCatalystCandidates(store.getState());
+  const realm = resolveRealmFromBaseUrl(message.data.baseUrl);
 
-  if (await isImpostor(profile, message.data.hash, message.data.signedHash, '')) {
+  if (await isImpostor(profile, message.data.hash, message.data.signedHash, realm?.address)) {
     console.warn('Impostor detected', message.address)
     return
   }

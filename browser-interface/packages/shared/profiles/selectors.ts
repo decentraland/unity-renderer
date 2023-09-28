@@ -44,7 +44,7 @@ export const getCurrentUserProfile = (store: RootProfileState & RootSessionState
 
 export const getCurrentProfileHash = (store: RootProfileState & RootSessionState) => {
   const userId = selectCurrentUserId(store)
-  return userId ? getProfileHash(userId, store) : null
+  return userId ? getProfileHash(userId, store) : undefined
 }
 
 export const getProfileHash = (userId: string, store: RootProfileState & RootSessionState) => {
