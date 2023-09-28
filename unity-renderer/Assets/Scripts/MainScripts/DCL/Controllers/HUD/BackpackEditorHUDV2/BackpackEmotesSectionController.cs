@@ -102,7 +102,7 @@ namespace DCL.Backpack
                 {
                     EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
                     List<WearableItem> allEmotes = new ();
-                    allEmotes.AddRange(embeddedEmotesSo.emotes);
+                    allEmotes.AddRange(embeddedEmotesSo.GetAllEmotes());
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
                     try

@@ -9,7 +9,7 @@ namespace AvatarSystem
     {
         void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes, GameObject container);
 
-        void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true);
+        void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool ignoreTimestamp = false);
 
         void StopEmote();
 

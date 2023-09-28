@@ -70,7 +70,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             if (retryCount < 0)
             {
                 embeddedEmotesSo = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-                embeddedEmotesSo.emotes = new EmbeddedEmote[] { };
+                embeddedEmotesSo.Clear();
                 throw new Exception("Embedded Emotes retry limit reached, they wont work correctly. Please check the Essentials group is set up correctly");
             }
 
@@ -108,23 +108,40 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:emoteId/";
         string url = TEMPLATE_URL.Replace(":emoteId", emoteId);
 
-        (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
-            TEMPLATE_URL, url,
-            isSigned: true,
-            cancellationToken: cancellationToken);
+        try
+        {
+            (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
+                TEMPLATE_URL, url,
+                isSigned: true,
+                cancellationToken: cancellationToken);
 
-        if (!success)
-            throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
+            if (!success)
+                throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
 
-        WearableItem wearable = response.data.ToWearableItem(
-            "https://builder-api.decentraland.org/v1/storage/contents/",
-            assetBundlesUrl);
+            WearableItem wearable = response.data.ToWearableItem(
+                "https://builder-api.decentraland.org/v1/storage/contents/",
+                assetBundlesUrl);
 
-        if (!wearable.IsEmote()) return null;
+            if (!wearable.IsEmote()) return null;
 
-        OnEmoteReceived(wearable);
+            OnEmoteReceived(wearable);
 
-        return wearable;
+            return wearable;
+        }
+        catch (UnityWebRequestException ex)
+        {
+            if (ex.ResponseCode == 404)
+                Debug.LogWarning($"Emote with id: {emoteId} does not exist");
+            else
+                Debug.LogException(ex);
+
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            return null;
+        }
     }
 
     public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId)
@@ -247,6 +264,11 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
             await promise.WithCancellation(linkedCt.Token);
         }
+        catch (UnityWebRequestException ex)
+        {
+            Debug.LogWarning($"Emote with id:{id} does not exist or connection failed");
+            return null;
+        }
         catch (PromiseException ex)
         {
             Debug.LogWarning($"Emote with id:{id} was rejected");
@@ -262,6 +284,11 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                     promises.Remove(id);
             }
 
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
             return null;
         }
         finally
@@ -425,7 +452,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
     private void EmbedEmotes()
     {
-        foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSo.emotes)
+        foreach (EmbeddedEmote embeddedEmote in embeddedEmotesSo.GetAllEmotes())
         {
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;
