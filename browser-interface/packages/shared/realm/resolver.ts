@@ -45,13 +45,6 @@ export async function adapterForRealmConfig(
     ...about.configurations
   }
 
-  if (
-    about.comms?.healthy &&
-    'adapter' in about.comms &&
-    about.comms.adapter.startsWith('archipelago:archipelago-v1')
-  ) {
-  }
-
   if (about.bff?.healthy) {
     if (about.comms?.adapter && about.comms.adapter.startsWith('archipelago:archipelago')) {
       const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago:'.length)
