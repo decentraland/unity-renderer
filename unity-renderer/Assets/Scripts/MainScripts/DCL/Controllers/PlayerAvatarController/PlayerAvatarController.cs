@@ -160,7 +160,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
-        avatar.PlayEmote(id, timestamp);
+        avatar.GetEmotesController().PlayEmote(id, timestamp);
 
         bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
 
@@ -213,8 +213,9 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
-                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                string[] emoteIds = embeddedEmotesSo.GetAllIds();
+                emotes.UnionWith(emoteIds);
+                wearableItems.AddRange(emoteIds);
 
                 await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
@@ -228,7 +229,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
 
-                avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
+                avatar.GetEmotesController().PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
         catch (Exception e) when (e is not OperationCanceledException)

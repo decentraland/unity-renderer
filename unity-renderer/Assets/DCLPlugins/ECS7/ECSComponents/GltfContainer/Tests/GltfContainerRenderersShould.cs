@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.Components.GltfContainer
 {
     public class GltfContainerRenderersShould
     {
@@ -49,6 +49,7 @@ namespace Tests
                 internalEcsComponents.customLayerColliderComponent,
                 renderersComponent,
                 internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.Animation,
                 new DataStore_ECS7(),
                 new DataStore_FeatureFlag());
 

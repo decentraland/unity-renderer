@@ -4,6 +4,7 @@ using DCL.Camera;
 using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Emotes;
+using DCL.Helpers;
 using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
@@ -96,7 +97,7 @@ public class IntegrationTestSuite_Legacy
     private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        embeddedEmotes.Clear();
         return embeddedEmotes;
     }
 
@@ -112,9 +113,7 @@ public class IntegrationTestSuite_Legacy
         Settings.i.Dispose();
 
         foreach ( var go in legacySystems )
-        {
-            Object.Destroy(go);
-        }
+            Utils.SafeDestroy(go);
 
         yield return null;
     }

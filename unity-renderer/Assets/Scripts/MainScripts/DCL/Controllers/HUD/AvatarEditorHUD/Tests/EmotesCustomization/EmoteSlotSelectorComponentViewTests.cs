@@ -1,9 +1,12 @@
+using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DCL.EmotesCustomization.Tests
 {
+    [TestFixture, RequiresPlayMode]
     public class EmoteSlotSelectorComponentViewTests
     {
         private EmoteSlotSelectorComponentView emoteSlotSelectorComponent;
@@ -22,8 +25,8 @@ namespace DCL.EmotesCustomization.Tests
         public void TearDown()
         {
             emoteSlotSelectorComponent.Dispose();
-            GameObject.Destroy(testTexture);
-            GameObject.Destroy(testSprite);
+            Utils.SafeDestroy(testTexture);
+            Utils.SafeDestroy(testSprite);
         }
 
         [Test]
@@ -53,7 +56,7 @@ namespace DCL.EmotesCustomization.Tests
 
             int slotNumberReceived = -1;
             string emoteIdReceived = "";
-            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId) =>
+            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId, playEmote) =>
             {
                 slotNumberReceived = slotNumber;
                 emoteIdReceived = emoteId;
@@ -89,7 +92,7 @@ namespace DCL.EmotesCustomization.Tests
 
             int slotNumberReceived = -1;
             string emoteIdReceived = "";
-            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId) =>
+            emoteSlotSelectorComponent.onSlotSelected += (slotNumber, emoteId, playEmote) =>
             {
                 slotNumberReceived = slotNumber;
                 emoteIdReceived = emoteId;
