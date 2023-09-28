@@ -126,7 +126,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             translationSequence = null;
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);//ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
+            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
         }
 
@@ -141,7 +141,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             translationSequence.Kill();
             translationSequence = null;
 
-            mapCameraObject.transform.localPosition = localCameraPosition;//ClampLocalPosition(localCameraPosition);
+            mapCameraObject.transform.localPosition = ClampLocalPosition(localCameraPosition);
         }
 
         public void SetPositionAndZoom(Vector2 coordinates, float zoom)
@@ -152,7 +152,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
             SetCameraSize(zoom);
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
-            mapCameraObject.transform.localPosition = new Vector3(position.x, position.y, CAMERA_HEIGHT);//ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
+            mapCameraObject.transform.localPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
             cullingController.SetCameraDirty(this);
         }
 
@@ -186,6 +186,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             localPos.x = Mathf.Clamp(localPos.x, cameraPositionBounds.xMin, cameraPositionBounds.xMax);
             localPos.y = Mathf.Clamp(localPos.y, cameraPositionBounds.yMin, cameraPositionBounds.yMax);
+
             return localPos;
         }
 
@@ -196,8 +197,21 @@ namespace DCLServices.MapRendererV2.MapCameraController
             var cameraYSize = mapCameraObject.mapCamera.orthographicSize;
             var cameraXSize = cameraYSize * mapCameraObject.mapCamera.aspect;
 
-            cameraPositionBounds = Rect.MinMaxRect(worldBounds.xMin + cameraXSize, worldBounds.yMin + cameraYSize,
-                worldBounds.xMax - cameraXSize, worldBounds.yMax - cameraYSize);
+            float xMin = worldBounds.xMin + cameraXSize;
+            float xMax = worldBounds.xMax - cameraXSize;
+
+            float yMin = worldBounds.yMin + cameraYSize;
+            float yMax = worldBounds.yMax - cameraYSize;
+
+            // If the map's width is smaller than the camera's width, disable X-drag
+            if (worldBounds.xMax - worldBounds.xMin < 2 * cameraXSize)
+                xMin = xMax = 0;
+
+            // If the map's height is smaller than the camera's height, disable Y-drag
+            if (worldBounds.yMax - worldBounds.yMin < 2 * cameraYSize)
+                yMin = yMax = 0;
+
+            cameraPositionBounds = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
         }
 
         public void SuspendRendering()
