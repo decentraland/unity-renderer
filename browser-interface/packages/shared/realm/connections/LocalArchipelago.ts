@@ -4,10 +4,8 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { legacyServices } from '../local-services/legacy'
 import { Vector3 } from 'lib/math/Vector3'
 import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
-import { commsLogger } from 'shared/comms/logger'
 
 export function localArchipelago(baseUrl: string, about: AboutResponse, _identity: ExplorerIdentity): IRealmAdapter {
-  commsLogger.info('creating local archipelago connection')
   const events = mitt<RealmConnectionEvents>()
 
   return {
