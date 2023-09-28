@@ -8,7 +8,7 @@ export function hookConnectToFixedAdaptersIfNecessary(realm: IRealmAdapter) {
   if (realm.about.comms?.fixedAdapter) {
     commsLogger.info(`fixed adapter: ${JSON.stringify(realm.about.comms?.fixedAdapter as string)}`)
     connStr = realm.about.comms?.fixedAdapter as string
-  } else if (realm.about.comms?.adapter && realm.about.comms?.adapter.startsWith('fixed')) {
+  } else if (realm.about.comms?.adapter && realm.about.comms?.adapter.startsWith('fixed-adapter')) {
     const adapter = realm.about.comms?.adapter
     const ix = adapter.indexOf(':')
     connStr = adapter.substring(ix + 1)
