@@ -49,6 +49,7 @@ public class TaskbarHUDController : IHUD
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
     private CancellationTokenSource openPrivateChatCancellationToken = new ();
     private readonly IWorldState worldState;
+    private SceneContentCategory currentContentCategory;
 
     private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
@@ -67,7 +68,7 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<string> openChat => DataStore.i.HUDs.openChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
     internal bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
-    internal BaseVariable<bool> reportingScenePanelVisible => DataStore.i.contentModeration.reportingScenePanelVisible;
+    internal BaseVariable<(bool isVisible, SceneContentCategory rating)> reportingScenePanelVisible => DataStore.i.contentModeration.reportingScenePanelVisible;
 
     public TaskbarHUDController(IChatController chatController, IFriendsController friendsController, ISupportAnalytics analytics, IWorldState worldState)
     {
@@ -156,6 +157,7 @@ public class TaskbarHUDController : IHUD
         if (!worldState.TryGetScene(currentSceneNumber, out IParcelScene currentParcelScene))
             return;
 
+        currentContentCategory = currentParcelScene.contentCategory;
         view.contentModerationTaskbarButton.SetContentCategory(currentParcelScene.contentCategory);
     }
 
@@ -170,7 +172,7 @@ public class TaskbarHUDController : IHUD
         if (!isContentModerationFeatureEnabled)
             return;
 
-        reportingScenePanelVisible.Set(!reportingScenePanelVisible.Get());
+        reportingScenePanelVisible.Set((!reportingScenePanelVisible.Get().isVisible, currentContentCategory));
     }
 
     private void HandleFriendsToggle(bool show)

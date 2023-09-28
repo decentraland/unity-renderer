@@ -10,6 +10,7 @@ namespace DCL.ContentModeration
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
         private readonly IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView;
+        private readonly IContentModerationReportingComponentView contentModerationReportingComponentView;
         private readonly IWorldState worldState;
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ContentModeration contentModerationDataStore;
@@ -18,6 +19,7 @@ namespace DCL.ContentModeration
             IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView,
             IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView,
             IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView,
+            IContentModerationReportingComponentView contentModerationReportingComponentView,
             IWorldState worldState,
             DataStore_Settings settingsDataStore,
             DataStore_ContentModeration contentModerationDataStore)
@@ -25,6 +27,7 @@ namespace DCL.ContentModeration
             this.adultContentSceneWarningComponentView = adultContentSceneWarningComponentView;
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
             this.adultContentEnabledNotificationComponentView = adultContentEnabledNotificationComponentView;
+            this.contentModerationReportingComponentView = contentModerationReportingComponentView;
             this.worldState = worldState;
             this.settingsDataStore = settingsDataStore;
             this.contentModerationDataStore = contentModerationDataStore;
@@ -36,6 +39,8 @@ namespace DCL.ContentModeration
             adultContentAgeConfirmationComponentView.OnConfirmClicked += OnAgeConfirmationAccepted;
             adultContentAgeConfirmationComponentView.OnCancelClicked += OnAgeConfirmationRejected;
             contentModerationDataStore.adultContentSettingEnabled.OnChange += OnAdultContentSettingChanged;
+            contentModerationDataStore.reportingScenePanelVisible.OnChange += OnReportingScenePanelVisible;
+            contentModerationReportingComponentView.OnPanelClosed += OnContentModerationReportingClosed;
         }
 
         public void Dispose()
@@ -46,6 +51,8 @@ namespace DCL.ContentModeration
             adultContentAgeConfirmationComponentView.OnConfirmClicked -= OnAgeConfirmationAccepted;
             adultContentAgeConfirmationComponentView.OnCancelClicked -= OnAgeConfirmationRejected;
             contentModerationDataStore.adultContentSettingEnabled.OnChange -= OnAdultContentSettingChanged;
+            contentModerationDataStore.reportingScenePanelVisible.OnChange -= OnReportingScenePanelVisible;
+            contentModerationReportingComponentView.OnPanelClosed -= OnContentModerationReportingClosed;
         }
 
         private void OnSceneNumberChanged(int currentSceneNumber, int _)
@@ -81,7 +88,7 @@ namespace DCL.ContentModeration
 
         private void OnAgeConfirmationAccepted()
         {
-            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.ACCEPTED, true);
+            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.Accepted, true);
             settingsDataStore.settingsPanelVisible.Set(false);
             adultContentEnabledNotificationComponentView.ShowNotification();
             HideNotificationAfterDelay(5).Forget();
@@ -96,7 +103,7 @@ namespace DCL.ContentModeration
 
         private void OnAgeConfirmationRejected()
         {
-            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.REJECTED, true);
+            contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.Rejected, true);
         }
 
         private void OnAdultContentSettingChanged(bool isEnabled, bool _)
@@ -106,5 +113,19 @@ namespace DCL.ContentModeration
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
         }
+
+        private void OnReportingScenePanelVisible((bool isVisible, SceneContentCategory rating) panelStatus, (bool isVisible, SceneContentCategory rating) _)
+        {
+            if (panelStatus.isVisible)
+            {
+                contentModerationReportingComponentView.ShowPanel();
+                contentModerationReportingComponentView.SetRating(panelStatus.rating);
+            }
+            else
+                contentModerationReportingComponentView.HidePanel();
+        }
+
+        private void OnContentModerationReportingClosed() =>
+            contentModerationDataStore.reportingScenePanelVisible.Set((false, contentModerationDataStore.reportingScenePanelVisible.Get().rating), false);
     }
 }

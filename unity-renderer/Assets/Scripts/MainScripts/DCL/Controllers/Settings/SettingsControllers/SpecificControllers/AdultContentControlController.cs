@@ -38,7 +38,7 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
 
         private void OnAdultContentAgeConfirmationResultChanged(DataStore_ContentModeration.AdultContentAgeConfirmationResult result, DataStore_ContentModeration.AdultContentAgeConfirmationResult _)
         {
-            if (result == DataStore_ContentModeration.AdultContentAgeConfirmationResult.ACCEPTED)
+            if (result == DataStore_ContentModeration.AdultContentAgeConfirmationResult.Accepted)
             {
                 currentGeneralSettings.adultContent = true;
                 DataStore.i.contentModeration.adultContentSettingEnabled.Set(true, true);

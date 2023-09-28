@@ -26,10 +26,14 @@ namespace DCL.ContentModeration
             var adultContentEnabledNotificationComponentView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                                                  .Instantiate<AdultContentEnabledNotificationComponentView>("AdultContentEnabledNotificationHUD", "AdultContentEnabledNotificationHUD", cancellationToken: ct);
 
+            var contentModerationReportingComponentView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                 .Instantiate<ContentModerationReportingComponentView>("ContentModerationReportingHUD", "ContentModerationReportingHUD", cancellationToken: ct);
+
             contentModerationHUDController = new ContentModerationHUDController(
                 adultContentSceneWarningComponentView,
                 adultContentAgeConfirmationComponentView,
                 adultContentEnabledNotificationComponentView,
+                contentModerationReportingComponentView,
                 Environment.i.world.state,
                 DataStore.i.settings,
                 DataStore.i.contentModeration);
