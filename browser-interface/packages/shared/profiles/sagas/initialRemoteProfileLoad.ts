@@ -17,6 +17,7 @@ export function* initialRemoteProfileLoad() {
 
   // getting the profile from local storage initially has been disabled to ensure getting
   // the correct information from the catalysts including hashes for impostor checking
+  // this also may lead to inconsistencies when changing your profile in a different platform (web&desktop)
   let profile: Avatar | null/* = yield call(fetchLocalProfile)*/
   try {
     profile = yield call(
