@@ -7,23 +7,21 @@ import {getCurrentIdentity, getCurrentNetwork} from 'shared/session/selectors'
 import type {ExplorerIdentity} from 'shared/session/types'
 import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
 import {profileRequest, profileSuccess, saveProfileDelta} from '../actions'
-import {fetchProfile} from './fetchProfile'
+import {fetchProfileFromCatalyst} from './fetchProfile'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
+import {fetchLocalProfile} from "./local";
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
-  // getting the profile from local storage initially has been disabled to ensure getting
-  // the correct information from the catalysts including hashes for impostor checking
-  // this also may lead to inconsistencies when changing your profile in a different platform (web&desktop)
-  let profile: Avatar | null/* = yield call(fetchLocalProfile)*/
+  let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
     profile = yield call(
-      fetchProfile,
-      // disabled since the profile is not loaded from local storage anymore
-      profileRequest(userId, /*profile && profile.userId === userId ? profile.version :*/ 0)
+      // force fetching from catalyst initially so hashes are set for impostor checking
+      fetchProfileFromCatalyst,
+      profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
     )
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, {userId})

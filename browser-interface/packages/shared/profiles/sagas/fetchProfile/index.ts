@@ -16,6 +16,35 @@ import type { ProfileStatus } from '../../types'
 import { fetchPeerProfile } from '../comms'
 import { fetchCatalystProfile } from '../content'
 
+export function* fetchProfileFromCatalyst(action: ProfileRequestAction): any {
+  const { userId, minimumVersion } = action.payload
+  const {
+    loadingCurrentUser,
+  } = yield select(getInformationToFetchProfileFromStore, action)
+
+  try {
+    const profile = yield call(fetchFromCatalyst, userId, +(minimumVersion || 0))
+
+    const avatar: Avatar = ensureAvatarCompatibilityFormat(profile)
+    avatar.userId = userId
+
+    if (loadingCurrentUser) {
+      avatar.hasConnectedWeb3 = true
+    }
+
+    yield put(profileSuccess(avatar))
+    return avatar
+  } catch (error: any) {
+    debugger
+    trackEvent('error', {
+      context: 'kernel#saga',
+      message: `Error requesting profile for ${userId}: ${error}`,
+      stack: error.stack || ''
+    })
+    yield put(profileFailure(userId, `${error}`))
+  }
+}
+
 export function* fetchProfile(action: ProfileRequestAction): any {
   const { userId, minimumVersion } = action.payload
   const {
