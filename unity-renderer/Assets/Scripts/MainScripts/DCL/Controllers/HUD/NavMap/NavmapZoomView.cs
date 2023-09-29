@@ -21,10 +21,7 @@ namespace DCL
         private void Awake()
         {
             if (DataStore.i.featureFlags.flags.Get().IsInitialized)
-            {
-                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
-                    zoomVerticalRange = new Vector2Int(zoomVerticalRange.x, 165);
-            }
+                HandleFeatureFlag();
             else
                 DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
         }
@@ -32,8 +29,21 @@ namespace DCL
         private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
         {
             DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
-                zoomVerticalRange = new Vector2Int(zoomVerticalRange.x, 165);
+            HandleFeatureFlag();
+        }
+
+        private void HandleFeatureFlag()
+        {
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user")) return;
+
+            zoomVerticalRange = new Vector2Int(zoomVerticalRange.x, 40);
+
+            normalizedZoomCurve = new AnimationCurve();
+            normalizedZoomCurve.AddKey(0, 0);
+            normalizedZoomCurve.AddKey(1, 0.25f);
+            normalizedZoomCurve.AddKey(2, 0.5f);
+            normalizedZoomCurve.AddKey(3, 0.75f);
+            normalizedZoomCurve.AddKey(4, 1);
         }
 
         [Serializable]

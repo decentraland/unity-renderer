@@ -59,12 +59,12 @@ namespace DCL
                 }
                 else if (i == normalizedCurve.length - 1)
                 {
-                    keyFrame.time = Mathf.FloorToInt(keyFrame.time);
+                    keyFrame.time = Mathf.RoundToInt(keyFrame.time);
                     keyFrame.value = 1;
                 }
                 else
                 {
-                    keyFrame.time = Mathf.FloorToInt(keyFrame.time);
+                    keyFrame.time = Mathf.RoundToInt(keyFrame.time);
                     keyFrame.value = keyFrame.value;
                 }
 
