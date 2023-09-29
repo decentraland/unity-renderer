@@ -7,7 +7,7 @@ import {getCurrentIdentity, getCurrentNetwork} from 'shared/session/selectors'
 import type {ExplorerIdentity} from 'shared/session/types'
 import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
 import {profileRequest, profileSuccess, saveProfileDelta} from '../actions'
-import {fetchProfile} from './fetchProfile'
+import {fetchProfileFromCatalyst} from './fetchProfile'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
 import {fetchLocalProfile} from "./local";
 
@@ -19,7 +19,9 @@ export function* initialRemoteProfileLoad() {
   let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
     profile = yield call(
-      fetchProfile,
+      // force fetching from catalyst initially so hashes are set for impostor checking
+      // also ensures that the initial profile has consistent data
+      fetchProfileFromCatalyst,
       profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
     )
   } catch (e: any) {
