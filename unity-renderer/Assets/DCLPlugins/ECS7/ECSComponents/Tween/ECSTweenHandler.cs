@@ -56,6 +56,8 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
             if (tweener == null)
             {
+                // There may be a tween running for the entity transform, even though internalComponentModel.tweener
+                // is null, e.g: during preview mode hot-reload.
                 var transformTweens = DOTween.TweensByTarget(entityTransform, true);
                 if (transformTweens != null)
                     transformTweens[0].Rewind();
