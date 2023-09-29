@@ -63,6 +63,7 @@ namespace DCL.Emotes
 
             if (animation != null)
             {
+                animation.cullingType = occlude ? AnimationCullingType.BasedOnRenderers :  AnimationCullingType.AlwaysAnimate;
                 animation.enabled = true;
 
                 foreach (AnimationState state in animation)
