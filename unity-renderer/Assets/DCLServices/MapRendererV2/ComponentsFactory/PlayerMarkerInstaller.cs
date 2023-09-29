@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using DCL;
 using DCL.Providers;
 using DCLServices.MapRendererV2.CoordsUtils;
@@ -25,7 +24,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             IMapCullingController cullingController,
             CancellationToken cancellationToken)
         {
-            var prefab = await GetPrefab(cancellationToken);
+            PlayerMarkerObject prefab = await GetPrefab(cancellationToken);
 
             var controller = new PlayerMarkerController(
                 CreateMarker,
@@ -43,11 +42,16 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             IPlayerMarker CreateMarker(Transform parent)
             {
-                PlayerMarkerObject obj = Object.Instantiate(prefab, parent);
-                coordsUtils.SetObjectScale(obj);
-                obj.SetSortingOrder(MapRendererDrawOrder.PLAYER_MARKER);
+                PlayerMarkerObject pmObject = Object.Instantiate(prefab, parent);
+                coordsUtils.SetObjectScale(pmObject);
+                pmObject.SetSortingOrder(MapRendererDrawOrder.PLAYER_MARKER);
 
-                return new PlayerMarker(obj);
+                if (DataStore.i.featureFlags.flags.Get().IsInitialized)
+                    pmObject.SetAnimatedCircleVisibility(DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"));
+                else
+                    DataStore.i.featureFlags.flags.OnChange += (current, previous) => { pmObject.SetAnimatedCircleVisibility(current.IsFeatureEnabled("map_focus_home_or_user")); };
+
+                return new PlayerMarker(pmObject);
             }
         }
 
