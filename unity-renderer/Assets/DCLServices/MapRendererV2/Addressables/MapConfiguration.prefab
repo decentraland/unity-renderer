@@ -157,6 +157,7 @@ Transform:
   - {fileID: 7964758222206947239}
   - {fileID: 5609044988966314515}
   - {fileID: 3920442518738607191}
+  - {fileID: 1636461207753407025}
   - {fileID: 195609709436987355}
   - {fileID: 3735749858117802142}
   - {fileID: 7640763729826473348}
@@ -180,6 +181,7 @@ MonoBehaviour:
   <AtlasRoot>k__BackingField: {fileID: 7964758222206947239}
   <ColdUserMarkersRoot>k__BackingField: {fileID: 5609044988966314515}
   <HotUserMarkersRoot>k__BackingField: {fileID: 3920442518738607191}
+  <FriendUserMarkersRoot>k__BackingField: {fileID: 1636461207753407025}
   <ScenesOfInterestMarkersRoot>k__BackingField: {fileID: 195609709436987355}
   <FavoritesMarkersRoot>k__BackingField: {fileID: 3735749858117802142}
   <HomePointRoot>k__BackingField: {fileID: 7640763729826473348}
@@ -302,6 +304,37 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7667485276565658746}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5694240695484966351}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8156092532580100816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1636461207753407025}
+  m_Layer: 27
+  m_Name: Friend Users
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1636461207753407025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8156092532580100816}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

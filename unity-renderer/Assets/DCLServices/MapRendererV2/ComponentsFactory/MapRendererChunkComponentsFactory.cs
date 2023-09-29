@@ -45,6 +45,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         internal FavoritesMarkersInstaller favoritesMarkersInstaller { get; }
         internal HomePointMarkerInstaller homePointMarkerInstaller { get; }
         internal HotUsersMarkersInstaller hotUsersMarkersInstaller { get; }
+
+        internal FriendUsersMarkersInstaller friendUsersMarkersInstaller { get; }
         internal PlayerMarkerInstaller playerMarkerInstaller { get; }
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
@@ -130,7 +132,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
+                hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                friendUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
                 /* List of other creators that can be executed in parallel */);
 
             return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);
