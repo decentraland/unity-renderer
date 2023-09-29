@@ -1,4 +1,5 @@
-﻿using DCL.Providers;
+﻿using DCL.Browser;
+using DCL.Providers;
 using DCL.Tasks;
 using System.Threading;
 
@@ -36,7 +37,8 @@ namespace DCL.ContentModeration
                 contentModerationReportingComponentView,
                 Environment.i.world.state,
                 DataStore.i.settings,
-                DataStore.i.contentModeration);
+                DataStore.i.contentModeration,
+                new WebInterfaceBrowserBridge());
         }
 
         public void Dispose()

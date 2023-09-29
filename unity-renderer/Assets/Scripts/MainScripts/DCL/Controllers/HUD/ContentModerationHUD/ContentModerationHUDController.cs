@@ -1,6 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Controllers;
 using DCL.Helpers;
+using System.Collections.Generic;
 
 namespace DCL.ContentModeration
 {
@@ -14,6 +16,7 @@ namespace DCL.ContentModeration
         private readonly IWorldState worldState;
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ContentModeration contentModerationDataStore;
+        private readonly IBrowserBridge browserBridge;
 
         public ContentModerationHUDController(
             IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView,
@@ -22,7 +25,8 @@ namespace DCL.ContentModeration
             IContentModerationReportingComponentView contentModerationReportingComponentView,
             IWorldState worldState,
             DataStore_Settings settingsDataStore,
-            DataStore_ContentModeration contentModerationDataStore)
+            DataStore_ContentModeration contentModerationDataStore,
+            IBrowserBridge browserBridge)
         {
             this.adultContentSceneWarningComponentView = adultContentSceneWarningComponentView;
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
@@ -31,6 +35,7 @@ namespace DCL.ContentModeration
             this.worldState = worldState;
             this.settingsDataStore = settingsDataStore;
             this.contentModerationDataStore = contentModerationDataStore;
+            this.browserBridge = browserBridge;
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
             CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
@@ -41,6 +46,8 @@ namespace DCL.ContentModeration
             contentModerationDataStore.adultContentSettingEnabled.OnChange += OnAdultContentSettingChanged;
             contentModerationDataStore.reportingScenePanelVisible.OnChange += OnReportingScenePanelVisible;
             contentModerationReportingComponentView.OnPanelClosed += OnContentModerationReportingClosed;
+            contentModerationReportingComponentView.OnSendClicked += OnContentModerationReportingSendClicked;
+            contentModerationReportingComponentView.OnLearnMoreClicked += OnLearnMoreClicked;
         }
 
         public void Dispose()
@@ -53,6 +60,8 @@ namespace DCL.ContentModeration
             contentModerationDataStore.adultContentSettingEnabled.OnChange -= OnAdultContentSettingChanged;
             contentModerationDataStore.reportingScenePanelVisible.OnChange -= OnReportingScenePanelVisible;
             contentModerationReportingComponentView.OnPanelClosed -= OnContentModerationReportingClosed;
+            contentModerationReportingComponentView.OnSendClicked -= OnContentModerationReportingSendClicked;
+            contentModerationReportingComponentView.OnLearnMoreClicked -= OnLearnMoreClicked;
         }
 
         private void OnSceneNumberChanged(int currentSceneNumber, int _)
@@ -67,12 +76,12 @@ namespace DCL.ContentModeration
                     adultContentSceneWarningComponentView.ShowModal();
                     break;
                 case SceneContentCategory.RESTRICTED:
-                    // TODO: Show a different modal for restricted scenes
+                    // TODO (Santi): Show a different modal for restricted scenes
                     break;
                 case SceneContentCategory.TEEN:
                 default:
                     adultContentSceneWarningComponentView.HideModal();
-                    // TODO: Hide the modal for restricted scenes
+                    // TODO (Santi): Hide the modal for restricted scenes
                     break;
             }
         }
@@ -127,5 +136,22 @@ namespace DCL.ContentModeration
 
         private void OnContentModerationReportingClosed() =>
             contentModerationDataStore.reportingScenePanelVisible.Set((false, contentModerationDataStore.reportingScenePanelVisible.Get().rating), false);
+
+        private void OnContentModerationReportingSendClicked((SceneContentCategory contentCategory, List<string> issues, string comments) report)
+        {
+            contentModerationReportingComponentView.SetLoadingState(true);
+
+            contentModerationReportingComponentView.SetLoadingState(false);
+
+            // TODO (Santi): Send the report to the backend
+
+            contentModerationReportingComponentView.SetPanelAsSent(true);
+        }
+
+        private void OnLearnMoreClicked()
+        {
+            // TODO (Santi): Open the correct Learn More url
+            browserBridge.OpenUrl("https://www.google.es");
+        }
     }
 }
