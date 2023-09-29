@@ -381,6 +381,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
         }
 
+        lastExtendedEmoteData?.CheckStatus(Time.time - lastEmotePlayTime);
+
         // If we reach the emote loop, we send the RPC message again to refresh new users
         if (bb.shouldLoop && isOwnPlayer)
         {
@@ -425,6 +427,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
+    private float lastEmotePlayTime = 0;
     private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
     {
         if (!string.IsNullOrEmpty(emoteId))
@@ -434,6 +437,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
+                lastEmotePlayTime = Time.time;
+
                 emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
             }
         }

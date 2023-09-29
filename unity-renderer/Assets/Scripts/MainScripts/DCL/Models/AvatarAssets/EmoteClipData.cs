@@ -63,6 +63,7 @@ namespace DCL.Emotes
 
             if (animation != null)
             {
+                animation.gameObject.layer = gameObjectLayer;
                 animation.cullingType = occlude ? AnimationCullingType.BasedOnRenderers :  AnimationCullingType.AlwaysAnimate;
                 animation.enabled = true;
 
@@ -107,6 +108,25 @@ namespace DCL.Emotes
 
             if (AudioSource != null)
                 AudioSource.Stop();
+        }
+
+        public void CheckStatus(float timeSincePlay)
+        {
+            if (animation != null)
+            {
+                foreach (AnimationState state in animation)
+                {
+                    if (state.clip == AvatarClip) continue;
+
+                    if (!(state.time < state.clip.length)) continue;
+
+                    float delta = timeSincePlay - state.time;
+                    if (!(delta < 0.05f) && state.enabled) continue;
+
+                    state.time = timeSincePlay;
+                    animation.CrossFade(state.clip.name, 0, PlayMode.StopAll);
+                }
+            }
         }
     }
 }
