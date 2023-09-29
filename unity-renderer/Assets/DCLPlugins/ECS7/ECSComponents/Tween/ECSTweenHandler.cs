@@ -1,31 +1,19 @@
 using DCL.Controllers;
-using DCL.ECS7;
-using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DG.Tweening;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
     private IInternalECSComponent<InternalTween> internalTweenComponent;
-    private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool;
-    private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
-    // private readonly IECSComponentWriter componentsWriter;
     private PBTween lastModel;
 
-    public ECSTweenHandler(
-        IInternalECSComponent<InternalTween> internalTweenComponent,
-        WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool,
-        IReadOnlyDictionary<int, ComponentWriter> componentsWriter)
-        // IECSComponentWriter componentsWriter)
+    public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent)
     {
         this.internalTweenComponent = internalTweenComponent;
-        this.tweenStateComponentPool = tweenStateComponentPool;
-        this.componentsWriter = componentsWriter;
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -102,30 +90,6 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
             tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
             internalComponentModel.tweener = tweener;
-
-            if (componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
-            {
-                // Explanation on this FRESH Tween State put here:
-                // Something that may be happening: TweenSystem runs -> TweenHandler receives an updated component
-                // -> Next Frame Tween System Runs (but the scene already read the last TweenState
-                var tweenStatePooledComponent = tweenStateComponentPool.Get();
-                PBTweenState tweenStateComponentModel = tweenStatePooledComponent.WrappedComponent.Model;
-                tweenStateComponentModel.CurrentTime = model.CurrentTime;
-                if (isPlaying)
-                    tweenStateComponentModel.State = model.CurrentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
-                else
-                    tweenStateComponentModel.State = TweenStateStatus.TsPaused;
-
-                writer.Put(entity.entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
-
-                // 'IECSComponentWriter componentsWriter' doesn't work ¯\_(ツ)_/¯
-                // componentsWriter.PutComponent(
-                //     scene,
-                //     entity,
-                //     ComponentID.TWEEN_STATE,
-                //     tweenStateComponentModel,
-                //     ECSComponentWriteType.SEND_TO_SCENE);
-            }
         }
         else if (internalComponentModel.playing == isPlaying)
         {

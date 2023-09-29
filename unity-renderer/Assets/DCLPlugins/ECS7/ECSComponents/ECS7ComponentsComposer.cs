@@ -1,12 +1,10 @@
 using DCL.ECS7;
-using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECSComponents.UIDropdown;
 using DCL.ECSComponents.UIInput;
 using DCL.ECSComponents.UIText;
 using DCL.ECSRuntime;
 using DCLPlugins.ECSComponents;
 using System;
-using System.Collections.Generic;
 
 namespace DCL.ECSComponents
 {
@@ -51,53 +49,48 @@ namespace DCL.ECSComponents
         private readonly UiCanvasInformationRegister uiCanvasInformationRegister;
         private readonly TweenStateRegister tweenStateRegister;
 
-        public ECS7ComponentsComposer(
-            ECSComponentsFactory componentsFactory,
-            IECSComponentWriter componentWriter,
-            IInternalECSComponents internalComponents,
-            WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool,
-            IReadOnlyDictionary<int, ComponentWriter> componentsWriter)
+        public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
-            transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentWriter, internalComponents);
-            audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentWriter);
-            audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentWriter, internalComponents);
-            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentWriter, internalComponents);
-            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentWriter, internalComponents);
-            gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentWriter, internalComponents);
-            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentWriter, internalComponents.AnimationPlayer);
-            billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentWriter);
-            avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentWriter, internalComponents);
-            avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentWriter);
-            avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentWriter, internalComponents);
-            cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentWriter);
-            materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentWriter, internalComponents);
-            raycastRegister = new RaycastRegister(ComponentID.RAYCAST, componentsFactory, componentWriter, internalComponents);
-            raycastResultRegister = new RaycastResultRegister(ComponentID.RAYCAST_RESULT, componentsFactory, componentWriter);
-            meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentWriter, internalComponents);
-            meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentWriter, internalComponents);
-            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentWriter, internalComponents);
-            videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentWriter, internalComponents);
-            videoEventRegister = new VideoEventRegister(ComponentID.VIDEO_EVENT, componentsFactory, componentWriter);
-            tweenRegister = new TweenRegister(ComponentID.TWEEN, componentsFactory, componentWriter, internalComponents, tweenStateComponentPool, componentsWriter);
+            transformRegister = new TransformRegister(ComponentID.TRANSFORM, componentsFactory, componentsWriter, internalComponents);
+            audioStreamRegister = new AudioStreamRegister(ComponentID.AUDIO_STREAM, componentsFactory, componentsWriter);
+            audioSourceRegister = new AudioSourceRegister(ComponentID.AUDIO_SOURCE, componentsFactory, componentsWriter, internalComponents);
+            nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentsWriter, internalComponents);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter, internalComponents.AnimationPlayer);
+            billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
+            avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter, internalComponents);
+            avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
+            avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter, internalComponents);
+            cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
+            materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
+            raycastRegister = new RaycastRegister(ComponentID.RAYCAST, componentsFactory, componentsWriter, internalComponents);
+            raycastResultRegister = new RaycastResultRegister(ComponentID.RAYCAST_RESULT, componentsFactory, componentsWriter);
+            meshRendererRegister = new MeshRendererRegister(ComponentID.MESH_RENDERER, componentsFactory, componentsWriter, internalComponents);
+            meshColliderRegister = new MeshColliderRegister(ComponentID.MESH_COLLIDER, componentsFactory, componentsWriter, internalComponents);
+            visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
+            videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
+            videoEventRegister = new VideoEventRegister(ComponentID.VIDEO_EVENT, componentsFactory, componentsWriter);
+            tweenRegister = new TweenRegister(ComponentID.TWEEN, componentsFactory, componentsWriter, internalComponents);
 
             // Multi-purposed components
-            pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentWriter, internalComponents.PointerEventsComponent);
+            pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
 
             // UI components
-            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentWriter, internalComponents.uiContainerComponent);
-            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentWriter, internalComponents.uiContainerComponent);
-            uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentWriter, internalComponents.uiContainerComponent);
-            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, ComponentID.UI_INPUT_RESULT, componentsFactory, componentWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
-            uiDropdownRegister = new UIDropdownRegister(ComponentID.UI_DROPDOWN, ComponentID.UI_DROPDOWN_RESULT, componentsFactory, componentWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
+            uiTransformRegister = new UITransformRegister(ComponentID.UI_TRANSFORM, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiTextRegister = new UiTextRegister(ComponentID.UI_TEXT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiBackgroundRegister = new UIBackgroundRegister(ComponentID.UI_BACKGROUND, componentsFactory, componentsWriter, internalComponents.uiContainerComponent);
+            uiInputRegister = new UIInputRegister(ComponentID.UI_INPUT, ComponentID.UI_INPUT_RESULT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
+            uiDropdownRegister = new UIDropdownRegister(ComponentID.UI_DROPDOWN, ComponentID.UI_DROPDOWN_RESULT, componentsFactory, componentsWriter, internalComponents.uiContainerComponent, internalComponents.uiInputResultsComponent);
 
             // Components without a handler
-            pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentWriter);
-            cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentWriter);
-            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentWriter);
-            gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentWriter);
-            engineInfoRegister = new EngineInfoRegister(ComponentID.ENGINE_INFO, componentsFactory, componentWriter);
-            uiCanvasInformationRegister = new UiCanvasInformationRegister(ComponentID.UI_CANVAS_INFORMATION, componentsFactory, componentWriter);
-            tweenStateRegister = new TweenStateRegister(ComponentID.TWEEN_STATE, componentsFactory, componentWriter);
+            pointerEventResultRegister = new PointerEventResultRegister(ComponentID.POINTER_EVENTS_RESULT, componentsFactory, componentsWriter);
+            cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
+            pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
+            gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentsWriter);
+            engineInfoRegister = new EngineInfoRegister(ComponentID.ENGINE_INFO, componentsFactory, componentsWriter);
+            uiCanvasInformationRegister = new UiCanvasInformationRegister(ComponentID.UI_CANVAS_INFORMATION, componentsFactory, componentsWriter);
+            tweenStateRegister = new TweenStateRegister(ComponentID.TWEEN_STATE, componentsFactory, componentsWriter);
         }
 
         public void Dispose()

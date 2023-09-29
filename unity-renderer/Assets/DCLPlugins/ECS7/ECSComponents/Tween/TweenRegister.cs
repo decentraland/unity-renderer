@@ -1,8 +1,5 @@
-using DCL.ECS7;
-using DCL.ECS7.ComponentWrapper.Generic;
 using System;
 using DCL.ECSRuntime;
-using System.Collections.Generic;
 
 namespace DCL.ECSComponents
 {
@@ -12,22 +9,10 @@ namespace DCL.ECSComponents
         private readonly IECSComponentWriter componentWriter;
         private readonly int componentId;
 
-        public TweenRegister(
-            int componentId,
-            ECSComponentsFactory factory,
-            IECSComponentWriter componentWriter,
-            IInternalECSComponents internalComponents,
-            WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool,
-            IReadOnlyDictionary<int, ComponentWriter> componentsWriter)
+        public TweenRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTween>, () => new ECSTweenHandler(
-                internalComponents.TweenComponent,
-                tweenStateComponentPool,
-                componentsWriter));
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTween>, () => new ECSTweenHandler(internalComponents.TweenComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBTween>(componentId, ProtoSerialization.Serialize);
-
-            factory.AddOrReplaceComponent(ComponentID.TWEEN_STATE, ProtoSerialization.Deserialize<PBTweenState>, null);
-            componentWriter.AddOrReplaceComponentSerializer<PBTweenState>(ComponentID.TWEEN_STATE, ProtoSerialization.Serialize);
 
             this.factory = factory;
             this.componentWriter = componentWriter;
@@ -38,7 +23,6 @@ namespace DCL.ECSComponents
         {
             factory.RemoveComponent(componentId);
             componentWriter.RemoveComponentSerializer(componentId);
-            componentWriter.RemoveComponentSerializer(ComponentID.TWEEN_STATE);
         }
     }
 }
