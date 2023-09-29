@@ -71,7 +71,7 @@ namespace DCL.Emotes
 
                     // this reduntant stop is intended, sometimes when animations are triggered their first frame is not 0
                     animation.Stop(state.clip.name);
-                    animation.Play(state.clip.name, PlayMode.StopAll);
+                    animation.CrossFade(state.clip.name, 0, PlayMode.StopAll);
                 }
             }
 
