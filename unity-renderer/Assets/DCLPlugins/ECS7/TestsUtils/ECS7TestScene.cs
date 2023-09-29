@@ -27,6 +27,9 @@ public class ECS7TestScene : IParcelScene
     public void SetContentCategory(SceneContentCategory category) =>
         throw new NotImplementedException();
 
+    public void SetAssociatedPlace(string placeId) =>
+        throw new NotImplementedException();
+
     IDCLEntity IParcelScene.CreateEntity(long id)
     {
         return CreateEntity(id);
@@ -46,6 +49,7 @@ public class ECS7TestScene : IParcelScene
     bool IParcelScene.isTestScene => throw new NotImplementedException();
     float IParcelScene.loadingProgress => throw new NotImplementedException();
     public SceneContentCategory contentCategory => throw new NotImplementedException();
+    public string associatedPlaceId => throw new NotImplementedException();
 
     IDCLEntity IParcelScene.GetEntityById(long entityId)
     {

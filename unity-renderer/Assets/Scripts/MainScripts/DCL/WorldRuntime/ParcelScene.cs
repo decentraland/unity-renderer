@@ -39,6 +39,7 @@ namespace DCL.Controllers
 
         public float loadingProgress { get; private set; }
         public SceneContentCategory contentCategory { get; private set; }
+        public string associatedPlaceId { get; private set; }
 
         [System.NonSerialized]
         public string sceneName;
@@ -678,5 +679,8 @@ namespace DCL.Controllers
 
         public void SetContentCategory(SceneContentCategory category) =>
             contentCategory = category;
+
+        public void SetAssociatedPlace(string placeId) =>
+            associatedPlaceId = placeId;
     }
 }

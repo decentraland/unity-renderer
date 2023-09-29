@@ -1,6 +1,7 @@
 ﻿using DCL.Browser;
 using DCL.Providers;
 using DCL.Tasks;
+using DCLServices.PlacesAPIService;
 using System.Threading;
 
 namespace DCL.ContentModeration
@@ -38,7 +39,9 @@ namespace DCL.ContentModeration
                 Environment.i.world.state,
                 DataStore.i.settings,
                 DataStore.i.contentModeration,
-                new WebInterfaceBrowserBridge());
+                new WebInterfaceBrowserBridge(),
+                Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                new UserProfileWebInterfaceBridge());
         }
 
         public void Dispose()

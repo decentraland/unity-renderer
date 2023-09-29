@@ -36,7 +36,7 @@ namespace DCL
         private Coroutine deferredDecodingCoroutine;
         private CancellationTokenSource tokenSource;
         private CancellationTokenSource requestPlaceCts;
-        private CancellationTokenSource realodAdultScenesCts;
+        private CancellationTokenSource reloadAdultScenesCts;
         private IMessagingControllersManager messagingControllersManager => Environment.i.messaging.manager;
         private BaseDictionary<string, (string name, string description, string icon)> disabledPortableExperiences => DataStore.i.world.disabledPortableExperienceIds;
         private BaseHashSet<string> portableExperienceIds => DataStore.i.world.portableExperienceIds;
@@ -85,7 +85,7 @@ namespace DCL
             tokenSource?.Cancel();
             tokenSource?.Dispose();
             requestPlaceCts.SafeCancelAndDispose();
-            realodAdultScenesCts.SafeCancelAndDispose();
+            reloadAdultScenesCts.SafeCancelAndDispose();
 
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
             Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -523,6 +523,8 @@ namespace DCL
                                            .GetPlace(parcelScene.sceneData.basePosition, requestPlaceCts.Token)
                                            .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
 
+                parcelScene.SetAssociatedPlace(associatedPlace.id);
+
                 switch (associatedPlace.content_rating)
                 {
                     case "A" or "M":
@@ -915,23 +917,22 @@ namespace DCL
                 return;
 
             var loadedScenes = Environment.i.world.state.GetLoadedScenes();
-            realodAdultScenesCts = realodAdultScenesCts.SafeRestart();
-            ReloadAdultScenesAsync(loadedScenes.ToList(), realodAdultScenesCts.Token).Forget();
-            return;
+            reloadAdultScenesCts = reloadAdultScenesCts.SafeRestart();
+            ReloadAdultScenesAsync(loadedScenes.ToList(), reloadAdultScenesCts.Token).Forget();
+        }
 
-            async UniTaskVoid ReloadAdultScenesAsync(List<KeyValuePair<int, IParcelScene>> loadedScenes, CancellationToken ct)
+        private async UniTaskVoid ReloadAdultScenesAsync(List<KeyValuePair<int, IParcelScene>> loadedScenes, CancellationToken ct)
+        {
+            foreach (KeyValuePair<int,IParcelScene> scene in loadedScenes)
             {
-                foreach (KeyValuePair<int,IParcelScene> scene in loadedScenes)
-                {
-                    if (scene.Value.contentCategory != SceneContentCategory.ADULT)
-                        continue;
+                if (scene.Value.contentCategory != SceneContentCategory.ADULT)
+                    continue;
 
-                    WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
-                    await Task.Delay(TimeSpan.FromSeconds(0.5f), ct);
+                WebInterface.ReloadScene(scene.Value.sceneData.basePosition);
+                await Task.Delay(TimeSpan.FromSeconds(0.5f), ct);
 
-                    if (ct.IsCancellationRequested)
-                        return;
-                }
+                if (ct.IsCancellationRequested)
+                    return;
             }
         }
     }

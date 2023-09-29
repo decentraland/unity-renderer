@@ -2,13 +2,20 @@
 using DCL.Browser;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Tasks;
+using DCLServices.PlacesAPIService;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 
 namespace DCL.ContentModeration
 {
 
     public class ContentModerationHUDController
     {
+        private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
+
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
         private readonly IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView;
@@ -17,6 +24,10 @@ namespace DCL.ContentModeration
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ContentModeration contentModerationDataStore;
         private readonly IBrowserBridge browserBridge;
+        private readonly IPlacesAPIService placesAPIService;
+        private readonly IUserProfileBridge userProfileBridge;
+
+        private CancellationTokenSource reportPlaceCts;
 
         public ContentModerationHUDController(
             IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView,
@@ -26,7 +37,9 @@ namespace DCL.ContentModeration
             IWorldState worldState,
             DataStore_Settings settingsDataStore,
             DataStore_ContentModeration contentModerationDataStore,
-            IBrowserBridge browserBridge)
+            IBrowserBridge browserBridge,
+            IPlacesAPIService placesAPIService,
+            IUserProfileBridge userProfileBridge)
         {
             this.adultContentSceneWarningComponentView = adultContentSceneWarningComponentView;
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
@@ -36,6 +49,8 @@ namespace DCL.ContentModeration
             this.settingsDataStore = settingsDataStore;
             this.contentModerationDataStore = contentModerationDataStore;
             this.browserBridge = browserBridge;
+            this.placesAPIService = placesAPIService;
+            this.userProfileBridge = userProfileBridge;
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
             CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
@@ -62,6 +77,8 @@ namespace DCL.ContentModeration
             contentModerationReportingComponentView.OnPanelClosed -= OnContentModerationReportingClosed;
             contentModerationReportingComponentView.OnSendClicked -= OnContentModerationReportingSendClicked;
             contentModerationReportingComponentView.OnLearnMoreClicked -= OnLearnMoreClicked;
+
+            reportPlaceCts.SafeCancelAndDispose();
         }
 
         private void OnSceneNumberChanged(int currentSceneNumber, int _)
@@ -100,14 +117,13 @@ namespace DCL.ContentModeration
             contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.Accepted, true);
             settingsDataStore.settingsPanelVisible.Set(false);
             adultContentEnabledNotificationComponentView.ShowNotification();
-            HideNotificationAfterDelay(5).Forget();
-            return;
+            HideNotificationAfterDelay(SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION).Forget();
+        }
 
-            UniTask HideNotificationAfterDelay(int delayInSeconds)
-            {
-                return UniTask.Delay(delayInSeconds * 1000).ContinueWith(() =>
-                    adultContentEnabledNotificationComponentView.HideNotification());
-            }
+        private UniTask HideNotificationAfterDelay(int delayInSeconds)
+        {
+            return UniTask.Delay(delayInSeconds * 1000).ContinueWith(() =>
+                adultContentEnabledNotificationComponentView.HideNotification());
         }
 
         private void OnAgeConfirmationRejected()
@@ -139,13 +155,48 @@ namespace DCL.ContentModeration
 
         private void OnContentModerationReportingSendClicked((SceneContentCategory contentCategory, List<string> issues, string comments) report)
         {
-            contentModerationReportingComponentView.SetLoadingState(true);
+            if (!worldState.TryGetScene(CommonScriptableObjects.sceneNumber.Get(), out IParcelScene currentParcelScene))
+                return;
 
-            contentModerationReportingComponentView.SetLoadingState(false);
+            reportPlaceCts = reportPlaceCts.SafeRestart();
+            SendReportAsync(
+                    new PlaceContentReportPayload
+                    {
+                        // TODO (Santi): Test places for .zone: e0d0fc69-1628-4a2e-914a-ad76d681528b, f8f2d59b-0755-47c3-88ac-b117f697d251
+                        placeId = currentParcelScene.associatedPlaceId,
+                        guest = userProfileBridge.GetOwn().isGuest,
+                        coordinates = $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}",
+                        rating = report.contentCategory switch
+                                 {
+                                     SceneContentCategory.TEEN => "T",
+                                     SceneContentCategory.ADULT => "A",
+                                     SceneContentCategory.RESTRICTED => "R",
+                                     _ => "E",
+                                 },
+                        issues = report.issues.ToArray(),
+                        comment = report.comments,
+                    },
+                    reportPlaceCts.Token)
+               .Forget();
+        }
 
-            // TODO (Santi): Send the report to the backend
-
-            contentModerationReportingComponentView.SetPanelAsSent(true);
+        private async UniTask SendReportAsync(PlaceContentReportPayload placeContentReport, CancellationToken ct)
+        {
+            try
+            {
+                contentModerationReportingComponentView.SetLoadingState(true);
+                await placesAPIService.ReportPlace(placeContentReport, ct)
+                                      .Timeout(TimeSpan.FromSeconds(5));
+                contentModerationReportingComponentView.SetPanelAsSent(true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"An error occurred while reporting the content category for ({placeContentReport.coordinates}): {ex.Message}");
+            }
+            finally
+            {
+                contentModerationReportingComponentView.SetLoadingState(false);
+            }
         }
 
         private void OnLearnMoreClicked()

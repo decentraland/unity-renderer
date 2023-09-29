@@ -30,6 +30,7 @@ namespace DCL.Controllers
         bool isTestScene { get; }
         float loadingProgress { get; }
         SceneContentCategory contentCategory { get; }
+        string associatedPlaceId { get; }
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         HashSet<Vector2Int> GetParcels();
@@ -44,5 +45,6 @@ namespace DCL.Controllers
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
         bool IsInitMessageDone();
         void SetContentCategory(SceneContentCategory category);
+        void SetAssociatedPlace(string placeId);
     }
 }
