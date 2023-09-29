@@ -4,7 +4,7 @@ import {recoverAddressFromEthSignature} from "@dcl/crypto/dist/crypto";
 
 export async function isImpostor(avatar: Avatar, hash: string, signedHash: string, signer: string | undefined): Promise<boolean> {
   let checksum = await getProfileChecksum(avatar);
-  return checksum != hash || getSigner(hash, signedHash) != signer
+  return checksum != hash/* || getSigner(hash, signedHash) != signer*/
 }
 
 export async function getProfileChecksum(avatar: Avatar): Promise<string> {
