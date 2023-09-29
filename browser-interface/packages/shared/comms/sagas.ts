@@ -346,14 +346,14 @@ function* respondCommsProfileRequests() {
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (profile && context) {
-      if (!hash && identity) {
-        // force to update profile hash
-        yield call(fetchCatalystProfile, identity.address, 0)
-        hash = yield select(getCurrentProfileHash)
-        if (!hash) {
-          continue
-        }
-      }
+      // if (!hash && identity) {
+      //   // force to update profile hash
+      //   yield call(fetchCatalystProfile, identity.address, 0)
+      //   hash = yield select(getCurrentProfileHash)
+      //   if (!hash) {
+      //     continue
+      //   }
+      // }
 
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
@@ -370,8 +370,8 @@ function* respondCommsProfileRequests() {
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
-        hash: hash!.hash,
-        signedHash: hash!.signedHash
+        hash: hash?.hash ?? '',
+        signedHash: hash?.signedHash ?? ''
       }
       yield apply(context, context.sendProfileResponse, [response])
     }

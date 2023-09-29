@@ -236,7 +236,7 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
   }
 }
 
-async function* processProfileResponse(message: Package<proto.ProfileResponse>) {
+async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
