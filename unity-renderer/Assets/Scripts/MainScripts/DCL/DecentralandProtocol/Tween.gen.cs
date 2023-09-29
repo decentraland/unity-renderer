@@ -26,39 +26,41 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CidkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW4ucHJvdG8SG2Rl",
             "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFsYW5kL2NvbW1v",
-            "bi92ZWN0b3JzLnByb3RvItUCCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
+            "bi92ZWN0b3JzLnByb3RvIoUDCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
             "EkMKDnR3ZWVuX2Z1bmN0aW9uGAIgASgOMisuZGVjZW50cmFsYW5kLnNkay5j",
             "b21wb25lbnRzLkVhc2luZ0Z1bmN0aW9uEjEKBG1vdmUYAyABKAsyIS5kZWNl",
             "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuTW92ZUgAEjUKBnJvdGF0ZRgEIAEo",
             "CzIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Sb3RhdGVIABIzCgVz",
             "Y2FsZRgFIAEoCzIiLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5TY2Fs",
             "ZUgAEhQKB3BsYXlpbmcYBiABKAhIAYgBARIZCgxjdXJyZW50X3RpbWUYByAB",
-            "KAJIAogBAUIGCgRtb2RlQgoKCF9wbGF5aW5nQg8KDV9jdXJyZW50X3RpbWUi",
-            "XgoETW92ZRIrCgVzdGFydBgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24u",
-            "VmVjdG9yMxIpCgNlbmQYAiABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZl",
-            "Y3RvcjMiZgoGUm90YXRlEi4KBXN0YXJ0GAEgASgLMh8uZGVjZW50cmFsYW5k",
-            "LmNvbW1vbi5RdWF0ZXJuaW9uEiwKA2VuZBgCIAEoCzIfLmRlY2VudHJhbGFu",
-            "ZC5jb21tb24uUXVhdGVybmlvbiJfCgVTY2FsZRIrCgVzdGFydBgBIAEoCzIc",
-            "LmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIpCgNlbmQYAiABKAsyHC5k",
-            "ZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMq5wQKDkVhc2luZ0Z1bmN0aW9u",
-            "Eg0KCVRGX0xJTkVBUhAAEhEKDVRGX0VBU0VJTlFVQUQQARISCg5URl9FQVNF",
-            "T1VUUVVBRBACEg8KC1RGX0VBU0VRVUFEEAMSEQoNVEZfRUFTRUlOU0lORRAE",
-            "EhIKDlRGX0VBU0VPVVRTSU5FEAUSDwoLVEZfRUFTRVNJTkUQBhIRCg1URl9F",
-            "QVNFSU5FWFBPEAcSEgoOVEZfRUFTRU9VVEVYUE8QCBIPCgtURl9FQVNFRVhQ",
-            "TxAJEhQKEFRGX0VBU0VJTkVMQVNUSUMQChIVChFURl9FQVNFT1VURUxBU1RJ",
-            "QxALEhIKDlRGX0VBU0VFTEFTVElDEAwSEwoPVEZfRUFTRUlOQk9VTkNFEA0S",
-            "FAoQVEZfRUFTRU9VVEJPVU5DRRAOEhEKDVRGX0VBU0VCT1VOQ0UQDxISCg5U",
-            "Rl9FQVNFSU5DVUJJQxAQEhMKD1RGX0VBU0VPVVRDVUJJQxAREhAKDFRGX0VB",
-            "U0VDVUJJQxASEhIKDlRGX0VBU0VJTlFVQVJUEBMSEwoPVEZfRUFTRU9VVFFV",
-            "QVJUEBQSEAoMVEZfRUFTRVFVQVJUEBUSEgoOVEZfRUFTRUlOUVVJTlQQFhIT",
-            "Cg9URl9FQVNFT1VUUVVJTlQQFxIQCgxURl9FQVNFUVVJTlQQGBIRCg1URl9F",
-            "QVNFSU5DSVJDEBkSEgoOVEZfRUFTRU9VVENJUkMQGhIPCgtURl9FQVNFQ0lS",
-            "QxAbEhEKDVRGX0VBU0VJTkJBQ0sQHBISCg5URl9FQVNFT1VUQkFDSxAdEg8K",
-            "C1RGX0VBU0VCQUNLEB5CFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
+            "KAJIAogBARIbCg5mYWNlX2RpcmVjdGlvbhgIIAEoCEgDiAEBQgYKBG1vZGVC",
+            "CgoIX3BsYXlpbmdCDwoNX2N1cnJlbnRfdGltZUIRCg9fZmFjZV9kaXJlY3Rp",
+            "b24iXgoETW92ZRIrCgVzdGFydBgBIAEoCzIcLmRlY2VudHJhbGFuZC5jb21t",
+            "b24uVmVjdG9yMxIpCgNlbmQYAiABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9u",
+            "LlZlY3RvcjMiZgoGUm90YXRlEi4KBXN0YXJ0GAEgASgLMh8uZGVjZW50cmFs",
+            "YW5kLmNvbW1vbi5RdWF0ZXJuaW9uEiwKA2VuZBgCIAEoCzIfLmRlY2VudHJh",
+            "bGFuZC5jb21tb24uUXVhdGVybmlvbiJfCgVTY2FsZRIrCgVzdGFydBgBIAEo",
+            "CzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMxIpCgNlbmQYAiABKAsy",
+            "HC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMq5wQKDkVhc2luZ0Z1bmN0",
+            "aW9uEg0KCVRGX0xJTkVBUhAAEhEKDVRGX0VBU0VJTlFVQUQQARISCg5URl9F",
+            "QVNFT1VUUVVBRBACEg8KC1RGX0VBU0VRVUFEEAMSEQoNVEZfRUFTRUlOU0lO",
+            "RRAEEhIKDlRGX0VBU0VPVVRTSU5FEAUSDwoLVEZfRUFTRVNJTkUQBhIRCg1U",
+            "Rl9FQVNFSU5FWFBPEAcSEgoOVEZfRUFTRU9VVEVYUE8QCBIPCgtURl9FQVNF",
+            "RVhQTxAJEhQKEFRGX0VBU0VJTkVMQVNUSUMQChIVChFURl9FQVNFT1VURUxB",
+            "U1RJQxALEhIKDlRGX0VBU0VFTEFTVElDEAwSEwoPVEZfRUFTRUlOQk9VTkNF",
+            "EA0SFAoQVEZfRUFTRU9VVEJPVU5DRRAOEhEKDVRGX0VBU0VCT1VOQ0UQDxIS",
+            "Cg5URl9FQVNFSU5DVUJJQxAQEhMKD1RGX0VBU0VPVVRDVUJJQxAREhAKDFRG",
+            "X0VBU0VDVUJJQxASEhIKDlRGX0VBU0VJTlFVQVJUEBMSEwoPVEZfRUFTRU9V",
+            "VFFVQVJUEBQSEAoMVEZfRUFTRVFVQVJUEBUSEgoOVEZfRUFTRUlOUVVJTlQQ",
+            "FhITCg9URl9FQVNFT1VUUVVJTlQQFxIQCgxURl9FQVNFUVVJTlQQGBIRCg1U",
+            "Rl9FQVNFSU5DSVJDEBkSEgoOVEZfRUFTRU9VVENJUkMQGhIPCgtURl9FQVNF",
+            "Q0lSQxAbEhEKDVRGX0VBU0VJTkJBQ0sQHBISCg5URl9FQVNFT1VUQkFDSxAd",
+            "Eg8KC1RGX0VBU0VCQUNLEB5CFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.EasingFunction), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Rotate", "Scale", "Playing", "CurrentTime" }, new[]{ "Mode", "Playing", "CurrentTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Rotate", "Scale", "Playing", "CurrentTime", "FaceDirection" }, new[]{ "Mode", "Playing", "CurrentTime", "FaceDirection" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Move), global::DCL.ECSComponents.Move.Parser, new[]{ "Start", "End" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Rotate), global::DCL.ECSComponents.Rotate.Parser, new[]{ "Start", "End" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Scale), global::DCL.ECSComponents.Scale.Parser, new[]{ "Start", "End" }, null, null, null, null)
@@ -152,6 +154,7 @@ namespace DCL.ECSComponents {
       tweenFunction_ = other.tweenFunction_;
       playing_ = other.playing_;
       currentTime_ = other.currentTime_;
+      faceDirection_ = other.faceDirection_;
       switch (other.ModeCase) {
         case ModeOneofCase.Move:
           Move = other.Move.Clone();
@@ -292,6 +295,31 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~2;
     }
 
+    /// <summary>Field number for the "face_direction" field.</summary>
+    public const int FaceDirectionFieldNumber = 8;
+    private bool faceDirection_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool FaceDirection {
+      get { if ((_hasBits0 & 4) != 0) { return faceDirection_; } else { return false; } }
+      set {
+        _hasBits0 |= 4;
+        faceDirection_ = value;
+      }
+    }
+    /// <summary>Gets whether the "face_direction" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasFaceDirection {
+      get { return (_hasBits0 & 4) != 0; }
+    }
+    /// <summary>Clears the value of the "face_direction" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearFaceDirection() {
+      _hasBits0 &= ~4;
+    }
+
     private object mode_;
     /// <summary>Enum of possible cases for the "mode" oneof.</summary>
     public enum ModeOneofCase {
@@ -336,6 +364,7 @@ namespace DCL.ECSComponents {
       if (!object.Equals(Scale, other.Scale)) return false;
       if (Playing != other.Playing) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
+      if (FaceDirection != other.FaceDirection) return false;
       if (ModeCase != other.ModeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -351,6 +380,7 @@ namespace DCL.ECSComponents {
       if (modeCase_ == ModeOneofCase.Scale) hash ^= Scale.GetHashCode();
       if (HasPlaying) hash ^= Playing.GetHashCode();
       if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
+      if (HasFaceDirection) hash ^= FaceDirection.GetHashCode();
       hash ^= (int) modeCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -398,6 +428,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(61);
         output.WriteFloat(CurrentTime);
       }
+      if (HasFaceDirection) {
+        output.WriteRawTag(64);
+        output.WriteBool(FaceDirection);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -436,6 +470,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(61);
         output.WriteFloat(CurrentTime);
       }
+      if (HasFaceDirection) {
+        output.WriteRawTag(64);
+        output.WriteBool(FaceDirection);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -467,6 +505,9 @@ namespace DCL.ECSComponents {
       if (HasCurrentTime) {
         size += 1 + 4;
       }
+      if (HasFaceDirection) {
+        size += 1 + 1;
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -490,6 +531,9 @@ namespace DCL.ECSComponents {
       }
       if (other.HasCurrentTime) {
         CurrentTime = other.CurrentTime;
+      }
+      if (other.HasFaceDirection) {
+        FaceDirection = other.FaceDirection;
       }
       switch (other.ModeCase) {
         case ModeOneofCase.Move:
@@ -570,6 +614,10 @@ namespace DCL.ECSComponents {
             CurrentTime = input.ReadFloat();
             break;
           }
+          case 64: {
+            FaceDirection = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -626,6 +674,10 @@ namespace DCL.ECSComponents {
           }
           case 61: {
             CurrentTime = input.ReadFloat();
+            break;
+          }
+          case 64: {
+            FaceDirection = input.ReadBool();
             break;
           }
         }

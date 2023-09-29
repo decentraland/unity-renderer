@@ -43,5 +43,6 @@ namespace DCL.ECS7
         public const int UI_DROPDOWN_RESULT = 1096;
         public const int TWEEN = 1102;
         public const int TWEEN_STATE = 1103;
+        public const int TWEEN_SEQUENCE = 1104;
     }
 }
