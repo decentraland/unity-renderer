@@ -1,10 +1,10 @@
 import {hashV1} from "@dcl/hashing";
 import {Avatar} from "@dcl/schemas";
-// import {recoverAddressFromEthSignature} from "@dcl/crypto/dist/crypto";
+import {recoverAddressFromEthSignature} from "@dcl/crypto/dist/crypto";
 
-export async function isImpostor(avatar: Avatar, hash: string, signedHash: string, signer: string | undefined): Promise<boolean> {
+export async function isImpostor(avatar: Avatar, profileHash: string, profileSignedHash: string, signer: string | undefined): Promise<boolean> {
   let checksum = await getProfileChecksum(avatar);
-  return checksum != hash/* || getSigner(hash, signedHash) != signer*/
+  return checksum != profileHash/* || getSigner(profileHash, profileSignedHash) != signer*/
 }
 
 export async function getProfileChecksum(avatar: Avatar): Promise<string> {
@@ -13,6 +13,6 @@ export async function getProfileChecksum(avatar: Avatar): Promise<string> {
   return await hashV1(encoder.encode(payload));
 }
 
-// function getSigner(hash: string, signedHash: string): string {
-//   return recoverAddressFromEthSignature(signedHash, hash)
-// }
+function getSigner(hash: string, signedHash: string): string {
+  return recoverAddressFromEthSignature(signedHash, hash)
+}

@@ -239,14 +239,19 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
 async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
-  const profile = ensureAvatarCompatibilityFormat(JSON.parse(message.data.serializedProfile))
+  const data = message.data;
+  const profile = ensureAvatarCompatibilityFormat(JSON.parse(data.serializedProfile))
   profile.userId = message.address
   profile.ethAddress = message.address
   peerTrackingInfo.lastProfileVersion = profile.version
 
-  const realm = resolveRealmFromBaseUrl(message.data.baseUrl);
+  // TODO: this is wrong, cant use data.baseUrl. Need to pass a new parameter in ProfileResponse for the catalyst's domain
+  const realm = resolveRealmFromBaseUrl(data.baseUrl);
 
-  if (await isImpostor(profile, message.data.profileHash, message.data.profileSignedHash, realm?.address)) {
+  const profileHash = data.profileHash;
+  const profileSignedHash = data.profileSignedHash;
+
+  if (await isImpostor(profile, profileHash, profileSignedHash, realm?.address)) {
     console.warn('Impostor detected', message.address)
     return
   }
