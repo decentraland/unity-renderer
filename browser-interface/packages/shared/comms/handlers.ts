@@ -246,7 +246,7 @@ async function processProfileResponse(message: Package<proto.ProfileResponse>) {
 
   const realm = resolveRealmFromBaseUrl(message.data.baseUrl);
 
-  if (await isImpostor(profile, message.data.hash, message.data.signedHash, realm?.address)) {
+  if (await isImpostor(profile, message.data.profileHash, message.data.profileSignedHash, realm?.address)) {
     console.warn('Impostor detected', message.address)
     return
   }

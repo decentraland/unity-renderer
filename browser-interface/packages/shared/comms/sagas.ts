@@ -370,8 +370,8 @@ function* respondCommsProfileRequests() {
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
-        hash: hash.hash,
-        signedHash: hash.signedHash
+        profileHash: hash.hash,
+        profileSignedHash: hash.signedHash
       }
       yield apply(context, context.sendProfileResponse, [response])
     }
