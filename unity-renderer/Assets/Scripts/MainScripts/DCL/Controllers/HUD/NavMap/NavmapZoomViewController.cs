@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Threading;
@@ -13,8 +14,8 @@ namespace DCL
 
         private readonly NavmapZoomView view;
 
-        private readonly AnimationCurve normalizedCurve;
-        private readonly int zoomSteps;
+        private AnimationCurve normalizedCurve;
+        private int zoomSteps;
 
         private bool active;
 
@@ -25,10 +26,17 @@ namespace DCL
         private int currentZoomLevel;
 
         private IMapCameraController cameraController;
+        private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
 
-        public NavmapZoomViewController(NavmapZoomView view)
+        public NavmapZoomViewController(NavmapZoomView view, BaseVariable<FeatureFlag> featureFlagsFlags)
         {
             this.view = view;
+            this.featureFlagsFlags = featureFlagsFlags;
+
+            if (featureFlagsFlags.Get().IsInitialized)
+                HandleFeatureFlag();
+            else
+                featureFlagsFlags.OnChange += OnFeatureFlagsChanged;
 
             normalizedCurve = view.normalizedZoomCurve;
             zoomSteps = normalizedCurve.length;
@@ -36,13 +44,30 @@ namespace DCL
             CurveClamp01();
         }
 
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            featureFlagsFlags.OnChange -= OnFeatureFlagsChanged;
+            HandleFeatureFlag();
+        }
+
+        private void HandleFeatureFlag()
+        {
+            if (featureFlagsFlags.Get().IsFeatureEnabled("map_focus_home_or_user")) return;
+
+            view.zoomVerticalRange = new Vector2Int(view.zoomVerticalRange.x, 40);
+
+            normalizedCurve = new AnimationCurve();
+            normalizedCurve.AddKey(0, 0);
+            normalizedCurve.AddKey(1, 0.25f);
+            normalizedCurve.AddKey(2, 0.5f);
+            normalizedCurve.AddKey(3, 0.75f);
+            normalizedCurve.AddKey(4, 1);
+            zoomSteps = normalizedCurve.length;
+        }
+
         public void Dispose()
         {
-            if (cts != null)
-            {
-                cts.Cancel();
-                cts.Dispose();
-            }
+            cts.SafeCancelAndDispose();
         }
 
         private void CurveClamp01()

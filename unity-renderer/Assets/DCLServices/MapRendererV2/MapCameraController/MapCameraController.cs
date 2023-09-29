@@ -156,16 +156,14 @@ namespace DCLServices.MapRendererV2.MapCameraController
             cullingController.SetCameraDirty(this);
         }
 
-        public void TranslateTo(Vector2 coordinates, float zoom, float duration, Action onComplete = null)
+        public void TranslateTo(Vector2 coordinates, float duration, Action onComplete = null)
         {
             translationSequence = DOTween.Sequence();
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             Vector3 targetPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
-            zoom = Mathf.Lerp(zoomValues.y, zoomValues.x, Mathf.Clamp01(zoom));
 
-            translationSequence.Join(mapCameraObject.mapCamera.DOOrthoSize(zoom, duration).SetEase(Ease.OutQuart))
-                               .Join(mapCameraObject.transform.DOLocalMove(targetPosition, duration).SetEase(Ease.OutQuart))
+            translationSequence.Join(mapCameraObject.transform.DOLocalMove(targetPosition, duration).SetEase(Ease.OutQuart))
                                .OnComplete(() =>
                                 {
                                     CalculateCameraPositionBounds();
