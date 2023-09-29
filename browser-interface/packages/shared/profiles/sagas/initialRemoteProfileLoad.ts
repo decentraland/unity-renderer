@@ -1,31 +1,20 @@
-import type { Avatar } from '@dcl/schemas'
-import { ethereumConfigurations, ETHEREUM_NETWORK, RESET_TUTORIAL } from 'config'
+import type {Avatar} from '@dcl/schemas'
+import {ethereumConfigurations, ETHEREUM_NETWORK, RESET_TUTORIAL} from 'config'
 import defaultLogger from 'lib/logger'
-import { call, put, select } from 'redux-saga/effects'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
-import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
-import type { ExplorerIdentity } from 'shared/session/types'
-import { fetchOwnedENS } from 'lib/web3/fetchOwnedENS'
-import {profileHashSuccess, profileRequest, profileSuccess, saveProfileDelta} from '../actions'
-import { fetchProfile } from './fetchProfile'
-import {fetchLocalProfile, fetchLocalProfileHash} from './local/index'
-import { getFeatureFlagEnabled } from 'shared/meta/selectors'
+import {call, put, select} from 'redux-saga/effects'
+import {BringDownClientAndReportFatalError, ErrorContext} from 'shared/loading/ReportFatalError'
+import {getCurrentIdentity, getCurrentNetwork} from 'shared/session/selectors'
+import type {ExplorerIdentity} from 'shared/session/types'
+import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
+import {profileRequest, profileSuccess, saveProfileDelta} from '../actions'
+import {fetchProfile} from './fetchProfile'
+import {fetchLocalProfile} from './local/index'
+import {getFeatureFlagEnabled} from 'shared/meta/selectors'
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
-
-  const hash = yield call(fetchLocalProfileHash)
-  if (hash) {
-    try {
-      yield put(profileHashSuccess(identity.address, hash))
-    }
-    catch (error) {
-      defaultLogger.log(`Invalid profile hash stored: ${JSON.stringify(hash, null, 2)}`)
-      return null
-    }
-  }
 
   let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
@@ -34,13 +23,13 @@ export function* initialRemoteProfileLoad() {
       profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
     )
   } catch (e: any) {
-    BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
+    BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, {userId})
     throw e
   }
 
   if (!profile) {
     const error = new Error('Could not initialize profile')
-    BringDownClientAndReportFatalError(error, ErrorContext.KERNEL_INIT, { userId })
+    BringDownClientAndReportFatalError(error, ErrorContext.KERNEL_INIT, {userId})
     throw error
   }
 
@@ -78,14 +67,14 @@ export function* initialRemoteProfileLoad() {
         }
       } else {
         // User has no available names, set the hasClaimedName to false
-        profile = { ...profile, hasClaimedName: false, tutorialStep: 0x0 }
+        profile = {...profile, hasClaimedName: false, tutorialStep: 0x0}
       }
       profileDirty = true
     }
   }
 
   if (RESET_TUTORIAL) {
-    profile = { ...profile, tutorialStep: 0 }
+    profile = {...profile, tutorialStep: 0}
     profileDirty = true
   }
 

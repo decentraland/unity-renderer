@@ -8,7 +8,7 @@ import { waitForNetworkSelected } from 'shared/meta/sagas'
 import { getCurrentIdentity, getCurrentNetwork, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import type { SaveProfileDelta } from '../actions'
-import {deployProfile, profileSuccess, ProfileHashSuccessAction, saveProfileFailure} from '../actions'
+import {deployProfile, profileSuccess, saveProfileFailure} from '../actions'
 import { validateAvatar } from '../schemaValidation'
 import { getCurrentUserProfileDirty } from '../selectors'
 import { localProfilesRepo } from './local/localProfilesRepo'
@@ -101,21 +101,5 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
       stack: error.stacktrace
     })
     yield put(saveProfileFailure(userId, 'unknown reason'))
-  }
-}
-
-export function* saveLocalProfileHash(payload: ProfileHashSuccessAction) {
-  const network = yield select(getCurrentNetwork)
-  const identity = yield select(getCurrentIdentity)
-
-  if (payload.payload.userId !== identity?.address) {
-    return
-  }
-
-  try {
-    yield apply(localProfilesRepo, localProfilesRepo.persistHash, [payload.payload.userId, network!, payload.payload.profileHash])
-  }
-  catch (error: any) {
-    defaultLogger.log(`Cannot persist profile hash ${JSON.stringify(payload.payload, null, 2)}`)
   }
 }
