@@ -8,7 +8,6 @@ import type {ExplorerIdentity} from 'shared/session/types'
 import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
 import {profileRequest, profileSuccess, saveProfileDelta} from '../actions'
 import {fetchProfile} from './fetchProfile'
-import {fetchLocalProfile} from './local/index'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
 
 export function* initialRemoteProfileLoad() {
@@ -16,11 +15,14 @@ export function* initialRemoteProfileLoad() {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
-  let profile: Avatar | null = yield call(fetchLocalProfile)
+  // getting the profile from local storage initially has been disabled to ensure getting
+  // the correct information from the catalysts including hashes for impostor checking
+  let profile: Avatar | null/* = yield call(fetchLocalProfile)*/
   try {
     profile = yield call(
       fetchProfile,
-      profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
+      // disabled since the profile is not loaded from local storage anymore
+      profileRequest(userId, /*profile && profile.userId === userId ? profile.version :*/ 0)
     )
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, {userId})
