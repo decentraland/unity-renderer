@@ -10,7 +10,7 @@ import { disconnectRoom, handleNewCommsContext } from 'shared/comms/sagas'
 import { commsEstablished } from 'shared/loading/types'
 import { saveProfileDelta } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
 import { legacyServices } from 'shared/realm/local-services/legacy'
 import { realmToConnectionString } from 'shared/realm/resolver'
@@ -20,7 +20,7 @@ import { reducers } from 'shared/store/rootReducer'
 import { allScenesEvent } from 'shared/world/parcelSceneManager'
 
 const about: AboutResponse = {
-  comms: { healthy: false, protocol: 'v2' },
+  comms: { healthy: false, protocol: 'v2', adapter: 'offline' },
   configurations: {
     scenesUrn: [],
     globalScenesUrn: [],

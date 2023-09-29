@@ -32,7 +32,11 @@ namespace DCL.ECS7
         public const int POINTER_LOCK = 1074;
         public const int AVATAR_SHAPE = 1080;
         public const int VISIBILITY_COMPONENT = 1081;
+        public const int AVATAR_BASE = 1087;
+        public const int AVATAR_EMOTE_COMMAND = 1088;
+        public const int PLAYER_IDENTITY_DATA = 1089;
         public const int BILLBOARD = 1090;
+        public const int AVATAR_EQUIPPED_DATA = 1091;
         public const int UI_INPUT = 1093;
         public const int UI_DROPDOWN = 1094;
         public const int UI_INPUT_RESULT = 1095;

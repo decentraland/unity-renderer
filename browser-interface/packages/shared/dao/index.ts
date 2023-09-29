@@ -5,7 +5,7 @@ import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromC
 import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
 import { commsLogger } from 'shared/comms/logger'
 import { getDisabledCatalystConfig } from 'shared/meta/selectors'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { setRealmAdapter } from 'shared/realm/actions'
 import {
   adapterForRealmConfig,
@@ -66,7 +66,7 @@ export async function fetchCatalystStatus(
     aboutResponse.status === ServerConnectionStatus.OK &&
     result &&
     result.comms &&
-    result.configurations && 
+    result.configurations &&
     result.configurations.realmName &&
     result.bff &&
     result.content &&
@@ -170,7 +170,7 @@ async function resolveOfflineRealmAboutFromConnectionString(
         comms: {
           healthy: false,
           protocol: params.get('protocol') || 'offline',
-          fixedAdapter: params.get('fixedAdapter') || 'offline:offline'
+          adapter: params.get('adapter') || params.get('fixedAdapter') || 'offline:offline'
         },
         configurations: {
           realmName: realmString,
@@ -231,7 +231,6 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
   commsLogger.info('Connecting to realm', realmString)
 
   const newAdapter = await adapterForRealmConfig(realmConfig.baseUrl, realmConfig.about, identity)
-
   if (newAdapter) {
     store.dispatch(setRealmAdapter(newAdapter))
   } else {

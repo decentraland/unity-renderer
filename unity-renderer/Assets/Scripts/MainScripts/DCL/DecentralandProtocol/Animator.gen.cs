@@ -27,17 +27,17 @@ namespace DCL.ECSComponents {
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYW5pbWF0b3IucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJLCgpQQkFuaW1hdG9yEj0K",
             "BnN0YXRlcxgBIAMoCzItLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Q",
-            "QkFuaW1hdGlvblN0YXRlItYBChBQQkFuaW1hdGlvblN0YXRlEgwKBG5hbWUY",
-            "ASABKAkSDAoEY2xpcBgCIAEoCRIUCgdwbGF5aW5nGAMgASgISACIAQESEwoG",
-            "d2VpZ2h0GAQgASgCSAGIAQESEgoFc3BlZWQYBSABKAJIAogBARIRCgRsb29w",
-            "GAYgASgISAOIAQESGQoMc2hvdWxkX3Jlc2V0GAcgASgISASIAQFCCgoIX3Bs",
-            "YXlpbmdCCQoHX3dlaWdodEIICgZfc3BlZWRCBwoFX2xvb3BCDwoNX3Nob3Vs",
-            "ZF9yZXNldEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "QkFuaW1hdGlvblN0YXRlIs4BChBQQkFuaW1hdGlvblN0YXRlEgwKBGNsaXAY",
+            "AiABKAkSFAoHcGxheWluZxgDIAEoCEgAiAEBEhMKBndlaWdodBgEIAEoAkgB",
+            "iAEBEhIKBXNwZWVkGAUgASgCSAKIAQESEQoEbG9vcBgGIAEoCEgDiAEBEhkK",
+            "DHNob3VsZF9yZXNldBgHIAEoCEgEiAEBQgoKCF9wbGF5aW5nQgkKB193ZWln",
+            "aHRCCAoGX3NwZWVkQgcKBV9sb29wQg8KDV9zaG91bGRfcmVzZXRKBAgBEAJC",
+            "FKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimator), global::DCL.ECSComponents.PBAnimator.Parser, new[]{ "States" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimationState), global::DCL.ECSComponents.PBAnimationState.Parser, new[]{ "Name", "Clip", "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, new[]{ "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAnimationState), global::DCL.ECSComponents.PBAnimationState.Parser, new[]{ "Clip", "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, new[]{ "Playing", "Weight", "Speed", "Loop", "ShouldReset" }, null, null, null)
           }));
     }
     #endregion
@@ -272,7 +272,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimationState(PBAnimationState other) : this() {
       _hasBits0 = other._hasBits0;
-      name_ = other.name_;
       clip_ = other.clip_;
       playing_ = other.playing_;
       weight_ = other.weight_;
@@ -286,21 +285,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAnimationState Clone() {
       return new PBAnimationState(this);
-    }
-
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
-    /// <summary>
-    /// the identifier for this animation, to use in scene code
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
     }
 
     /// <summary>Field number for the "clip" field.</summary>
@@ -473,7 +457,6 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Name != other.Name) return false;
       if (Clip != other.Clip) return false;
       if (Playing != other.Playing) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Weight, other.Weight)) return false;
@@ -487,7 +470,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Clip.Length != 0) hash ^= Clip.GetHashCode();
       if (HasPlaying) hash ^= Playing.GetHashCode();
       if (HasWeight) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Weight);
@@ -512,10 +494,6 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
       if (Clip.Length != 0) {
         output.WriteRawTag(18);
         output.WriteString(Clip);
@@ -550,10 +528,6 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
       if (Clip.Length != 0) {
         output.WriteRawTag(18);
         output.WriteString(Clip);
@@ -588,9 +562,6 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-      }
       if (Clip.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Clip);
       }
@@ -620,9 +591,6 @@ namespace DCL.ECSComponents {
     public void MergeFrom(PBAnimationState other) {
       if (other == null) {
         return;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
       }
       if (other.Clip.Length != 0) {
         Clip = other.Clip;
@@ -657,10 +625,6 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
           case 18: {
             Clip = input.ReadString();
             break;
@@ -700,10 +664,6 @@ namespace DCL.ECSComponents {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
           case 18: {
             Clip = input.ReadString();
             break;

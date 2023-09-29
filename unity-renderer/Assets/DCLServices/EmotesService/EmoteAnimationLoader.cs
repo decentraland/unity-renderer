@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Providers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Emotes
 {
@@ -26,7 +27,7 @@ namespace DCL.Emotes
             this.resourceProvider = resourceProvider;
         }
 
-        public async UniTask LoadEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
+        public async UniTask LoadRemoteEmote(GameObject targetContainer, WearableItem emote, string bodyShapeId, CancellationToken ct = default)
         {
             if (targetContainer == null)
                 throw new NullReferenceException("Container cannot be null");
@@ -44,24 +45,66 @@ namespace DCL.Emotes
             foreach (Renderer renderer in rendereable.renderers)
                 renderer.enabled = false;
 
-            var animation = rendereable.container.GetComponentInChildren<Animation>();
+            GameObject emoteInstance = rendereable.container;
+
+            SetupEmote(emoteInstance, emote.id);
+
+            var contentProvider = emote.GetContentProvider(bodyShapeId);
+
+            foreach (var contentMap in contentProvider.contents)
+            {
+                if (!IsValidAudioClip(contentMap.file)) continue;
+
+                AudioClip audioClip = null;
+                try
+                {
+                    audioClip = await AsyncLoadAudioClip(contentMap.file, contentProvider);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                if (audioClip != null)
+                    await SetupAudioClip(audioClip, emoteInstance, ct);
+
+                // we only support one audio clip
+                break;
+            }
+
+        }
+
+        public async UniTask LoadLocalEmote(GameObject targetContainer, ExtendedEmote embeddedEmote, CancellationToken ct)
+        {
+            GameObject emoteInstance = Object.Instantiate(embeddedEmote.propPrefab, targetContainer.transform, false);
+            var renderers = emoteInstance.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer renderer in renderers)
+                renderer.enabled = false;
+
+            SetupEmote(emoteInstance, embeddedEmote.id);
+            await SetupAudioClip(embeddedEmote.clip, emoteInstance, ct);
+        }
+
+        private void SetupEmote(GameObject emoteInstance, string emoteId)
+        {
+            var animation = emoteInstance.GetComponentInChildren<Animation>();
 
             if (animation == null)
             {
-                Debug.LogError("Animation component not found in the container for emote " + emote.id);
+                Debug.LogError("Animation component not found in the container for emote " + emoteId);
                 return;
             }
 
             if (animation.GetClipCount() > 1)
             {
-                this.container = rendereable.container;
+                this.container = emoteInstance;
 
                 // we cant use the animation order so we use the naming convention at /creator/emotes/props-and-sounds/
                 foreach (AnimationState state in animation)
                 {
                     AnimationClip clip = state.clip;
 
-                    if (clip.name.Contains("_avatar", StringComparison.OrdinalIgnoreCase) || clip.name == emote.id)
+                    if (clip.name.Contains("_avatar", StringComparison.OrdinalIgnoreCase) || clip.name == emoteId)
                         mainClip = clip;
 
                     // There's a bug with the legacy animation where animations start ahead of time the first time
@@ -85,7 +128,7 @@ namespace DCL.Emotes
 
             if (mainClip == null)
             {
-                Debug.LogError("AnimationClip not found in the container for emote " + emote.id);
+                Debug.LogError("AnimationClip not found in the container for emote " + emoteId);
                 return;
             }
 
@@ -93,34 +136,20 @@ namespace DCL.Emotes
             // In rare cases some animations might use the same GLB, thus causing this clip to be used by 2 different emotes
             //     so we avoid renaming the clip again witch can cause problems as we use the clip names internally
             if (!mainClip.name.Contains("urn"))
-                mainClip.name = emote.id;
-
-            var contentProvider = emote.GetContentProvider(bodyShapeId);
-
-            foreach (var contentMap in contentProvider.contents)
-            {
-                if (!IsValidAudioClip(contentMap.file)) continue;
-
-                try { audioClip = await AsyncLoadAudioClip(contentMap.file, contentProvider); }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-
-                if (audioClip != null)
-                {
-                    audioSource = await resourceProvider.Instantiate<AudioSource>(EMOTE_AUDIO_SOURCE, "EmoteAudioSource", cancellationToken: ct);
-                    audioSource.clip = audioClip;
-                    audioSource.transform.SetParent(rendereable.container.transform, false);
-                    audioSource.transform.ResetLocalTRS();
-                }
-
-                // we only support one audio clip
-                break;
-            }
+                mainClip.name = emoteId;
 
             animation.Stop();
             animation.enabled = false;
+        }
+
+        private async UniTask SetupAudioClip(AudioClip clip, GameObject audioSourceParent, CancellationToken ct)
+        {
+            audioClip = clip;
+            audioSource = await resourceProvider.Instantiate<AudioSource>(EMOTE_AUDIO_SOURCE, "EmoteAudioSource",
+                cancellationToken: ct);
+            audioSource.clip = audioClip;
+            audioSource.transform.SetParent(audioSourceParent.transform, false);
+            audioSource.transform.ResetLocalTRS();
         }
 
         private bool IsValidAudioClip(string fileName) =>

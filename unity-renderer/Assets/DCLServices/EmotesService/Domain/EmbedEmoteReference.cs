@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DCL.Emotes
+﻿namespace DCL.Emotes
 {
     public class EmbedEmoteReference : IEmoteReference
     {
