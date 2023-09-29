@@ -87,10 +87,16 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     break;
                 case PBTween.ModeOneofCase.Move:
                 default:
-                    entityTransform.localPosition = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
-                    tweener = entityTransform.DOLocalMove(
-                        ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
-                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                    Vector3 startPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
+                    Vector3 endPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
+
+                    if (model.HasFaceDirection && model.FaceDirection)
+                        entityTransform.forward = (endPos - startPos).normalized;
+
+                    entityTransform.localPosition = startPos;
+                    tweener = entityTransform.DOLocalMove(endPos, durationInSeconds)
+                                             .SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction))
+                                             .SetAutoKill(false);
                     break;
             }
 
