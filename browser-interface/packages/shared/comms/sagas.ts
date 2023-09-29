@@ -196,7 +196,6 @@ function* pingerProcess() {
 function* handleConnectToComms(action: ConnectToCommsAction) {
   try {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-
     yield put(setCommsIsland(action.payload.event.islandId))
 
     const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
@@ -294,7 +293,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         logger: commsLogger,
         url: theUrl.origin + theUrl.pathname,
         token,
-        globalAudioStream: await getGlobalAudioStream(),
+        globalAudioStream: await getGlobalAudioStream()
       })
 
       store.dispatch(setLiveKitAdapter(livekitAdapter))

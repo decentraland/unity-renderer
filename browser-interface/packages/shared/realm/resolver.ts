@@ -46,7 +46,14 @@ export async function adapterForRealmConfig(
   }
 
   if (about.bff?.healthy) {
-    return createArchipelagoConnection(baseUrl, about, identity)
+    if (about.comms?.adapter && about.comms.adapter.startsWith('archipelago:archipelago')) {
+      const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago:'.length)
+      return createArchipelagoConnection(baseUrl, archipelagoUrl, about, identity)
+    } else {
+      const url = baseUrl + '/archipelago/ws'
+      const wsUrl = url.replace(/^http/, 'ws')
+      return createArchipelagoConnection(baseUrl, wsUrl, about, identity)
+    }
   }
 
   // return a mocked Archipelago

@@ -95,4 +95,6 @@ export type TrackEvents = PositionTrackEvents & {
   ['seamless_login tos accepted']: Record<string, never> // {}
   ['seamless_login tos rejected']: Record<string, never> // {}
   ['seamless_login go to tos']: Record<string, never> // {}
+
+  ['DEFAULT_REALM']: { message: string }
 }
