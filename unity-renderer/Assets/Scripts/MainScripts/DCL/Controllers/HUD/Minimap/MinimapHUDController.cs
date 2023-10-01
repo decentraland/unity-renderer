@@ -22,6 +22,7 @@ public class MinimapHUDController : IHUD
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private IntVariable currentSceneNumber => CommonScriptableObjects.sceneNumber;
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
+    private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
     private Vector2Int currentCoords;
     private Vector2Int homeCoords = new Vector2Int(0, 0);
 
@@ -75,6 +76,7 @@ public class MinimapHUDController : IHUD
     public void Initialize()
     {
         view = CreateView();
+        view.SetReportSceneButtonActive(!isContentModerationFeatureEnabled);
         view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
         view.OnCopyLocationRequested += OnCopyLocationToClipboard;
         InitializeMapRenderer();

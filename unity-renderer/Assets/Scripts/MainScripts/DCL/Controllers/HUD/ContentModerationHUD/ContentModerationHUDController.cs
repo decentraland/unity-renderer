@@ -15,6 +15,7 @@ namespace DCL.ContentModeration
     public class ContentModerationHUDController
     {
         private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
+        private const int REPORT_PLACE_TIMEOUT = 30;
 
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
@@ -186,7 +187,7 @@ namespace DCL.ContentModeration
             {
                 contentModerationReportingComponentView.SetLoadingState(true);
                 await placesAPIService.ReportPlace(placeContentReport, ct)
-                                      .Timeout(TimeSpan.FromSeconds(5));
+                                      .Timeout(TimeSpan.FromSeconds(REPORT_PLACE_TIMEOUT));
                 contentModerationReportingComponentView.SetPanelAsSent(true);
             }
             catch (Exception ex)

@@ -151,6 +151,9 @@ public class MinimapHUDView : MonoBehaviour
         locationCopiedToast.ShowDelayHide(3);
     }
 
+    public void SetReportSceneButtonActive(bool isActive) =>
+        reportSceneButton.gameObject.SetActive(isActive);
+
     private void OnDestroy()
     {
         if (mouseCatcher != null)
