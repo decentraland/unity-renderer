@@ -8,7 +8,6 @@ namespace DCL.ContentModeration
     {
         [SerializeField] internal Button backgroundButton;
         [SerializeField] internal ToggleComponentView confirmAgeCheckbox;
-        [SerializeField] internal ButtonComponentView closeButton;
         [SerializeField] internal ButtonComponentView cancelButton;
         [SerializeField] internal ButtonComponentView confirmButton;
 
@@ -20,7 +19,6 @@ namespace DCL.ContentModeration
             base.Awake();
             confirmAgeCheckbox.OnSelectedChanged += OnConfirmAgeCheckboxChanged;
             backgroundButton.onClick.AddListener(Cancel);
-            closeButton.onClick.AddListener(Cancel);
             cancelButton.onClick.AddListener(Cancel);
             confirmButton.onClick.AddListener(Confirm);
             OnConfirmAgeCheckboxChanged(confirmAgeCheckbox.isOn, null, null);
@@ -30,7 +28,6 @@ namespace DCL.ContentModeration
         {
             confirmAgeCheckbox.OnSelectedChanged -= OnConfirmAgeCheckboxChanged;
             backgroundButton.onClick.RemoveAllListeners();
-            closeButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
             confirmButton.onClick.RemoveAllListeners();
             base.Dispose();

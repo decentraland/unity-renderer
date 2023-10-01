@@ -8,5 +8,6 @@ namespace DCL.ContentModeration
 
         void ShowModal();
         void HideModal();
+        void SetRestrictedMode(bool isRestricted);
     }
 }

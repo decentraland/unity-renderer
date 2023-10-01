@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,9 +8,13 @@ namespace DCL.ContentModeration
     public class AdultContentSceneWarningComponentView : BaseComponentView, IAdultContentSceneWarningComponentView
     {
         [SerializeField] internal Button backgroundButton;
-        [SerializeField] internal ButtonComponentView closeButton;
+        [SerializeField] internal ButtonComponentView gotItButton;
         [SerializeField] internal ButtonComponentView cancelButton;
         [SerializeField] internal ButtonComponentView goToSettingsButton;
+        [SerializeField] internal TMP_Text subTitle;
+
+        private const string RESTRICTED_MODE_SUBTITLE = "This scene has been restricted by our community as it potentially contains adult or inappropriate content for some users.";
+        private const string ADULT_MODE_SUBTITLE = "This scene has been flagged by our community as it potentially contains adult or inappropriate content for some users. <b>Please confirm your age at Settings Screen</b>.";
 
         public event Action OnGoToSettingsClicked;
 
@@ -17,16 +22,16 @@ namespace DCL.ContentModeration
         {
             base.Awake();
             backgroundButton.onClick.AddListener(HideModal);
-            closeButton.onClick.AddListener(HideModal);
             cancelButton.onClick.AddListener(HideModal);
+            gotItButton.onClick.AddListener(HideModal);
             goToSettingsButton.onClick.AddListener(GoToSettings);
         }
 
         public override void Dispose()
         {
             backgroundButton.onClick.RemoveAllListeners();
-            closeButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
+            gotItButton.onClick.RemoveAllListeners();
             goToSettingsButton.onClick.RemoveAllListeners();
             base.Dispose();
         }
@@ -38,6 +43,14 @@ namespace DCL.ContentModeration
 
         public void HideModal() =>
             Hide();
+
+        public void SetRestrictedMode(bool isRestricted)
+        {
+            gotItButton.gameObject.SetActive(isRestricted);
+            cancelButton.gameObject.SetActive(!isRestricted);
+            goToSettingsButton.gameObject.SetActive(!isRestricted);
+            subTitle.text = isRestricted ? RESTRICTED_MODE_SUBTITLE : ADULT_MODE_SUBTITLE;
+        }
 
         private void GoToSettings() =>
             OnGoToSettingsClicked?.Invoke();

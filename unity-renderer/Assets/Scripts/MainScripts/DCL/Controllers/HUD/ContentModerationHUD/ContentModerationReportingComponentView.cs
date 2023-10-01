@@ -14,7 +14,8 @@ namespace DCL.ContentModeration
         [SerializeField] internal ButtonComponentView cancelButton;
         [SerializeField] internal ButtonComponentView gotItButton;
         [SerializeField] internal ButtonComponentView sendButton;
-        [SerializeField] internal ButtonComponentView learnMoreButton;
+        [SerializeField] internal Button learnMoreButton1;
+        [SerializeField] internal Button learnMoreButton2;
         [SerializeField] internal Slider ratingSlider;
         [SerializeField] internal Button teenAuxButton;
         [SerializeField] internal Button adultAuxButton;
@@ -68,7 +69,8 @@ namespace DCL.ContentModeration
             gotItButton.onClick.AddListener(HidePanel);
             sendButtonText = sendButton.GetComponentInChildren<TMP_Text>();
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
-            learnMoreButton.onClick.AddListener(GoToLearnMore);
+            learnMoreButton1.onClick.AddListener(GoToLearnMore);
+            learnMoreButton2.onClick.AddListener(GoToLearnMore);
             ratingSlider.onValueChanged.AddListener(OnRatingSliderChanged);
             teenAuxButton.onClick.AddListener(() => { ratingSlider.value = 0; });
             adultAuxButton.onClick.AddListener(() => { ratingSlider.value = 1; } );
@@ -83,7 +85,8 @@ namespace DCL.ContentModeration
             cancelButton.onClick.RemoveAllListeners();
             gotItButton.onClick.RemoveAllListeners();
             sendButton.onClick.RemoveAllListeners();
-            learnMoreButton.onClick.RemoveAllListeners();
+            learnMoreButton1.onClick.RemoveAllListeners();
+            learnMoreButton2.onClick.RemoveAllListeners();
             ratingSlider.onValueChanged.RemoveAllListeners();
             teenAuxButton.onClick.RemoveAllListeners();
             adultAuxButton.onClick.RemoveAllListeners();

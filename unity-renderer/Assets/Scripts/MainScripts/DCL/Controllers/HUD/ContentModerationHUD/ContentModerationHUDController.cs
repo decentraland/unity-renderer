@@ -92,14 +92,15 @@ namespace DCL.ContentModeration
                 case SceneContentCategory.ADULT when !contentModerationDataStore.adultContentSettingEnabled.Get():
                     Utils.UnlockCursor();
                     adultContentSceneWarningComponentView.ShowModal();
+                    adultContentSceneWarningComponentView.SetRestrictedMode(false);
                     break;
                 case SceneContentCategory.RESTRICTED:
-                    // TODO (Santi): Show a different modal for restricted scenes
+                    adultContentSceneWarningComponentView.ShowModal();
+                    adultContentSceneWarningComponentView.SetRestrictedMode(true);
                     break;
                 case SceneContentCategory.TEEN:
                 default:
                     adultContentSceneWarningComponentView.HideModal();
-                    // TODO (Santi): Hide the modal for restricted scenes
                     break;
             }
         }
