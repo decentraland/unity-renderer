@@ -251,7 +251,7 @@ async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const profileHash = data.profileHash;
   const profileSignedHash = data.profileSignedHash;
 
-  if (await isImpostor(profile, profileHash, profileSignedHash, realm?.address)) {
+  if (isImpostor(profile, profileHash, profileSignedHash, realm?.address)) {
     console.warn('Impostor detected', message.address)
     return
   }
