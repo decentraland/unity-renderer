@@ -34,8 +34,6 @@ import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import {isImpostor} from "../profiles/impostorValidation";
 import {resolveRealmCandidateFromBaseUrl} from "../dao";
-import {storeCondition} from "../../lib/redux";
-import {getRealmAdapter} from "../realm/selectors";
 
 type PingRequest = {
   alias: number
