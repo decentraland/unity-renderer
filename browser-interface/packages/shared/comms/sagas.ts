@@ -339,21 +339,12 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    let { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+    const { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
       typeof getInformationForCommsProfileRequest
     >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (profile && context && hash) {
-      // if (!hash && identity) {
-      //   // force to update profile hash
-      //   yield call(fetchCatalystProfile, identity.address, 0)
-      //   hash = yield select(getCurrentProfileHash)
-      //   if (!hash) {
-      //     continue
-      //   }
-      // }
-
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
