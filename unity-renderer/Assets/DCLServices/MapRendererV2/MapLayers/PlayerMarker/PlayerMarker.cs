@@ -30,6 +30,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             markerObject.transform.localRotation = rot;
         }
 
+        public void SetZoom(float zoom)
+        {
+            markerObject.SetZoom(zoom);
+        }
+
         public void Dispose()
         {
             if (markerObject)

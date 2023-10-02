@@ -5,6 +5,7 @@ using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
+using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,9 @@ namespace DCLServices.MapRendererV2
             mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
+            mapCameraController.ZoomChanged += OnCameraZoomChanged;
+
+            OnCameraZoomChanged(mapCameraController.Camera.orthographicSize);
 
             return mapCameraController;
         }
@@ -111,7 +115,21 @@ namespace DCLServices.MapRendererV2
         {
             mapCameraController.OnReleasing -= ReleaseCamera;
             DisableLayers(mapCameraController.EnabledLayers);
+            OnCameraZoomChanged(mapCameraController.Camera.orthographicSize);
             mapCameraPool.Release(mapCameraController);
+            mapCameraController.ZoomChanged -= OnCameraZoomChanged;
+        }
+        private void OnCameraZoomChanged(float zoom)
+        {
+            var mask = MapLayer.PlayerMarker;
+            foreach (MapLayer mapLayer in ALL_LAYERS)
+            {
+                if (EnumUtils.HasFlag(mask, mapLayer) && layers.TryGetValue(mapLayer, out var mapLayerStatus))
+                {
+                    Debug.Log("adjust zoom");
+                    ((PlayerMarkerController)mapLayerStatus.MapLayerController).ApplyCameraZoom(zoom);
+                }
+            }
         }
 
         public void SetSharedLayer(MapLayer mask, bool active)

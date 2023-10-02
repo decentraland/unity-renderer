@@ -9,6 +9,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         [SerializeField] private SpriteRenderer circle;
         [SerializeField] private SpriteRenderer friendsArea;
 
+        private float scaleDivider = 20f;
+
         public void SetAnimatedCircleVisibility(bool visible)
         {
             circle.enabled = visible;
@@ -20,6 +22,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             compass.sortingOrder = sortingOrder;
             circle.sortingOrder = sortingOrder - 1;
             friendsArea.sortingOrder = sortingOrder - 1;
+        }
+
+        public void SetZoom(float zoom)
+        {
+            transform.localScale = new Vector3(zoom/ scaleDivider, zoom/ scaleDivider, 1f);
         }
     }
 }

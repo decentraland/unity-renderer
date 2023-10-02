@@ -15,6 +15,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private const int MAX_TEXTURE_SIZE = 4096;
 
         public event Action<IMapCameraControllerInternal> OnReleasing;
+        public event Action<float> ZoomChanged;
 
         public MapLayer EnabledLayers { get; private set; }
 
@@ -176,7 +177,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             zoom = Mathf.Clamp01(zoom);
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
-
+            ZoomChanged?.Invoke(mapCameraObject.mapCamera.orthographicSize);
             CalculateCameraPositionBounds();
         }
 

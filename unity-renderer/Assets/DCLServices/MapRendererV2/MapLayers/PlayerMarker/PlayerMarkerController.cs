@@ -72,6 +72,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             playerMarker.SetRotation(markerRot);
         }
 
+        public void ApplyCameraZoom(float zoom)
+        {
+            playerMarker.SetZoom(zoom);
+        }
+
         private void OnPlayerWorldPositionChange(Vector3 current, Vector3 previous)
         {
             SetPosition();

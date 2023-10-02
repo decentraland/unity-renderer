@@ -10,5 +10,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         void SetRotation(Quaternion rot);
 
         void SetActive(bool active);
+
+        void SetZoom(float zoom);
     }
 }
