@@ -5,7 +5,7 @@ using DCL.Social.Chat;
 using DCL.Interface;
 using DCL.Social.Friends;
 using Analytics;
-using DCL.Controllers;
+using DCL.Social.Chat;
 using System;
 using System.Threading;
 using TMPro;
@@ -47,8 +47,6 @@ public class TaskbarHUDController : IHUD
     private CreateChannelWindowController channelCreationWindow;
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
     private CancellationTokenSource openPrivateChatCancellationToken = new ();
-    private readonly IWorldState worldState;
-    private SceneContentCategory currentContentCategory;
 
     private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
 
@@ -67,12 +65,11 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<string> openChat => DataStore.i.HUDs.openChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
 
-    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController, ISupportAnalytics analytics, IWorldState worldState)
+    public TaskbarHUDController(IChatController chatController, IFriendsController friendsController, ISupportAnalytics analytics)
     {
         this.chatController = chatController;
         this.friendsController = friendsController;
         this.analytics = analytics;
-        this.worldState = worldState;
     }
 
     protected virtual TaskbarHUDView CreateView()

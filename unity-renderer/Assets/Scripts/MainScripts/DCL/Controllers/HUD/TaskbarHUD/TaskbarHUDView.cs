@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DCL;
+using DCL.Interface;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
