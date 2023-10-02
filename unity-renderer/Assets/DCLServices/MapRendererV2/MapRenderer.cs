@@ -21,7 +21,7 @@ namespace DCLServices.MapRendererV2
             public readonly IMapLayerController MapLayerController;
             public int ActivityOwners;
             public CancellationTokenSource CTS;
-            public bool sharedActive = true;
+            public bool? sharedActive;
 
             public MapLayerStatus(IMapLayerController mapLayerController)
             {
@@ -36,6 +36,7 @@ namespace DCLServices.MapRendererV2
         private readonly IMapRendererComponentsFactory componentsFactory;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
+
         private MapRendererConfiguration configurationInstance;
 
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
@@ -63,6 +64,9 @@ namespace DCLServices.MapRendererV2
 
                 foreach (KeyValuePair<MapLayer, IMapLayerController> pair in components.Layers)
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
+
+                layers[MapLayer.SatelliteAtlas].sharedActive = true;
+                layers[MapLayer.ParcelsAtlas].sharedActive = false;
             }
             catch (OperationCanceledException)
             {
@@ -90,6 +94,13 @@ namespace DCLServices.MapRendererV2
             return mapCameraController;
         }
 
+        private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
+        {
+            mapCameraController.OnReleasing -= ReleaseCamera;
+            DisableLayers(mapCameraController.EnabledLayers);
+            mapCameraPool.Release(mapCameraController);
+        }
+
         public void SetSharedLayer(MapLayer mask, bool active)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
@@ -109,20 +120,13 @@ namespace DCLServices.MapRendererV2
             }
         }
 
-        private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
-        {
-            mapCameraController.OnReleasing -= ReleaseCamera;
-            DisableLayers(mapCameraController.EnabledLayers);
-            mapCameraPool.Release(mapCameraController);
-        }
-
         private void EnableLayers(MapLayer mask)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
                 if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                if (mapLayerStatus.ActivityOwners == 0)
+                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive == true)
                 {
                     // Cancel deactivation flow
                     ResetCancellationSource(mapLayerStatus);
@@ -141,7 +145,7 @@ namespace DCLServices.MapRendererV2
 
                 mapLayerStatus.ActivityOwners = mapLayerStatus.ActivityOwners - 1 < 0 ? 0 : mapLayerStatus.ActivityOwners - 1;
 
-                if (mapLayerStatus.ActivityOwners == 0)
+                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive == false)
                 {
                     // Cancel activation flow
                     ResetCancellationSource(mapLayerStatus);
