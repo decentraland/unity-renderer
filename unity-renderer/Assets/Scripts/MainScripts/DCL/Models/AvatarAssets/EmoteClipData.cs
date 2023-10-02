@@ -133,9 +133,9 @@ namespace DCL.Emotes
         {
             GUILayout.BeginArea(new Rect(10,10,5000,5000));
             GUI.color = Color.magenta;
-            GUI.skin.label.fontSize = 28;
+            GUI.skin.label.fontSize = 20;
             GUILayout.Label("Animator enabled: " + animation.enabled);
-            GUILayout.Space(50);
+            GUILayout.Space(25);
 
             if (animation != null)
             {
@@ -148,17 +148,19 @@ namespace DCL.Emotes
                 }
             }
 
-            GUILayout.Space(50);
-
-            if (renderers != null)
+            if (ExtraContent != null)
             {
-                foreach (Renderer renderer in renderers)
-                {
-                    GUILayout.Label($"Renderer {renderer.name} enabled: {renderer.enabled}");
-                }
+                var pos = ExtraContent.transform.localPosition;
+                var pos2 = ExtraContent.transform.position;
+                GUILayout.Label($"Local Pos: {pos.x},{pos.y},{pos.z}");
+                GUILayout.Label($"Global Pos: {pos2.x},{pos2.y},{pos2.z}");
             }
 
+            GUILayout.Space(25);
 
+            if (renderers != null)
+                foreach (Renderer renderer in renderers)
+                    GUILayout.Label($"Renderer {renderer.name} enabled: {renderer.enabled} visible: {renderer.isVisible} Layer: {LayerMask.LayerToName(renderer.gameObject.layer)}");
 
             GUILayout.EndArea();
         }
