@@ -98,6 +98,20 @@ namespace DCLServices.MapRendererV2
             mapCameraPool.Release(mapCameraController);
         }
 
+        public void SetSatelliteViewMode(bool isActive)
+        {
+            if (isActive)
+            {
+                EnableLayers(MapLayer.SatelliteAtlas);
+                DisableLayers(MapLayer.Atlas);
+            }
+            else
+            {
+                EnableLayers(MapLayer.Atlas);
+                DisableLayers(MapLayer.SatelliteAtlas);
+            }
+        }
+
         private void EnableLayers(MapLayer mask)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)

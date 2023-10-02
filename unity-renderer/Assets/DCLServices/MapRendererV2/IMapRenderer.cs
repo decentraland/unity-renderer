@@ -7,5 +7,7 @@ namespace DCLServices.MapRendererV2
     public interface IMapRenderer : IService
     {
         IMapCameraController RentCamera(in MapCameraInput cameraInput);
+
+        void SetSatelliteViewMode(bool isActive);
     }
 }
