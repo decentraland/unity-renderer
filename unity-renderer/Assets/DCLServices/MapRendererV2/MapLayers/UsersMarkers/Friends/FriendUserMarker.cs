@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.CoordsUtils;
@@ -29,6 +30,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
         private MapMarkerPoolableBehavior<FriendUserMarkerObject> poolableBehavior;
         internal string profilePicUrl { get; private set; }
         internal string profileName { get; private set; }
+        private AssetPromise_Texture profilePicturePromise;
 
         internal FriendUserMarker(IUnityObjectPool<FriendUserMarkerObject> pool, IMapCullingController mapCullingController, ICoordsUtils coordsUtils, Vector3Variable worldOffset)
         {
@@ -97,13 +99,20 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
         public void OnMapObjectBecameVisible(IFriendUserMarker obj)
         {
-            poolableBehavior.OnBecameVisible().profileName.text = profileName;
+            FriendUserMarkerObject friendUserMarkerObject = poolableBehavior.OnBecameVisible();
+            friendUserMarkerObject.profileName.text = profileName;
+            profilePicturePromise = new AssetPromise_Texture(profilePicUrl);
+            profilePicturePromise.OnSuccessEvent += (assetTexture) => OnTextureDownloaded(assetTexture, friendUserMarkerObject.profilePicture);
+            AssetPromiseKeeper_Texture.i.Keep(profilePicturePromise);
         }
+
+        private void OnTextureDownloaded(Asset_Texture obj, SpriteRenderer spriteRenderer) =>
+            spriteRenderer.sprite = Sprite.Create(obj.texture, new Rect(0.0f, 0.0f, obj.texture.width, obj.texture.height), new Vector2(0.5f,0.5f));
 
         public void OnMapObjectCulled(IFriendUserMarker obj)
         {
             poolableBehavior.OnBecameInvisible();
-            // Keep tracking position
+            AssetPromiseKeeper_Texture.i.Forget(profilePicturePromise);
         }
     }
 }

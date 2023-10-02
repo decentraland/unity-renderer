@@ -72,6 +72,9 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
             if (await friendsController.GetFriendshipStatus(player.id) != FriendshipStatus.FRIEND)
                 return;
 
+            if (markers.ContainsKey(player.id))
+                return;
+
             UserProfile recipientProfile = userProfileBridge.Get(player.id);
 
             try { recipientProfile ??= await userProfileBridge.RequestFullUserProfileAsync(player.id, CancellationToken.None); }
