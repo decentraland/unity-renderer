@@ -10,9 +10,9 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
         internal SpriteRenderer[] spriteRenderers { get; private set; }
 
         [field: SerializeField]
-        internal Image profilePicture { get; private set; }
+        internal SpriteRenderer profilePicture { get; private set; }
 
         [field: SerializeField]
-        internal TMP_Text profileName { get; private set; }
+        internal TextMeshPro profileName { get; private set; }
     }
 }

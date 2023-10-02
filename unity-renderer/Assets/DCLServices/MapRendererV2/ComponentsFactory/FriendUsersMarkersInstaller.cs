@@ -40,6 +40,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 for (var i = 0; i < obj.spriteRenderers.Length; i++)
                     obj.spriteRenderers[i].sortingOrder = MapRendererDrawOrder.FRIEND_USER_MARKERS;
 
+                obj.profileName.sortingOrder = MapRendererDrawOrder.FRIEND_USER_MARKERS;
                 coordsUtils.SetObjectScale(obj);
             }
 

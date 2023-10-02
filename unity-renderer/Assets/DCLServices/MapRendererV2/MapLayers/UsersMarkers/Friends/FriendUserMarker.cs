@@ -12,6 +12,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 {
     internal class FriendUserMarker : IFriendUserMarker
     {
+        private const int MAX_NAME_LENGTH = 15;
+
         private readonly ICoordsUtils coordsUtils;
         private readonly Vector3Variable worldOffset;
 
@@ -25,6 +27,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
         public Vector2 Pivot { get; }
 
         private MapMarkerPoolableBehavior<FriendUserMarkerObject> poolableBehavior;
+        internal string profilePicUrl { get; private set; }
+        internal string profileName { get; private set; }
 
         internal FriendUserMarker(IUnityObjectPool<FriendUserMarkerObject> pool, IMapCullingController mapCullingController, ICoordsUtils coordsUtils, Vector3Variable worldOffset)
         {
@@ -46,12 +50,12 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
         public void SetProfilePicture(string url)
         {
-            //poolableBehavior.instance.profilePicture.SetImage(url);
+            profilePicUrl = url;
         }
 
         public void SetPlayerName(string name)
         {
-            poolableBehavior.instance.profileName.text = name;
+            this.profileName = name.Length > MAX_NAME_LENGTH ? name.Substring(0, MAX_NAME_LENGTH) : name;
         }
 
         private async UniTaskVoid TrackPosition(Player player, CancellationToken ct)
@@ -93,7 +97,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
         public void OnMapObjectBecameVisible(IFriendUserMarker obj)
         {
-            poolableBehavior.OnBecameVisible();
+            poolableBehavior.OnBecameVisible().profileName.text = profileName;
         }
 
         public void OnMapObjectCulled(IFriendUserMarker obj)
