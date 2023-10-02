@@ -10,7 +10,8 @@ import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
-  getPickRealmsAlgorithmConfig
+  getPickRealmsAlgorithmConfig,
+  isMainRealmEnabled
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
@@ -78,6 +79,13 @@ function* pickCatalystRealm() {
 
   const algorithm = createAlgorithm(config)
 
+  const x = yield select(isMainRealmEnabled)
+
+  console.log('IS MAIN', x)
+  if (x) {
+    return urlWithProtocol('https://realm-provider.decentraland.zone/main')
+  }
+
   const realm: Realm = yield call(
     candidateToRealm,
     algorithm.pickCandidate(filteredCandidates, [currentUserParcel.x, currentUserParcel.y])
@@ -88,6 +96,9 @@ function* pickCatalystRealm() {
 
 function getInformationForCatalystPicker(state: RootState) {
   const config = getPickRealmsAlgorithmConfig(state)
+  const x = isMainRealmEnabled(state)
+
+  console.log('IS MAIN', x)
   return {
     candidates: getCatalystCandidates(state),
     currentUserParcel: getParcelPosition(state),

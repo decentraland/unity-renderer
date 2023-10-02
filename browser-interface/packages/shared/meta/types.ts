@@ -52,7 +52,7 @@ export type FeatureFlagsName =
   | 'decoupled_loading_screen'
   | 'seamless_login_variant'
   | 'my_account'
-
+  | 'main-realm'
 
 export type BannedUsers = Record<string, Ban[]>
 
