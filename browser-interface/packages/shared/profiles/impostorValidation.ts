@@ -1,11 +1,10 @@
 import {Avatar} from "@dcl/schemas";
 import {sha3} from "eth-connect";
-import { ecdsaRecover } from 'ethereum-cryptography/secp256k1-compat'
+import { ecdsaVerify } from 'ethereum-cryptography/secp256k1-compat'
 
-export function isImpostor(avatar: Avatar, profileHash: string, profileSignedHash: string, signer: string | undefined): boolean {
+export function isImpostor(avatar: Avatar, profileHash: string, profileSignedHash: string, signerPublicKey: string): boolean {
   let checksum = getProfileChecksum(avatar);
-  const recoveredSigner = getSigner(profileHash, profileSignedHash);
-  return checksum != profileHash || recoveredSigner != signer
+  return checksum != profileHash || !verifySignature(profileHash, profileSignedHash, signerPublicKey)
 }
 
 export function getProfileChecksum(avatar: Avatar): string {
@@ -13,9 +12,8 @@ export function getProfileChecksum(avatar: Avatar): string {
   return sha3(payload);
 }
 
-function getSigner(hash: string, signedHash: string): string {
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder("utf-8");
-  const signature = encoder.encode(signedHash);
-  return decoder.decode(ecdsaRecover(signature, signature[64] === 0x1c ? 1 : 0, encoder.encode(hash)))
+function verifySignature(hash: string, signedHash: string, publicKey: string): boolean {
+  return ecdsaVerify(Buffer.from(signedHash, 'hex'),
+    Buffer.from(hash, 'hex'),
+    Buffer.from(publicKey, 'hex'))
 }

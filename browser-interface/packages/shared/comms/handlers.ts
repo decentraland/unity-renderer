@@ -247,18 +247,11 @@ async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   profile.ethAddress = message.address
   peerTrackingInfo.lastProfileVersion = profile.version
 
-  let signerAddress: string | undefined
-  const trustedRealm = await storeCondition(getRealmAdapter);
-  if (trustedRealm?.baseUrl == data.catalystDomain) {
-    signerAddress = trustedRealm.about.lambdas?.address
-  } else {
-    signerAddress = resolveRealmCandidateFromBaseUrl(data.catalystDomain)?.address
-  }
-
   const profileHash = data.profileHash;
   const profileSignedHash = data.profileSignedHash;
+  const signerPublicKey: string = resolveRealmCandidateFromBaseUrl(data.catalystDomain)?.publicKey ?? ''
 
-  if (isImpostor(profile, profileHash, profileSignedHash, signerAddress)) {
+  if (isImpostor(profile, profileHash, profileSignedHash, signerPublicKey)) {
     console.warn('Impostor detected', message.address)
     return
   }
