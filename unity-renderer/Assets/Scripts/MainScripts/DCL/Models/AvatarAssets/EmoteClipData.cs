@@ -154,6 +154,7 @@ namespace DCL.Emotes
                 var pos2 = ExtraContent.transform.position;
                 GUILayout.Label($"Local Pos: {pos.x},{pos.y},{pos.z}");
                 GUILayout.Label($"Global Pos: {pos2.x},{pos2.y},{pos2.z}");
+                GUILayout.Label($"Parent: {ExtraContent.transform.parent.name}");
             }
 
             GUILayout.Space(25);
