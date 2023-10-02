@@ -25,12 +25,13 @@ public class AddressablesEssentialsTests
         Assert.NotNull(asset);
 
         //We check that the 31 embedded emotes are present
-        Assert.AreEqual(asset.emotes.Count(), 31);
+        EmbeddedEmote[] embeddedEmotes = asset.GetEmbeddedEmotes();
+        Assert.AreEqual(embeddedEmotes.Count(), 31);
 
         //We validate just the first emote, wave
-        Assert.AreEqual(asset.emotes[0].id, "wave");
-        Assert.NotNull(asset.emotes[0].femaleAnimation);
-        Assert.NotNull(asset.emotes[0].maleAnimation);
+        Assert.AreEqual(embeddedEmotes[0].id, "wave");
+        Assert.NotNull(embeddedEmotes[0].femaleAnimation);
+        Assert.NotNull(embeddedEmotes[0].maleAnimation);
     }
 
     [Test]

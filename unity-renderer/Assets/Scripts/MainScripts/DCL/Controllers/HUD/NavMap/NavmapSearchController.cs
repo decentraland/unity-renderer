@@ -52,7 +52,6 @@ public class NavmapSearchController : IDisposable
     {
         mapCamera.TranslateTo(
             coordinates: coordinates,
-            zoom: navmapZoomViewController.ResetZoomToMidValue(),
             duration: TRANSLATION_DURATION,
             onComplete: () => toastViewController.ShowPlaceToast(new MapRenderImage.ParcelClickData(){Parcel = coordinates, WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f)}, showUntilClick: true));
 

@@ -99,7 +99,6 @@ namespace HUD.NavMap.Tests
             // Assert
             cameraController.Received()
                             .TranslateTo(Arg.Any<Vector2>(),
-                                 Arg.Is(zoomViewController.ResetZoomToMidValue()),
                                  Arg.Is(NavMapLocationControlsController.TRANSLATION_DURATION), Arg.Any<Action>());
         }
 
@@ -119,7 +118,6 @@ namespace HUD.NavMap.Tests
             cameraController.Received()
                             .TranslateTo(
                                  Arg.Any<Vector2>(),
-                                 Arg.Is(zoomViewController.ResetZoomToMidValue()),
                                  Arg.Is(NavMapLocationControlsController.TRANSLATION_DURATION));
         }
     }

@@ -14,7 +14,7 @@ namespace AvatarSystem
 {
     public class AvatarEmotesController : IAvatarEmotesController
     {
-        private const float BASE_VOLUME = 0.4f;
+        private const float BASE_VOLUME = 0.2f;
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
 
@@ -59,25 +59,24 @@ namespace AvatarSystem
             try
             {
                 IEmoteReference emoteReference = await emotesService.RequestEmote(emoteKey, cts.Token);
+                if (emoteReference == null) return;
                 animator.EquipEmote(emoteId, emoteReference.GetData());
                 equippedEmotes[emoteKey] = emoteReference;
                 OnEmoteEquipped?.Invoke(emoteId, emoteReference);
             }
             catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool ignoreTimestamp)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
-            var volume = GetEmoteVolume();
-            if (equippedEmotes.ContainsKey(emoteKey))
-                animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude);
+            if (!equippedEmotes.ContainsKey(emoteKey)) return;
+
+            float volume = GetEmoteVolume();
+            animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, ignoreTimestamp);
         }
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
@@ -122,7 +121,6 @@ namespace AvatarSystem
                 equippedEmotes.Remove(emoteKey);
             }
         }
-
 
         public void Dispose()
         {

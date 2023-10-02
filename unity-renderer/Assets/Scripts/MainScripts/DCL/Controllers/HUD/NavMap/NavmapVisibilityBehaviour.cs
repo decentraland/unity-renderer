@@ -36,11 +36,14 @@ namespace DCL
         private readonly BaseVariable<bool> navmapIsRendered = DataStore.i.HUDs.navmapIsRendered;
 
         private IMapCameraController cameraController;
+        private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
-        public NavmapVisibilityBehaviour(BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavmapSearchComponentView searchView, NavMapLocationControlsView locationControlsView,
+        public NavmapVisibilityBehaviour(BaseVariable<FeatureFlag> featureFlagsFlags, BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavmapSearchComponentView searchView, NavMapLocationControlsView locationControlsView,
             NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
         {
+            this.featureFlagsFlags = featureFlagsFlags;
+
             this.navmapVisible = navmapVisible;
 
             this.zoomView = zoomView;
@@ -50,7 +53,7 @@ namespace DCL
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
-            navmapZoomViewController = new NavmapZoomViewController(zoomView);
+            navmapZoomViewController = new NavmapZoomViewController(zoomView, featureFlagsFlags);
             locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs(), navmapZoomViewController, navmapToastViewController);
 
@@ -151,7 +154,7 @@ namespace DCL
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
 
-                if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                if (featureFlagsFlags.Get().IsFeatureEnabled("map_focus_home_or_user"))
                     locationControlsController.Activate(cameraController);
                 else
                     locationControlsController.Hide();

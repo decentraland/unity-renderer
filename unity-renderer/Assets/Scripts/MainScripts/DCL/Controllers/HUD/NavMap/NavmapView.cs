@@ -34,7 +34,7 @@ namespace DCL
 
         private void Start()
         {
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
                 navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
             navmapFilterComponentController = new NavmapFilterComponentController(filterView);
 

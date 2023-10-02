@@ -11,6 +11,7 @@ import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
+import { commsLogger } from 'shared/comms/logger'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -23,16 +24,14 @@ function craftMessage(packet: ClientPacket): Uint8Array {
 
 export async function createArchipelagoConnection(
   baseUrl: string,
+  archipelagoUrl: string,
   about: AboutResponse,
   identity: ExplorerIdentity
 ): Promise<IRealmAdapter> {
   const logger = createLogger('Archipelago handshake: ')
   const address = identity.address
-  const url = new URL('/archipelago/ws', baseUrl).toString()
-  const wsUrl = url.replace(/^http/, 'ws')
-
   const connected = future<void>()
-  const ws = new WebSocket(wsUrl, 'archipelago')
+  const ws = new WebSocket(archipelagoUrl, 'archipelago')
   ws.binaryType = 'arraybuffer'
   ws.onopen = () => connected.resolve()
 

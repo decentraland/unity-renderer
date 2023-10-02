@@ -10,7 +10,7 @@ namespace DCL.Emotes
         public bool Loop { get; }
 
         [CanBeNull] private Animation animation;
-        [CanBeNull] public GameObject ExtraContent { get; }
+        [CanBeNull] public GameObject ExtraContent { get; set; }
 
         [CanBeNull] private Renderer[] renderers;
 
@@ -35,6 +35,16 @@ namespace DCL.Emotes
 
             if (animation == null)
                 Debug.LogError($"Animation {AvatarClip.name} extra content does not have an animation");
+            else
+            {
+                animation.wrapMode = WrapMode.Default;
+
+                foreach (AnimationState state in animation)
+                {
+                    if (state.clip == AvatarClip) continue;
+                    state.wrapMode = Loop ? WrapMode.Loop : WrapMode.Once;
+                }
+            }
 
             renderers = ExtraContent.GetComponentsInChildren<Renderer>();
         }
@@ -53,26 +63,24 @@ namespace DCL.Emotes
 
             if (animation != null)
             {
-                var layer = 0;
-
                 animation.enabled = true;
 
                 foreach (AnimationState state in animation)
                 {
                     if (state.clip == AvatarClip) continue;
-                    state.layer = layer++;
-                    state.wrapMode = Loop ? WrapMode.Loop : WrapMode.Once;
-                    animation.Play(state.clip.name);
+
+                    // this reduntant stop is intended, sometimes when animations are triggered their first frame is not 0
+                    animation.Stop(state.clip.name);
+                    animation.Play(state.clip.name, PlayMode.StopAll);
                 }
             }
 
-            if (AudioSource != null)
-            {
-                AudioSource.spatialBlend = spatial ? 1 : 0;
-                AudioSource.volume = volume;
-                AudioSource.loop = Loop;
-                AudioSource.Play();
-            }
+            if (AudioSource == null) return;
+
+            AudioSource.spatialBlend = spatial ? 1 : 0;
+            AudioSource.volume = volume;
+            AudioSource.loop = Loop;
+            AudioSource.Play();
         }
 
         public void Stop()
