@@ -16,6 +16,7 @@ namespace DCL.ContentModeration
     {
         private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
         private const int REPORT_PLACE_TIMEOUT = 30;
+        private const string LEARN_MORE_URL = "https://decentraland.org/blog/";
 
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
@@ -201,10 +202,7 @@ namespace DCL.ContentModeration
             }
         }
 
-        private void OnLearnMoreClicked()
-        {
-            // TODO (Santi): Open the correct Learn More url
-            browserBridge.OpenUrl("https://www.google.es");
-        }
+        private void OnLearnMoreClicked() =>
+            browserBridge.OpenUrl(LEARN_MORE_URL);
     }
 }
