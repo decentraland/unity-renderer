@@ -370,7 +370,8 @@ function* respondCommsProfileRequests() {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
         profileHash: hash.hash,
-        profileSignedHash: hash.signedHash
+        profileSignedHash: hash.signedHash,
+        catalystDomain: realmAdapter.baseUrl
       }
       yield apply(context, context.sendProfileResponse, [response])
     }

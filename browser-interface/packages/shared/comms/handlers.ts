@@ -33,7 +33,9 @@ import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import {isImpostor} from "../profiles/impostorValidation";
-import {resolveRealmFromBaseUrl} from "../dao";
+import {resolveRealmCandidateFromBaseUrl} from "../dao";
+import {storeCondition} from "../../lib/redux";
+import {getRealmAdapter} from "../realm/selectors";
 
 type PingRequest = {
   alias: number
@@ -245,13 +247,18 @@ async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   profile.ethAddress = message.address
   peerTrackingInfo.lastProfileVersion = profile.version
 
-  // TODO: this is wrong, cant use data.baseUrl. Need to pass a new parameter in ProfileResponse for the catalyst's domain
-  const realm = resolveRealmFromBaseUrl(data.baseUrl);
+  let signerAddress: string | undefined
+  const trustedRealm = await storeCondition(getRealmAdapter);
+  if (trustedRealm?.baseUrl == data.catalystDomain) {
+    signerAddress = trustedRealm.about.lambdas?.address
+  } else {
+    signerAddress = resolveRealmCandidateFromBaseUrl(data.catalystDomain)?.address
+  }
 
   const profileHash = data.profileHash;
   const profileSignedHash = data.profileSignedHash;
 
-  if (isImpostor(profile, profileHash, profileSignedHash, realm?.address)) {
+  if (isImpostor(profile, profileHash, profileSignedHash, signerAddress)) {
     console.warn('Impostor detected', message.address)
     return
   }

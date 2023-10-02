@@ -157,7 +157,7 @@ export async function resolveRealmAboutFromBaseUrl(
   return { about: res.result!, baseUrl: realmBaseUrl }
 }
 
-export function resolveRealmFromBaseUrl(baseUrl: string) {
+export function resolveRealmCandidateFromBaseUrl(baseUrl: string) {
   const candidates: Candidate[] = getCatalystCandidates(store.getState())
 
   for (const candidate of candidates) {
