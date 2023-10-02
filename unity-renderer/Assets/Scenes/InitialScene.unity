@@ -105,7 +105,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 2
+    serializedVersion: 3
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -118,7 +118,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    buildHeightMesh: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -129,6 +129,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2098027020916773621, guid: ceb6d50874be1824d8eb3e16a06470ce,
@@ -192,6 +193,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceb6d50874be1824d8eb3e16a06470ce, type: 3}
 --- !u!1 &1444882335
 GameObject:
@@ -228,22 +232,23 @@ MonoBehaviour:
     ignoreGlobalScenes: 0
     msgStepByStep: 0
     logWs: 0
+    overrideUserID: 
   OpenBrowserOnStart: 1
   webSocketSSL: 0
   kernelVersion: 
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 3
-  customURL: https://play.decentraland.zone/?
+  customURL: https://play.decentraland.zone/?ENABLE_navmap_header&ENABLE_navmap-satellite-view&
   network: 0
   realm: loki
   startInCoords: {x: 0, y: 0}
+  overrideUserID: 
   forceLocalComms: 0
   enableTutorial: 0
   builderInWorld: 0
   soloScene: 0
   disableAssetBundles: 0
-  enableGLTFast: 0
   enableDebugMode: 0
   debugPanelMode: 0
   disableGLTFDownloadThrottle: 0
@@ -256,11 +261,17 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1444882335}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.5098898, y: -0.5752002, z: 7.8599234}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 1405032993}
+  - {fileID: 1444882337}

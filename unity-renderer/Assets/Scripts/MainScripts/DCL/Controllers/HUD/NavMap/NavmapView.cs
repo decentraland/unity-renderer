@@ -13,7 +13,9 @@ namespace DCL
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] private NavMapLocationControlsView locationControlsView;
         [SerializeField] private NavmapZoomView zoomView;
+        [SerializeField] private NavMapChunksLayersView chunksLayersView;
 
+        [Space]
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
 
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
@@ -28,7 +30,7 @@ namespace DCL
         private void Start()
         {
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,  chunksLayersView,
                 navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
