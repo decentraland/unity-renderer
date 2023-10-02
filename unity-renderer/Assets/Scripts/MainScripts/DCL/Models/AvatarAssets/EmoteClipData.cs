@@ -128,5 +128,39 @@ namespace DCL.Emotes
                 }
             }
         }
+
+        public void OnGUI()
+        {
+            GUILayout.BeginArea(new Rect(10,10,5000,5000));
+            GUI.color = Color.magenta;
+            GUI.skin.label.fontSize = 28;
+            GUILayout.Label("Animator enabled: " + animation.enabled);
+            GUILayout.Space(50);
+
+            if (animation != null)
+            {
+                foreach (AnimationState state in animation)
+                {
+                    if (state.clip == AvatarClip) continue;
+                    GUILayout.Label("Clip: " + state.clip.name);
+                    GUILayout.Label(" - Animation State Enabled: " + state.enabled);
+                    GUILayout.Label(" - Animation State Time: " + state.time);
+                }
+            }
+
+            GUILayout.Space(50);
+
+            if (renderers != null)
+            {
+                foreach (Renderer renderer in renderers)
+                {
+                    GUILayout.Label($"Renderer {renderer.name} enabled: {renderer.enabled}");
+                }
+            }
+
+
+
+            GUILayout.EndArea();
+        }
     }
 }

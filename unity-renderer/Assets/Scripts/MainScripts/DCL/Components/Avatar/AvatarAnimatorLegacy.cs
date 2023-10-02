@@ -406,6 +406,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
     }
 
+    // TODO: REMOVE THIS
+    private void OnGUI()
+    {
+        lastExtendedEmoteData?.OnGUI();
+    }
+
     private int GetCurrentEmoteLoopCount() =>
         Mathf.RoundToInt(currentEmote.time / currentEmote.length);
 
