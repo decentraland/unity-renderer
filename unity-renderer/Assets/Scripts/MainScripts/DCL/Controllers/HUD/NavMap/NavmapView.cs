@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
@@ -36,7 +37,7 @@ namespace DCL
         {
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
                 navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
-            navmapFilterComponentController = new NavmapFilterComponentController(filterView);
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);

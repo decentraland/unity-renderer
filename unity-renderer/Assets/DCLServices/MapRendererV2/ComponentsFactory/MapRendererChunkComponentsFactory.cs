@@ -9,6 +9,7 @@ using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.ParcelHighlight;
+using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
@@ -130,7 +131,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CreateAtlas(),
                 coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, Environment.i.serviceLocator.Get<IPlacesAPIService>(), cancellationToken),
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),

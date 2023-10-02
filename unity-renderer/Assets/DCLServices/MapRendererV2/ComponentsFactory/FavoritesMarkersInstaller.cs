@@ -24,6 +24,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
+            IPlacesAPIService placesAPIService,
             CancellationToken cancellationToken
         )
         {
@@ -43,7 +44,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 defaultCapacity: PREWARM_COUNT);
 
             var controller = new FavoritesMarkerController(
-                Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                placesAPIService,
                 objectsPool,
                 CreateMarker,
                 PREWARM_COUNT,

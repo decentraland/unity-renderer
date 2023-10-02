@@ -1,5 +1,6 @@
 using DCLServices.MapRendererV2.MapLayers;
 using System;
+using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,9 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
     [SerializeField] private Button filterButton;
     [SerializeField] private Button closeButtonArea;
     [SerializeField] private GameObject filtersContainer;
+    [SerializeField] private Button infoButton;
+    [SerializeField] private Button daoButton;
+    [SerializeField] private TooltipComponentView tooltip;
 
     [SerializeField] private Toggle favoritesToggle;
     [SerializeField] private Toggle poisToggle;
@@ -15,6 +19,7 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
     [SerializeField] private Toggle peopleToggle;
 
     public event Action<MapLayer, bool> OnFilterChanged;
+    public event Action OnClickedDAO;
 
     public override void RefreshControl()
     {
@@ -28,6 +33,10 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
         filterButton.onClick.AddListener(OnFilterButtonClicked);
         closeButtonArea.onClick.RemoveAllListeners();
         closeButtonArea.onClick.AddListener(OnFilterButtonClicked);
+        infoButton.onClick.RemoveAllListeners();
+        infoButton.onClick.AddListener(OnInfoButtonClicked);
+        daoButton.onClick.RemoveAllListeners();
+        daoButton.onClick.AddListener(() => OnClickedDAO?.Invoke());
 
         favoritesToggle.onValueChanged.RemoveAllListeners();
         poisToggle.onValueChanged.RemoveAllListeners();
@@ -44,6 +53,12 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
         });
 
         filtersContainer.SetActive(false);
+    }
+
+    private void OnInfoButtonClicked()
+    {
+        if (!tooltip.gameObject.activeSelf)
+            tooltip.Show();
     }
 
     private void OnFilterButtonClicked() =>
