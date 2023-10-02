@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace DCL.ContentModeration
 {
-    public class ContentModerationTaskbarButtonComponentView : BaseComponentView
+    public class ContentModerationReportingButtonComponentView : BaseComponentView, IContentModerationReportingButtonComponentView
     {
         [SerializeField] internal Button contentModerationButton;
         [SerializeField] internal TMP_Text contentModerationRatingText;

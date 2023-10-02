@@ -6,7 +6,6 @@ using DCL.Interface;
 using DCL.Social.Friends;
 using Analytics;
 using DCL.Controllers;
-using DCL.Social.Chat;
 using System;
 using System.Threading;
 using TMPro;
@@ -67,8 +66,6 @@ public class TaskbarHUDController : IHUD
     internal BaseVariable<int> numOfLoadedExperiences => DataStore.i.experiencesViewer.numOfLoadedExperiences;
     internal BaseVariable<string> openChat => DataStore.i.HUDs.openChat;
     internal BaseVariable<bool> isPromoteChannelsToastVisible => DataStore.i.channels.isPromoteToastVisible;
-    internal bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
-    internal BaseVariable<(bool isVisible, SceneContentCategory rating)> reportingScenePanelVisible => DataStore.i.contentModeration.reportingScenePanelVisible;
 
     public TaskbarHUDController(IChatController chatController, IFriendsController friendsController, ISupportAnalytics analytics, IWorldState worldState)
     {
@@ -105,7 +102,6 @@ public class TaskbarHUDController : IHUD
         view.OnExperiencesToggle += HandleExperiencesToggle;
         view.OnVoiceChatToggle += HandleVoiceChatToggle;
         view.OnIntercomPressed += OpenIntercom;
-        view.OnContentModerationPressed += OpenContentModerationPanel;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -125,8 +121,6 @@ public class TaskbarHUDController : IHUD
 
         isExperiencesViewerOpen.OnChange += IsExperiencesViewerOpenChanged;
 
-        CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
-
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
@@ -144,35 +138,12 @@ public class TaskbarHUDController : IHUD
         NumOfLoadedExperiencesChanged(numOfLoadedExperiences.Get(), 0);
 
         openChat.OnChange += OpenChat;
-
-        if (!isContentModerationFeatureEnabled)
-            view.contentModerationTaskbarButton.gameObject.SetActive(false);
-    }
-
-    private void OnSceneNumberChanged(int currentSceneNumber, int _)
-    {
-        if (!isContentModerationFeatureEnabled)
-            return;
-
-        if (!worldState.TryGetScene(currentSceneNumber, out IParcelScene currentParcelScene))
-            return;
-
-        currentContentCategory = currentParcelScene.contentCategory;
-        view.contentModerationTaskbarButton.SetContentCategory(currentParcelScene.contentCategory);
     }
 
     private void OpenIntercom()
     {
         analytics.SendOpenSupport(OpenSupportSource.Taskbar);
         WebInterface.OpenURL(INTERCOM_URL);
-    }
-
-    private void OpenContentModerationPanel()
-    {
-        if (!isContentModerationFeatureEnabled)
-            return;
-
-        reportingScenePanelVisible.Set((!reportingScenePanelVisible.Get().isVisible, currentContentCategory));
     }
 
     private void HandleFriendsToggle(bool show)
@@ -757,7 +728,6 @@ public class TaskbarHUDController : IHUD
         isExperiencesViewerOpen.OnChange -= IsExperiencesViewerOpenChanged;
         isExperiencesViewerInitialized.OnChange -= InitializeExperiencesViewer;
         numOfLoadedExperiences.OnChange -= NumOfLoadedExperiencesChanged;
-        CommonScriptableObjects.sceneNumber.OnChange -= OnSceneNumberChanged;
 
         openPrivateChatCancellationToken.Cancel();
         openPrivateChatCancellationToken.Dispose();

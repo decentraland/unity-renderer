@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using DCL;
-using DCL.ContentModeration;
-using DCL.Interface;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +26,6 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal TaskbarButton experiencesButton;
     [SerializeField] internal RectTransform socialTooltipReference;
     [SerializeField] internal Button intercomButton;
-    [SerializeField] internal ContentModerationTaskbarButtonComponentView contentModerationTaskbarButton;
 
     private readonly Dictionary<TaskbarButtonType, TaskbarButton> buttonsByType =
         new Dictionary<TaskbarButtonType, TaskbarButton>();
@@ -41,7 +38,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action<bool> OnVoiceChatToggle;
     public event System.Action<bool> OnExperiencesToggle;
     public event Action OnIntercomPressed;
-    public event Action OnContentModerationPressed;
 
     private HUDCanvasCameraModeController hudCanvasCameraModeController;
 
@@ -57,8 +53,6 @@ public class TaskbarHUDView : MonoBehaviour
         hudCanvasCameraModeController = new HUDCanvasCameraModeController(GetComponent<Canvas>(), DataStore.i.camera.hudsCamera);
         intercomButton.onClick.RemoveAllListeners();
         intercomButton.onClick.AddListener(()=>OnIntercomPressed?.Invoke());
-        contentModerationTaskbarButton.OnContentModerationPressed -= OnContentModerationButtonPressed;
-        contentModerationTaskbarButton.OnContentModerationPressed += OnContentModerationButtonPressed;
     }
 
     private void Initialize()
@@ -237,9 +231,6 @@ public class TaskbarHUDView : MonoBehaviour
         else
             taskbarAnimator.Hide(instant);
     }
-
-    private void OnContentModerationButtonPressed() =>
-        OnContentModerationPressed?.Invoke();
 
     public enum TaskbarButtonType
     {

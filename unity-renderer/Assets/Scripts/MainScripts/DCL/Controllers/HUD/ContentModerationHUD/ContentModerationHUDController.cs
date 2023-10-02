@@ -22,6 +22,7 @@ namespace DCL.ContentModeration
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
         private readonly IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView;
         private readonly IContentModerationReportingComponentView contentModerationReportingComponentView;
+        private readonly IContentModerationReportingButtonComponentView contentModerationReportingButtonComponentView;
         private readonly IWorldState worldState;
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ContentModeration contentModerationDataStore;
@@ -29,6 +30,7 @@ namespace DCL.ContentModeration
         private readonly IPlacesAPIService placesAPIService;
         private readonly IUserProfileBridge userProfileBridge;
 
+        private SceneContentCategory currentContentCategory;
         private CancellationTokenSource reportPlaceCts;
 
         public ContentModerationHUDController(
@@ -36,6 +38,7 @@ namespace DCL.ContentModeration
             IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView,
             IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView,
             IContentModerationReportingComponentView contentModerationReportingComponentView,
+            IContentModerationReportingButtonComponentView contentModerationReportingButtonComponentView,
             IWorldState worldState,
             DataStore_Settings settingsDataStore,
             DataStore_ContentModeration contentModerationDataStore,
@@ -47,6 +50,7 @@ namespace DCL.ContentModeration
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
             this.adultContentEnabledNotificationComponentView = adultContentEnabledNotificationComponentView;
             this.contentModerationReportingComponentView = contentModerationReportingComponentView;
+            this.contentModerationReportingButtonComponentView = contentModerationReportingButtonComponentView;
             this.worldState = worldState;
             this.settingsDataStore = settingsDataStore;
             this.contentModerationDataStore = contentModerationDataStore;
@@ -65,6 +69,7 @@ namespace DCL.ContentModeration
             contentModerationReportingComponentView.OnPanelClosed += OnContentModerationReportingClosed;
             contentModerationReportingComponentView.OnSendClicked += OnContentModerationReportingSendClicked;
             contentModerationReportingComponentView.OnLearnMoreClicked += OnLearnMoreClicked;
+            contentModerationReportingButtonComponentView.OnContentModerationPressed += OpenContentModerationPanel;
         }
 
         public void Dispose()
@@ -79,6 +84,7 @@ namespace DCL.ContentModeration
             contentModerationReportingComponentView.OnPanelClosed -= OnContentModerationReportingClosed;
             contentModerationReportingComponentView.OnSendClicked -= OnContentModerationReportingSendClicked;
             contentModerationReportingComponentView.OnLearnMoreClicked -= OnLearnMoreClicked;
+            contentModerationReportingButtonComponentView.OnContentModerationPressed -= OpenContentModerationPanel;
 
             reportPlaceCts.SafeCancelAndDispose();
         }
@@ -104,6 +110,9 @@ namespace DCL.ContentModeration
                     adultContentSceneWarningComponentView.HideModal();
                     break;
             }
+
+            currentContentCategory = currentParcelScene.contentCategory;
+            contentModerationReportingButtonComponentView.SetContentCategory(currentParcelScene.contentCategory);
         }
 
         private void OnGoToSettingsPanelClicked() =>
@@ -204,5 +213,8 @@ namespace DCL.ContentModeration
 
         private void OnLearnMoreClicked() =>
             browserBridge.OpenUrl(LEARN_MORE_URL);
+
+        private void OpenContentModerationPanel() =>
+            contentModerationDataStore.reportingScenePanelVisible.Set((!contentModerationDataStore.reportingScenePanelVisible.Get().isVisible, currentContentCategory));
     }
 }
