@@ -1,9 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL.Helpers;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
-using System;
 using System.Threading;
 using TMPro;
 using UnityEngine;
