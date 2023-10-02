@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class NavmapFilterComponentView : BaseComponentView, INavmapFilterComponentView
 {
     [SerializeField] private Button filterButton;
+    [SerializeField] private Button closeButtonArea;
     [SerializeField] private GameObject filtersContainer;
 
     [SerializeField] private Toggle favoritesToggle;
@@ -25,6 +26,8 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
 
         filterButton.onClick.RemoveAllListeners();
         filterButton.onClick.AddListener(OnFilterButtonClicked);
+        closeButtonArea.onClick.RemoveAllListeners();
+        closeButtonArea.onClick.AddListener(OnFilterButtonClicked);
 
         favoritesToggle.onValueChanged.RemoveAllListeners();
         poisToggle.onValueChanged.RemoveAllListeners();
