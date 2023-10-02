@@ -238,7 +238,7 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
   }
 }
 
-async function processProfileResponse(message: Package<proto.ProfileResponse>) {
+function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const data = message.data;
