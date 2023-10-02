@@ -39,7 +39,7 @@ public class NavmapSearchComponentViewShould
     [Test]
     public void SetSearchResults()
     {
-        navmapSearchComponentView.SetSearchResultRecords(new List<IHotScenesController.PlaceInfo>(){new IHotScenesController.PlaceInfo(){title = "Test title", user_count = 4}});
+        navmapSearchComponentView.SetSearchResultRecords(new List<IHotScenesController.PlaceInfo>(){new IHotScenesController.PlaceInfo(){title = "Test title", user_count = 4, base_position = "10,30"}});
 
         Assert.False(navmapSearchComponentView.noRecordsFound.activeSelf, "No records found is active");
         Assert.AreEqual(1, navmapSearchComponentView.usedRecords.Count, "Used records count does not match");
