@@ -48,8 +48,8 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
         friendsToggle.onValueChanged.AddListener((isOn) => OnFilterChanged?.Invoke(MapLayer.Friends, isOn));
         peopleToggle.onValueChanged.AddListener((isOn) =>
         {
-            OnFilterChanged?.Invoke(MapLayer.HotUsersMarkers, isOn);
             OnFilterChanged?.Invoke(MapLayer.ColdUsersMarkers, isOn);
+            OnFilterChanged?.Invoke(MapLayer.HotUsersMarkers, isOn);
         });
 
         filtersContainer.SetActive(false);

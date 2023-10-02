@@ -31,7 +31,7 @@ public class NavmapFilterComponentController : IDisposable
 
     public void Dispose()
     {
-        view.OnFilterChanged += ToggleLayer;
+        view.OnFilterChanged -= ToggleLayer;
         view.OnClickedDAO -= OpenDAOLink;
     }
 }
