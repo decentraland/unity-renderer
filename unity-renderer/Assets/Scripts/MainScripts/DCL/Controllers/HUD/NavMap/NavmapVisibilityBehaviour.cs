@@ -11,9 +11,8 @@ namespace DCL
 {
     public class NavmapVisibilityBehaviour : IDisposable
     {
-        private static readonly MapLayer ACTIVE_MAP_LAYERS =
-            MapLayer.Atlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker
-            | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
+        private const MapLayer ACTIVE_MAP_LAYERS =
+            MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
 
         private Vector3 atlasOriginalPosition;
 

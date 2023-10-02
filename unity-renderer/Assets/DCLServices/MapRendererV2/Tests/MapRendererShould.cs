@@ -25,10 +25,10 @@ namespace DCLServices.MapRendererV2.Tests
 
         private static readonly MapLayer[] TEST_MAP_LAYERS =
         {
-            MapLayer.Atlas,
+            MapLayer.ParcelsAtlas,
             MapLayer.PlayerMarker | MapLayer.ColdUsersMarkers,
             MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.ColdUsersMarkers,
-            MapLayer.Atlas | MapLayer.HotUsersMarkers | MapLayer.HomePoint | MapLayer.ScenesOfInterest
+            MapLayer.ParcelsAtlas | MapLayer.HotUsersMarkers | MapLayer.HomePoint | MapLayer.ScenesOfInterest
         };
 
         [SetUp]

@@ -6,7 +6,7 @@ namespace DCLServices.MapRendererV2.MapLayers
     public enum MapLayer
     {
         None,
-        Atlas = 1,
+        ParcelsAtlas = 1,
         SatelliteAtlas = 1 << 1,
         HomePoint = 1 << 2,
         ScenesOfInterest = 1 << 3,

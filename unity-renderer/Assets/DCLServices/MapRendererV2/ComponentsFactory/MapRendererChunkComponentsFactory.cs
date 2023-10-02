@@ -117,7 +117,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             // initialize Atlas but don't block the flow (to accelerate loading time)
             chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
 
-            layers.Add(MapLayer.Atlas, chunkAtlas);
+            layers.Add(MapLayer.ParcelsAtlas, chunkAtlas);
             return;
 
             async UniTask<IChunkController> CreateChunk(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct)

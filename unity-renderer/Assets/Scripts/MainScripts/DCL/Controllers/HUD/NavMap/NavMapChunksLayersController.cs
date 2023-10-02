@@ -1,6 +1,8 @@
 ﻿using DCL.Helpers;
 using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.MapLayers;
 using System;
+using UnityEngine;
 using Application = UnityEngine.Device.Application;
 
 namespace DCL
@@ -20,8 +22,6 @@ namespace DCL
             this.view.HyperLinkClicked += OpenGenesisCityLink;
 
             mapRender = Environment.i.serviceLocator.Get<IMapRenderer>();
-
-            view.SetState(satelliteViewActive: true);
         }
 
         public void Dispose()
@@ -33,16 +33,20 @@ namespace DCL
             Utils.SafeDestroy(view.gameObject);
         }
 
-        private void EnableSatelliteViewMode()
+        public void EnableSatelliteViewMode()
         {
             view.SetState(satelliteViewActive: true);
-            mapRender.SetSatelliteViewMode(true);
+
+            mapRender.SetSharedLayer(MapLayer.SatelliteAtlas, true);
+            mapRender.SetSharedLayer(MapLayer.ParcelsAtlas, false);
         }
 
         private void EnableParcelsViewMode()
         {
             view.SetState(satelliteViewActive: false);
-            mapRender.SetSatelliteViewMode(false);
+
+            mapRender.SetSharedLayer(MapLayer.ParcelsAtlas, true);
+            mapRender.SetSharedLayer(MapLayer.SatelliteAtlas, false);
         }
 
         private static void OpenGenesisCityLink() =>

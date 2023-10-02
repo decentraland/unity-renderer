@@ -2005,7 +2005,7 @@ PrefabInstance:
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 260.01
+      value: 177.7036
       objectReference: {fileID: 0}
     - target: {fileID: 4934202114834473616, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}
@@ -2071,6 +2071,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396723951966252051, guid: add5c116a0ce3a449a365130213aa3d5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6396723951966252051, guid: add5c116a0ce3a449a365130213aa3d5,
         type: 3}

@@ -24,8 +24,19 @@ namespace DCL
 
         private void Start()
         {
-            atlasLayerSectionSelector.GetSection(SATELLITE_SECTION).onSelect.AddListener(isActive => SatelliteButtonClicked?.Invoke());
-            atlasLayerSectionSelector.GetSection(PARCELS_SECTION).onSelect.AddListener(isActive => ParcelsButtonClicked?.Invoke());
+            atlasLayerSectionSelector.GetSection(SATELLITE_SECTION)
+                                     .onSelect.AddListener(isActive =>
+                                      {
+                                          if (isActive)
+                                              SatelliteButtonClicked?.Invoke();
+                                      });
+
+            atlasLayerSectionSelector.GetSection(PARCELS_SECTION)
+                                     .onSelect.AddListener(isActive =>
+                                      {
+                                          if (isActive)
+                                              ParcelsButtonClicked?.Invoke();
+                                      });
 
             tmpTextHyperLink.HyperLinkClicked += OnHyperLinkClicked;
         }

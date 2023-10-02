@@ -21,6 +21,7 @@ namespace DCLServices.MapRendererV2
             public readonly IMapLayerController MapLayerController;
             public int ActivityOwners;
             public CancellationTokenSource CTS;
+            public bool sharedActive = true;
 
             public MapLayerStatus(IMapLayerController mapLayerController)
             {
@@ -55,22 +56,19 @@ namespace DCLServices.MapRendererV2
 
             try
             {
-                var components = await componentsFactory.Create(cancellationToken);
+                MapRendererComponents components = await componentsFactory.Create(cancellationToken);
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
                 configurationInstance = components.ConfigurationInstance;
 
-                foreach (var pair in components.Layers)
+                foreach (KeyValuePair<MapLayer, IMapLayerController> pair in components.Layers)
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
             }
             catch (OperationCanceledException)
             {
                 // just ignore
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
@@ -84,12 +82,31 @@ namespace DCLServices.MapRendererV2
             zoomValues.y = Mathf.Min(zoomValues.y, MAX_ZOOM);
 
             EnableLayers(cameraInput.EnabledLayers);
-            var mapCameraController = mapCameraPool.Get();
+            IMapCameraControllerInternal mapCameraController = mapCameraPool.Get();
             mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
 
             return mapCameraController;
+        }
+
+        public void SetSharedLayer(MapLayer mask, bool active)
+        {
+            foreach (MapLayer mapLayer in ALL_LAYERS)
+            {
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus) || mapLayerStatus.ActivityOwners == 0 || mapLayerStatus.sharedActive == active)
+                    continue;
+
+                mapLayerStatus.sharedActive = active;
+
+                // Cancel activation/deactivation flow
+                ResetCancellationSource(mapLayerStatus);
+
+                if (active)
+                    mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
+                else
+                    mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
+            }
         }
 
         private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
@@ -99,57 +116,32 @@ namespace DCLServices.MapRendererV2
             mapCameraPool.Release(mapCameraController);
         }
 
-        private bool isSatelliteViewMode = true;
-
-        public void SetSatelliteViewMode(bool isActive)
-        {
-            if (isActive)
-            {
-                layers[MapLayer.SatelliteAtlas].MapLayerController.Enable(default(CancellationToken));
-                layers[MapLayer.Atlas].MapLayerController.Disable(default(CancellationToken));
-            }
-            else
-            {
-                layers[MapLayer.SatelliteAtlas].MapLayerController.Disable(default(CancellationToken));
-                layers[MapLayer.Atlas].MapLayerController.Enable(default(CancellationToken));
-            }
-        }
-
         private void EnableLayers(MapLayer mask)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer) && layers.TryGetValue(mapLayer, out var mapLayerStatus))
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
+
+                if (mapLayerStatus.ActivityOwners == 0)
                 {
-                    if (mapLayer == MapLayer.Atlas && isSatelliteViewMode)
-                    {
-                        ResetCancellationSource(mapLayerStatus);
-                        mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                        continue;
-                    }
-
-                    if (mapLayerStatus.ActivityOwners == 0)
-                    {
-                        // Cancel deactivation flow
-                        ResetCancellationSource(mapLayerStatus);
-                        mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
-
-                    mapLayerStatus.ActivityOwners++;
+                    // Cancel deactivation flow
+                    ResetCancellationSource(mapLayerStatus);
+                    mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                 }
-            }
 
-            if (!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap-satellite-view"))
-                SetSatelliteViewMode(false);
+                mapLayerStatus.ActivityOwners++;
+            }
         }
 
         private void DisableLayers(MapLayer mask)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out var mapLayerStatus)) continue;
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                if (--mapLayerStatus.ActivityOwners == 0)
+                mapLayerStatus.ActivityOwners = mapLayerStatus.ActivityOwners - 1 < 0 ? 0 : mapLayerStatus.ActivityOwners - 1;
+
+                if (mapLayerStatus.ActivityOwners == 0)
                 {
                     // Cancel activation flow
                     ResetCancellationSource(mapLayerStatus);
@@ -171,7 +163,7 @@ namespace DCLServices.MapRendererV2
 
         public void Dispose()
         {
-            foreach (var status in layers.Values)
+            foreach (MapLayerStatus status in layers.Values)
             {
                 if (status.CTS != null)
                 {
