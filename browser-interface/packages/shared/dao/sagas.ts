@@ -69,6 +69,11 @@ function* pickCatalystRealm() {
 
   if (candidates.length === 0) return undefined
 
+  const mainRealm = candidates.find((c) => c.catalystName === 'main')
+  if (mainRealm) {
+    return urlWithProtocol(mainRealm.domain)
+  }
+
   const filteredCandidates = candidates.filter((candidate: Candidate) => {
     const lastConnected = lastConnectedCandidates.get(candidate.domain)
     if (lastConnected && Date.now() - lastConnected < 60 * 1000) {
@@ -78,13 +83,6 @@ function* pickCatalystRealm() {
   })
 
   const algorithm = createAlgorithm(config)
-
-  const x = yield select(isMainRealmEnabled)
-
-  console.log('IS MAIN', x)
-  if (x) {
-    return urlWithProtocol('https://realm-provider.decentraland.zone/main')
-  }
 
   const realm: Realm = yield call(
     candidateToRealm,
@@ -96,9 +94,6 @@ function* pickCatalystRealm() {
 
 function getInformationForCatalystPicker(state: RootState) {
   const config = getPickRealmsAlgorithmConfig(state)
-  const x = isMainRealmEnabled(state)
-
-  console.log('IS MAIN', x)
   return {
     candidates: getCatalystCandidates(state),
     currentUserParcel: getParcelPosition(state),
