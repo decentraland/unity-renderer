@@ -12,6 +12,7 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
             base.Initialize();
             CommonScriptableObjects.adultContentSettingDeactivated.Set(!DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation"));
             DataStore.i.contentModeration.adultContentAgeConfirmationResult.OnChange += OnAdultContentAgeConfirmationResultChanged;
+            DataStore.i.contentModeration.adultContentSettingEnabled.Set(currentGeneralSettings.adultContent, false);
         }
 
         public override void OnDestroy()
@@ -42,6 +43,7 @@ namespace MainScripts.DCL.Controllers.Settings.SettingsControllers.SpecificContr
             {
                 currentGeneralSettings.adultContent = true;
                 DataStore.i.contentModeration.adultContentSettingEnabled.Set(true, true);
+                ApplySettings();
             }
             else
                 RaiseToggleValueChanged(false);
