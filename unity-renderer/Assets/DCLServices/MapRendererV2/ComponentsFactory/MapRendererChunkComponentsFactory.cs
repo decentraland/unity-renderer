@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks.Linq;
 using DCL;
 using DCL.Providers;
+using DCL.Social.Friends;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -133,7 +134,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                friendUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
+                friendUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, new UserProfileWebInterfaceBridge(), Environment.i.serviceLocator.Get<IFriendsController>(), cancellationToken)
                 /* List of other creators that can be executed in parallel */);
 
             return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);

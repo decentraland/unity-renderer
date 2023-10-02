@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks.Linq;
 using DCL;
 using DCL.Providers;
+using DCL.Social.Friends;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
@@ -28,6 +29,8 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
+            IUserProfileBridge userProfileBridge,
+            IFriendsController friendsController,
             CancellationToken cancellationToken)
         {
             var prefab = await GetPrefab(cancellationToken);
@@ -47,7 +50,15 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             var wrapsPool = new ObjectPool<IFriendUserMarker>(CreateWrap, actionOnRelease: m => m.Dispose(), defaultCapacity: FRIEND_USER_MARKERS_PREWARM_COUNT);
 
-            var controller = new FriendsMarkersAreaController(DataStore.i.player.otherPlayers, objectsPool, wrapsPool, FRIEND_USER_MARKERS_PREWARM_COUNT, configuration.HotUserMarkersRoot, coordsUtils, cullingController, new UserProfileWebInterfaceBridge());
+            var controller = new FriendsMarkersAreaController(
+                DataStore.i.player.otherPlayers,
+                objectsPool,
+                wrapsPool,
+                FRIEND_USER_MARKERS_PREWARM_COUNT,
+                configuration.HotUserMarkersRoot,
+                coordsUtils, cullingController,
+                userProfileBridge,
+                friendsController);
 
             await controller.Initialize(cancellationToken);
             writer.Add(MapLayer.Friends, controller);

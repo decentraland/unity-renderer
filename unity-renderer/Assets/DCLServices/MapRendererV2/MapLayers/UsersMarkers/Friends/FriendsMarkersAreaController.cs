@@ -23,6 +23,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
         private readonly IUnityObjectPool<FriendUserMarkerObject> objectsPool;
         private readonly IObjectPool<IFriendUserMarker> wrapsPool;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IFriendsController friendsController;
 
         private readonly BaseDictionary<string, Player> otherPlayers;
 
@@ -34,7 +35,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
         public FriendsMarkersAreaController(BaseDictionary<string, Player> otherPlayers,
             IUnityObjectPool<FriendUserMarkerObject> objectsPool, IObjectPool<IFriendUserMarker> wrapsPool,
-            int prewarmCount, Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, IUserProfileBridge userProfileBridge)
+            int prewarmCount, Transform parent, ICoordsUtils coordsUtils, IMapCullingController cullingController, IUserProfileBridge userProfileBridge,
+            IFriendsController friendsController)
             : base(parent, coordsUtils, cullingController)
         {
             this.otherPlayers = otherPlayers;
@@ -42,6 +44,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
             this.prewarmCount = prewarmCount;
             this.wrapsPool = wrapsPool;
             this.userProfileBridge = userProfileBridge;
+            this.friendsController = friendsController;
         }
 
         public UniTask Initialize(CancellationToken cancellationToken)
@@ -66,7 +69,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
         private async UniTaskVoid CheckIfIsFriend(Player player)
         {
-            if (await Environment.i.serviceLocator.Get<IFriendsController>().GetFriendshipStatus(player.id) != FriendshipStatus.FRIEND)
+            if (await friendsController.GetFriendshipStatus(player.id) != FriendshipStatus.FRIEND)
                 return;
 
             UserProfile recipientProfile = userProfileBridge.Get(player.id);
