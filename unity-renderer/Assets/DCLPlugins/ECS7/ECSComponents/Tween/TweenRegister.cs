@@ -11,7 +11,7 @@ namespace DCL.ECSComponents
 
         public TweenRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
-            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTween>, () => new ECSTweenHandler(internalComponents.TweenComponent));
+            factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBTween>, () => new ECSTweenHandler(internalComponents.TweenComponent, internalComponents.sceneBoundsCheckComponent));
             componentWriter.AddOrReplaceComponentSerializer<PBTween>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

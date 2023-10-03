@@ -5,6 +5,7 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
+using DCL.Models;
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace ECSSystems.TweenSystem
         private readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool;
         private readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> transformComponentPool;
         private readonly Vector3Variable worldOffset;
+        private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
         // TODO: Remove when polishing PR
         private const string QUERY_PARAM_SYNC_TWEENSTATE = "SYNC_TWEENSTATE";
@@ -28,7 +30,8 @@ namespace ECSSystems.TweenSystem
             IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
             WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStateComponentPool,
             WrappedComponentPool<IWrappedComponent<ECSTransform>> transformComponentPool,
-            Vector3Variable worldOffset)
+            Vector3Variable worldOffset,
+            IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
         {
             this.tweenInternalComponent = tweenInternalComponent;
             this.tweenStateComponent = tweenStateComponent;
@@ -36,6 +39,7 @@ namespace ECSSystems.TweenSystem
             this.tweenStateComponentPool = tweenStateComponentPool;
             this.transformComponentPool = transformComponentPool;
             this.worldOffset = worldOffset;
+            this.sbcInternalComponent = sbcInternalComponent;
         }
 
         public void Update()
@@ -51,13 +55,13 @@ namespace ECSSystems.TweenSystem
                 if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
                     continue;
 
-                long entity = tweenComponentGroup[i].key2;
+                long entityId = tweenComponentGroup[i].key2;
                 InternalTween model = tweenComponentGroup[i].value.model;
 
                 if (model.removed)
                 {
                     model.tweener.Kill();
-                    writer.Remove(entity, ComponentID.TWEEN_STATE);
+                    writer.Remove(entityId, ComponentID.TWEEN_STATE);
                     continue;
                 }
 
@@ -70,7 +74,7 @@ namespace ECSSystems.TweenSystem
                 // TODO: Remove if we don't need it...
                 if (WebInterface.CheckURLParam(QUERY_PARAM_SYNC_TWEENSTATE) &&
                     model.currentTime == 0 &&
-                    tweenStateComponent.TryGet(scene, entity, out var existentTweenState))
+                    tweenStateComponent.TryGet(scene, entityId, out var existentTweenState))
                 {
                     playing = model.playing = existentTweenState.model.State != TweenStateStatus.TsPaused;
                     currentTime = model.currentTime = existentTweenState.model.CurrentTime;
@@ -83,6 +87,18 @@ namespace ECSSystems.TweenSystem
                 {
                     tweenStateComponentModel.CurrentTime = currentTime;
                     tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
+
+                    scene.entities.TryGetValue(entityId, out IDCLEntity entity);
+                    switch (model.tweenMode)
+                    {
+                        case PBTween.ModeOneofCase.Move:
+                            sbcInternalComponent.SetPosition(scene, entity, model.transform.position);
+                            break;
+                        case PBTween.ModeOneofCase.Rotate:
+                        case PBTween.ModeOneofCase.Scale:
+                            sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+                            break;
+                    }
                 }
                 else
                 {
@@ -90,23 +106,24 @@ namespace ECSSystems.TweenSystem
                 }
 
                 //TODO: If we decide to make TweenState a GOVS component instead of LWW, we have to use Append() here
-                writer.Put(entity, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
+                writer.Put(entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
-                UpdateTransformComponent(scene, entity, writer, model);
+                UpdateTransformComponent(scene, entityId, model.transform, writer);
 
                 model.currentTime = currentTime;
-                tweenInternalComponent.PutFor(scene, entity, model);
+                tweenInternalComponent.PutFor(scene, entityId, model);
             }
         }
 
-        private void UpdateTransformComponent(IParcelScene scene, long entity, ComponentWriter writer, InternalTween internalTweenModel)
+        private void UpdateTransformComponent(IParcelScene scene, long entity, Transform entityTransform, ComponentWriter writer)
         {
-            // TODO: Update rotation and scale when we add support for that.
             var transformComponent = transformComponentPool.Get();
             var transformComponentModel = transformComponent.WrappedComponent.Model;
             Vector3 currentWorldOffset = worldOffset.Get();
-            var newPosition = internalTweenModel.transform.position;
+            var newPosition = entityTransform.localPosition;
             transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newPosition, ref currentWorldOffset);
+            transformComponentModel.rotation = entityTransform.localRotation;
+            transformComponentModel.scale = entityTransform.localScale;
             writer.Put(entity, ComponentID.TRANSFORM, transformComponent);
         }
     }

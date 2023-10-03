@@ -8,12 +8,14 @@ using UnityEngine;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
-    private IInternalECSComponent<InternalTween> internalTweenComponent;
+    private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
+    private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
     private PBTween lastModel;
 
-    public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent)
+    public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
         this.internalTweenComponent = internalTweenComponent;
+        this.sbcInternalComponent = sbcInternalComponent;
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -24,6 +26,8 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         {
             removed = true
         });
+
+        // SBC Internal Component is reset when the Transform component is removed, not here.
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTween model)
@@ -66,12 +70,16 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     tweener = entityTransform.DOLocalRotateQuaternion(
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
                         durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+
+                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
                     break;
                 case PBTween.ModeOneofCase.Scale:
                     entityTransform.localScale = ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start);
                     tweener = entityTransform.DOScale(
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
                         durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+
+                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
                     break;
                 case PBTween.ModeOneofCase.Move:
                 default:
@@ -85,11 +93,14 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     tweener = entityTransform.DOLocalMove(endPos, durationInSeconds)
                                              .SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction))
                                              .SetAutoKill(false);
+
+                    sbcInternalComponent.SetPosition(scene, entity, entityTransform.position);
                     break;
             }
 
             tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
             internalComponentModel.tweener = tweener;
+            internalComponentModel.tweenMode = model.ModeCase;
         }
         else if (internalComponentModel.playing == isPlaying)
         {

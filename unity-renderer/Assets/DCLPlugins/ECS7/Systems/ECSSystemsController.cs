@@ -154,7 +154,8 @@ public class ECSSystemsController : IDisposable
             context.ComponentWriters,
             context.TweenStatePool,
             context.TransformPool,
-            CommonScriptableObjects.worldOffset);
+            CommonScriptableObjects.worldOffset,
+            context.internalEcsComponents.sceneBoundsCheckComponent);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);

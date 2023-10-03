@@ -356,5 +356,6 @@ namespace DCL.ECS7.InternalComponents
         public float currentTime;
         public Transform transform;
         public Tweener tweener;
+        public PBTween.ModeOneofCase tweenMode;
     }
 }
