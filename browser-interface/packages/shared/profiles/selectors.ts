@@ -47,7 +47,7 @@ export const getCurrentProfileHash = (store: RootProfileState & RootSessionState
   return userId ? getProfileHash(store, userId) : undefined
 }
 
-export const getProfileHash = (store: RootProfileState & RootSessionState, userId: string) => {
+export const getProfileHash = (store: RootProfileState, userId: string) => {
   return store.profiles.hashes[userId.toLowerCase()]
 }
 

@@ -7,7 +7,7 @@ import { USER_AUTHENTICATED } from 'shared/session/actions'
 import type { ProfileSuccessAction } from '../actions'
 import {
   DEPLOY_OUTFITS_REQUEST,
-  DEPLOY_PROFILE_REQUEST,
+  DEPLOY_PROFILE_REQUEST, DEPLOY_PROFILE_SUCCESS,
   PROFILE_REQUEST,
   PROFILE_SUCCESS,
   SAVE_DELTA_PROFILE_REQUEST,
@@ -24,6 +24,7 @@ import { handleDeployOutfits } from './handleDeployOutfits'
 import {handleSaveLocalAvatar} from './handleSaveLocalAvatar'
 import { initialRemoteProfileLoad } from './initialRemoteProfileLoad'
 import { cachedRequest } from './content/cachedRequest'
+import {handleDeployProfileSuccess} from "./handleDeployProfileSuccess";
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
   action.type + action.payload.userId
@@ -57,6 +58,8 @@ export function* profileSaga(): any {
    * We debounce this because sometimes `DEPLOY_PROFILE_REQUEST` gets called too frequently by renderer
    */
   yield debounce(200, DEPLOY_PROFILE_REQUEST, handleDeployProfile)
+
+  yield takeEvery(DEPLOY_PROFILE_SUCCESS, handleDeployProfileSuccess)
 
   /**
    * Manage a request by the client to deploy outfits

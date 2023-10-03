@@ -17,7 +17,11 @@ import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
 import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
-import {DEPLOY_PROFILE_SUCCESS, profileSuccess, SEND_PROFILE_TO_RENDERER_REQUEST} from 'shared/profiles/actions'
+import {
+  DEPLOY_PROFILE_SUCCESS,
+  PROFILE_HASH_SUCCESS,
+  SEND_PROFILE_TO_RENDERER_REQUEST
+} from 'shared/profiles/actions'
 import {getCurrentProfileHash, getCurrentUserProfile, getProfileHash} from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -55,7 +59,7 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
-import {fetchCatalystProfile} from "../profiles/sagas/content";
+import {RootProfileState} from "../profiles/types";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -346,10 +350,8 @@ function* respondCommsProfileRequests() {
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (!hash && identity) {
-      profile = yield call(fetchCatalystProfile, identity.address, profile?.version)
-      if (profile) {
-        // update profile in store
-        yield put(profileSuccess(profile))
+      while (!(yield select((state: RootProfileState) => getProfileHash(state, identity!.address)))) {
+        yield take(PROFILE_HASH_SUCCESS)
       }
       hash = yield select(getProfileHash, identity.address)
     }
