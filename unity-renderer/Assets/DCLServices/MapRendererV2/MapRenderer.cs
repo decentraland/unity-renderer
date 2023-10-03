@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
@@ -63,7 +62,10 @@ namespace DCLServices.MapRendererV2
                 configurationInstance = components.ConfigurationInstance;
 
                 foreach (KeyValuePair<MapLayer, IMapLayerController> pair in components.Layers)
+                {
+                    pair.Value.Disable(cancellationToken);
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
+                }
 
                 layers[MapLayer.SatelliteAtlas].sharedActive = true;
                 layers[MapLayer.ParcelsAtlas].sharedActive = false;
