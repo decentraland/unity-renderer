@@ -128,7 +128,7 @@ namespace DCLServices.MapRendererV2
             {
                 if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive == true)
+                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive != false)
                 {
                     // Cancel deactivation flow
                     ResetCancellationSource(mapLayerStatus);
@@ -147,7 +147,7 @@ namespace DCLServices.MapRendererV2
 
                 mapLayerStatus.ActivityOwners = mapLayerStatus.ActivityOwners - 1 < 0 ? 0 : mapLayerStatus.ActivityOwners - 1;
 
-                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive == false)
+                if (mapLayerStatus.ActivityOwners == 0)
                 {
                     // Cancel activation flow
                     ResetCancellationSource(mapLayerStatus);
