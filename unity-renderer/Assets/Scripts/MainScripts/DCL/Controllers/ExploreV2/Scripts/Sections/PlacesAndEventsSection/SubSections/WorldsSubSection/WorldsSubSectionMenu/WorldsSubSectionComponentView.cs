@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.Interface;
 using DCL.Tasks;
 using System;
 using System.Collections.Generic;
@@ -66,7 +65,7 @@ public class WorldsSubSectionComponentView : BaseComponentView, IWorldsSubSectio
     public event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnFavoriteClicked;
-    public event Action<FriendsHandler> OnFriendHandlerAdded;
+    public event Action<IFriendTrackerHandler> OnFriendHandlerAdded;
     public event Action OnWorldsSubSectionEnable;
     public event Action OnSortingChanged;
     public event Action OnShowMoreWorldsClicked;

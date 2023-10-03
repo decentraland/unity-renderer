@@ -247,7 +247,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
     }
 
-    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
+    private void View_OnFriendHandlerAdded(IFriendTrackerHandler friendsHandler) =>
         friendsTrackerController.AddHandler(friendsHandler);
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)
