@@ -81,7 +81,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas
 #if UNITY_EDITOR
             // fixes editor exception for downloading pictures from github: "UnityWebRequestException: Unable to complete SSL connection"
             try { webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: linkedCts.Token); }
-            catch (UnityWebRequestException _)
+            catch (UnityWebRequestException e) when (e.Message.Contains("Unable to complete SSL connection"))
             {
                 if (webRequestAttempts < maxAttempts)
                 {
