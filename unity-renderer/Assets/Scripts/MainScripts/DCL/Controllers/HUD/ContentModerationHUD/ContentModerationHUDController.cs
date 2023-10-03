@@ -211,7 +211,7 @@ namespace DCL.ContentModeration
         }
 
         private void OnLearnMoreClicked() =>
-            browserBridge.OpenUrl(LEARN_MORE_URL);
+            browserBridge.OpenUrl(LEARN_MORE_URL); // TODO (Santi): Change this to the correct URL when it's ready
 
         private void OpenContentModerationPanel() =>
             contentModerationDataStore.reportingScenePanelVisible.Set((!contentModerationDataStore.reportingScenePanelVisible.Get().isVisible, currentContentCategory));

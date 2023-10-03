@@ -10,43 +10,46 @@ namespace DCL.ContentModeration
     public class ContentModerationReportingComponentView : BaseComponentView, IContentModerationReportingComponentView
     {
         [Header("REFERENCES")]
-        [SerializeField] internal Button backgroundButton;
-        [SerializeField] internal ButtonComponentView cancelButton;
-        [SerializeField] internal ButtonComponentView gotItButton;
-        [SerializeField] internal ButtonComponentView sendButton;
-        [SerializeField] internal Button learnMoreButton1;
-        [SerializeField] internal Button learnMoreButton2;
-        [SerializeField] internal Slider ratingSlider;
-        [SerializeField] internal Button teenAuxButton;
-        [SerializeField] internal Button adultAuxButton;
-        [SerializeField] internal Button restrictedAuxButton;
-        [SerializeField] internal TMP_Text optionsSectionTitle;
-        [SerializeField] internal TMP_Text optionsSectionSubtitle;
-        [SerializeField] internal Transform optionsContainer;
-        [SerializeField] internal ScrollRect optionsScroll;
-        [SerializeField] internal GameObject mainModal;
-        [SerializeField] internal GameObject mainFormSection;
-        [SerializeField] internal GameObject loadingStateSection;
-        [SerializeField] internal GameObject reportSentModal;
+        [SerializeField] private Button backgroundButton;
+        [SerializeField] private ButtonComponentView cancelButton;
+        [SerializeField] private ButtonComponentView gotItButton;
+        [SerializeField] private ButtonComponentView sendButton;
+        [SerializeField] private Button learnMoreButton1;
+        [SerializeField] private Button learnMoreButton2;
+        [SerializeField] private ContentModerationRatingButtonComponentView teenRatingButton;
+        [SerializeField] private ContentModerationRatingButtonComponentView adultRatingButton;
+        [SerializeField] private ContentModerationRatingButtonComponentView restrictedRatingButton;
+        [SerializeField] private TMP_Text optionsSectionTitle;
+        [SerializeField] private TMP_Text optionsSectionSubtitle;
+        [SerializeField] private Transform optionsContainer;
+        [SerializeField] private ScrollRect optionsScroll;
+        [SerializeField] private GameObject mainModal;
+        [SerializeField] private GameObject mainFormSection;
+        [SerializeField] private GameObject loadingStateSection;
+        [SerializeField] private GameObject reportSentModal;
+        [SerializeField] private Image modalHeaderImage;
 
         [Header("TEEN CONFIGURATION")]
-        public string teenOptionTitle;
-        public string teenOptionSubtitle;
-        public List<string> teenOptions;
+        [SerializeField] private Sprite teenHeaderSprite;
+        [SerializeField] private string teenOptionTitle;
+        [SerializeField] private string teenOptionSubtitle;
+        [SerializeField] private List<string> teenOptions;
 
         [Header("ADULT CONFIGURATION")]
-        public string adultOptionTitle;
-        public string adultOptionSubtitle;
-        public List<string> adultOptions;
+        [SerializeField] private Sprite adultHeaderSprite;
+        [SerializeField] private string adultOptionTitle;
+        [SerializeField] private string adultOptionSubtitle;
+        [SerializeField] private List<string> adultOptions;
 
         [Header("RESTRICTED CONFIGURATION")]
-        public string restrictedOptionTitle;
-        public string restrictedOptionSubtitle;
-        public List<string> restrictedOptions;
+        [SerializeField] private Sprite restrictedHeaderSprite;
+        [SerializeField] private string restrictedOptionTitle;
+        [SerializeField] private string restrictedOptionSubtitle;
+        [SerializeField] private List<string> restrictedOptions;
 
         [Header("PREFABS")]
-        [SerializeField] internal GameObject optionButtonPrefab;
-        [SerializeField] internal GameObject commentsPrefab;
+        [SerializeField] private GameObject optionButtonPrefab;
+        [SerializeField] private GameObject commentsPrefab;
 
         private readonly List<ContentModerationReportingOptionComponentView> teenOptionButtons = new ();
         private readonly List<ContentModerationReportingOptionComponentView> adultOptionButtons = new ();
@@ -71,10 +74,9 @@ namespace DCL.ContentModeration
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
             learnMoreButton1.onClick.AddListener(GoToLearnMore);
             learnMoreButton2.onClick.AddListener(GoToLearnMore);
-            ratingSlider.onValueChanged.AddListener(OnRatingSliderChanged);
-            teenAuxButton.onClick.AddListener(() => { ratingSlider.value = 0; });
-            adultAuxButton.onClick.AddListener(() => { ratingSlider.value = 1; } );
-            restrictedAuxButton.onClick.AddListener(() => { ratingSlider.value = 2; });
+            teenRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.TEEN));
+            adultRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.ADULT));
+            restrictedRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.RESTRICTED));
 
             CreateButtons();
         }
@@ -87,10 +89,9 @@ namespace DCL.ContentModeration
             sendButton.onClick.RemoveAllListeners();
             learnMoreButton1.onClick.RemoveAllListeners();
             learnMoreButton2.onClick.RemoveAllListeners();
-            ratingSlider.onValueChanged.RemoveAllListeners();
-            teenAuxButton.onClick.RemoveAllListeners();
-            adultAuxButton.onClick.RemoveAllListeners();
-            restrictedAuxButton.onClick.RemoveAllListeners();
+            teenRatingButton.RatingButton.onClick.RemoveAllListeners();
+            adultRatingButton.RatingButton.onClick.RemoveAllListeners();
+            restrictedRatingButton.RatingButton.onClick.RemoveAllListeners();
             base.Dispose();
         }
 
@@ -117,19 +118,17 @@ namespace DCL.ContentModeration
         {
             currentRating = contentCategory;
 
-            switch (contentCategory)
+            teenRatingButton.Select(contentCategory == SceneContentCategory.TEEN);
+            adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
+            restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
+
+            modalHeaderImage.sprite = contentCategory switch
             {
-                default:
-                case SceneContentCategory.TEEN:
-                    ratingSlider.value = 0;
-                    break;
-                case SceneContentCategory.ADULT:
-                    ratingSlider.value = 1;
-                    break;
-                case SceneContentCategory.RESTRICTED:
-                    ratingSlider.value = 2;
-                    break;
-            }
+                SceneContentCategory.TEEN => teenHeaderSprite,
+                SceneContentCategory.ADULT => adultHeaderSprite,
+                SceneContentCategory.RESTRICTED => restrictedHeaderSprite,
+                _ => teenHeaderSprite,
+            };
         }
 
         public void SetLoadingState(bool isLoading)
@@ -200,32 +199,33 @@ namespace DCL.ContentModeration
             return commentsObject.GetComponentInChildren<TMP_InputField>();
         }
 
-        private void OnRatingSliderChanged(float value)
+        private void OnRatingButtonClicked(SceneContentCategory contentCategory)
         {
             selectedOptions.Clear();
+            SetRating(contentCategory);
 
-            switch ((int)value)
+            switch (contentCategory)
             {
-                case 0:
+                case SceneContentCategory.TEEN:
                     optionsSectionTitle.text = teenOptionTitle;
                     optionsSectionSubtitle.text = teenOptionSubtitle;
                     break;
-                case 1:
+                case SceneContentCategory.ADULT:
                     optionsSectionTitle.text = adultOptionTitle;
                     optionsSectionSubtitle.text = adultOptionSubtitle;
                     break;
-                case 2:
+                case SceneContentCategory.RESTRICTED:
                     optionsSectionTitle.text = restrictedOptionTitle;
                     optionsSectionSubtitle.text = restrictedOptionSubtitle;
                     break;
             }
 
             foreach (ContentModerationReportingOptionComponentView option in teenOptionButtons)
-                option.SetActive((int)value == 0);
+                option.SetActive((int)contentCategory == 0);
             foreach (ContentModerationReportingOptionComponentView option in adultOptionButtons)
-                option.SetActive((int)value == 1);
+                option.SetActive((int)contentCategory == 1);
             foreach (ContentModerationReportingOptionComponentView option in restrictedOptionButtons)
-                option.SetActive((int)value == 2);
+                option.SetActive((int)contentCategory == 2);
 
             ResetOptions();
         }

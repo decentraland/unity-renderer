@@ -14,9 +14,9 @@ namespace DCL.ContentModeration
         [SerializeField] internal Color backgroundSelectedColor;
         [SerializeField] internal Color textSelectedColor;
 
-        public override void RefreshControl() { }
-
         public Button OptionButton => optionButton;
+
+        public override void RefreshControl() { }
 
         public void SetOptionText(string text) =>
             optionText.text = text;
