@@ -33,7 +33,7 @@ namespace DCL
             Utils.SafeDestroy(view.gameObject);
         }
 
-        public void EnableSatelliteViewMode()
+        private void EnableSatelliteViewMode()
         {
             view.SetState(satelliteViewActive: true);
 

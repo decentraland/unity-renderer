@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
@@ -67,14 +68,24 @@ namespace DCLServices.MapRendererV2
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
                 }
 
-                layers[MapLayer.SatelliteAtlas].sharedActive = true;
-                layers[MapLayer.ParcelsAtlas].sharedActive = false;
+                if (DataStore.i.featureFlags.flags.Get().IsInitialized)
+                    OnFeatureFlagsChanged(null ,null);
+                else
+                    DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
             }
-            catch (OperationCanceledException)
+            catch
+                (OperationCanceledException)
             {
                 // just ignore
             }
             catch (Exception e) { Debug.LogException(e); }
+        }
+
+        private void OnFeatureFlagsChanged(FeatureFlag _, FeatureFlag __)
+        {
+            bool satelliteEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap-satellite-view"); // false if not initialized
+            layers[MapLayer.SatelliteAtlas].sharedActive = satelliteEnabled;
+            layers[MapLayer.ParcelsAtlas].sharedActive = !satelliteEnabled;
         }
 
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
