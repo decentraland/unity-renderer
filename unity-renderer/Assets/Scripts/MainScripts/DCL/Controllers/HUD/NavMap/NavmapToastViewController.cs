@@ -2,6 +2,7 @@
 using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.PlacesAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace DCL
     {
         private readonly MinimapMetadata minimapMetadata;
         private readonly NavmapToastView view;
+        private readonly IPlaceCardComponentView placeCardModal;
         private readonly MapRenderImage mapRenderImage;
         private readonly float sqrDistanceToCloseView;
 
@@ -29,7 +31,8 @@ namespace DCL
             NavmapToastView view,
             MapRenderImage mapRenderImage,
             IPlacesAPIService placesAPIService,
-            IPlacesAnalytics placesAnalytics
+            IPlacesAnalytics placesAnalytics,
+            IPlaceCardComponentView placeCardModal
             )
         {
             this.placesAPIService = placesAPIService;
@@ -37,8 +40,24 @@ namespace DCL
             this.minimapMetadata = minimapMetadata;
             this.view = view;
             this.mapRenderImage = mapRenderImage;
+            this.placeCardModal = placeCardModal;
             this.sqrDistanceToCloseView = view.distanceToCloseView * view.distanceToCloseView;
+
             this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
+            this.view.OnGoto += JumpIn;
+            this.view.OnInfoClick += EnablePlaceCardModal;
+
+            this.placeCardModal.OnFavoriteChanged += OnFavoriteToggleClicked;
+            this.placeCardModal.OnVoteChanged += ChangeVote;
+        }
+
+        private void EnablePlaceCardModal() =>
+            placeCardModal.SetActive(true);
+
+        private void JumpIn(int x, int y)
+        {
+            DataStore.i.HUDs.navmapVisible.Set(false);
+            Environment.i.world.teleportController.Teleport(x, y);
         }
 
         public void Activate()
@@ -63,6 +82,11 @@ namespace DCL
             mapRenderImage.Hovered -= OnHovered;
             mapRenderImage.DragStarted -= OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
+
+            view.OnFavoriteToggleClicked -= OnFavoriteToggleClicked;
+            view.OnGoto -= JumpIn;
+
+            placeCardModal.OnFavoriteChanged -= OnFavoriteToggleClicked;
         }
 
         public void CloseCurrentToast() =>
@@ -128,10 +152,10 @@ namespace DCL
             retrievingFavoritesCts?.SafeCancelAndDispose();
             retrievingFavoritesCts = CancellationTokenSource.CreateLinkedTokenSource(disposingCts.Token);
 
-            RetrieveFavoriteStateAsync(retrievingFavoritesCts.Token).Forget();
+            RetrieveAdditionalData(retrievingFavoritesCts.Token).Forget();
         }
 
-        private async UniTaskVoid RetrieveFavoriteStateAsync(CancellationToken ct)
+        private async UniTaskVoid RetrieveAdditionalData(CancellationToken ct)
         {
             try
             {
@@ -141,6 +165,7 @@ namespace DCL
                 bool isFavorite = await placesAPIService.IsFavoritePlace(place, ct);
                 view.SetFavoriteLoading(false);
                 view.SetCurrentFavoriteStatus(place.id, isFavorite);
+                SetPlaceCardModalData(place);
             }
             catch (NotAPlaceException)
             {
@@ -152,6 +177,20 @@ namespace DCL
             }
         }
 
+        private void SetPlaceCardModalData(IHotScenesController.PlaceInfo place)
+        {
+            placeCardModal.SetCoords(currentParcel);
+            placeCardModal.SetDeployedAt(place.deployed_at);
+            placeCardModal.SetPlaceAuthor(place.contact_name);
+            placeCardModal.SetPlaceName(place.title);
+            placeCardModal.SetPlaceDescription(place.description);
+            placeCardModal.SetUserVisits(place.user_visits);
+            placeCardModal.SetNumberOfUsers(place.user_count);
+            placeCardModal.SetUserRating(place.like_rate_as_float);
+            placeCardModal.SetNumberOfFavorites(place.favorites);
+            placeCardModal.SetTotalVotes(place.likes + place.dislikes);
+        }
+
         private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
         {
             if(isFavorite)
@@ -160,6 +199,21 @@ namespace DCL
                 placesAnalytics.RemoveFavorite(uuid, IPlacesAnalytics.ActionSource.FromNavmap);
 
             placesAPIService.SetPlaceFavorite(uuid, isFavorite, default).Forget();
+        }
+
+        private void ChangeVote(string placeId, bool? isUpvote)
+        {
+            if (isUpvote != null)
+            {
+                if (isUpvote.Value)
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+                else
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+            }
+            else
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+
+            placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
         }
 
         public void Dispose()

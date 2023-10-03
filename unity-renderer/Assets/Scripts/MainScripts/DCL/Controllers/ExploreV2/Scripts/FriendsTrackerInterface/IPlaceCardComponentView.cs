@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public interface IPlaceCardComponentView
 {
     event Action<string, bool?> OnVoteChanged;
+    event Action<string, bool> OnFavoriteChanged;
 
     IFriendTrackerHandler friendsHandler { get; set; }
 
@@ -132,4 +133,6 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="isPOI">Tru for set it as POI.</param>
     void SetIsPOI(bool isPOI);
+
+    void SetActive(bool isActive);
 }

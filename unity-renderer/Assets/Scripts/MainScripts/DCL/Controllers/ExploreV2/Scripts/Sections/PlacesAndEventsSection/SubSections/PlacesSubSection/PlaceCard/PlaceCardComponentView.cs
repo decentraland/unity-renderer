@@ -257,7 +257,18 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             return;
 
         poiMark.SetActive(isPOI);
+    }
 
+    public void SetActive(bool isActive)
+    {
+        if (isActive)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)

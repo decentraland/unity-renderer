@@ -28,6 +28,7 @@ namespace DCL
         private readonly NavmapZoomViewController navmapZoomViewController;
         private readonly NavMapLocationControlsController locationControlsController;
         private readonly NavmapSearchController navmapSearchController;
+        private readonly IPlaceCardComponentView placeCardModal;
 
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
 
@@ -40,7 +41,7 @@ namespace DCL
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
         public NavmapVisibilityBehaviour(BaseVariable<FeatureFlag> featureFlagsFlags, BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavmapSearchComponentView searchView, NavMapLocationControlsView locationControlsView,
-            NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics)
+            NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics, IPlaceCardComponentView placeCardModal)
         {
             this.featureFlagsFlags = featureFlagsFlags;
 
@@ -48,11 +49,12 @@ namespace DCL
 
             this.zoomView = zoomView;
             this.rendererConfiguration = rendererConfiguration;
+            this.placeCardModal = placeCardModal;
 
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
-            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics);
+            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics, this.placeCardModal);
             navmapZoomViewController = new NavmapZoomViewController(zoomView, featureFlagsFlags);
             locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs(), navmapZoomViewController, navmapToastViewController);

@@ -11,6 +11,8 @@ namespace DCL
         private static readonly int triggerLoadingComplete = Animator.StringToHash("LoadingComplete");
 
         public event Action<string, bool> OnFavoriteToggleClicked;
+        public event Action<int, int> OnGoto;
+        public event Action OnInfoClick;
 
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
@@ -22,6 +24,7 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
+        [SerializeField] internal Button infoButton;
         [SerializeField] internal GameObject favoriteContainer;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
         [SerializeField] internal GameObject favoriteLoading;
@@ -33,6 +36,7 @@ namespace DCL
         Vector2Int location;
         RectTransform rectTransform;
         MinimapMetadata minimapMetadata;
+        private MinimapMetadata.MinimapSceneInfo sceneInfo;
 
         AssetPromise_Texture texturePromise;
         string currentImageUrl;
@@ -52,6 +56,8 @@ namespace DCL
         private void Awake()
         {
             favoriteToggle.OnFavoriteChange += (uuid, isFavorite) => OnFavoriteToggleClicked?.Invoke(uuid, isFavorite);
+            infoButton.onClick.RemoveAllListeners();
+            infoButton.onClick.AddListener(()=>OnInfoClick?.Invoke());
             minimapMetadata = MinimapMetadata.GetMetadata();
             rectTransform = transform as RectTransform;
         }
@@ -76,6 +82,7 @@ namespace DCL
             if (!gameObject.activeSelf)
                 AudioScriptableObjects.dialogOpen.Play(true);
 
+            this.sceneInfo = sceneInfo;
             bool sceneInfoExists = sceneInfo != null;
 
             gameObject.SetActive(true);
@@ -159,9 +166,7 @@ namespace DCL
 
         private void OnGotoClick()
         {
-            DataStore.i.HUDs.navmapVisible.Set(false);
-            Environment.i.world.teleportController.Teleport(location.x, location.y);
-
+            OnGoto?.Invoke(location.x, location.y);
             Close();
         }
 

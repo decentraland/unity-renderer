@@ -16,6 +16,7 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapSearchComponentView searchView;
         [SerializeField] internal NavmapFilterComponentView filterView;
+        [SerializeField] internal GameObject placeCardModalParent;
 
         [Space]
         [SerializeField] internal NavmapToastView toastView;
@@ -23,6 +24,8 @@ namespace DCL
         [SerializeField] private NavmapZoomView zoomView;
 
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
+
+        private IPlaceCardComponentView placeCardModal;
 
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
 
@@ -35,8 +38,10 @@ namespace DCL
 
         private void Start()
         {
+            placeCardModal = placeCardModalParent.GetComponent<IPlaceCardComponentView>();
+
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
-                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics(), placeCardModal);
             navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
