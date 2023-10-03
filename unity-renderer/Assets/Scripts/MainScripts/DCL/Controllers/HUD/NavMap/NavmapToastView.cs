@@ -13,6 +13,7 @@ namespace DCL
         public event Action<string, bool> OnFavoriteToggleClicked;
         public event Action<int, int> OnGoto;
         public event Action OnInfoClick;
+        public event Action<string, bool?> OnVoteChanged;
 
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
@@ -28,6 +29,12 @@ namespace DCL
         [SerializeField] internal GameObject favoriteContainer;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
         [SerializeField] internal GameObject favoriteLoading;
+        [SerializeField] internal ButtonComponentView upvoteButton;
+        [SerializeField] internal ButtonComponentView downvoteButton;
+        [SerializeField] internal GameObject upvoteOff;
+        [SerializeField] internal GameObject upvoteOn;
+        [SerializeField] internal GameObject downvoteOff;
+        [SerializeField] internal GameObject downvoteOn;
 
         [field: SerializeField]
         [Tooltip("Distance in units")]
@@ -40,6 +47,8 @@ namespace DCL
 
         AssetPromise_Texture texturePromise;
         string currentImageUrl;
+        private bool placeIsUpvote;
+        private bool placeIsDownvote;
 
         public void Open(Vector2Int parcel, Vector2 worldPosition)
         {
@@ -60,6 +69,11 @@ namespace DCL
             infoButton.onClick.AddListener(()=>OnInfoClick?.Invoke());
             minimapMetadata = MinimapMetadata.GetMetadata();
             rectTransform = transform as RectTransform;
+            if(upvoteButton != null)
+                upvoteButton.onClick.AddListener(() => ChangeVote(true));
+
+            if(downvoteButton != null)
+                downvoteButton.onClick.AddListener(() => ChangeVote(false));
         }
 
         private void Start()
@@ -122,7 +136,6 @@ namespace DCL
                     texturePromise = null;
                 }
 
-
                 if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
                 {
                     texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
@@ -153,7 +166,41 @@ namespace DCL
             // By setting the pivot accordingly BEFORE we position the toast, we can have it always visible in an easier way
             toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
             toastContainer.position = worldPosition;
+        }
 
+        private string placeId;
+
+        public void SetPlaceId(string UUID)
+        {
+            placeId = UUID;
+        }
+
+        public void SetVoteButtons(bool isUpvoted, bool isDownvoted)
+        {
+            placeIsUpvote = isUpvoted;
+            placeIsDownvote = isDownvoted;
+            upvoteOn.SetActive(isUpvoted);
+            upvoteOff.SetActive(!isUpvoted);
+            downvoteOn.SetActive(isDownvoted);
+            downvoteOff.SetActive(!isDownvoted);
+        }
+
+        private void ChangeVote(bool upvote)
+        {
+
+            if (upvote)
+            {
+                OnVoteChanged?.Invoke(placeId, placeIsUpvote ? (bool?)null : true);
+                placeIsUpvote = !placeIsUpvote;
+                placeIsDownvote = false;
+            }
+            else
+            {
+                OnVoteChanged?.Invoke(placeId, placeIsDownvote ? (bool?)null : false);
+                placeIsUpvote = false;
+                placeIsDownvote = !placeIsDownvote;
+            }
+            SetVoteButtons(placeIsUpvote, placeIsDownvote);
         }
 
         public void Close()

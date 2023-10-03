@@ -46,9 +46,12 @@ namespace DCL
             this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
             this.view.OnGoto += JumpIn;
             this.view.OnInfoClick += EnablePlaceCardModal;
+            this.view.OnVoteChanged += ChangeVote;
 
             this.placeCardModal.OnFavoriteChanged += OnFavoriteToggleClicked;
             this.placeCardModal.OnVoteChanged += ChangeVote;
+            this.placeCardModal.onJumpInClick.RemoveAllListeners();
+            this.placeCardModal.onJumpInClick.AddListener(() => JumpIn(currentParcel.x, currentParcel.y));
         }
 
         private void EnablePlaceCardModal() =>
@@ -82,11 +85,6 @@ namespace DCL
             mapRenderImage.Hovered -= OnHovered;
             mapRenderImage.DragStarted -= OnDragStarted;
             minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
-
-            view.OnFavoriteToggleClicked -= OnFavoriteToggleClicked;
-            view.OnGoto -= JumpIn;
-
-            placeCardModal.OnFavoriteChanged -= OnFavoriteToggleClicked;
         }
 
         public void CloseCurrentToast() =>
@@ -161,6 +159,8 @@ namespace DCL
             {
                 view.SetFavoriteLoading(true);
                 var place = await placesAPIService.GetPlace(currentParcel, ct);
+                view.SetPlaceId(place.id);
+                view.SetVoteButtons(place.user_like, place.user_dislike);
                 view.SetIsAPlace(true);
                 bool isFavorite = await placesAPIService.IsFavoritePlace(place, ct);
                 view.SetFavoriteLoading(false);
@@ -179,6 +179,7 @@ namespace DCL
 
         private void SetPlaceCardModalData(IHotScenesController.PlaceInfo place)
         {
+            placeCardModal.SetPlacePicture(place.image);
             placeCardModal.SetCoords(currentParcel);
             placeCardModal.SetDeployedAt(place.deployed_at);
             placeCardModal.SetPlaceAuthor(place.contact_name);
