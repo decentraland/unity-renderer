@@ -196,8 +196,6 @@ namespace DCL.ContentModeration
             try
             {
                 contentModerationReportingComponentView.SetLoadingState(true);
-                await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: ct);
-                throw new Exception("Test error!!");
                 await placesAPIService.ReportPlace(placeContentReport, ct)
                                       .Timeout(TimeSpan.FromSeconds(REPORT_PLACE_TIMEOUT));
                 contentModerationReportingComponentView.SetPanelAsSent(true);

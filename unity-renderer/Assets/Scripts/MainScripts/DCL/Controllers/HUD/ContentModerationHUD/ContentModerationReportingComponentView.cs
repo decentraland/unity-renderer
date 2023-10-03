@@ -158,6 +158,7 @@ namespace DCL.ContentModeration
             mainFormSection.SetActive(false);
             loadingStateSection.SetActive(false);
             errorStateSection.SetActive(true);
+            isLoadingActive = false;
         }
 
         private void CreateButtons()
