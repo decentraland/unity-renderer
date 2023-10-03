@@ -6,6 +6,7 @@ using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
+using DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas;
 using DCLServices.MapRendererV2.MapLayers.ParcelHighlight;
 using DCLServices.MapRendererV2.MapLayers.SatelliteAtlas;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -112,7 +113,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         private async UniTask CreateAtlas(Dictionary<MapLayer, IMapLayerController> layers, MapRendererConfiguration configuration, ICoordsUtils coordsUtils, IMapCullingController cullingController, CancellationToken cancellationToken)
         {
-            var chunkAtlas = new ChunkAtlasController(configuration.AtlasRoot, ATLAS_CHUNK_SIZE, coordsUtils, cullingController, chunkBuilder: CreateChunk);
+            var chunkAtlas = new ParcelChunkAtlasController(configuration.AtlasRoot, ATLAS_CHUNK_SIZE, coordsUtils, cullingController, chunkBuilder: CreateChunk);
 
             // initialize Atlas but don't block the flow (to accelerate loading time)
             chunkAtlas.Initialize(cancellationToken).SuppressCancellationThrow().Forget();
@@ -124,7 +125,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             {
                 SpriteRenderer atlasChunkPrefab = await GetAtlasChunkPrefab(ct);
 
-                var chunk = new ChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
+                var chunk = new ParcelChunkController(atlasChunkPrefab, chunkLocalPosition, coordsCenter, parent);
                 chunk.SetDrawOrder(MapRendererDrawOrder.ATLAS);
                 await chunk.LoadImage(ATLAS_CHUNK_SIZE, PARCEL_SIZE, coordsCenter, ct);
 

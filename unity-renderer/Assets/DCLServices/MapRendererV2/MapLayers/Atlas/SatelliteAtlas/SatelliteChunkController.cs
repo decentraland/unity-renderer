@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using DCLServices.MapRendererV2.MapLayers.Atlas;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Threading;
@@ -9,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
-namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
+namespace DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas
 {
     public class SatelliteChunkController : IChunkController
     {
@@ -55,7 +54,10 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             linkedCts = CancellationTokenSource.CreateLinkedTokenSource(internalCts.Token, ct);
 
             var url = $"{CHUNKS_API}{chunkId.x}%2C{chunkId.y}.jpg";
-            UnityWebRequest webRequest = await GetTextureFromWebAsync(url, ct: linkedCts.Token);
+
+            UnityWebRequest webRequest = !Application.isEditor
+                ? await webRequestController.Ref.GetTextureAsync(url, cancellationToken: linkedCts.Token)
+                : await GetTextureFromWebAsync(url, ct: linkedCts.Token);
 
             Texture2D texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
@@ -66,6 +68,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
                 0, SpriteMeshType.FullRect, Vector4.one, false);
 
             return;
+
             Texture2D CreateTexture(byte[] data)
             {
                 var texture2D = new Texture2D(1, 1);
@@ -74,6 +77,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             }
         }
 
+#if UNITY_EDITOR
         private async UniTask<UnityWebRequest> GetTextureFromWebAsync(string url, int maxAttempts = 3, CancellationToken ct = default)
         {
             UnityWebRequest webRequest;
@@ -92,5 +96,6 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
 
             return webRequest;
         }
+#endif
     }
 }

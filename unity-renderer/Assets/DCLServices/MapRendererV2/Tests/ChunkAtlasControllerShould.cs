@@ -20,8 +20,8 @@ namespace DCLServices.MapRendererV2.Tests
         private const int CHUNK_SIZE = 1000;
         private const int FRAME_DELAY = 5;
 
-        private ChunkAtlasController atlasController;
-        private ChunkAtlasController.ChunkBuilder builder;
+        private ParcelChunkAtlasController atlasController;
+        private ParcelChunkAtlasController.ChunkBuilder builder;
         private int iterationsNumber;
 
         [SetUp]
@@ -32,9 +32,9 @@ namespace DCLServices.MapRendererV2.Tests
             coordUtils.WorldMinCoords.Returns(new Vector2Int(-150, -150));
             coordUtils.WorldMaxCoords.Returns(new Vector2Int(175, 175));
 
-            builder = Substitute.For<ChunkAtlasController.ChunkBuilder>();
+            builder = Substitute.For<ParcelChunkAtlasController.ChunkBuilder>();
 
-            atlasController = new ChunkAtlasController(null, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
+            atlasController = new ParcelChunkAtlasController(null, CHUNK_SIZE, coordUtils, Substitute.For<IMapCullingController>(), builder);
 
             var parcelsInsideChunk = CHUNK_SIZE / PARCEL_SIZE;
 
@@ -80,7 +80,7 @@ namespace DCLServices.MapRendererV2.Tests
             var expected = new int[iterationsNumber];
 
             for (var i = 0; i < iterationsNumber; i++)
-                expected[i] = frame + i / ChunkAtlasController.CHUNKS_CREATED_PER_BATCH * FRAME_DELAY;
+                expected[i] = frame + i / ParcelChunkAtlasController.CHUNKS_CREATED_PER_BATCH * FRAME_DELAY;
 
             await atlasController.Initialize(CancellationToken.None);
 

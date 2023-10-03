@@ -13,7 +13,7 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
     {
         public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct);
 
-        private const int CHUNKS_CREATED_PER_BATCH = 10;
+        private const int CHUNKS_CREATED_PER_BATCH = 5;
 
         private readonly int gridSize;
         private readonly int parcelsInsideChunk;

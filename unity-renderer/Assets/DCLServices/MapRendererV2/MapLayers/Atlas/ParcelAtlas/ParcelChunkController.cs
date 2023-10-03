@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.MapLayers.Atlas
 {
-    public class ChunkController : IChunkController
+    public class ParcelChunkController : IChunkController
     {
         private const int PIXELS_PER_UNIT = 50;
         private const string CHUNKS_API = "https://api.decentraland.org/v1/map.png";
@@ -17,7 +17,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private Service<IWebRequestController> webRequestController;
 
-        public ChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
+        public ParcelChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
         {
             spriteRenderer = Object.Instantiate(prefab, parent);
 #if UNITY_EDITOR
