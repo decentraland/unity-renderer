@@ -12,5 +12,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         void SetActive(bool active);
 
         void SetZoom(float zoom);
+
+        void ResetToBaseScale();
     }
 }

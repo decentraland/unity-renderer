@@ -37,6 +37,7 @@ namespace DCLServices.MapRendererV2
         private readonly IMapRendererComponentsFactory componentsFactory;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
+        private List<IZoomScalingLayer> zoomScalingLayers;
 
         private MapRendererConfiguration configurationInstance;
 
@@ -55,6 +56,7 @@ namespace DCLServices.MapRendererV2
         {
             this.cancellationToken = cancellationToken;
             layers = new Dictionary<MapLayer, MapLayerStatus>();
+            zoomScalingLayers = new List<IZoomScalingLayer>();
 
             try
             {
@@ -62,6 +64,9 @@ namespace DCLServices.MapRendererV2
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
                 configurationInstance = components.ConfigurationInstance;
+
+                foreach (IZoomScalingLayer zoomScalingLayer in components.ZoomScalingLayers)
+                    zoomScalingLayers.Add(zoomScalingLayer);
 
                 foreach (KeyValuePair<MapLayer, IMapLayerController> pair in components.Layers)
                 {
@@ -101,34 +106,32 @@ namespace DCLServices.MapRendererV2
 
             EnableLayers(cameraInput.EnabledLayers);
             IMapCameraControllerInternal mapCameraController = mapCameraPool.Get();
-            mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
+            mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.ZoomChanged += OnCameraZoomChanged;
-
-            OnCameraZoomChanged(mapCameraController.Camera.orthographicSize);
-
+            Debug.Log($"VV:: cameraInput.Zoom { cameraInput.Zoom}");
+            Debug.Log($"VV:: orthographicSize {mapCameraController.Camera.orthographicSize}");
             return mapCameraController;
         }
 
         private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
         {
             mapCameraController.OnReleasing -= ReleaseCamera;
-            DisableLayers(mapCameraController.EnabledLayers);
-            OnCameraZoomChanged(mapCameraController.Camera.orthographicSize);
-            mapCameraPool.Release(mapCameraController);
             mapCameraController.ZoomChanged -= OnCameraZoomChanged;
+            DisableLayers(mapCameraController.EnabledLayers);
+            mapCameraPool.Release(mapCameraController);
+
+            foreach (var layer in zoomScalingLayers)
+                layer.ResetToBaseScale();
         }
+
         private void OnCameraZoomChanged(float zoom)
         {
-            var mask = MapLayer.PlayerMarker;
-            foreach (MapLayer mapLayer in ALL_LAYERS)
+            foreach (var layer in zoomScalingLayers)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer) && layers.TryGetValue(mapLayer, out var mapLayerStatus))
-                {
-                    Debug.Log("adjust zoom");
-                    ((PlayerMarkerController)mapLayerStatus.MapLayerController).ApplyCameraZoom(zoom);
-                }
+                Debug.Log($"adjust zoom {zoom}");
+                layer.ApplyCameraZoom(zoom);
             }
         }
 

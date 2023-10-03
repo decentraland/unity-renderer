@@ -2,12 +2,13 @@
 using DCL.Helpers;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using System;
 using System.Threading;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
 {
-    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController
+    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController, IZoomScalingLayer
     {
         internal delegate IPlayerMarker PlayerMarkerBuilder(Transform parent);
 
@@ -75,6 +76,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         public void ApplyCameraZoom(float zoom)
         {
             playerMarker.SetZoom(zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            playerMarker.ResetToBaseScale();
         }
 
         private void OnPlayerWorldPositionChange(Vector3 current, Vector3 previous)

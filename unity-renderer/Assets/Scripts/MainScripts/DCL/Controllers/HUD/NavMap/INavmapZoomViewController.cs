@@ -2,6 +2,6 @@
 {
     public interface INavmapZoomViewController
     {
-        float ResetZoomToMidValue();
+        float ResetZoom(int zoomStep);
     }
 }
