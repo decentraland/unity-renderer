@@ -87,7 +87,6 @@ namespace DCL
 
             mapCamera.TranslateTo(
                 coordinates: homePoint.Get(),
-                zoom: navmapZoomViewController.ResetZoomToMidValue(),
                 duration: TRANSLATION_DURATION,
                 onComplete: () => toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true));
         }
@@ -99,7 +98,6 @@ namespace DCL
 
             mapCamera.TranslateTo(
                 coordinates: Utils.WorldToGridPosition(playerPlayerWorldPosition.Get()),
-                zoom: navmapZoomViewController.ResetZoomToMidValue(),
                 duration: TRANSLATION_DURATION);
         }
     }

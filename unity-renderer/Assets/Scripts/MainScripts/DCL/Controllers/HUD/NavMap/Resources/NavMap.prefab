@@ -2840,7 +2840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -15.000056, y: 56.000004}
+  m_AnchoredPosition: {x: -15, y: 56}
   m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &3295086073103147151
@@ -2935,7 +2935,6 @@ GameObject:
   - component: {fileID: 5188948955112179522}
   - component: {fileID: 3578851569800893368}
   - component: {fileID: 5340690109582645380}
-  - component: {fileID: 1481270875036362003}
   m_Layer: 5
   m_Name: NavMap
   m_TagString: Untagged
@@ -3068,71 +3067,6 @@ MonoBehaviour:
     <MapCameraDragBehaviorData>k__BackingField:
       inertia: 1
       decelerationRate: 0.00001
---- !u!114 &1481270875036362003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7061832710791367598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb7799ed4671e6748979ae8dbe3553a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  zoomIn:
-    InputAction: {fileID: 11400000, guid: a11a0b29d3b1143e2a9948ef2bf8d2eb, type: 2}
-    Button: {fileID: 5604832739893698629}
-    Image: {fileID: 8196224411457082589}
-  zoomOut:
-    InputAction: {fileID: 11400000, guid: c01fe13e1029e4cf3beba2417ddc7684, type: 2}
-    Button: {fileID: 8824537395097959515}
-    Image: {fileID: 243504401618224385}
-  mouseWheelAction: {fileID: 11400000, guid: 321d843783c1847a2a90e7e46f44e476, type: 2}
-  <normalizedZoomCurve>k__BackingField:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.8
-      outSlope: 0.8
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.2304
-      inSlope: Infinity
-      outSlope: Infinity
-      tangentMode: 7
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 2
-      value: 0.5184
-      inSlope: 0
-      outSlope: Infinity
-      tangentMode: 97
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 3
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  <zoomVerticalRange>k__BackingField: {x: 14, y: 40}
-  <scaleDuration>k__BackingField: 0.2
 --- !u!1 &7147034322982732920
 GameObject:
   m_ObjectHideFlags: 0
@@ -4584,18 +4518,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56335e8088662e547858ed3f1bf805b1, type: 3}
---- !u!114 &243504401618224385 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5188115033891044829, guid: 56335e8088662e547858ed3f1bf805b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4944665230400731356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &4629339733707251925 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 333351180236904457, guid: 56335e8088662e547858ed3f1bf805b1,
@@ -4614,30 +4536,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb7799ed4671e6748979ae8dbe3553a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5604832739893698629 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 672909338269276313, guid: 56335e8088662e547858ed3f1bf805b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4944665230400731356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8196224411457082589 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3828108583598976001, guid: 56335e8088662e547858ed3f1bf805b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4944665230400731356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8480774943751937224 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3544114331175920660, guid: 56335e8088662e547858ed3f1bf805b1,
@@ -4648,18 +4546,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 424bbd378e824a3fb7a7940e1e001459, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8824537395097959515 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4533423698185831559, guid: 56335e8088662e547858ed3f1bf805b1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4944665230400731356}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7513513862048072415
