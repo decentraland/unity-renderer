@@ -381,8 +381,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             animation.Blend(bb.expressionTriggerId, 1, EXPRESSION_ENTER_TRANSITION_TIME);
         }
 
-        lastExtendedEmoteData?.CheckStatus(Time.time - lastEmotePlayTime);
-
         // If we reach the emote loop, we send the RPC message again to refresh new users
         if (bb.shouldLoop && isOwnPlayer)
         {
@@ -404,12 +402,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
             return isAnimationOver || isMoving;
         }
-    }
-
-    // TODO: REMOVE THIS
-    private void OnGUI()
-    {
-        lastExtendedEmoteData?.OnGUI();
     }
 
     private int GetCurrentEmoteLoopCount() =>

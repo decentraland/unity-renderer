@@ -40,6 +40,7 @@ namespace DCL.Rendering
         // Cache to avoid allocations when getting names
         private readonly HashSet<Shader> avatarShaders = new HashSet<Shader>();
         private readonly HashSet<Shader> nonAvatarShaders = new HashSet<Shader>();
+        private int previewLayer = LayerMask.NameToLayer("CharacterPreview");
 
         private BaseVariable<FeatureFlag> featureFlags => DataStore.i.featureFlags.flags;
 
@@ -180,7 +181,10 @@ namespace DCL.Rendering
 
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
+                bool isIgnoredByLayer = r.gameObject.layer == previewLayer;
+
                 bool shouldBeVisible =
+                    isIgnoredByLayer ||
                     distance < profile.visibleDistanceThreshold ||
                     bounds.Contains(playerPosition) ||
                     // At the end we perform queries for emissive and opaque conditions

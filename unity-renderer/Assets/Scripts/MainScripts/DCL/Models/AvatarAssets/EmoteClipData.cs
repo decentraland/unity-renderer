@@ -64,7 +64,7 @@ namespace DCL.Emotes
             if (animation != null)
             {
                 animation.gameObject.layer = gameObjectLayer;
-                animation.cullingType = occlude ? AnimationCullingType.BasedOnRenderers :  AnimationCullingType.AlwaysAnimate;
+                animation.cullingType = occlude ? AnimationCullingType.BasedOnRenderers : AnimationCullingType.AlwaysAnimate;
                 animation.enabled = true;
 
                 foreach (AnimationState state in animation)
@@ -89,10 +89,7 @@ namespace DCL.Emotes
         {
             if (renderers != null)
             {
-                foreach (Renderer renderer in renderers)
-                {
-                    renderer.enabled = false;
-                }
+                foreach (Renderer renderer in renderers) { renderer.enabled = false; }
             }
 
             if (animation != null)
@@ -108,62 +105,6 @@ namespace DCL.Emotes
 
             if (AudioSource != null)
                 AudioSource.Stop();
-        }
-
-        public void CheckStatus(float timeSincePlay)
-        {
-            if (animation != null)
-            {
-                foreach (AnimationState state in animation)
-                {
-                    if (state.clip == AvatarClip) continue;
-
-                    if (!(state.time < state.clip.length)) continue;
-
-                    float delta = timeSincePlay - state.time;
-                    if (!(delta < 0.05f) && state.enabled) continue;
-
-                    state.time = timeSincePlay;
-                    animation.CrossFade(state.clip.name, 0, PlayMode.StopAll);
-                }
-            }
-        }
-
-        public void OnGUI()
-        {
-            GUILayout.BeginArea(new Rect(10,10,5000,5000));
-            GUI.color = Color.magenta;
-            GUI.skin.label.fontSize = 20;
-            GUILayout.Label("Animator enabled: " + animation.enabled);
-            GUILayout.Space(25);
-
-            if (animation != null)
-            {
-                foreach (AnimationState state in animation)
-                {
-                    if (state.clip == AvatarClip) continue;
-                    GUILayout.Label("Clip: " + state.clip.name);
-                    GUILayout.Label(" - Animation State Enabled: " + state.enabled);
-                    GUILayout.Label(" - Animation State Time: " + state.time);
-                }
-            }
-
-            if (ExtraContent != null)
-            {
-                var pos = ExtraContent.transform.localPosition;
-                var pos2 = ExtraContent.transform.position;
-                GUILayout.Label($"Local Pos: {pos.x},{pos.y},{pos.z}");
-                GUILayout.Label($"Global Pos: {pos2.x},{pos2.y},{pos2.z}");
-                GUILayout.Label($"Parent: {ExtraContent.transform.parent.name}");
-            }
-
-            GUILayout.Space(25);
-
-            if (renderers != null)
-                foreach (Renderer renderer in renderers)
-                    GUILayout.Label($"Renderer {renderer.name} enabled: {renderer.enabled} visible: {renderer.isVisible} Layer: {LayerMask.LayerToName(renderer.gameObject.layer)}");
-
-            GUILayout.EndArea();
         }
     }
 }
