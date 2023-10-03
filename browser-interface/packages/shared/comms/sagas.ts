@@ -19,10 +19,9 @@ import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
 import {
   DEPLOY_PROFILE_SUCCESS,
-  PROFILE_HASH_SUCCESS,
   SEND_PROFILE_TO_RENDERER_REQUEST
 } from 'shared/profiles/actions'
-import {getCurrentProfileHash, getCurrentUserProfile, getProfileHash} from 'shared/profiles/selectors'
+import {getCurrentProfileHash, getCurrentUserProfile} from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
@@ -59,7 +58,7 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
-import {RootProfileState} from "../profiles/types";
+import {waitForProfileHash} from "../profiles/sagas/waitForProfileHash";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -350,10 +349,7 @@ function* respondCommsProfileRequests() {
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (!hash && identity) {
-      while (!(yield select((state: RootProfileState) => getProfileHash(state, identity!.address)))) {
-        yield take(PROFILE_HASH_SUCCESS)
-      }
-      hash = yield select(getProfileHash, identity.address)
+      hash = yield call(waitForProfileHash, identity!.address)
     }
 
     if (profile && context) {
