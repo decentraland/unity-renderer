@@ -19,7 +19,6 @@ const EXPECTED: Candidate = {
     [1, 1]
   ],
   version: { content: '1.0.0', lambdas: '1.0.0', bff: '1.0.0', comms: 'v2' },
-  // TODO: set expected keys
   address: '',
   publicKey: ''
 }
@@ -53,11 +52,11 @@ describe('Fetch catalyst server status', () => {
               version: '1.0.0'
             },
             lambdas: {
-              version: '1.0.0'
+              version: '1.0.0',
+              address: '',
+              publicKey: ''
             },
-            acceptingUsers: true,
-            address: '',
-            publicKey: ''
+            acceptingUsers: true
           }
         }
       } else {
@@ -118,11 +117,11 @@ describe('Fetch catalyst server status', () => {
               version: '1.0.0'
             },
             lambdas: {
-              version: '1.0.0'
+              version: '1.0.0',
+              address: '',
+              publicKey: ''
             },
-            acceptingUsers: true,
-            address: '',
-            publicKey: ''
+            acceptingUsers: true
           }
         }
       } else {
