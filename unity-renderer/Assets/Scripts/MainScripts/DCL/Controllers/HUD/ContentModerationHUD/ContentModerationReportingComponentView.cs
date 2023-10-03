@@ -12,16 +12,20 @@ namespace DCL.ContentModeration
         [Header("REFERENCES")]
         [SerializeField] private Button backgroundButton;
         [SerializeField] private ButtonComponentView cancelButton;
-        [SerializeField] private ButtonComponentView gotItButton;
+        [SerializeField] private ButtonComponentView gotItButton1;
+        [SerializeField] private ButtonComponentView gotItButton2;
         [SerializeField] private ButtonComponentView sendButton;
         [SerializeField] private ButtonComponentView retryButton;
-        [SerializeField] private Button learnMoreButton1;
-        [SerializeField] private Button learnMoreButton2;
+        [SerializeField] private Button learnMoreButton;
         [SerializeField] private ContentModerationRatingButtonComponentView teenRatingButton;
         [SerializeField] private ContentModerationRatingButtonComponentView adultRatingButton;
         [SerializeField] private ContentModerationRatingButtonComponentView restrictedRatingButton;
+        [SerializeField] private GameObject optionsSectionContainer;
         [SerializeField] private TMP_Text optionsSectionTitle;
         [SerializeField] private TMP_Text optionsSectionSubtitle;
+        [SerializeField] private GameObject markedRatingInfoContainer;
+        [SerializeField] private TMP_Text markedRatingInfoTitle;
+        [SerializeField] private TMP_Text markedRatingInfoDescription;
         [SerializeField] private Transform optionsContainer;
         [SerializeField] private ScrollRect optionsScroll;
         [SerializeField] private GameObject mainModal;
@@ -36,18 +40,21 @@ namespace DCL.ContentModeration
         [SerializeField] private string teenOptionTitle;
         [SerializeField] private string teenOptionSubtitle;
         [SerializeField] private List<string> teenOptions;
+        [SerializeField] private string teenDescription;
 
         [Header("ADULT CONFIGURATION")]
         [SerializeField] private Sprite adultHeaderSprite;
         [SerializeField] private string adultOptionTitle;
         [SerializeField] private string adultOptionSubtitle;
         [SerializeField] private List<string> adultOptions;
+        [SerializeField] private string adultDescription;
 
         [Header("RESTRICTED CONFIGURATION")]
         [SerializeField] private Sprite restrictedHeaderSprite;
         [SerializeField] private string restrictedOptionTitle;
         [SerializeField] private string restrictedOptionSubtitle;
         [SerializeField] private List<string> restrictedOptions;
+        [SerializeField] private string restrictedDescription;
 
         [Header("PREFABS")]
         [SerializeField] private GameObject optionButtonPrefab;
@@ -71,15 +78,15 @@ namespace DCL.ContentModeration
             base.Awake();
             backgroundButton.onClick.AddListener(HidePanel);
             cancelButton.onClick.AddListener(HidePanel);
-            gotItButton.onClick.AddListener(HidePanel);
+            gotItButton1.onClick.AddListener(HidePanel);
+            gotItButton2.onClick.AddListener(HidePanel);
             sendButtonText = sendButton.GetComponentInChildren<TMP_Text>();
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
             retryButton.onClick.AddListener(() => SetLoadingState(false));
-            learnMoreButton1.onClick.AddListener(GoToLearnMore);
-            learnMoreButton2.onClick.AddListener(GoToLearnMore);
-            teenRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.TEEN));
-            adultRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.ADULT));
-            restrictedRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.RESTRICTED));
+            learnMoreButton.onClick.AddListener(GoToLearnMore);
+            teenRatingButton.RatingButton.onClick.AddListener(() => SetRating(SceneContentCategory.TEEN));
+            adultRatingButton.RatingButton.onClick.AddListener(() => SetRating(SceneContentCategory.ADULT));
+            restrictedRatingButton.RatingButton.onClick.AddListener(() => SetRating(SceneContentCategory.RESTRICTED));
 
             CreateButtons();
         }
@@ -88,11 +95,11 @@ namespace DCL.ContentModeration
         {
             backgroundButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
-            gotItButton.onClick.RemoveAllListeners();
+            gotItButton1.onClick.RemoveAllListeners();
+            gotItButton2.onClick.RemoveAllListeners();
             sendButton.onClick.RemoveAllListeners();
             retryButton.onClick.RemoveAllListeners();
-            learnMoreButton1.onClick.RemoveAllListeners();
-            learnMoreButton2.onClick.RemoveAllListeners();
+            learnMoreButton.onClick.RemoveAllListeners();
             teenRatingButton.RatingButton.onClick.RemoveAllListeners();
             adultRatingButton.RatingButton.onClick.RemoveAllListeners();
             restrictedRatingButton.RatingButton.onClick.RemoveAllListeners();
@@ -118,18 +125,8 @@ namespace DCL.ContentModeration
             OnPanelClosed?.Invoke();
         }
 
-        public void SetRating(SceneContentCategory contentCategory)
+        public void SetRatingAsMarked(SceneContentCategory contentCategory)
         {
-            currentRating = contentCategory;
-
-            teenRatingButton.Select(contentCategory == SceneContentCategory.TEEN);
-            adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
-            restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
-
-            teenRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.TEEN);
-            adultRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.ADULT);
-            restrictedRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.RESTRICTED);
-
             modalHeaderImage.sprite = contentCategory switch
                                       {
                                           SceneContentCategory.TEEN => teenHeaderSprite,
@@ -137,6 +134,63 @@ namespace DCL.ContentModeration
                                           SceneContentCategory.RESTRICTED => restrictedHeaderSprite,
                                           _ => teenHeaderSprite,
                                       };
+
+            teenRatingButton.SetCurrentMarkActive(contentCategory == SceneContentCategory.TEEN);
+            adultRatingButton.SetCurrentMarkActive(contentCategory == SceneContentCategory.ADULT);
+            restrictedRatingButton.SetCurrentMarkActive(contentCategory == SceneContentCategory.RESTRICTED);
+        }
+
+        public void SetRating(SceneContentCategory contentCategory)
+        {
+            currentRating = contentCategory;
+
+            selectedOptions.Clear();
+
+            teenRatingButton.Select(contentCategory == SceneContentCategory.TEEN);
+            adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
+            restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
+
+            markedRatingInfoContainer.SetActive((contentCategory == SceneContentCategory.TEEN && teenRatingButton.IsMarked) ||
+                                                (contentCategory == SceneContentCategory.ADULT && adultRatingButton.IsMarked) ||
+                                                (contentCategory == SceneContentCategory.RESTRICTED && restrictedRatingButton.IsMarked));
+            optionsSectionContainer.SetActive((contentCategory == SceneContentCategory.TEEN && !teenRatingButton.IsMarked) ||
+                                              (contentCategory == SceneContentCategory.ADULT && !adultRatingButton.IsMarked) ||
+                                              (contentCategory == SceneContentCategory.RESTRICTED && !restrictedRatingButton.IsMarked));
+
+            gotItButton1.gameObject.SetActive(markedRatingInfoContainer.activeSelf);
+            sendButton.gameObject.SetActive(!markedRatingInfoContainer.activeSelf);
+
+            switch (contentCategory)
+            {
+                default:
+                case SceneContentCategory.TEEN:
+                    optionsSectionTitle.text = teenOptionTitle;
+                    optionsSectionSubtitle.text = teenOptionSubtitle;
+                    markedRatingInfoTitle.text = teenOptionTitle;
+                    markedRatingInfoDescription.text = teenDescription;
+                    break;
+                case SceneContentCategory.ADULT:
+                    optionsSectionTitle.text = adultOptionTitle;
+                    optionsSectionSubtitle.text = adultOptionSubtitle;
+                    markedRatingInfoTitle.text = adultOptionTitle;
+                    markedRatingInfoDescription.text = adultDescription;
+                    break;
+                case SceneContentCategory.RESTRICTED:
+                    optionsSectionTitle.text = restrictedOptionTitle;
+                    optionsSectionSubtitle.text = restrictedOptionSubtitle;
+                    markedRatingInfoTitle.text = restrictedOptionTitle;
+                    markedRatingInfoDescription.text = restrictedDescription;
+                    break;
+            }
+
+            foreach (ContentModerationReportingOptionComponentView option in teenOptionButtons)
+                option.SetActive((int)contentCategory == 0);
+            foreach (ContentModerationReportingOptionComponentView option in adultOptionButtons)
+                option.SetActive((int)contentCategory == 1);
+            foreach (ContentModerationReportingOptionComponentView option in restrictedOptionButtons)
+                option.SetActive((int)contentCategory == 2);
+
+            ResetOptions();
         }
 
         public void SetLoadingState(bool isLoading)
@@ -214,40 +268,6 @@ namespace DCL.ContentModeration
         {
             GameObject commentsObject = Instantiate(commentsPrefab, optionsContainer);
             return commentsObject.GetComponentInChildren<TMP_InputField>();
-        }
-
-        private void OnRatingButtonClicked(SceneContentCategory contentCategory)
-        {
-            selectedOptions.Clear();
-            currentRating = contentCategory;
-            teenRatingButton.Select(contentCategory == SceneContentCategory.TEEN);
-            adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
-            restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
-
-            switch (contentCategory)
-            {
-                case SceneContentCategory.TEEN:
-                    optionsSectionTitle.text = teenOptionTitle;
-                    optionsSectionSubtitle.text = teenOptionSubtitle;
-                    break;
-                case SceneContentCategory.ADULT:
-                    optionsSectionTitle.text = adultOptionTitle;
-                    optionsSectionSubtitle.text = adultOptionSubtitle;
-                    break;
-                case SceneContentCategory.RESTRICTED:
-                    optionsSectionTitle.text = restrictedOptionTitle;
-                    optionsSectionSubtitle.text = restrictedOptionSubtitle;
-                    break;
-            }
-
-            foreach (ContentModerationReportingOptionComponentView option in teenOptionButtons)
-                option.SetActive((int)contentCategory == 0);
-            foreach (ContentModerationReportingOptionComponentView option in adultOptionButtons)
-                option.SetActive((int)contentCategory == 1);
-            foreach (ContentModerationReportingOptionComponentView option in restrictedOptionButtons)
-                option.SetActive((int)contentCategory == 2);
-
-            ResetOptions();
         }
 
         private void ResetOptions()

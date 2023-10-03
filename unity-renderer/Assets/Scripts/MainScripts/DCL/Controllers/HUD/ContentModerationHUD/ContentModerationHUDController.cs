@@ -156,6 +156,7 @@ namespace DCL.ContentModeration
             if (panelStatus.isVisible)
             {
                 contentModerationReportingComponentView.ShowPanel();
+                contentModerationReportingComponentView.SetRatingAsMarked(panelStatus.rating);
                 contentModerationReportingComponentView.SetRating(panelStatus.rating);
             }
             else

@@ -16,6 +16,7 @@ namespace DCL.ContentModeration
         [SerializeField] private GameObject currentMark;
 
         public Button RatingButton => ratingButton;
+        public bool IsMarked { get; private set; }
 
         public override void RefreshControl() { }
 
@@ -28,7 +29,10 @@ namespace DCL.ContentModeration
                 text.color = isSelected ? selectedColor : unselectedColor;
         }
 
-        public void SetCurrentMarkArctive(bool isActive) =>
+        public void SetCurrentMarkActive(bool isActive)
+        {
+            IsMarked = isActive;
             currentMark.SetActive(isActive);
+        }
     }
 }

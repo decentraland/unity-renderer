@@ -12,6 +12,7 @@ namespace DCL.ContentModeration
 
         void ShowPanel();
         void HidePanel();
+        void SetRatingAsMarked(SceneContentCategory contentCategory);
         void SetRating(SceneContentCategory contentCategory);
         void SetLoadingState(bool isLoading);
         void SetPanelAsSent(bool hasBeenSent);
