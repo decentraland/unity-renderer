@@ -55,9 +55,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas
 
             var url = $"{CHUNKS_API}{chunkId.x}%2C{chunkId.y}.jpg";
 
-            UnityWebRequest webRequest = !Application.isEditor
-                ? await webRequestController.Ref.GetTextureAsync(url, cancellationToken: linkedCts.Token)
-                : await GetTextureFromWebAsync(url, ct: linkedCts.Token);
+            UnityWebRequest webRequest = await GetTextureFromWebAsync(url, ct: linkedCts.Token);
 
             Texture2D texture = CreateTexture(webRequest.downloadHandler.data);
             texture.wrapMode = TextureWrapMode.Clamp;
@@ -77,11 +75,11 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas
             }
         }
 
-#if UNITY_EDITOR
         private async UniTask<UnityWebRequest> GetTextureFromWebAsync(string url, int maxAttempts = 3, CancellationToken ct = default)
         {
             UnityWebRequest webRequest;
-
+#if UNITY_EDITOR
+            // fixes strange exception with SSL certificate on editor
             try { webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: linkedCts.Token); }
             catch (Exception e)
             {
@@ -93,9 +91,11 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas
                 else
                     throw;
             }
+#else
+            webRequest = await webRequestController.Ref.GetTextureAsync(url, cancellationToken: linkedCts.Token);
+#endif
 
             return webRequest;
         }
-#endif
     }
 }
