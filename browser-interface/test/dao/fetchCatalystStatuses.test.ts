@@ -55,7 +55,9 @@ describe('Fetch catalyst server status', () => {
             lambdas: {
               version: '1.0.0'
             },
-            acceptingUsers: true
+            acceptingUsers: true,
+            address: '',
+            publicKey: ''
           }
         }
       } else {
@@ -118,7 +120,9 @@ describe('Fetch catalyst server status', () => {
             lambdas: {
               version: '1.0.0'
             },
-            acceptingUsers: true
+            acceptingUsers: true,
+            address: '',
+            publicKey: ''
           }
         }
       } else {
