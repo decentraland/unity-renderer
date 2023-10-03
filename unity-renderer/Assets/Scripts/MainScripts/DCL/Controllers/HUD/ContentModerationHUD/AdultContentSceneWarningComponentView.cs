@@ -13,7 +13,7 @@ namespace DCL.ContentModeration
         [SerializeField] internal ButtonComponentView goToSettingsButton;
         [SerializeField] internal TMP_Text subTitle;
 
-        private const string RESTRICTED_MODE_SUBTITLE = "This scene has been restricted by our community as it potentially contains adult or inappropriate content for some users.";
+        private const string RESTRICTED_MODE_SUBTITLE = "This scene has been restricted by our community as it potentially contains prohibited content for the users.";
         private const string ADULT_MODE_SUBTITLE = "This scene has been flagged by our community as it potentially contains adult or inappropriate content for some users. <b>Please confirm your age at Settings Screen</b>.";
 
         public event Action OnGoToSettingsClicked;

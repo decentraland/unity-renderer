@@ -241,7 +241,6 @@ GameObject:
   - component: {fileID: 7405636297975238921}
   - component: {fileID: 1737145859534900007}
   - component: {fileID: 5271063547028627344}
-  - component: {fileID: 2404460358014335883}
   m_Layer: 5
   m_Name: ReportingButton
   m_TagString: Untagged
@@ -383,23 +382,6 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 0}
---- !u!114 &2404460358014335883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2076155032646608607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea39ce90c1a674c749c66ba7bcf164da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showHideAnimator: {fileID: 7035785007405642281}
-  hideAnimatorOnAwake: 1
-  enableAnimatorOnHover: 1
-  setVisibleDelay: 0
-  setHideDelay: 0
 --- !u!1 &3517717675850236691
 GameObject:
   m_ObjectHideFlags: 0
