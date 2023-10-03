@@ -44,10 +44,10 @@ export const getCurrentUserProfile = (store: RootProfileState & RootSessionState
 
 export const getCurrentProfileHash = (store: RootProfileState & RootSessionState) => {
   const userId = selectCurrentUserId(store)
-  return userId ? getProfileHash(userId, store) : undefined
+  return userId ? getProfileHash(store, userId) : undefined
 }
 
-export const getProfileHash = (userId: string, store: RootProfileState & RootSessionState) => {
+export const getProfileHash = (store: RootProfileState & RootSessionState, userId: string) => {
   return store.profiles.hashes[userId.toLowerCase()]
 }
 

@@ -17,8 +17,8 @@ import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
 import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
-import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
-import {getCurrentProfileHash, getCurrentUserProfile} from 'shared/profiles/selectors'
+import {DEPLOY_PROFILE_SUCCESS, profileSuccess, SEND_PROFILE_TO_RENDERER_REQUEST} from 'shared/profiles/actions'
+import {getCurrentProfileHash, getCurrentUserProfile, getProfileHash} from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
@@ -55,6 +55,7 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
+import {fetchCatalystProfile} from "../profiles/sagas/content";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -339,12 +340,21 @@ function* respondCommsProfileRequests() {
     yield take(chan)
 
     const realmAdapter: IRealmAdapter = yield call(waitForRealm)
-    const { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
+    let { context, profile, identity, hash } = (yield select(getInformationForCommsProfileRequest)) as ReturnType<
       typeof getInformationForCommsProfileRequest
     >
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
-    if (profile && context && hash) {
+    if (!hash && identity) {
+      profile = yield call(fetchCatalystProfile, identity.address, profile?.version)
+      if (profile) {
+        // update profile in store
+        yield put(profileSuccess(profile))
+      }
+      hash = yield select(getProfileHash, identity.address)
+    }
+
+    if (profile && context) {
       profile.hasConnectedWeb3 = identity?.hasConnectedWeb3 || profile.hasConnectedWeb3
 
       // naive throttling
@@ -360,8 +370,8 @@ function* respondCommsProfileRequests() {
       const response: rfc4.ProfileResponse = {
         serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer,
-        profileHash: hash.hash,
-        profileSignedHash: hash.signedHash,
+        profileHash: hash?.hash ?? '',
+        profileSignedHash: hash?.signedHash ?? '',
         catalystDomain: realmAdapter.baseUrl
       }
       yield apply(context, context.sendProfileResponse, [response])

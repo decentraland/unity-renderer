@@ -8,7 +8,7 @@ import { waitForNetworkSelected } from 'shared/meta/sagas'
 import { getCurrentIdentity, getCurrentNetwork, getCurrentUserId } from 'shared/session/selectors'
 import { RootState } from 'shared/store/rootTypes'
 import type { SaveProfileDelta } from '../actions'
-import {deployProfile, profileSuccess, saveProfileFailure} from '../actions'
+import {deployProfile, invalidateProfileHash, profileSuccess, saveProfileFailure} from '../actions'
 import { validateAvatar } from '../schemaValidation'
 import { getCurrentUserProfileDirty } from '../selectors'
 import { localProfilesRepo } from './local/localProfilesRepo'
@@ -92,6 +92,9 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
 
     // Update profile for other users if the user has a wallet
     if (profile.hasConnectedWeb3) {
+      // changing the state of the profile means that the profile hashes will change
+      // by invalidating the hashes, it forces the regeneration on the next profile propagation
+      yield put(invalidateProfileHash(userId))
       yield put(deployProfile(profile))
     }
   } catch (error: any) {

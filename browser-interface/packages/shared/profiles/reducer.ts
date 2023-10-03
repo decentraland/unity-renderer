@@ -10,7 +10,11 @@ import {
   ADDED_PROFILES_TO_CATALOG,
   ProfileFailureAction,
   ADD_PROFILE_TO_LAST_SENT_VERSION_AND_CATALOG,
-  AddProfileToLastSentProfileVersionAndCatalog, PROFILE_HASH_SUCCESS, ProfileHashSuccessAction
+  AddProfileToLastSentProfileVersionAndCatalog,
+  PROFILE_HASH_SUCCESS,
+  ProfileHashSuccessAction,
+  PROFILE_HASH_CLEAR,
+  ProfileHashClearAction
 } from './actions'
 
 const INITIAL_PROFILES: ProfileState = {
@@ -60,6 +64,11 @@ export function profileReducer(state?: ProfileState, action?: AnyAction): Profil
           }
         }
       }
+    case PROFILE_HASH_CLEAR:
+      const clearProfileHashPayload = (action as ProfileHashClearAction).payload
+      const newState = { ...state }
+      delete newState.hashes[clearProfileHashPayload.userId.toLowerCase()]
+      return newState
     case PROFILE_FAILURE:
       const { userId } = (action as ProfileFailureAction).payload
 

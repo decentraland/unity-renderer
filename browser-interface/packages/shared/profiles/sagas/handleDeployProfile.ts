@@ -28,6 +28,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
+
   try {
     yield call(deployAvatar, {
       url: profileServiceUrl,
