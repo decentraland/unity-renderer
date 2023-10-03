@@ -400,7 +400,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3315807077006444356}
-  - {fileID: 6728909720176403010}
   m_Father: {fileID: 768142562206141630}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -932,12 +931,12 @@ GameObject:
   - component: {fileID: 3125802649658963521}
   - component: {fileID: 633840604733874754}
   m_Layer: 5
-  m_Name: CurrentRateText
+  m_Name: CurrentMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6728909720176403010
 RectTransform:
   m_ObjectHideFlags: 0
@@ -945,12 +944,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7353874786376071693}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7363614736522659558}
+  m_Father: {fileID: 768142562206141630}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1092,6 +1091,7 @@ RectTransform:
   - {fileID: 5941647958605996813}
   - {fileID: 6962840386076676726}
   - {fileID: 7363614736522659558}
+  - {fileID: 6728909720176403010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1231,6 +1231,7 @@ MonoBehaviour:
   textsToColor:
   - {fileID: 554455150696115561}
   - {fileID: 2175340679856879859}
+  currentMark: {fileID: 7353874786376071693}
 --- !u!1 &9040822276957754546
 GameObject:
   m_ObjectHideFlags: 0

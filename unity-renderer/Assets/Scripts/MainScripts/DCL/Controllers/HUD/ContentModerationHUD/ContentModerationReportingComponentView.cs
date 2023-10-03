@@ -122,13 +122,17 @@ namespace DCL.ContentModeration
             adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
             restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
 
+            teenRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.TEEN);
+            adultRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.ADULT);
+            restrictedRatingButton.SetCurrentMarkArctive(contentCategory == SceneContentCategory.RESTRICTED);
+
             modalHeaderImage.sprite = contentCategory switch
-            {
-                SceneContentCategory.TEEN => teenHeaderSprite,
-                SceneContentCategory.ADULT => adultHeaderSprite,
-                SceneContentCategory.RESTRICTED => restrictedHeaderSprite,
-                _ => teenHeaderSprite,
-            };
+                                      {
+                                          SceneContentCategory.TEEN => teenHeaderSprite,
+                                          SceneContentCategory.ADULT => adultHeaderSprite,
+                                          SceneContentCategory.RESTRICTED => restrictedHeaderSprite,
+                                          _ => teenHeaderSprite,
+                                      };
         }
 
         public void SetLoadingState(bool isLoading)
@@ -202,7 +206,10 @@ namespace DCL.ContentModeration
         private void OnRatingButtonClicked(SceneContentCategory contentCategory)
         {
             selectedOptions.Clear();
-            SetRating(contentCategory);
+            currentRating = contentCategory;
+            teenRatingButton.Select(contentCategory == SceneContentCategory.TEEN);
+            adultRatingButton.Select(contentCategory == SceneContentCategory.ADULT);
+            restrictedRatingButton.Select(contentCategory == SceneContentCategory.RESTRICTED);
 
             switch (contentCategory)
             {

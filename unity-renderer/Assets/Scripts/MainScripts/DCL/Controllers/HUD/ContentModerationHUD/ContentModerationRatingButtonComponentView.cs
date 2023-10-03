@@ -13,6 +13,7 @@ namespace DCL.ContentModeration
         [SerializeField] private Color selectedColor;
         [SerializeField] private Color unselectedColor;
         [SerializeField] private List<TMP_Text> textsToColor;
+        [SerializeField] private GameObject currentMark;
 
         public Button RatingButton => ratingButton;
 
@@ -26,5 +27,8 @@ namespace DCL.ContentModeration
             foreach (TMP_Text text in textsToColor)
                 text.color = isSelected ? selectedColor : unselectedColor;
         }
+
+        public void SetCurrentMarkArctive(bool isActive) =>
+            currentMark.SetActive(isActive);
     }
 }
