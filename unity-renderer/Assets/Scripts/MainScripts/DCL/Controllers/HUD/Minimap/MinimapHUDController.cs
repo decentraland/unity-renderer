@@ -35,8 +35,7 @@ public class MinimapHUDController : IHUD
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
-    private static readonly MapLayer RENDER_LAYERS
-        = MapLayer.Atlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest;
+    private const MapLayer RENDER_LAYERS = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest;
 
     private Service<IMapRenderer> mapRenderer;
     private IMapCameraController mapCameraController;

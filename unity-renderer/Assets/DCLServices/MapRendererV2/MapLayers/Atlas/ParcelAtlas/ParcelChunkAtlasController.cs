@@ -7,16 +7,12 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.Atlas
 {
-    internal class ChunkAtlasController : MapLayerControllerBase, IAtlasController
+    internal class ParcelChunkAtlasController : MapLayerControllerBase, IAtlasController
     {
-        public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition,
-            Vector2Int coordsCenter,
-            Transform parent,
-            CancellationToken ct);
+        public delegate UniTask<IChunkController> ChunkBuilder(Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent, CancellationToken ct);
 
-        public const int CHUNKS_CREATED_PER_BATCH = 10;
+        public const int CHUNKS_CREATED_PER_BATCH = 5;
 
-        private readonly SpriteRenderer prefab;
         private readonly int chunkSize;
         private readonly int parcelsInsideChunk;
         private readonly ChunkBuilder chunkBuilder;
@@ -24,11 +20,10 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
 
         private int parcelSize => coordsUtils.ParcelSize;
 
-        public ChunkAtlasController(Transform parent, SpriteRenderer prefab, int chunkSize,
+        public ParcelChunkAtlasController(Transform parent, int chunkSize,
             ICoordsUtils coordsUtils, IMapCullingController cullingController, ChunkBuilder chunkBuilder)
             : base(parent, coordsUtils, cullingController)
         {
-            this.prefab = prefab;
             this.chunkSize = chunkSize;
             this.chunkBuilder = chunkBuilder;
 
@@ -62,7 +57,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
                     // Subtract half parcel size to displace the pivot, this allow easier PositionToCoords calculations.
                     Vector3 localPosition = new Vector3((parcelSize * i) - halfParcelSize, (parcelSize * j) - halfParcelSize, 0);
 
-                    var instance = chunkBuilder.Invoke(localPosition, coordsCenter, instantiationParent, linkedCt);
+                    var instance = chunkBuilder.Invoke(chunkLocalPosition: localPosition, coordsCenter, instantiationParent, linkedCt);
                     chunksCreating.Add(instance);
                 }
             }
@@ -87,11 +82,16 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             ClearCurrentChunks();
         }
 
-        // Atlas is always enabled and can't be turned off/on
-        UniTask IMapLayerController.Enable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Enable(CancellationToken cancellationToken)
+        {
+            instantiationParent.gameObject.SetActive(true);
+            return UniTask.CompletedTask;
+        }
 
-        UniTask IMapLayerController.Disable(CancellationToken cancellationToken) =>
-            UniTask.CompletedTask;
+        UniTask IMapLayerController.Disable(CancellationToken cancellationToken)
+        {
+            instantiationParent.gameObject.SetActive(false);
+            return UniTask.CompletedTask;
+        }
     }
 }
