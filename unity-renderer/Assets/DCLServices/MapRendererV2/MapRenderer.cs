@@ -145,7 +145,7 @@ namespace DCLServices.MapRendererV2
             {
                 if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                mapLayerStatus.ActivityOwners = mapLayerStatus.ActivityOwners - 1 < 0 ? 0 : mapLayerStatus.ActivityOwners - 1;
+                mapLayerStatus.ActivityOwners = Math.Max(mapLayerStatus.ActivityOwners - 1, 0);
 
                 if (mapLayerStatus.ActivityOwners == 0)
                 {
