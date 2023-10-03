@@ -14,6 +14,7 @@ namespace DCL.ContentModeration
         [SerializeField] private ButtonComponentView cancelButton;
         [SerializeField] private ButtonComponentView gotItButton;
         [SerializeField] private ButtonComponentView sendButton;
+        [SerializeField] private ButtonComponentView retryButton;
         [SerializeField] private Button learnMoreButton1;
         [SerializeField] private Button learnMoreButton2;
         [SerializeField] private ContentModerationRatingButtonComponentView teenRatingButton;
@@ -26,6 +27,7 @@ namespace DCL.ContentModeration
         [SerializeField] private GameObject mainModal;
         [SerializeField] private GameObject mainFormSection;
         [SerializeField] private GameObject loadingStateSection;
+        [SerializeField] private GameObject errorStateSection;
         [SerializeField] private GameObject reportSentModal;
         [SerializeField] private Image modalHeaderImage;
 
@@ -72,6 +74,7 @@ namespace DCL.ContentModeration
             gotItButton.onClick.AddListener(HidePanel);
             sendButtonText = sendButton.GetComponentInChildren<TMP_Text>();
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
+            retryButton.onClick.AddListener(() => SetLoadingState(false));
             learnMoreButton1.onClick.AddListener(GoToLearnMore);
             learnMoreButton2.onClick.AddListener(GoToLearnMore);
             teenRatingButton.RatingButton.onClick.AddListener(() => OnRatingButtonClicked(SceneContentCategory.TEEN));
@@ -87,6 +90,7 @@ namespace DCL.ContentModeration
             cancelButton.onClick.RemoveAllListeners();
             gotItButton.onClick.RemoveAllListeners();
             sendButton.onClick.RemoveAllListeners();
+            retryButton.onClick.RemoveAllListeners();
             learnMoreButton1.onClick.RemoveAllListeners();
             learnMoreButton2.onClick.RemoveAllListeners();
             teenRatingButton.RatingButton.onClick.RemoveAllListeners();
@@ -139,6 +143,7 @@ namespace DCL.ContentModeration
         {
             mainFormSection.SetActive(!isLoading);
             loadingStateSection.SetActive(isLoading);
+            errorStateSection.SetActive(false);
             isLoadingActive = isLoading;
         }
 
@@ -146,6 +151,13 @@ namespace DCL.ContentModeration
         {
             mainModal.SetActive(!hasBeenSent);
             reportSentModal.SetActive(hasBeenSent);
+        }
+
+        public void SetPanelAsError()
+        {
+            mainFormSection.SetActive(false);
+            loadingStateSection.SetActive(false);
+            errorStateSection.SetActive(true);
         }
 
         private void CreateButtons()

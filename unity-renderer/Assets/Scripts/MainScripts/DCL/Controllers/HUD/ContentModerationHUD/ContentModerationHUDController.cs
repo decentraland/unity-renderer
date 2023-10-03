@@ -196,17 +196,17 @@ namespace DCL.ContentModeration
             try
             {
                 contentModerationReportingComponentView.SetLoadingState(true);
+                await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: ct);
+                throw new Exception("Test error!!");
                 await placesAPIService.ReportPlace(placeContentReport, ct)
                                       .Timeout(TimeSpan.FromSeconds(REPORT_PLACE_TIMEOUT));
                 contentModerationReportingComponentView.SetPanelAsSent(true);
+                contentModerationReportingComponentView.SetLoadingState(false);
             }
             catch (Exception ex)
             {
+                contentModerationReportingComponentView.SetPanelAsError();
                 Debug.LogError($"An error occurred while reporting the content category for ({placeContentReport.coordinates}): {ex.Message}");
-            }
-            finally
-            {
-                contentModerationReportingComponentView.SetLoadingState(false);
             }
         }
 
