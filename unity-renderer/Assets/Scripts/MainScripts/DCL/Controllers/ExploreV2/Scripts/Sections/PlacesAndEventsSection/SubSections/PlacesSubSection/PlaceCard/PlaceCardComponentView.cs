@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
@@ -136,6 +137,12 @@ public interface IPlaceCardComponentView
     /// </summary>
     /// <param name="isPOI">Tru for set it as POI.</param>
     void SetIsPOI(bool isPOI);
+
+    /// <summary>
+    /// Set the the age rating set for the place.
+    /// </summary>
+    /// <param name="contentCategory">Age category.</param>
+    void SetAgeRating(SceneContentCategory contentCategory);
 }
 
 public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView, IComponentModelConfig<PlaceCardComponentModel>
@@ -189,6 +196,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text numberOfFavoritesText;
     [SerializeField] internal TMP_Text updatedAtText;
     [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal TMP_Text ageRatingText;
+    [SerializeField] internal GameObject ageRatingOutline;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -313,6 +322,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetNumberOfFavorites(model.numberOfFavorites);
         SetDeployedAt(model.deployedAt);
         SetIsPOI(model.isPOI);
+        SetAgeRating(model.ageRating);
         ResetScrollPosition();
         RebuildCardLayouts();
     }
@@ -389,6 +399,22 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         poiMark.SetActive(isPOI);
 
+    }
+
+    public void SetAgeRating(SceneContentCategory contentCategory)
+    {
+        model.ageRating = contentCategory;
+
+        if (ageRatingText != null)
+            ageRatingText.text = contentCategory switch
+                                 {
+                                     SceneContentCategory.ADULT => "PG 18+",
+                                     SceneContentCategory.RESTRICTED => "RESTRICTED",
+                                     _ => "PG 13+",
+                                 };
+
+        if (ageRatingOutline != null)
+            ageRatingOutline.SetActive(contentCategory != SceneContentCategory.RESTRICTED);
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)

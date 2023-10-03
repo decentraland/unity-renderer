@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCLServices.WorldsAPIService;
 using System;
@@ -109,6 +110,12 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = place.likes + place.dislikes,
                     numberOfFavorites = place.favorites,
                     deployedAt = place.deployed_at,
+                    ageRating = place.content_rating switch
+                                {
+                                    "A" or "M" => SceneContentCategory.ADULT,
+                                    "R" => SceneContentCategory.RESTRICTED,
+                                    _ => SceneContentCategory.TEEN,
+                                },
                 });
             count++;
             if(count >= amountToTake)
