@@ -189,6 +189,8 @@ namespace DCL
             placeCardModal.SetUserRating(place.like_rate_as_float);
             placeCardModal.SetNumberOfFavorites(place.favorites);
             placeCardModal.SetTotalVotes(place.likes + place.dislikes);
+            placeCardModal.SetFavoriteButton(place.user_favorite, place.id);
+            placeCardModal.SetVoteButtons(place.user_like, place.user_dislike);
         }
 
         private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
