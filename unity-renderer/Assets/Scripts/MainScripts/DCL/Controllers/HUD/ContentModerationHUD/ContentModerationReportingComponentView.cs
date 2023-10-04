@@ -69,17 +69,17 @@ namespace DCL.ContentModeration
         private TMP_Text sendButtonText;
         private bool isLoadingActive;
 
-        public event Action OnPanelClosed;
+        public event Action<bool> OnPanelClosed;
         public event Action<(SceneContentCategory contentCategory, List<string> issues, string comments)> OnSendClicked;
         public event Action OnLearnMoreClicked;
 
         public override void Awake()
         {
             base.Awake();
-            backgroundButton.onClick.AddListener(HidePanel);
-            cancelButton.onClick.AddListener(HidePanel);
-            gotItButton1.onClick.AddListener(HidePanel);
-            gotItButton2.onClick.AddListener(HidePanel);
+            backgroundButton.onClick.AddListener(() => HidePanel(!reportSentModal.activeSelf));
+            cancelButton.onClick.AddListener(() => HidePanel(true));
+            gotItButton1.onClick.AddListener(() => HidePanel(false));
+            gotItButton2.onClick.AddListener(() => HidePanel(false));
             sendButtonText = sendButton.GetComponentInChildren<TMP_Text>();
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
             retryButton.onClick.AddListener(() => SetLoadingState(false));
@@ -116,13 +116,13 @@ namespace DCL.ContentModeration
             ResetOptions();
         }
 
-        public void HidePanel()
+        public void HidePanel(bool isCancelled)
         {
             if (isLoadingActive)
                 return;
 
             Hide();
-            OnPanelClosed?.Invoke();
+            OnPanelClosed?.Invoke(isCancelled);
         }
 
         public void SetRatingAsMarked(SceneContentCategory contentCategory)

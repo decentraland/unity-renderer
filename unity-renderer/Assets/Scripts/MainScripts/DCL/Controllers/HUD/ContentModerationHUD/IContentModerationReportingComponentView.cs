@@ -6,12 +6,12 @@ namespace DCL.ContentModeration
 {
     public interface IContentModerationReportingComponentView
     {
-        event Action OnPanelClosed;
+        event Action<bool> OnPanelClosed;
         event Action<(SceneContentCategory contentCategory, List<string> issues, string comments)> OnSendClicked;
         event Action OnLearnMoreClicked;
 
         void ShowPanel();
-        void HidePanel();
+        void HidePanel(bool isCancelled);
         void SetRatingAsMarked(SceneContentCategory contentCategory);
         void SetRating(SceneContentCategory contentCategory);
         void SetLoadingState(bool isLoading);

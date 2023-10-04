@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace DCL.ContentModeration
 {
-
     public class ContentModerationHUDController
     {
         private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
@@ -28,7 +27,9 @@ namespace DCL.ContentModeration
         private readonly IBrowserBridge browserBridge;
         private readonly IPlacesAPIService placesAPIService;
         private readonly IUserProfileBridge userProfileBridge;
+        private readonly IContentModerationAnalytics contentModerationAnalytics;
 
+        private string currentPlaceId;
         private CancellationTokenSource reportPlaceCts;
 
         public ContentModerationHUDController(
@@ -41,7 +42,8 @@ namespace DCL.ContentModeration
             DataStore_ContentModeration contentModerationDataStore,
             IBrowserBridge browserBridge,
             IPlacesAPIService placesAPIService,
-            IUserProfileBridge userProfileBridge)
+            IUserProfileBridge userProfileBridge,
+            IContentModerationAnalytics contentModerationAnalytics)
         {
             this.adultContentSceneWarningComponentView = adultContentSceneWarningComponentView;
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
@@ -53,6 +55,7 @@ namespace DCL.ContentModeration
             this.browserBridge = browserBridge;
             this.placesAPIService = placesAPIService;
             this.userProfileBridge = userProfileBridge;
+            this.contentModerationAnalytics = contentModerationAnalytics;
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
             CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
@@ -104,10 +107,15 @@ namespace DCL.ContentModeration
                     adultContentSceneWarningComponentView.HideModal();
                     break;
             }
+
+            currentPlaceId = currentParcelScene.associatedPlaceId;
         }
 
-        private void OnGoToSettingsPanelClicked() =>
+        private void OnGoToSettingsPanelClicked()
+        {
             settingsDataStore.settingsPanelVisible.Set(true);
+            contentModerationAnalytics.OpenSettingsFromContentWarning();
+        }
 
         private void OnAdultContentAgeConfirmationVisible(bool isVisible, bool _)
         {
@@ -134,12 +142,15 @@ namespace DCL.ContentModeration
             contentModerationDataStore.adultContentAgeConfirmationResult.Set(DataStore_ContentModeration.AdultContentAgeConfirmationResult.Rejected, true);
         }
 
-        private void OnAdultContentSettingChanged(bool isEnabled, bool _)
+        private void OnAdultContentSettingChanged(bool currentIsEnabled, bool previousIsEnabled)
         {
-            if (!isEnabled)
+            if (!currentIsEnabled)
                 adultContentEnabledNotificationComponentView.HideNotification();
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
+
+            if (currentIsEnabled != previousIsEnabled)
+                contentModerationAnalytics.SwitchAdultContentSetting(currentIsEnabled);
         }
 
         private void OnReportingScenePanelVisible((bool isVisible, SceneContentCategory rating) panelStatus, (bool isVisible, SceneContentCategory rating) _)
@@ -149,13 +160,17 @@ namespace DCL.ContentModeration
                 contentModerationReportingComponentView.ShowPanel();
                 contentModerationReportingComponentView.SetRatingAsMarked(panelStatus.rating);
                 contentModerationReportingComponentView.SetRating(panelStatus.rating);
+                contentModerationAnalytics.OpenReportForm(currentPlaceId);
             }
             else
-                contentModerationReportingComponentView.HidePanel();
+                contentModerationReportingComponentView.HidePanel(false);
         }
 
-        private void OnContentModerationReportingClosed() =>
+        private void OnContentModerationReportingClosed(bool isCancelled)
+        {
             contentModerationDataStore.reportingScenePanelVisible.Set((false, contentModerationDataStore.reportingScenePanelVisible.Get().rating), false);
+            contentModerationAnalytics.CloseReportForm(currentPlaceId, isCancelled);
+        }
 
         private void OnContentModerationReportingSendClicked((SceneContentCategory contentCategory, List<string> issues, string comments) report)
         {
@@ -187,6 +202,12 @@ namespace DCL.ContentModeration
         {
             try
             {
+                contentModerationAnalytics.SubmitReportForm(
+                    placeContentReport.placeId,
+                    placeContentReport.rating,
+                    placeContentReport.issues,
+                    placeContentReport.comment);
+
                 contentModerationReportingComponentView.SetLoadingState(true);
                 await placesAPIService.ReportPlace(placeContentReport, ct)
                                       .Timeout(TimeSpan.FromSeconds(REPORT_PLACE_TIMEOUT));
@@ -195,12 +216,16 @@ namespace DCL.ContentModeration
             }
             catch (Exception ex)
             {
+                contentModerationAnalytics.ErrorSendingReportingForm(currentPlaceId);
                 contentModerationReportingComponentView.SetPanelAsError();
                 Debug.LogError($"An error occurred while reporting the content category for ({placeContentReport.coordinates}): {ex.Message}");
             }
         }
 
-        private void OnLearnMoreClicked() =>
+        private void OnLearnMoreClicked()
+        {
             browserBridge.OpenUrl(LEARN_MORE_URL); // TODO (Santi): Change this to the correct URL when it's ready
+            contentModerationAnalytics.ClickLearnMoreContentModeration(currentPlaceId);
+        }
     }
 }
