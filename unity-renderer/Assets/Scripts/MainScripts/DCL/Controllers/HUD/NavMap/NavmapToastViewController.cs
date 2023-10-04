@@ -233,6 +233,13 @@ namespace DCL
         {
             disposingCts?.SafeCancelAndDispose();
             Unsubscribe();
+            this.view.OnFavoriteToggleClicked -= OnFavoriteToggleClicked;
+            this.view.OnGoto -= JumpIn;
+            this.view.OnInfoClick -= EnablePlaceCardModal;
+            this.view.OnVoteChanged -= ChangeVote;
+            this.placeCardModal.OnFavoriteChanged -= OnFavoriteToggleClicked;
+            this.placeCardModal.OnVoteChanged -= ChangeVote;
+            this.placeCardModal.onJumpInClick.RemoveAllListeners();
         }
     }
 }

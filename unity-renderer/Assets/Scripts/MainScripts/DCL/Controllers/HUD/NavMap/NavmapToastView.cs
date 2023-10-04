@@ -49,6 +49,7 @@ namespace DCL
         string currentImageUrl;
         private bool placeIsUpvote;
         private bool placeIsDownvote;
+        private string placeId;
 
         public void Open(Vector2Int parcel, Vector2 worldPosition)
         {
@@ -89,6 +90,11 @@ namespace DCL
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
             }
+            if(upvoteButton != null)
+                upvoteButton.onClick.RemoveAllListeners();
+
+            if(downvoteButton != null)
+                downvoteButton.onClick.RemoveAllListeners();
         }
 
         public void Populate(Vector2Int coordinates, Vector2 worldPosition, MinimapMetadata.MinimapSceneInfo sceneInfo)
@@ -167,8 +173,6 @@ namespace DCL
             toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
             toastContainer.position = worldPosition;
         }
-
-        private string placeId;
 
         public void SetPlaceId(string UUID)
         {

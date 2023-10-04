@@ -63,4 +63,18 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
 
     private void OnFilterButtonClicked() =>
         filtersContainer.SetActive(!filtersContainer.activeInHierarchy);
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        
+        filterButton.onClick.RemoveAllListeners();
+        closeButtonArea.onClick.RemoveAllListeners();
+        infoButton.onClick.RemoveAllListeners();
+        daoButton.onClick.RemoveAllListeners();
+        favoritesToggle.onValueChanged.RemoveAllListeners();
+        poisToggle.onValueChanged.RemoveAllListeners();
+        friendsToggle.onValueChanged.RemoveAllListeners();
+        peopleToggle.onValueChanged.RemoveAllListeners();
+    }
 }
