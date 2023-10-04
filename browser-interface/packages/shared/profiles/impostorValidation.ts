@@ -4,7 +4,7 @@ import { ecdsaVerify } from 'ethereum-cryptography/secp256k1-compat'
 
 export function isImpostor(avatar: Avatar, profileHash: string, profileSignedHash: string, signerPublicKey: string): boolean {
   let checksum = getProfileChecksum(avatar);
-  return checksum != profileHash || !verifySignature(profileHash, profileSignedHash, signerPublicKey)
+  return checksum !== profileHash || !verifySignature(profileHash, profileSignedHash, signerPublicKey)
 }
 
 export function getProfileChecksum(avatar: Avatar): string {
