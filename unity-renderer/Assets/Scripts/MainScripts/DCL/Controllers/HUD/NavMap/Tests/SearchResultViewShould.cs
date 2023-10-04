@@ -11,7 +11,7 @@ public class SearchResultViewShould
     public void SetUp()
     {
         searchRecordComponentView = Object.Instantiate(
-                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/NavMap/Resources/SearchRecord.prefab"))
+                                                 AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/NavMap/Prefabs/SearchRecord.prefab"))
                                             .GetComponent<SearchRecordComponentView>();
     }
 

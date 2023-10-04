@@ -12,7 +12,7 @@ public class NavmapSearchComponentViewShould
     public void SetUp()
     {
         navmapSearchComponentView = Object.Instantiate(
-                                               AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/NavMap/Resources/NavmapHeader.prefab"))
+                                               AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Scripts/MainScripts/DCL/Controllers/HUD/NavMap/Prefabs/NavmapHeader.prefab"))
                                           .GetComponent<NavmapSearchComponentView>();
     }
 

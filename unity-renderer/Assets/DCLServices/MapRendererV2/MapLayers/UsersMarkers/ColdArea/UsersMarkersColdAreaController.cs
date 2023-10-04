@@ -184,7 +184,8 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
             hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.BACKGROUND);
             foreach (IColdUserMarker coldUserMarker in instances)
             {
-                coldUserMarker.SetActive(false);
+                if(coldUserMarker != null)
+                    coldUserMarker.SetActive(false);
             }
             // cancellation of `ColdAreasUpdateLoop` is handled by the cancellation token
             return UniTask.CompletedTask;
