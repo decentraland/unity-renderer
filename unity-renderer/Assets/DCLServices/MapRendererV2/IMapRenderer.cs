@@ -1,5 +1,4 @@
 ﻿using DCL;
-using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 
@@ -9,5 +8,6 @@ namespace DCLServices.MapRendererV2
     {
         IMapCameraController RentCamera(in MapCameraInput cameraInput);
         void ToggleLayer(MapLayer mask, bool isActive);
+        void SetSharedLayer(MapLayer mask, bool active);
     }
 }

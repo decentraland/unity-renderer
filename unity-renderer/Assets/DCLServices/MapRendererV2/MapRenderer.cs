@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
@@ -20,6 +21,7 @@ namespace DCLServices.MapRendererV2
             public readonly IMapLayerController MapLayerController;
             public int ActivityOwners;
             public CancellationTokenSource CTS;
+            public bool? sharedActive;
 
             public MapLayerStatus(IMapLayerController mapLayerController)
             {
@@ -34,6 +36,7 @@ namespace DCLServices.MapRendererV2
         private readonly IMapRendererComponentsFactory componentsFactory;
 
         private Dictionary<MapLayer, MapLayerStatus> layers;
+
         private MapRendererConfiguration configurationInstance;
 
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
@@ -54,22 +57,35 @@ namespace DCLServices.MapRendererV2
 
             try
             {
-                var components = await componentsFactory.Create(cancellationToken);
+                MapRendererComponents components = await componentsFactory.Create(cancellationToken);
                 cullingController = components.CullingController;
                 mapCameraPool = components.MapCameraControllers;
                 configurationInstance = components.ConfigurationInstance;
 
-                foreach (var pair in components.Layers)
+                foreach (KeyValuePair<MapLayer, IMapLayerController> pair in components.Layers)
+                {
+                    pair.Value.Disable(cancellationToken);
                     layers[pair.Key] = new MapLayerStatus(pair.Value);
+                }
+
+                if (DataStore.i.featureFlags.flags.Get().IsInitialized)
+                    OnFeatureFlagsChanged(null ,null);
+                else
+                    DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
             }
-            catch (OperationCanceledException)
+            catch
+                (OperationCanceledException)
             {
                 // just ignore
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            catch (Exception e) { Debug.LogException(e); }
+        }
+
+        private void OnFeatureFlagsChanged(FeatureFlag _, FeatureFlag __)
+        {
+            bool satelliteEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("navmap-satellite-view"); // false if not initialized
+            layers[MapLayer.SatelliteAtlas].sharedActive = satelliteEnabled;
+            layers[MapLayer.ParcelsAtlas].sharedActive = !satelliteEnabled;
         }
 
         public IMapCameraController RentCamera(in MapCameraInput cameraInput)
@@ -83,7 +99,7 @@ namespace DCLServices.MapRendererV2
             zoomValues.y = Mathf.Min(zoomValues.y, MAX_ZOOM);
 
             EnableLayers(cameraInput.EnabledLayers);
-            var mapCameraController = mapCameraPool.Get();
+            IMapCameraControllerInternal mapCameraController = mapCameraPool.Get();
             mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
@@ -98,22 +114,39 @@ namespace DCLServices.MapRendererV2
             mapCameraPool.Release(mapCameraController);
         }
 
+        public void SetSharedLayer(MapLayer mask, bool active)
+        {
+            foreach (MapLayer mapLayer in ALL_LAYERS)
+            {
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus) || mapLayerStatus.ActivityOwners == 0 || mapLayerStatus.sharedActive == active)
+                    continue;
+
+                mapLayerStatus.sharedActive = active;
+
+                // Cancel activation/deactivation flow
+                ResetCancellationSource(mapLayerStatus);
+
+                if (active)
+                    mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
+                else
+                    mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
+            }
+        }
+
         private void EnableLayers(MapLayer mask)
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer)
-                    && layers.TryGetValue(mapLayer, out var mapLayerStatus))
-                {
-                    if (mapLayerStatus.ActivityOwners == 0)
-                    {
-                        // Cancel deactivation flow
-                        ResetCancellationSource(mapLayerStatus);
-                        mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                    mapLayerStatus.ActivityOwners++;
+                if (mapLayerStatus.ActivityOwners == 0 && mapLayerStatus.sharedActive != false)
+                {
+                    // Cancel deactivation flow
+                    ResetCancellationSource(mapLayerStatus);
+                    mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                 }
+
+                mapLayerStatus.ActivityOwners++;
             }
         }
 
@@ -121,15 +154,15 @@ namespace DCLServices.MapRendererV2
         {
             foreach (MapLayer mapLayer in ALL_LAYERS)
             {
-                if (EnumUtils.HasFlag(mask, mapLayer)
-                    && layers.TryGetValue(mapLayer, out var mapLayerStatus))
+                if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
+
+                mapLayerStatus.ActivityOwners = Math.Max(mapLayerStatus.ActivityOwners - 1, 0);
+
+                if (mapLayerStatus.ActivityOwners == 0)
                 {
-                    if (--mapLayerStatus.ActivityOwners == 0)
-                    {
-                        // Cancel activation flow
-                        ResetCancellationSource(mapLayerStatus);
-                        mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
+                    // Cancel activation flow
+                    ResetCancellationSource(mapLayerStatus);
+                    mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                 }
             }
         }
@@ -166,7 +199,7 @@ namespace DCLServices.MapRendererV2
 
         public void Dispose()
         {
-            foreach (var status in layers.Values)
+            foreach (MapLayerStatus status in layers.Values)
             {
                 if (status.CTS != null)
                 {

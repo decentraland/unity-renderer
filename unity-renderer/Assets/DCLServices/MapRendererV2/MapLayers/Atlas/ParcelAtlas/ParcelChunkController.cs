@@ -1,26 +1,23 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
-using System;
+using MainScripts.DCL.Helpers.Utils;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace DCLServices.MapRendererV2.MapLayers.Atlas
 {
-    public class ChunkController : IChunkController
+    public class ParcelChunkController : IChunkController
     {
         private const int PIXELS_PER_UNIT = 50;
         private const string CHUNKS_API = "https://api.decentraland.org/v1/map.png";
-
-        private readonly Vector2 Vector2_OneHalf = new (0.5f, 0.5f);
 
         private readonly SpriteRenderer spriteRenderer;
 
         private Service<IWebRequestController> webRequestController;
 
-        public ChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
+        public ParcelChunkController(SpriteRenderer prefab, Vector3 chunkLocalPosition, Vector2Int coordsCenter, Transform parent)
         {
             spriteRenderer = Object.Instantiate(prefab, parent);
 #if UNITY_EDITOR
@@ -41,7 +38,7 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             texture.wrapMode = TextureWrapMode.Clamp;
 
             spriteRenderer.sprite =
-                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2_OneHalf, PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
+                Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2Ext.OneHalf, PIXELS_PER_UNIT, 0, SpriteMeshType.FullRect, Vector4.one, false);
 
             Texture2D CreateTexture(byte[] data)
             {

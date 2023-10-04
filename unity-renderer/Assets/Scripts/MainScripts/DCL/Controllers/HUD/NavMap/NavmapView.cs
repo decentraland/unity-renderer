@@ -1,19 +1,15 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL.Browser;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        [Header("TEXT")]
-        [SerializeField] internal TextMeshProUGUI currentSceneNameText;
-        [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapSearchComponentView searchView;
         [SerializeField] internal NavmapFilterComponentView filterView;
         [SerializeField] internal GameObject placeCardModalParent;
@@ -22,7 +18,9 @@ namespace DCL
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] private NavMapLocationControlsView locationControlsView;
         [SerializeField] private NavmapZoomView zoomView;
+        [SerializeField] private NavMapChunksLayersView chunksLayersView;
 
+        [Space]
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
 
         private IPlaceCardComponentView placeCardModal;
@@ -40,8 +38,18 @@ namespace DCL
         {
             placeCardModal = placeCardModalParent.GetComponent<IPlaceCardComponentView>();
 
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, searchView, locationControlsView,
-                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics(), placeCardModal);
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(
+                DataStore.i.featureFlags.flags,
+                DataStore.i.HUDs.navmapVisible,
+                zoomView,
+                toastView,
+                searchView,
+                locationControlsView,
+                chunksLayersView,
+                navmapRendererConfiguration,
+                Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(),
+                new PlacesAnalytics(),
+                placeCardModal);
             navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge());
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
@@ -52,8 +60,6 @@ namespace DCL
         {
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
-            UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
-            CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
 
             //Needed due to script execution order
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
@@ -68,7 +74,6 @@ namespace DCL
         private void OnDisable()
         {
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
-            CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
         }
 
@@ -91,26 +96,6 @@ namespace DCL
             RectTransform.localPosition = Vector2.zero;
             RectTransform.offsetMax = Vector2.zero;
             RectTransform.offsetMin = Vector2.zero;
-        }
-
-        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int _)
-        {
-            const string format = "{0},{1}";
-            currentSceneCoordsText.text = string.Format(format, current.x, current.y);
-            currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
-        }
-
-        private async UniTaskVoid UpdateSceneNameAsync(Vector2Int current, CancellationToken cancellationToken)
-        {
-            MinimapMetadata.MinimapSceneInfo info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-
-            if (info == null)
-            {
-                await WebInterfaceMinimapApiBridge.i.GetScenesInformationAroundParcel(current, 2, cancellationToken);
-                info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-            }
-
-            currentSceneNameText.text = info?.name ?? "Unnamed";
         }
     }
 }

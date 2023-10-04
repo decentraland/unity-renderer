@@ -11,9 +11,8 @@ namespace DCL
 {
     public class NavmapVisibilityBehaviour : IDisposable
     {
-        private static readonly MapLayer ACTIVE_MAP_LAYERS =
-            MapLayer.Atlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker
-            | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
+        private const MapLayer ACTIVE_MAP_LAYERS =
+            MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
 
         private Vector3 atlasOriginalPosition;
 
@@ -27,10 +26,12 @@ namespace DCL
         private readonly NavmapToastViewController navmapToastViewController;
         private readonly NavmapZoomViewController navmapZoomViewController;
         private readonly NavMapLocationControlsController locationControlsController;
+
         private readonly NavmapSearchController navmapSearchController;
         private readonly IPlaceCardComponentView placeCardModal;
-
+        private readonly NavMapChunksLayersController chunksLayerController;
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
+        private readonly NavMapChunksLayersView chunksLayersView;
 
         private Service<IMapRenderer> mapRenderer;
 
@@ -40,8 +41,18 @@ namespace DCL
         private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
-        public NavmapVisibilityBehaviour(BaseVariable<FeatureFlag> featureFlagsFlags, BaseVariable<bool> navmapVisible, NavmapZoomView zoomView, NavmapToastView toastView, NavmapSearchComponentView searchView, NavMapLocationControlsView locationControlsView,
-            NavmapRendererConfiguration rendererConfiguration, IPlacesAPIService placesAPIService, IPlacesAnalytics placesAnalytics, IPlaceCardComponentView placeCardModal)
+        public NavmapVisibilityBehaviour(
+            BaseVariable<FeatureFlag> featureFlagsFlags,
+            BaseVariable<bool> navmapVisible,
+            NavmapZoomView zoomView,
+            NavmapToastView toastView,
+            NavmapSearchComponentView searchView,
+            NavMapLocationControlsView locationControlsView,
+            NavMapChunksLayersView chunksLayersView,
+            NavmapRendererConfiguration rendererConfiguration,
+            IPlacesAPIService placesAPIService,
+            IPlacesAnalytics placesAnalytics,
+            IPlaceCardComponentView placeCardModal)
         {
             this.featureFlagsFlags = featureFlagsFlags;
 
@@ -57,7 +68,13 @@ namespace DCL
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics, this.placeCardModal);
             navmapZoomViewController = new NavmapZoomViewController(zoomView, featureFlagsFlags);
             locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
+
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs(), navmapZoomViewController, navmapToastViewController);
+            chunksLayerController = new NavMapChunksLayersController(chunksLayersView);
+
+            { // Needed for feature flag. Remove when feature flag is removed
+                this.chunksLayersView = chunksLayersView;
+            }
 
             this.rendererConfiguration.RenderImage.EmbedMapCameraDragBehavior(rendererConfiguration.MapCameraDragBehaviorData);
 
@@ -78,6 +95,7 @@ namespace DCL
 
             navmapToastViewController.Dispose();
             navmapZoomViewController.Dispose();
+            chunksLayerController.Dispose();
         }
 
         private void ReleaseCameraController()
@@ -155,6 +173,9 @@ namespace DCL
 
                 navmapToastViewController.Activate();
                 navmapZoomViewController.Activate(cameraController);
+
+                if (!featureFlagsFlags.Get().IsFeatureEnabled("navmap-satellite-view"))
+                    chunksLayersView.Hide();
 
                 if (featureFlagsFlags.Get().IsFeatureEnabled("map_focus_home_or_user"))
                     locationControlsController.Activate(cameraController);

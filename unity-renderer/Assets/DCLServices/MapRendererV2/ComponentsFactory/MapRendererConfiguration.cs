@@ -11,6 +11,9 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
         public Transform AtlasRoot { get; private set; }
 
         [field: SerializeField]
+        public Transform SatelliteAtlasRoot { get; private set; }
+
+        [field: SerializeField]
         public Transform ColdUserMarkersRoot { get; private set; }
 
         [field: SerializeField]
