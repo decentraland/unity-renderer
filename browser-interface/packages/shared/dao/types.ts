@@ -23,7 +23,6 @@ type BaseCandidate = {
   elapsed: number
   status: ServerConnectionStatus
   publicKey: string
-  address: string
 }
 
 export type Candidate = {

@@ -122,7 +122,6 @@ function buildCandidate(params: Partial<Candidate>): Candidate {
     acceptingUsers: true,
     usersParcels: circularSlice(usersCount, someRandomParcels),
     publicKey: '',
-    address: '',
     ...params
   }
 }

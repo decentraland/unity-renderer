@@ -107,7 +107,6 @@ export async function fetchCatalystStatus(
       acceptingUsers: result.acceptingUsers,
       maxUsers: 2000,
       publicKey: result.lambdas.publicKey,
-      address: result.lambdas.address,
       usersParcels,
     }
   }
