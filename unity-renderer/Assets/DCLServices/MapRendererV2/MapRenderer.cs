@@ -5,7 +5,6 @@ using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
-using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -44,6 +43,7 @@ namespace DCLServices.MapRendererV2
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
 
         internal IMapCullingController cullingController { get; private set; }
+        private float currentBaseZoom;
 
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
@@ -75,7 +75,7 @@ namespace DCLServices.MapRendererV2
                 }
 
                 if (DataStore.i.featureFlags.flags.Get().IsInitialized)
-                    OnFeatureFlagsChanged(null ,null);
+                    OnFeatureFlagsChanged(null, null);
                 else
                     DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
             }
@@ -110,8 +110,9 @@ namespace DCLServices.MapRendererV2
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
             mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.ZoomChanged += OnCameraZoomChanged;
-            Debug.Log($"VV:: cameraInput.Zoom { cameraInput.Zoom}");
-            Debug.Log($"VV:: orthographicSize {mapCameraController.Camera.orthographicSize}");
+
+            currentBaseZoom = mapCameraController.Camera.orthographicSize;
+
             return mapCameraController;
         }
 
@@ -122,16 +123,15 @@ namespace DCLServices.MapRendererV2
             DisableLayers(mapCameraController.EnabledLayers);
             mapCameraPool.Release(mapCameraController);
 
-            foreach (var layer in zoomScalingLayers)
+            foreach (IZoomScalingLayer layer in zoomScalingLayers)
                 layer.ResetToBaseScale();
         }
 
         private void OnCameraZoomChanged(float zoom)
         {
-            foreach (var layer in zoomScalingLayers)
+            foreach (IZoomScalingLayer layer in zoomScalingLayers)
             {
-                Debug.Log($"adjust zoom {zoom}");
-                layer.ApplyCameraZoom(zoom);
+                layer.ApplyCameraZoom(currentBaseZoom, zoom);
             }
         }
 

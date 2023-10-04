@@ -131,23 +131,16 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         private static bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo) =>
             sceneInfo.name is EMPTY_PARCEL_NAME;
 
-        public void ApplyCameraZoom(float zoom)
+        public void ApplyCameraZoom(float baseZoom, float zoom)
         {
-
             foreach (ISceneOfInterestMarker marker in markers.Values)
-            {
-                marker.SetZoom(zoom);
-            }
-            // playerMarker.SetZoom(zoom);
+                marker.SetZoom(coordsUtils.ParcelSize, baseZoom, zoom);
         }
 
         public void ResetToBaseScale()
         {
             foreach (var marker in markers.Values)
-            {
-                marker.ResetToBaseScale();
-            }
-            // playerMarker.ResetToBaseScale();
+                marker.ResetScale(coordsUtils.ParcelSize);
         }
 
         public UniTask Disable(CancellationToken cancellationToken)

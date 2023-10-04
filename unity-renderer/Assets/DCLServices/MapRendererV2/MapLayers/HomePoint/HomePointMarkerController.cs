@@ -27,9 +27,9 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
             this.builder = builder;
         }
 
-        public void ApplyCameraZoom(float zoom)
+        public void ApplyCameraZoom(float baseZoom, float zoom)
         {
-            marker.SetZoom(zoom);
+            marker.SetZoom(baseZoom, zoom);
         }
 
         public void ResetToBaseScale()

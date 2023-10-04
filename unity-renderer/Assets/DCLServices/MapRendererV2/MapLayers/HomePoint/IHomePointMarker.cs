@@ -9,7 +9,7 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
 
         void SetActive(bool active);
 
-        void SetZoom(float zoom);
+        void SetZoom(float baseZoom, float zoom);
 
         void ResetToBaseScale();
     }

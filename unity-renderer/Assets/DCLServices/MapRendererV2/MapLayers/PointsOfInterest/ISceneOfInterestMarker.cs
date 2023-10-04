@@ -14,8 +14,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         void OnBecameInvisible();
 
-        void SetZoom(float zoom);
+        void SetZoom(float baseScale, float baseZoom, float zoom);
 
-        void ResetToBaseScale();
+        void ResetScale(float scale);
     }
 }
