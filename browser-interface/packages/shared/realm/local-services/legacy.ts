@@ -10,13 +10,14 @@ export function legacyServices(baseUrl: string, about: AboutResponse): LegacySer
 
   const state = store.getState()
   const tld = getSelectedNetwork(state) === ETHEREUM_NETWORK.MAINNET ? 'org' : 'zone'
+  const realmProviderUrl = `https://realm-provider.decentraland.${tld}`
 
   return {
     fetchContentServer: contentServer,
     updateContentServer: contentServer,
     lambdasServer,
     poiService: lambdasServer + '/contracts/pois',
-    exploreRealmsService: `https://realm-provider.decentraland.${tld}/realms`,
-    hotScenesService: `https://realm-provider.decentraland.${tld}/hot-scenes`
+    exploreRealmsService: `${realmProviderUrl}/realms`,
+    hotScenesService: `${realmProviderUrl}/hot-scenes`
   }
 }
