@@ -15,8 +15,8 @@ export function legacyServices(baseUrl: string, about: AboutResponse): LegacySer
     fetchContentServer: contentServer,
     updateContentServer: contentServer,
     lambdasServer,
-    hotScenesService: lambdasServer + '/explore/hot-scenes',
     poiService: lambdasServer + '/contracts/pois',
-    exploreRealmsService: `https://realm-provider.decentraland.${tld}/realms`
+    exploreRealmsService: `https://realm-provider.decentraland.${tld}/realms`,
+    hotScenesService: `https://realm-provider.decentraland.${tld}/hot-scenes`
   }
 }
