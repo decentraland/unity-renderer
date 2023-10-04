@@ -93,7 +93,14 @@ public class NavmapSearchController : IDisposable
     private async UniTaskVoid SearchAndDisplay(string searchText, CancellationTokenSource cts)
     {
         (IReadOnlyList<IHotScenesController.PlaceInfo> places, int total) searchPlaces = await placesAPIService.SearchPlaces(searchText, 0, 5, cts.Token);
-        exploreV2Analytics.SendSearchPlaces(searchText, searchPlaces.places.Select(p=>Utils.ConvertStringToVector(p.base_position)).ToArray(), searchPlaces.places.Select(p=>p.id).ToArray(), ActionSource.FromNavmap);
+        List<Vector2Int> resultsCoordinates = new List<Vector2Int>();
+        List<string> resultsIds = new List<string>();
+        foreach (var place in searchPlaces.places)
+        {
+            resultsCoordinates.Add(Utils.ConvertStringToVector(place.base_position));
+            resultsIds.Add(place.id);
+        }
+        exploreV2Analytics.SendSearchPlaces(searchText, resultsCoordinates.ToArray(), resultsIds.ToArray(), ActionSource.FromNavmap);
         view.SetSearchResultRecords(searchPlaces.places);
     }
 
