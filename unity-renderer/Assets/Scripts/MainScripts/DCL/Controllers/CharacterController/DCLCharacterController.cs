@@ -267,14 +267,13 @@ public class DCLCharacterController : MonoBehaviour
 
     internal void LateUpdate()
     {
-        if(!dataStorePlayer.canPlayerMove.Get())
-            return;
-
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);
             return;
         }
+
+        bool canMove = dataStorePlayer.canPlayerMove.Get();
 
         if (freeMovementController.IsActive())
         {
@@ -306,7 +305,11 @@ public class DCLCharacterController : MonoBehaviour
                 // Horizontal movement
                 var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
 
-                transform.forward = characterForward.Get().Value;
+                if (!canMove)
+                    speed = 0;
+
+                if(canMove)
+                    transform.forward = characterForward.Get().Value;
 
                 var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
                 var xzPlaneRight = Vector3.Scale(cameraRight.Get(), new Vector3(1, 0, 1));
@@ -331,12 +334,17 @@ public class DCLCharacterController : MonoBehaviour
 
                 forwardTarget.Normalize();
                 velocity += forwardTarget * speed;
-                CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
+
+                if(canMove)
+                    CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
             }
 
             bool jumpButtonPressedWithGraceTime = jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f);
 
-            if (jumpButtonPressedWithGraceTime) // almost-grounded jump button press allowed time
+            if (jumpButtonPressedWithGraceTime)
+                isMovingByUserInput = true;
+
+            if (jumpButtonPressedWithGraceTime && canMove) // almost-grounded jump button press allowed time
             {
                 bool justLeftGround = (Time.time - lastUngroundedTime) < 0.1f;
 
@@ -372,6 +380,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             SaveLateUpdateGroundTransforms();
         }
+
         OnUpdateFinish?.Invoke(Time.deltaTime);
     }
 

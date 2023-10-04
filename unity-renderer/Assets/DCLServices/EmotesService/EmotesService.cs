@@ -1,6 +1,7 @@
 ﻿using AvatarAssets;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
+using DCLServices.EmotesService.Domain;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ namespace DCL.Emotes
         private void SetupEmbeddedClip(EmbeddedEmote embeddedEmote, AnimationClip clip, string urnPrefix)
         {
             clip.name = embeddedEmote.id;
-            var clipData = new EmoteClipData(clip, embeddedEmote.emoteDataV0?.loop ?? false);
+            var clipData = new EmoteAnimationData(clip, embeddedEmote.emoteDataV0?.loop ?? false);
             embeddedEmotes.Add(new EmoteBodyId(urnPrefix, embeddedEmote.id), new EmbedEmoteReference(embeddedEmote, clipData));
         }
 

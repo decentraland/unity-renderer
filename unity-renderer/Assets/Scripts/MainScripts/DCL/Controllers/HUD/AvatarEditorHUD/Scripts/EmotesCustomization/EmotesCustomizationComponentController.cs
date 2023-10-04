@@ -213,7 +213,7 @@ namespace DCL.EmotesCustomization
                 if (emoteCard != null)
                 {
                     emoteCard.SetAsLoading(false);
-                    emoteCard.SetSoundIcon(emoteReference.GetData().AudioSource != null);
+                    emoteCard.SetSoundIcon(emoteReference.GetData().HasAudio());
                     emotesInLoadingState.Remove(emoteId);
                 }
             }
