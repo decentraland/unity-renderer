@@ -27,6 +27,8 @@ namespace ExploreV2Analytics
         void SendFilterEvents(FilterType filterType, string filterValue = "");
         void SendClickedNavmapSearchResult(Vector2Int coordinatesOfResult);
         void SendToggleMapLayer(string layerName, bool isActive);
+        void SendCenterMapToHome();
+        void SendCenterMapToPlayer();
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
@@ -52,6 +54,8 @@ namespace ExploreV2Analytics
         private const string FILTER_EVENTS = "player_filter_events";
         private const string SELECT_NAVMAP_HISTORY_RESULT = "clicked_navmap_search_result";
         private const string TOGGLE_MAP_LAYER = "toggle_map_layer";
+        private const string MAP_CENTER_HOME = "map_center_home";
+        private const string MAP_CENTER_TO_PLAYER = "map_center_to_player";
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
         private static DateTime? exploreSectionSetVisibleTimeStamp = null;
@@ -285,6 +289,16 @@ namespace ExploreV2Analytics
                 ["is_active"] = isActive.ToString(),
             };
             GenericAnalytics.SendAnalytic(TOGGLE_MAP_LAYER, data);
+        }
+
+        public void SendCenterMapToHome()
+        {
+            GenericAnalytics.SendAnalytic(MAP_CENTER_HOME);
+        }
+
+        public void SendCenterMapToPlayer()
+        {
+            GenericAnalytics.SendAnalytic(MAP_CENTER_TO_PLAYER);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Helpers;
 using DCLServices.MapRendererV2.MapCameraController;
+using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -15,6 +16,7 @@ namespace HUD.NavMap.Tests
         private INavmapZoomViewController zoomViewController;
         private INavmapToastViewController toastViewController;
         private IMapCameraController cameraController;
+        private IExploreV2Analytics exploreV2Analytics;
 
         [SetUp]
         public void SetUp()
@@ -23,6 +25,7 @@ namespace HUD.NavMap.Tests
             zoomViewController = Substitute.For<INavmapZoomViewController>();
             toastViewController = Substitute.For<INavmapToastViewController>();
             cameraController = Substitute.For<IMapCameraController>();
+            exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         }
 
         [TearDown]
@@ -34,7 +37,7 @@ namespace HUD.NavMap.Tests
         [Test]
         public void Activate_SetsUpListeners()
         {
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
 
             controller.Activate(cameraController);
 
@@ -48,7 +51,7 @@ namespace HUD.NavMap.Tests
         [Test]
         public void Deactivate_RemovesListeners()
         {
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
 
             controller.Activate(cameraController);
             controller.Deactivate();
@@ -63,7 +66,7 @@ namespace HUD.NavMap.Tests
         [Test]
         public void Hide_DeactivatesAndHidesView()
         {
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(), new BaseVariable<Vector3>());
 
             controller.Hide();
             view.Received().Hide();
@@ -77,7 +80,7 @@ namespace HUD.NavMap.Tests
             Vector3 playerPosition = Vector3.zero;
 
             // Act
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
 
             // Assert
             Assert.That(controller.homePoint.Get(), Is.EqualTo(homeLocation));
@@ -90,7 +93,7 @@ namespace HUD.NavMap.Tests
             // Arrange
             Vector2Int homeLocation = Vector2Int.one;
             Vector3 playerPosition = Vector3.zero;
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
             controller.Activate(cameraController);
 
             // Act
@@ -108,7 +111,7 @@ namespace HUD.NavMap.Tests
             // Arrange
             Vector2Int homeLocation = Vector2Int.one;
             Vector3 playerPosition = Vector3.zero;
-            controller = new NavMapLocationControlsController(view, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
+            controller = new NavMapLocationControlsController(view, exploreV2Analytics, zoomViewController, toastViewController, new BaseVariable<Vector2Int>(homeLocation), new BaseVariable<Vector3>(playerPosition));
             controller.Activate(cameraController);
 
             // Act

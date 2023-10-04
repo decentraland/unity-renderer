@@ -93,6 +93,8 @@ namespace DCL
                 coordinates: homePoint.Get(),
                 duration: TRANSLATION_DURATION,
                 onComplete: () => toastViewController.ShowPlaceToast(homeParcel, showUntilClick: true));
+
+            exploreV2Analytics.SendCenterMapToHome();
         }
 
         private void CenterToPlayerLocation()
@@ -103,6 +105,8 @@ namespace DCL
             mapCamera.TranslateTo(
                 coordinates: Utils.WorldToGridPosition(playerPlayerWorldPosition.Get()),
                 duration: TRANSLATION_DURATION);
+
+            exploreV2Analytics.SendCenterMapToPlayer();
         }
     }
 }
