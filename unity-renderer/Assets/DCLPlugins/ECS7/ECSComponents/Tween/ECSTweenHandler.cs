@@ -86,7 +86,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     Vector3 startPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
                     Vector3 endPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
 
-                    if (model.HasFaceDirection && model.FaceDirection)
+                    if (model.Move.HasFaceDirection && model.Move.FaceDirection)
                         entityTransform.forward = (endPos - startPos).normalized;
 
                     entityTransform.localPosition = startPos;

@@ -26,23 +26,30 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CjBkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW5fc2VxdWVuY2Uu",
             "cHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxonZGVjZW50cmFs",
-            "YW5kL3Nkay9jb21wb25lbnRzL3R3ZWVuLnByb3RvIlcKD1BCVHdlZW5TZXF1",
-            "ZW5jZRI2CghzZXF1ZW5jZRgBIAMoCzIkLmRlY2VudHJhbGFuZC5zZGsuY29t",
-            "cG9uZW50cy5QQlR3ZWVuEgwKBGxvb3AYAiABKAhCFKoCEURDTC5FQ1NDb21w",
-            "b25lbnRzYgZwcm90bzM="));
+            "YW5kL3Nkay9jb21wb25lbnRzL3R3ZWVuLnByb3RvIo0BCg9QQlR3ZWVuU2Vx",
+            "dWVuY2USNgoIc2VxdWVuY2UYASADKAsyJC5kZWNlbnRyYWxhbmQuc2RrLmNv",
+            "bXBvbmVudHMuUEJUd2VlbhI5CgRsb29wGAIgASgOMiYuZGVjZW50cmFsYW5k",
+            "LnNkay5jb21wb25lbnRzLlR3ZWVuTG9vcEgAiAEBQgcKBV9sb29wKigKCVR3",
+            "ZWVuTG9vcBIOCgpUTF9SRVNUQVJUEAASCwoHVExfWU9ZTxABQhSqAhFEQ0wu",
+            "RUNTQ29tcG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::DCL.ECSComponents.TweenReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTweenSequence), global::DCL.ECSComponents.PBTweenSequence.Parser, new[]{ "Sequence", "Loop" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TweenLoop), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTweenSequence), global::DCL.ECSComponents.PBTweenSequence.Parser, new[]{ "Sequence", "Loop" }, new[]{ "Loop" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum TweenLoop {
+    [pbr::OriginalName("TL_RESTART")] TlRestart = 0,
+    [pbr::OriginalName("TL_YOYO")] TlYoyo = 1,
+  }
+
+  #endregion
+
   #region Messages
-  /// <summary>
-  /// TODO: Testing using protobuf instead of Schemas (wip)
-  /// </summary>
   public sealed partial class PBTweenSequence : pb::IMessage<PBTweenSequence>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -50,6 +57,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBTweenSequence> _parser = new pb::MessageParser<PBTweenSequence>(() => new PBTweenSequence());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBTweenSequence> Parser { get { return _parser; } }
@@ -77,6 +85,7 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBTweenSequence(PBTweenSequence other) : this() {
+      _hasBits0 = other._hasBits0;
       sequence_ = other.sequence_.Clone();
       loop_ = other.loop_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -101,14 +110,27 @@ namespace DCL.ECSComponents {
 
     /// <summary>Field number for the "loop" field.</summary>
     public const int LoopFieldNumber = 2;
-    private bool loop_;
+    private global::DCL.ECSComponents.TweenLoop loop_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Loop {
-      get { return loop_; }
+    public global::DCL.ECSComponents.TweenLoop Loop {
+      get { if ((_hasBits0 & 1) != 0) { return loop_; } else { return global::DCL.ECSComponents.TweenLoop.TlRestart; } }
       set {
+        _hasBits0 |= 1;
         loop_ = value;
       }
+    }
+    /// <summary>Gets whether the "loop" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasLoop {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "loop" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearLoop() {
+      _hasBits0 &= ~1;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -136,7 +158,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= sequence_.GetHashCode();
-      if (Loop != false) hash ^= Loop.GetHashCode();
+      if (HasLoop) hash ^= Loop.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -156,9 +178,9 @@ namespace DCL.ECSComponents {
       output.WriteRawMessage(this);
     #else
       sequence_.WriteTo(output, _repeated_sequence_codec);
-      if (Loop != false) {
+      if (HasLoop) {
         output.WriteRawTag(16);
-        output.WriteBool(Loop);
+        output.WriteEnum((int) Loop);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -171,9 +193,9 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       sequence_.WriteTo(ref output, _repeated_sequence_codec);
-      if (Loop != false) {
+      if (HasLoop) {
         output.WriteRawTag(16);
-        output.WriteBool(Loop);
+        output.WriteEnum((int) Loop);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -186,8 +208,8 @@ namespace DCL.ECSComponents {
     public int CalculateSize() {
       int size = 0;
       size += sequence_.CalculateSize(_repeated_sequence_codec);
-      if (Loop != false) {
-        size += 1 + 1;
+      if (HasLoop) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Loop);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -202,7 +224,7 @@ namespace DCL.ECSComponents {
         return;
       }
       sequence_.Add(other.sequence_);
-      if (other.Loop != false) {
+      if (other.HasLoop) {
         Loop = other.Loop;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -225,7 +247,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Loop = input.ReadBool();
+            Loop = (global::DCL.ECSComponents.TweenLoop) input.ReadEnum();
             break;
           }
         }
@@ -248,7 +270,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            Loop = input.ReadBool();
+            Loop = (global::DCL.ECSComponents.TweenLoop) input.ReadEnum();
             break;
           }
         }
