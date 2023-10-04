@@ -56,7 +56,10 @@ namespace DCL
             exploreV2Analytics.SendToggleMapLayer(MapLayer.ParcelsAtlas.ToString(), true);
         }
 
-        private static void OpenGenesisCityLink() =>
+        private void OpenGenesisCityLink()
+        {
+            exploreV2Analytics.SendOpenGenesisCityUrl();
             Application.OpenURL(GENESIS_CITY_URL);
+        }
     }
 }
