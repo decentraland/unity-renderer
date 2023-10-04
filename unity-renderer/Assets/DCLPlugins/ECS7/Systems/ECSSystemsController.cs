@@ -150,7 +150,6 @@ public class ECSSystemsController : IDisposable
 
         ECSTweenSystem tweenSystem = new ECSTweenSystem(
             context.internalEcsComponents.TweenComponent,
-            context.TweenState,
             context.ComponentWriters,
             context.TweenStatePool,
             context.TransformPool,
