@@ -33,7 +33,7 @@ import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import {isImpostor} from "../profiles/impostorValidation";
-import {resolveRealmCandidateFromBaseUrl} from "../dao";
+import {resolveRealmPublicKeyFromBaseUrl} from "../dao";
 
 type PingRequest = {
   alias: number
@@ -236,7 +236,7 @@ function processProfileRequest(message: Package<proto.ProfileRequest>) {
   }
 }
 
-function processProfileResponse(message: Package<proto.ProfileResponse>) {
+async function processProfileResponse(message: Package<proto.ProfileResponse>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
 
   const data = message.data;
@@ -247,10 +247,15 @@ function processProfileResponse(message: Package<proto.ProfileResponse>) {
 
   const profileHash = data.profileHash;
   const profileSignedHash = data.profileSignedHash;
-  const signerPublicKey: string = resolveRealmCandidateFromBaseUrl(data.catalystDomain)?.publicKey ?? ''
+  const signerPublicKey = await resolveRealmPublicKeyFromBaseUrl(data.catalystDomain)
 
-  if (isImpostor(profile, profileHash, profileSignedHash, signerPublicKey)) {
-    console.warn('Impostor detected', message.address)
+  if (signerPublicKey) {
+    if (isImpostor(profile, profileHash, profileSignedHash, signerPublicKey)) {
+      console.warn('Impostor detected', message.address)
+      return
+    }
+  } else {
+    console.warn('Impostor detected: could not solve signer public key', data.catalystDomain)
     return
   }
 

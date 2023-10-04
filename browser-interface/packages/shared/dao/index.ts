@@ -1,25 +1,26 @@
-import { PIN_CATALYST } from 'config'
+import {PIN_CATALYST} from 'config'
 import defaultLogger from 'lib/logger'
-import { storeCondition } from 'lib/redux'
-import { fetchCatalystNodesFromContract } from 'lib/web3/fetchCatalystNodesFromContract'
-import { CatalystNode } from 'lib/web3/fetchCatalystNodesFromContract'
-import { commsLogger } from 'shared/comms/logger'
-import { getDisabledCatalystConfig } from 'shared/meta/selectors'
-import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
-import { setRealmAdapter } from 'shared/realm/actions'
+import {storeCondition} from 'lib/redux'
+import {CatalystNode, fetchCatalystNodesFromContract} from 'lib/web3/fetchCatalystNodesFromContract'
+import {commsLogger} from 'shared/comms/logger'
+import {getDisabledCatalystConfig} from 'shared/meta/selectors'
+import {AboutResponse} from 'shared/protocol/decentraland/renderer/about.gen'
+import {setRealmAdapter} from 'shared/realm/actions'
 import {
   adapterForRealmConfig,
+  isDclEns,
   resolveRealmBaseUrlFromRealmQueryParameter,
   urlWithProtocol
 } from 'shared/realm/resolver'
-import { getRealmAdapter } from 'shared/realm/selectors'
-import { OFFLINE_REALM } from 'shared/realm/types'
-import { getCurrentIdentity } from 'shared/session/selectors'
-import { store } from 'shared/store/isolatedStore'
-import { checkValidRealm } from './sagas'
-import { Candidate, Parcel, ServerConnectionStatus } from './types'
-import { ask } from './utils/ping'
-import { getCatalystCandidates } from './selectors'
+import {getRealmAdapter} from 'shared/realm/selectors'
+import {OFFLINE_REALM} from 'shared/realm/types'
+import {getCurrentIdentity} from 'shared/session/selectors'
+import {store} from 'shared/store/isolatedStore'
+import {checkValidRealm} from './sagas'
+import {Candidate, Parcel, ServerConnectionStatus} from './types'
+import {ask} from './utils/ping'
+import {getCatalystCandidates} from './selectors'
+import {ensureRealmAdapter} from "../realm/ensureRealmAdapter";
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -153,16 +154,37 @@ export async function resolveRealmAboutFromBaseUrl(
     return undefined
   }
 
-  return { about: res.result!, baseUrl: realmBaseUrl }
+  let about = res.result!
+
+  if (isDclEns(realmString) && !about.lambdas?.publicKey) {
+    if (res.result.lambdas) {
+      const aboutFromLambdas = await checkValidRealm(res.result.lambdas.publicUrl.replace('/lambdas', ''));
+      about = {
+        ... about,
+        lambdas: {
+          ...about.lambdas!,
+          publicKey: aboutFromLambdas?.result?.lambdas?.publicKey
+        }
+      }
+    }
+  }
+
+  return { about: about, baseUrl: realmBaseUrl }
 }
 
-export function resolveRealmCandidateFromBaseUrl(baseUrl: string) {
+export async function resolveRealmPublicKeyFromBaseUrl(baseUrl: string) {
   const candidates: Candidate[] = getCatalystCandidates(store.getState())
 
   for (const candidate of candidates) {
     if (candidate.domain === baseUrl) {
-      return candidate
+      return candidate.publicKey
     }
+  }
+
+  const realmAdapter = await ensureRealmAdapter();
+
+  if (realmAdapter.baseUrl === baseUrl) {
+    return realmAdapter.about.lambdas?.publicKey
   }
 
   return undefined
