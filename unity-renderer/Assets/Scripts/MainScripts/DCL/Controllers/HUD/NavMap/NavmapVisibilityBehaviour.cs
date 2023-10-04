@@ -33,7 +33,6 @@ namespace DCL
         private readonly NavMapChunksLayersController chunksLayerController;
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
         private readonly NavMapChunksLayersView chunksLayersView;
-        private readonly IExploreV2Analytics exploreV2Analytics;
 
         private Service<IMapRenderer> mapRenderer;
 
@@ -64,17 +63,16 @@ namespace DCL
             this.zoomView = zoomView;
             this.rendererConfiguration = rendererConfiguration;
             this.placeCardModal = placeCardModal;
-            this.exploreV2Analytics = exploreV2Analytics;
 
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
             navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics, this.placeCardModal, exploreV2Analytics);
             navmapZoomViewController = new NavmapZoomViewController(zoomView, featureFlagsFlags);
-            locationControlsController = new NavMapLocationControlsController(locationControlsView, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
+            locationControlsController = new NavMapLocationControlsController(locationControlsView, exploreV2Analytics, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
 
             navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs(), navmapZoomViewController, navmapToastViewController, exploreV2Analytics);
-            chunksLayerController = new NavMapChunksLayersController(chunksLayersView);
+            chunksLayerController = new NavMapChunksLayersController(chunksLayersView, exploreV2Analytics);
 
             { // Needed for feature flag. Remove when feature flag is removed
                 this.chunksLayersView = chunksLayersView;
