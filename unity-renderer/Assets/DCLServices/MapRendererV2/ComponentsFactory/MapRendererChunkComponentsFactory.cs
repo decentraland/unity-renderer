@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Providers;
+using DCL.Social.Friends;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -8,6 +9,7 @@ using DCLServices.MapRendererV2.MapLayers;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
 using DCLServices.MapRendererV2.MapLayers.Atlas.SatelliteAtlas;
 using DCLServices.MapRendererV2.MapLayers.ParcelHighlight;
+using DCLServices.PlacesAPIService;
 using DCLServices.MapRendererV2.MapLayers.SatelliteAtlas;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
@@ -36,8 +38,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         internal ColdUsersMarkersInstaller coldUsersMarkersInstaller { get; }
         internal SceneOfInterestsMarkersInstaller sceneOfInterestsMarkersInstaller { get; }
+        internal FavoritesMarkersInstaller favoritesMarkersInstaller { get; }
         internal HomePointMarkerInstaller homePointMarkerInstaller { get; }
         internal HotUsersMarkersInstaller hotUsersMarkersInstaller { get; }
+
+        internal FriendUsersMarkersInstaller friendUsersMarkersInstaller { get; }
         internal PlayerMarkerInstaller playerMarkerInstaller { get; }
 
         private IAddressableResourceProvider AddressableProvider => addressablesProvider.Ref;
@@ -71,9 +76,11 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CreateSatelliteAtlas(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, Environment.i.serviceLocator.Get<IPlacesAPIService>(), cancellationToken),
                 playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken)
+                hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                friendUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, new UserProfileWebInterfaceBridge(), Environment.i.serviceLocator.Get<IFriendsController>(), cancellationToken)
                 /* List of other creators that can be executed in parallel */);
 
             return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);

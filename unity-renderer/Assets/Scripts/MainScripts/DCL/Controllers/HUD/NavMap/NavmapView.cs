@@ -1,7 +1,8 @@
-﻿using DCL.Helpers;
+using Cysharp.Threading.Tasks;
+using DCL.Browser;
+using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
-using System;
 using System.Threading;
 using UnityEngine;
 
@@ -10,6 +11,10 @@ namespace DCL
     public class NavmapView : MonoBehaviour
     {
         [SerializeField] internal NavmapSearchComponentView searchView;
+        [SerializeField] internal NavmapFilterComponentView filterView;
+        [SerializeField] internal GameObject placeCardModalParent;
+
+        [Space]
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] private NavMapLocationControlsView locationControlsView;
         [SerializeField] private NavmapZoomView zoomView;
@@ -18,6 +23,8 @@ namespace DCL
         [Space]
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
 
+        private IPlaceCardComponentView placeCardModal;
+
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
 
         private RectTransform rectTransform;
@@ -25,13 +32,28 @@ namespace DCL
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
-        private NavmapSearchController navmapSearchController;
+        private NavmapFilterComponentController navmapFilterComponentController;
 
         private void Start()
         {
-            navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,  chunksLayersView,
-                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+            placeCardModal = placeCardModalParent.GetComponent<IPlaceCardComponentView>();
+
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(
+                DataStore.i.featureFlags.flags,
+                DataStore.i.HUDs.navmapVisible,
+                zoomView,
+                toastView,
+                searchView,
+                locationControlsView,
+                chunksLayersView,
+                navmapRendererConfiguration,
+                Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(),
+                new PlacesAnalytics(),
+                placeCardModal,
+                exploreV2Analytics);
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
@@ -61,7 +83,6 @@ namespace DCL
         private void OnDestroy()
         {
             navmapVisibilityBehaviour.Dispose();
-            navmapSearchController.Dispose();
         }
 
         private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
