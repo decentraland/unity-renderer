@@ -178,27 +178,18 @@ namespace DCL.Emotes
 
             if (!requiredAnimationSequence.Contains(name)) return;
 
-            switch (name)
-            {
-                case AVATAR_START:
-                    animationSequence.AvatarStart = clip;
-                    break;
-                case AVATAR_LOOP:
-                    animationSequence.AvatarLoop = clip;
-                    break;
-                case AVATAR_END:
-                    animationSequence.AvatarEnd = clip;
-                    break;
-                case PROP_START:
-                    animationSequence.PropStart = clip;
-                    break;
-                case PROP_LOOP:
-                    animationSequence.PropLoop = clip;
-                    break;
-                case PROP_END:
-                    animationSequence.PropEnd = clip;
-                    break;
-            }
+            if (name.EndsWith(AVATAR_START, StringComparison.OrdinalIgnoreCase))
+                animationSequence.AvatarStart = clip;
+            else if (name.EndsWith(AVATAR_LOOP, StringComparison.OrdinalIgnoreCase))
+                animationSequence.AvatarLoop = clip;
+            else if (name.EndsWith(AVATAR_END, StringComparison.OrdinalIgnoreCase))
+                animationSequence.AvatarEnd = clip;
+            else if (name.EndsWith(PROP_START, StringComparison.OrdinalIgnoreCase))
+                animationSequence.PropStart = clip;
+            else if (name.EndsWith(PROP_LOOP, StringComparison.OrdinalIgnoreCase))
+                animationSequence.PropLoop = clip;
+            else if (name.EndsWith(PROP_END, StringComparison.OrdinalIgnoreCase))
+                animationSequence.PropEnd = clip;
 
             requiredAnimationSequence.Remove(name);
         }
