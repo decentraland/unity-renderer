@@ -28,7 +28,7 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
 
   if (isMainRealmEnabled(state)) {
     if (net === ETHEREUM_NETWORK.MAINNET) {
-      catalysts.push({ domain: 'https://realm-provider.decentraland.zone/main' }) //TODO use org instead
+      catalysts.push({ domain: 'https://realm-provider.decentraland.org/main' })
     } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
       catalysts.push({ domain: 'https://realm-provider.decentraland.zone/main' })
     }
