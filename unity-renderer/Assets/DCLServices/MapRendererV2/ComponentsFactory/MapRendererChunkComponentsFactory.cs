@@ -53,6 +53,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             var coordsUtils = new ChunkCoordsUtils(PARCEL_SIZE);
             IMapCullingController cullingController = new MapCullingController(new MapCullingRectVisibilityChecker(CULLING_BOUNDS_IN_PARCELS * PARCEL_SIZE));
             var layers = new Dictionary<MapLayer, IMapLayerController>();
+            var zoomScalingLayers = new List<IZoomScalingLayer>();
 
             ParcelHighlightMarkerObject highlightMarkerPrefab = await GetParcelHighlightMarkerPrefab(cancellationToken);
             var highlightMarkersPool = new ObjectPool<IParcelHighlightMarker>(
@@ -75,15 +76,15 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 CreateAtlas(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 CreateSatelliteAtlas(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 coldUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                sceneOfInterestsMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
+                sceneOfInterestsMarkersInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
+                playerMarkerInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
+                homePointMarkerInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
                 favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, Environment.i.serviceLocator.Get<IPlacesAPIService>(), cancellationToken),
-                playerMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                homePointMarkerInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
-                friendUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, new UserProfileWebInterfaceBridge(), Environment.i.serviceLocator.Get<IFriendsController>(), cancellationToken)
+                friendUsersMarkersInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, new UserProfileWebInterfaceBridge(), Environment.i.serviceLocator.Get<IFriendsController>(), cancellationToken)
                 /* List of other creators that can be executed in parallel */);
 
-            return new MapRendererComponents(configuration, layers, cullingController, cameraControllersPool);
+            return new MapRendererComponents(configuration, layers, zoomScalingLayers, cullingController, cameraControllersPool);
 
             IMapCameraControllerInternal CameraControllerBuilder()
             {
