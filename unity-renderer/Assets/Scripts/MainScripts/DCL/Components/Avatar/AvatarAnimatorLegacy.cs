@@ -4,8 +4,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
-using DCL.Emotes;
-using DCL.Helpers;
+using DCLServices.EmotesService.Domain;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -128,8 +127,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     {
         StopEmote();
 
-        animation = container.gameObject.GetOrCreateComponent<Animation>();
-        container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
+        animation = GetOrCreateComponent<Animation>(container.gameObject);
+        GetOrCreateComponent<StickerAnimationListener>(container.gameObject);
 
         PrepareLocomotionAnims(bodyshapeId);
         SetIdleFrame();
@@ -153,6 +152,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         }
 
         return true;
+    }
+
+    private static T GetOrCreateComponent<T>(GameObject gameObject) where T: Component
+    {
+        T component = gameObject.GetComponent<T>();
+        return !component ? gameObject.AddComponent<T>() : component;
     }
 
     private void PrepareLocomotionAnims(string bodyshapeId)
@@ -356,7 +361,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private void State_Expression(BlackBoard bb)
     {
-        var prevAnimation = latestAnimationState;
+        latestAnimationState = AvatarAnimation.EMOTE;
 
         var exitTransitionStarted = false;
 
@@ -372,14 +377,15 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             bool isPlaying = lastExtendedEmoteData?.GetState() == EmoteState.PLAYING;
 
             if (isPlaying && !canTransitionOut)
-            {
                 exitTransitionStarted = true;
-                dataStorePlayer.canPlayerMove.Set(false);
-            }
 
             if (canTransitionOut)
             {
-                dataStorePlayer.canPlayerMove.Set(true);
+                StopEmoteInternal(true);
+
+                if (isOwnPlayer)
+                    dataStorePlayer.canPlayerMove.Set(true);
+
                 currentState = State_Ground;
             }
         }
@@ -414,6 +420,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             //bool emoteIsFinished = lastExtendedEmoteData?.IsFinished() ?? true;
             //bool isAnimationOver = emoteIsFinished && !bb.shouldLoop;
             bool isMoving = isOwnPlayer ? DCLCharacterController.i.isMovingByUserInput : Math.Abs(bb.movementSpeed) > OTHER_PLAYER_MOVE_THRESHOLD;
+            bool isJumping = isOwnPlayer && DCLCharacterController.i.isJumping;
             bool emoteIsFinished = lastExtendedEmoteData?.IsFinished() ?? true;
             bool isAnimationFinishing = lastExtendedEmoteData?.GetState() == EmoteState.STOPPING;
             return isMoving || isAnimationFinishing || emoteIsFinished;
@@ -449,6 +456,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         lastExtendedEmoteData = emoteClipData;
         emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
+
+        if (lastExtendedEmoteData.IsSequential() && isOwnPlayer)
+            dataStorePlayer.canPlayerMove.Set(false);
     }
 
     public void Reset()
@@ -525,7 +535,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {
         //NOTE(Mordi): Adds handler for animation events, and passes in the audioContainer for the avatar
-        AvatarAnimationEventHandler animationEventHandler = createdAnimation.gameObject.GetOrCreateComponent<AvatarAnimationEventHandler>();
+        AvatarAnimationEventHandler animationEventHandler = GetOrCreateComponent<AvatarAnimationEventHandler>(createdAnimation.gameObject);
         AudioContainer audioContainer = transform.GetComponentInChildren<AudioContainer>();
 
         if (audioContainer != null)

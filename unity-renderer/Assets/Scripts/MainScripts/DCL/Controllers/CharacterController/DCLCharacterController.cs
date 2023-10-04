@@ -308,7 +308,8 @@ public class DCLCharacterController : MonoBehaviour
                 if (!canMove)
                     speed = 0;
 
-                transform.forward = characterForward.Get().Value;
+                if(canMove)
+                    transform.forward = characterForward.Get().Value;
 
                 var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
                 var xzPlaneRight = Vector3.Scale(cameraRight.Get(), new Vector3(1, 0, 1));
@@ -333,10 +334,15 @@ public class DCLCharacterController : MonoBehaviour
 
                 forwardTarget.Normalize();
                 velocity += forwardTarget * speed;
-                CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
+
+                if(canMove)
+                    CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
             }
 
             bool jumpButtonPressedWithGraceTime = jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f);
+
+            if (jumpButtonPressedWithGraceTime)
+                isMovingByUserInput = true;
 
             if (jumpButtonPressedWithGraceTime && canMove) // almost-grounded jump button press allowed time
             {

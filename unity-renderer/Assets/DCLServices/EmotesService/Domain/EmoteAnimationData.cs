@@ -10,6 +10,7 @@ namespace DCLServices.EmotesService.Domain
         STOPPING,
         STOPPED,
     }
+
     public class EmoteAnimationData
     {
         private const float EXPRESSION_EXIT_TRANSITION_TIME = 0.2f;
@@ -61,6 +62,9 @@ namespace DCLServices.EmotesService.Domain
         public bool HasAudio() =>
             audioSource != null;
 
+        public bool IsSequential() =>
+            isSequential;
+
         public void UnEquip()
         {
             if (extraContent != null)
@@ -68,7 +72,6 @@ namespace DCLServices.EmotesService.Domain
 
             if (isSequential)
             {
-
                 avatarAnimation.RemoveClip(animationSequence.AvatarStart);
                 avatarAnimation.RemoveClip(animationSequence.AvatarLoop);
                 avatarAnimation.RemoveClip(animationSequence.AvatarEnd);
@@ -86,6 +89,7 @@ namespace DCLServices.EmotesService.Domain
         public void Equip(Animation animation)
         {
             avatarAnimation = animation;
+
             if (isSequential)
             {
                 avatarAnimation.AddClip(animationSequence.AvatarStart, animationSequence.AvatarStart.name);
@@ -139,6 +143,8 @@ namespace DCLServices.EmotesService.Domain
         {
             string avatarClipName = avatarClip.name;
 
+            avatarAnimation.wrapMode = loop ? WrapMode.Loop : WrapMode.Once;
+
             if (avatarAnimation.IsPlaying(avatarClipName))
                 avatarAnimation.Rewind(avatarClipName);
 
@@ -187,7 +193,7 @@ namespace DCLServices.EmotesService.Domain
                 extraContentAnimation[animationSequence.PropLoop.name].wrapMode = WrapMode.Loop;
                 extraContentAnimation.Stop();
                 extraContentAnimation.CrossFadeQueued(animationSequence.PropStart.name, EXPRESSION_ENTER_TRANSITION_TIME, QueueMode.PlayNow);
-                extraContentAnimation.CrossFadeQueued(animationSequence.PropLoop.name, 0 ,QueueMode.CompleteOthers);
+                extraContentAnimation.CrossFadeQueued(animationSequence.PropLoop.name, 0, QueueMode.CompleteOthers);
             }
 
             if (audioSource == null) return;
@@ -220,7 +226,13 @@ namespace DCLServices.EmotesService.Domain
             avatarAnimation[animationSequence.AvatarEnd.name].wrapMode = WrapMode.Once;
             avatarAnimation.Stop();
 
-            if (!immediate)
+            if (immediate)
+            {
+                if (renderers != null)
+                    foreach (Renderer renderer in renderers)
+                        renderer.enabled = false;
+            }
+            else
                 avatarAnimation.CrossFade(animationSequence.AvatarEnd.name, EXPRESSION_EXIT_TRANSITION_TIME);
 
             currentAvatarAnimation = avatarAnimation[animationSequence.AvatarEnd.name];
@@ -230,7 +242,17 @@ namespace DCLServices.EmotesService.Domain
             extraContentAnimation[animationSequence.PropEnd.name].wrapMode = WrapMode.Once;
             extraContentAnimation.Stop();
 
-            if (!immediate)
+            if (immediate)
+            {
+                foreach (AnimationState state in extraContentAnimation)
+                {
+                    if (state.clip == avatarClip) continue;
+                    extraContentAnimation.Stop(state.clip.name);
+                }
+
+                extraContentAnimation.enabled = false;
+            }
+            else
                 extraContentAnimation.CrossFade(animationSequence.PropEnd.name, EXPRESSION_EXIT_TRANSITION_TIME);
         }
 
