@@ -18,13 +18,15 @@ namespace ExploreV2Analytics
         void SendRemoveParticipateEvent(string eventId, bool isWorld, ActionSource source = ActionSource.FromExplore);
         void TeleportToPlaceFromFavorite(string placeUUID, string placeName);
         void SendSearchEvents(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
-        void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds);
+        void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds, ActionSource source = ActionSource.FromExplore);
         void SendSearchWorlds(string searchString, string[] firstResultsIds);
         void SendPlacesTabOpen();
         void SendWorldsTabOpen();
         void SendEventsTabOpen();
         void SendFavoritesTabOpen();
         void SendFilterEvents(FilterType filterType, string filterValue = "");
+        void SendClickedNavmapSearchResult(Vector2Int coordinatesOfResult);
+        void SendToggleMapLayer(string layerName, bool isActive);
     }
 
     public class ExploreV2Analytics : IExploreV2Analytics
@@ -48,6 +50,8 @@ namespace ExploreV2Analytics
         private const string EXPLORE_EVENTS_TAB_OPEN = "explore_events_tab_open";
         private const string EXPLORE_FAVORITES_TAB_OPEN = "explore_favorites_tab_open";
         private const string FILTER_EVENTS = "player_filter_events";
+        private const string SELECT_NAVMAP_HISTORY_RESULT = "clicked_navmap_search_result";
+        private const string TOGGLE_MAP_LAYER = "toggle_map_layer";
 
         private static DateTime? exploreMainMenuSetVisibleTimeStamp = null;
         private static DateTime? exploreSectionSetVisibleTimeStamp = null;
@@ -197,13 +201,14 @@ namespace ExploreV2Analytics
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_EVENTS, data);
         }
 
-        public void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds)
+        public void SendSearchPlaces(string searchString, Vector2Int[] firstResultsCoordinates, string[] firstResultsIds, ActionSource source = ActionSource.FromExplore)
         {
             var data = new Dictionary<string, string>
             {
                 ["search_string"] = searchString,
                 ["first_results_coordinates"] = string.Join(",", firstResultsCoordinates),
-                ["first_results_ids"] = string.Join(",", firstResultsIds)
+                ["first_results_ids"] = string.Join(",", firstResultsIds),
+                ["source"] = source.ToString()
             };
             GenericAnalytics.SendAnalytic(EXPLORE_SEARCH_PLACES, data);
         }
@@ -261,6 +266,25 @@ namespace ExploreV2Analytics
                 ["value"] = filterValue
             };
             GenericAnalytics.SendAnalytic(FILTER_EVENTS, data);
+        }
+
+        public void SendClickedNavmapSearchResult(Vector2Int coordinatesOfResult)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["coordinates_of_result"] = coordinatesOfResult.ToString(),
+            };
+            GenericAnalytics.SendAnalytic(SELECT_NAVMAP_HISTORY_RESULT, data);
+        }
+
+        public void SendToggleMapLayer(string layerName, bool isActive)
+        {
+            var data = new Dictionary<string, string>
+            {
+                ["layer_name"] = layerName,
+                ["is_active"] = isActive.ToString(),
+            };
+            GenericAnalytics.SendAnalytic(TOGGLE_MAP_LAYER, data);
         }
     }
 }

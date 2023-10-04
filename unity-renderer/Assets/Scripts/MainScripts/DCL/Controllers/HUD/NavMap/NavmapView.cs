@@ -38,6 +38,8 @@ namespace DCL
         {
             placeCardModal = placeCardModalParent.GetComponent<IPlaceCardComponentView>();
 
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+
             navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(
                 DataStore.i.featureFlags.flags,
                 DataStore.i.HUDs.navmapVisible,
@@ -49,8 +51,9 @@ namespace DCL
                 navmapRendererConfiguration,
                 Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(),
                 new PlacesAnalytics(),
-                placeCardModal);
-            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge());
+                placeCardModal,
+                exploreV2Analytics);
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);

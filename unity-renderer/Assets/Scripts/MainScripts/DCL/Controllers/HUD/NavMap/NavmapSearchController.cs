@@ -10,6 +10,7 @@ using System.Threading;
 using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
+using ExploreV2Analytics;
 using UnityEngine;
 
 public class NavmapSearchController : IDisposable
@@ -23,6 +24,7 @@ public class NavmapSearchController : IDisposable
     private readonly IPlayerPrefs playerPrefs;
     private readonly NavmapZoomViewController navmapZoomViewController;
     private readonly INavmapToastViewController toastViewController;
+    private readonly IExploreV2Analytics exploreV2Analytics;
 
     private CancellationTokenSource searchCts;
     private bool isAlreadySelected = false;
@@ -34,7 +36,8 @@ public class NavmapSearchController : IDisposable
         IPlacesAPIService placesAPIService,
         IPlayerPrefs playerPrefs,
         NavmapZoomViewController navmapZoomViewController,
-        INavmapToastViewController toastViewController)
+        INavmapToastViewController toastViewController,
+        IExploreV2Analytics exploreV2Analytics)
     {
         this.view = view;
         this.placesAPIService = placesAPIService;
@@ -56,6 +59,7 @@ public class NavmapSearchController : IDisposable
             onComplete: () => toastViewController.ShowPlaceToast(new MapRenderImage.ParcelClickData(){Parcel = coordinates, WorldPosition = new Vector2(Screen.width / 2f, Screen.height / 2f)}, showUntilClick: true));
 
         OnSelectedSearchbarChange(false);
+        exploreV2Analytics.SendClickedNavmapSearchResult(coordinates);
     }
 
     public void Activate(IMapCameraController mapCameraController)
@@ -70,7 +74,6 @@ public class NavmapSearchController : IDisposable
     public void Deactivate()
     {
         if (!active) return;
-
         active = false;
     }
 
@@ -83,7 +86,6 @@ public class NavmapSearchController : IDisposable
         }
 
         AddToPreviousSearch(searchText);
-
         searchCts = searchCts.SafeRestart();
         SearchAndDisplay(searchText, searchCts).Forget();
     }
@@ -91,6 +93,7 @@ public class NavmapSearchController : IDisposable
     private async UniTaskVoid SearchAndDisplay(string searchText, CancellationTokenSource cts)
     {
         (IReadOnlyList<IHotScenesController.PlaceInfo> places, int total) searchPlaces = await placesAPIService.SearchPlaces(searchText, 0, 5, cts.Token);
+        exploreV2Analytics.SendSearchPlaces(searchText, searchPlaces.places.Select(p=>Utils.ConvertStringToVector(p.base_position)).ToArray(), searchPlaces.places.Select(p=>p.id).ToArray(), ActionSource.FromNavmap);
         view.SetSearchResultRecords(searchPlaces.places);
     }
 

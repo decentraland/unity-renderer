@@ -2,6 +2,7 @@
 using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.PlacesAPIService;
+using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace DCL
         private readonly NavmapToastView view;
         private readonly IPlaceCardComponentView placeCardModal;
         private readonly MapRenderImage mapRenderImage;
+        private readonly IExploreV2Analytics exploreV2Analytics;
         private readonly float sqrDistanceToCloseView;
 
         private Vector2 lastClickPosition;
@@ -26,13 +28,17 @@ namespace DCL
         private CancellationTokenSource retrievingFavoritesCts;
         private bool showUntilClick;
 
+        private string placeId;
+        private string placeName;
+
         public NavmapToastViewController(
             MinimapMetadata minimapMetadata,
             NavmapToastView view,
             MapRenderImage mapRenderImage,
             IPlacesAPIService placesAPIService,
             IPlacesAnalytics placesAnalytics,
-            IPlaceCardComponentView placeCardModal
+            IPlaceCardComponentView placeCardModal,
+            IExploreV2Analytics exploreV2Analytics
             )
         {
             this.placesAPIService = placesAPIService;
@@ -41,6 +47,7 @@ namespace DCL
             this.view = view;
             this.mapRenderImage = mapRenderImage;
             this.placeCardModal = placeCardModal;
+            this.exploreV2Analytics = exploreV2Analytics;
             this.sqrDistanceToCloseView = view.distanceToCloseView * view.distanceToCloseView;
 
             this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
@@ -61,6 +68,7 @@ namespace DCL
         {
             DataStore.i.HUDs.navmapVisible.Set(false);
             Environment.i.world.teleportController.Teleport(x, y);
+            exploreV2Analytics.SendPlaceTeleport(placeId, placeName, currentParcel, ActionSource.FromNavmap);
         }
 
         public void Activate()
@@ -159,6 +167,8 @@ namespace DCL
             {
                 view.SetFavoriteLoading(true);
                 var place = await placesAPIService.GetPlace(currentParcel, ct);
+                placeId = place.id;
+                placeName = place.title;
                 view.SetPlaceId(place.id);
                 view.SetVoteButtons(place.user_like, place.user_dislike);
                 view.SetIsAPlace(true);
@@ -209,12 +219,12 @@ namespace DCL
             if (isUpvote != null)
             {
                 if (isUpvote.Value)
-                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromNavmap);
                 else
-                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromNavmap);
             }
             else
-                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromFavorites);
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromNavmap);
 
             placesAPIService.SetPlaceVote(isUpvote, placeId, default).Forget();
         }
