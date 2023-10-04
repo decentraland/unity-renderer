@@ -25,6 +25,7 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
+        [SerializeField] internal GameObject infoButtonContainer;
         [SerializeField] internal Button infoButton;
         [SerializeField] internal GameObject favoriteContainer;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
@@ -245,6 +246,12 @@ namespace DCL
         public void SetIsAPlace(bool isAPlace)
         {
             favoriteContainer.SetActive(isAPlace);
+            SetInfoButtonEnabled(isAPlace);
+        }
+
+        public void SetInfoButtonEnabled(bool isActive)
+        {
+            infoButtonContainer.SetActive(isActive);
         }
     }
 }

@@ -388,6 +388,7 @@ MonoBehaviour:
     type: 3}
   toastAnimator: {fileID: 2777010639308600957}
   goToButton: {fileID: 4603100673564791174}
+  infoButtonContainer: {fileID: 2425366635079326018}
   infoButton: {fileID: 8626910542831730621}
   favoriteContainer: {fileID: 8371206149832847143}
   favoriteToggle: {fileID: 907190896744746301}
