@@ -31,7 +31,6 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             markerObject.transform.localRotation = rot;
         }
 
-        private float scaleMultiplier = 20f;
         private bool isInit;
         float baseZoom;
         float baseScale;
