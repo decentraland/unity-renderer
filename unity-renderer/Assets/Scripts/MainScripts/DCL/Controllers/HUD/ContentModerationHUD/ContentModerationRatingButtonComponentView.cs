@@ -29,7 +29,7 @@ namespace DCL.ContentModeration
             unselectedContainer.SetActive(!isSelected && !IsMarked);
 
             foreach (TMP_Text text in textsToColor)
-                text.color = isSelected || IsMarked ? selectedColor : unselectedColor;
+                text.color = IsMarked ? selectedColor : unselectedColor;
 
             backgroundImage.color = IsMarked ? backgroundMarkedColor : backgroundNormalColor;
         }
