@@ -12,8 +12,11 @@ namespace DCL.ContentModeration
         [SerializeField] private GameObject unselectedContainer;
         [SerializeField] private Color selectedColor;
         [SerializeField] private Color unselectedColor;
+        [SerializeField] private Color backgroundNormalColor;
+        [SerializeField] private Color backgroundMarkedColor;
         [SerializeField] private List<TMP_Text> textsToColor;
         [SerializeField] private GameObject currentMark;
+        [SerializeField] private Image backgroundImage;
 
         public Button RatingButton => ratingButton;
         public bool IsMarked { get; private set; }
@@ -22,11 +25,13 @@ namespace DCL.ContentModeration
 
         public void Select(bool isSelected)
         {
-            selectedContainer.SetActive(isSelected);
-            unselectedContainer.SetActive(!isSelected);
+            selectedContainer.SetActive(isSelected || IsMarked);
+            unselectedContainer.SetActive(!isSelected && !IsMarked);
 
             foreach (TMP_Text text in textsToColor)
-                text.color = isSelected ? selectedColor : unselectedColor;
+                text.color = isSelected || IsMarked ? selectedColor : unselectedColor;
+
+            backgroundImage.color = IsMarked ? backgroundMarkedColor : backgroundNormalColor;
         }
 
         public void SetCurrentMarkActive(bool isActive)

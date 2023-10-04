@@ -1228,10 +1228,13 @@ MonoBehaviour:
   unselectedContainer: {fileID: 6613392791276576500}
   selectedColor: {r: 0.21176472, g: 0.8313726, b: 0.1137255, a: 1}
   unselectedColor: {r: 0, g: 0, b: 0, a: 1}
+  backgroundNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundMarkedColor: {r: 0.88235295, g: 1, b: 0.8627451, a: 1}
   textsToColor:
   - {fileID: 554455150696115561}
   - {fileID: 2175340679856879859}
   currentMark: {fileID: 7353874786376071693}
+  backgroundImage: {fileID: 5125971934364990006}
 --- !u!1 &9040822276957754546
 GameObject:
   m_ObjectHideFlags: 0

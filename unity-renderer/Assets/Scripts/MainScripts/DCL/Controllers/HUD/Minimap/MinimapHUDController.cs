@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.ContentModeration;
+using DCL.Controllers;
 using DCL.Interface;
 using DCL.Tasks;
 using DCLServices.CopyPaste.Analytics;
@@ -33,6 +35,8 @@ public class MinimapHUDController : IHUD
     private readonly IPlacesAnalytics placesAnalytics;
     private readonly IClipboard clipboard;
     private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
+    private readonly DataStore_ContentModeration contentModerationDataStore;
+    private readonly IWorldState worldState;
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
@@ -43,6 +47,7 @@ public class MinimapHUDController : IHUD
     private IMapCameraController mapCameraController;
     private MapRendererTrackPlayerPosition mapRendererTrackPlayerPosition;
     private CancellationTokenSource retrievingFavoritesCts;
+    private SceneContentCategory currentContentCategory;
 
     private MinimapHUDModel model { get; set; } = new ();
 
@@ -53,7 +58,9 @@ public class MinimapHUDController : IHUD
         IPlacesAPIService placesAPIService,
         IPlacesAnalytics placesAnalytics,
         IClipboard clipboard,
-        ICopyPasteAnalyticsService copyPasteAnalyticsService)
+        ICopyPasteAnalyticsService copyPasteAnalyticsService,
+        DataStore_ContentModeration contentModerationDataStore,
+        IWorldState worldState)
     {
         minimapZoom.Set(1f);
         metadataController = minimapMetadataController;
@@ -63,11 +70,14 @@ public class MinimapHUDController : IHUD
         this.placesAnalytics = placesAnalytics;
         this.clipboard = clipboard;
         this.copyPasteAnalyticsService = copyPasteAnalyticsService;
+        this.contentModerationDataStore = contentModerationDataStore;
+        this.worldState = worldState;
 
         if (metadataController != null)
             metadataController.OnHomeChanged += SetNewHome;
 
         minimapVisible.OnChange += SetVisibility;
+        currentSceneNumber.OnChange += OnSceneNumberChanged;
     }
 
     protected virtual MinimapHUDView CreateView() =>
@@ -79,6 +89,7 @@ public class MinimapHUDController : IHUD
         view.SetReportSceneButtonActive(!isContentModerationFeatureEnabled);
         view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
         view.OnCopyLocationRequested += OnCopyLocationToClipboard;
+        view.contentModerationButton.OnContentModerationPressed += OpenContentModerationPanel;
         InitializeMapRenderer();
 
         OnPlayerCoordsChange(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
@@ -106,6 +117,8 @@ public class MinimapHUDController : IHUD
             metadataController.OnHomeChanged -= SetNewHome;
 
         minimapVisible.OnChange -= SetVisibility;
+        view.contentModerationButton.OnContentModerationPressed -= OpenContentModerationPanel;
+        currentSceneNumber.OnChange -= OnSceneNumberChanged;
     }
 
     private void InitializeMapRenderer()
@@ -300,5 +313,22 @@ public class MinimapHUDController : IHUD
         clipboard.WriteText($"{model.sceneName}: {model.playerPosition}");
         view.ShowLocationCopiedToast();
         copyPasteAnalyticsService.Copy("location");
+    }
+
+    private void OpenContentModerationPanel()
+    {
+        if (!isContentModerationFeatureEnabled)
+            return;
+
+        contentModerationDataStore.reportingScenePanelVisible.Set((!contentModerationDataStore.reportingScenePanelVisible.Get().isVisible, currentContentCategory));
+    }
+
+    private void OnSceneNumberChanged(int sceneNumber, int _)
+    {
+        if (!worldState.TryGetScene(sceneNumber, out IParcelScene currentParcelScene))
+            return;
+
+        currentContentCategory = currentParcelScene.contentCategory;
+        view.contentModerationButton.SetContentCategory(currentParcelScene.contentCategory);
     }
 }

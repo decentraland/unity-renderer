@@ -1,6 +1,5 @@
 ﻿using DCL.Controllers;
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,12 +7,11 @@ namespace DCL.ContentModeration
 {
     public class ContentModerationReportingButtonComponentView : BaseComponentView, IContentModerationReportingButtonComponentView
     {
-        [SerializeField] internal Button contentModerationButton;
-        [SerializeField] internal TMP_Text contentModerationRatingText;
-        [SerializeField] internal Image contentModerationRatingBackground;
-        [SerializeField] internal Color backgroundColorForTeen;
-        [SerializeField] internal Color backgroundColorForAdult;
-        [SerializeField] internal Color backgroundColorForRestricted;
+        [SerializeField] private Button contentModerationButton;
+        [SerializeField] private Image flagImage;
+        [SerializeField] private Sprite teenFlagIcon;
+        [SerializeField] private Sprite adultFlagIcon;
+        [SerializeField] private Sprite restrictedFlagIcon;
 
         public event Action OnContentModerationPressed;
 
@@ -36,17 +34,14 @@ namespace DCL.ContentModeration
             switch (contentCategory)
             {
                 case SceneContentCategory.ADULT:
-                    contentModerationRatingText.text = "A";
-                    contentModerationRatingBackground.color = backgroundColorForAdult;
+                    flagImage.sprite = adultFlagIcon;
                     break;
                 case SceneContentCategory.RESTRICTED:
-                    contentModerationRatingText.text = "R";
-                    contentModerationRatingBackground.color = backgroundColorForRestricted;
+                    flagImage.sprite = restrictedFlagIcon;
                     break;
                 case SceneContentCategory.TEEN:
                 default:
-                    contentModerationRatingText.text = "T";
-                    contentModerationRatingBackground.color = backgroundColorForTeen;
+                    flagImage.sprite = teenFlagIcon;
                     break;
             }
         }

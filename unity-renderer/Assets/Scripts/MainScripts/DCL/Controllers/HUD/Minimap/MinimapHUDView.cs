@@ -1,4 +1,5 @@
 using DCL;
+using DCL.ContentModeration;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using System;
 using TMPro;
@@ -23,6 +24,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] internal GameObject sceneOptionsPanel;
     [SerializeField] private ToggleComponentView toggleSceneUI;
     [SerializeField] internal Button reportSceneButton;
+    [SerializeField] internal ContentModerationReportingButtonComponentView contentModerationReportButton;
     [SerializeField] internal ToggleComponentView setHomeScene;
     [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
     [SerializeField] internal Image disableFavorite;
@@ -40,6 +42,8 @@ public class MinimapHUDView : MonoBehaviour
 
     [field: SerializeField]
     internal int mapRendererVisibleParcels { get; private set; }
+
+    internal IContentModerationReportingButtonComponentView contentModerationButton => contentModerationReportButton;
 
     public RectTransform mapViewport;
 
