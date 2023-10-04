@@ -9,7 +9,7 @@ using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
-    internal class ScenesOfInterestMarkersController : MapLayerControllerBase, IMapCullingListener<ISceneOfInterestMarker>, IMapLayerController
+    internal class ScenesOfInterestMarkersController : MapLayerControllerBase, IMapCullingListener<ISceneOfInterestMarker>, IMapLayerController, IZoomScalingLayer
     {
         internal const int PREWARM_PER_FRAME = 20;
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
@@ -130,6 +130,25 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         private static bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo) =>
             sceneInfo.name is EMPTY_PARCEL_NAME;
+
+        public void ApplyCameraZoom(float zoom)
+        {
+
+            foreach (ISceneOfInterestMarker marker in markers.Values)
+            {
+                marker.SetZoom(zoom);
+            }
+            // playerMarker.SetZoom(zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            foreach (var marker in markers.Values)
+            {
+                marker.ResetToBaseScale();
+            }
+            // playerMarker.ResetToBaseScale();
+        }
 
         public UniTask Disable(CancellationToken cancellationToken)
         {

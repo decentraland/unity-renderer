@@ -32,8 +32,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         }
 
         private bool isInit;
-        float baseZoom;
-        float baseScale;
+        private float baseZoom;
+        private float baseScale;
 
         public void SetZoom(float zoom)
         {
@@ -47,7 +47,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             }
             else
             {
-                float newScale = Math.Max((zoom/baseZoom) * baseScale, baseScale);
+                float newScale = Math.Max(zoom/baseZoom * baseScale, baseScale);
                 Debug.Log($" new Scale {newScale}");
 
                 markerObject.transform.localScale = new Vector3(newScale, newScale, 1f);

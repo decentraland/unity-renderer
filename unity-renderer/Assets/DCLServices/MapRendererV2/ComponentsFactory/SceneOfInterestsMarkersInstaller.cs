@@ -23,6 +23,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         public async UniTask Install(
             Dictionary<MapLayer, IMapLayerController> writer,
+            List<IZoomScalingLayer> zoomScalingWriter,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -56,6 +57,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             await controller.Initialize(cancellationToken);
             writer.Add(MapLayer.ScenesOfInterest, controller);
+            zoomScalingWriter.Add(controller);
         }
 
         private static ISceneOfInterestMarker CreateMarker(IUnityObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController) =>

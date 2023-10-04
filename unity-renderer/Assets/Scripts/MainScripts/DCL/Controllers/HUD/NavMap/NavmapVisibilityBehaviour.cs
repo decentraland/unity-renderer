@@ -173,7 +173,7 @@ namespace DCL
                     new MapCameraInput(
                         ACTIVE_MAP_LAYERS,
                         Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
-                        navmapZoomViewController.ResetZoom(zoomStep: 6),
+                        navmapZoomViewController.ResetZoom(zoomStep: 7),
                         rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
                         zoomView.zoomVerticalRange));
 

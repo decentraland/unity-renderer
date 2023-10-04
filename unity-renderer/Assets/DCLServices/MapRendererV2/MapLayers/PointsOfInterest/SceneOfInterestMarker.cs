@@ -1,8 +1,8 @@
 ﻿using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
@@ -42,6 +42,41 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         public void OnBecameInvisible()
         {
             poolableBehavior.OnBecameInvisible();
+        }
+
+        private bool isInit;
+        private float baseZoom;
+        private float baseScale;
+
+        public void SetZoom(float zoom)
+        {
+            if (!isInit)
+            {
+                baseZoom = zoom;
+                if(poolableBehavior.instance != null)
+                    baseScale = poolableBehavior.instance.transform.localScale.x;
+                else
+                {
+                    baseScale = 20;
+                }
+                isInit = true;
+
+                Debug.Log($" base Scale {baseScale}");
+            }
+            else
+            {
+                float newScale = Math.Max(zoom/baseZoom * baseScale, baseScale);
+                Debug.Log($" new Scale {newScale}");
+
+                if(poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(newScale);
+            }
+        }
+
+        public void ResetToBaseScale()
+        {
+            if(poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(baseScale);
         }
 
         public void Dispose()
