@@ -202,8 +202,9 @@ namespace DCLServices.MapRendererV2.Tests.UsersMarkers.ColdArea
         }
 
         [Test]
-        public void SetUpdateModeOnDisable()
+        public async Task SetUpdateModeOnDisable()
         {
+            await controller.Initialize(CancellationToken.None);
             var cts = new CancellationTokenSource();
 
             try
