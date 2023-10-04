@@ -44,6 +44,7 @@ public class NavmapSearchController : IDisposable
         this.playerPrefs = playerPrefs;
         this.navmapZoomViewController = navmapZoomViewController;
         this.toastViewController = toastViewController;
+        this.exploreV2Analytics = exploreV2Analytics;
 
         searchCts = new CancellationTokenSource();
         view.OnSelectedSearchBar += OnSelectedSearchbarChange;
@@ -100,8 +101,8 @@ public class NavmapSearchController : IDisposable
             resultsCoordinates.Add(Utils.ConvertStringToVector(place.base_position));
             resultsIds.Add(place.id);
         }
-        exploreV2Analytics.SendSearchPlaces(searchText, resultsCoordinates.ToArray(), resultsIds.ToArray(), ActionSource.FromNavmap);
         view.SetSearchResultRecords(searchPlaces.places);
+        exploreV2Analytics.SendSearchPlaces(searchText, resultsCoordinates.ToArray(), resultsIds.ToArray(), ActionSource.FromNavmap);
     }
 
     private void OnSelectedSearchbarChange(bool isSelected)
