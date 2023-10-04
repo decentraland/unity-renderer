@@ -7,7 +7,6 @@ namespace DCLServices.MapRendererV2
     public interface IMapRenderer : IService
     {
         IMapCameraController RentCamera(in MapCameraInput cameraInput);
-        void ToggleLayer(MapLayer mask, bool isActive);
         void SetSharedLayer(MapLayer mask, bool active);
     }
 }

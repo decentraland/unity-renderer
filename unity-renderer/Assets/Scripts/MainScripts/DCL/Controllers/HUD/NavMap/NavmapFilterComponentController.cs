@@ -31,7 +31,7 @@ public class NavmapFilterComponentController : IDisposable
 
     private void ToggleLayer(MapLayer layerName, bool isActive)
     {
-        mapRenderer.Ref.ToggleLayer(layerName, isActive);
+        mapRenderer.Ref.SetSharedLayer(layerName, isActive);
         exploreV2Analytics.SendToggleMapLayer(layerName.ToString(), isActive);
     }
 

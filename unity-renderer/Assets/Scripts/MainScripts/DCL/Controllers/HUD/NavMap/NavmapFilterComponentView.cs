@@ -67,7 +67,7 @@ public class NavmapFilterComponentView : BaseComponentView, INavmapFilterCompone
     public override void Dispose()
     {
         base.Dispose();
-        
+
         filterButton.onClick.RemoveAllListeners();
         closeButtonArea.onClick.RemoveAllListeners();
         infoButton.onClick.RemoveAllListeners();

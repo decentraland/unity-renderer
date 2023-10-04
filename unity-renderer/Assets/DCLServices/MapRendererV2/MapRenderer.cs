@@ -167,25 +167,6 @@ namespace DCLServices.MapRendererV2
             }
         }
 
-        public void ToggleLayer(MapLayer mask, bool isActive)
-        {
-            foreach (MapLayer mapLayer in ALL_LAYERS)
-            {
-                if (EnumUtils.HasFlag(mask, mapLayer)
-                    && layers.TryGetValue(mapLayer, out var mapLayerStatus))
-                {
-                    if (isActive)
-                    {
-                        mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
-                    else
-                    {
-                        mapLayerStatus.MapLayerController.Disable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
-                    }
-                }
-            }
-        }
-
         private void ResetCancellationSource(MapLayerStatus mapLayerStatus)
         {
             if (mapLayerStatus.CTS != null)
