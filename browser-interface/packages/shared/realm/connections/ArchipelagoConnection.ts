@@ -11,7 +11,6 @@ import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
-import { commsLogger } from 'shared/comms/logger'
 
 // shared writer to leverage pools
 const writer = new Writer()
