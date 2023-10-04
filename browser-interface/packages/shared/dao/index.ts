@@ -156,15 +156,16 @@ export async function resolveRealmAboutFromBaseUrl(
 
   let about = res.result!
 
-  if (isDclEns(realmString) && !about.lambdas?.publicKey) {
-    if (res.result.lambdas) {
-      const aboutFromLambdas = await checkValidRealm(res.result.lambdas.publicUrl.replace('/lambdas', ''));
-      about = {
-        ... about,
-        lambdas: {
-          ...about.lambdas!,
-          publicKey: aboutFromLambdas?.result?.lambdas?.publicKey
-        }
+  // for worlds, the publicKey is not available in the about response
+  // to get the publicKey, query the about from the lambdas url
+  // publicKey is necessary to make impostor checks
+  if (isDclEns(realmString) && about.lambdas && !about.lambdas?.publicKey) {
+    const aboutFromLambdas = await checkValidRealm(about.lambdas.publicUrl.replace('/lambdas', ''));
+    about = {
+      ... about,
+      lambdas: {
+        ...about.lambdas!,
+        publicKey: aboutFromLambdas?.result?.lambdas?.publicKey
       }
     }
   }
