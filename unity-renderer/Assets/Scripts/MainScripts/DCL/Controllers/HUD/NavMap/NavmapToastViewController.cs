@@ -5,6 +5,8 @@ using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
 using MainScripts.DCL.Controllers.HotScenes;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -30,6 +32,7 @@ namespace DCL
 
         private string placeId;
         private string placeName;
+        private IReadOnlyList<string> allPointOfInterest;
 
         public NavmapToastViewController(
             MinimapMetadata minimapMetadata,
@@ -59,6 +62,12 @@ namespace DCL
             this.placeCardModal.OnVoteChanged += ChangeVote;
             this.placeCardModal.onJumpInClick.RemoveAllListeners();
             this.placeCardModal.onJumpInClick.AddListener(() => JumpIn(currentParcel.x, currentParcel.y));
+            RequestAllPOIs().Forget();
+        }
+
+        private async UniTaskVoid RequestAllPOIs()
+        {
+            allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(CancellationToken.None);
         }
 
         private void EnablePlaceCardModal() =>
@@ -202,6 +211,7 @@ namespace DCL
             placeCardModal.SetTotalVotes(place.likes + place.dislikes);
             placeCardModal.SetFavoriteButton(place.user_favorite, place.id);
             placeCardModal.SetVoteButtons(place.user_like, place.user_dislike);
+            placeCardModal.SetIsPOI(allPointOfInterest.Contains(place.base_position));
         }
 
         private void OnFavoriteToggleClicked(string uuid, bool isFavorite)
