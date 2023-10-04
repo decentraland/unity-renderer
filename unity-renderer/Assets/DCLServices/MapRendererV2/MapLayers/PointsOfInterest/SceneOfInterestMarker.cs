@@ -55,13 +55,13 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
             float newScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
 
             if (poolableBehavior.instance != null)
-                poolableBehavior.instance.SetScale(newScale);
+                poolableBehavior.instance.SetScale(baseScale, newScale);
         }
 
         public void ResetScale(float scale)
         {
             if (poolableBehavior.instance != null)
-                poolableBehavior.instance.SetScale(scale);
+                poolableBehavior.instance.SetScale(scale, scale);
         }
     }
 }

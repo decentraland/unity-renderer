@@ -79,7 +79,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
                 sceneOfInterestsMarkersInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
                 playerMarkerInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
                 homePointMarkerInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, cancellationToken),
-                favoritesMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, Environment.i.serviceLocator.Get<IPlacesAPIService>(), cancellationToken),
+                favoritesMarkersInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, Environment.i.serviceLocator.Get<IPlacesAPIService>(), cancellationToken),
                 hotUsersMarkersInstaller.Install(layers, configuration, coordsUtils, cullingController, cancellationToken),
                 friendUsersMarkersInstaller.Install(layers, zoomScalingLayers, configuration, coordsUtils, cullingController, new UserProfileWebInterfaceBridge(), Environment.i.serviceLocator.Get<IFriendsController>(), cancellationToken)
                 /* List of other creators that can be executed in parallel */);

@@ -13,5 +13,9 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
         void TrackPlayer(Player player);
         void SetProfilePicture(string url);
         void SetPlayerName(string name);
+
+        void SetZoom(float baseScale, float baseZoom, float zoom);
+
+        void ResetScale(float scale);
     }
 }

@@ -1,6 +1,7 @@
 using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.Favorites
@@ -41,6 +42,20 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
         public void OnBecameInvisible()
         {
             poolableBehavior.OnBecameInvisible();
+        }
+
+        public void SetZoom(float baseScale, float baseZoom, float zoom)
+        {
+            float newScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(baseScale, newScale);
+        }
+
+        public void ResetScale(float scale)
+        {
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(scale, scale);
         }
 
         public void Dispose()
