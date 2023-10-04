@@ -13,7 +13,7 @@ import type { PortContext } from './context'
 import * as codegen from '@dcl/rpc/dist/codegen'
 
 import { PortableExperiencesServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/portable_experiences.gen'
-import { isDclEns, isEns } from '../../realm/resolver'
+import { isEns } from '../../realm/resolver'
 
 export function registerPortableExperiencesServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, PortableExperiencesServiceDefinition, async () => ({
@@ -30,7 +30,7 @@ export function registerPortableExperiencesServiceServerImplementation(port: Rpc
         return px
       }
       // Load via Worlds ENS url
-      if (!isEns(req.ens) && !isDclEns(req.ens)) throw new Error('Invalid ens name')
+      if (!isEns(req.ens)) throw new Error('Invalid ens name')
       const px = await spawnPortableExperienceFromEns(req.ens, ctx.sceneData.id)
       return { ...px, ens: req.ens }
     },
