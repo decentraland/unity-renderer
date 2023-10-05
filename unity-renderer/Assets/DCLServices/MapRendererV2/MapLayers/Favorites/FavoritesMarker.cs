@@ -60,6 +60,8 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
 
         public void ResetScale(float scale)
         {
+            currentNewScale = scale;
+
             if (poolableBehavior.instance != null)
                 poolableBehavior.instance.SetScale(scale, scale);
         }

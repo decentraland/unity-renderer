@@ -5,7 +5,6 @@ using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {

@@ -117,11 +117,12 @@ namespace DCLServices.MapRendererV2
         {
             mapCameraController.OnReleasing -= ReleaseCamera;
             mapCameraController.ZoomChanged -= OnCameraZoomChanged;
-            DisableLayers(mapCameraController.EnabledLayers);
-            mapCameraPool.Release(mapCameraController);
 
             foreach (IZoomScalingLayer layer in zoomScalingLayers)
                 layer.ResetToBaseScale();
+
+            DisableLayers(mapCameraController.EnabledLayers);
+            mapCameraPool.Release(mapCameraController);
         }
 
         private void OnCameraZoomChanged(float baseZoom, float newZoom)
