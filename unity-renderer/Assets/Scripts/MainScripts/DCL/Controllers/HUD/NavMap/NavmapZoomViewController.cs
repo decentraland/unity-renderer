@@ -97,9 +97,9 @@ namespace DCL
             }
         }
 
-        public float ResetZoom(int zoomStep)
+        public float ResetZoomToMidValue()
         {
-            SetZoomLevel(Math.Clamp(zoomStep, 0, zoomSteps - 1));
+            SetZoomLevel(Mathf.FloorToInt((zoomSteps - 1) / 2f));
             return targetNormalizedZoom;
         }
 
