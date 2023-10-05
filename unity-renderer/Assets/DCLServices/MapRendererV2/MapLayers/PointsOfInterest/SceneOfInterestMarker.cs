@@ -13,6 +13,8 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         private readonly IMapCullingController cullingController;
 
         private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;
+        private float currentBaseScale;
+        private float currentNewScale;
 
         public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
@@ -43,6 +45,9 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         public void OnBecameVisible()
         {
             poolableBehavior.OnBecameVisible().title.text = title;
+
+            if(currentBaseScale != 0)
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
         }
 
         public void OnBecameInvisible()
@@ -52,10 +57,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         public void SetZoom(float baseScale, float baseZoom, float zoom)
         {
-            float newScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+            currentBaseScale = baseScale;
+            currentNewScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
 
             if (poolableBehavior.instance != null)
-                poolableBehavior.instance.SetScale(baseScale, newScale);
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
         }
 
         public void ResetScale(float scale)
