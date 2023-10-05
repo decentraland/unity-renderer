@@ -59,6 +59,8 @@ namespace DCL.ContentModeration
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
             CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
+            UpdateSceneNameByCoords(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
+            CommonScriptableObjects.playerCoords.OnChange += UpdateSceneNameByCoords;
             adultContentSceneWarningComponentView.OnGoToSettingsClicked += OnGoToSettingsPanelClicked;
             contentModerationDataStore.adultContentAgeConfirmationVisible.OnChange += OnAdultContentAgeConfirmationVisible;
             adultContentAgeConfirmationComponentView.OnConfirmClicked += OnAgeConfirmationAccepted;
@@ -73,6 +75,7 @@ namespace DCL.ContentModeration
         public void Dispose()
         {
             CommonScriptableObjects.sceneNumber.OnChange -= OnSceneNumberChanged;
+            CommonScriptableObjects.playerCoords.OnChange -= UpdateSceneNameByCoords;
             adultContentSceneWarningComponentView.OnGoToSettingsClicked -= OnGoToSettingsPanelClicked;
             contentModerationDataStore.adultContentAgeConfirmationVisible.OnChange -= OnAdultContentAgeConfirmationVisible;
             adultContentAgeConfirmationComponentView.OnConfirmClicked -= OnAgeConfirmationAccepted;
@@ -109,6 +112,15 @@ namespace DCL.ContentModeration
             }
 
             currentPlaceId = currentParcelScene.associatedPlaceId;
+            UpdateSceneNameByCoords(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
+        }
+
+        private void UpdateSceneNameByCoords(Vector2Int playerCoords, Vector2Int _)
+        {
+            MinimapMetadata.MinimapSceneInfo sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(playerCoords.x, playerCoords.y);
+
+            if (sceneInfo != null)
+                contentModerationReportingComponentView.SetScene(sceneInfo.name);
         }
 
         private void OnGoToSettingsPanelClicked()
@@ -174,14 +186,11 @@ namespace DCL.ContentModeration
 
         private void OnContentModerationReportingSendClicked((SceneContentCategory contentCategory, List<string> issues, string comments) report)
         {
-            if (!worldState.TryGetScene(CommonScriptableObjects.sceneNumber.Get(), out IParcelScene currentParcelScene))
-                return;
-
             reportPlaceCts = reportPlaceCts.SafeRestart();
             SendReportAsync(
                     new PlaceContentReportPayload
                     {
-                        placeId = "e0d0fc69-1628-4a2e-914a-ad76d681528b",//currentParcelScene.associatedPlaceId, // TODO (Santi): Uncomment this and remove the hardcoded id!! Test places for .zone: e0d0fc69-1628-4a2e-914a-ad76d681528b, f8f2d59b-0755-47c3-88ac-b117f697d251
+                        placeId = "e0d0fc69-1628-4a2e-914a-ad76d681528b",//currentPlaceId, // TODO (Santi): Uncomment this and remove the hardcoded id!! Test places for .zone: e0d0fc69-1628-4a2e-914a-ad76d681528b, f8f2d59b-0755-47c3-88ac-b117f697d251
                         guest = userProfileBridge.GetOwn().isGuest,
                         coordinates = $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}",
                         rating = report.contentCategory switch

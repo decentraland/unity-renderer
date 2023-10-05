@@ -10,6 +10,7 @@ namespace DCL.ContentModeration
     public class ContentModerationReportingComponentView : BaseComponentView, IContentModerationReportingComponentView
     {
         [Header("REFERENCES")]
+        [SerializeField] private TMP_Text titleText;
         [SerializeField] private Button backgroundButton;
         [SerializeField] private ButtonComponentView cancelButton;
         [SerializeField] private ButtonComponentView gotItButton1;
@@ -63,11 +64,13 @@ namespace DCL.ContentModeration
         private readonly List<ContentModerationReportingOptionComponentView> teenOptionButtons = new ();
         private readonly List<ContentModerationReportingOptionComponentView> adultOptionButtons = new ();
         private readonly List<ContentModerationReportingOptionComponentView> restrictedOptionButtons = new ();
+        private SceneContentCategory currentMarkedRating;
         private SceneContentCategory currentRating;
         private readonly List<string> selectedOptions = new ();
         private TMP_InputField commentsInput;
         private TMP_Text sendButtonText;
         private bool isLoadingActive;
+        private string currentSceneName;
 
         public event Action<bool> OnPanelClosed;
         public event Action<(SceneContentCategory contentCategory, List<string> issues, string comments)> OnSendClicked;
@@ -125,8 +128,13 @@ namespace DCL.ContentModeration
             OnPanelClosed?.Invoke(isCancelled);
         }
 
+        public void SetScene(string sceneName) =>
+            currentSceneName = sceneName;
+
         public void SetRatingAsMarked(SceneContentCategory contentCategory)
         {
+            currentMarkedRating = contentCategory;
+
             modalHeaderImage.sprite = contentCategory switch
                                       {
                                           SceneContentCategory.TEEN => teenHeaderSprite,
@@ -191,6 +199,7 @@ namespace DCL.ContentModeration
                 option.SetActive((int)contentCategory == 2);
 
             ResetOptions();
+            SetTitle();
         }
 
         public void SetLoadingState(bool isLoading)
@@ -283,6 +292,13 @@ namespace DCL.ContentModeration
             optionsScroll.verticalNormalizedPosition = 1f;
             commentsInput.text = string.Empty;
             SetSendButtonInteractable(false);
+        }
+
+        private void SetTitle()
+        {
+            titleText.text = currentMarkedRating == currentRating
+                ? $"{currentSceneName} has been rated as"
+                : $"Flag {currentSceneName} for Rating Review";
         }
 
         private void SetSendButtonInteractable(bool isInteractable)

@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DCL;
-using DCL.ContentModeration;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Tasks;

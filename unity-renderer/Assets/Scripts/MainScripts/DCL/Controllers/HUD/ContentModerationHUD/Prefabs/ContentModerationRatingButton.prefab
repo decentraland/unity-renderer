@@ -386,7 +386,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7363614736522659558
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1087,8 +1087,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1306,9 +1306,18 @@ MonoBehaviour:
   unselectedColor: {r: 0, g: 0, b: 0, a: 1}
   backgroundNormalColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundMarkedColor: {r: 0.88235295, g: 1, b: 0.8627451, a: 1}
-  textsToColor:
+  texts:
   - {fileID: 554455150696115561}
   - {fileID: 2175340679856879859}
+  imagesToColor:
+  - {fileID: 1369406117183103517}
+  - {fileID: 3828876219575111320}
+  - {fileID: 1880267362873120269}
+  - {fileID: 4497072982614296016}
+  - {fileID: 7616867577748406421}
+  - {fileID: 7870997744650851063}
+  - {fileID: 6359209119974604462}
+  - {fileID: 4139505984705583015}
   currentMark: {fileID: 3873457562753268175}
   backgroundImage: {fileID: 5125971934364990006}
 --- !u!1 &9040822276957754546

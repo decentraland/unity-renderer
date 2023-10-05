@@ -14,24 +14,33 @@ namespace DCL.ContentModeration
         [SerializeField] private Color unselectedColor;
         [SerializeField] private Color backgroundNormalColor;
         [SerializeField] private Color backgroundMarkedColor;
-        [SerializeField] private List<TMP_Text> textsToColor;
+        [SerializeField] private List<TMP_Text> texts;
+        [SerializeField] private List<Image> imagesToColor;
         [SerializeField] private GameObject currentMark;
         [SerializeField] private Image backgroundImage;
 
         public Button RatingButton => ratingButton;
         public bool IsMarked { get; private set; }
 
+        public override void Awake()
+        {
+            base.Awake();
+
+            foreach (Image image in imagesToColor)
+                image.color = selectedColor;
+        }
+
         public override void RefreshControl() { }
 
         public void Select(bool isSelected)
         {
-            selectedContainer.SetActive(isSelected || IsMarked);
-            unselectedContainer.SetActive(!isSelected && !IsMarked);
+            selectedContainer.SetActive(isSelected);
+            unselectedContainer.SetActive(!isSelected);
 
-            foreach (TMP_Text text in textsToColor)
+            foreach (TMP_Text text in texts)
                 text.color = IsMarked ? selectedColor : unselectedColor;
 
-            backgroundImage.color = IsMarked ? backgroundMarkedColor : backgroundNormalColor;
+            backgroundImage.color = IsMarked && isSelected ? backgroundMarkedColor : backgroundNormalColor;
         }
 
         public void SetCurrentMarkActive(bool isActive)
