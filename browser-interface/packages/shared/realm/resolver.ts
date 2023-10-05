@@ -71,8 +71,8 @@ export function prettyRealmName(realm: string, candidates: Candidate[]) {
   return realm
 }
 
-export function isDclEns(str: string | undefined): str is `${string}.dcl.eth` {
-  return !!str?.match(/^[a-zA-Z0-9]+\.dcl\.eth$/)?.length
+export function isEns(str: string | undefined): str is `${string}.eth` {
+  return !!str?.match(/^[a-zA-Z0-9.]+\.eth$/)?.length
 }
 
 export function dclWorldUrl(dclName: string) {
@@ -86,7 +86,7 @@ export function realmToConnectionString(realm: IRealmAdapter) {
     return realmName
   }
 
-  if (isDclEns(realmName) && realm.baseUrl === dclWorldUrl(realmName)) {
+  if (isEns(realmName) && realm.baseUrl === dclWorldUrl(realmName)) {
     return realmName
   }
 
@@ -105,7 +105,7 @@ export function resolveRealmBaseUrlFromRealmQueryParameter(realmString: string, 
     }
   }
 
-  if (isDclEns(realmString)) {
+  if (isEns(realmString)) {
     return dclWorldUrl(realmString)
   }
 
