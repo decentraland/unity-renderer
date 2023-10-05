@@ -6,8 +6,8 @@ import {BringDownClientAndReportFatalError, ErrorContext} from 'shared/loading/R
 import {getCurrentIdentity, getCurrentNetwork} from 'shared/session/selectors'
 import type {ExplorerIdentity} from 'shared/session/types'
 import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
-import {profileRequest, profileSuccess, saveProfileDelta} from '../actions'
-import {fetchProfileFromCatalyst} from './fetchProfile'
+import {invalidateProfileHash, profileRequest, profileSuccess, saveProfileDelta} from '../actions'
+import {fetchProfile} from './fetchProfile'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
 import {fetchLocalProfile} from "./local";
 
@@ -16,12 +16,13 @@ export function* initialRemoteProfileLoad() {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
+  // force to retrieve profile hashes on next profile request
+  invalidateProfileHash(userId)
+
   let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
     profile = yield call(
-      // force fetching from catalyst initially so hashes are set for impostor checking
-      // also ensures that the initial profile has consistent data
-      fetchProfileFromCatalyst,
+      fetchProfile,
       profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
     )
   } catch (e: any) {
