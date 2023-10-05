@@ -43,7 +43,6 @@ namespace DCLServices.MapRendererV2
         private IObjectPool<IMapCameraControllerInternal> mapCameraPool;
 
         internal IMapCullingController cullingController { get; private set; }
-        private float currentBaseZoom;
 
         public MapRenderer(IMapRendererComponentsFactory componentsFactory)
         {
@@ -107,11 +106,9 @@ namespace DCLServices.MapRendererV2
             EnableLayers(cameraInput.EnabledLayers);
             IMapCameraControllerInternal mapCameraController = mapCameraPool.Get();
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
-            mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
             mapCameraController.OnReleasing += ReleaseCamera;
             mapCameraController.ZoomChanged += OnCameraZoomChanged;
-
-            currentBaseZoom = mapCameraController.Camera.orthographicSize;
+            mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
 
             return mapCameraController;
         }
@@ -127,10 +124,10 @@ namespace DCLServices.MapRendererV2
                 layer.ResetToBaseScale();
         }
 
-        private void OnCameraZoomChanged(float zoom)
+        private void OnCameraZoomChanged(float baseZoom, float newZoom)
         {
             foreach (IZoomScalingLayer layer in zoomScalingLayers)
-                layer.ApplyCameraZoom(currentBaseZoom, zoom);
+                layer.ApplyCameraZoom(baseZoom, newZoom);
         }
 
         public void SetSharedLayer(MapLayer mask, bool active)

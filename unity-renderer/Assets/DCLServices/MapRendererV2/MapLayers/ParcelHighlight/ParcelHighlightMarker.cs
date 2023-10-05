@@ -15,6 +15,11 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
             Deactivate();
         }
 
+        public void Dispose()
+        {
+            Utils.SafeDestroy(obj.gameObject);
+        }
+
         public void SetCoordinates(Vector2Int coords, Vector3 position)
         {
             obj.text.text = $"{coords.x}, {coords.y}";
@@ -28,17 +33,13 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
 
         public void Deactivate()
         {
-            obj.gameObject.SetActive(false);
+            if (obj != null && obj.gameObject != null)
+                obj.gameObject.SetActive(false);
         }
 
         public void SetZoom(float baseZoom, float newZoom)
         {
             obj.SetScale(baseZoom, newZoom);
-        }
-
-        public void Dispose()
-        {
-            Utils.SafeDestroy(obj.gameObject);
         }
     }
 }
