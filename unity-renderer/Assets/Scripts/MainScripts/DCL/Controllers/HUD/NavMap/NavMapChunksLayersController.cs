@@ -1,6 +1,7 @@
 ﻿using DCL.Helpers;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.MapLayers;
+using ExploreV2Analytics;
 using System;
 using UnityEngine;
 using Application = UnityEngine.Device.Application;
@@ -11,11 +12,13 @@ namespace DCL
     {
         private const string GENESIS_CITY_URL = "https://genesis.city/";
         private readonly NavMapChunksLayersView view;
+        private readonly IExploreV2Analytics exploreV2Analytics;
         private readonly IMapRenderer mapRender;
 
-        public NavMapChunksLayersController(NavMapChunksLayersView view)
+        public NavMapChunksLayersController(NavMapChunksLayersView view, IExploreV2Analytics exploreV2Analytics)
         {
             this.view = view;
+            this.exploreV2Analytics = exploreV2Analytics;
 
             this.view.ParcelsButtonClicked += EnableParcelsViewMode;
             this.view.SatelliteButtonClicked += EnableSatelliteViewMode;
@@ -39,6 +42,8 @@ namespace DCL
 
             mapRender.SetSharedLayer(MapLayer.SatelliteAtlas, true);
             mapRender.SetSharedLayer(MapLayer.ParcelsAtlas, false);
+
+            exploreV2Analytics.SendToggleMapLayer(MapLayer.SatelliteAtlas.ToString(), true);
         }
 
         private void EnableParcelsViewMode()
@@ -47,9 +52,14 @@ namespace DCL
 
             mapRender.SetSharedLayer(MapLayer.ParcelsAtlas, true);
             mapRender.SetSharedLayer(MapLayer.SatelliteAtlas, false);
+
+            exploreV2Analytics.SendToggleMapLayer(MapLayer.ParcelsAtlas.ToString(), true);
         }
 
-        private static void OpenGenesisCityLink() =>
+        private void OpenGenesisCityLink()
+        {
+            exploreV2Analytics.SendOpenGenesisCityUrl();
             Application.OpenURL(GENESIS_CITY_URL);
+        }
     }
 }
