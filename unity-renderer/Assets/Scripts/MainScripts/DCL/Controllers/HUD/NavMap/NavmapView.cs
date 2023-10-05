@@ -52,7 +52,8 @@ namespace DCL
                 Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(),
                 new PlacesAnalytics(),
                 placeCardModal,
-                exploreV2Analytics);
+                exploreV2Analytics,
+                new WebInterfaceBrowserBridge());
             navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);

@@ -6,6 +6,8 @@ public interface IPlaceCardComponentView
 {
     event Action<string, bool?> OnVoteChanged;
     event Action<string, bool> OnFavoriteChanged;
+    event Action<Vector2Int> OnPressedLinkCopy;
+    event Action<Vector2Int, string> OnPressedTwitterButton;
 
     IFriendTrackerHandler friendsHandler { get; set; }
 

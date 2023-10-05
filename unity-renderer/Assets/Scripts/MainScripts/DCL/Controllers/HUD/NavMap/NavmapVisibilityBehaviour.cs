@@ -1,3 +1,4 @@
+using DCL.Browser;
 using System;
 using DCL.Helpers;
 using DCLServices.MapRendererV2;
@@ -33,6 +34,8 @@ namespace DCL
         private readonly NavMapChunksLayersController chunksLayerController;
         private readonly MapCameraDragBehavior mapCameraDragBehavior;
         private readonly NavMapChunksLayersView chunksLayersView;
+        private readonly IExploreV2Analytics exploreV2Analytics;
+        private readonly IBrowserBridge browserBridge;
 
         private Service<IMapRenderer> mapRenderer;
 
@@ -54,7 +57,8 @@ namespace DCL
             IPlacesAPIService placesAPIService,
             IPlacesAnalytics placesAnalytics,
             IPlaceCardComponentView placeCardModal,
-            IExploreV2Analytics exploreV2Analytics)
+            IExploreV2Analytics exploreV2Analytics,
+            IBrowserBridge browserBridge)
         {
             this.featureFlagsFlags = featureFlagsFlags;
 
@@ -63,11 +67,13 @@ namespace DCL
             this.zoomView = zoomView;
             this.rendererConfiguration = rendererConfiguration;
             this.placeCardModal = placeCardModal;
+            this.exploreV2Analytics = exploreV2Analytics;
+            this.browserBridge = browserBridge;
 
             DataStore.i.exploreV2.isOpen.OnChange += OnExploreOpenChanged;
             navmapVisible.OnChange += OnNavmapVisibilityChanged;
 
-            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics, this.placeCardModal, exploreV2Analytics);
+            navmapToastViewController = new NavmapToastViewController(MinimapMetadata.GetMetadata(), toastView, rendererConfiguration.RenderImage, placesAPIService, placesAnalytics, this.placeCardModal, exploreV2Analytics, browserBridge);
             navmapZoomViewController = new NavmapZoomViewController(zoomView, featureFlagsFlags);
             locationControlsController = new NavMapLocationControlsController(locationControlsView, exploreV2Analytics, navmapZoomViewController, navmapToastViewController, DataStore.i.HUDs.homePoint, DataStore.i.player.playerWorldPosition);
 

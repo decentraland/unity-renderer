@@ -39,6 +39,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal ButtonComponentView infoButton;
     [SerializeField] internal ButtonComponentView upvoteButton;
     [SerializeField] internal ButtonComponentView downvoteButton;
+    [SerializeField] internal Button shareButton;
     [SerializeField] internal GameObject upvoteOff;
     [SerializeField] internal GameObject upvoteOn;
     [SerializeField] internal GameObject downvoteOff;
@@ -58,6 +59,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal TMP_Text numberOfFavoritesText;
     [SerializeField] internal TMP_Text updatedAtText;
     [SerializeField] internal ScrollRect scroll;
+    [SerializeField] internal PlaceCopyContextualMenu placeCopyContextualMenu;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -77,6 +79,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private bool thumbnailFromMarketPlaceRequested;
     public event Action<string, bool?> OnVoteChanged;
+    public event Action<Vector2Int> OnPressedLinkCopy;
+    public event Action<Vector2Int, string> OnPressedTwitterButton;
 
     public override void Awake()
     {
@@ -103,7 +107,31 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         if(downvoteButton != null)
             downvoteButton.onClick.AddListener(() => ChangeVote(false));
 
+        if(shareButton != null)
+            shareButton.onClick.AddListener(()=>ToggleContextMenu());
+
+        if (placeCopyContextualMenu != null)
+            placeCopyContextualMenu.OnTwitter += ClickedTwitter;
+
+        if (placeCopyContextualMenu != null)
+            placeCopyContextualMenu.OnPlaceLinkCopied += CopiedLink;
+
         CleanFriendHeadsItems();
+    }
+
+    private void ToggleContextMenu()
+    {
+        placeCopyContextualMenu.Show();
+    }
+
+    private void CopiedLink()
+    {
+        OnPressedLinkCopy?.Invoke(model.coords);
+    }
+
+    private void ClickedTwitter()
+    {
+        OnPressedTwitterButton?.Invoke(model.coords, model.placeInfo.title);
     }
 
     private void ChangeVote(bool upvote)
@@ -359,6 +387,12 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if(favoriteButton != null)
             favoriteButton.OnFavoriteChange -= FavoriteValueChanged;
+
+        if (placeCopyContextualMenu != null)
+            placeCopyContextualMenu.OnTwitter -= ClickedTwitter;
+
+        if (placeCopyContextualMenu != null)
+            placeCopyContextualMenu.OnPlaceLinkCopied -= CopiedLink;
     }
 
     private void ShowFavoriteButton(bool show)
