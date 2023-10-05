@@ -110,32 +110,6 @@ namespace Tests
             yield return null;
         }
 
-        [Test]
-        public void ReactToPlayerCoordsChange()
-        {
-            const string sceneName = "SCENE_NAME";
-            MinimapMetadata.GetMetadata()
-                .AddSceneInfo(
-                    new MinimapMetadata.MinimapSceneInfo
-                    {
-                        parcels = new List<Vector2Int>
-                        {
-                            new Vector2Int(-77, -77)
-                        },
-                        name = sceneName
-                    });
-            CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
-            Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
-            Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);
-        }
-
-        [Test]
-        public void DisplaySceneDataWhenInitialize()
-        {
-            Assert.AreEqual(INITIAL_SCENE_NAME, navmapView.currentSceneNameText.text);
-            Assert.AreEqual("0,0", navmapView.currentSceneCoordsText.text);
-        }
-
         private class WebInterfaceMinimapApiBridgeMock : WebInterfaceMinimapApiBridge
         {
             public MinimapMetadata.MinimapSceneInfo[] ScenesInformationResult { get; set; }

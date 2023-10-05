@@ -199,14 +199,7 @@ namespace DCL
 
             // Map
             result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
-
-            const int ATLAS_CHUNK_SIZE = 1020;
-            const int PARCEL_SIZE = 20;
-
-            // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
-            const float CULLING_BOUNDS_IN_PARCELS = 10;
-
-            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory(PARCEL_SIZE, ATLAS_CHUNK_SIZE, CULLING_BOUNDS_IN_PARCELS)));
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory()));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));

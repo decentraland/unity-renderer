@@ -75,7 +75,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     public event Action<IHotScenesController.PlaceInfo> OnJumpInClicked;
     public event Action<string, bool?> OnVoteChanged;
     public event Action<string, bool> OnFavoriteClicked;
-    public event Action<FriendsHandler> OnFriendHandlerAdded;
+    public event Action<IFriendTrackerHandler> OnFriendHandlerAdded;
     public event Action OnPlacesSubSectionEnable;
     public event Action OnFilterChanged;
     public event Action OnSortingChanged;

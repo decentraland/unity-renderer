@@ -192,6 +192,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87c2ea01f3aa94b648d225daa8b22214
+    m_Address: Rarity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 44dd7b11a83bf4605916ad96f6ce3881
     m_Address: MenuButton
     m_ReadOnly: 0
@@ -1344,6 +1349,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f89f754c892ba4e8faa6b3390ff07e16
     m_Address: CursorInteractive
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9440a54c9ef22324ebdbd9239d2e6021
+    m_Address: RarityCornerEmotes
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

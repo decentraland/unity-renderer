@@ -43,7 +43,7 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     /// <summary>
     /// It will be triggered when a new friend handler is added by a place card.
     /// </summary>
-    event Action<FriendsHandler> OnFriendHandlerAdded;
+    event Action<IFriendTrackerHandler> OnFriendHandlerAdded;
 
     /// <summary>
     /// It will be triggered each time the view is enabled.

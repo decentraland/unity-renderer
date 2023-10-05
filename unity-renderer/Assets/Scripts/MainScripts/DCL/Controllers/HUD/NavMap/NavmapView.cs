@@ -1,28 +1,29 @@
-﻿using Cysharp.Threading.Tasks;
-using DCL.Helpers;
+using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Map;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
-using System;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        [Header("TEXT")]
-        [SerializeField] internal TextMeshProUGUI currentSceneNameText;
-        [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapSearchComponentView searchView;
+        [SerializeField] internal NavmapFilterComponentView filterView;
+        [SerializeField] internal GameObject placeCardModalParent;
 
         [Space]
         [SerializeField] internal NavmapToastView toastView;
         [SerializeField] private NavMapLocationControlsView locationControlsView;
         [SerializeField] private NavmapZoomView zoomView;
+        [SerializeField] private NavMapChunksLayersView chunksLayersView;
 
+        [Space]
         [SerializeField] private NavmapRendererConfiguration navmapRendererConfiguration;
+
+        private IPlaceCardComponentView placeCardModal;
 
         internal NavmapVisibilityBehaviour navmapVisibilityBehaviour;
 
@@ -31,13 +32,29 @@ namespace DCL
 
         private RectTransform RectTransform => rectTransform ??= transform as RectTransform;
         private BaseVariable<Transform> configureMapInFullscreenMenu => DataStore.i.exploreV2.configureMapInFullscreenMenu;
-        private NavmapSearchController navmapSearchController;
+        private NavmapFilterComponentController navmapFilterComponentController;
 
         private void Start()
         {
-            navmapSearchController = new NavmapSearchController(searchView, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new DefaultPlayerPrefs());
-            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(DataStore.i.featureFlags.flags, DataStore.i.HUDs.navmapVisible, zoomView, toastView, locationControlsView,
-                navmapRendererConfiguration, Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(), new PlacesAnalytics());
+            placeCardModal = placeCardModalParent.GetComponent<IPlaceCardComponentView>();
+
+            var exploreV2Analytics = new ExploreV2Analytics.ExploreV2Analytics();
+
+            navmapVisibilityBehaviour = new NavmapVisibilityBehaviour(
+                DataStore.i.featureFlags.flags,
+                DataStore.i.HUDs.navmapVisible,
+                zoomView,
+                toastView,
+                searchView,
+                locationControlsView,
+                chunksLayersView,
+                navmapRendererConfiguration,
+                Environment.i.platform.serviceLocator.Get<IPlacesAPIService>(),
+                new PlacesAnalytics(),
+                placeCardModal,
+                exploreV2Analytics,
+                new WebInterfaceBrowserBridge());
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
@@ -47,8 +64,6 @@ namespace DCL
         {
             configureMapInFullscreenMenu.OnChange += ConfigureMapInFullscreenMenuChanged;
             updateSceneNameCancellationToken = updateSceneNameCancellationToken.SafeRestart();
-            UpdateSceneNameAsync(CommonScriptableObjects.playerCoords.Get(), updateSceneNameCancellationToken.Token).Forget();
-            CommonScriptableObjects.playerCoords.OnChange += UpdateCurrentSceneData;
 
             //Needed due to script execution order
             DataStore.i.featureFlags.flags.OnChange += OnFeatureFlagsChanged;
@@ -63,14 +78,12 @@ namespace DCL
         private void OnDisable()
         {
             configureMapInFullscreenMenu.OnChange -= ConfigureMapInFullscreenMenuChanged;
-            CommonScriptableObjects.playerCoords.OnChange -= UpdateCurrentSceneData;
             DataStore.i.featureFlags.flags.OnChange -= OnFeatureFlagsChanged;
         }
 
         private void OnDestroy()
         {
             navmapVisibilityBehaviour.Dispose();
-            navmapSearchController.Dispose();
         }
 
         private void ConfigureMapInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
@@ -87,26 +100,6 @@ namespace DCL
             RectTransform.localPosition = Vector2.zero;
             RectTransform.offsetMax = Vector2.zero;
             RectTransform.offsetMin = Vector2.zero;
-        }
-
-        private void UpdateCurrentSceneData(Vector2Int current, Vector2Int _)
-        {
-            const string format = "{0},{1}";
-            currentSceneCoordsText.text = string.Format(format, current.x, current.y);
-            currentSceneNameText.text = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name ?? "Unnamed";
-        }
-
-        private async UniTaskVoid UpdateSceneNameAsync(Vector2Int current, CancellationToken cancellationToken)
-        {
-            MinimapMetadata.MinimapSceneInfo info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-
-            if (info == null)
-            {
-                await WebInterfaceMinimapApiBridge.i.GetScenesInformationAroundParcel(current, 2, cancellationToken);
-                info = MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y);
-            }
-
-            currentSceneNameText.text = info?.name ?? "Unnamed";
         }
     }
 }

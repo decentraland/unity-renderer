@@ -40,7 +40,7 @@ public class MinimapHUDController : IHUD
     private readonly CancellationTokenSource disposingCts = new ();
 
     private static readonly MapLayer RENDER_LAYERS
-        = MapLayer.Atlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest;
+        = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest | MapLayer.Favorites | MapLayer.Friends;
 
     private Service<IMapRenderer> mapRenderer;
     private IMapCameraController mapCameraController;

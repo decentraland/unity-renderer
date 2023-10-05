@@ -34,7 +34,7 @@ namespace DCLServices.MapRendererV2.TestScene
         {
             var root = new VisualElement();
 
-            var enabledLayers = new EnumFlagsField("Enabled Layers", MapLayer.Atlas);
+            var enabledLayers = new EnumFlagsField("Enabled Layers", MapLayer.ParcelsAtlas);
             var position = new Vector2IntField("Position");
             var zoom = new FloatField("Zoom") { value = 1 };
             var texRes = new Vector2IntField("Texture Resolution") { value = new Vector2Int(512, 512) };
