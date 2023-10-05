@@ -177,7 +177,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             zoom = Mathf.Clamp01(zoom);
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
-            interactivityBehavior.ApplyCameraZoom(Math.Min(zoomValues.y, zoomValues.x), mapCameraObject.mapCamera.orthographicSize);
+            interactivityBehavior.ApplyCameraZoom(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
             ZoomChanged?.Invoke(mapCameraObject.mapCamera.orthographicSize);
             CalculateCameraPositionBounds();
         }

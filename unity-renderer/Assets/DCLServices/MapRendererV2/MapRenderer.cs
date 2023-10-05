@@ -130,9 +130,7 @@ namespace DCLServices.MapRendererV2
         private void OnCameraZoomChanged(float zoom)
         {
             foreach (IZoomScalingLayer layer in zoomScalingLayers)
-            {
                 layer.ApplyCameraZoom(currentBaseZoom, zoom);
-            }
         }
 
         public void SetSharedLayer(MapLayer mask, bool active)
