@@ -2772,14 +2772,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 16
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -4749,7 +4749,7 @@ MonoBehaviour:
   - Moderate Violence
   - Suggestive or Horror-Themed
   - Frequent or Intense Cartoons
-  - 'width: 138px height: 17px '
+  - Simulated Gambling
   - Mild Language
   teenDescription: "Scenarios in this category may contain mild or infrequent occurrences
     of cartoon, fantasy, or realistic violence, as well as infrequent or mild mature,
