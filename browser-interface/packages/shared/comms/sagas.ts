@@ -59,6 +59,7 @@ import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
 import {waitForProfileHash} from "../profiles/sagas/waitForProfileHash";
+import {fetchProfileHashes} from "../profiles/sagas/content/fetchProfileHashes";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -349,7 +350,7 @@ function* respondCommsProfileRequests() {
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (!hash && identity) {
-      hash = yield call(waitForProfileHash, identity!.address)
+      hash = yield fetchProfileHashes(identity!.address, profile?.version)
     }
 
     if (profile && context) {
