@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using TMPro;
 using UIComponents.Scripts.Components;
@@ -14,7 +15,7 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
     [SerializeField] internal TMP_Text playerCount;
 
     public event Action<string> OnSelectedHistoryRecord;
-    public event Action<string> OnSelectedRegularRecord;
+    public event Action<Vector2Int> OnSelectedRegularRecord;
 
     public override void Awake()
     {
@@ -32,7 +33,7 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
         }
         else
         {
-            OnSelectedRegularRecord?.Invoke(model.recordText);
+            OnSelectedRegularRecord?.Invoke(model.placeCoordinates);
         }
     }
 
@@ -44,6 +45,7 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
         SetRecordText(model.recordText);
         SetIcon(model.isHistory);
         SetPlayerCount(model.playerCount);
+        SetCoordinates(model.placeCoordinates);
     }
 
     public void SetRecordText(string text)
@@ -65,5 +67,10 @@ public class SearchRecordComponentView : BaseComponentView<SearchRecordComponent
         recordText.gameObject.SetActive(count > 0);
         recordTextNoPlayerCount.gameObject.SetActive(count == 0);
         playerCount.text = count.ToString();
+    }
+
+    public void SetCoordinates(Vector2Int coordinates)
+    {
+        model.placeCoordinates = coordinates;
     }
 }

@@ -1,32 +1,35 @@
 
-## **Issue Description:**
+### **Issue Description:**
 <!-- Short description of the observed issue -->
 
 ### **Steps to reproduce:**
 
-1.
-2.
-3.
-4.
-5.
-
-
+  1.
+  2.
+  3.
 
 ### **Expected behaviour:**
-
 
 
 ### **Current behaviour:**
 
 
-
 ### **Reproduction rate:**
-<!-- Values from 5/5 -->
 
 
 ### **Severity:**
 <!-- Cosmetic, Minor, Medium, High, Critical, Blocker -->
+- [ ] Cosmetic
+- [ ] Minor
+- [ ] Medium
+- [ ] High
+- [ ] Critical
+- [ ] Blocker
 
+### **Priority:**
+- [ ] High
+- [ ] Medium
+- [ ] Low
 
 ### **Platforms:**
 - [ ] Windows
@@ -37,6 +40,8 @@
 - [ ] Google Chrome
 - [ ] Microsoft Edge
 - [ ] Firefox
+- [ ] Desktop
+- [ ] Not Browser Specific
 
 ### **Environment:**
 - [ ] Production
@@ -44,7 +49,9 @@
 - [ ] Release Branch
 
 
-### **Additional Notes:**
+#### **Evidence:**
 
-### **Evidence:**
+#### **Additional Notes:**
+
+
 

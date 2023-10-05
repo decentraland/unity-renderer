@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using MainScripts.DCL.Helpers.Utils;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,8 +51,6 @@ public interface IImageComponentView
 
 public class ImageComponentView : BaseComponentView, IImageComponentView, IComponentModelConfig<ImageComponentModel>
 {
-    private readonly Vector2 vector2oneHalf = new (0.5f, 0.5f);
-
     [Header("Prefab References")]
     [SerializeField] internal Image image;
     [SerializeField] internal GameObject loadingIndicator;
@@ -203,7 +202,7 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     {
         DestroyInterntally(currentSprite);
 
-        currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), vector2oneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : null;
+        currentSprite = texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2Ext.OneHalf, 100, 0, SpriteMeshType.FullRect, Vector4.one, false) : null;
 
         SetImage(currentSprite, false);
         SetLoadingIndicatorVisible(false);
@@ -216,9 +215,9 @@ public class ImageComponentView : BaseComponentView, IImageComponentView, ICompo
     {
         RectTransform imageRectTransform = (RectTransform)image.transform;
 
-        imageRectTransform.anchorMin = vector2oneHalf;
-        imageRectTransform.anchorMax = vector2oneHalf;
-        imageRectTransform.pivot = vector2oneHalf;
+        imageRectTransform.anchorMin = Vector2Ext.OneHalf;
+        imageRectTransform.anchorMax = Vector2Ext.OneHalf;
+        imageRectTransform.pivot = Vector2Ext.OneHalf;
         imageRectTransform.localPosition = Vector2.zero;
 
         if (transform.parent == null)
