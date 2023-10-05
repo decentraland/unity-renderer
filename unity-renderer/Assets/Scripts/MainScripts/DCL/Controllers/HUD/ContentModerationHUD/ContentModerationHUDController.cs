@@ -113,7 +113,7 @@ namespace DCL.ContentModeration
 
             currentPlaceId = currentParcelScene.associatedPlaceId;
             UpdateSceneNameByCoords(CommonScriptableObjects.playerCoords.Get(), Vector2Int.zero);
-            contentModerationReportingComponentView.HidePanel(false);
+            contentModerationReportingComponentView.HidePanel(true);
         }
 
         private void UpdateSceneNameByCoords(Vector2Int playerCoords, Vector2Int _)
