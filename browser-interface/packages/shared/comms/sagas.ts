@@ -58,7 +58,7 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
-import {fetchProfileHashes} from "../profiles/sagas/content/fetchProfileHashes";
+import {waitForProfileHash} from "../profiles/sagas/waitForProfileHash";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -349,7 +349,7 @@ function* respondCommsProfileRequests() {
     const contentServer: string = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
 
     if (!hash && identity) {
-      hash = yield fetchProfileHashes(identity!.address, profile?.version)
+      hash = yield call(waitForProfileHash, identity!.address)
     }
 
     if (profile && context) {
