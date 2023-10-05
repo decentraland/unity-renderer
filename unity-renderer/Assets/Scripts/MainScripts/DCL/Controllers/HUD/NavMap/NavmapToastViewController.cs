@@ -69,6 +69,8 @@ namespace DCL
             this.placeCardModal.OnVoteChanged += ChangeVote;
             this.placeCardModal.onJumpInClick.RemoveAllListeners();
             this.placeCardModal.onJumpInClick.AddListener(() => JumpIn(currentParcel.x, currentParcel.y));
+            this.placeCardModal.OnPressedLinkCopy += CopyLink;
+            this.placeCardModal.OnPressedTwitterButton += OpenTwitter;
             RequestAllPOIs().Forget();
         }
 
@@ -269,6 +271,8 @@ namespace DCL
             this.view.OnVoteChanged -= ChangeVote;
             this.placeCardModal.OnFavoriteChanged -= OnFavoriteToggleClicked;
             this.placeCardModal.OnVoteChanged -= ChangeVote;
+            this.placeCardModal.OnPressedLinkCopy -= CopyLink;
+            this.placeCardModal.OnPressedTwitterButton -= OpenTwitter;
             this.placeCardModal.onJumpInClick.RemoveAllListeners();
         }
     }
