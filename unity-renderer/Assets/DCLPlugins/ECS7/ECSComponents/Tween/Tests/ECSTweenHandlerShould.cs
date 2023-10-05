@@ -1,15 +1,10 @@
 using DCL.CRDT;
-using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DG.Tweening;
-using NSubstitute;
 using NUnit.Framework;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TestTools;
-using Environment = DCL.Environment;
 using Vector3 = UnityEngine.Vector3;
 
 namespace Tests
@@ -20,8 +15,7 @@ namespace Tests
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
         private ECSTweenHandler componentHandler;
-        private IInternalECSComponent<InternalTween> internalTweenComponent;
-        private IInternalECSComponent<InternalSceneBoundsCheck> internalSBCComponent;
+        private InternalECSComponents internalComponents;
 
         [SetUp]
         public void SetUp()
@@ -29,32 +23,28 @@ namespace Tests
             var componentsFactory = new ECSComponentsFactory();
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
-            var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
 
-            internalTweenComponent = Substitute.For<IInternalECSComponent<InternalTween>>();
-            internalSBCComponent = Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>();
-            componentHandler = new ECSTweenHandler(internalTweenComponent, internalSBCComponent);
-
-            // Environment.Setup(ServiceLocatorFactory.CreateDefault());
+            componentHandler = new ECSTweenHandler(internalComponents.TweenComponent, internalComponents.sceneBoundsCheckComponent);
         }
 
         [TearDown]
         public void TearDown()
         {
             componentHandler.OnComponentRemoved(scene, entity);
+            internalComponents.TweenComponent.RemoveFor(scene, entity);
             testUtils.Dispose();
-            // Environment.Dispose();
         }
 
         [Test]
-        public void CreateInternalComponentCorrectlyForMoveMode()
+        public void CreateInternalSBCComponentCorrectly()
         {
-            Transform entityTransform = entity.gameObject.transform;
-            entityTransform.position = new Vector3(50f, 50f, 50f);
+            var internalSBC = internalComponents.sceneBoundsCheckComponent.GetFor(scene, entity);
+            Assert.IsNull(internalSBC);
 
             var model = new PBTween()
             {
@@ -68,14 +58,40 @@ namespace Tests
 
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            internalTweenComponent.Received(1).PutFor(scene, entity, Arg.Is<InternalTween>(comp =>
-                comp.transform == entityTransform
-                && comp.tweenMode == PBTween.ModeOneofCase.Move));
+            internalSBC = internalComponents.sceneBoundsCheckComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalSBC);
+        }
+
+        [Test]
+        public void CreateInternalComponentCorrectlyForMoveMode()
+        {
+            var internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNull(internalTween);
+
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = 1f, Y = 1f, Z = 1f },
+                    End = new Decentraland.Common.Vector3() { X = 5f, Y = 5f, Z = 5f }
+                }
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalTween);
+            Assert.AreEqual(entity.gameObject.transform, internalTween.Value.model.transform);
+            Assert.AreEqual(PBTween.ModeOneofCase.Move, internalTween.Value.model.tweenMode);
         }
 
         [Test]
         public void CreateInternalComponentCorrectlyForRotationMode()
         {
+            var internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNull(internalTween);
+
             var model = new PBTween()
             {
                 Duration = 3000,
@@ -88,14 +104,18 @@ namespace Tests
 
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            internalTweenComponent.Received(1).PutFor(scene, entity, Arg.Is<InternalTween>(comp =>
-                comp.transform == entity.gameObject.transform
-                && comp.tweenMode == PBTween.ModeOneofCase.Rotate));
+            internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalTween);
+            Assert.AreEqual(entity.gameObject.transform, internalTween.Value.model.transform);
+            Assert.AreEqual(PBTween.ModeOneofCase.Rotate, internalTween.Value.model.tweenMode);
         }
 
         [Test]
         public void CreateInternalComponentCorrectlyForScaleMode()
         {
+            var internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNull(internalTween);
+
             var model = new PBTween()
             {
                 Duration = 3000,
@@ -108,9 +128,10 @@ namespace Tests
 
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            internalTweenComponent.Received(1).PutFor(scene, entity, Arg.Is<InternalTween>(comp =>
-                comp.transform == entity.gameObject.transform
-                && comp.tweenMode == PBTween.ModeOneofCase.Scale));
+            internalTween = internalComponents.TweenComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalTween);
+            Assert.AreEqual(entity.gameObject.transform, internalTween.Value.model.transform);
+            Assert.AreEqual(PBTween.ModeOneofCase.Scale, internalTween.Value.model.tweenMode);
         }
 
         [Test]
@@ -245,31 +266,149 @@ namespace Tests
         [Test]
         public void HandleFaceDirectionCorrectly()
         {
+            Vector3 startPosition = Vector3.one;
+            Vector3 endPosition = new Vector3(57f, 41f, 5f);
+            Transform entityTransform = entity.gameObject.transform;
 
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startPosition.x, Y = startPosition.y, Z = startPosition.z },
+                    End = new Decentraland.Common.Vector3() { X = endPosition.x, Y = endPosition.y, Z = endPosition.z },
+                    FaceDirection = true
+                }
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check transform direction is correct
+            Assert.AreEqual((endPosition - startPosition).normalized.ToString(), entityTransform.forward.ToString());
         }
 
         [Test]
         public void ResetTweenIfNewOneIsPutOnSameEntity()
         {
+            // Setup first Tween component
+            Vector3 startPosition1 = Vector3.one;
+            Vector3 endPosition1 = new Vector3(5f, 5f, 5f);
 
-        }
+            Transform entityTransform = entity.gameObject.transform;
+            entityTransform.localPosition = new Vector3(50f, 50f, 50f);
 
-        [Test]
-        public void UseLinearEasingByDefault()
-        {
+            // Confirm there's no previous tween running for entity transform
+            var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.IsNull(transformTweens);
 
+            var model1 = new PBTween()
+            {
+                Duration = 3000,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startPosition1.x, Y = startPosition1.y, Z = startPosition1.z },
+                    End = new Decentraland.Common.Vector3() { X = endPosition1.x, Y = endPosition1.y, Z = endPosition1.z }
+                }
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model1);
+
+            // Check transform is positioned at start-position
+            Assert.AreEqual(entityTransform.localPosition, startPosition1);
+
+            // Setup second Tween component
+            Vector3 startPosition2 = new Vector3(37f, 22f, 11f);
+            Vector3 endPosition2 = new Vector3(68f, 99f, 33f);
+            var model2 = new PBTween()
+            {
+                Duration = 1500,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startPosition2.x, Y = startPosition2.y, Z = startPosition2.z },
+                    End = new Decentraland.Common.Vector3() { X = endPosition2.x, Y = endPosition2.y, Z = endPosition2.z }
+                }
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model2);
+
+            // Check transform is positioned at start-position
+            Assert.AreEqual(entityTransform.localPosition, startPosition2);
+
+            // Check transform DOTween is playing
+            transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.IsNotNull(transformTweens);
+            Assert.IsTrue(transformTweens[0].IsPlaying());
+
+            // Move tween to the end to check end-position is correct
+            // (DOTween doesn't have any way to get the end value of the tween...)
+            transformTweens[0].Goto(model2.Duration);
+            Assert.AreEqual(endPosition2, entityTransform.localPosition);
         }
 
         [Test]
         public void BePlayingByDefault()
         {
+            Vector3 startScale = Vector3.one;
+            Vector3 endScale = new Vector3(5f, 5f, 5f);
 
+            Transform entityTransform = entity.gameObject.transform;
+            entityTransform.localScale = new Vector3(50f, 50f, 50f);
+
+            // Confirm there's no previous tween running for entity transform
+            var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.IsNull(transformTweens);
+
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Scale = new Scale()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startScale.x, Y = startScale.y, Z = startScale.z },
+                    End = new Decentraland.Common.Vector3() { X = endScale.x, Y = endScale.y, Z = endScale.z }
+                }
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check transform DOTween is playing by default...
+            transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.IsNotNull(transformTweens);
+            Assert.IsTrue(transformTweens[0].IsPlaying());
         }
 
         [Test]
         public void HandlePausing()
         {
+            Vector3 startPosition = Vector3.one;
+            Vector3 endPosition = new Vector3(5f, 5f, 5f);
+            Transform entityTransform = entity.gameObject.transform;
 
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startPosition.x, Y = startPosition.y, Z = startPosition.z },
+                    End = new Decentraland.Common.Vector3() { X = endPosition.x, Y = endPosition.y, Z = endPosition.z }
+                }
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check transform DOTween is playing
+            var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.IsNotNull(transformTweens);
+            Assert.IsTrue(transformTweens[0].IsPlaying());
+
+            // Pause it
+            model.Playing = false;
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check it's not playing
+            Assert.IsFalse(transformTweens[0].IsPlaying());
+
+            // Unpause it
+            model.Playing = true;
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check it's playing again
+            Assert.IsTrue(transformTweens[0].IsPlaying());
         }
     }
 }
