@@ -31,6 +31,11 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
             obj.gameObject.SetActive(false);
         }
 
+        public void SetZoom(float baseZoom, float newZoom)
+        {
+            obj.SetScale(baseZoom, newZoom);
+        }
+
         public void Dispose()
         {
             Utils.SafeDestroy(obj.gameObject);
