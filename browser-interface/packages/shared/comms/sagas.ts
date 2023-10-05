@@ -58,7 +58,6 @@ import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
-import {waitForProfileHash} from "../profiles/sagas/waitForProfileHash";
 import {fetchProfileHashes} from "../profiles/sagas/content/fetchProfileHashes";
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
