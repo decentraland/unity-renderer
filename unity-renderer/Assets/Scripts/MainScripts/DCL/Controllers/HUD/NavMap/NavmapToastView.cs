@@ -14,6 +14,8 @@ namespace DCL
         public event Action<int, int> OnGoto;
         public event Action OnInfoClick;
         public event Action<string, bool?> OnVoteChanged;
+        public event Action<Vector2Int> OnPressedLinkCopy;
+        public event Action<Vector2Int, string> OnPressedTwitterButton;
 
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
@@ -27,6 +29,7 @@ namespace DCL
         [SerializeField] internal Button goToButton;
         [SerializeField] internal GameObject infoButtonContainer;
         [SerializeField] internal Button infoButton;
+        [SerializeField] internal Button shareButton;
         [SerializeField] internal GameObject favoriteContainer;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
         [SerializeField] internal GameObject favoriteLoading;
@@ -36,6 +39,7 @@ namespace DCL
         [SerializeField] internal GameObject upvoteOn;
         [SerializeField] internal GameObject downvoteOff;
         [SerializeField] internal GameObject downvoteOn;
+        [SerializeField] internal PlaceCopyContextualMenu placeCopyContextualMenu;
 
         [field: SerializeField]
         [Tooltip("Distance in units")]
@@ -76,6 +80,29 @@ namespace DCL
 
             if(downvoteButton != null)
                 downvoteButton.onClick.AddListener(() => ChangeVote(false));
+
+            shareButton.onClick.RemoveAllListeners();
+            shareButton.onClick.AddListener(OpenShareContextMenu);
+
+            placeCopyContextualMenu.OnPlaceLinkCopied += OnLinkCopied;
+            placeCopyContextualMenu.OnTwitter += OnOpenTwitter;
+
+            placeCopyContextualMenu.Hide(true);
+        }
+
+        private void OpenShareContextMenu()
+        {
+            placeCopyContextualMenu.Show();
+        }
+
+        private void OnOpenTwitter()
+        {
+            OnPressedTwitterButton?.Invoke(location, sceneInfo.name);
+        }
+
+        private void OnLinkCopied()
+        {
+            OnPressedLinkCopy?.Invoke(location);
         }
 
         private void Start()

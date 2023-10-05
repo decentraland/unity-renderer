@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
 using DCL.Tasks;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.PlacesAPIService;
@@ -14,11 +15,14 @@ namespace DCL
 {
     public class NavmapToastViewController : IDisposable, INavmapToastViewController
     {
+        private const string COPY_LINK = "https://play.decentraland.org/?position={0},{1}";
+
         private readonly MinimapMetadata minimapMetadata;
         private readonly NavmapToastView view;
         private readonly IPlaceCardComponentView placeCardModal;
         private readonly MapRenderImage mapRenderImage;
         private readonly IExploreV2Analytics exploreV2Analytics;
+        private readonly IBrowserBridge browserBridge;
         private readonly float sqrDistanceToCloseView;
 
         private Vector2 lastClickPosition;
@@ -41,8 +45,8 @@ namespace DCL
             IPlacesAPIService placesAPIService,
             IPlacesAnalytics placesAnalytics,
             IPlaceCardComponentView placeCardModal,
-            IExploreV2Analytics exploreV2Analytics
-            )
+            IExploreV2Analytics exploreV2Analytics,
+            IBrowserBridge browserBridge)
         {
             this.placesAPIService = placesAPIService;
             this.placesAnalytics = placesAnalytics;
@@ -51,18 +55,34 @@ namespace DCL
             this.mapRenderImage = mapRenderImage;
             this.placeCardModal = placeCardModal;
             this.exploreV2Analytics = exploreV2Analytics;
+            this.browserBridge = browserBridge;
             this.sqrDistanceToCloseView = view.distanceToCloseView * view.distanceToCloseView;
 
             this.view.OnFavoriteToggleClicked += OnFavoriteToggleClicked;
             this.view.OnGoto += JumpIn;
             this.view.OnInfoClick += EnablePlaceCardModal;
             this.view.OnVoteChanged += ChangeVote;
+            this.view.OnPressedLinkCopy += CopyLink;
+            this.view.OnPressedTwitterButton += OpenTwitter;
 
             this.placeCardModal.OnFavoriteChanged += OnFavoriteToggleClicked;
             this.placeCardModal.OnVoteChanged += ChangeVote;
             this.placeCardModal.onJumpInClick.RemoveAllListeners();
             this.placeCardModal.onJumpInClick.AddListener(() => JumpIn(currentParcel.x, currentParcel.y));
             RequestAllPOIs().Forget();
+        }
+
+        private void OpenTwitter(Vector2Int coordinates, string sceneName)
+        {
+            var description = $"Check out {sceneName}, a cool place I found in Decentraland!".Replace(" ", "%20");
+            var twitterUrl = $"https://twitter.com/intent/tweet?text={description}&hashtags=DCLPlace&url={string.Format(COPY_LINK, coordinates.x, coordinates.y)}";
+
+            browserBridge.OpenUrl(twitterUrl);
+        }
+
+        private void CopyLink(Vector2Int coordinates)
+        {
+            Environment.i.platform.clipboard.WriteText(string.Format(COPY_LINK, coordinates.x, coordinates.y));
         }
 
         private async UniTaskVoid RequestAllPOIs()
