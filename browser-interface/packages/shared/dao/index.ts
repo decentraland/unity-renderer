@@ -21,6 +21,7 @@ import {Candidate, Parcel, ServerConnectionStatus} from './types'
 import {ask} from './utils/ping'
 import {getCatalystCandidates} from './selectors'
 import {ensureRealmAdapter} from "../realm/ensureRealmAdapter";
+import {invalidateProfileHash} from "../profiles/actions";
 
 async function fetchCatalystNodes(endpoint: string | undefined): Promise<CatalystNode[]> {
   if (endpoint) {
@@ -273,6 +274,9 @@ export async function changeRealm(realmString: string, forceChange: boolean = fa
   } else {
     throw new Error(`Can't connect to realm ${realmString} right now.`)
   }
+
+  // profile hashes must be updated after changing realms
+  invalidateProfileHash(identity.address)
 
   return
 }
