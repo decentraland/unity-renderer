@@ -718,8 +718,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 0.125
+      time: 1.0334334
+      value: 0.23717171
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 1
@@ -727,8 +727,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 2
-      value: 0.25
+      time: 2.0200195
+      value: 0.49917236
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 97
@@ -736,8 +736,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 3
-      value: 0.375
+      time: 3.0133667
+      value: 0.64513254
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 7
@@ -745,17 +745,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 4
-      value: 0.5
-      inSlope: 0
-      outSlope: Infinity
-      tangentMode: 97
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 5
-      value: 0.625
+      time: 4.0133667
+      value: 0.7914895
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 7
@@ -763,8 +754,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 6
-      value: 0.75
+      time: 5.0158095
+      value: 0.9013244
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 1
@@ -772,17 +763,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 7
-      value: 0.875
-      inSlope: Infinity
-      outSlope: Infinity
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 8
-      value: 1
+      time: 5.999695
+      value: 1.0022354
       inSlope: 0
       outSlope: 0
       tangentMode: 1
