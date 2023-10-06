@@ -27,6 +27,7 @@ namespace DCL
         private const bool VERBOSE = false;
         private const int SCENE_MESSAGES_PREWARM_COUNT = 100000;
         private const int REQUEST_PLACE_TIME_OUT = 10;
+        private const string EMPTY_PARCEL_NAME = "Empty parcel";
 
         private readonly IConfirmedExperiencesRepository confirmedExperiencesRepository;
 
@@ -515,6 +516,10 @@ namespace DCL
         private async Task RequestSceneContentCategory(ParcelScene parcelScene)
         {
             if (!isContentModerationFeatureEnabled)
+                return;
+
+            var sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(parcelScene.sceneData.basePosition.x, parcelScene.sceneData.basePosition.y);
+            if (sceneInfo is { name: EMPTY_PARCEL_NAME })
                 return;
 
             try
