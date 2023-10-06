@@ -12,7 +12,6 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         public void SetAnimatedCircleVisibility(bool visible)
         {
             circle.enabled = visible;
-            friendsArea.enabled = visible;
         }
 
         public void SetSortingOrder(int sortingOrder)
