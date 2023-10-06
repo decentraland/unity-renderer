@@ -897,10 +897,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1649726674084686573}
     m_Modifications:
+    - target: {fileID: 661714257022111537, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 661714257022111537, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 836569618237506586, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
       propertyPath: m_Name
       value: SearchBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684105793296059905, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1858580563299991830, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
@@ -916,6 +931,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995416973248544320, guid: db08434be6dadc943b7e258f41869504,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4493314213840434625, guid: db08434be6dadc943b7e258f41869504,
         type: 3}
