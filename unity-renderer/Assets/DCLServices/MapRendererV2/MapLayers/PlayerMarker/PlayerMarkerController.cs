@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
 {
-    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController, IZoomScalingLayer
+    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController<PlayerMarkerParameter>, IZoomScalingLayer
     {
         internal delegate IPlayerMarker PlayerMarkerBuilder(Transform parent);
 
@@ -53,6 +53,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             playerWorldPosition.OnChange -= OnPlayerWorldPositionChange;
             playerRotation.OnChange -= OnPlayerRotationChange;
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(PlayerMarkerParameter param)
+        {
+            playerMarker?.SetBackgroundVisibility(param.BackgroundIsActive);
         }
 
         private void SetPosition()
