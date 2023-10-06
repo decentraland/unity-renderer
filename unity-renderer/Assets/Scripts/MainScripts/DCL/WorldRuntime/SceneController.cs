@@ -537,17 +537,13 @@ namespace DCL
                         parcelScene.SetContentCategory(SceneContentCategory.TEEN);
                         break;
                 }
-
-                // TODO (Santi): Remove this code, this is just for testing purposes
-                if (parcelScene.sceneData.basePosition is { x: 100, y: 100 } or { x: 100, y: 101 })
-                    parcelScene.SetContentCategory(SceneContentCategory.ADULT);
-                else if (parcelScene.sceneData.basePosition is { x: 101, y: 100 })
-                    parcelScene.SetContentCategory(SceneContentCategory.RESTRICTED);
             }
             catch (Exception ex)
             {
-                Debug.LogError($"An error occurred while requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {ex.Message}. It will be set as TEEN (13+) by default.");
                 parcelScene.SetContentCategory(SceneContentCategory.TEEN);
+
+                if (ex is not NotAPlaceException)
+                    Debug.LogError($"An error occurred while requesting the content category for ({parcelScene.sceneData.basePosition.x},{parcelScene.sceneData.basePosition.y}): {ex.Message}. It will be set as TEEN (13+) by default.");
             }
         }
 
