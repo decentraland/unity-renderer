@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 
 namespace DCLServices.PlacesAPIService
 {
@@ -11,6 +10,6 @@ namespace DCLServices.PlacesAPIService
         public string coordinates;
         public string rating;
         public string[] issues;
-        [CanBeNull] public string comment;
+        public string comment;
     }
 }
