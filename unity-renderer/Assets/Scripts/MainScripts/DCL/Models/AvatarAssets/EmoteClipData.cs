@@ -63,6 +63,8 @@ namespace DCL.Emotes
 
             if (animation != null)
             {
+                animation.gameObject.layer = gameObjectLayer;
+                animation.cullingType = occlude ? AnimationCullingType.BasedOnRenderers : AnimationCullingType.AlwaysAnimate;
                 animation.enabled = true;
 
                 foreach (AnimationState state in animation)
@@ -71,7 +73,7 @@ namespace DCL.Emotes
 
                     // this reduntant stop is intended, sometimes when animations are triggered their first frame is not 0
                     animation.Stop(state.clip.name);
-                    animation.Play(state.clip.name, PlayMode.StopAll);
+                    animation.CrossFade(state.clip.name, 0, PlayMode.StopAll);
                 }
             }
 
@@ -87,10 +89,7 @@ namespace DCL.Emotes
         {
             if (renderers != null)
             {
-                foreach (Renderer renderer in renderers)
-                {
-                    renderer.enabled = false;
-                }
+                foreach (Renderer renderer in renderers) { renderer.enabled = false; }
             }
 
             if (animation != null)
