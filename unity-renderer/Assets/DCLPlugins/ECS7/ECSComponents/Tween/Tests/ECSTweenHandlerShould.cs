@@ -37,6 +37,7 @@ namespace Tests
         {
             componentHandler.OnComponentRemoved(scene, entity);
             internalComponents.TweenComponent.RemoveFor(scene, entity);
+            internalComponents.sceneBoundsCheckComponent.RemoveFor(scene, entity);
             testUtils.Dispose();
         }
 
@@ -409,6 +410,32 @@ namespace Tests
 
             // Check it's playing again
             Assert.IsTrue(transformTweens[0].IsPlaying());
+        }
+
+        [Test]
+        public void HandleCustomInitialCurrentTime()
+        {
+            Vector3 startScale = Vector3.one;
+            Vector3 endScale = new Vector3(5f, 5f, 5f);
+            float initialTime = 0.67f;
+            Transform entityTransform = entity.gameObject.transform;
+
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Scale = new Scale()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startScale.x, Y = startScale.y, Z = startScale.z },
+                    End = new Decentraland.Common.Vector3() { X = endScale.x, Y = endScale.y, Z = endScale.z }
+                },
+                CurrentTime = initialTime
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check tween time is the custom initial one
+            var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            Assert.AreEqual(initialTime, transformTweens[0].ElapsedPercentage());
         }
     }
 }
