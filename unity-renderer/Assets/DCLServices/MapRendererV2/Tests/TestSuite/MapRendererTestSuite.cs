@@ -1,4 +1,6 @@
-﻿using DCLServices.MapRendererV2.MapLayers;
+﻿using DCLServices.MapRendererV2.CommonBehavior;
+using DCLServices.MapRendererV2.MapCameraController;
+using DCLServices.MapRendererV2.MapLayers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,10 +18,10 @@ namespace DCLServices.MapRendererV2
 
         internal Dictionary<MapLayer, IMapLayerController> layersDictionary_Test => layers.ToDictionary(l => l.Key, l => l.Value.MapLayerController);
 
-        internal void EnableLayers_Test(MapLayer mask) =>
-            EnableLayers(mask);
+        internal void EnableLayers_Test(IMapActivityOwner owner, MapLayer mask) =>
+            EnableLayers(owner, mask, new Dictionary<MapLayer, IMapLayerParameter>());
 
-        internal void DisableLayers_Test(MapLayer mask) =>
-            DisableLayers(mask);
+        internal void DisableLayers_Test(IMapActivityOwner owner, MapLayer mask) =>
+            DisableLayers(owner, mask);
     }
 }

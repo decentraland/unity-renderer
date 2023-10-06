@@ -2,7 +2,9 @@
 using DCL;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -189,6 +191,11 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
             }
             // cancellation of `ColdAreasUpdateLoop` is handled by the cancellation token
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(IMapLayerParameter layerParameter)
+        {
+
         }
     }
 }

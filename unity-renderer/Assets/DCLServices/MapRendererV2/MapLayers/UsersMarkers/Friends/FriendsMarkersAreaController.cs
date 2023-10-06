@@ -2,6 +2,7 @@
 using DCL.Social.Friends;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
@@ -131,6 +132,11 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
 
             markers.Clear();
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(IMapLayerParameter layerParameter)
+        {
+
         }
     }
 }

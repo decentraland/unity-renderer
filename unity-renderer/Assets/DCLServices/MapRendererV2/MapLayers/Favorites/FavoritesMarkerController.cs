@@ -1,9 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -152,6 +154,11 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             isEnabled = false;
 
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(IMapLayerParameter layerParameter)
+        {
+
         }
 
         public UniTask Enable(CancellationToken cancellationToken)

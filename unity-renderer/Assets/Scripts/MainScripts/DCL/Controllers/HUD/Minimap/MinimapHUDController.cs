@@ -5,16 +5,19 @@ using DCL.Interface;
 using DCL.Tasks;
 using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
+using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
 using DCLServices.PlacesAPIService;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class MinimapHUDController : IHUD
+public class MinimapHUDController : IHUD, IMapActivityOwner
 {
     private static bool VERBOSE = false;
 
@@ -124,12 +127,20 @@ public class MinimapHUDController : IHUD
     {
         view.pixelPerfectMapRendererTextureProvider.SetHudCamera(DataStore.i.camera.hudsCamera.Get());
 
+        var mapLayerParameters = new Dictionary<MapLayer, IMapLayerParameter>
+            { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = false} } };
+
         mapCameraController = mapRenderer.Ref.RentCamera(
-            new MapCameraInput(RENDER_LAYERS,
+            new MapCameraInput(
+                this,
+                RENDER_LAYERS,
+                mapLayerParameters,
                 Vector2Int.RoundToInt(MapRendererTrackPlayerPosition.GetPlayerCentricCoords(playerCoords.Get())),
                 1,
                 view.pixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)));
+                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)
+                )
+            );
 
         mapRendererTrackPlayerPosition = new MapRendererTrackPlayerPosition(mapCameraController, DataStore.i.player.playerWorldPosition);
         view.mapRendererTargetImage.texture = mapCameraController.GetRenderTexture();
@@ -153,7 +164,7 @@ public class MinimapHUDController : IHUD
             DataStore.i.HUDs.navmapIsRendered.OnChange -= OnNavMapIsRenderedChange;
             view.pixelPerfectMapRendererTextureProvider.Deactivate();
             mapRendererTrackPlayerPosition.Dispose();
-            mapCameraController.Release();
+            mapCameraController.Release(this);
             mapCameraController = null;
         }
     }

@@ -1,7 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -90,6 +92,11 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
 
             markers.Clear();
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(IMapLayerParameter layerParameter)
+        {
+
         }
     }
 }

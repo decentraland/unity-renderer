@@ -1,6 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -65,6 +67,11 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
             homePointCoordinates.OnChange -= OnHomePointCoordinatesChange;
 
             return UniTask.CompletedTask;
+        }
+
+        public void SetParameter(IMapLayerParameter layerParameter)
+        {
+
         }
 
         private void OnHomePointCoordinatesChange(Vector2Int current, Vector2Int previous)
