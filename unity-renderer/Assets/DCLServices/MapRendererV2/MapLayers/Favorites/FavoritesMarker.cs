@@ -1,6 +1,7 @@
 using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.Favorites
@@ -8,6 +9,8 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
     internal class FavoritesMarker : IFavoritesMarker
     {
         internal const int MAX_TITLE_LENGTH = 29;
+        private float currentBaseScale;
+        private float currentNewScale;
 
         public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
@@ -36,11 +39,31 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
         public void OnBecameVisible()
         {
             poolableBehavior.OnBecameVisible().title.text = title;
+
+            if(currentBaseScale != 0)
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
         }
 
         public void OnBecameInvisible()
         {
             poolableBehavior.OnBecameInvisible();
+        }
+
+        public void SetZoom(float baseScale, float baseZoom, float zoom)
+        {
+            currentBaseScale = baseScale;
+            currentNewScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
+        }
+
+        public void ResetScale(float scale)
+        {
+            currentNewScale = scale;
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(scale, scale);
         }
 
         public void Dispose()

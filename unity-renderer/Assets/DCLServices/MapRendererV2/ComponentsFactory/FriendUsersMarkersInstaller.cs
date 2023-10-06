@@ -26,6 +26,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         public async UniTask Install(
             Dictionary<MapLayer, IMapLayerController> writer,
+            List<IZoomScalingLayer> zoomScalingWriter,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -63,6 +64,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             await controller.Initialize(cancellationToken);
             writer.Add(MapLayer.Friends, controller);
+            zoomScalingWriter.Add(controller);
         }
 
         internal async Task<FriendUserMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

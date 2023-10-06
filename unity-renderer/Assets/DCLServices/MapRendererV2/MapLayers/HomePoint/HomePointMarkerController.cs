@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.HomePoint
 {
-    internal class HomePointMarkerController : MapLayerControllerBase, IMapLayerController
+    internal class HomePointMarkerController : MapLayerControllerBase, IMapLayerController, IZoomScalingLayer
     {
         internal delegate IHomePointMarker HomePointMarkerBuilder(Transform parent);
 
@@ -25,6 +25,16 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
         {
             this.homePointCoordinates = homePointCoordinates;
             this.builder = builder;
+        }
+
+        public void ApplyCameraZoom(float baseZoom, float zoom)
+        {
+            marker.SetZoom(baseZoom, zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            marker.ResetToBaseScale();
         }
 
         public void Initialize()

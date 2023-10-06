@@ -8,5 +8,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         void Initialize(MapLayer layers);
 
         void Release();
+
+        void ApplyCameraZoom(float baseZoom, float newZoom);
     }
 }

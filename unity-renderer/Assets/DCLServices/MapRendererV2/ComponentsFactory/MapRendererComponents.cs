@@ -10,16 +10,18 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
     {
         public readonly MapRendererConfiguration ConfigurationInstance;
         public readonly IReadOnlyDictionary<MapLayer, IMapLayerController> Layers;
+        public readonly IReadOnlyList<IZoomScalingLayer> ZoomScalingLayers;
         public readonly IMapCullingController CullingController;
         public readonly IObjectPool<IMapCameraControllerInternal> MapCameraControllers;
 
         public MapRendererComponents(MapRendererConfiguration configurationInstance, IReadOnlyDictionary<MapLayer, IMapLayerController> layers,
-            IMapCullingController cullingController, IObjectPool<IMapCameraControllerInternal> mapCameraControllers)
+            IReadOnlyList<IZoomScalingLayer> zoomScalingLayers, IMapCullingController cullingController, IObjectPool<IMapCameraControllerInternal> mapCameraControllers)
         {
             ConfigurationInstance = configurationInstance;
             Layers = layers;
             CullingController = cullingController;
             MapCameraControllers = mapCameraControllers;
+            ZoomScalingLayers = zoomScalingLayers;
         }
     }
 }

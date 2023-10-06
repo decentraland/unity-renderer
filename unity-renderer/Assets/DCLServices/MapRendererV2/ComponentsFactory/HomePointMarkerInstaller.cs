@@ -20,6 +20,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         public async UniTask Install(
             Dictionary<MapLayer, IMapLayerController> writer,
+            List<IZoomScalingLayer> zoomScalingWriter,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -45,6 +46,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
             controller.Initialize();
             writer.Add(MapLayer.HomePoint, controller);
+            zoomScalingWriter.Add(controller);
         }
 
         internal async UniTask<HomePointMarkerObject> GetPrefab(CancellationToken cancellationToken) =>

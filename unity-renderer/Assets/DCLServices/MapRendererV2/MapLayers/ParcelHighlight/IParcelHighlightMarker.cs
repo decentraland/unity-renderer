@@ -10,5 +10,7 @@ namespace DCLServices.MapRendererV2.MapLayers.ParcelHighlight
         void Activate();
 
         void Deactivate();
+
+        void SetZoom(float baseZoom, float newZoom);
     }
 }
