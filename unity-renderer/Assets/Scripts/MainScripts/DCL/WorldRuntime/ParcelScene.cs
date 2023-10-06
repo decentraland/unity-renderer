@@ -381,6 +381,7 @@ namespace DCL.Controllers
             newEntity.gameObject.name = "ENTITY_" + id;
 #endif
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
+            newEntity.gameObject.SetActive(true);
             newEntity.scene = this;
 
             newEntity.OnCleanupEvent += po.OnCleanup;
