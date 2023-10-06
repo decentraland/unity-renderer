@@ -107,7 +107,10 @@ namespace DCLServices.MapRendererV2
             IMapCameraControllerInternal mapCameraController = mapCameraPool.Get();
             mapCameraController.Initialize(cameraInput.TextureResolution, zoomValues, cameraInput.EnabledLayers);
             mapCameraController.OnReleasing += ReleaseCamera;
-            mapCameraController.ZoomChanged += OnCameraZoomChanged;
+
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+                mapCameraController.ZoomChanged += OnCameraZoomChanged;
+
             mapCameraController.SetPositionAndZoom(cameraInput.Position, cameraInput.Zoom);
 
             return mapCameraController;
@@ -116,10 +119,13 @@ namespace DCLServices.MapRendererV2
         private void ReleaseCamera(IMapCameraControllerInternal mapCameraController)
         {
             mapCameraController.OnReleasing -= ReleaseCamera;
-            mapCameraController.ZoomChanged -= OnCameraZoomChanged;
 
-            foreach (IZoomScalingLayer layer in zoomScalingLayers)
-                layer.ResetToBaseScale();
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+            {
+                mapCameraController.ZoomChanged -= OnCameraZoomChanged;
+                foreach (IZoomScalingLayer layer in zoomScalingLayers)
+                    layer.ResetToBaseScale();
+            }
 
             DisableLayers(mapCameraController.EnabledLayers);
             mapCameraPool.Release(mapCameraController);

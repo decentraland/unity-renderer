@@ -1,4 +1,5 @@
-﻿using DCLServices.MapRendererV2.CoordsUtils;
+﻿using DCL;
+using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DG.Tweening;
@@ -177,8 +178,13 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             zoom = Mathf.Clamp01(zoom);
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
-            interactivityBehavior.ApplyCameraZoom(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
-            ZoomChanged?.Invoke(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+            {
+                interactivityBehavior.ApplyCameraZoom(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+                ZoomChanged?.Invoke(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+            }
+
             CalculateCameraPositionBounds();
         }
 
