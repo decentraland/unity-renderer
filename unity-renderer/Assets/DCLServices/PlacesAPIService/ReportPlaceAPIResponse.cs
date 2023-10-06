@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace DCLServices.PlacesAPIService
 {
@@ -13,6 +14,6 @@ namespace DCLServices.PlacesAPIService
     public class ReportPlaceResponseData
     {
         public string filename;
-        public string signedUrl;
+        public string signed_url;
     }
 }

@@ -228,7 +228,7 @@ namespace DCLServices.PlacesAPIService
 
             // PUT using the gotten signed url and sending the report payload
             string putData = JsonUtility.ToJson(placeContentReportPayload);
-            UnityWebRequest putResult = await webRequestController.PutAsync(postResponse.data.signedUrl, putData, isSigned: true, cancellationToken: ct);
+            UnityWebRequest putResult = await webRequestController.PutAsync(postResponse.data.signed_url, putData, isSigned: true, cancellationToken: ct);
             if (putResult.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error reporting place:\n{putResult.error}");
         }
