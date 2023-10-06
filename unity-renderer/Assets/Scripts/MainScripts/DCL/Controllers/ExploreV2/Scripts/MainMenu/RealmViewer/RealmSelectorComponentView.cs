@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Social.Friends;
 using TMPro;
+using UIComponents.Scripts.Components.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -37,6 +38,7 @@ public interface IRealmSelectorComponentView
 
 public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorComponentView, IComponentModelConfig<RealmSelectorComponentModel>
 {
+    private const string REALM_DOCS_LINK = "https://docs.decentraland.org/player/general/meet-with-friends/";
     internal const string REALMS_POOL_NAME = "RealmSelector_RealmRowsPool";
     internal const int REALMS_POOL_PREWARM = 20;
 
@@ -55,6 +57,8 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
     [SerializeField] internal Button modalBackgroundButton;
     [SerializeField] internal ButtonComponentView closeCardButton;
     [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField] internal TMPTextHyperLink realmsInformationLink;
+    [SerializeField] internal RectTransform rootTransform;
 
     [Header("Configuration")]
     [SerializeField] internal RealmSelectorComponentModel model;
@@ -105,6 +109,8 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         if (modalBackgroundButton != null)
             modalBackgroundButton.onClick.AddListener(CloseModal);
 
+        realmsInformationLink.HyperLinkClicked += () => WebInterface.OpenURL(REALM_DOCS_LINK);
+
         ConfigureRealmsPool();
         RefreshSortingArrows();
     }
@@ -129,6 +135,11 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         base.Show(instant);
 
         DataStore.i.exploreV2.isSomeModalOpen.Set(true);
+
+        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("main_realm"))
+        {
+            rootTransform.sizeDelta = new Vector2(rootTransform.sizeDelta.x, 380);
+        }
     }
 
     public override void Hide(bool instant = false)
