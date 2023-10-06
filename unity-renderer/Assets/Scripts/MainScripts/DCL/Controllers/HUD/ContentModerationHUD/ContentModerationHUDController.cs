@@ -191,7 +191,7 @@ namespace DCL.ContentModeration
             SendReportAsync(
                     new PlaceContentReportPayload
                     {
-                        placeId = "e0d0fc69-1628-4a2e-914a-ad76d681528b",//currentPlaceId, // TODO (Santi): Uncomment this and remove the hardcoded id!! Test places for .zone: e0d0fc69-1628-4a2e-914a-ad76d681528b, f8f2d59b-0755-47c3-88ac-b117f697d251
+                        placeId = currentPlaceId,
                         guest = userProfileBridge.GetOwn().isGuest,
                         coordinates = $"{CommonScriptableObjects.playerCoords.Get().x},{CommonScriptableObjects.playerCoords.Get().y}",
                         rating = report.contentCategory switch
