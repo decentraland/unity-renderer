@@ -502,7 +502,9 @@ namespace DCL
 
                 sceneSortDirty = true;
 
-                OnNewSceneAdded?.Invoke(newScene);
+                if (newScene.contentCategory != SceneContentCategory.RESTRICTED &&
+                    (newScene.contentCategory != SceneContentCategory.ADULT || (newScene.contentCategory == SceneContentCategory.ADULT && DataStore.i.contentModeration.adultContentSettingEnabled.Get())))
+                    OnNewSceneAdded?.Invoke(newScene);
 
                 messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.sceneNumber);
 
