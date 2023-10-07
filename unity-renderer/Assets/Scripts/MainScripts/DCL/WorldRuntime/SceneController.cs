@@ -521,6 +521,11 @@ namespace DCL
                 return;
 
             var sceneInfo = MinimapMetadata.GetMetadata().GetSceneInfo(parcelScene.sceneData.basePosition.x, parcelScene.sceneData.basePosition.y);
+
+            Debug.Log(sceneInfo != null ?
+                $"[SANTI LOG] MinimapMetadata.GetMetadata().GetSceneInfo: {sceneInfo.name}" :
+                "[SANTI LOG] MinimapMetadata.GetMetadata().GetSceneInfo: NULL!");
+
             if (sceneInfo is { name: EMPTY_PARCEL_NAME })
                 return;
 
