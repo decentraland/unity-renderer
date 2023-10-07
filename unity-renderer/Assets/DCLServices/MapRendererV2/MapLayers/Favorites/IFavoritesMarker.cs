@@ -16,5 +16,9 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
         void OnBecameVisible();
 
         void OnBecameInvisible();
+
+        void SetZoom(float baseScale, float baseZoom, float zoom);
+
+        void ResetScale(float baseScale);
     }
 }

@@ -1,14 +1,20 @@
 ﻿using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.Culling;
 using MainScripts.DCL.Helpers.Utils;
+using System;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
     internal class SceneOfInterestMarker : ISceneOfInterestMarker
     {
         internal const int MAX_TITLE_LENGTH = 29;
+
+        private readonly IMapCullingController cullingController;
+
+        private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;
+        private float currentBaseScale;
+        private float currentNewScale;
 
         public Vector3 CurrentPosition => poolableBehavior.currentPosition;
 
@@ -18,14 +24,16 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         internal string title { get; private set; }
 
-        private MapMarkerPoolableBehavior<SceneOfInterestMarkerObject> poolableBehavior;
-
-        private readonly IMapCullingController cullingController;
-
         public SceneOfInterestMarker(IUnityObjectPool<SceneOfInterestMarkerObject> objectsPool, IMapCullingController cullingController)
         {
             poolableBehavior = new MapMarkerPoolableBehavior<SceneOfInterestMarkerObject>(objectsPool);
             this.cullingController = cullingController;
+        }
+
+        public void Dispose()
+        {
+            OnBecameInvisible();
+            cullingController.StopTracking(this);
         }
 
         public void SetData(string title, Vector3 position)
@@ -37,6 +45,9 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
         public void OnBecameVisible()
         {
             poolableBehavior.OnBecameVisible().title.text = title;
+
+            if(currentBaseScale != 0)
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
         }
 
         public void OnBecameInvisible()
@@ -44,10 +55,21 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
             poolableBehavior.OnBecameInvisible();
         }
 
-        public void Dispose()
+        public void SetZoom(float baseScale, float baseZoom, float zoom)
         {
-            OnBecameInvisible();
-            cullingController.StopTracking(this);
+            currentBaseScale = baseScale;
+            currentNewScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(currentBaseScale, currentNewScale);
+        }
+
+        public void ResetScale(float scale)
+        {
+            currentNewScale = scale;
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.SetScale(scale, scale);
         }
     }
 }

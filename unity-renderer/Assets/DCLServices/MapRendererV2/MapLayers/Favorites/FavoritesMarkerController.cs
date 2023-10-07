@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.Favorites
 {
-    internal class FavoritesMarkerController : MapLayerControllerBase, IMapCullingListener<IFavoritesMarker>, IMapLayerController
+    internal class FavoritesMarkerController : MapLayerControllerBase, IMapCullingListener<IFavoritesMarker>, IMapLayerController, IZoomScalingLayer
     {
         internal const int PREWARM_PER_FRAME = 20;
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
@@ -68,6 +68,18 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
         public void OnMapObjectCulled(IFavoritesMarker marker)
         {
             marker.OnBecameInvisible();
+        }
+
+        public void ApplyCameraZoom(float baseZoom, float zoom)
+        {
+            foreach (IFavoritesMarker marker in markers.Values)
+                marker.SetZoom(coordsUtils.ParcelSize, baseZoom, zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            foreach (var marker in markers.Values)
+                marker.ResetScale(coordsUtils.ParcelSize);
         }
 
         private void OnMinimapSceneInfoUpdated(IHotScenesController.PlaceInfo sceneInfo)

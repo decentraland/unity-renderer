@@ -16,7 +16,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
     /// <summary>
     /// Updates players' positions within the comms radius
     /// </summary>
-    internal class FriendsMarkersAreaController : MapLayerControllerBase, IMapLayerController
+    internal class FriendsMarkersAreaController : MapLayerControllerBase, IMapLayerController, IZoomScalingLayer
     {
         internal const int PREWARM_PER_FRAME = 20;
 
@@ -97,6 +97,18 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
                 wrapsPool.Release(marker);
                 markers.Remove(id);
             }
+        }
+
+        public void ApplyCameraZoom(float baseZoom, float zoom)
+        {
+            foreach (var marker in markers.Values)
+                marker.SetZoom(coordsUtils.ParcelSize, baseZoom, zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            foreach (var marker in markers.Values)
+                marker.ResetScale(coordsUtils.ParcelSize);
         }
 
         public UniTask Enable(CancellationToken cancellationToken)

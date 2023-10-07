@@ -19,6 +19,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
 
         public async UniTask Install(
             Dictionary<MapLayer, IMapLayerController> writer,
+            List<IZoomScalingLayer> zoomScalingWriter,
             MapRendererConfiguration configuration,
             ICoordsUtils coordsUtils,
             IMapCullingController cullingController,
@@ -38,6 +39,7 @@ namespace DCLServices.MapRendererV2.ComponentsFactory
             controller.Initialize();
 
             writer.Add(MapLayer.PlayerMarker, controller);
+            zoomScalingWriter.Add(controller);
             return;
 
             IPlayerMarker CreateMarker(Transform parent)

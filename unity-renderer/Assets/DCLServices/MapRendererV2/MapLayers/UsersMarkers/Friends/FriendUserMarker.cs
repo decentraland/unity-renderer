@@ -60,6 +60,20 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
             this.profileName = name.Length > MAX_NAME_LENGTH ? name.Substring(0, MAX_NAME_LENGTH) : name;
         }
 
+        public void SetZoom(float baseScale, float baseZoom, float zoom)
+        {
+            float newScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.transform.localScale = new Vector3(newScale, newScale, 1f);
+        }
+
+        public void ResetScale(float scale)
+        {
+            if (poolableBehavior.instance != null)
+                poolableBehavior.instance.transform.localScale = new Vector3(scale, scale, 1f);
+        }
+
         private async UniTaskVoid TrackPosition(Player player, CancellationToken ct)
         {
             var startedTracking = false;
