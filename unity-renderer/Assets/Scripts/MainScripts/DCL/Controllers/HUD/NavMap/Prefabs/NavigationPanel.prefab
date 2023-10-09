@@ -567,17 +567,17 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0334334
-      value: 0.23717171
+      time: 0.7999985
+      value: 0.14049491
       inSlope: Infinity
-      outSlope: Infinity
+      outSlope: -Infinity
       tangentMode: 1
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
-      time: 2.0200195
-      value: 0.49917236
+      time: 1.699997
+      value: 0.36240783
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 97
@@ -585,8 +585,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 3.0133667
-      value: 0.64513254
+      time: 2.7999878
+      value: 0.5673127
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 7
@@ -594,8 +594,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 4.0133667
-      value: 0.7914895
+      time: 4
+      value: 0.7490243
       inSlope: Infinity
       outSlope: Infinity
       tangentMode: 7
@@ -603,7 +603,7 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 5.0158095
+      time: 5
       value: 0.9013244
       inSlope: Infinity
       outSlope: Infinity
@@ -612,8 +612,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 5.999695
-      value: 1.0022354
+      time: 6
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 1
@@ -624,7 +624,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   <zoomVerticalRange>k__BackingField: {x: 14, y: 157}
-  <scaleDuration>k__BackingField: 0.2
+  <scaleDuration>k__BackingField: 0.3
 --- !u!1 &6075758885154517307
 GameObject:
   m_ObjectHideFlags: 0
