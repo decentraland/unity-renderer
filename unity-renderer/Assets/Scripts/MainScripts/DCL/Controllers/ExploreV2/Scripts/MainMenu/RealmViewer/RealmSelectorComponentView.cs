@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
 using System.Linq;
@@ -135,11 +136,6 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         base.Show(instant);
 
         DataStore.i.exploreV2.isSomeModalOpen.Set(true);
-
-        if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("main_realm"))
-        {
-            rootTransform.sizeDelta = new Vector2(rootTransform.sizeDelta.x, 380);
-        }
     }
 
     public override void Hide(bool instant = false)
@@ -217,6 +213,8 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
         RefreshRowColours();
 
         ApplySorting(currentSorting, currentSortingDirection);
+
+        rootTransform.ForceUpdateLayout();
     }
 
     internal void ApplySorting(RealmsSorting sortBy, RealmsSortingDirection sortingDirection)
@@ -254,6 +252,8 @@ public class RealmSelectorComponentView : BaseComponentView, IRealmSelectorCompo
 
         RefreshSortingArrows();
         RefreshRowColours();
+
+        rootTransform.ForceUpdateLayout();
     }
 
     internal void RefreshSortingArrows()
