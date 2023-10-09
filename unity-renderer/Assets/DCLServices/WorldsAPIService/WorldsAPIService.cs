@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Tasks;
 using DCLServices.Lambdas;
-using MainScripts.DCL.Controllers.HotScenes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,6 +14,7 @@ namespace DCLServices.WorldsAPIService
         UniTask<(IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total)> SearchWorlds(string searchText, int pageNumber, int pageSize, CancellationToken ct, bool renewCache = false);
         UniTask<(IReadOnlyList<WorldsResponse.WorldInfo> worlds, int total)> GetWorlds(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default, bool renewCache = false);
         UniTask<IReadOnlyList<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
+        UniTask<WorldsResponse.WorldInfo> GetWorld(string name, CancellationToken ct, bool renewCache = false);
         UniTask<List<WorldsResponse.WorldInfo>> GetWorldsByNamesList(IEnumerable<string> namesList, CancellationToken ct, bool renewCache = false);
     }
 
@@ -67,7 +67,19 @@ namespace DCLServices.WorldsAPIService
             var favorites = await client.GetFavorites(pageNumber, pageSize, disposeCts.Token);
             return favorites;
         }
-        
+
+        public async UniTask<WorldsResponse.WorldInfo> GetWorld(string name, CancellationToken ct, bool renewCache = false)
+        {
+            if (renewCache)
+                worldsByName.Remove(name);
+            else if (worldsByName.TryGetValue(name, out var worldInfo))
+                return worldInfo;
+
+            var world = await client.GetWorld(name, ct);
+            worldsByName[world.world_name] = world;
+            return world;
+        }
+
         public async UniTask<List<WorldsResponse.WorldInfo>> GetWorldsByNamesList(IEnumerable<string> namesList, CancellationToken ct, bool renewCache = false)
         {
             List<WorldsResponse.WorldInfo> alreadyCachedWorlds = new ();

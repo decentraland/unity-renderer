@@ -31,12 +31,17 @@ namespace DCL.ContentModeration
             var contentModerationReportingComponentView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                                  .Instantiate<ContentModerationReportingComponentView>("ContentModerationReportingHUD", "ContentModerationReportingHUD", cancellationToken: ct);
 
+            var contentModerationReportingButtonForWorldsComponentView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                                                          .Instantiate<ContentModerationReportingButtonComponentView>("ContentModerationButtonForWorldsHUD", "ContentModerationButtonForWorldsHUD", cancellationToken: ct);
+
             contentModerationHUDController = new ContentModerationHUDController(
                 adultContentSceneWarningComponentView,
                 adultContentAgeConfirmationComponentView,
                 adultContentEnabledNotificationComponentView,
                 contentModerationReportingComponentView,
+                contentModerationReportingButtonForWorldsComponentView,
                 Environment.i.world.state,
+                DataStore.i.common,
                 DataStore.i.settings,
                 DataStore.i.contentModeration,
                 new WebInterfaceBrowserBridge(),

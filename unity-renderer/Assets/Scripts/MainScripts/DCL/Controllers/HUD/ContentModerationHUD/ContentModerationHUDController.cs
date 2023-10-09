@@ -21,7 +21,9 @@ namespace DCL.ContentModeration
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
         private readonly IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView;
         private readonly IContentModerationReportingComponentView contentModerationReportingComponentView;
+        private readonly IContentModerationReportingButtonComponentView contentModerationReportingButtonForWorldsComponentView;
         private readonly IWorldState worldState;
+        private readonly DataStore_Common commonDataStore;
         private readonly DataStore_Settings settingsDataStore;
         private readonly DataStore_ContentModeration contentModerationDataStore;
         private readonly IBrowserBridge browserBridge;
@@ -30,6 +32,7 @@ namespace DCL.ContentModeration
         private readonly IContentModerationAnalytics contentModerationAnalytics;
 
         private string currentPlaceId;
+        private SceneContentCategory currentContentCategory;
         private CancellationTokenSource reportPlaceCts;
 
         public ContentModerationHUDController(
@@ -37,7 +40,9 @@ namespace DCL.ContentModeration
             IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView,
             IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView,
             IContentModerationReportingComponentView contentModerationReportingComponentView,
+            IContentModerationReportingButtonComponentView contentModerationReportingButtonForWorldsComponentView,
             IWorldState worldState,
+            DataStore_Common commonDataStore,
             DataStore_Settings settingsDataStore,
             DataStore_ContentModeration contentModerationDataStore,
             IBrowserBridge browserBridge,
@@ -49,7 +54,9 @@ namespace DCL.ContentModeration
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
             this.adultContentEnabledNotificationComponentView = adultContentEnabledNotificationComponentView;
             this.contentModerationReportingComponentView = contentModerationReportingComponentView;
+            this.contentModerationReportingButtonForWorldsComponentView = contentModerationReportingButtonForWorldsComponentView;
             this.worldState = worldState;
+            this.commonDataStore = commonDataStore;
             this.settingsDataStore = settingsDataStore;
             this.contentModerationDataStore = contentModerationDataStore;
             this.browserBridge = browserBridge;
@@ -70,6 +77,9 @@ namespace DCL.ContentModeration
             contentModerationReportingComponentView.OnPanelClosed += OnContentModerationReportingClosed;
             contentModerationReportingComponentView.OnSendClicked += OnContentModerationReportingSendClicked;
             contentModerationReportingComponentView.OnLearnMoreClicked += OnLearnMoreClicked;
+            contentModerationReportingButtonForWorldsComponentView.OnContentModerationPressed += OpenContentModerationPanel;
+            OnIsWorldChanged(commonDataStore.isWorld.Get(), false);
+            commonDataStore.isWorld.OnChange += OnIsWorldChanged;
         }
 
         public void Dispose()
@@ -85,6 +95,8 @@ namespace DCL.ContentModeration
             contentModerationReportingComponentView.OnPanelClosed -= OnContentModerationReportingClosed;
             contentModerationReportingComponentView.OnSendClicked -= OnContentModerationReportingSendClicked;
             contentModerationReportingComponentView.OnLearnMoreClicked -= OnLearnMoreClicked;
+            contentModerationReportingButtonForWorldsComponentView.OnContentModerationPressed -= OpenContentModerationPanel;
+            commonDataStore.isWorld.OnChange -= OnIsWorldChanged;
 
             reportPlaceCts.SafeCancelAndDispose();
         }
@@ -93,6 +105,9 @@ namespace DCL.ContentModeration
         {
             if (!worldState.TryGetScene(currentSceneNumber, out IParcelScene currentParcelScene))
                 return;
+
+            currentContentCategory = currentParcelScene.contentCategory;
+            contentModerationReportingButtonForWorldsComponentView.SetContentCategory(currentParcelScene.contentCategory);
 
             switch (currentParcelScene.contentCategory)
             {
@@ -236,6 +251,17 @@ namespace DCL.ContentModeration
         {
             browserBridge.OpenUrl(LEARN_MORE_URL); // TODO (Santi): Change this to the correct URL when it's ready
             contentModerationAnalytics.ClickLearnMoreContentModeration(currentPlaceId);
+        }
+
+        private void OpenContentModerationPanel() =>
+            contentModerationDataStore.reportingScenePanelVisible.Set((!contentModerationDataStore.reportingScenePanelVisible.Get().isVisible, currentContentCategory));
+
+        private void OnIsWorldChanged(bool current, bool _)
+        {
+            if (current)
+                contentModerationReportingButtonForWorldsComponentView.Show();
+            else
+                contentModerationReportingButtonForWorldsComponentView.Hide();
         }
     }
 }

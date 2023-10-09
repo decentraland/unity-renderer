@@ -11,5 +11,6 @@ namespace DCL
         public readonly BaseVariable<AboutResponse.Types.LambdasInfo> playerRealmAboutLambdas = new BaseVariable<AboutResponse.Types.LambdasInfo>();
         public readonly BaseVariable<AboutResponse.Types.ContentInfo> playerRealmAboutContent = new BaseVariable<AboutResponse.Types.ContentInfo>();
         public readonly BaseVariable<string> realmName = new BaseVariable<string>();
+        public readonly BaseVariable<bool> realmWasSetByFirstTime = new (false);
     }
 }

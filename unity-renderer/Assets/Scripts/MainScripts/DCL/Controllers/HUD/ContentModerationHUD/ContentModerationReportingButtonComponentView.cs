@@ -29,6 +29,12 @@ namespace DCL.ContentModeration
 
         public override void RefreshControl() { }
 
+        public void Show() =>
+            base.Show();
+
+        public void Hide() =>
+            base.Hide();
+
         public void SetContentCategory(SceneContentCategory contentCategory)
         {
             switch (contentCategory)

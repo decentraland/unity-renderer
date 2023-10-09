@@ -7,6 +7,8 @@ namespace DCL.ContentModeration
     {
         event Action OnContentModerationPressed;
 
+        void Show();
+        void Hide();
         void SetContentCategory(SceneContentCategory contentCategory);
     }
 }

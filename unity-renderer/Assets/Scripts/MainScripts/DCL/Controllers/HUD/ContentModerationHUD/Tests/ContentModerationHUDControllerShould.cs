@@ -24,6 +24,8 @@ namespace DCL.ContentModeration.Tests
         private IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
         private IAdultContentEnabledNotificationComponentView adultContentEnabledNotificationComponentView;
         private IContentModerationReportingComponentView contentModerationReportingComponentView;
+        private IContentModerationReportingButtonComponentView contentModerationReportingButtonForWorldsComponentView;
+        private DataStore_Common commonDataStore;
         private DataStore_Settings settingsDataStore;
         private DataStore_ContentModeration contentModerationDataStore;
         private IBrowserBridge browserBridge;
@@ -47,6 +49,8 @@ namespace DCL.ContentModeration.Tests
             adultContentAgeConfirmationComponentView = Substitute.For<IAdultContentAgeConfirmationComponentView>();
             adultContentEnabledNotificationComponentView = Substitute.For<IAdultContentEnabledNotificationComponentView>();
             contentModerationReportingComponentView = Substitute.For<IContentModerationReportingComponentView>();
+            contentModerationReportingButtonForWorldsComponentView = Substitute.For<IContentModerationReportingButtonComponentView>();
+            commonDataStore = new DataStore_Common();
             settingsDataStore = new DataStore_Settings();
             contentModerationDataStore = new DataStore_ContentModeration();
             browserBridge = Substitute.For<IBrowserBridge>();
@@ -59,7 +63,9 @@ namespace DCL.ContentModeration.Tests
                 adultContentAgeConfirmationComponentView,
                 adultContentEnabledNotificationComponentView,
                 contentModerationReportingComponentView,
+                contentModerationReportingButtonForWorldsComponentView,
                 Environment.i.world.state,
+                commonDataStore,
                 settingsDataStore,
                 contentModerationDataStore,
                 browserBridge,

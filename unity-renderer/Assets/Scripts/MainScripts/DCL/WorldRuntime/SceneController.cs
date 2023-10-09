@@ -14,6 +14,8 @@ using DCL.Tasks;
 using DCL.World.PortableExperiences;
 using DCLServices.PlacesAPIService;
 using DCLServices.PortableExperiences.Analytics;
+using DCLServices.WorldsAPIService;
+using MainScripts.DCL.Controllers.HotScenes;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -44,6 +46,7 @@ namespace DCL
         private BaseVariable<ExperiencesConfirmationData> pendingPortableExperienceToBeConfirmed => DataStore.i.world.portableExperiencePendingToConfirm;
         private IPortableExperiencesAnalyticsService portableExperiencesAnalytics => Environment.i.serviceLocator.Get<IPortableExperiencesAnalyticsService>();
         private IPlacesAPIService placesAPIService => Environment.i.serviceLocator.Get<IPlacesAPIService>();
+        private IWorldsAPIService worldsAPIService => Environment.i.serviceLocator.Get<IWorldsAPIService>();
         private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
 
         public EntityIdHelper entityIdHelper { get; } = new EntityIdHelper();
@@ -526,13 +529,34 @@ namespace DCL
 
             try
             {
-                var associatedPlace = await placesAPIService
-                                           .GetPlace(parcelScene.sceneData.basePosition, requestPlaceCts.Token)
-                                           .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
+                string placeId;
+                string placeContentRating;
 
-                parcelScene.SetAssociatedPlace(associatedPlace.id);
+                await UniTask
+                     .WaitUntil(() => DataStore.i.realm.realmWasSetByFirstTime.Get(), cancellationToken: requestPlaceCts.Token)
+                     .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
 
-                switch (associatedPlace.content_rating)
+                if (!DataStore.i.common.isWorld.Get())
+                {
+                    var associatedPlace = await placesAPIService
+                                               .GetPlace(parcelScene.sceneData.basePosition, requestPlaceCts.Token)
+                                               .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
+
+                    placeId = associatedPlace.id;
+                    placeContentRating = associatedPlace.content_rating;
+                }
+                else
+                {
+                    var associatedWorld = await worldsAPIService
+                                               .GetWorld(DataStore.i.realm.realmName.Get(), requestPlaceCts.Token)
+                                               .Timeout(TimeSpan.FromSeconds(REQUEST_PLACE_TIME_OUT));
+                    placeId = associatedWorld.id;
+                    placeContentRating = associatedWorld.content_rating;
+                }
+
+                parcelScene.SetAssociatedPlace(placeId);
+
+                switch (placeContentRating)
                 {
                     case "A" or "M":
                         parcelScene.SetContentCategory(SceneContentCategory.ADULT);
