@@ -23,16 +23,14 @@ function craftMessage(packet: ClientPacket): Uint8Array {
 
 export async function createArchipelagoConnection(
   baseUrl: string,
+  archipelagoUrl: string,
   about: AboutResponse,
   identity: ExplorerIdentity
 ): Promise<IRealmAdapter> {
   const logger = createLogger('Archipelago handshake: ')
   const address = identity.address
-  const url = new URL('/archipelago/ws', baseUrl).toString()
-  const wsUrl = url.replace(/^http/, 'ws')
-
   const connected = future<void>()
-  const ws = new WebSocket(wsUrl, 'archipelago')
+  const ws = new WebSocket(archipelagoUrl, 'archipelago')
   ws.binaryType = 'arraybuffer'
   ws.onopen = () => connected.resolve()
 

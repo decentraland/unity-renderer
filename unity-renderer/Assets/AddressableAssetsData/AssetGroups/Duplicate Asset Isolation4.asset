@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Duplicate Asset Isolation4
+  m_EditorClassIdentifier: 
+  m_GroupName: Duplicate Asset Isolation4
+  m_Data:
+    m_SerializedData: []
+  m_GUID: fa816dc15a72a754ea7ef5e0838a10a2
+  m_SerializeEntries:
+  - m_GUID: 11f766998dd0ca24dbe445905db26bc9
+    m_Address: Assets/DCLServices/MapRendererV2/Textures/MapContainer12.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7f73f505dc50cb54c8fd0fe5e1afa9ae, type: 2}
+    - {fileID: 11400000, guid: 4bb5e2c2154c8124db00cf624c64299e, type: 2}

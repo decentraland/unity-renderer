@@ -46,7 +46,7 @@ public interface IWorldsSubSectionComponentView : IPlacesAndEventsSubSectionComp
     /// <summary>
     /// It will be triggered when a new friend handler is added by a world card.
     /// </summary>
-    event Action<FriendsHandler> OnFriendHandlerAdded;
+    event Action<IFriendTrackerHandler> OnFriendHandlerAdded;
 
     /// <summary>
     /// It will be triggered each time the view is enabled.

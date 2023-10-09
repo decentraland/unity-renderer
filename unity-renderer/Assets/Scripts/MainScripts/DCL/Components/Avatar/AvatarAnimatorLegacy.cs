@@ -425,6 +425,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
+    private float lastEmotePlayTime = 0;
     private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
     {
         if (!string.IsNullOrEmpty(emoteId))
@@ -434,6 +435,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
+                lastEmotePlayTime = Time.time;
+
                 emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
             }
         }
@@ -454,7 +457,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
-    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude)
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
+        bool ignoreTimestamp)
     {
         if (animation == null)
             return;
@@ -466,8 +470,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
 
         bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
-
-        var mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && blackboard.expressionTriggerTimestamp != timestamps;
+        bool mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && (blackboard.expressionTriggerTimestamp != timestamps || ignoreTimestamp);
 
         if (loop && blackboard.expressionTriggerId == emoteId)
             return;
@@ -492,7 +495,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             currentEmote = animation[emoteId];
             lastEmoteLoopCount = GetCurrentEmoteLoopCount();
             currentState = State_Expression;
-            OnUpdateWithDeltaTime(Time.deltaTime);
         }
     }
 

@@ -20,7 +20,7 @@ import { reducers } from 'shared/store/rootReducer'
 import { allScenesEvent } from 'shared/world/parcelSceneManager'
 
 const about: AboutResponse = {
-  comms: { healthy: false, protocol: 'v2' },
+  comms: { healthy: false, protocol: 'v2', adapter: 'offline' },
   configurations: {
     scenesUrn: [],
     globalScenesUrn: [],
