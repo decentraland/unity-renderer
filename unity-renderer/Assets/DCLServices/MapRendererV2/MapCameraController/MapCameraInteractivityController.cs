@@ -52,10 +52,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         public void RemoveHighlight()
         {
-            if (marker == null)
-                return;
-
-            marker.Deactivate();
+            marker?.Deactivate();
         }
 
         public bool TryGetParcel(Vector2 normalizedCoordinates, out Vector2Int parcel) =>
@@ -94,6 +91,11 @@ namespace DCLServices.MapRendererV2.MapCameraController
                 markersPool.Release(marker);
                 marker = null;
             }
+        }
+
+        public void ApplyCameraZoom(float baseZoom, float newZoom)
+        {
+            marker?.SetZoom(baseZoom, newZoom);
         }
     }
 }

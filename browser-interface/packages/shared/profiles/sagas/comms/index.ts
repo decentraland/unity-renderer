@@ -13,7 +13,7 @@ export async function fetchPeerProfile(
   minimumVersion?: number
 ): Promise<Avatar | null> {
   const targetVersion = minimumVersion || 0
-  const isConnectedToPeer = requestProfileFromPeers(room, userId, targetVersion)
+  const isConnectedToPeer = await requestProfileFromPeers(room, userId, targetVersion)
   if (!isConnectedToPeer) {
     return null
   }
