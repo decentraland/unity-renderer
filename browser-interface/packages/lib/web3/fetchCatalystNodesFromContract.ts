@@ -6,7 +6,6 @@ import { getSelectedNetwork } from 'shared/dao/selectors'
 import { isMainRealmEnabled } from 'shared/meta/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { catalystABI } from './catalystABI'
-import { getEthereumNetworkFromProvider } from './getEthereumNetworkFromProvider'
 import { requestManager } from './provider'
 
 export type CatalystNode = {
