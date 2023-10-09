@@ -234,7 +234,7 @@ public class WorldsSubSectionComponentController : IWorldsSubSectionComponentCon
         exploreV2Analytics.SendWorldTeleport(worldFromAPI.id, worldFromAPI.title);
     }
 
-    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
+    private void View_OnFriendHandlerAdded(IFriendTrackerHandler friendsHandler) =>
         friendsTrackerController.AddHandler(friendsHandler);
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)

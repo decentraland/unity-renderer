@@ -18,7 +18,7 @@ namespace DCLServices.MapRendererV2.TestScene
             var addressableResourceProvider = new AddressableResourceProvider();
             result.Register<IAddressableResourceProvider>(() => addressableResourceProvider);
 
-            var mapRenderer = new MapRenderer(new MapRendererChunkComponentsFactory(parcelSize, atlasChunkSize, cullingBoundsInParcels));
+            var mapRenderer = new MapRenderer(new MapRendererChunkComponentsFactory());
 
             result.Register<IMapRenderer>(() => mapRenderer);
             result.Register<IHotScenesFetcher>(() => container.hotScenesController);

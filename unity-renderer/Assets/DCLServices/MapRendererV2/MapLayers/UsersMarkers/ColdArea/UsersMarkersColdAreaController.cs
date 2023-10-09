@@ -36,6 +36,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         private ColdUserMarkersStorage storage;
 
         private CancellationTokenSource cancellationTokenSource;
+        IColdUserMarker[] instances;
 
         public UsersMarkersColdAreaController(Transform parent, ColdUserMarkerObject prefab, ColdUserMarkerBuilder builder,
             IHotScenesFetcher hotScenesFetcher, BaseVariable<string> realmName, Vector2IntVariable userPosition,
@@ -56,9 +57,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         {
             cancellationTokenSource = LinkWithDisposeToken(cancellationToken);
             cancellationToken = cancellationTokenSource.Token;
-
-            var instances = new IColdUserMarker[maxMarkers];
-
+            instances = new IColdUserMarker[maxMarkers];
             async UniTask InstantiateMarkers(CancellationToken ct)
             {
                 for (var i = 0; i < maxMarkers;)
@@ -173,13 +172,21 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         {
             hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.FOREGROUND);
             ColdAreasUpdateLoop(LinkWithDisposeToken(cancellationToken).Token).Forget();
+            foreach (IColdUserMarker coldUserMarker in instances)
+            {
+                coldUserMarker.SetActive(true);
+            }
             return UniTask.CompletedTask;
         }
 
         public UniTask Disable(CancellationToken cancellationToken)
         {
             hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.BACKGROUND);
-
+            foreach (IColdUserMarker coldUserMarker in instances)
+            {
+                if(coldUserMarker != null)
+                    coldUserMarker.SetActive(false);
+            }
             // cancellation of `ColdAreasUpdateLoop` is handled by the cancellation token
             return UniTask.CompletedTask;
         }

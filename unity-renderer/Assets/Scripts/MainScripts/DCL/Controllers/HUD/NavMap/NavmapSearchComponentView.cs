@@ -3,6 +3,7 @@ using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 using UnityEngine.UI;
 
 public class NavmapSearchComponentView : BaseComponentView, INavmapSearchComponentView
@@ -18,6 +19,7 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
 
     public event Action<bool> OnSelectedSearchBar;
     public event Action<string> OnSearchedText;
+    public event Action<Vector2Int> OnSelectedSearchRecord;
 
     private UnityObjectPool<SearchRecordComponentView> recordsPool;
     internal readonly List<SearchRecordComponentView> usedRecords = new ();
@@ -81,20 +83,27 @@ public class NavmapSearchComponentView : BaseComponentView, INavmapSearchCompone
         foreach (IHotScenesController.PlaceInfo placeInfo in places)
         {
             SearchRecordComponentView searchRecordComponentView = recordsPool.Get();
+            searchRecordComponentView.OnSelectedRegularRecord -= OnSelectedRegularRecord;
+            searchRecordComponentView.OnSelectedRegularRecord += OnSelectedRegularRecord;
             searchRecordComponentView.SetModel(new SearchRecordComponentModel()
             {
                 recordText = placeInfo.title,
                 isHistory = false,
-                playerCount = placeInfo.user_count
+                playerCount = placeInfo.user_count,
+                placeCoordinates = DCL.Helpers.Utils.ConvertStringToVector(placeInfo.base_position)
             });
             usedRecords.Add(searchRecordComponentView);
         }
     }
 
-    private void OnSelectedHistoryRecord(string searchText)
+    private void OnSelectedRegularRecord(Vector2Int coordinates)
     {
-        searchBar.SubmitSearch(searchText, true, false);
+        OnSelectedSearchRecord?.Invoke(coordinates);
+        searchBar.ClearSearch(false);
     }
+
+    private void OnSelectedHistoryRecord(string searchText) =>
+        searchBar.SubmitSearch(searchText, true, false);
 
     public void ClearResults()
     {

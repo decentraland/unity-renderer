@@ -1,4 +1,5 @@
-﻿using DCLServices.MapRendererV2.CoordsUtils;
+﻿using DCL;
+using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
 using DG.Tweening;
@@ -15,6 +16,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         private const int MAX_TEXTURE_SIZE = 4096;
 
         public event Action<IMapCameraControllerInternal> OnReleasing;
+        public event Action<float, float> ZoomChanged;
 
         public MapLayer EnabledLayers { get; private set; }
 
@@ -156,16 +158,14 @@ namespace DCLServices.MapRendererV2.MapCameraController
             cullingController.SetCameraDirty(this);
         }
 
-        public void TranslateTo(Vector2 coordinates, float zoom, float duration, Action onComplete = null)
+        public void TranslateTo(Vector2 coordinates, float duration, Action onComplete = null)
         {
             translationSequence = DOTween.Sequence();
 
             Vector3 position = coordsUtils.CoordsToPositionUnclamped(coordinates);
             Vector3 targetPosition = ClampLocalPosition(new Vector3(position.x, position.y, CAMERA_HEIGHT));
-            zoom = Mathf.Lerp(zoomValues.y, zoomValues.x, Mathf.Clamp01(zoom));
 
-            translationSequence.Join(mapCameraObject.mapCamera.DOOrthoSize(zoom, duration).SetEase(Ease.OutQuart))
-                               .Join(mapCameraObject.transform.DOLocalMove(targetPosition, duration).SetEase(Ease.OutQuart))
+            translationSequence.Join(mapCameraObject.transform.DOLocalMove(targetPosition, duration).SetEase(Ease.OutQuart))
                                .OnComplete(() =>
                                 {
                                     CalculateCameraPositionBounds();
@@ -179,6 +179,12 @@ namespace DCLServices.MapRendererV2.MapCameraController
             zoom = Mathf.Clamp01(zoom);
             mapCameraObject.mapCamera.orthographicSize = Mathf.Lerp(zoomValues.y, zoomValues.x, zoom);
 
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("map_focus_home_or_user"))
+            {
+                interactivityBehavior.ApplyCameraZoom(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+                ZoomChanged?.Invoke(zoomValues.x, mapCameraObject.mapCamera.orthographicSize);
+            }
+
             CalculateCameraPositionBounds();
         }
 
@@ -186,6 +192,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         {
             localPos.x = Mathf.Clamp(localPos.x, cameraPositionBounds.xMin, cameraPositionBounds.xMax);
             localPos.y = Mathf.Clamp(localPos.y, cameraPositionBounds.yMin, cameraPositionBounds.yMax);
+
             return localPos;
         }
 
@@ -196,8 +203,21 @@ namespace DCLServices.MapRendererV2.MapCameraController
             var cameraYSize = mapCameraObject.mapCamera.orthographicSize;
             var cameraXSize = cameraYSize * mapCameraObject.mapCamera.aspect;
 
-            cameraPositionBounds = Rect.MinMaxRect(worldBounds.xMin + cameraXSize, worldBounds.yMin + cameraYSize,
-                worldBounds.xMax - cameraXSize, worldBounds.yMax - cameraYSize);
+            float xMin = worldBounds.xMin + cameraXSize;
+            float xMax = worldBounds.xMax - cameraXSize;
+
+            float yMin = worldBounds.yMin + cameraYSize;
+            float yMax = worldBounds.yMax - cameraYSize;
+
+            // If the map's width is smaller than the camera's width, disable X-drag
+            if (worldBounds.xMax - worldBounds.xMin < 2 * cameraXSize)
+                xMin = xMax = 0;
+
+            // If the map's height is smaller than the camera's height, disable Y-drag
+            if (worldBounds.yMax - worldBounds.yMin < 2 * cameraYSize)
+                yMin = yMax = 0;
+
+            cameraPositionBounds = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
         }
 
         public void SuspendRendering()

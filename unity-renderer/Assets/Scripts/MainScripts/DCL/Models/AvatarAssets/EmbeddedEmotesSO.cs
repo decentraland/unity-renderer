@@ -21,7 +21,7 @@ namespace DCL.Emotes
 
         public IEnumerable<EmbeddedEmote> GetAllEmotes()
         {
-            if (items != null) return items;
+            if (items is { Count: > 0 }) return items;
 
             items = new List<EmbeddedEmote>();
             items.AddRange(emotes);

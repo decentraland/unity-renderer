@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Tasks;
 using DCLServices.MapRendererV2.MapCameraController;
 using System;
 using System.Threading;
@@ -13,6 +14,9 @@ namespace DCL
 
         private readonly NavmapZoomView view;
 
+        private AnimationCurve normalizedCurve;
+        private int zoomSteps;
+
         private bool active;
 
         private CancellationTokenSource cts;
@@ -22,28 +26,75 @@ namespace DCL
         private int currentZoomLevel;
 
         private IMapCameraController cameraController;
+        private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
 
-        private readonly AnimationCurve normalizedCurve;
-        private readonly int zoomSteps;
-
-        public NavmapZoomViewController(NavmapZoomView view)
+        public NavmapZoomViewController(NavmapZoomView view, BaseVariable<FeatureFlag> featureFlagsFlags)
         {
             this.view = view;
+            this.featureFlagsFlags = featureFlagsFlags;
 
-            // Keys should be between [0;1]
-            var keys = view.normalizedZoomCurve.keys;
+            if (featureFlagsFlags.Get().IsInitialized)
+                HandleFeatureFlag();
+            else
+                featureFlagsFlags.OnChange += OnFeatureFlagsChanged;
 
-            var firstKey = keys[0];
-            firstKey.time = 0;
-            firstKey.value = 0;
-            keys[0] = firstKey;
+            normalizedCurve = view.normalizedZoomCurve;
+            zoomSteps = normalizedCurve.length;
 
-            var lastKey = keys[^1];
-            lastKey.value = 1;
-            keys[^1] = lastKey;
+            CurveClamp01();
+        }
 
-            normalizedCurve = new AnimationCurve(keys);
-            zoomSteps = keys.Length;
+        private void OnFeatureFlagsChanged(FeatureFlag current, FeatureFlag previous)
+        {
+            featureFlagsFlags.OnChange -= OnFeatureFlagsChanged;
+            HandleFeatureFlag();
+        }
+
+        private void HandleFeatureFlag()
+        {
+            if (featureFlagsFlags.Get().IsFeatureEnabled("map_focus_home_or_user")) return;
+
+            view.zoomVerticalRange = new Vector2Int(view.zoomVerticalRange.x, 40);
+
+            normalizedCurve = new AnimationCurve();
+            normalizedCurve.AddKey(0, 0);
+            normalizedCurve.AddKey(1, 0.25f);
+            normalizedCurve.AddKey(2, 0.5f);
+            normalizedCurve.AddKey(3, 0.75f);
+            normalizedCurve.AddKey(4, 1);
+            zoomSteps = normalizedCurve.length;
+        }
+
+        public void Dispose()
+        {
+            cts.SafeCancelAndDispose();
+        }
+
+        private void CurveClamp01()
+        {
+            // Keys should be int for zoomSteps to work properly
+            for (var i = 0; i < normalizedCurve.keys.Length; i++)
+            {
+                Keyframe keyFrame = normalizedCurve.keys[i];
+
+                if (i == 0)
+                {
+                    keyFrame.time = 0;
+                    keyFrame.value = 0;
+                }
+                else if (i == normalizedCurve.length - 1)
+                {
+                    keyFrame.time = Mathf.RoundToInt(keyFrame.time);
+                    keyFrame.value = 1;
+                }
+                else
+                {
+                    keyFrame.time = Mathf.RoundToInt(keyFrame.time);
+                    keyFrame.value = keyFrame.value;
+                }
+
+                normalizedCurve.MoveKey(i, keyFrame);
+            }
         }
 
         public float ResetZoomToMidValue()
@@ -97,7 +148,7 @@ namespace DCL
             if (value == 0 || Mathf.Abs(value) < MOUSE_WHEEL_THRESHOLD)
                 return;
 
-            var zoomAction = value > 0 ? DCLAction_Hold.ZoomIn : DCLAction_Hold.ZoomOut;
+            DCLAction_Hold zoomAction = value > 0 ? DCLAction_Hold.ZoomIn : DCLAction_Hold.ZoomOut;
             Zoom(zoomAction);
         }
 
@@ -114,14 +165,14 @@ namespace DCL
             if (!active || isScaling)
                 return;
 
+            EventSystem.current.SetSelectedGameObject(null);
+
             switch (action)
             {
                 case DCLAction_Hold.ZoomIn when Mathf.Approximately(targetNormalizedZoom, 1f):
                 case DCLAction_Hold.ZoomOut when Mathf.Approximately(targetNormalizedZoom, 0f):
                     return;
             }
-
-            EventSystem.current.SetSelectedGameObject(null);
 
             SetZoomLevel(currentZoomLevel + (action == DCLAction_Hold.ZoomIn ? 1 : -1));
             ScaleOverTime(cameraController.Zoom, targetNormalizedZoom, cts.Token).Forget();
@@ -138,7 +189,7 @@ namespace DCL
         private async UniTaskVoid ScaleOverTime(float from, float to, CancellationToken ct)
         {
             isScaling = true;
-            var scaleDuration = view.scaleDuration;
+            float scaleDuration = view.scaleDuration;
 
             for (float timer = 0; timer < scaleDuration; timer += Time.deltaTime)
             {
@@ -152,15 +203,6 @@ namespace DCL
             }
 
             isScaling = false;
-        }
-
-        public void Dispose()
-        {
-            if (cts != null)
-            {
-                cts.Cancel();
-                cts.Dispose();
-            }
         }
     }
 }

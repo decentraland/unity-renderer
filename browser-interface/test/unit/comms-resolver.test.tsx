@@ -19,7 +19,7 @@ describe('Comms resolver', () => {
         comms: {
           healthy: false,
           protocol: 'offline',
-          fixedAdapter: 'offline:offline'
+          adapter: 'offline:offline'
         },
         configurations: {
           realmName: 'offline',
@@ -48,7 +48,7 @@ describe('Comms resolver', () => {
         comms: {
           healthy: false,
           protocol: 'offline',
-          fixedAdapter: 'offline:offline'
+          adapter: 'offline:offline'
         },
         configurations: {
           realmName: 'offline?baseUrl=peer.decentraland.zone',
@@ -76,7 +76,7 @@ describe('Comms resolver', () => {
         comms: {
           healthy: false,
           protocol: 'offline',
-          fixedAdapter: 'offline:offline'
+          adapter: 'offline:offline'
         },
         configurations: {
           realmName: 'offline?baseUrl=https://peer.decentraland.zone',
@@ -104,7 +104,7 @@ describe('Comms resolver', () => {
         comms: {
           healthy: false,
           protocol: 'offline',
-          fixedAdapter: 'offline:offline'
+          adapter: 'offline:offline'
         },
         configurations: {
           realmName: 'offline?baseUrl=http://peer.decentraland.zone',

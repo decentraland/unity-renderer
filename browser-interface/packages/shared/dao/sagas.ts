@@ -108,7 +108,6 @@ function clearQsRealm() {
 
 function* tryConnectRealm(realm: string) {
   const realmConfig = yield call(resolveRealmConfigFromString, realm)
-
   const lastConnectedCandidates = yield select(getLastConnectedCandidates)
   lastConnectedCandidates.set(realmConfig.baseUrl, Date.now())
   yield put(setLastConnectedCandidates(lastConnectedCandidates))

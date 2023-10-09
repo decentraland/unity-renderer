@@ -5,11 +5,10 @@ using MainScripts.DCL.Helpers.Utils;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 {
-    internal class ScenesOfInterestMarkersController : MapLayerControllerBase, IMapCullingListener<ISceneOfInterestMarker>, IMapLayerController
+    internal class ScenesOfInterestMarkersController : MapLayerControllerBase, IMapCullingListener<ISceneOfInterestMarker>, IMapLayerController, IZoomScalingLayer
     {
         internal const int PREWARM_PER_FRAME = 20;
         private const string EMPTY_PARCEL_NAME = "Empty parcel";
@@ -130,6 +129,18 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
 
         private static bool IsEmptyParcel(MinimapMetadata.MinimapSceneInfo sceneInfo) =>
             sceneInfo.name is EMPTY_PARCEL_NAME;
+
+        public void ApplyCameraZoom(float baseZoom, float zoom)
+        {
+            foreach (ISceneOfInterestMarker marker in markers.Values)
+                marker.SetZoom(coordsUtils.ParcelSize, baseZoom, zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            foreach (var marker in markers.Values)
+                marker.ResetScale(coordsUtils.ParcelSize);
+        }
 
         public UniTask Disable(CancellationToken cancellationToken)
         {

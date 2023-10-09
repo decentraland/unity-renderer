@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 84740712157323780, guid: 79e73d05107c94490a167f9282ea3552,
@@ -263,6 +264,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 111.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5731843546294456135, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      propertyPath: hoverScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6334812375382215234, guid: 79e73d05107c94490a167f9282ea3552,
         type: 3}
@@ -549,6 +555,13 @@ PrefabInstance:
       value: 512
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8727948855350530120, guid: 79e73d05107c94490a167f9282ea3552,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1159164306159574365}
   m_SourcePrefab: {fileID: 100100000, guid: 79e73d05107c94490a167f9282ea3552, type: 3}
 --- !u!224 &116567353491093194 stripped
 RectTransform:
@@ -587,5 +600,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRectTransform: {fileID: 116567353491093194}
-  hoverScale: 1.02
+  hoverScale: 1
   normalScale: 1

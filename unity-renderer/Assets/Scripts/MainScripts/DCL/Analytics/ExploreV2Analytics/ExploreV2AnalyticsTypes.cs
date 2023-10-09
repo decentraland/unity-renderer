@@ -11,6 +11,7 @@ namespace ExploreV2Analytics
         FromExplore,
         FromSearch,
         FromFavorites,
+        FromNavmap,
     }
 
     public enum FilterType
