@@ -12,7 +12,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
         public readonly float Zoom;
         public readonly Vector2Int TextureResolution;
         public readonly Vector2Int ZoomValues;
-        public readonly Dictionary<MapLayer, IMapLayerParameter> LayerParameters;
         public readonly IMapActivityOwner ActivityOwner;
 
         /// <param name="enabledLayers">active layers</param>
@@ -20,7 +19,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// <param name="zoom">default zoom</param>
         /// <param name="textureResolution">desired texture resolution</param>
         /// <param name="zoomValues">zoom thresholds in parcels</param>
-        public MapCameraInput(IMapActivityOwner activityOwner, MapLayer enabledLayers, Dictionary<MapLayer, IMapLayerParameter> layerParameters, Vector2Int position, float zoom,
+        public MapCameraInput(IMapActivityOwner activityOwner, MapLayer enabledLayers, Vector2Int position, float zoom,
             Vector2Int textureResolution, Vector2Int zoomValues)
         {
             EnabledLayers = enabledLayers;
@@ -28,7 +27,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
             Zoom = zoom;
             TextureResolution = textureResolution;
             ZoomValues = zoomValues;
-            LayerParameters = layerParameters;
             ActivityOwner = activityOwner;
         }
     }

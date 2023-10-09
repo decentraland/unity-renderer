@@ -19,7 +19,7 @@ namespace DCLServices.MapRendererV2
         internal Dictionary<MapLayer, IMapLayerController> layersDictionary_Test => layers.ToDictionary(l => l.Key, l => l.Value.MapLayerController);
 
         internal void EnableLayers_Test(IMapActivityOwner owner, MapLayer mask) =>
-            EnableLayers(owner, mask, new Dictionary<MapLayer, IMapLayerParameter>());
+            EnableLayers(owner, mask);
 
         internal void DisableLayers_Test(IMapActivityOwner owner, MapLayer mask) =>
             DisableLayers(owner, mask);

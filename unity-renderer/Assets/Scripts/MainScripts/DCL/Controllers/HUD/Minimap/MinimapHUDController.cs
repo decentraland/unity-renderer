@@ -20,6 +20,7 @@ using Object = UnityEngine.Object;
 public class MinimapHUDController : IHUD, IMapActivityOwner
 {
     private static bool VERBOSE = false;
+    private const MapLayer RENDER_LAYERS = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest | MapLayer.Favorites | MapLayer.Friends;
 
     public MinimapHUDView view;
 
@@ -28,7 +29,7 @@ public class MinimapHUDController : IHUD, IMapActivityOwner
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
     private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
     private Vector2Int currentCoords;
-    private Vector2Int homeCoords = new Vector2Int(0, 0);
+    private Vector2Int homeCoords = new (0, 0);
 
     private readonly MinimapMetadataController metadataController;
     private readonly IHomeLocationController locationController;
@@ -42,8 +43,8 @@ public class MinimapHUDController : IHUD, IMapActivityOwner
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
-    private static readonly MapLayer RENDER_LAYERS
-        = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest | MapLayer.Favorites | MapLayer.Friends;
+    public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters { get; } = new Dictionary<MapLayer, IMapLayerParameter>
+        { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = false} } };
 
     private Service<IMapRenderer> mapRenderer;
     private IMapCameraController mapCameraController;
@@ -127,14 +128,10 @@ public class MinimapHUDController : IHUD, IMapActivityOwner
     {
         view.pixelPerfectMapRendererTextureProvider.SetHudCamera(DataStore.i.camera.hudsCamera.Get());
 
-        var mapLayerParameters = new Dictionary<MapLayer, IMapLayerParameter>
-            { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = false} } };
-
         mapCameraController = mapRenderer.Ref.RentCamera(
             new MapCameraInput(
                 this,
                 RENDER_LAYERS,
-                mapLayerParameters,
                 Vector2Int.RoundToInt(MapRendererTrackPlayerPosition.GetPlayerCentricCoords(playerCoords.Get())),
                 1,
                 view.pixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),

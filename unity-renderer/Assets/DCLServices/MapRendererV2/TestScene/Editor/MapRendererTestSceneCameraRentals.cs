@@ -12,9 +12,10 @@ namespace DCLServices.MapRendererV2.TestScene
     public class MapRendererTestSceneCameraRentals : IMapRendererTestSceneElementProvider, IMapActivityOwner
     {
         private readonly MapRenderer mapRenderer;
+        private readonly List<IMapCameraController> mapCameraControllers = new ();
 
         private VisualElement rents;
-        private readonly List<IMapCameraController> mapCameraControllers = new ();
+        public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters { get; } = new Dictionary<MapLayer, IMapLayerParameter>();
 
         public MapRendererTestSceneCameraRentals(MapRenderer mapRenderer)
         {
@@ -47,7 +48,6 @@ namespace DCLServices.MapRendererV2.TestScene
                     new MapCameraInput(
                         this,
                         (MapLayer)enabledLayers.value,
-                        new Dictionary<MapLayer, IMapLayerParameter>(),
                         position.value,
                         zoom.value,
                         texRes.value,

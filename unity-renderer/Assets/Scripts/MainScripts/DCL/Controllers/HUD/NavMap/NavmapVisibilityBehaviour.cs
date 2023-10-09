@@ -46,7 +46,9 @@ namespace DCL
 
         private IMapCameraController cameraController;
         private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
-        private readonly Dictionary<MapLayer, IMapLayerParameter> mapLayerParameters = new() { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = true} } };
+        public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters  { get; } = new Dictionary<MapLayer, IMapLayerParameter>
+            { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = true} } };
+
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
         public NavmapVisibilityBehaviour(
@@ -177,7 +179,6 @@ namespace DCL
                     new MapCameraInput(
                         this,
                         ACTIVE_MAP_LAYERS,
-                        mapLayerParameters,
                         Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
                         navmapZoomViewController.ResetZoomToMidValue(),
                         rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
