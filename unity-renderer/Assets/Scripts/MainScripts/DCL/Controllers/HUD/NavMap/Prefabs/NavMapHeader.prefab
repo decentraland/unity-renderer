@@ -1179,6 +1179,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1948462310988936940, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 170
+      objectReference: {fileID: 0}
+    - target: {fileID: 1948462310988936940, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
@@ -1204,6 +1209,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2015362782760519154, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 174
+      objectReference: {fileID: 0}
+    - target: {fileID: 2015362782760519154, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
@@ -1216,6 +1226,151 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2336410439161125310, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -60.3406
+      objectReference: {fileID: 0}
+    - target: {fileID: 2336410439161125310, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.b
+      value: 0.09411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.g
+      value: 0.08235294
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.r
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_FadeDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_FadeDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.b
+      value: 0.83137256
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.g
+      value: 0.8039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.r
+      value: 0.8117647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.b
+      value: 0.21150766
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.g
+      value: 0.42116228
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.r
+      value: 0.9150943
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.b
+      value: 0.92941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.g
+      value: 0.92156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570110717146215505, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.r
+      value: 0.9254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 3349881950591198022, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -51.6363
+      objectReference: {fileID: 0}
+    - target: {fileID: 3349881950591198022, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.700043
+      objectReference: {fileID: 0}
+    - target: {fileID: 3486174961931710572, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -60.3406
+      objectReference: {fileID: 0}
+    - target: {fileID: 3486174961931710572, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.59996
       objectReference: {fileID: 0}
     - target: {fileID: 3695249173653152852, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
@@ -1250,7 +1405,7 @@ PrefabInstance:
     - target: {fileID: 3695249173653152852, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 362
+      value: 357.2459
       objectReference: {fileID: 0}
     - target: {fileID: 3695249173653152852, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
@@ -1317,10 +1472,145 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3928310836764874321, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -51.6363
+      objectReference: {fileID: 0}
+    - target: {fileID: 3928310836764874321, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.7
+      objectReference: {fileID: 0}
     - target: {fileID: 8541987404686844328, guid: 3015af70c81b4784eb9745dea5f035e2,
         type: 3}
       propertyPath: m_Name
       value: AtlasLayersSectionsSelector
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: selectedTextColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.b
+      value: 0.09411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.g
+      value: 0.08235294
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: unselectedTextColor.r
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_FadeDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_NormalColor.b
+      value: 0.22352941
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_NormalColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_FadeDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_NormalColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.b
+      value: 0.83137256
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.g
+      value: 0.8039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_PressedColor.r
+      value: 0.8117647
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.b
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.g
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_SelectedColor.r
+      value: 0.9882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.b
+      value: 0.21150766
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.g
+      value: 0.42116228
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForSelected.m_HighlightedColor.r
+      value: 0.9150943
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.b
+      value: 0.92941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.g
+      value: 0.92156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 9038943690015209763, guid: 3015af70c81b4784eb9745dea5f035e2,
+        type: 3}
+      propertyPath: backgroundTransitionColorsForUnselected.m_HighlightedColor.r
+      value: 0.9254902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
