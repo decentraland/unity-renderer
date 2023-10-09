@@ -357,5 +357,6 @@ namespace DCL.ECS7.InternalComponents
         public Transform transform;
         public Tweener tweener;
         public PBTween.ModeOneofCase tweenMode;
+        public PBTween lastModel;
     }
 }

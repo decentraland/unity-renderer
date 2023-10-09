@@ -4,18 +4,20 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
     private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
     private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
-    private PBTween lastModel;
+    private readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>();
 
     public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
         this.internalTweenComponent = internalTweenComponent;
         this.sbcInternalComponent = sbcInternalComponent;
+        InitializeEasingFunctionsMap();
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -40,7 +42,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
         var internalComponentModel = internalTweenComponent.GetFor(scene, entity)?.model ?? new InternalTween();
 
-        if (!IsSameAsLastModel(model))
+        if (!AreSameModels(model, internalComponentModel.lastModel))
         {
             Transform entityTransform = entity.gameObject.transform;
             float durationInSeconds = model.Duration / 1000;
@@ -62,14 +64,16 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
 
-            // TODO: Evaluate if we need to use local or global values...
+            var ease = Ease.Linear;
+            easingFunctionsMap.TryGetValue(model.TweenFunction, out ease);
+
             switch (model.ModeCase)
             {
                 case PBTween.ModeOneofCase.Rotate:
                     entityTransform.localRotation = ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start);
                     tweener = entityTransform.DOLocalRotateQuaternion(
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
-                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                        durationInSeconds).SetEase(ease).SetAutoKill(false);
 
                     sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
                     break;
@@ -77,7 +81,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                     entityTransform.localScale = ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start);
                     tweener = entityTransform.DOScale(
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
-                        durationInSeconds).SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction)).SetAutoKill(false);
+                        durationInSeconds).SetEase(ease).SetAutoKill(false);
 
                     sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
                     break;
@@ -91,7 +95,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
                     entityTransform.localPosition = startPos;
                     tweener = entityTransform.DOLocalMove(endPos, durationInSeconds)
-                                             .SetEase(SDKEasingFunctinToDOTweenEaseType(model.TweenFunction))
+                                             .SetEase(ease)
                                              .SetAutoKill(false);
 
                     sbcInternalComponent.SetPosition(scene, entity, entityTransform.position);
@@ -114,103 +118,67 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         else
             internalComponentModel.tweener.Pause();
 
+        internalComponentModel.lastModel = model;
         internalTweenComponent.PutFor(scene, entity, internalComponentModel);
-        lastModel = model;
     }
 
-    private bool IsSameAsLastModel(PBTween targetModel)
+    private bool AreSameModels(PBTween modelA, PBTween modelB)
     {
-        if (lastModel == null)
+        if (modelB == null || modelA == null)
             return false;
 
-        if (lastModel.ModeCase != targetModel.ModeCase
-            || lastModel.TweenFunction != targetModel.TweenFunction
-            || !lastModel.CurrentTime.Equals(targetModel.CurrentTime)
-            || !lastModel.Duration.Equals(targetModel.Duration))
+        if (modelB.ModeCase != modelA.ModeCase
+            || modelB.TweenFunction != modelA.TweenFunction
+            || !modelB.CurrentTime.Equals(modelA.CurrentTime)
+            || !modelB.Duration.Equals(modelA.Duration))
             return false;
 
-        switch (targetModel.ModeCase)
+        switch (modelA.ModeCase)
         {
             case PBTween.ModeOneofCase.Scale:
-                return lastModel.Scale.Start.Equals(targetModel.Scale.Start)
-                       && lastModel.Scale.End.Equals(targetModel.Scale.End);
+                return modelB.Scale.Start.Equals(modelA.Scale.Start)
+                       && modelB.Scale.End.Equals(modelA.Scale.End);
             case PBTween.ModeOneofCase.Rotate:
-                return lastModel.Rotate.Start.Equals(targetModel.Rotate.Start)
-                       && lastModel.Rotate.End.Equals(targetModel.Rotate.End);
+                return modelB.Rotate.Start.Equals(modelA.Rotate.Start)
+                       && modelB.Rotate.End.Equals(modelA.Rotate.End);
             case PBTween.ModeOneofCase.Move:
             default:
-                return lastModel.Move.Start.Equals(targetModel.Move.Start)
-                       && lastModel.Move.End.Equals(targetModel.Move.End);
+                return modelB.Move.Start.Equals(modelA.Move.Start)
+                       && modelB.Move.End.Equals(modelA.Move.End);
         }
     }
 
-    private Ease SDKEasingFunctinToDOTweenEaseType(EasingFunction easingFunction)
+    private void InitializeEasingFunctionsMap()
     {
-        switch (easingFunction)
-        {
-            case EasingFunction.TfEaseinsine:
-                return Ease.InSine;
-            case EasingFunction.TfEaseoutsine:
-                return Ease.OutSine;
-            case EasingFunction.TfEasesine:
-                return Ease.InOutSine;
-            case EasingFunction.TfEaseinquad:
-                return Ease.InQuad;
-            case EasingFunction.TfEaseoutquad:
-                return Ease.OutQuad;
-            case EasingFunction.TfEasequad:
-                return Ease.InOutQuad;
-            case EasingFunction.TfEaseinexpo:
-                return Ease.InExpo;
-            case EasingFunction.TfEaseoutexpo:
-                return Ease.OutExpo;
-            case EasingFunction.TfEaseexpo:
-                return Ease.InOutExpo;
-            case EasingFunction.TfEaseinelastic:
-                return Ease.InElastic;
-            case EasingFunction.TfEaseoutelastic:
-                return Ease.OutElastic;
-            case EasingFunction.TfEaseelastic:
-                return Ease.InOutElastic;
-            case EasingFunction.TfEaseinbounce:
-                return Ease.InBounce;
-            case EasingFunction.TfEaseoutbounce:
-                return Ease.OutBounce;
-            case EasingFunction.TfEasebounce:
-                return Ease.InOutBounce;
-            case EasingFunction.TfEaseincubic:
-                return Ease.InCubic;
-            case EasingFunction.TfEaseoutcubic:
-                return Ease.OutCubic;
-            case EasingFunction.TfEasecubic:
-                return Ease.InOutCubic;
-            case EasingFunction.TfEaseinquart:
-                return Ease.InQuart;
-            case EasingFunction.TfEaseoutquart:
-                return Ease.OutQuart;
-            case EasingFunction.TfEasequart:
-                return Ease.InOutQuart;
-            case EasingFunction.TfEaseinquint:
-                return Ease.InQuint;
-            case EasingFunction.TfEaseoutquint:
-                return Ease.OutQuint;
-            case EasingFunction.TfEasequint:
-                return Ease.InOutQuint;
-            case EasingFunction.TfEaseincirc:
-                return Ease.InCirc;
-            case EasingFunction.TfEaseoutcirc:
-                return Ease.OutCirc;
-            case EasingFunction.TfEasecirc:
-                return Ease.InOutCirc;
-            case EasingFunction.TfEaseinback:
-                return Ease.InBack;
-            case EasingFunction.TfEaseoutback:
-                return Ease.OutBack;
-            case EasingFunction.TfEaseback:
-                return Ease.InOutBack;
-            case EasingFunction.TfLinear:
-            default:
-                return Ease.Linear;
-        }
+        easingFunctionsMap[EasingFunction.TfEaseinsine] = Ease.InSine;
+        easingFunctionsMap[EasingFunction.TfEaseoutsine] = Ease.OutSine;
+        easingFunctionsMap[EasingFunction.TfEasesine] = Ease.InOutSine;
+        easingFunctionsMap[EasingFunction.TfEaseinquad] = Ease.InQuad;
+        easingFunctionsMap[EasingFunction.TfEaseoutquad] = Ease.OutQuad;
+        easingFunctionsMap[EasingFunction.TfEasequad] = Ease.InOutQuad;
+        easingFunctionsMap[EasingFunction.TfEaseinexpo] = Ease.InExpo;
+        easingFunctionsMap[EasingFunction.TfEaseoutexpo] = Ease.OutExpo;
+        easingFunctionsMap[EasingFunction.TfEaseexpo] = Ease.InOutExpo;
+        easingFunctionsMap[EasingFunction.TfEaseinelastic] = Ease.InElastic;
+        easingFunctionsMap[EasingFunction.TfEaseoutelastic] = Ease.OutElastic;
+        easingFunctionsMap[EasingFunction.TfEaseelastic] = Ease.InOutElastic;
+        easingFunctionsMap[EasingFunction.TfEaseinbounce] = Ease.InBounce;
+        easingFunctionsMap[EasingFunction.TfEaseoutbounce] = Ease.OutBounce;
+        easingFunctionsMap[EasingFunction.TfEasebounce] = Ease.InOutBounce;
+        easingFunctionsMap[EasingFunction.TfEaseincubic] = Ease.InCubic;
+        easingFunctionsMap[EasingFunction.TfEaseoutcubic] = Ease.OutCubic;
+        easingFunctionsMap[EasingFunction.TfEasecubic] = Ease.InOutCubic;
+        easingFunctionsMap[EasingFunction.TfEaseinquart] = Ease.InQuart;
+        easingFunctionsMap[EasingFunction.TfEaseoutquart] = Ease.OutQuart;
+        easingFunctionsMap[EasingFunction.TfEasequart] = Ease.InOutQuart;
+        easingFunctionsMap[EasingFunction.TfEaseinquint] = Ease.InQuint;
+        easingFunctionsMap[EasingFunction.TfEaseoutquint] = Ease.OutQuint;
+        easingFunctionsMap[EasingFunction.TfEasequint] = Ease.InOutQuint;
+        easingFunctionsMap[EasingFunction.TfEaseincirc] = Ease.InCirc;
+        easingFunctionsMap[EasingFunction.TfEaseoutcirc] = Ease.OutCirc;
+        easingFunctionsMap[EasingFunction.TfEasecirc] = Ease.InOutCirc;
+        easingFunctionsMap[EasingFunction.TfEaseinback] = Ease.InBack;
+        easingFunctionsMap[EasingFunction.TfEaseoutback] = Ease.OutBack;
+        easingFunctionsMap[EasingFunction.TfEaseback] = Ease.InOutBack;
     }
 }
