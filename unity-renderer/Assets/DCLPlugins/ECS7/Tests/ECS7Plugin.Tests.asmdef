@@ -70,7 +70,10 @@
         "GUID:c76ce68567754cd0abab86915b7ba63e",
         "GUID:f62194f4058c46f38d95fae970600589",
         "GUID:0a17d39e1dc14c038aa3c6483a185df0",
-        "GUID:9b110c16a6b8f4d54ae0f56af2163334"
+        "GUID:9b110c16a6b8f4d54ae0f56af2163334",
+        "GUID:a52df805fcc64cdda6898fa21797152e",
+        "GUID:ed6f26f965aa4a39b494b55b335924b9",
+        "GUID:5e1778ed041a41f7a0c13abb42ca70b6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -81,7 +84,8 @@
         "NSubstitute.dll",
         "System.Threading.Tasks.Extensions.dll",
         "Google.Protobuf.dll",
-        "System.Memory.dll"
+        "System.Memory.dll",
+        "DOTween.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
