@@ -16,6 +16,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
     private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
     private readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>()
     {
+        [EfLinear] = Linear,
         [EfEaseinsine] = InSine,
         [EfEaseoutsine] = OutSine,
         [EfEasesine] = InOutSine,
@@ -98,8 +99,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
 
-            var ease = Ease.Linear;
-            easingFunctionsMap.TryGetValue(model.EasingFunction, out ease);
+            Ease ease;
+            if (!easingFunctionsMap.TryGetValue(model.EasingFunction, out ease))
+                ease = Ease.Linear;
 
             switch (model.ModeCase)
             {
