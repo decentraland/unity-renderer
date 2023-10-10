@@ -17,11 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 0aa70b7b624070446b34e63de2c857b2
   m_SerializeEntries:
-  - m_GUID: 3a469246dbd49484e80f29cca68f725f
-    m_Address: AdultContentAgeConfirmationHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ccf3f220fcfb6c64c8fde9fc707b33ec
     m_Address: AdultContentEnabledNotificationHUD
     m_ReadOnly: 0
@@ -39,6 +34,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 317fd5175517dc74ca59789118f32dd4
     m_Address: ContentModerationReportingHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a469246dbd49484e80f29cca68f725f
+    m_Address: AdultContentAgeConfirmationHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
