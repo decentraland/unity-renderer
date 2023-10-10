@@ -26,41 +26,41 @@ namespace DCL.ECSComponents {
           string.Concat(
             "CidkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdHdlZW4ucHJvdG8SG2Rl",
             "Y2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxohZGVjZW50cmFsYW5kL2NvbW1v",
-            "bi92ZWN0b3JzLnByb3RvItUCCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
-            "EkMKDnR3ZWVuX2Z1bmN0aW9uGAIgASgOMisuZGVjZW50cmFsYW5kLnNkay5j",
-            "b21wb25lbnRzLkVhc2luZ0Z1bmN0aW9uEjEKBG1vdmUYAyABKAsyIS5kZWNl",
-            "bnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuTW92ZUgAEjUKBnJvdGF0ZRgEIAEo",
-            "CzIjLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5Sb3RhdGVIABIzCgVz",
-            "Y2FsZRgFIAEoCzIiLmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5TY2Fs",
-            "ZUgAEhQKB3BsYXlpbmcYBiABKAhIAYgBARIZCgxjdXJyZW50X3RpbWUYByAB",
-            "KAJIAogBAUIGCgRtb2RlQgoKCF9wbGF5aW5nQg8KDV9jdXJyZW50X3RpbWUi",
-            "jgEKBE1vdmUSKwoFc3RhcnQYASABKAsyHC5kZWNlbnRyYWxhbmQuY29tbW9u",
-            "LlZlY3RvcjMSKQoDZW5kGAIgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5W",
-            "ZWN0b3IzEhsKDmZhY2VfZGlyZWN0aW9uGAMgASgISACIAQFCEQoPX2ZhY2Vf",
-            "ZGlyZWN0aW9uImYKBlJvdGF0ZRIuCgVzdGFydBgBIAEoCzIfLmRlY2VudHJh",
-            "bGFuZC5jb21tb24uUXVhdGVybmlvbhIsCgNlbmQYAiABKAsyHy5kZWNlbnRy",
-            "YWxhbmQuY29tbW9uLlF1YXRlcm5pb24iXwoFU2NhbGUSKwoFc3RhcnQYASAB",
-            "KAsyHC5kZWNlbnRyYWxhbmQuY29tbW9uLlZlY3RvcjMSKQoDZW5kGAIgASgL",
-            "MhwuZGVjZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzKucECg5FYXNpbmdGdW5j",
-            "dGlvbhINCglURl9MSU5FQVIQABIRCg1URl9FQVNFSU5RVUFEEAESEgoOVEZf",
-            "RUFTRU9VVFFVQUQQAhIPCgtURl9FQVNFUVVBRBADEhEKDVRGX0VBU0VJTlNJ",
-            "TkUQBBISCg5URl9FQVNFT1VUU0lORRAFEg8KC1RGX0VBU0VTSU5FEAYSEQoN",
-            "VEZfRUFTRUlORVhQTxAHEhIKDlRGX0VBU0VPVVRFWFBPEAgSDwoLVEZfRUFT",
-            "RUVYUE8QCRIUChBURl9FQVNFSU5FTEFTVElDEAoSFQoRVEZfRUFTRU9VVEVM",
-            "QVNUSUMQCxISCg5URl9FQVNFRUxBU1RJQxAMEhMKD1RGX0VBU0VJTkJPVU5D",
-            "RRANEhQKEFRGX0VBU0VPVVRCT1VOQ0UQDhIRCg1URl9FQVNFQk9VTkNFEA8S",
-            "EgoOVEZfRUFTRUlOQ1VCSUMQEBITCg9URl9FQVNFT1VUQ1VCSUMQERIQCgxU",
-            "Rl9FQVNFQ1VCSUMQEhISCg5URl9FQVNFSU5RVUFSVBATEhMKD1RGX0VBU0VP",
-            "VVRRVUFSVBAUEhAKDFRGX0VBU0VRVUFSVBAVEhIKDlRGX0VBU0VJTlFVSU5U",
-            "EBYSEwoPVEZfRUFTRU9VVFFVSU5UEBcSEAoMVEZfRUFTRVFVSU5UEBgSEQoN",
-            "VEZfRUFTRUlOQ0lSQxAZEhIKDlRGX0VBU0VPVVRDSVJDEBoSDwoLVEZfRUFT",
-            "RUNJUkMQGxIRCg1URl9FQVNFSU5CQUNLEBwSEgoOVEZfRUFTRU9VVEJBQ0sQ",
-            "HRIPCgtURl9FQVNFQkFDSxAeQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "bi92ZWN0b3JzLnByb3RvItYCCgdQQlR3ZWVuEhAKCGR1cmF0aW9uGAEgASgC",
+            "EkQKD2Vhc2luZ19mdW5jdGlvbhgCIAEoDjIrLmRlY2VudHJhbGFuZC5zZGsu",
+            "Y29tcG9uZW50cy5FYXNpbmdGdW5jdGlvbhIxCgRtb3ZlGAMgASgLMiEuZGVj",
+            "ZW50cmFsYW5kLnNkay5jb21wb25lbnRzLk1vdmVIABI1CgZyb3RhdGUYBCAB",
+            "KAsyIy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuUm90YXRlSAASMwoF",
+            "c2NhbGUYBSABKAsyIi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuU2Nh",
+            "bGVIABIUCgdwbGF5aW5nGAYgASgISAGIAQESGQoMY3VycmVudF90aW1lGAcg",
+            "ASgCSAKIAQFCBgoEbW9kZUIKCghfcGxheWluZ0IPCg1fY3VycmVudF90aW1l",
+            "Io4BCgRNb3ZlEisKBXN0YXJ0GAEgASgLMhwuZGVjZW50cmFsYW5kLmNvbW1v",
+            "bi5WZWN0b3IzEikKA2VuZBgCIAEoCzIcLmRlY2VudHJhbGFuZC5jb21tb24u",
+            "VmVjdG9yMxIbCg5mYWNlX2RpcmVjdGlvbhgDIAEoCEgAiAEBQhEKD19mYWNl",
+            "X2RpcmVjdGlvbiJmCgZSb3RhdGUSLgoFc3RhcnQYASABKAsyHy5kZWNlbnRy",
+            "YWxhbmQuY29tbW9uLlF1YXRlcm5pb24SLAoDZW5kGAIgASgLMh8uZGVjZW50",
+            "cmFsYW5kLmNvbW1vbi5RdWF0ZXJuaW9uIl8KBVNjYWxlEisKBXN0YXJ0GAEg",
+            "ASgLMhwuZGVjZW50cmFsYW5kLmNvbW1vbi5WZWN0b3IzEikKA2VuZBgCIAEo",
+            "CzIcLmRlY2VudHJhbGFuZC5jb21tb24uVmVjdG9yMyrnBAoORWFzaW5nRnVu",
+            "Y3Rpb24SDQoJRUZfTElORUFSEAASEQoNRUZfRUFTRUlOUVVBRBABEhIKDkVG",
+            "X0VBU0VPVVRRVUFEEAISDwoLRUZfRUFTRVFVQUQQAxIRCg1FRl9FQVNFSU5T",
+            "SU5FEAQSEgoORUZfRUFTRU9VVFNJTkUQBRIPCgtFRl9FQVNFU0lORRAGEhEK",
+            "DUVGX0VBU0VJTkVYUE8QBxISCg5FRl9FQVNFT1VURVhQTxAIEg8KC0VGX0VB",
+            "U0VFWFBPEAkSFAoQRUZfRUFTRUlORUxBU1RJQxAKEhUKEUVGX0VBU0VPVVRF",
+            "TEFTVElDEAsSEgoORUZfRUFTRUVMQVNUSUMQDBITCg9FRl9FQVNFSU5CT1VO",
+            "Q0UQDRIUChBFRl9FQVNFT1VUQk9VTkNFEA4SEQoNRUZfRUFTRUJPVU5DRRAP",
+            "EhIKDkVGX0VBU0VJTkNVQklDEBASEwoPRUZfRUFTRU9VVENVQklDEBESEAoM",
+            "RUZfRUFTRUNVQklDEBISEgoORUZfRUFTRUlOUVVBUlQQExITCg9FRl9FQVNF",
+            "T1VUUVVBUlQQFBIQCgxFRl9FQVNFUVVBUlQQFRISCg5FRl9FQVNFSU5RVUlO",
+            "VBAWEhMKD0VGX0VBU0VPVVRRVUlOVBAXEhAKDEVGX0VBU0VRVUlOVBAYEhEK",
+            "DUVGX0VBU0VJTkNJUkMQGRISCg5FRl9FQVNFT1VUQ0lSQxAaEg8KC0VGX0VB",
+            "U0VDSVJDEBsSEQoNRUZfRUFTRUlOQkFDSxAcEhIKDkVGX0VBU0VPVVRCQUNL",
+            "EB0SDwoLRUZfRUFTRUJBQ0sQHkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.VectorsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.EasingFunction), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "TweenFunction", "Move", "Rotate", "Scale", "Playing", "CurrentTime" }, new[]{ "Mode", "Playing", "CurrentTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBTween), global::DCL.ECSComponents.PBTween.Parser, new[]{ "Duration", "EasingFunction", "Move", "Rotate", "Scale", "Playing", "CurrentTime" }, new[]{ "Mode", "Playing", "CurrentTime" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Move), global::DCL.ECSComponents.Move.Parser, new[]{ "Start", "End", "FaceDirection" }, new[]{ "FaceDirection" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Rotate), global::DCL.ECSComponents.Rotate.Parser, new[]{ "Start", "End" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.Scale), global::DCL.ECSComponents.Scale.Parser, new[]{ "Start", "End" }, null, null, null, null)
@@ -71,44 +71,44 @@ namespace DCL.ECSComponents {
   }
   #region Enums
   /// <summary>
-  /// Implementation guidelines for these easing functions can be found 
+  /// Implementation guidelines for these easing functions can be found
   /// at https://github.com/ai/easings.net/blob/6fcd5f852a470bf1a7890e8178afa0f471d5f2ec/src/easings/easingsFunctions.ts
   /// </summary>
   public enum EasingFunction {
     /// <summary>
     /// default
     /// </summary>
-    [pbr::OriginalName("TF_LINEAR")] TfLinear = 0,
-    [pbr::OriginalName("TF_EASEINQUAD")] TfEaseinquad = 1,
-    [pbr::OriginalName("TF_EASEOUTQUAD")] TfEaseoutquad = 2,
-    [pbr::OriginalName("TF_EASEQUAD")] TfEasequad = 3,
-    [pbr::OriginalName("TF_EASEINSINE")] TfEaseinsine = 4,
-    [pbr::OriginalName("TF_EASEOUTSINE")] TfEaseoutsine = 5,
-    [pbr::OriginalName("TF_EASESINE")] TfEasesine = 6,
-    [pbr::OriginalName("TF_EASEINEXPO")] TfEaseinexpo = 7,
-    [pbr::OriginalName("TF_EASEOUTEXPO")] TfEaseoutexpo = 8,
-    [pbr::OriginalName("TF_EASEEXPO")] TfEaseexpo = 9,
-    [pbr::OriginalName("TF_EASEINELASTIC")] TfEaseinelastic = 10,
-    [pbr::OriginalName("TF_EASEOUTELASTIC")] TfEaseoutelastic = 11,
-    [pbr::OriginalName("TF_EASEELASTIC")] TfEaseelastic = 12,
-    [pbr::OriginalName("TF_EASEINBOUNCE")] TfEaseinbounce = 13,
-    [pbr::OriginalName("TF_EASEOUTBOUNCE")] TfEaseoutbounce = 14,
-    [pbr::OriginalName("TF_EASEBOUNCE")] TfEasebounce = 15,
-    [pbr::OriginalName("TF_EASEINCUBIC")] TfEaseincubic = 16,
-    [pbr::OriginalName("TF_EASEOUTCUBIC")] TfEaseoutcubic = 17,
-    [pbr::OriginalName("TF_EASECUBIC")] TfEasecubic = 18,
-    [pbr::OriginalName("TF_EASEINQUART")] TfEaseinquart = 19,
-    [pbr::OriginalName("TF_EASEOUTQUART")] TfEaseoutquart = 20,
-    [pbr::OriginalName("TF_EASEQUART")] TfEasequart = 21,
-    [pbr::OriginalName("TF_EASEINQUINT")] TfEaseinquint = 22,
-    [pbr::OriginalName("TF_EASEOUTQUINT")] TfEaseoutquint = 23,
-    [pbr::OriginalName("TF_EASEQUINT")] TfEasequint = 24,
-    [pbr::OriginalName("TF_EASEINCIRC")] TfEaseincirc = 25,
-    [pbr::OriginalName("TF_EASEOUTCIRC")] TfEaseoutcirc = 26,
-    [pbr::OriginalName("TF_EASECIRC")] TfEasecirc = 27,
-    [pbr::OriginalName("TF_EASEINBACK")] TfEaseinback = 28,
-    [pbr::OriginalName("TF_EASEOUTBACK")] TfEaseoutback = 29,
-    [pbr::OriginalName("TF_EASEBACK")] TfEaseback = 30,
+    [pbr::OriginalName("EF_LINEAR")] EfLinear = 0,
+    [pbr::OriginalName("EF_EASEINQUAD")] EfEaseinquad = 1,
+    [pbr::OriginalName("EF_EASEOUTQUAD")] EfEaseoutquad = 2,
+    [pbr::OriginalName("EF_EASEQUAD")] EfEasequad = 3,
+    [pbr::OriginalName("EF_EASEINSINE")] EfEaseinsine = 4,
+    [pbr::OriginalName("EF_EASEOUTSINE")] EfEaseoutsine = 5,
+    [pbr::OriginalName("EF_EASESINE")] EfEasesine = 6,
+    [pbr::OriginalName("EF_EASEINEXPO")] EfEaseinexpo = 7,
+    [pbr::OriginalName("EF_EASEOUTEXPO")] EfEaseoutexpo = 8,
+    [pbr::OriginalName("EF_EASEEXPO")] EfEaseexpo = 9,
+    [pbr::OriginalName("EF_EASEINELASTIC")] EfEaseinelastic = 10,
+    [pbr::OriginalName("EF_EASEOUTELASTIC")] EfEaseoutelastic = 11,
+    [pbr::OriginalName("EF_EASEELASTIC")] EfEaseelastic = 12,
+    [pbr::OriginalName("EF_EASEINBOUNCE")] EfEaseinbounce = 13,
+    [pbr::OriginalName("EF_EASEOUTBOUNCE")] EfEaseoutbounce = 14,
+    [pbr::OriginalName("EF_EASEBOUNCE")] EfEasebounce = 15,
+    [pbr::OriginalName("EF_EASEINCUBIC")] EfEaseincubic = 16,
+    [pbr::OriginalName("EF_EASEOUTCUBIC")] EfEaseoutcubic = 17,
+    [pbr::OriginalName("EF_EASECUBIC")] EfEasecubic = 18,
+    [pbr::OriginalName("EF_EASEINQUART")] EfEaseinquart = 19,
+    [pbr::OriginalName("EF_EASEOUTQUART")] EfEaseoutquart = 20,
+    [pbr::OriginalName("EF_EASEQUART")] EfEasequart = 21,
+    [pbr::OriginalName("EF_EASEINQUINT")] EfEaseinquint = 22,
+    [pbr::OriginalName("EF_EASEOUTQUINT")] EfEaseoutquint = 23,
+    [pbr::OriginalName("EF_EASEQUINT")] EfEasequint = 24,
+    [pbr::OriginalName("EF_EASEINCIRC")] EfEaseincirc = 25,
+    [pbr::OriginalName("EF_EASEOUTCIRC")] EfEaseoutcirc = 26,
+    [pbr::OriginalName("EF_EASECIRC")] EfEasecirc = 27,
+    [pbr::OriginalName("EF_EASEINBACK")] EfEaseinback = 28,
+    [pbr::OriginalName("EF_EASEOUTBACK")] EfEaseoutback = 29,
+    [pbr::OriginalName("EF_EASEBACK")] EfEaseback = 30,
   }
 
   #endregion
@@ -151,7 +151,7 @@ namespace DCL.ECSComponents {
     public PBTween(PBTween other) : this() {
       _hasBits0 = other._hasBits0;
       duration_ = other.duration_;
-      tweenFunction_ = other.tweenFunction_;
+      easingFunction_ = other.easingFunction_;
       playing_ = other.playing_;
       currentTime_ = other.currentTime_;
       switch (other.ModeCase) {
@@ -190,15 +190,15 @@ namespace DCL.ECSComponents {
       }
     }
 
-    /// <summary>Field number for the "tween_function" field.</summary>
-    public const int TweenFunctionFieldNumber = 2;
-    private global::DCL.ECSComponents.EasingFunction tweenFunction_ = global::DCL.ECSComponents.EasingFunction.TfLinear;
+    /// <summary>Field number for the "easing_function" field.</summary>
+    public const int EasingFunctionFieldNumber = 2;
+    private global::DCL.ECSComponents.EasingFunction easingFunction_ = global::DCL.ECSComponents.EasingFunction.EfLinear;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.EasingFunction TweenFunction {
-      get { return tweenFunction_; }
+    public global::DCL.ECSComponents.EasingFunction EasingFunction {
+      get { return easingFunction_; }
       set {
-        tweenFunction_ = value;
+        easingFunction_ = value;
       }
     }
 
@@ -332,7 +332,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Duration, other.Duration)) return false;
-      if (TweenFunction != other.TweenFunction) return false;
+      if (EasingFunction != other.EasingFunction) return false;
       if (!object.Equals(Move, other.Move)) return false;
       if (!object.Equals(Rotate, other.Rotate)) return false;
       if (!object.Equals(Scale, other.Scale)) return false;
@@ -347,7 +347,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Duration != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Duration);
-      if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) hash ^= TweenFunction.GetHashCode();
+      if (EasingFunction != global::DCL.ECSComponents.EasingFunction.EfLinear) hash ^= EasingFunction.GetHashCode();
       if (modeCase_ == ModeOneofCase.Move) hash ^= Move.GetHashCode();
       if (modeCase_ == ModeOneofCase.Rotate) hash ^= Rotate.GetHashCode();
       if (modeCase_ == ModeOneofCase.Scale) hash ^= Scale.GetHashCode();
@@ -376,9 +376,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(13);
         output.WriteFloat(Duration);
       }
-      if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
+      if (EasingFunction != global::DCL.ECSComponents.EasingFunction.EfLinear) {
         output.WriteRawTag(16);
-        output.WriteEnum((int) TweenFunction);
+        output.WriteEnum((int) EasingFunction);
       }
       if (modeCase_ == ModeOneofCase.Move) {
         output.WriteRawTag(26);
@@ -414,9 +414,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(13);
         output.WriteFloat(Duration);
       }
-      if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
+      if (EasingFunction != global::DCL.ECSComponents.EasingFunction.EfLinear) {
         output.WriteRawTag(16);
-        output.WriteEnum((int) TweenFunction);
+        output.WriteEnum((int) EasingFunction);
       }
       if (modeCase_ == ModeOneofCase.Move) {
         output.WriteRawTag(26);
@@ -451,8 +451,8 @@ namespace DCL.ECSComponents {
       if (Duration != 0F) {
         size += 1 + 4;
       }
-      if (TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TweenFunction);
+      if (EasingFunction != global::DCL.ECSComponents.EasingFunction.EfLinear) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) EasingFunction);
       }
       if (modeCase_ == ModeOneofCase.Move) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Move);
@@ -484,8 +484,8 @@ namespace DCL.ECSComponents {
       if (other.Duration != 0F) {
         Duration = other.Duration;
       }
-      if (other.TweenFunction != global::DCL.ECSComponents.EasingFunction.TfLinear) {
-        TweenFunction = other.TweenFunction;
+      if (other.EasingFunction != global::DCL.ECSComponents.EasingFunction.EfLinear) {
+        EasingFunction = other.EasingFunction;
       }
       if (other.HasPlaying) {
         Playing = other.Playing;
@@ -534,7 +534,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            TweenFunction = (global::DCL.ECSComponents.EasingFunction) input.ReadEnum();
+            EasingFunction = (global::DCL.ECSComponents.EasingFunction) input.ReadEnum();
             break;
           }
           case 26: {
@@ -592,7 +592,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 16: {
-            TweenFunction = (global::DCL.ECSComponents.EasingFunction) input.ReadEnum();
+            EasingFunction = (global::DCL.ECSComponents.EasingFunction) input.ReadEnum();
             break;
           }
           case 26: {

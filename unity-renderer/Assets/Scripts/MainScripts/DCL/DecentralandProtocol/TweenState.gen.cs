@@ -50,9 +50,6 @@ namespace DCL.ECSComponents {
   #endregion
 
   #region Messages
-  /// <summary>
-  /// This shouldn't be synced
-  /// </summary>
   public sealed partial class PBTweenState : pb::IMessage<PBTweenState>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage

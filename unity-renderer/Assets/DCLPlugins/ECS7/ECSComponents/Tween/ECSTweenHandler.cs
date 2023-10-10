@@ -7,17 +7,51 @@ using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static DCL.ECSComponents.EasingFunction;
+using static DG.Tweening.Ease;
+
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
     private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
     private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
-    private readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>();
+    private readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>()
+    {
+        [EfEaseinsine] = InSine,
+        [EfEaseoutsine] = OutSine,
+        [EfEasesine] = InOutSine,
+        [EfEaseinquad] = InQuad,
+        [EfEaseoutquad] = OutQuad,
+        [EfEasequad] = InOutQuad,
+        [EfEaseinexpo] = InExpo,
+        [EfEaseoutexpo] = OutExpo,
+        [EfEaseexpo] = InOutExpo,
+        [EfEaseinelastic] = InElastic,
+        [EfEaseoutelastic] = OutElastic,
+        [EfEaseelastic] = InOutElastic,
+        [EfEaseinbounce] = InBounce,
+        [EfEaseoutbounce] = OutBounce,
+        [EfEasebounce] = InOutBounce,
+        [EfEaseincubic] = InCubic,
+        [EfEaseoutcubic] = OutCubic,
+        [EfEasecubic] = InOutCubic,
+        [EfEaseinquart] = InQuart,
+        [EfEaseoutquart] = OutQuart,
+        [EfEasequart] = InOutQuart,
+        [EfEaseinquint] = InQuint,
+        [EfEaseoutquint] = OutQuint,
+        [EfEasequint] = InOutQuint,
+        [EfEaseincirc] = InCirc,
+        [EfEaseoutcirc] = OutCirc,
+        [EfEasecirc] = InOutCirc,
+        [EfEaseinback] = InBack,
+        [EfEaseoutback] = OutBack,
+        [EfEaseback] = InOutBack
+    };
 
     public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
         this.internalTweenComponent = internalTweenComponent;
         this.sbcInternalComponent = sbcInternalComponent;
-        InitializeEasingFunctionsMap();
     }
 
     public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
@@ -65,7 +99,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             internalComponentModel.currentTime = model.CurrentTime;
 
             var ease = Ease.Linear;
-            easingFunctionsMap.TryGetValue(model.TweenFunction, out ease);
+            easingFunctionsMap.TryGetValue(model.EasingFunction, out ease);
 
             switch (model.ModeCase)
             {
@@ -128,7 +162,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             return false;
 
         if (modelB.ModeCase != modelA.ModeCase
-            || modelB.TweenFunction != modelA.TweenFunction
+            || modelB.EasingFunction != modelA.EasingFunction
             || !modelB.CurrentTime.Equals(modelA.CurrentTime)
             || !modelB.Duration.Equals(modelA.Duration))
             return false;
@@ -146,39 +180,5 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 return modelB.Move.Start.Equals(modelA.Move.Start)
                        && modelB.Move.End.Equals(modelA.Move.End);
         }
-    }
-
-    private void InitializeEasingFunctionsMap()
-    {
-        easingFunctionsMap[EasingFunction.TfEaseinsine] = Ease.InSine;
-        easingFunctionsMap[EasingFunction.TfEaseoutsine] = Ease.OutSine;
-        easingFunctionsMap[EasingFunction.TfEasesine] = Ease.InOutSine;
-        easingFunctionsMap[EasingFunction.TfEaseinquad] = Ease.InQuad;
-        easingFunctionsMap[EasingFunction.TfEaseoutquad] = Ease.OutQuad;
-        easingFunctionsMap[EasingFunction.TfEasequad] = Ease.InOutQuad;
-        easingFunctionsMap[EasingFunction.TfEaseinexpo] = Ease.InExpo;
-        easingFunctionsMap[EasingFunction.TfEaseoutexpo] = Ease.OutExpo;
-        easingFunctionsMap[EasingFunction.TfEaseexpo] = Ease.InOutExpo;
-        easingFunctionsMap[EasingFunction.TfEaseinelastic] = Ease.InElastic;
-        easingFunctionsMap[EasingFunction.TfEaseoutelastic] = Ease.OutElastic;
-        easingFunctionsMap[EasingFunction.TfEaseelastic] = Ease.InOutElastic;
-        easingFunctionsMap[EasingFunction.TfEaseinbounce] = Ease.InBounce;
-        easingFunctionsMap[EasingFunction.TfEaseoutbounce] = Ease.OutBounce;
-        easingFunctionsMap[EasingFunction.TfEasebounce] = Ease.InOutBounce;
-        easingFunctionsMap[EasingFunction.TfEaseincubic] = Ease.InCubic;
-        easingFunctionsMap[EasingFunction.TfEaseoutcubic] = Ease.OutCubic;
-        easingFunctionsMap[EasingFunction.TfEasecubic] = Ease.InOutCubic;
-        easingFunctionsMap[EasingFunction.TfEaseinquart] = Ease.InQuart;
-        easingFunctionsMap[EasingFunction.TfEaseoutquart] = Ease.OutQuart;
-        easingFunctionsMap[EasingFunction.TfEasequart] = Ease.InOutQuart;
-        easingFunctionsMap[EasingFunction.TfEaseinquint] = Ease.InQuint;
-        easingFunctionsMap[EasingFunction.TfEaseoutquint] = Ease.OutQuint;
-        easingFunctionsMap[EasingFunction.TfEasequint] = Ease.InOutQuint;
-        easingFunctionsMap[EasingFunction.TfEaseincirc] = Ease.InCirc;
-        easingFunctionsMap[EasingFunction.TfEaseoutcirc] = Ease.OutCirc;
-        easingFunctionsMap[EasingFunction.TfEasecirc] = Ease.InOutCirc;
-        easingFunctionsMap[EasingFunction.TfEaseinback] = Ease.InBack;
-        easingFunctionsMap[EasingFunction.TfEaseoutback] = Ease.OutBack;
-        easingFunctionsMap[EasingFunction.TfEaseback] = Ease.InOutBack;
     }
 }
