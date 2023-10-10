@@ -3,6 +3,7 @@ using DCL.ECS7;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
+using DCL.ECSRuntime;
 using DCL.Models;
 using DG.Tweening;
 using System.Collections.Generic;
@@ -37,60 +38,67 @@ namespace ECSSystems.TweenSystem
         public void Update()
         {
             var tweenComponentGroup = tweenInternalComponent.GetForAll();
-            int entitiesCount = tweenComponentGroup.Count;
 
-            for (int i = 0; i < entitiesCount; i++)
+            for (var i = 0; i < tweenComponentGroup.Count; i++)
             {
-                var tweenStatePooledComponent = tweenStateComponentPool.Get();
-                var tweenStateComponentModel = tweenStatePooledComponent.WrappedComponent.Model;
-                IParcelScene scene = tweenComponentGroup[i].key1;
-                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
-                    continue;
+                UpdateTweenComponentModel(tweenComponentGroup[i]);
+            }
+        }
 
-                long entityId = tweenComponentGroup[i].key2;
-                InternalTween model = tweenComponentGroup[i].value.model;
+        private void UpdateTweenComponentModel(KeyValueSetTriplet<IParcelScene, long, ECSComponentData<InternalTween>> tweenComponentGroup)
+        {
+            var tweenStatePooledComponent = tweenStateComponentPool.Get();
+            var tweenStateComponentModel = tweenStatePooledComponent.WrappedComponent.Model;
+            IParcelScene scene = tweenComponentGroup.key1;
+            if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                return;
 
-                if (model.removed)
-                {
-                    model.tweener.Kill();
-                    writer.Remove(entityId, ComponentID.TWEEN_STATE);
-                    continue;
-                }
+            long entityId = tweenComponentGroup.key2;
+            InternalTween model = tweenComponentGroup.value.model;
 
-                float currentTime = model.tweener.ElapsedPercentage();
-                if (currentTime.Equals(1f) && model.currentTime.Equals(1f))
-                    continue;
+            if (model.removed)
+            {
+                model.tweener.Kill();
+                writer.Remove(entityId, ComponentID.TWEEN_STATE);
+                return;
+            }
 
-                bool playing = model.playing;
+            float currentTime = model.tweener.ElapsedPercentage();
+            if (currentTime.Equals(1f) && model.currentTime.Equals(1f))
+                return;
 
-                if (playing)
-                {
-                    tweenStateComponentModel.CurrentTime = currentTime;
-                    tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
+            if (model.playing)
+            {
+                tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
+                UpdatePlayingTweenComponentModel(tweenStateComponentModel, currentTime, scene, entityId, model);
+            }
+            else
+            {
+                tweenStateComponentModel.State = TweenStateStatus.TsPaused;
+            }
 
-                    scene.entities.TryGetValue(entityId, out IDCLEntity entity);
-                    switch (model.tweenMode)
-                    {
-                        case PBTween.ModeOneofCase.Move:
-                            sbcInternalComponent.SetPosition(scene, entity, model.transform.position);
-                            break;
-                        case PBTween.ModeOneofCase.Rotate:
-                        case PBTween.ModeOneofCase.Scale:
-                            sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
-                            break;
-                    }
-                }
-                else
-                {
-                    tweenStateComponentModel.State = TweenStateStatus.TsPaused;
-                }
+            writer.Put(entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
-                writer.Put(entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
+            UpdateTransformComponent(scene, entityId, model.transform, writer);
 
-                UpdateTransformComponent(scene, entityId, model.transform, writer);
+            model.currentTime = currentTime;
+            tweenInternalComponent.PutFor(scene, entityId, model);
+        }
 
-                model.currentTime = currentTime;
-                tweenInternalComponent.PutFor(scene, entityId, model);
+        private void UpdatePlayingTweenComponentModel(PBTweenState tweenStateComponentModel, float currentTime,
+            IParcelScene scene, long entityId, InternalTween model)
+        {
+            tweenStateComponentModel.CurrentTime = currentTime;
+            scene.entities.TryGetValue(entityId, out IDCLEntity entity);
+            switch (model.tweenMode)
+            {
+                case PBTween.ModeOneofCase.Move:
+                    sbcInternalComponent.SetPosition(scene, entity, model.transform.position);
+                    break;
+                case PBTween.ModeOneofCase.Rotate:
+                case PBTween.ModeOneofCase.Scale:
+                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+                    break;
             }
         }
 

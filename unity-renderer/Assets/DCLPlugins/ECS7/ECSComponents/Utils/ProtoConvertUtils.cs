@@ -48,33 +48,30 @@ namespace DCL.ECSComponents
             return ret;
         }
 
-        public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original)
-        {
-            Vector3 vector = new Vector3();
-            vector.X = original.x;
-            vector.Y = original.y;
-            vector.Z = original.z;
-            return vector;
-        }
+        public static Vector3 UnityVectorToPBVector(UnityEngine.Vector3 original) =>
+            new()
+            {
+                X = original.x,
+                Y = original.y,
+                Z = original.z
+            };
 
-        public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original)
-        {
-            UnityEngine.Vector3 vector = new UnityEngine.Vector3();
-            vector.x = original.X;
-            vector.y = original.Y;
-            vector.z = original.Z;
-            return vector;
-        }
+        public static UnityEngine.Vector3 PBVectorToUnityVector(Vector3 original) =>
+            new()
+            {
+                x = original.X,
+                y = original.Y,
+                z = original.Z
+            };
 
-        public static UnityEngine.Quaternion PBQuaternionToUnityQuaternion(Quaternion original)
-        {
-            UnityEngine.Quaternion quaternion = new UnityEngine.Quaternion();
-            quaternion.x = original.X;
-            quaternion.y = original.Y;
-            quaternion.z = original.Z;
-            quaternion.w = original.W;
-            return quaternion;
-        }
+        public static UnityEngine.Quaternion PBQuaternionToUnityQuaternion(Quaternion original) =>
+            new()
+            {
+                x = original.X,
+                y = original.Y,
+                z = original.Z,
+                w = original.W
+            };
 
         public static CameraMode.ModeId PBCameraEnumToUnityEnum(CameraType mode)
         {

@@ -88,8 +88,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 // There may be a tween running for the entity transform, even though internalComponentModel.tweener
                 // is null, e.g: during preview mode hot-reload.
                 var transformTweens = DOTween.TweensByTarget(entityTransform, true);
-                if (transformTweens != null)
-                    transformTweens[0].Rewind();
+                transformTweens?[0].Rewind();
             }
             else
             {
@@ -99,42 +98,29 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
 
-            Ease ease;
-            if (!easingFunctionsMap.TryGetValue(model.EasingFunction, out ease))
+            if (!easingFunctionsMap.TryGetValue(model.EasingFunction, out Ease ease))
                 ease = Ease.Linear;
 
             switch (model.ModeCase)
             {
                 case PBTween.ModeOneofCase.Rotate:
-                    entityTransform.localRotation = ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start);
-                    tweener = entityTransform.DOLocalRotateQuaternion(
+                    tweener = SetupRotationTween(scene, entity,
+                        ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start),
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
-                        durationInSeconds).SetEase(ease).SetAutoKill(false);
-
-                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+                        durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Scale:
-                    entityTransform.localScale = ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start);
-                    tweener = entityTransform.DOScale(
+                    tweener = SetupScaleTween(scene, entity,
+                        ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start),
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
-                        durationInSeconds).SetEase(ease).SetAutoKill(false);
-
-                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+                        durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Move:
                 default:
-                    Vector3 startPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start);
-                    Vector3 endPos = ProtoConvertUtils.PBVectorToUnityVector(model.Move.End);
-
-                    if (model.Move.HasFaceDirection && model.Move.FaceDirection)
-                        entityTransform.forward = (endPos - startPos).normalized;
-
-                    entityTransform.localPosition = startPos;
-                    tweener = entityTransform.DOLocalMove(endPos, durationInSeconds)
-                                             .SetEase(ease)
-                                             .SetAutoKill(false);
-
-                    sbcInternalComponent.SetPosition(scene, entity, entityTransform.position);
+                    tweener = SetupPositionTween(scene, entity,
+                        ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start),
+                        ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
+                        durationInSeconds, ease, model.Move.HasFaceDirection && model.Move.FaceDirection);
                     break;
             }
 
@@ -169,18 +155,53 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             || !modelB.Duration.Equals(modelA.Duration))
             return false;
 
-        switch (modelA.ModeCase)
-        {
-            case PBTween.ModeOneofCase.Scale:
-                return modelB.Scale.Start.Equals(modelA.Scale.Start)
-                       && modelB.Scale.End.Equals(modelA.Scale.End);
-            case PBTween.ModeOneofCase.Rotate:
-                return modelB.Rotate.Start.Equals(modelA.Rotate.Start)
-                       && modelB.Rotate.End.Equals(modelA.Rotate.End);
-            case PBTween.ModeOneofCase.Move:
-            default:
-                return modelB.Move.Start.Equals(modelA.Move.Start)
-                       && modelB.Move.End.Equals(modelA.Move.End);
-        }
+        return modelA.ModeCase switch
+               {
+                   PBTween.ModeOneofCase.Scale => modelB.Scale.Start.Equals(modelA.Scale.Start) && modelB.Scale.End.Equals(modelA.Scale.End),
+                   PBTween.ModeOneofCase.Rotate => modelB.Rotate.Start.Equals(modelA.Rotate.Start) && modelB.Rotate.End.Equals(modelA.Rotate.End),
+                   PBTween.ModeOneofCase.Move => modelB.Move.Start.Equals(modelA.Move.Start) && modelB.Move.End.Equals(modelA.Move.End),
+                   PBTween.ModeOneofCase.None => modelB.Move.Start.Equals(modelA.Move.Start) && modelB.Move.End.Equals(modelA.Move.End),
+                   _ => modelB.Move.Start.Equals(modelA.Move.Start) && modelB.Move.End.Equals(modelA.Move.End)
+               };
+    }
+
+    private Tweener SetupRotationTween(IParcelScene scene, IDCLEntity entity, Quaternion startRotation,
+        Quaternion endRotation, float durationInSeconds, Ease ease)
+    {
+        var entityTransform = entity.gameObject.transform;
+        entityTransform.localRotation = startRotation;
+        var tweener = entityTransform.DOLocalRotateQuaternion(endRotation, durationInSeconds).SetEase(ease).SetAutoKill(false);
+
+        sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+
+        return tweener;
+    }
+
+    Tweener SetupScaleTween(IParcelScene scene, IDCLEntity entity, Vector3 startScale,
+        Vector3 endScale, float durationInSeconds, Ease ease)
+    {
+        var entityTransform = entity.gameObject.transform;
+        entityTransform.localScale = startScale;
+        var tweener = entityTransform.DOScale(endScale, durationInSeconds).SetEase(ease).SetAutoKill(false);
+
+        sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+
+        return tweener;
+    }
+
+    Tweener SetupPositionTween(IParcelScene scene, IDCLEntity entity, Vector3 startPosition,
+        Vector3 endPosition, float durationInSeconds, Ease ease, bool faceDirection)
+    {
+        var entityTransform = entity.gameObject.transform;
+
+        if (faceDirection)
+            entityTransform.forward = (endPosition - startPosition).normalized;
+
+        entityTransform.localPosition = startPosition;
+        var tweener = entityTransform.DOLocalMove(endPosition, durationInSeconds).SetEase(ease).SetAutoKill(false);
+
+        sbcInternalComponent.SetPosition(scene, entity, entityTransform.position);
+
+        return tweener;
     }
 }
