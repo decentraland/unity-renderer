@@ -1,4 +1,4 @@
-import { scenesChanged } from '../loading/actions'
+import { scenesChanged, signalSceneReload } from '../loading/actions'
 import { LoadableScene } from '../types'
 import { SceneWorker } from './SceneWorker'
 import { store } from 'shared/store/isolatedStore'
@@ -190,7 +190,7 @@ export async function reloadScene(sceneId: string) {
     console.error(`Could reload sceneId=${sceneId} correctly due to: '${e}'`)
   }
 
-  await setDesiredParcelScenes(getDesiredParcelScenes())
+  store.dispatch(signalSceneReload())
 }
 
 export function unloadParcelSceneById(sceneId: string) {
@@ -205,7 +205,7 @@ export function unloadParcelSceneById(sceneId: string) {
  * @internal
  **/
 async function loadParcelSceneByIdIfMissing(sceneId: string, entity: LoadableScene) {
-  // create the worker if don't exis
+  // create the worker if don't exist
   if (!getSceneWorkerBySceneID(sceneId)) {
     // If we are running in isolated mode and it is builder mode, we create a stateless worker instead of a normal worker
     const denyListed = isParcelDenyListed(entity.entity.metadata.scene.parcels)
@@ -219,8 +219,6 @@ async function loadParcelSceneByIdIfMissing(sceneId: string, entity: LoadableSce
 
     // add default permissions for Parcel based scenes
     defaultParcelPermissions.forEach(($) => worker.rpcContext.permissionGranted.add($))
-
-    setNewParcelScene(worker)
   }
 }
 

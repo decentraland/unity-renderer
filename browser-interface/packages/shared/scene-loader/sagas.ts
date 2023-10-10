@@ -7,7 +7,7 @@ import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
+import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD, SCENE_RELOAD } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -317,6 +317,7 @@ function* onWorldPositionChange() {
       newParcel: take(SET_PARCEL_POSITION),
       SCENE_START: take(SCENE_START),
       newLoadingRadius: take(SET_WORLD_LOADING_RADIUS),
+      reload: take(SCENE_RELOAD),
       unload: take(BEFORE_UNLOAD)
     })
 
