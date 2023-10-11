@@ -57,7 +57,9 @@ public class HUDDesktopFactory : HUDFactory
                     Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                     new PlacesAnalytics(),
                     Clipboard.Create(),
-                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>());
+                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>(),
+                    DataStore.i.contentModeration,
+                    Environment.i.world.state);
                 break;
 
             default:

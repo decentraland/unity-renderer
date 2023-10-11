@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using System;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -24,6 +25,7 @@ public class PlaceCardComponentModel : BaseComponentModel
     public int numberOfFavorites;
     public string deployedAt;
     public bool isPOI;
+    public SceneContentCategory ageRating;
 
     [HideInInspector]
     public IHotScenesController.PlaceInfo placeInfo;

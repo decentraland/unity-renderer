@@ -39,6 +39,7 @@ namespace DCLPlugins.RealmPlugin
         private void RealmChanged(AboutConfiguration current, AboutConfiguration _)
         {
             DataStore.i.common.isWorld.Set(current.IsWorld());
+            DataStore.i.realm.realmWasSetByFirstTime.Set(true);
 
             realmsModifiers.ForEach(rm => rm.OnEnteredRealm(current.IsWorld(), current));
         }
