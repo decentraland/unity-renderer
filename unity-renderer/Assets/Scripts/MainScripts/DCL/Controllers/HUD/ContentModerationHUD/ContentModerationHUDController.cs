@@ -2,6 +2,7 @@
 using DCL.Browser;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.NotificationModel;
 using DCL.Tasks;
 using DCLServices.PlacesAPIService;
 using System;
@@ -16,6 +17,7 @@ namespace DCL.ContentModeration
         private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
         private const int REPORT_PLACE_TIMEOUT = 30;
         private const string LEARN_MORE_URL = "https://decentraland.org/blog/";
+        private const string REPORTING_ERROR_MESSAGE = "There was an error sending the information. Please try again later...";
 
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
         private readonly IAdultContentAgeConfirmationComponentView adultContentAgeConfirmationComponentView;
@@ -30,6 +32,7 @@ namespace DCL.ContentModeration
         private readonly IPlacesAPIService placesAPIService;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly IContentModerationAnalytics contentModerationAnalytics;
+        private readonly NotificationsController notificationsController;
 
         private string currentPlaceId;
         private SceneContentCategory currentContentCategory;
@@ -48,7 +51,8 @@ namespace DCL.ContentModeration
             IBrowserBridge browserBridge,
             IPlacesAPIService placesAPIService,
             IUserProfileBridge userProfileBridge,
-            IContentModerationAnalytics contentModerationAnalytics)
+            IContentModerationAnalytics contentModerationAnalytics,
+            NotificationsController notificationsController)
         {
             this.adultContentSceneWarningComponentView = adultContentSceneWarningComponentView;
             this.adultContentAgeConfirmationComponentView = adultContentAgeConfirmationComponentView;
@@ -63,6 +67,7 @@ namespace DCL.ContentModeration
             this.placesAPIService = placesAPIService;
             this.userProfileBridge = userProfileBridge;
             this.contentModerationAnalytics = contentModerationAnalytics;
+            this.notificationsController = notificationsController;
 
             OnSceneNumberChanged(CommonScriptableObjects.sceneNumber.Get(), 0);
             CommonScriptableObjects.sceneNumber.OnChange += OnSceneNumberChanged;
@@ -242,7 +247,14 @@ namespace DCL.ContentModeration
             catch (Exception ex)
             {
                 contentModerationAnalytics.ErrorSendingReportingForm(currentPlaceId);
-                contentModerationReportingComponentView.SetPanelAsError();
+                contentModerationReportingComponentView.ResetPanelState();
+                notificationsController.ShowNotification(new Model
+                {
+                    message = REPORTING_ERROR_MESSAGE,
+                    type = NotificationModel.Type.ERROR,
+                    timer = 10f,
+                    destroyOnFinish = true,
+                });
                 Debug.LogError($"An error occurred while reporting the content category for ({placeContentReport.coordinates}): {ex.Message}");
             }
         }

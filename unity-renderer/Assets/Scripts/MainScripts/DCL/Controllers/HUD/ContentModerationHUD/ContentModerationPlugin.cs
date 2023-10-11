@@ -47,7 +47,8 @@ namespace DCL.ContentModeration
                 new WebInterfaceBrowserBridge(),
                 Environment.i.serviceLocator.Get<IPlacesAPIService>(),
                 new UserProfileWebInterfaceBridge(),
-                new ContentModerationAnalytics());
+                new ContentModerationAnalytics(),
+                NotificationsController.i);
         }
 
         public void Dispose()

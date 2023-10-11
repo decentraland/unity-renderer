@@ -32,6 +32,7 @@ namespace DCL.ContentModeration.Tests
         private IPlacesAPIService placesAPIService;
         private IUserProfileBridge userProfileBridge;
         private IContentModerationAnalytics contentModerationAnalytics;
+        private NotificationsController notificationsController;
 
         private ParcelScene testTeenScene;
         private ParcelScene testAdultScene;
@@ -57,6 +58,8 @@ namespace DCL.ContentModeration.Tests
             placesAPIService = Substitute.For<IPlacesAPIService>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
             contentModerationAnalytics = Substitute.For<IContentModerationAnalytics>();
+            notificationsController = Object.Instantiate(new GameObject()).AddComponent<NotificationsController>();
+            notificationsController.allowNotifications = false;
 
             contentModerationHUDController = new ContentModerationHUDController(
                 adultContentSceneWarningComponentView,
@@ -71,7 +74,8 @@ namespace DCL.ContentModeration.Tests
                 browserBridge,
                 placesAPIService,
                 userProfileBridge,
-                contentModerationAnalytics);
+                contentModerationAnalytics,
+                notificationsController);
 
             CreateTestScene(new Vector2Int { x = 50, y = 50 }, SceneContentCategory.TEEN, "testTeenPlace", TEST_TEEN_SCENE_NUMBER);
             CreateTestScene(new Vector2Int { x = 100, y = 100 }, SceneContentCategory.ADULT, "testAdultPlace", TEST_ADULT_SCENE_NUMBER);
@@ -84,6 +88,7 @@ namespace DCL.ContentModeration.Tests
             Object.Destroy(testTeenScene.gameObject);
             Object.Destroy(testAdultScene.gameObject);
             Object.Destroy(testRestrictedScene.gameObject);
+            Object.Destroy(notificationsController.gameObject);
 
             return base.TearDown();
         }

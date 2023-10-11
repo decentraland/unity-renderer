@@ -17,6 +17,6 @@ namespace DCL.ContentModeration
         void SetRating(SceneContentCategory contentCategory);
         void SetLoadingState(bool isLoading);
         void SetPanelAsSent(bool hasBeenSent);
-        void SetPanelAsError();
+        void ResetPanelState();
     }
 }

@@ -16,7 +16,6 @@ namespace DCL.ContentModeration
         [SerializeField] private ButtonComponentView gotItButton1;
         [SerializeField] private ButtonComponentView gotItButton2;
         [SerializeField] private ButtonComponentView sendButton;
-        [SerializeField] private ButtonComponentView retryButton;
         [SerializeField] private Button learnMoreButton;
         [SerializeField] private ContentModerationRatingButtonComponentView teenRatingButton;
         [SerializeField] private ContentModerationRatingButtonComponentView adultRatingButton;
@@ -32,7 +31,6 @@ namespace DCL.ContentModeration
         [SerializeField] private GameObject mainModal;
         [SerializeField] private GameObject mainFormSection;
         [SerializeField] private GameObject loadingStateSection;
-        [SerializeField] private GameObject errorStateSection;
         [SerializeField] private GameObject reportSentModal;
         [SerializeField] private Image modalHeaderImage;
 
@@ -68,7 +66,6 @@ namespace DCL.ContentModeration
         private SceneContentCategory currentRating;
         private readonly List<string> selectedOptions = new ();
         private TMP_InputField commentsInput;
-        private TMP_Text sendButtonText;
         private bool isLoadingActive;
         private string currentSceneName;
 
@@ -83,9 +80,7 @@ namespace DCL.ContentModeration
             cancelButton.onClick.AddListener(() => HidePanel(true));
             gotItButton1.onClick.AddListener(() => HidePanel(false));
             gotItButton2.onClick.AddListener(() => HidePanel(false));
-            sendButtonText = sendButton.GetComponentInChildren<TMP_Text>();
             sendButton.onClick.AddListener(() => SendReport((currentRating, selectedOptions, commentsInput.text)));
-            retryButton.onClick.AddListener(() => SetLoadingState(false));
             learnMoreButton.onClick.AddListener(GoToLearnMore);
             teenRatingButton.RatingButton.onClick.AddListener(() => SetRating(SceneContentCategory.TEEN));
             adultRatingButton.RatingButton.onClick.AddListener(() => SetRating(SceneContentCategory.ADULT));
@@ -101,7 +96,6 @@ namespace DCL.ContentModeration
             gotItButton1.onClick.RemoveAllListeners();
             gotItButton2.onClick.RemoveAllListeners();
             sendButton.onClick.RemoveAllListeners();
-            retryButton.onClick.RemoveAllListeners();
             learnMoreButton.onClick.RemoveAllListeners();
             teenRatingButton.RatingButton.onClick.RemoveAllListeners();
             adultRatingButton.RatingButton.onClick.RemoveAllListeners();
@@ -206,7 +200,6 @@ namespace DCL.ContentModeration
         {
             mainFormSection.SetActive(!isLoading);
             loadingStateSection.SetActive(isLoading);
-            errorStateSection.SetActive(false);
             isLoadingActive = isLoading;
         }
 
@@ -216,11 +209,10 @@ namespace DCL.ContentModeration
             reportSentModal.SetActive(hasBeenSent);
         }
 
-        public void SetPanelAsError()
+        public void ResetPanelState()
         {
-            mainFormSection.SetActive(false);
+            mainFormSection.SetActive(true);
             loadingStateSection.SetActive(false);
-            errorStateSection.SetActive(true);
             isLoadingActive = false;
         }
 
@@ -301,11 +293,8 @@ namespace DCL.ContentModeration
                 : $"Flag {currentSceneName} for Rating Review";
         }
 
-        private void SetSendButtonInteractable(bool isInteractable)
-        {
+        private void SetSendButtonInteractable(bool isInteractable) =>
             sendButton.SetInteractable(isInteractable);
-            sendButtonText.text = isInteractable ? "FLAG THIS SCENE" : "SELECT AT LEAST ONE";
-        }
 
         private void SendReport((SceneContentCategory contentCategory, List<string> issues, string comments) report) =>
             OnSendClicked?.Invoke(report);
