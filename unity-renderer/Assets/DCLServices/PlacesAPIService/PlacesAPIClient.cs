@@ -29,10 +29,10 @@ namespace DCLServices.PlacesAPIService
 
     public class PlacesAPIClient: IPlacesAPIClient
     {
-        private const string BASE_URL = "https://places.decentraland.zone/api/places"; // TODO (Santi): Change it to .org when it's ready
+        private const string BASE_URL = "https://places.decentraland.org/api/places";
         private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
         private const string POI_URL = "https://dcl-lists.decentraland.org/pois";
-        private const string CONTENT_MODERATION_REPORT_URL = "https://places.decentraland.zone/api/report"; // TODO (Santi): Change it to .org when it's ready
+        private const string CONTENT_MODERATION_REPORT_URL = "https://places.decentraland.org/api/report";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)

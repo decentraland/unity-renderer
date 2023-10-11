@@ -23,7 +23,7 @@ namespace DCLServices.WorldsAPIService
 
     public class WorldsAPIClient : IWorldsAPIClient
     {
-        private const string BASE_URL = "https://places.decentraland.zone/api/worlds"; // TODO (Santi): Change it to .org when it's ready
+        private const string BASE_URL = "https://places.decentraland.org/api/worlds";
 
         private readonly IWebRequestController webRequestController;
 

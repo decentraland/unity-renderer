@@ -71,15 +71,15 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 93e1efcab17a8de4ba733f92f79f6a5e, type: 3}
   - {fileID: 21300000, guid: 8a63dcab35445e14a93cc252f0595cb6, type: 3}
   m_PackedSpriteNamesToIndex:
-  - FlagPlaceIcon_A
-  - FlagPlaceModalHeader_Green
-  - FlagPlaceModalHeader_Yellow
-  - FlagPlaceIcon_R
-  - FlagPlaceIcon_T
-  - AdultAgeConfirmationHeader
-  - FlagPlaceConfirmationHeader
-  - FlagPlaceModalHeader_Red
-  - AdultWarningHeader
+  - AdultIcn
+  - FlagTeen
+  - FlagAdult
+  - RestrictedIcn
+  - TeenIcn
+  - UnhiddenEye
+  - ConfirmFlagImg
+  - FlagRestricted
+  - HiddenEye
   m_RenderDataMap: {}
   m_Tag: Atlas
   m_IsVariant: 0
