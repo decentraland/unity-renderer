@@ -11,6 +11,7 @@ namespace ECSSystems.AvatarModifierAreaSystem
     {
         private IInternalECSComponent<InternalAvatarModifierArea> internalAvatarModifierArea;
         private readonly DataStore_Player dataStore;
+        private readonly HashSet<Collider> excludedColliders = new HashSet<Collider>();
 
         public ECSAvatarModifierAreaSystem(
             IInternalECSComponent<InternalAvatarModifierArea> internalAvatarModifierArea,
@@ -32,8 +33,11 @@ namespace ECSSystems.AvatarModifierAreaSystem
                 var model = componentGroup[i].value.model;
                 Transform entityTransform = scene.entities[entityId].gameObject.transform;
 
+                if (model.excludedIds.Count > 0)
+                    UpdateExcludedCollidersCollection(model.excludedIds);
+
                 HashSet<GameObject> currentAvatarsInArea = ECSAvatarUtils.DetectAvatars(model.area, entityTransform.position,
-                    entityTransform.rotation, model.excludedIds.Count > 0 ? GetExcludedColliders(model.excludedIds) : null);
+                    entityTransform.rotation, excludedColliders);
 
                 if (model.removed)
                 {
@@ -45,7 +49,7 @@ namespace ECSSystems.AvatarModifierAreaSystem
                     continue;
                 }
 
-                if (AreSetEquals(model.avatarsInArea, currentAvatarsInArea))
+                if (AreSetsEqual(model.avatarsInArea, currentAvatarsInArea))
                     continue;
 
                 // Apply modifier for avatars that just entered the area
@@ -71,7 +75,7 @@ namespace ECSSystems.AvatarModifierAreaSystem
             }
         }
 
-        private bool AreSetEquals(HashSet<GameObject> set1, HashSet<GameObject> set2)
+        private bool AreSetsEqual(HashSet<GameObject> set1, HashSet<GameObject> set2)
         {
             if (set1 == null && set2 == null)
                 return true;
@@ -79,25 +83,24 @@ namespace ECSSystems.AvatarModifierAreaSystem
             if (set1 == null || set2 == null)
                 return false;
 
+            if (set1.Count != set2.Count)
+                return false;
+
             return set1.SetEquals(set2);
         }
 
-        private HashSet<Collider> GetExcludedColliders(HashSet<string> excludedIds)
+        private void UpdateExcludedCollidersCollection(HashSet<string> excludedIds)
         {
             var ownPlayer = dataStore.ownPlayer.Get();
-            var otherPlayers = dataStore.otherPlayers;
+            excludedColliders.Clear();
 
-            HashSet<Collider> result = new HashSet<Collider>();
             foreach (string excludedId in excludedIds)
             {
-                string parsedExcludedId = excludedId.ToLower();
-                if (otherPlayers.TryGetValue(parsedExcludedId, out Player player))
-                    result.Add(player.collider);
-                else if (ownPlayer != null && parsedExcludedId == ownPlayer.id)
-                    result.Add(ownPlayer.collider);
+                if (dataStore.otherPlayers.TryGetValue(excludedId, out Player player))
+                    excludedColliders.Add(player.collider);
+                else if (ownPlayer != null && excludedId == ownPlayer.id)
+                    excludedColliders.Add(ownPlayer.collider);
             }
-
-            return result;
         }
     }
 }

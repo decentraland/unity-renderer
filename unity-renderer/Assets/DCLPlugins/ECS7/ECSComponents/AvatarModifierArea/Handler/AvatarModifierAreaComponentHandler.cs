@@ -50,7 +50,12 @@ namespace DCL.ECSComponents
                 internalComponentModel.OnAvatarExit += modifier.RemoveModifier;
             }
 
-            internalComponentModel.excludedIds = model.ExcludeIds.ToHashSet();
+            HashSet<string> excludedIds = new HashSet<string>();
+            foreach (string modelExcludeId in model.ExcludeIds)
+            {
+                excludedIds.Add(modelExcludeId.ToLower());
+            }
+            internalComponentModel.excludedIds = excludedIds;
 
             internalAvatarModifierArea.PutFor(scene, entity, internalComponentModel);
         }
