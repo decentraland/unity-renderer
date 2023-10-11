@@ -621,7 +621,6 @@ MonoBehaviour:
   goToButton: {fileID: 4603100673564791174}
   infoButton: {fileID: 8626910542831730621}
   shareButton: {fileID: 5409463304230243934}
-  favoriteContainer: {fileID: 8371206149832847143}
   favoriteToggle: {fileID: 907190896744746301}
   favoriteLoading: {fileID: 4763281138551048167}
   upvoteButton: {fileID: 3216423920231547524}
