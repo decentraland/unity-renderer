@@ -106,8 +106,10 @@ import { rendererSignalSceneReady } from 'shared/world/actions'
 import {
   allScenesEvent,
   AllScenesEvents,
+  getLoadedParcelSceneByParcel,
   getSceneWorkerBySceneID,
-  getSceneWorkerBySceneNumber
+  getSceneWorkerBySceneNumber,
+  reloadSpecificScene
 } from 'shared/world/parcelSceneManager'
 import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
@@ -116,6 +118,8 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
+import { encodeParcelPosition } from 'lib/decentraland'
+import { Vector2 } from 'shared/protocol/decentraland/common/vectors.gen'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -384,6 +388,13 @@ export class BrowserInterface {
       data.cameraRotation || data.rotation,
       data.playerHeight || playerHeight
     )
+  }
+
+  public ReloadScene(data: {coords: Vector2}) {
+    const sceneToReload = getLoadedParcelSceneByParcel(encodeParcelPosition(data.coords))
+    if (sceneToReload) {
+      reloadSpecificScene(sceneToReload.loadableScene.id)
+    }
   }
 
   public ReportMousePosition(data: { id: string; mousePosition: EcsMathReadOnlyVector3 }) {

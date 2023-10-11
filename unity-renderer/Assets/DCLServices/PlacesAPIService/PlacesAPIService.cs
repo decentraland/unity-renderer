@@ -33,6 +33,8 @@ namespace DCLServices.PlacesAPIService
         UniTask<bool> IsFavoritePlace(string placeUUID, CancellationToken ct, bool renewCache = false);
 
         UniTask<IReadOnlyList<string>> GetPointsOfInterestCoords(CancellationToken ct, bool renewCache = false);
+
+        UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct);
     }
 
     public class PlacesAPIService : IPlacesAPIService, ILambdaServiceConsumer<IHotScenesController.PlacesAPIResponse>
@@ -292,6 +294,9 @@ namespace DCLServices.PlacesAPIService
 
             return pointsOfInterestCoords;
         }
+
+        public async UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct) =>
+            await client.ReportPlace(placeContentReportPayload, ct);
 
         public void Dispose()
         {

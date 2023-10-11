@@ -44,6 +44,12 @@ namespace DCL.Interface
             public string id;
         }
 
+        [Serializable]
+        public class ReloadScenePayload
+        {
+            public Vector2 coords;
+        }
+
         [System.Serializable]
         public abstract class ControlEvent
         {
@@ -984,6 +990,7 @@ namespace DCL.Interface
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
+        private static ReloadScenePayload reloadScenePayload = new ReloadScenePayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
         private static Web3UseResponsePayload web3UseResponsePayload = new Web3UseResponsePayload();
         private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
@@ -1062,6 +1069,12 @@ namespace DCL.Interface
             positionPayload.cameraRotation = cameraRotation;
 
             SendMessage("ReportPosition", positionPayload);
+        }
+
+        public static void ReloadScene(Vector2 coords)
+        {
+            reloadScenePayload.coords = coords;
+            SendMessage("ReloadScene", reloadScenePayload);
         }
 
         public static void ReportCameraChanged(CameraMode.ModeId cameraMode) { ReportCameraChanged(cameraMode, -1); }

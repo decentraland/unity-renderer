@@ -3,6 +3,7 @@ using DCL.Backpack;
 using DCL.Social.Chat;
 using DCL.Chat.Notifications;
 using DCL.ConfirmationPopup;
+using DCL.ContentModeration;
 using DCL.ECS7;
 using DCL.Emotes;
 using DCL.EmotesWheel;
@@ -80,7 +81,7 @@ namespace DCL
             pluginSystem.RegisterWithFlag<ECS7Plugin>(() => new ECS7Plugin(), "ecs7");
             pluginSystem.RegisterWithFlag<BlurFeature>(() => new BlurFeature(), "ui_blur_variant:enabled");
             pluginSystem.RegisterWithFlag<PromoteChannelsToastPlugin>(() => new PromoteChannelsToastPlugin(), "promote_channels_toast");
-            pluginSystem.RegisterWithFlag<PlayerPassportPlugin>(() => new PlayerPassportPlugin(), "new_avatar_flow");
+            pluginSystem.Register<PlayerPassportPlugin>(() => new PlayerPassportPlugin());
             pluginSystem.RegisterWithFlag<FavoritePlacesPlugin>(() => new FavoritePlacesPlugin(), "favourite_places");
             pluginSystem.RegisterWithFlag<OutlinerPlugin>(() => new OutlinerPlugin(), "avatar_outliner");
             pluginSystem.RegisterWithFlag<LoadingScreenV2Plugin>(() => new LoadingScreenV2Plugin(), "loading_screen_v2");
@@ -106,6 +107,7 @@ namespace DCL
 
             pluginSystem.RegisterWithFlag<WalletPlugin>(() => new WalletPlugin(), "wallet");
             pluginSystem.RegisterWithFlag<MyAccountPlugin>(() => new MyAccountPlugin(), "my_account");
+            pluginSystem.RegisterWithFlag<ContentModerationPlugin>(() => new ContentModerationPlugin(), "content_moderation");
 
             pluginSystem.SetFeatureFlagsData(DataStore.i.featureFlags.flags);
 

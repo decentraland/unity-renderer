@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -137,4 +138,6 @@ public interface IPlaceCardComponentView
     void SetIsPOI(bool isPOI);
 
     void SetActive(bool isActive);
+
+    void SetAgeRating(SceneContentCategory contentCategory);
 }
