@@ -54,7 +54,7 @@ namespace DCL
                 placeCardModal,
                 exploreV2Analytics,
                 new WebInterfaceBrowserBridge());
-            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics);
+            navmapFilterComponentController = new NavmapFilterComponentController(filterView, new WebInterfaceBrowserBridge(), exploreV2Analytics, new UserProfileWebInterfaceBridge(), DataStore.i);
 
             ConfigureMapInFullscreenMenuChanged(configureMapInFullscreenMenu.Get(), null);
             DataStore.i.HUDs.isNavMapInitialized.Set(true);
