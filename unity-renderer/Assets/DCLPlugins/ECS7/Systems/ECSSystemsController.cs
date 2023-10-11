@@ -1,5 +1,6 @@
 using DCL;
 using ECSSystems.AnimationSystem;
+using ECSSystems.AvatarModifierAreaSystem;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSEngineInfoSystem;
@@ -156,6 +157,9 @@ public class ECSSystemsController : IDisposable
             CommonScriptableObjects.worldOffset,
             context.internalEcsComponents.sceneBoundsCheckComponent);
 
+        ECSAvatarModifierAreaSystem avatarModifierAreaSystem = new ECSAvatarModifierAreaSystem(
+            context.internalEcsComponents.AvatarModifierAreaComponent, DataStore.i.player);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -168,6 +172,7 @@ public class ECSSystemsController : IDisposable
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
+            avatarModifierAreaSystem.Update,
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,

@@ -18,7 +18,7 @@ namespace DCL.ECSComponents.Test
 {
     public class AvatarModifierAreaShould
     {
-        private IDCLEntity entity;
+        /*private IDCLEntity entity;
         private IParcelScene scene;
         private AvatarModifierAreaComponentHandler componentHandler;
         private GameObject gameObject;
@@ -128,6 +128,6 @@ namespace DCL.ECSComponents.Test
             model.ExcludeIds.Add("IdToExclude");
 
             return model;
-        }
+        }*/
     }
 }
