@@ -180,8 +180,6 @@ export async function loadSceneEntityWithoutCache(sceneId: string): Promise<Load
 }
 
 export async function reloadScene(sceneId: string) {
-  unloadParcelSceneById(sceneId)
-
   // Force reload of scene data
   try {
     const reloadedScene = await loadSceneEntityWithoutCache(sceneId)
@@ -189,6 +187,8 @@ export async function reloadScene(sceneId: string) {
   } catch (e) {
     console.error(`Could reload sceneId=${sceneId} correctly due to: '${e}'`)
   }
+
+  unloadParcelSceneById(sceneId)
 
   store.dispatch(signalSceneReload())
 }
