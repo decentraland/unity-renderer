@@ -15,7 +15,9 @@ namespace DCLServices.WorldsAPIService
         UniTask<WorldsResponse.WorldsAPIResponse> GetWorlds(int pageNumber, int pageSize, string filter = "", string sort = "", CancellationToken ct = default);
 
         UniTask<List<WorldsResponse.WorldInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
-      
+
+        UniTask<WorldsResponse.WorldInfo> GetWorld(string name, CancellationToken ct);
+
         UniTask<List<WorldsResponse.WorldInfo>> GetWorldsByNamesList(List<string> namesList, CancellationToken ct);
     }
 
@@ -79,10 +81,29 @@ namespace DCLServices.WorldsAPIService
 
             if (response.data == null)
                 throw new Exception($"No favorites info retrieved:\n{result.downloadHandler.text}");
-                
+
             return response.data;
         }
-        
+
+        public async UniTask<WorldsResponse.WorldInfo> GetWorld(string name, CancellationToken ct)
+        {
+            const string URL = BASE_URL + "?names={0}&with_realms_detail=true";
+            var result = await webRequestController.GetAsync(string.Format(URL, name), cancellationToken: ct, isSigned: true);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching world info:\n{result.error}");
+
+            var response = Utils.SafeFromJson<WorldsResponse.WorldsAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing world info:\n{result.downloadHandler.text}");
+
+            if (response.data.Count == 0)
+                throw new NotAWorldException(name);
+
+            return response.data[0];
+        }
+
         public async UniTask<List<WorldsResponse.WorldInfo>> GetWorldsByNamesList(List<string> namesList, CancellationToken ct)
         {
             if (namesList.Count == 0)

@@ -1,7 +1,9 @@
+using DCL.Helpers;
 using DCL.Interface;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL
@@ -20,6 +22,11 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
         [SerializeField] internal TextMeshProUGUI sceneLocationText;
+        [SerializeField] internal TextMeshProUGUI playerCountText;
+        [SerializeField] internal TextMeshProUGUI userVisitsText;
+        [SerializeField] internal TextMeshProUGUI userRatingText;
+        [SerializeField] internal RectTransform numberOfUsersContainer;
+        [SerializeField] internal RectTransform userVisitsAndRatingContainer;
         [SerializeField] internal RectTransform toastContainer;
         [SerializeField] internal GameObject scenePreviewContainer;
         [SerializeField] internal RawImageFillParent scenePreviewImage;
@@ -27,10 +34,8 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
-        [SerializeField] internal GameObject infoButtonContainer;
         [SerializeField] internal Button infoButton;
         [SerializeField] internal Button shareButton;
-        [SerializeField] internal GameObject favoriteContainer;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
         [SerializeField] internal GameObject favoriteLoading;
         [SerializeField] internal ButtonComponentView upvoteButton;
@@ -219,7 +224,6 @@ namespace DCL
 
         private void ChangeVote(bool upvote)
         {
-
             if (upvote)
             {
                 OnVoteChanged?.Invoke(placeId, placeIsUpvote ? (bool?)null : true);
@@ -258,7 +262,6 @@ namespace DCL
         public void SetFavoriteLoading(bool isLoading)
         {
             favoriteLoading.SetActive(isLoading);
-            favoriteToggle.gameObject.SetActive(!isLoading);
         }
 
         public void SetCurrentFavoriteStatus(string uuid, bool isFavorite)
@@ -272,13 +275,41 @@ namespace DCL
 
         public void SetIsAPlace(bool isAPlace)
         {
-            favoriteContainer.SetActive(isAPlace);
+            favoriteToggle.SetInteractable(isAPlace);
             SetInfoButtonEnabled(isAPlace);
+            
+            if(!isAPlace)
+                favoriteLoading.SetActive(false);
         }
 
         public void SetInfoButtonEnabled(bool isActive)
         {
-            infoButtonContainer.SetActive(isActive);
+            infoButton.interactable = isActive;
+        }
+
+        public void SetPlayerCount(int players)
+        {
+            numberOfUsersContainer.gameObject.SetActive(players > 0);
+            playerCountText.text = players.ToString();
+        }
+
+        public void SetUserVisits(int userVisitsCount)
+        {
+            userVisitsText.text = userVisitsCount.ToString();
+        }
+
+        public void SetUserRating(float? userRatingCount)
+        {
+            userRatingText.text = userRatingCount != null ? $"{userRatingCount.Value * 100:0}%" : "-%";
+        }
+
+        public void RebuildLayouts()
+        {
+            if (numberOfUsersContainer != null)
+                Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer);
+
+            if (userVisitsAndRatingContainer != null)
+                Utils.ForceRebuildLayoutImmediate(userVisitsAndRatingContainer);
         }
     }
 }

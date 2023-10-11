@@ -13,12 +13,16 @@ public class NavmapFilterComponentController : IDisposable
     private INavmapFilterComponentView view;
     private IBrowserBridge browserBridge;
     private IExploreV2Analytics exploreV2Analytics;
+    private readonly IUserProfileBridge userProfileBridge;
+    private readonly DataStore dataStore;
 
-    public NavmapFilterComponentController(INavmapFilterComponentView view, IBrowserBridge browserBridge, IExploreV2Analytics exploreV2Analytics)
+    public NavmapFilterComponentController(INavmapFilterComponentView view, IBrowserBridge browserBridge, IExploreV2Analytics exploreV2Analytics, IUserProfileBridge userProfileBridge, DataStore dataStore)
     {
         this.view = view;
         this.browserBridge = browserBridge;
         this.exploreV2Analytics = exploreV2Analytics;
+        this.userProfileBridge = userProfileBridge;
+        this.dataStore = dataStore;
 
         view.OnFilterChanged += ToggleLayer;
         view.OnClickedDAO += OpenDAOLink;
@@ -31,6 +35,12 @@ public class NavmapFilterComponentController : IDisposable
 
     private void ToggleLayer(MapLayer layerName, bool isActive)
     {
+        if (layerName.Equals(MapLayer.Friends) && userProfileBridge.GetOwn().isGuest)
+        {
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
+            return;
+        }
+
         mapRenderer.Ref.SetSharedLayer(layerName, isActive);
         exploreV2Analytics.SendToggleMapLayer(layerName.ToString(), isActive);
     }

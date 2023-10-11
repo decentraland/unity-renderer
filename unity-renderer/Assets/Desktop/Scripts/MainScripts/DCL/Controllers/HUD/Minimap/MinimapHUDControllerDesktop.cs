@@ -15,8 +15,10 @@ namespace DCL.Controllers.HUD
             IPlacesAPIService placesAPIService,
             IPlacesAnalytics placesAnalytics,
             IClipboard clipboard,
-            ICopyPasteAnalyticsService copyPasteAnalyticsService
+            ICopyPasteAnalyticsService copyPasteAnalyticsService,
+            DataStore_ContentModeration contentModerationDataStore,
+            IWorldState worldState
         ) : base(minimapMetadataController, locationController, environment, placesAPIService, placesAnalytics, clipboard,
-            copyPasteAnalyticsService) { }
+            copyPasteAnalyticsService, contentModerationDataStore, worldState) { }
     }
 }

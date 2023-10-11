@@ -19,6 +19,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<List<IHotScenesController.PlaceInfo>> GetFavorites(int pageNumber, int pageSize, CancellationToken ct);
         UniTask<List<IHotScenesController.PlaceInfo>> GetAllFavorites(CancellationToken ct);
         UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(List<Vector2Int> coordsList, CancellationToken ct);
+        UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct);
 
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
@@ -31,6 +32,7 @@ namespace DCLServices.PlacesAPIService
         private const string BASE_URL = "https://places.decentraland.org/api/places";
         private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
         private const string POI_URL = "https://dcl-lists.decentraland.org/pois";
+        private const string CONTENT_MODERATION_REPORT_URL = "https://places.decentraland.org/api/report";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)
@@ -211,6 +213,24 @@ namespace DCLServices.PlacesAPIService
                 throw new Exception($"No POIs info retrieved:\n{result.downloadHandler.text}");
 
             return response.data;
+        }
+
+        public async UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct)
+        {
+            // POST for getting a signed url
+            UnityWebRequest postResult = await webRequestController.PostAsync(CONTENT_MODERATION_REPORT_URL, "", isSigned: true, cancellationToken: ct);
+            if (postResult.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error reporting place:\n{postResult.error}");
+
+            var postResponse = Utils.SafeFromJson<ReportPlaceAPIResponse>(postResult.downloadHandler.text);
+            if (postResponse?.data == null || !postResponse.ok)
+                throw new Exception($"Error reporting place:\n{postResult.downloadHandler.text}");
+
+            // PUT using the gotten signed url and sending the report payload
+            string putData = JsonUtility.ToJson(placeContentReportPayload);
+            UnityWebRequest putResult = await webRequestController.PutAsync(postResponse.data.signed_url, putData, isSigned: true, cancellationToken: ct);
+            if (putResult.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error reporting place:\n{putResult.error}");
         }
     }
 }

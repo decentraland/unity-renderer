@@ -12,6 +12,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.TweenSystem;
 using ECSSystems.UiCanvasInformationSystem;
 using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VideoPlayerSystem;
@@ -134,8 +135,7 @@ public class ECSSystemsController : IDisposable
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
             context.ComponentWriters,
             context.UiCanvasInformationPool,
-            DataStore.i.ecs7.scenes
-        );
+            DataStore.i.ecs7.scenes);
 
         ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
             context.internalEcsComponents.inputEventResultsComponent,
@@ -148,6 +148,14 @@ public class ECSSystemsController : IDisposable
             context.componentGroups.AnimationGroup,
             context.internalEcsComponents.Animation);
 
+        ECSTweenSystem tweenSystem = new ECSTweenSystem(
+            context.internalEcsComponents.TweenComponent,
+            context.ComponentWriters,
+            context.TweenStatePool,
+            context.TransformPool,
+            CommonScriptableObjects.worldOffset,
+            context.internalEcsComponents.sceneBoundsCheckComponent);
+
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
 
@@ -155,6 +163,7 @@ public class ECSSystemsController : IDisposable
         {
             engineInfoSystem.Update,
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
+            tweenSystem.Update,
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,

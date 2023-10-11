@@ -38,6 +38,8 @@ namespace DCL.Controllers
         public bool isPortableExperience { get; set; } = false;
 
         public float loadingProgress { get; private set; }
+        public SceneContentCategory contentCategory { get; private set; }
+        public string associatedPlaceId { get; private set; }
 
         [System.NonSerialized]
         public string sceneName;
@@ -610,7 +612,7 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
                     return $"{baseState}:{prettyName} - {sceneLifecycleHandler.sceneResourcesLoadTracker.GetStateString()}";
                 case SceneLifecycleHandler.State.READY:
-                    return $"{baseState}:{prettyName} - ready!";
+                    return $"{baseState}:{prettyName} - ready! ({(contentCategory != SceneContentCategory.TEEN ? contentCategory.ToString() : string.Empty)})";
             }
 
             return $"scene:{prettyName} - no state?";
@@ -675,5 +677,11 @@ namespace DCL.Controllers
             return sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
                    || sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS;
         }
+
+        public void SetContentCategory(SceneContentCategory category) =>
+            contentCategory = category;
+
+        public void SetAssociatedPlace(string placeId) =>
+            associatedPlaceId = placeId;
     }
 }
