@@ -9,7 +9,7 @@ public static class ECSTransformParentingSystem
         return () => Update(internalSceneBoundsCheckComponent);
     }
 
-    private static void Update(IInternalECSComponent<InternalSceneBoundsCheck> internalSceneBoundsCheckComponent)
+    private static void Update(IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
         if (ECSTransformUtils.orphanEntities == null || ECSTransformUtils.orphanEntities.Count == 0)
         {
@@ -29,7 +29,7 @@ public static class ECSTransformParentingSystem
 
                 ECSTransformUtils.orphanEntities.RemoveAt(i);
 
-                internalSceneBoundsCheckComponent.SetPosition(data.scene, data.entity, data.entity.gameObject.transform.position);
+                sbcInternalComponent.SetPosition(data.scene, data.entity, data.entity.gameObject.transform.position);
             }
         }
     }

@@ -1,6 +1,7 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECSComponents;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -345,5 +346,17 @@ namespace DCL.ECS7.InternalComponents
             dirty = false;
             IsInitialized = false;
         }
+    }
+
+    public struct InternalTween : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public bool removed;
+        public bool playing;
+        public float currentTime;
+        public Transform transform;
+        public Tweener tweener;
+        public PBTween.ModeOneofCase tweenMode;
+        public PBTween lastModel;
     }
 }

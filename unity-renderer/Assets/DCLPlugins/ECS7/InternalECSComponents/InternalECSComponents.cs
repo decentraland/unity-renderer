@@ -30,6 +30,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
     public IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
     public IInternalECSComponent<InternalAnimation> Animation { get; }
+    public IInternalECSComponent<InternalTween> TweenComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -216,6 +217,15 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
             crdtExecutors,
             this
         );
+
+        TweenComponent = new InternalECSComponent<InternalTween>(
+            InternalECSComponentsId.TWEEN,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
     }
 
     public void Dispose()
@@ -239,6 +249,7 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
         EngineInfo.Dispose();
         AnimationPlayer.Dispose();
         Animation.Dispose();
+        TweenComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

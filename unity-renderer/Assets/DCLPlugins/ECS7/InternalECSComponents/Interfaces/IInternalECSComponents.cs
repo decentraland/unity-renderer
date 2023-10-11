@@ -27,4 +27,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
     IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
     IInternalECSComponent<InternalAnimation> Animation { get; }
+    IInternalECSComponent<InternalTween> TweenComponent { get; }
 }

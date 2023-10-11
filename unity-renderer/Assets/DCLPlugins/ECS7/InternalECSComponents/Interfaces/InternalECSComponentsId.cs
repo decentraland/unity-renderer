@@ -21,5 +21,6 @@ public enum InternalECSComponentsId
     GLTF_CONTAINER_LOADING_STATE = 19,
     ENGINE_INFO = 20,
     ANIMATION_PLAYER = 21,
-    ANIMATION = 22
+    ANIMATION = 22,
+    TWEEN = 23
 }
