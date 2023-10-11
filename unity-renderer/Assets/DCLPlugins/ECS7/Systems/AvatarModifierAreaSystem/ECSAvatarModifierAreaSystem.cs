@@ -90,9 +90,10 @@ namespace ECSSystems.AvatarModifierAreaSystem
             HashSet<Collider> result = new HashSet<Collider>();
             foreach (string excludedId in excludedIds)
             {
-                if (otherPlayers.TryGetValue(excludedId, out Player player))
+                string parsedExcludedId = excludedId.ToLower();
+                if (otherPlayers.TryGetValue(parsedExcludedId, out Player player))
                     result.Add(player.collider);
-                else if (ownPlayer != null && excludedId == ownPlayer.id)
+                else if (ownPlayer != null && parsedExcludedId == ownPlayer.id)
                     result.Add(ownPlayer.collider);
             }
 
