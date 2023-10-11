@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
-using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -53,6 +49,7 @@ namespace DCL.ECSComponents
             HashSet<string> excludedIds = new HashSet<string>();
             foreach (string modelExcludeId in model.ExcludeIds)
             {
+                // player ids are stored in lowercase in the datastore
                 excludedIds.Add(modelExcludeId.ToLower());
             }
             internalComponentModel.excludedIds = excludedIds;
