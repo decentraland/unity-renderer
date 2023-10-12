@@ -23,8 +23,9 @@ namespace AvatarSystem
         protected override async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             baseAvatar.FadeGhost(linkedCt).Forget(); //Avoid making the ghost fading a blocking part of the avatar
+            emotesController.Prepare(settings.bodyshapeId, baseAvatar.ArmatureContainer);
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, baseAvatar.SkinnedMeshRenderer, linkedCt: linkedCt);
-            Prepare(settings, emotes, baseAvatar.ArmatureContainer);
+            Prepare(settings, emotes);
             Bind();
 
             MeshRenderer newCombinedRenderer = loader.combinedRenderer.GetComponent<MeshRenderer>();

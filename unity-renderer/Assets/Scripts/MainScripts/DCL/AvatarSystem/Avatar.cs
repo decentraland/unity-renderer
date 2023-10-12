@@ -26,7 +26,7 @@ namespace AvatarSystem
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
-        private readonly IAvatarEmotesController emotesController;
+        protected readonly IAvatarEmotesController emotesController;
 
         private CancellationTokenSource loadCancellationToken;
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
@@ -111,7 +111,8 @@ namespace AvatarSystem
                 container = parent != null ? parent : container;
             }
 
-            Prepare(settings, emotes, container);
+            emotesController.Prepare(settings.bodyshapeId, container);
+            Prepare(settings, emotes);
             Bind();
             Inform(loader.combinedRenderer);
         }
@@ -139,12 +140,12 @@ namespace AvatarSystem
             return emotes;
         }
 
-        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes, GameObject container)
+        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes)
         {
             //Scale the bounds due to the giant avatar not being skinned yet
             extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
-            emotesController.LoadEmotes(settings.bodyshapeId, emotes, container);
+            emotesController.LoadEmotes(settings.bodyshapeId, emotes);
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottlerService.Register(gpuSkinning);
         }
@@ -165,6 +166,7 @@ namespace AvatarSystem
         public virtual void AddVisibilityConstraint(string key)
         {
             visibility.AddGlobalConstrain(key);
+            emotesController.StopEmote();
         }
 
         public void RemoveVisibilityConstrain(string key) =>

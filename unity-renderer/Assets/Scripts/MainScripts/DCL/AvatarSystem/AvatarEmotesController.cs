@@ -33,13 +33,15 @@ namespace AvatarSystem
         public bool TryGetEquippedEmote(string bodyShape, string emoteId, out IEmoteReference emoteReference) =>
             equippedEmotes.TryGetValue(new EmoteBodyId(bodyShape, emoteId), out emoteReference);
 
-        // ReSharper disable once PossibleMultipleEnumeration (its intended)
-        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes, GameObject container)
+        public void Prepare(string bodyShapeId, GameObject container)
         {
             this.bodyShapeId = bodyShapeId;
-
             animator.Prepare(bodyShapeId, container);
+        }
 
+        // ReSharper disable once PossibleMultipleEnumeration (its intended)
+        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes)
+        {
             foreach (WearableItem emote in newEmotes)
                 LoadEmote(bodyShapeId, emote);
         }

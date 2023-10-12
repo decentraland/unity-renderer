@@ -7,7 +7,9 @@ namespace AvatarSystem
 {
     public interface IAvatarEmotesController : IDisposable
     {
-        void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes, GameObject container);
+        void Prepare(string bodyShapeId, GameObject container);
+
+        void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> emotes);
 
         void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool ignoreTimestamp = false);
 
