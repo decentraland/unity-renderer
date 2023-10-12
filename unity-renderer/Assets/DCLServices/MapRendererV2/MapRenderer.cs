@@ -9,6 +9,7 @@ using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -20,7 +21,7 @@ namespace DCLServices.MapRendererV2
         private class MapLayerStatus
         {
             public readonly IMapLayerController MapLayerController;
-            public readonly Stack<IMapActivityOwner> ActivityOwners = new ();
+            public readonly List<IMapActivityOwner> ActivityOwners = new ();
 
             public bool? SharedActive;
             public CancellationTokenSource CTS;
@@ -175,7 +176,7 @@ namespace DCLServices.MapRendererV2
                     mapLayerStatus.MapLayerController.Enable(mapLayerStatus.CTS.Token).SuppressCancellationThrow().Forget();
                 }
 
-                mapLayerStatus.ActivityOwners.Push(owner);
+                mapLayerStatus.ActivityOwners.Add(owner);
             }
         }
 
@@ -185,7 +186,8 @@ namespace DCLServices.MapRendererV2
             {
                 if (!EnumUtils.HasFlag(mask, mapLayer) || !layers.TryGetValue(mapLayer, out MapLayerStatus mapLayerStatus)) continue;
 
-                mapLayerStatus.ActivityOwners.Pop();
+                if (mapLayerStatus.ActivityOwners.Contains(owner))
+                    mapLayerStatus.ActivityOwners.Remove(owner);
 
                 if (mapLayerStatus.ActivityOwners.Count == 0)
                 {
@@ -195,7 +197,8 @@ namespace DCLServices.MapRendererV2
                 }
                 else
                 {
-                    IReadOnlyDictionary<MapLayer, IMapLayerParameter> parametersByLayer = mapLayerStatus.ActivityOwners.Peek().LayersParameters;
+                    var currentOwner = mapLayerStatus.ActivityOwners.Last();
+                    IReadOnlyDictionary<MapLayer, IMapLayerParameter> parametersByLayer = currentOwner.LayersParameters;
 
                     if (parametersByLayer.ContainsKey(mapLayer))
                         mapLayerStatus.MapLayerController.SetParameter(parametersByLayer[mapLayer]);
