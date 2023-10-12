@@ -15,7 +15,11 @@ public class ExploreV2Feature : IPlugin
         exploreV2MenuComponentController.Initialize();
     }
 
-    internal virtual IExploreV2MenuComponentController CreateController() => new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>(),Environment.i.serviceLocator.Get<IWorldsAPIService>(), new PlacesAnalytics());
+    internal virtual IExploreV2MenuComponentController CreateController() =>
+        new ExploreV2MenuComponentController(Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+            Environment.i.serviceLocator.Get<IWorldsAPIService>(),
+            new PlacesAnalytics(),
+            RealmsInfoBridge.i);
 
     public void Dispose()
     {

@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Social.Friends;
+using DCL.Tasks;
 using DCL.Wallet;
 using DCLServices.PlacesAPIService;
 using DCLServices.WorldsAPIService;
@@ -7,6 +9,7 @@ using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -20,6 +23,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private readonly IPlacesAPIService placesAPIService;
     private readonly IWorldsAPIService worldsAPIService;
     private readonly IPlacesAnalytics placesAnalytics;
+    private readonly IRealmsInfoBridge realmsInfoBridge;
 
     // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
 
@@ -38,6 +42,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private MouseCatcher mouseCatcher;
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
     private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables;
+    private CancellationTokenSource openRealmSelectorCancellationToken;
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
@@ -72,11 +77,13 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform cameraReelTooltipReference => view.cameraReelTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
 
-    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics)
+    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics,
+        IRealmsInfoBridge realmsInfoBridge)
     {
         this.placesAPIService = placesAPIService;
         this.worldsAPIService = worldsAPIService;
         this.placesAnalytics = placesAnalytics;
+        this.realmsInfoBridge = realmsInfoBridge;
     }
 
     public void Initialize()
@@ -104,7 +111,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
         realmController.Initialize();
-        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
+        view.currentRealmViewer.onLogoClick?.AddListener(ShowRealmSelectorModal);
 
         if (isWalletInitialized.Get())
             OnWalletInitialized(true, false);
@@ -351,8 +358,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+
         if (currentOpenSection == ExploreSection.Quest)
             view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+
         if (currentOpenSection == ExploreSection.CameraReel)
             DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
@@ -402,5 +411,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.HideMapOnEnteringWorld();
 
         view.SetSectionActive(ExploreSection.Map, !isWorld);
+    }
+
+    private void ShowRealmSelectorModal()
+    {
+        async UniTask FetchRealmsThenShowModalAsync(CancellationToken cancellationToken)
+        {
+            try { await realmsInfoBridge.FetchRealmsInfo(cancellationToken); }
+            catch (OperationCanceledException) { return; }
+            catch (Exception e) { Debug.LogException(e); }
+
+            view.ShowRealmSelectorModal();
+        }
+
+        openRealmSelectorCancellationToken = openRealmSelectorCancellationToken.SafeRestart();
+        FetchRealmsThenShowModalAsync(openRealmSelectorCancellationToken.Token).Forget();
     }
 }
