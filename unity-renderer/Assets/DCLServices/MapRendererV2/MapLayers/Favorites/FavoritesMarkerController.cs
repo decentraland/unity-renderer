@@ -156,11 +156,6 @@ namespace DCLServices.MapRendererV2.MapLayers.Favorites
             return UniTask.CompletedTask;
         }
 
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
-
         public UniTask Enable(CancellationToken cancellationToken)
         {
             GetFavorites(CancellationToken.None).Forget();

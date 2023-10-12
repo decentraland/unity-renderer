@@ -158,11 +158,6 @@ namespace DCLServices.MapRendererV2.MapLayers.PointsOfInterest
             return UniTask.CompletedTask;
         }
 
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
-
         public UniTask Enable(CancellationToken cancellationToken)
         {
             foreach (ISceneOfInterestMarker marker in markers.Values)

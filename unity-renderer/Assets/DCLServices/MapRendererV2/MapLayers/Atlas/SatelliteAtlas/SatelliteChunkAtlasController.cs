@@ -92,11 +92,6 @@ namespace DCLServices.MapRendererV2.MapLayers.SatelliteAtlas
             return UniTask.CompletedTask;
         }
 
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
-
         protected override void DisposeImpl()
         {
             foreach (IChunkController chunk in chunks)

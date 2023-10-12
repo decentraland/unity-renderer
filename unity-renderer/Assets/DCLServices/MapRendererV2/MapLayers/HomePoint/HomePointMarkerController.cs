@@ -69,11 +69,6 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
             return UniTask.CompletedTask;
         }
 
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
-
         private void OnHomePointCoordinatesChange(Vector2Int current, Vector2Int previous)
         {
             SetMarkerPosition(current);

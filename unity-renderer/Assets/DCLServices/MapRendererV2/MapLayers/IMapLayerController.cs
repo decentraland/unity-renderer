@@ -5,11 +5,12 @@ using System.Threading;
 
 namespace DCLServices.MapRendererV2.MapLayers
 {
-    internal interface IMapLayerController<T> : IMapLayerController
+    internal interface IMapLayerController<in T> : IMapLayerController
     {
         void SetParameter(T param);
 
-        void IMapLayerController.SetParameter(IMapLayerParameter mapLayerParameter) => SetParameter((T)mapLayerParameter);
+        void IMapLayerController.SetParameter(IMapLayerParameter mapLayerParameter) =>
+            SetParameter((T)mapLayerParameter);
     }
 
     internal interface IMapLayerController : IDisposable
@@ -26,6 +27,6 @@ namespace DCLServices.MapRendererV2.MapLayers
         /// <param name="cancellationToken">Cancellation Token is bound to both `Abort` (changing to the `Enabled` state) and `Dispose`</param>
         UniTask Disable(CancellationToken cancellationToken);
 
-        void SetParameter(IMapLayerParameter layerParameter);
+        void SetParameter(IMapLayerParameter layerParameter) { }
     }
 }

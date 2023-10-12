@@ -93,10 +93,5 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.HotArea
             markers.Clear();
             return UniTask.CompletedTask;
         }
-
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
     }
 }

@@ -133,10 +133,5 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.Friends
             markers.Clear();
             return UniTask.CompletedTask;
         }
-
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
     }
 }

@@ -95,10 +95,5 @@ namespace DCLServices.MapRendererV2.MapLayers.Atlas
             instantiationParent.gameObject.SetActive(false);
             return UniTask.CompletedTask;
         }
-
-        public void SetParameter(IMapLayerParameter layerParameter)
-        {
-
-        }
     }
 }
