@@ -17,7 +17,7 @@ namespace DCL.ContentModeration
         [SerializeField] private List<TMP_Text> texts;
         [SerializeField] private List<Image> imagesToColor;
         [SerializeField] private GameObject currentMark;
-        [SerializeField] private Image backgroundImage;
+        [SerializeField] private List<Image> backgroundImages;
 
         public Button RatingButton => ratingButton;
         public bool IsMarked { get; private set; }
@@ -40,7 +40,8 @@ namespace DCL.ContentModeration
             foreach (TMP_Text text in texts)
                 text.color = IsMarked ? selectedColor : unselectedColor;
 
-            backgroundImage.color = IsMarked && isSelected ? backgroundMarkedColor : backgroundNormalColor;
+            foreach (Image background in backgroundImages)
+                background.color = IsMarked && isSelected ? backgroundMarkedColor : backgroundNormalColor;
         }
 
         public void SetCurrentMarkActive(bool isActive)
