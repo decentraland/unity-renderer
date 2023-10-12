@@ -166,11 +166,14 @@ namespace AvatarSystem
         public virtual void AddVisibilityConstraint(string key)
         {
             visibility.AddGlobalConstrain(key);
-            emotesController.StopEmote();
+            emotesController.AddVisibilityConstraint(key);
         }
 
-        public void RemoveVisibilityConstrain(string key) =>
+        public void RemoveVisibilityConstrain(string key)
+        {
             visibility.RemoveGlobalConstrain(key);
+            emotesController.RemoveVisibilityConstraint(key);
+        }
 
         public IAvatarEmotesController GetEmotesController() => emotesController;
 

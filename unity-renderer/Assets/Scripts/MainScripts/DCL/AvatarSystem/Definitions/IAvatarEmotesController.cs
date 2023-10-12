@@ -23,5 +23,9 @@ namespace AvatarSystem
         event Action<string> OnEmoteUnequipped;
 
         bool TryGetEquippedEmote(string bodyShape, string emoteId, out IEmoteReference emoteReference);
+
+        void AddVisibilityConstraint(string key);
+
+        void RemoveVisibilityConstraint(string key);
     }
 }
