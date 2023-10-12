@@ -53,6 +53,9 @@ export function createGenesisCityLoader(options: {
     },
     async stop() {
       listeners.clear()
+    },
+    invalidateCache(entity) {
+      downloadManager.invalidateCache(entity)
     }
   }
 }

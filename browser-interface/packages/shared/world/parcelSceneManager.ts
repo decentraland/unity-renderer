@@ -7,9 +7,6 @@ import { ParcelSceneLoadingState } from './types'
 import { getFeatureFlagVariantValue } from 'shared/meta/selectors'
 import { defaultParcelPermissions } from 'shared/apis/host/Permissions'
 import { getClient } from 'shared/renderer/selectors'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
-import { ensureRealmAdapter } from 'shared/realm/ensureRealmAdapter'
-import { Entity } from '@dcl/schemas'
 
 declare const globalThis: any
 
@@ -158,39 +155,12 @@ export async function setDesiredParcelScenes(desiredParcelScenes: Map<string, Lo
   }
 }
 
-export async function loadSceneEntityWithoutCache(sceneId: string): Promise<LoadableScene> {
-  const realmAdapter = await ensureRealmAdapter()
-  const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-  const sceneEntityUrl = fetchContentServerWithPrefix + sceneId
-
-  const scenesResponse = await fetch(sceneEntityUrl, {
-    method: 'get',
-    headers: { 'content-type': 'application/json' }
-  })
-
-  if (!scenesResponse.ok) throw new Error(`Failed to fetch ${sceneEntityUrl}`)
-
-  const entity: Entity = await scenesResponse.json()
-
-  return {
-    id: entity.id,
-    baseUrl: (entity as any).baseUrl || fetchContentServerWithPrefix,
-    entity
-  }
-}
-
 export async function reloadScene(sceneId: string) {
-  // Force reload of scene data
-  try {
-    const reloadedScene = await loadSceneEntityWithoutCache(sceneId)
-    parcelSceneLoadingState.desiredParcelScenes.set(sceneId, reloadedScene)
-  } catch (e) {
-    console.error(`Could reload sceneId=${sceneId} correctly due to: '${e}'`)
-  }
-
   unloadParcelSceneById(sceneId)
 
-  store.dispatch(signalSceneReload())
+  const loadableScene = getDesiredParcelScenes().get(sceneId)!
+
+  store.dispatch(signalSceneReload(loadableScene))
 }
 
 export function unloadParcelSceneById(sceneId: string) {

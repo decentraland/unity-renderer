@@ -7,7 +7,7 @@ import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD, SCENE_RELOAD } from 'shared/loading/actions'
+import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD, SCENE_RELOAD, SceneReload } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -311,7 +311,7 @@ function* onWorldPositionChange() {
       }
     }
 
-    const { unload } = yield race({
+    const reason: { unload: any; reload: SceneReload } = yield race({
       timeout: delay(5000),
       newSceneLoader: take(SET_SCENE_LOADER),
       newParcel: take(SET_PARCEL_POSITION),
@@ -321,7 +321,14 @@ function* onWorldPositionChange() {
       unload: take(BEFORE_UNLOAD)
     })
 
-    if (unload) return
+    if (reason.unload) return
+
+    if (reason.reload && sceneLoader) {
+      sceneLoader.invalidateCache({
+        ...reason.reload.payload.entity,
+        id: reason.reload.payload.id
+      })
+    }
   }
 }
 function getPositionChangeInfo(state: RootState) {
