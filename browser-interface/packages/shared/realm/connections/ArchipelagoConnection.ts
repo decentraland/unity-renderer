@@ -11,6 +11,9 @@ import { wsAsAsyncChannel } from '../../comms/logic/ws-async-channel'
 import { Vector3 } from 'lib/math/Vector3'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
+import { ETHEREUM_NETWORK } from 'config'
+import { store } from 'shared/store/isolatedStore'
+import { getSelectedNetwork } from 'shared/dao/selectors'
 
 // shared writer to leverage pools
 const writer = new Writer()
@@ -97,7 +100,9 @@ export async function createArchipelagoConnection(
         throw new Error('Protocol error: server did not send a welcomeMessage')
       }
 
-      return new ArchipelagoConnection(baseUrl, about, ws, address)
+      const state = store.getState()
+      const network = getSelectedNetwork(state)
+      return new ArchipelagoConnection(network, baseUrl, about, ws, address)
     }
   } catch (err: any) {
     connected.reject(err)
@@ -118,6 +123,7 @@ export class ArchipelagoConnection implements IRealmAdapter {
   private disposed = false
 
   constructor(
+    network: ETHEREUM_NETWORK,
     public baseUrl: string,
     public readonly about: AboutResponse,
     public ws: WebSocket,
@@ -151,7 +157,7 @@ export class ArchipelagoConnection implements IRealmAdapter {
       }
     })
 
-    this.services = legacyServices(baseUrl, about)
+    this.services = legacyServices(network, baseUrl, about)
   }
 
   sendHeartbeat(p: Vector3) {

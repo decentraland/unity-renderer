@@ -76,6 +76,14 @@ function* pickCatalystRealm() {
     return true
   })
 
+  const mainRealm = candidates.find((c) => c.catalystName === 'main')
+  if (mainRealm) {
+    const url = urlWithProtocol(mainRealm.domain)
+    if (yield checkValidRealm(url)) {
+      return url
+    }
+  }
+
   const algorithm = createAlgorithm(config)
 
   const realm: Realm = yield call(
