@@ -50,6 +50,7 @@ SpriteAtlas:
     isAtlasV2: 0
     cachedData: {fileID: 0}
     packedSpriteRenderDataKeys:
+    - 0fe67f012b80f43418f19657b5358393: 21300000
     - 2ae7cdd2f890b7f48a2c50d3daaae1bf: 21300000
     - 60d50773a2ca4e240899c9b43cd770d7: 21300000
     - 93e14674749996744b80c0f1bae996f3: 21300000
@@ -61,6 +62,7 @@ SpriteAtlas:
     - 8a63dcab35445e14a93cc252f0595cb6: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 0fe67f012b80f43418f19657b5358393, type: 3}
   - {fileID: 21300000, guid: 2ae7cdd2f890b7f48a2c50d3daaae1bf, type: 3}
   - {fileID: 21300000, guid: 60d50773a2ca4e240899c9b43cd770d7, type: 3}
   - {fileID: 21300000, guid: 93e14674749996744b80c0f1bae996f3, type: 3}
@@ -71,6 +73,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 93e1efcab17a8de4ba733f92f79f6a5e, type: 3}
   - {fileID: 21300000, guid: 8a63dcab35445e14a93cc252f0595cb6, type: 3}
   m_PackedSpriteNamesToIndex:
+  - RateBottomLine
   - AdultIcn
   - FlagTeen
   - FlagAdult
