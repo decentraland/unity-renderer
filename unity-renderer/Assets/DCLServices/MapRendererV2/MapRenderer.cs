@@ -9,7 +9,6 @@ using DCLServices.MapRendererV2.MapLayers;
 using MainScripts.DCL.Helpers.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -197,7 +196,7 @@ namespace DCLServices.MapRendererV2
                 }
                 else
                 {
-                    var currentOwner = mapLayerStatus.ActivityOwners.Last();
+                    var currentOwner = mapLayerStatus.ActivityOwners[^1];
                     IReadOnlyDictionary<MapLayer, IMapLayerParameter> parametersByLayer = currentOwner.LayersParameters;
 
                     if (parametersByLayer.ContainsKey(mapLayer))
