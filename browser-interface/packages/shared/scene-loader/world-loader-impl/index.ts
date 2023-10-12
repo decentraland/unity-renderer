@@ -10,6 +10,7 @@ export async function createWorldLoader(options: { urns: string[] }): Promise<IS
     async reportPosition(_positionReport) {
       return { scenes }
     },
-    async stop() {}
+    async stop() {},
+    invalidateCache(_) {}
   }
 }

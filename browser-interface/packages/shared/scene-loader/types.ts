@@ -1,3 +1,4 @@
+import { Entity } from '@dcl/schemas'
 import { InstancedSpawnPoint, LoadableScene } from 'shared/types'
 
 export type SetDesiredScenesCommand = {
@@ -14,6 +15,7 @@ export interface ISceneLoader {
   reportPosition(positionReport: SceneLoaderPositionReport): Promise<SetDesiredScenesCommand>
   fetchScenesByLocation(parcels: string[]): Promise<SetDesiredScenesCommand>
   stop(): Promise<void>
+  invalidateCache(sceneId: Entity): void
 }
 
 export type SceneLoaderState = {
