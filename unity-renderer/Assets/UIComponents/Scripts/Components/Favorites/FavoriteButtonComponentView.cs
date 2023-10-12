@@ -49,6 +49,11 @@ public class FavoriteButtonComponentView : BaseComponentView, IComponentModelCon
     private void SetButtonVisuals(bool isFavorite) =>
         buttonFill.color = isFavorite ? favoriteFillColor : noFavoriteFillColor;
 
+    public void SetInteractable(bool isInteractable)
+    {
+        button.button.interactable = isInteractable;
+    }
+
     public void Configure(FavoriteButtonComponentModel newModel)
     {
         model = newModel;

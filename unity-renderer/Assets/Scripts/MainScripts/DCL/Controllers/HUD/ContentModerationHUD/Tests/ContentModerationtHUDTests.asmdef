@@ -1,0 +1,41 @@
+{
+    "name": "ContentModerationHUDTests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "ContentModerationHUD",
+        "UIComponents",
+        "Unity.TextMeshPro",
+        "DataStore",
+        "BaseVariable",
+        "BrowserBridge",
+        "DCL.Runtime.Interfaces",
+        "UserProfile",
+        "PlacesAPIService",
+        "DCL.Runtime",
+        "Protocol",
+        "ScriptableObjects",
+        "UniTask",
+        "IService",
+        "IntegrationTestSuite",
+        "Environment",
+        "TestHelpers",
+        "ContentProvider",
+        "NotificationsController"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

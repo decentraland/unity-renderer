@@ -206,6 +206,10 @@ namespace DCL
                 bool isFavorite = await placesAPIService.IsFavoritePlace(place, ct);
                 view.SetFavoriteLoading(false);
                 view.SetCurrentFavoriteStatus(place.id, isFavorite);
+                view.SetPlayerCount(place.user_count);
+                view.SetUserRating(place.like_rate_as_float);
+                view.SetUserVisits(place.user_visits);
+                view.RebuildLayouts();
                 SetPlaceCardModalData(place);
             }
             catch (NotAPlaceException)

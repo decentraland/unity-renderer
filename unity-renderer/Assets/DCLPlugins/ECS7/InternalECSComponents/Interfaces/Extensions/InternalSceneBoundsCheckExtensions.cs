@@ -11,7 +11,7 @@ namespace DCL.ECS7.InternalComponents
         public static void SetPosition(this IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent,
             IParcelScene scene, IDCLEntity entity, Vector3 newEntityPosition, bool createComponentIfMissing = true)
         {
-            var model = sbcInternalComponent.GetFor(scene, entity)?.model;
+            var model = sbcInternalComponent.GetFor(scene, entity.entityId)?.model;
 
             InternalSceneBoundsCheck finalModel;
             if (model == null)
@@ -28,7 +28,7 @@ namespace DCL.ECS7.InternalComponents
 
             finalModel.entityPosition = newEntityPosition;
 
-            sbcInternalComponent.PutFor(scene, entity, finalModel);
+            sbcInternalComponent.PutFor(scene, entity.entityId, finalModel);
 
             // Update children position in their SBCComponent as well
             IList<long> childrenId = entity.childrenId;
