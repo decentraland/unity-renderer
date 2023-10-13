@@ -620,6 +620,8 @@ MonoBehaviour:
   toastAnimator: {fileID: 2777010639308600957}
   infoButtonImage: {fileID: 6415206778259168454}
   favoriteButtonImage: {fileID: 6169280303805343148}
+  normalFavorite: {fileID: 21300000, guid: 45e823eca8727410d947ff8af56eb13a, type: 3}
+  blockedFavorite: {fileID: 21300000, guid: 3c940a5c07400864db483f5212bd11dd, type: 3}
   normalImageColor: {r: 0, g: 0, b: 0, a: 1}
   disabledImageColor: {r: 0.7490196, g: 0.7372549, b: 0.7647059, a: 1}
   goToButton: {fileID: 4603100673564791174}
