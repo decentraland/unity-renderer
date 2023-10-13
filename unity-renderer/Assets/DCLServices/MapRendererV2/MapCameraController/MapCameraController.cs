@@ -1,4 +1,5 @@
 ﻿using DCL;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapLayers;
@@ -15,7 +16,7 @@ namespace DCLServices.MapRendererV2.MapCameraController
 
         private const int MAX_TEXTURE_SIZE = 4096;
 
-        public event Action<IMapCameraControllerInternal> OnReleasing;
+        public event Action<IMapActivityOwner, IMapCameraControllerInternal> OnReleasing;
         public event Action<float, float> ZoomChanged;
 
         public MapLayer EnabledLayers { get; private set; }
@@ -245,12 +246,12 @@ namespace DCLServices.MapRendererV2.MapCameraController
             return new Rect((Vector2) mapCameraObject.transform.localPosition - new Vector2(cameraXSize, cameraYSize), size);
         }
 
-        public void Release()
+        public void Release(IMapActivityOwner owner)
         {
             cullingController.OnCameraRemoved(this);
             renderTexture?.Release();
             interactivityBehavior.Release();
-            OnReleasing?.Invoke(this);
+            OnReleasing?.Invoke(owner, this);
         }
 
         public void Dispose()
