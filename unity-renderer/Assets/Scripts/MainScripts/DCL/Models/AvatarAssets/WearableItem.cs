@@ -357,7 +357,11 @@ public class WearableItem
     public static HashSet<string> ComposeHiddenCategoriesOrdered(string bodyShapeId, HashSet<string> forceRender, List<WearableItem> wearables)
     {
         var result = new HashSet<string>();
-        var wearablesByCategory = wearables.ToDictionary(w => w.data.category);
+        var wearablesByCategory = new Dictionary<string, WearableItem>();
+
+        foreach (var wearable in wearables)
+            wearablesByCategory.TryAdd(wearable.data.category, wearable);
+
         var previouslyHidden = new Dictionary<string, HashSet<string>>();
 
         foreach (string priorityCategory in CATEGORIES_PRIORITY)

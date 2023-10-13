@@ -23,23 +23,38 @@ namespace AvatarSystem
         private readonly IEmotesService emotesService;
         private readonly Dictionary<EmoteBodyId, IEmoteReference> equippedEmotes = new ();
         private readonly CancellationTokenSource cts = new ();
+        private readonly HashSet<string> visibilityConstraints;
 
         public AvatarEmotesController(IAnimator animator, IEmotesService emotesService)
         {
             this.animator = animator;
             this.emotesService = emotesService;
+            visibilityConstraints = new HashSet<string>();
         }
 
         public bool TryGetEquippedEmote(string bodyShape, string emoteId, out IEmoteReference emoteReference) =>
             equippedEmotes.TryGetValue(new EmoteBodyId(bodyShape, emoteId), out emoteReference);
 
-        // ReSharper disable once PossibleMultipleEnumeration (its intended)
-        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes, GameObject container)
+        public void AddVisibilityConstraint(string key)
+        {
+            visibilityConstraints.Add(key);
+            StopEmote();
+        }
+
+        public void RemoveVisibilityConstraint(string key)
+        {
+            visibilityConstraints.Remove(key);
+        }
+
+        public void Prepare(string bodyShapeId, GameObject container)
         {
             this.bodyShapeId = bodyShapeId;
-
             animator.Prepare(bodyShapeId, container);
+        }
 
+        // ReSharper disable once PossibleMultipleEnumeration (its intended)
+        public void LoadEmotes(string bodyShapeId, IEnumerable<WearableItem> newEmotes)
+        {
             foreach (WearableItem emote in newEmotes)
                 LoadEmote(bodyShapeId, emote);
         }
@@ -71,6 +86,7 @@ namespace AvatarSystem
         public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool ignoreTimestamp)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
+            if (visibilityConstraints.Count > 0) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
             if (!equippedEmotes.ContainsKey(emoteKey)) return;

@@ -58,6 +58,7 @@ namespace DCL.Emotes
                     renderer.enabled = true;
                     renderer.gameObject.layer = gameObjectLayer;
                     renderer.allowOcclusionWhenDynamic = occlude;
+                    renderer.forceRenderingOff = false;
                 }
             }
 
