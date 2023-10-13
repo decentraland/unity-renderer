@@ -34,6 +34,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             markerObject.gameObject.SetActive(active);
         }
 
+        public void SetBackgroundVisibility(bool backgroundIsActive)
+        {
+            markerObject.SetAnimatedCircleVisibility(backgroundIsActive);
+        }
+
         public void SetRotation(Quaternion rot)
         {
             markerObject.transform.localRotation = rot;

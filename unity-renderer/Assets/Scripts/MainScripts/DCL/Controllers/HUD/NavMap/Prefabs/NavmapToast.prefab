@@ -618,6 +618,12 @@ MonoBehaviour:
   scenePreviewFailImage: {fileID: 21300000, guid: 34d10cf7460a5b744ace5bdfde2f0a61,
     type: 3}
   toastAnimator: {fileID: 2777010639308600957}
+  infoButtonImage: {fileID: 6415206778259168454}
+  favoriteButtonImage: {fileID: 6169280303805343148}
+  normalFavorite: {fileID: 21300000, guid: 45e823eca8727410d947ff8af56eb13a, type: 3}
+  blockedFavorite: {fileID: 21300000, guid: 3c940a5c07400864db483f5212bd11dd, type: 3}
+  normalImageColor: {r: 0, g: 0, b: 0, a: 1}
+  disabledImageColor: {r: 0.7490196, g: 0.7372549, b: 0.7647059, a: 1}
   goToButton: {fileID: 4603100673564791174}
   infoButton: {fileID: 8626910542831730621}
   shareButton: {fileID: 5409463304230243934}
@@ -3130,7 +3136,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8ba9b271a894b4f8695979cdfe864b48, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c569e851fe024c7e8e4b57c07575226, type: 3}
   m_Type: 1
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4108,17 +4114,17 @@ PrefabInstance:
     - target: {fileID: 6243539789405148932, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
       propertyPath: m_Colors.m_DisabledColor.b
-      value: 0.83137256
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6243539789405148932, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
       propertyPath: m_Colors.m_DisabledColor.g
-      value: 0.8039216
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6243539789405148932, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
       propertyPath: m_Colors.m_DisabledColor.r
-      value: 0.8117647
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6337132753482525432, guid: 69bd596225e56a64ba21d5ac4b2e8351,
         type: 3}
@@ -4255,6 +4261,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2386190052100958393}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6415206778259168454 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8654255639651726463, guid: 69bd596225e56a64ba21d5ac4b2e8351,
+    type: 3}
+  m_PrefabInstance: {fileID: 2386190052100958393}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8626910542831730621 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6243539789405148932, guid: 69bd596225e56a64ba21d5ac4b2e8351,
@@ -4691,7 +4709,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
     m_PressedColor: {r: 0.9182284, g: 0.91193485, b: 0.9339623, a: 1}
     m_SelectedColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
-    m_DisabledColor: {r: 0.8117647, g: 0.8039216, b: 0.83137256, a: 1}
+    m_DisabledColor: {r: 0.9882353, g: 0.9882353, b: 0.9882353, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -4740,6 +4758,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!114 &6169280303805343148 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9065033776547182899, guid: 633e570ad7b45486690b28e43c776f5e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2905059189542001823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7206111642098648086 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5499343381416532105, guid: 633e570ad7b45486690b28e43c776f5e,

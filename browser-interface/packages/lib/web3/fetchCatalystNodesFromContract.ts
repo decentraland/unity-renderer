@@ -3,7 +3,6 @@ import { bytesToHex, ContractFactory } from 'eth-connect'
 import { retry } from 'lib/javascript/retry'
 import { defaultLogger } from 'lib/logger'
 import { getSelectedNetwork } from 'shared/dao/selectors'
-import { isMainRealmEnabled } from 'shared/meta/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { catalystABI } from './catalystABI'
 import { requestManager } from './provider'
@@ -26,12 +25,10 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
   const net = getSelectedNetwork(state)
   const catalysts = await fetchCatalysts(net)
 
-  if (isMainRealmEnabled(state)) {
-    if (net === ETHEREUM_NETWORK.MAINNET) {
-      catalysts.push({ domain: 'https://realm-provider.decentraland.org/main' })
-    } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
-      catalysts.push({ domain: 'https://realm-provider.decentraland.zone/main' })
-    }
+  if (net === ETHEREUM_NETWORK.MAINNET) {
+    catalysts.push({ domain: 'https://realm-provider.decentraland.org/main' })
+  } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
+    catalysts.push({ domain: 'https://realm-provider.decentraland.zone/main' })
   }
 
   return catalysts
