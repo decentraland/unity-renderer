@@ -16,7 +16,7 @@ namespace DCL.ContentModeration
     {
         private const int SECONDS_TO_HIDE_ADULT_CONTENT_ENABLED_NOTIFICATION = 5;
         private const int REPORT_PLACE_TIMEOUT = 30;
-        private const string LEARN_MORE_URL = "https://decentraland.org/blog/"; // TODO (Santi): Change this to the correct URL when it's ready
+        private const string LEARN_MORE_URL = "https://docs.decentraland.org/player/general/in-world-features/age-rating-scene-reporting/";
         private const string REPORTING_ERROR_MESSAGE = "There was an error sending the information. Please try again later...";
 
         private readonly IAdultContentSceneWarningComponentView adultContentSceneWarningComponentView;
