@@ -62,16 +62,24 @@ namespace DCL
 
         public UniTask<IReadOnlyList<RealmModel>> FetchRealmsInfo(CancellationToken cancellationToken)
         {
-            if (fetchRealmsTask != null)
+            try
+            {
+                if (fetchRealmsTask != null)
+                    return fetchRealmsTask.Task.AttachExternalCancellation(cancellationToken)
+                                          .Timeout(TimeSpan.FromSeconds(30));
+
+                fetchRealmsTask = new UniTaskCompletionSource<IReadOnlyList<RealmModel>>();
+
+                WebInterface.FetchRealmsInfo();
+
                 return fetchRealmsTask.Task.AttachExternalCancellation(cancellationToken)
-                                            .Timeout(TimeSpan.FromSeconds(30));
-
-            fetchRealmsTask = new UniTaskCompletionSource<IReadOnlyList<RealmModel>>();
-
-            WebInterface.FetchRealmsInfo();
-
-            return fetchRealmsTask.Task.AttachExternalCancellation(cancellationToken)
-                                  .Timeout(TimeSpan.FromSeconds(30));
+                                      .Timeout(TimeSpan.FromSeconds(30));
+            }
+            catch (Exception)
+            {
+                fetchRealmsTask = null;
+                throw;
+            }
         }
     }
 
