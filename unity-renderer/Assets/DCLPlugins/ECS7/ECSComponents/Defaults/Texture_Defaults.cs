@@ -67,7 +67,8 @@ namespace DCL.ECSComponents
         public static string GetTextureUrl(this Texture self, IParcelScene scene)
         {
             UtilsScene.TryGetMediaUrl(self.Src, scene.contentProvider,
-                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string url);
+                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames,
+                out string url, scene.isPortableExperience);
 
             return url;
         }

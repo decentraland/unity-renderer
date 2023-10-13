@@ -61,7 +61,8 @@ namespace DCL.ECSComponents
             UpdateModel(model);
 
             isValidUrl = UtilsScene.TryGetMediaUrl(model.Url, scene.contentProvider,
-                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string newUrl);
+                scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames,
+                out string newUrl, scene.isPortableExperience);
 
             url = newUrl;
 

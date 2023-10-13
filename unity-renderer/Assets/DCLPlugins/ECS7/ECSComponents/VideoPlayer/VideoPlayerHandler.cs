@@ -70,7 +70,8 @@ namespace DCL.ECSComponents
                     videoType = VideoType.Hls;
 
                 string videoUrl = videoType != VideoType.LiveKit
-                    ? model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames)
+                    ? model.GetVideoUrl(scene.contentProvider, scene.sceneData.requiredPermissions,
+                        scene.sceneData.allowedMediaHostnames, scene.isPortableExperience)
                     : model.Src;
 
                 isValidUrl = !string.IsNullOrEmpty(videoUrl);

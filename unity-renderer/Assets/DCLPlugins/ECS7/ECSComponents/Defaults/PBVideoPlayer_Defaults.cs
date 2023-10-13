@@ -30,10 +30,12 @@ namespace DCL.ECSComponents
         }
 
         public static string GetVideoUrl(this PBVideoPlayer self, ContentProvider sceneContentProvider,
-            IReadOnlyList<string> sceneRequiredPermissions, IReadOnlyList<string> sceneAllowedMediaHostnames)
+            IReadOnlyList<string> sceneRequiredPermissions, IReadOnlyList<string> sceneAllowedMediaHostnames,
+            bool isPortableExperience)
         {
             UtilsScene.TryGetMediaUrl(self.Src, sceneContentProvider,
-                sceneRequiredPermissions, sceneAllowedMediaHostnames, out string url);
+                sceneRequiredPermissions, sceneAllowedMediaHostnames,
+                out string url, isPortableExperience);
 
             return url;
         }

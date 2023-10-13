@@ -39,7 +39,7 @@ public static partial class UtilsScene
 
     public static bool TryGetMediaUrl(string inputUrl, ContentProvider sceneContentProvider,
         IReadOnlyList<string> sceneRequiredPermissions, IReadOnlyList<string> sceneAllowedMediaHostnames,
-        out string url)
+        out string url, bool checkAllowedMediaHostnames = true)
     {
         if (string.IsNullOrEmpty(inputUrl))
         {
@@ -53,15 +53,16 @@ public static partial class UtilsScene
             return true;
         }
 
-        if (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null)
+        if (checkAllowedMediaHostnames && (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null))
         {
             url = string.Empty;
             Debug.LogError("External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
             return false;
         }
 
-        if (HasRequiredPermission(sceneRequiredPermissions, ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES)
-            && IsUrlDomainAllowed(sceneAllowedMediaHostnames, inputUrl))
+        if (!checkAllowedMediaHostnames ||
+            (HasRequiredPermission(sceneRequiredPermissions, ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES)
+            && IsUrlDomainAllowed(sceneAllowedMediaHostnames, inputUrl)))
         {
             url = inputUrl;
             return true;

@@ -167,7 +167,8 @@ namespace Tests
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
-                scene.sceneData.allowedMediaHostnames);
+                scene.sceneData.allowedMediaHostnames,
+                isPortableExperience: true);
 
             Assert.AreEqual(string.Empty, outputUrl);
         }
@@ -186,7 +187,8 @@ namespace Tests
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
-                scene.sceneData.allowedMediaHostnames);
+                scene.sceneData.allowedMediaHostnames,
+                isPortableExperience: true);
 
             Assert.AreEqual(model.Src, outputUrl);
         }
@@ -207,9 +209,27 @@ namespace Tests
 
             string outputUrl = model.GetVideoUrl(scene.contentProvider,
                 scene.sceneData.requiredPermissions,
-                scene.sceneData.allowedMediaHostnames);
+                scene.sceneData.allowedMediaHostnames,
+                isPortableExperience: true);
 
             Assert.AreEqual(string.Empty, outputUrl);
+        }
+
+        [Test]
+        public void AllowExternalVideoForNonPortableExperiences()
+        {
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "http://fake/video.mp4",
+                Playing = true,
+            };
+
+            string outputUrl = model.GetVideoUrl(scene.contentProvider,
+                scene.sceneData.requiredPermissions,
+                scene.sceneData.allowedMediaHostnames,
+                isPortableExperience: false);
+
+            Assert.AreEqual(model.Src, outputUrl);
         }
 
         [UnityTest]
