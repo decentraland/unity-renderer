@@ -10,7 +10,8 @@ import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
-  getPickRealmsAlgorithmConfig
+  getPickRealmsAlgorithmConfig,
+  isMainRealmEnabled
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
@@ -68,15 +69,20 @@ function* pickCatalystRealm() {
 
   if (candidates.length === 0) return undefined
 
+  const mainRealmEnabled = yield select(isMainRealmEnabled)
+
   const filteredCandidates = candidates.filter((candidate: Candidate) => {
     const lastConnected = lastConnectedCandidates.get(candidate.domain)
     if (lastConnected && Date.now() - lastConnected < 60 * 1000) {
       return false
     }
+    if (!mainRealmEnabled) {
+      return candidate.catalystName != 'main'
+    }
     return true
   })
 
-  const mainRealm = candidates.find((c) => c.catalystName === 'main')
+  const mainRealm = filteredCandidates.find((c) => c.catalystName === 'main')
   if (mainRealm) {
     const url = urlWithProtocol(mainRealm.domain)
     if (yield checkValidRealm(url)) {
