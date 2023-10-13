@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 
 namespace DCL.ECSComponents
 {
@@ -53,6 +54,7 @@ namespace DCL.ECSComponents
                 excludedIds.Add(modelExcludeId.ToLower());
             }
             internalComponentModel.excludedIds = excludedIds;
+            internalComponentModel.avatarsInArea = new HashSet<GameObject>();
 
             internalAvatarModifierArea.PutFor(scene, entity, internalComponentModel);
         }

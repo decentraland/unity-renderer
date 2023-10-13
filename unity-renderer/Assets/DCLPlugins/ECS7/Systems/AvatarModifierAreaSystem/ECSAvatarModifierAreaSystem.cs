@@ -33,7 +33,7 @@ namespace ECSSystems.AvatarModifierAreaSystem
                 var model = componentGroup[i].value.model;
                 Transform entityTransform = scene.entities[entityId].gameObject.transform;
 
-                if (model.excludedIds.Count > 0)
+                if (model.excludedIds != null && model.excludedIds.Count > 0)
                     UpdateExcludedCollidersCollection(model.excludedIds);
 
                 HashSet<GameObject> currentAvatarsInArea = ECSAvatarUtils.DetectAvatars(model.area, entityTransform.position,

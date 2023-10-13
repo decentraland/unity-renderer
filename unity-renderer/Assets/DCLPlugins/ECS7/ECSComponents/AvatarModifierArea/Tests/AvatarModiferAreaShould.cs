@@ -1,133 +1,85 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DCL.Controllers;
-using DCL.Models;
-using Google.Protobuf;
-using Google.Protobuf.Collections;
-using NSubstitute;
-using NSubstitute.Extensions;
+﻿using System.Collections.Generic;
+using DCL.CRDT;
+using DCL.ECSRuntime;
 using NUnit.Framework;
-using Tests;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace DCL.ECSComponents.Test
 {
     public class AvatarModifierAreaShould
     {
-        /*private IDCLEntity entity;
-        private IParcelScene scene;
+        private ECS7TestUtilsScenesAndEntities testUtils;
+        private ECS7TestScene scene;
+        private ECS7TestEntity entity;
         private AvatarModifierAreaComponentHandler componentHandler;
-        private GameObject gameObject;
-        private DataStore_Player dataStorePlayer;
+        private InternalECSComponents internalComponents;
+        private AvatarModifierFactory factory = new AvatarModifierFactory();
 
         [SetUp]
         protected void SetUp()
         {
-            gameObject = new GameObject();
-            entity = Substitute.For<IDCLEntity>();
-            scene = Substitute.For<IParcelScene>();
-            var modifierFactory =  new AvatarModifierFactory();
-            dataStorePlayer = new DataStore_Player();
-            componentHandler = new AvatarModifierAreaComponentHandler(Substitute.For<IUpdateEventHandler>(), dataStorePlayer, modifierFactory);
+            var componentsFactory = new ECSComponentsFactory();
+            var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+            var executors = new Dictionary<int, ICRDTExecutor>();
+            internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
+            testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
-            entity.entityId.Returns(1);
-            entity.gameObject.Returns(gameObject);
-            LoadParcelScenesMessage.UnityParcelScene sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            sceneData.sceneNumber = 1;
-            scene.sceneData.Configure().Returns(sceneData);
+            scene = testUtils.CreateScene(666);
+            entity = scene.CreateEntity(1000);
 
-            componentHandler.OnComponentCreated(scene, entity);
+            componentHandler = new AvatarModifierAreaComponentHandler(internalComponents.AvatarModifierAreaComponent, factory);
         }
 
         [TearDown]
         protected void TearDown()
         {
             componentHandler.OnComponentRemoved(scene, entity);
-            GameObject.Destroy(gameObject);
+            internalComponents.AvatarModifierAreaComponent.RemoveFor(scene, entity);
+            testUtils.Dispose();
         }
 
         [Test]
-        public void UpdateComponentCorrectly()
+        public void CreateInternalComponentCorrectly()
         {
-            // Arrange
-            var model = CreateModel();
+            var internalComponent = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity);
+            Assert.IsNull(internalComponent);
+            string excludedId1 = "AAA123456";
+            string excludedId2 = "BBB456789";
 
-            // Act
+            var model = new PBAvatarModifierArea()
+            {
+                Area =  new Decentraland.Common.Vector3() { X = 4f, Y = 2.5f, Z = 4f },
+                ExcludeIds = { excludedId1, excludedId2 },
+                Modifiers = { AvatarModifierType.AmtHideAvatars }
+            };
+
             componentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            // Assert
-            Assert.IsNotNull(componentHandler.excludedColliders);
-            Assert.AreEqual(model,componentHandler.model);
+            internalComponent = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalComponent);
+            Assert.AreEqual(new Vector3(4f, 2.5f, 4f), internalComponent.Value.model.area);
+            Assert.IsNotNull(internalComponent.Value.model.OnAvatarEnter);
+            Assert.IsNotNull(internalComponent.Value.model.OnAvatarExit);
+            Assert.IsTrue(internalComponent.Value.model.excludedIds.Contains(excludedId1.ToLower()));
+            Assert.IsTrue(internalComponent.Value.model.excludedIds.Contains(excludedId2.ToLower()));
         }
 
         [Test]
-        public void DisposeComponentCorrectly()
+        [TestCase(AvatarModifierType.AmtHideAvatars)]
+        [TestCase(AvatarModifierType.AmtDisablePassports)]
+        public void SetupModifierEventsCorrectly(AvatarModifierType modifierType)
         {
-            // Arrange
-            var model = CreateModel();
+            var model = new PBAvatarModifierArea()
+            {
+                Area =  new Decentraland.Common.Vector3() { X = 4f, Y = 2.5f, Z = 4f },
+                Modifiers = { modifierType }
+            };
+
             componentHandler.OnComponentModelUpdated(scene, entity, model);
-            componentHandler.avatarsInArea = new HashSet<GameObject>();
-            componentHandler.avatarsInArea.Add(gameObject);
 
-            // Act
-            componentHandler.OnComponentRemoved(scene, entity);
-
-            // Assert
-            Assert.AreEqual(0,componentHandler.avatarsInArea.Count);
+            var internalComponent = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity);
+            Assert.IsTrue(factory.GetOrCreateAvatarModifier(modifierType).ApplyModifier == internalComponent.Value.model.OnAvatarEnter);
+            Assert.IsTrue(factory.GetOrCreateAvatarModifier(modifierType).RemoveModifier == internalComponent.Value.model.OnAvatarExit);
         }
-
-        [Test]
-        public void ExcludeAvatarsIdsCorrectly()
-        {
-            // Arrange
-            var model = CreateModel();
-            model.ExcludeIds.Add("PlayerId");
-            dataStorePlayer.otherPlayers.Add("PlayerId", new Player());
-
-            // Act
-            var result = componentHandler.GetExcludedColliders(model);
-
-            // Assert
-            Assert.AreEqual(1, result.Count);
-        }
-
-        [Test]
-        public void SerializeAndDeserialzeCorrectly()
-        {
-            // Arrange
-            var model = CreateModel();
-
-            // Act
-            var newModel = SerializaAndDeserialize(model);
-
-            // Assert
-            Assert.AreEqual(model.Area, newModel.Area);
-            Assert.AreEqual(model.Modifiers, newModel.Modifiers);
-            Assert.AreEqual(model.ExcludeIds, newModel.ExcludeIds);
-        }
-
-        private PBAvatarModifierArea SerializaAndDeserialize(PBAvatarModifierArea pb)
-        {
-            var serialized = AvatarModifierAreaSerializer.Serialize(pb);
-            return AvatarModifierAreaSerializer.Deserialize(serialized);
-        }
-
-        private PBAvatarModifierArea CreateModel()
-        {
-            PBAvatarModifierArea model = new PBAvatarModifierArea();
-            model.Area = new Decentraland.Common.Vector3();
-            model.Area.X = 2f;
-            model.Area.Y = 2f;
-            model.Area.Z = 2f;
-
-            model.Modifiers.Add(AvatarModifierType.AmtHideAvatars);
-            model.ExcludeIds.Add("IdToExclude");
-
-            return model;
-        }*/
     }
 }
