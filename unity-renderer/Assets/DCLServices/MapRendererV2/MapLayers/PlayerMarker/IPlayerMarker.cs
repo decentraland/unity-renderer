@@ -14,5 +14,7 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
         void SetZoom(float baseZoom, float zoom);
 
         void ResetToBaseScale();
+
+        void SetBackgroundVisibility(bool backgroundIsActive);
     }
 }

@@ -2,16 +2,19 @@ using DCL.Browser;
 using System;
 using DCL.Helpers;
 using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
+using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
 using DCLServices.PlacesAPIService;
 using ExploreV2Analytics;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
-    public class NavmapVisibilityBehaviour : IDisposable
+    public class NavmapVisibilityBehaviour : IDisposable, IMapActivityOwner
     {
         private const MapLayer ACTIVE_MAP_LAYERS =
             MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.ScenesOfInterest | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ColdUsersMarkers | MapLayer.ParcelHoverHighlight;
@@ -43,6 +46,9 @@ namespace DCL
 
         private IMapCameraController cameraController;
         private readonly BaseVariable<FeatureFlag> featureFlagsFlags;
+        public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters  { get; } = new Dictionary<MapLayer, IMapLayerParameter>
+            { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = true} } };
+
         private Camera hudCamera => DataStore.i.camera.hudsCamera.Get();
 
         public NavmapVisibilityBehaviour(
@@ -110,7 +116,7 @@ namespace DCL
         {
             if (cameraController != null)
             {
-                cameraController.Release();
+                cameraController.Release(this);
                 cameraController = null;
             }
         }
@@ -171,11 +177,13 @@ namespace DCL
 
                 cameraController = mapRenderer.Ref.RentCamera(
                     new MapCameraInput(
+                        this,
                         ACTIVE_MAP_LAYERS,
                         Utils.WorldToGridPosition(DataStore.i.player.playerWorldPosition.Get()),
                         navmapZoomViewController.ResetZoomToMidValue(),
                         rendererConfiguration.PixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                        zoomView.zoomVerticalRange));
+                        zoomView.zoomVerticalRange
+                        ));
 
                 SetRenderImageTransparency(false);
 
@@ -209,7 +217,7 @@ namespace DCL
 
                 SetRenderImageTransparency(true);
 
-                cameraController.Release();
+                cameraController.Release(this);
                 cameraController = null;
 
                 navmapIsRendered.Set(false);

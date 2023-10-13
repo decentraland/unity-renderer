@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using System.Threading;
@@ -63,6 +64,6 @@ namespace DCLServices.MapRendererV2.MapCameraController
         /// </summary>
         void ResumeRendering();
 
-        void Release();
+        void Release(IMapActivityOwner owner);
     }
 }

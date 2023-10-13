@@ -5,18 +5,22 @@ using DCL.Interface;
 using DCL.Tasks;
 using DCLServices.CopyPaste.Analytics;
 using DCLServices.MapRendererV2;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.ConsumerUtils;
 using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
+using DCLServices.MapRendererV2.MapLayers.PlayerMarker;
 using DCLServices.PlacesAPIService;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class MinimapHUDController : IHUD
+public class MinimapHUDController : IHUD, IMapActivityOwner
 {
     private static bool VERBOSE = false;
+    private const MapLayer RENDER_LAYERS = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest | MapLayer.Favorites | MapLayer.Friends;
 
     public MinimapHUDView view;
 
@@ -25,7 +29,7 @@ public class MinimapHUDController : IHUD
     private Vector2IntVariable playerCoords => CommonScriptableObjects.playerCoords;
     private bool isContentModerationFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("content_moderation");
     private Vector2Int currentCoords;
-    private Vector2Int homeCoords = new Vector2Int(0, 0);
+    private Vector2Int homeCoords = new (0, 0);
 
     private readonly MinimapMetadataController metadataController;
     private readonly IHomeLocationController locationController;
@@ -39,8 +43,8 @@ public class MinimapHUDController : IHUD
     private readonly BaseVariable<bool> minimapVisible = DataStore.i.HUDs.minimapVisible;
     private readonly CancellationTokenSource disposingCts = new ();
 
-    private static readonly MapLayer RENDER_LAYERS
-        = MapLayer.SatelliteAtlas | MapLayer.ParcelsAtlas | MapLayer.HomePoint | MapLayer.PlayerMarker | MapLayer.HotUsersMarkers | MapLayer.ScenesOfInterest | MapLayer.Favorites | MapLayer.Friends;
+    public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters { get; } = new Dictionary<MapLayer, IMapLayerParameter>
+        { { MapLayer.PlayerMarker, new PlayerMarkerParameter {BackgroundIsActive = false} } };
 
     private Service<IMapRenderer> mapRenderer;
     private IMapCameraController mapCameraController;
@@ -125,11 +129,15 @@ public class MinimapHUDController : IHUD
         view.pixelPerfectMapRendererTextureProvider.SetHudCamera(DataStore.i.camera.hudsCamera.Get());
 
         mapCameraController = mapRenderer.Ref.RentCamera(
-            new MapCameraInput(RENDER_LAYERS,
+            new MapCameraInput(
+                this,
+                RENDER_LAYERS,
                 Vector2Int.RoundToInt(MapRendererTrackPlayerPosition.GetPlayerCentricCoords(playerCoords.Get())),
                 1,
                 view.pixelPerfectMapRendererTextureProvider.GetPixelPerfectTextureResolution(),
-                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)));
+                new Vector2Int(view.mapRendererVisibleParcels, view.mapRendererVisibleParcels)
+                )
+            );
 
         mapRendererTrackPlayerPosition = new MapRendererTrackPlayerPosition(mapCameraController, DataStore.i.player.playerWorldPosition);
         view.mapRendererTargetImage.texture = mapCameraController.GetRenderTexture();
@@ -153,7 +161,7 @@ public class MinimapHUDController : IHUD
             DataStore.i.HUDs.navmapIsRendered.OnChange -= OnNavMapIsRenderedChange;
             view.pixelPerfectMapRendererTextureProvider.Deactivate();
             mapRendererTrackPlayerPosition.Dispose();
-            mapCameraController.Release();
+            mapCameraController.Release(this);
             mapCameraController = null;
         }
     }
