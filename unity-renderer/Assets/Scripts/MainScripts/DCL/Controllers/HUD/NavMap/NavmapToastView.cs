@@ -34,6 +34,8 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
         [SerializeField] internal Image infoButtonImage;
         [SerializeField] internal Image favoriteButtonImage;
+        [SerializeField] internal Sprite normalFavorite;
+        [SerializeField] internal Sprite blockedFavorite;
         [SerializeField] internal Color normalImageColor;
         [SerializeField] internal Color disabledImageColor;
 
@@ -280,6 +282,7 @@ namespace DCL
         public void SetIsAPlace(bool isAPlace)
         {
             favoriteToggle.SetInteractable(isAPlace);
+            favoriteButtonImage.sprite = isAPlace ? normalFavorite : blockedFavorite;
             favoriteButtonImage.color = isAPlace ? normalImageColor : disabledImageColor;
             SetInfoButtonEnabled(isAPlace);
 
