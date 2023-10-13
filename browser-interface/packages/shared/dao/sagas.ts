@@ -77,7 +77,7 @@ function* pickCatalystRealm() {
       return false
     }
     if (!mainRealmEnabled) {
-      return candidate.catalystName != 'main'
+      return candidate.catalystName !== 'main'
     }
     return true
   })
