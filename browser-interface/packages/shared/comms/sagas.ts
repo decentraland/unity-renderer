@@ -409,7 +409,9 @@ async function stripSnapshots(profile: Avatar): Promise<Avatar> {
     ...profile,
     avatar: { ...profile.avatar, snapshots: newSnapshots as Snapshots },
     // THIS IS IMPORTANT, the blocked and muted sizes are too big for the network and are unnecesary
-    blocked: [],
+    // blocked status propagation has been re-enabled so the current user knows when a peer has blocked it
+    // use case: you shouldn't be able to send messages or friend requests to peers that blocked you
+    // blocked: [],
     muted: []
   }
 }

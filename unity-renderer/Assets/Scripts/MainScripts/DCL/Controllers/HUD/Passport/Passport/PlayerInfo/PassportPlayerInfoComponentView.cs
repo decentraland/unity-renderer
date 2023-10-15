@@ -63,7 +63,6 @@ namespace DCL.Social.Passports
 
         private string fullWalletAddress;
         private bool areFriends;
-        private bool isBlocked = false;
         private Dictionary<FriendshipStatus, GameObject> friendStatusButtonsMapping;
         private CancellationTokenSource cts;
 
@@ -115,7 +114,7 @@ namespace DCL.Social.Passports
             SetWallet(model.userId);
             SetPresence(model.presenceStatus);
             SetIsBlocked(model.isBlocked);
-            SetHasBlockedOwnUser(model.hasBlocked);
+            SetIsBlockedByPeer(model.isBlockedByPeer);
             SetFriendStatus(model.friendshipStatus);
             SetFriendshipVisibility(model.isFriendshipVisible);
         }
@@ -151,7 +150,7 @@ namespace DCL.Social.Passports
         {
             areFriends = friendStatus == FriendshipStatus.FRIEND;
 
-            if (isBlocked)
+            if (model.isBlocked || model.isBlockedByPeer)
                 return;
 
             DisableAllFriendFlowButtons();
@@ -191,14 +190,16 @@ namespace DCL.Social.Passports
 
         public void SetIsBlocked(bool isBlocked)
         {
-            this.isBlocked = isBlocked;
+            model.isBlocked = isBlocked;
+
             DisableAllFriendFlowButtons();
 
             blockedFriendButton.gameObject.SetActive(isBlocked);
             optionsContainer.SetActive(!isBlocked);
             blockedLabel.SetActive(isBlocked);
 
-            if (!isBlocked) { SetFriendStatus(model.friendshipStatus); }
+            if (!isBlocked && !model.isBlockedByPeer)
+                SetFriendStatus(model.friendshipStatus);
         }
 
         public void SetActionsActive(bool isActive) =>
@@ -223,9 +224,10 @@ namespace DCL.Social.Passports
             normalUserPanel.SetActive(!isGuest);
         }
 
-        private void SetHasBlockedOwnUser(bool hasBlocked)
+        private void SetIsBlockedByPeer(bool hasBlocked)
         {
             friendsFlowContainer.SetActive(!hasBlocked);
+            DisableAllFriendFlowButtons();
         }
 
         private void DisableAllFriendFlowButtons()

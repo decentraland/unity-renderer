@@ -55,6 +55,7 @@ public class UserContextMenu : ContextMenuComponentView
     [SerializeField] internal GameObject friendAddContainer;
     [SerializeField] internal GameObject friendRemoveContainer;
     [SerializeField] internal GameObject friendRequestedContainer;
+    [SerializeField] internal GameObject blockedContainer;
 
     [Header("Texts")]
     [SerializeField] internal TextMeshProUGUI userName;
@@ -89,6 +90,7 @@ public class UserContextMenu : ContextMenuComponentView
     private static BaseVariable<(string playerId, string source)> currentPlayerId;
     private string userId;
     private bool isBlocked;
+    private bool isBlockedByPeer;
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
     private CancellationTokenSource friendOperationsCancellationToken = new ();
@@ -346,7 +348,7 @@ public class UserContextMenu : ContextMenuComponentView
         passportButton.gameObject.SetActive((flags & MenuConfigFlags.Passport) != 0);
         blockButton.gameObject.SetActive((flags & MenuConfigFlags.Block) != 0 && !isOwnUser);
         reportButton.gameObject.SetActive((flags & MenuConfigFlags.Report) != 0 && !isOwnUser);
-        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && enableSendMessage && !isOwnUser);
+        messageButton.gameObject.SetActive((flags & MenuConfigFlags.Message) != 0 && !isBlocked && !isBlockedByPeer && enableSendMessage && !isOwnUser);
 
         if (mentionButton != null)
             mentionButton.gameObject.SetActive((flags & MenuConfigFlags.Mention) != 0 && DataStore.i.HUDs.chatInputVisible.Get());
@@ -364,7 +366,9 @@ public class UserContextMenu : ContextMenuComponentView
             return false;
         }
 
-        if (profile.isGuest || !UserProfile.GetOwnUserProfile().hasConnectedWeb3)
+        var ownUserProfile = UserProfile.GetOwnUserProfile();
+
+        if (profile.isGuest || !ownUserProfile.hasConnectedWeb3)
             configFlags &= ~USES_FRIENDS_API_FLAGS;
 
         currentConfigFlags = configFlags;
@@ -372,15 +376,13 @@ public class UserContextMenu : ContextMenuComponentView
 
         if ((configFlags & MenuConfigFlags.Block) != 0)
         {
-            isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
+            isBlocked = ownUserProfile.IsBlocked(userId);
+            isBlockedByPeer = profile.IsBlocked(ownUserProfile.userId);
             blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
         }
 
         if ((configFlags & MenuConfigFlags.Name) != 0)
-        {
-            string name = profile?.userName;
-            userName.text = name;
-        }
+            userName.text = profile.userName;
 
         if ((configFlags & USES_FRIENDS_API_FLAGS) != 0)
         {
@@ -405,10 +407,11 @@ public class UserContextMenu : ContextMenuComponentView
                 friendAddContainer.SetActive(false);
                 friendRemoveContainer.SetActive(true);
                 friendRequestedContainer.SetActive(false);
+                blockedContainer.SetActive(false);
                 deleteFriendButton.gameObject.SetActive(true);
             }
 
-            if (messageEnabled) { messageButton.gameObject.SetActive(!isBlocked && enableSendMessage); }
+            if (messageEnabled) { messageButton.gameObject.SetActive(!isBlocked & !isBlockedByPeer && enableSendMessage); }
         }
         else if (friendshipStatus == FriendshipStatus.REQUESTED_TO)
         {
@@ -417,6 +420,7 @@ public class UserContextMenu : ContextMenuComponentView
                 friendAddContainer.SetActive(false);
                 friendRemoveContainer.SetActive(false);
                 friendRequestedContainer.SetActive(true);
+                blockedContainer.SetActive(false);
                 deleteFriendButton.gameObject.SetActive(false);
             }
 
@@ -426,9 +430,10 @@ public class UserContextMenu : ContextMenuComponentView
         {
             if (friendshipEnabled)
             {
-                friendAddContainer.SetActive(true);
+                friendAddContainer.SetActive(!isBlocked & !isBlockedByPeer);
                 friendRemoveContainer.SetActive(false);
                 friendRequestedContainer.SetActive(false);
+                blockedContainer.SetActive(isBlocked | isBlockedByPeer);
                 deleteFriendButton.gameObject.SetActive(false);
             }
 
@@ -438,9 +443,10 @@ public class UserContextMenu : ContextMenuComponentView
         {
             if (friendshipEnabled)
             {
-                friendAddContainer.SetActive(true);
+                friendAddContainer.SetActive(!isBlocked & !isBlockedByPeer);
                 friendRemoveContainer.SetActive(false);
                 friendRequestedContainer.SetActive(false);
+                blockedContainer.SetActive(isBlocked | isBlockedByPeer);
                 deleteFriendButton.gameObject.SetActive(false);
             }
 
