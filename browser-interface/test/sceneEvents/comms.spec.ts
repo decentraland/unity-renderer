@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import { ETHEREUM_NETWORK } from 'config'
 import mitt from 'mitt'
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
@@ -44,7 +45,7 @@ const realmAdapter: IRealmAdapter = {
   events: mitt(),
   async disconnect() {},
   sendHeartbeat: (_p) => {},
-  services: legacyServices('https://realm', about)
+  services: legacyServices(ETHEREUM_NETWORK.MAINNET, 'https://realm', about)
 }
 
 describe('when the realm change: SET_WORLD_CONTEXT', () => {

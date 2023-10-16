@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
+using DCLServices.MapRendererV2.CommonBehavior;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.MapRendererV2.Culling;
 using DCLServices.MapRendererV2.MapCameraController;
@@ -61,7 +62,9 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void EnableLayerByMask([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayers_Test(mask);
+            IMapActivityOwner owner = Substitute.For<IMapActivityOwner>();
+
+            mapRenderer.EnableLayers_Test(owner, mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {
@@ -73,8 +76,10 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void DisableLayerByMask([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayers_Test(mask);
-            mapRenderer.DisableLayers_Test(mask);
+            IMapActivityOwner owner = Substitute.For<IMapActivityOwner>();
+
+            mapRenderer.EnableLayers_Test(owner, mask);
+            mapRenderer.DisableLayers_Test(owner, mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {
@@ -86,10 +91,12 @@ namespace DCLServices.MapRendererV2.Tests
         [Test]
         public void NotDisableLayerIfStillUsed([ValueSource(nameof(TEST_MAP_LAYERS))] MapLayer mask)
         {
-            mapRenderer.EnableLayers_Test(mask);
-            mapRenderer.EnableLayers_Test(mask);
+            IMapActivityOwner owner = Substitute.For<IMapActivityOwner>();
 
-            mapRenderer.DisableLayers_Test(mask);
+            mapRenderer.EnableLayers_Test(owner, mask);
+            mapRenderer.EnableLayers_Test(owner, mask);
+
+            mapRenderer.DisableLayers_Test(owner, mask);
 
             foreach (MapLayer mapLayer in EnumUtils.Values<MapLayer>())
             {

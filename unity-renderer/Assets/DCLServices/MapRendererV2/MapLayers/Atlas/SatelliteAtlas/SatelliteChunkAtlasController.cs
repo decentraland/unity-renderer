@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers.Atlas;
 using System;
 using System.Collections.Generic;

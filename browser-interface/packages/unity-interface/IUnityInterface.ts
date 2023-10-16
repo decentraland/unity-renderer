@@ -48,21 +48,13 @@ import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 
 export type RealmInfo = {
   serverName: string
-  layer?: string
   usersCount: number
-  usersMax: number
-  userParcels: { x: number; y: number }[]
 }
 
 export type HotSceneInfo = {
   id: string
   name: string
-  creator: string
-  description: string
-  thumbnail: string
   baseCoords: { x: number; y: number }
-  parcels: { x: number; y: number }[]
-  usersTotalCount: number
   realms: RealmInfo[]
 }
 

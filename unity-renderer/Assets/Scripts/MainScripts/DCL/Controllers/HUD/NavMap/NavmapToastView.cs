@@ -32,6 +32,12 @@ namespace DCL
         [SerializeField] internal RawImageFillParent scenePreviewImage;
         [SerializeField] internal Sprite scenePreviewFailImage;
         [SerializeField] internal Animator toastAnimator;
+        [SerializeField] internal Image infoButtonImage;
+        [SerializeField] internal Image favoriteButtonImage;
+        [SerializeField] internal Sprite normalFavorite;
+        [SerializeField] internal Sprite blockedFavorite;
+        [SerializeField] internal Color normalImageColor;
+        [SerializeField] internal Color disabledImageColor;
 
         [SerializeField] internal Button goToButton;
         [SerializeField] internal Button infoButton;
@@ -276,8 +282,10 @@ namespace DCL
         public void SetIsAPlace(bool isAPlace)
         {
             favoriteToggle.SetInteractable(isAPlace);
+            favoriteButtonImage.sprite = isAPlace ? normalFavorite : blockedFavorite;
+            favoriteButtonImage.color = isAPlace ? normalImageColor : disabledImageColor;
             SetInfoButtonEnabled(isAPlace);
-            
+
             if(!isAPlace)
                 favoriteLoading.SetActive(false);
         }
@@ -285,6 +293,7 @@ namespace DCL
         public void SetInfoButtonEnabled(bool isActive)
         {
             infoButton.interactable = isActive;
+            infoButtonImage.color = isActive ? normalImageColor : disabledImageColor;
         }
 
         public void SetPlayerCount(int players)
