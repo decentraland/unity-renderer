@@ -260,11 +260,8 @@ namespace DCL.Backpack
         public void HideContinueSignup() =>
             saveAvatarButton.gameObject.SetActive(false);
 
-        public void ShowNextButton() =>
-            nextButton.gameObject.SetActive(true);
-
-        public void HideNextButton() =>
-            nextButton.gameObject.SetActive(false);
+        public void SetNextButtonActive(bool isActive) =>
+            nextButton.gameObject.SetActive(isActive);
 
         public void SetVRMButtonActive(bool enabled)
         {

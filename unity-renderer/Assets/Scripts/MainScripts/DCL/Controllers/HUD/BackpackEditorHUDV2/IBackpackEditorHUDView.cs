@@ -37,8 +37,7 @@ namespace DCL.Backpack
         void SetColorPickerValue(Color color);
         void ShowContinueSignup();
         void HideContinueSignup();
-        void ShowNextButton();
-        void HideNextButton();
+        void SetNextButtonActive(bool isActive);
         void SetVRMButtonActive(bool enabled);
         void SetVRMButtonEnabled(bool enabled);
         void SetVRMSuccessToastActive(bool active);

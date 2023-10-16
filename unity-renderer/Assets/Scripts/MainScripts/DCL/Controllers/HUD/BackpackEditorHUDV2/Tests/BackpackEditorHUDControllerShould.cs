@@ -345,16 +345,11 @@ namespace DCL.Backpack
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
+            view.Received(1).SetNextButtonActive(true);
             if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
-            {
-                view.Received(1).ShowNextButton();
                 view.Received(1).HideContinueSignup();
-            }
             else
-            {
-                view.Received(1).HideNextButton();
                 view.Received(1).ShowContinueSignup();
-            }
         }
 
         [Test]
@@ -364,7 +359,7 @@ namespace DCL.Backpack
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
-            view.Received(1).HideNextButton();
+            view.Received(1).SetNextButtonActive(false);
             view.Received(1).HideContinueSignup();
         }
 

@@ -248,23 +248,14 @@ namespace DCL.Backpack
                     if (dataStore.common.isSignUpFlow.Get())
                     {
                         if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
-                        {
-                            view.ShowNextButton();
                             view.HideContinueSignup();
-                        }
                         else
-                        {
-                            view.HideNextButton();
                             view.ShowContinueSignup();
-                        }
 
                         avatarSlotsHUDController.SelectSlot(WearableLiterals.Categories.BODY_SHAPE);
                     }
                     else
-                    {
-                        view.HideNextButton();
                         view.HideContinueSignup();
-                    }
                 }
                 else
                 {
@@ -273,13 +264,17 @@ namespace DCL.Backpack
                         try
                         {
                             await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
-                            CloseView();
+
+                            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                                CloseView();
                         }
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
                             Debug.LogException(e);
-                            CloseView();
+
+                            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                                CloseView();
                         }
                     }
                     else
@@ -287,6 +282,8 @@ namespace DCL.Backpack
 
                     wearableGridController.CancelWearableLoading();
                 }
+
+                view.SetNextButtonActive(visible);
             }
 
             setVisibilityCancellationToken = setVisibilityCancellationToken.SafeRestart();
