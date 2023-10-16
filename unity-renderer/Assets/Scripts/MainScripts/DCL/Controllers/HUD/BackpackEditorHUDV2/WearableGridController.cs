@@ -362,6 +362,8 @@ namespace DCL.Backpack
 
             string currentBodyShapeId = dataStoreBackpackV2.previewBodyShape.Get();
 
+            Debug.Log($"ToWearableGridModel: {wearable.ComposeThumbnailUrl()}");
+
             return new WearableGridItemModel
             {
                 WearableId = wearable.id,
