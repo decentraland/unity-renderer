@@ -13,6 +13,7 @@ namespace DCL.Backpack
         event Action OnAvatarUpdated;
         event Action OnOutfitsOpened;
         event Action OnVRMExport;
+        event Action OnBackToWallets;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
         IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
@@ -36,9 +37,11 @@ namespace DCL.Backpack
         void SetColorPickerValue(Color color);
         void ShowContinueSignup();
         void HideContinueSignup();
+        void ShowNextButton();
+        void HideNextButton();
         void SetVRMButtonActive(bool enabled);
         void SetVRMButtonEnabled(bool enabled);
         void SetVRMSuccessToastActive(bool active);
-
+        void SetSignUpModeActive(bool isActive);
     }
 }

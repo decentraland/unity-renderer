@@ -5,10 +5,10 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
@@ -21,6 +21,7 @@ namespace DCL.Backpack
         public event Action OnAvatarUpdated;
         public event Action OnOutfitsOpened;
         public event Action OnVRMExport;
+        public event Action OnBackToWallets;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -46,6 +47,12 @@ namespace DCL.Backpack
         [SerializeField] internal Button vrmExportButton;
         [SerializeField] internal RectTransform vrmExportedToast;
 
+        [Header("Sign Up Mode")]
+        [SerializeField] internal GameObject signUpHeader;
+        [SerializeField] internal Button backToWalletsButton;
+        [SerializeField] internal Button nextButton;
+        [SerializeField] internal GameObject[] objectsToDeactivateInSignUpMode;
+
         public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
         public IAvatarEmotesController EmotesController => backpackPreviewPanel?.EmotesController;
         public override bool isVisible => gameObject.activeInHierarchy;
@@ -69,6 +76,8 @@ namespace DCL.Backpack
             thisTransform = transform;
             backpackPreviewPanel.SetLoadingActive(false);
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
+            nextButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
+            backToWalletsButton.onClick.AddListener(() => OnBackToWallets?.Invoke());
         }
 
         public void Initialize(
@@ -251,6 +260,12 @@ namespace DCL.Backpack
         public void HideContinueSignup() =>
             saveAvatarButton.gameObject.SetActive(false);
 
+        public void ShowNextButton() =>
+            nextButton.gameObject.SetActive(true);
+
+        public void HideNextButton() =>
+            nextButton.gameObject.SetActive(false);
+
         public void SetVRMButtonActive(bool enabled)
         {
             vrmExportButton.gameObject.SetActive(enabled);
@@ -264,6 +279,14 @@ namespace DCL.Backpack
         public void SetVRMSuccessToastActive(bool active)
         {
             vrmExportedToast.gameObject.SetActive(active);
+        }
+
+        public void SetSignUpModeActive(bool isActive)
+        {
+            signUpHeader.SetActive(isActive);
+
+            foreach (GameObject go in objectsToDeactivateInSignUpMode)
+                go.SetActive(!isActive);
         }
 
         public void OnPointerDown(PointerEventData eventData)

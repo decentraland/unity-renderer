@@ -58,6 +58,8 @@ namespace DCL.Backpack
         private CancellationTokenSource outfitLoadCancellationToken = new ();
         private string categoryPendingToPlayEmote;
 
+        private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_terms_of_service_and_email_subscription");
+
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
@@ -124,6 +126,7 @@ namespace DCL.Backpack
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
             view.OnVRMExport += OnVrmExport;
+            view.OnBackToWallets += OnBackToWallets;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
@@ -240,14 +243,28 @@ namespace DCL.Backpack
                     wearableGridController.LoadCollections();
                     LoadUserProfile(ownUserProfile);
                     view.Show();
+                    view.SetSignUpModeActive(dataStore.common.isSignUpFlow.Get() && isNewTermsOfServiceAndEmailSubscriptionEnabled);
 
                     if (dataStore.common.isSignUpFlow.Get())
                     {
-                        view.ShowContinueSignup();
+                        if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                        {
+                            view.ShowNextButton();
+                            view.HideContinueSignup();
+                        }
+                        else
+                        {
+                            view.HideNextButton();
+                            view.ShowContinueSignup();
+                        }
+
                         avatarSlotsHUDController.SelectSlot(WearableLiterals.Categories.BODY_SHAPE);
                     }
                     else
+                    {
+                        view.HideNextButton();
                         view.HideContinueSignup();
+                    }
                 }
                 else
                 {
@@ -775,6 +792,9 @@ namespace DCL.Backpack
             vrmExportCts = new CancellationTokenSource();
             VrmExport(vrmExportCts.Token).Forget();
         }
+
+        private void OnBackToWallets() =>
+            userProfileBridge.LogOut();
 
         internal async UniTask VrmExport(CancellationToken ct)
         {
