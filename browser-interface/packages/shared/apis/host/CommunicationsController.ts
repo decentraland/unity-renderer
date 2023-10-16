@@ -20,12 +20,16 @@ import { CommunicationsControllerServiceDefinition } from 'shared/protocol/decen
  */
 export function registerCommunicationsControllerServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, CommunicationsControllerServiceDefinition, async (port, ctx) => {
+    const eventsToProcess: Uint8Array[] = []
     /**
      * The `receiveCommsMessage` relays messages in direction: scene -> comms
      */
     const commsController: ICommunicationsController = {
       cid: ctx.sceneData.id,
       receiveCommsMessage(data: Uint8Array, sender: PeerInformation) {
+        if (data.byteLength) {
+          eventsToProcess.push(data)
+        }
         const message = new TextDecoder().decode(data)
         ctx.sendSceneEvent('comms', {
           message,
@@ -48,6 +52,14 @@ export function registerCommunicationsControllerServiceServerImplementation(port
         const message = new TextEncoder().encode(req.message)
         sendParcelSceneCommsMessage(ctx.sceneData.id, message)
         return {}
+      },
+      async sendBinary(req, ctx) {
+        sendParcelSceneCommsMessage(ctx.sceneData.id, req.data)
+        const messages = [...eventsToProcess]
+
+        // clean messages
+        eventsToProcess.length = 0
+        return { data: messages }
       }
     }
   })
