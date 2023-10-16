@@ -192,6 +192,7 @@ namespace DCL.ECS7.InternalComponents
             this.shouldSort = false;
 
             this.rootElement = new VisualElement();
+            this.rootElement.pickingMode = PickingMode.Ignore; // ignore mouse by default
             rootElement.name += $"(Id: {entityId})";
         }
     }

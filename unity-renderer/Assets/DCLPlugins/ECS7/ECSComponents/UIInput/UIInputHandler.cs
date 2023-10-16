@@ -50,6 +50,7 @@ namespace DCL.ECSComponents.UIInput
             placeholder = new TextFieldPlaceholder(uiElement);
 
             AddElementToRoot(scene, entity, uiElement);
+            uiElement.pickingMode = PickingMode.Position; // force pointer blocking
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils

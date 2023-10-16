@@ -24,6 +24,10 @@ namespace DCL.ECSComponents.UIAbstractElements
         protected internal InternalUiContainer AddElementToRoot(IParcelScene scene, IDCLEntity entity, VisualElement uiElement)
         {
             var internalContainer = AddComponentToEntity(scene, entity);
+
+            // Apply existent picking mode into new element
+            uiElement.pickingMode = internalContainer.rootElement.pickingMode;
+
             internalContainer.rootElement.Add(uiElement);
             return internalContainer;
         }
