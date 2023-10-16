@@ -327,8 +327,6 @@ namespace DCL.Backpack
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            Debug.Log($"FetchCustomWearableCollections: {customCollections}");
-
             HashSet<string> publishedCollections = HashSetPool<string>.Get();
             HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
 
