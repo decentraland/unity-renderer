@@ -19,9 +19,9 @@ namespace DCL.UIElements.Image
         private Color color;
         private DCLUVs uvs;
 
-        internal VisualElement canvas { get; private set; }
-
         internal bool customMeshGenerationRequired { get; private set; }
+
+        public VisualElement canvas { get; private set; }
 
         public DCLImageScaleMode ScaleMode
         {
