@@ -386,7 +386,7 @@ namespace DCLServices.WearablesCatalogService
                 AddWearablesToCatalog(ws);
 
                 foreach (WearableItem w in ws)
-                    Debug.Log($"RequestWearableCollectionInBuilder: {w.baseUrl}/{w.thumbnail}");
+                    Debug.Log($"RequestWearableCollectionInBuilder: {w.baseUrl}{w.thumbnail}");
 
                 wearables.AddRange(ws);
             }
