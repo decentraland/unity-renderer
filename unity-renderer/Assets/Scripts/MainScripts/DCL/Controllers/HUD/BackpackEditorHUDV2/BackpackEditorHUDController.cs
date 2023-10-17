@@ -301,8 +301,11 @@ namespace DCL.Backpack
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
-        private void OnSignUpFlowFinished(bool current, bool previous) =>
+        private void OnSignUpFlowFinished(bool current, bool previous)
+        {
             CloseView();
+            view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+        }
 
         private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
         {

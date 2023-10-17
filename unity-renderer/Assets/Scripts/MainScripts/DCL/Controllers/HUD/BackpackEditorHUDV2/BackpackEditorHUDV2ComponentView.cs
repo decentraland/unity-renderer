@@ -287,6 +287,7 @@ namespace DCL.Backpack
         {
             currentStage = stage;
             nextButton.gameObject.SetActive(stage == SignUpStage.CustomizeAvatar);
+            wearablesSection.SetActive(stage == SignUpStage.CustomizeAvatar);
         }
 
         public void OnPointerDown(PointerEventData eventData)
