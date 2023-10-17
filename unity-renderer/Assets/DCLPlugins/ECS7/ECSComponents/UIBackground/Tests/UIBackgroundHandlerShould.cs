@@ -43,26 +43,5 @@ namespace Tests
             Assert.AreEqual(new StyleInt(32), handler.image.canvas.style.unitySliceBottom);
             Assert.AreEqual(new StyleInt(32), handler.image.canvas.style.unitySliceRight);
         }
-
-        [Test]
-        public void UpdatePointerBlockingCorrectly()
-        {
-            var model = new PBUiBackground
-            {
-                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.1f, A = 0.95f },
-                TextureMode = BackgroundTextureMode.NineSlices,
-                TextureSlices = new () { Left = 0.1f, Top = 0.2f, Bottom = 0.5f, Right = 0.5f }
-            };
-
-            handler.OnComponentCreated(scene, entity);
-            handler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.AreEqual(PickingMode.Ignore, handler.image.canvas.pickingMode);
-
-            model.PointerBlocker = true;
-            handler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.AreEqual(PickingMode.Position, handler.image.canvas.pickingMode);
-        }
     }
 }

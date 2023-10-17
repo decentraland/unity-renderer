@@ -42,7 +42,7 @@ namespace DCL.ECSComponents.UIText
             uiElement.style.color = model.GetColor().ToUnityColor();
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
-            uiElement.pickingMode = model.PointerBlocker ? PickingMode.Position : PickingMode.Ignore;
+            // uiElement.pickingMode = model.PointerBlocker ? PickingMode.Position : PickingMode.Ignore;
 
             fontUpdater.Update(model.GetFont());
         }

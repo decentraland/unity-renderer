@@ -193,5 +193,30 @@ namespace Tests
             containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
             Assert.IsFalse(containerModel.shouldSort);
         }
+
+        [Test]
+        public void UpdatePointerBlockingCorrectly()
+        {
+            var model = new PBUiTransform()
+            {
+                Display = YGDisplay.YgdFlex,
+                FlexGrow = 23,
+                FlexShrink = 1,
+                Height = 99,
+                Width = 34,
+                PositionType = YGPositionType.YgptAbsolute
+            };
+
+            handler.OnComponentCreated(scene, entity);
+            handler.OnComponentModelUpdated(scene, entity, model);
+
+            var containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
+            Assert.AreEqual(PickingMode.Ignore, containerModel.rootElement);
+
+            model.PointerFilter = PointerFilterMode.PfmBlock;
+            handler.OnComponentModelUpdated(scene, entity, model);
+
+            Assert.AreEqual(PickingMode.Position, containerModel.rootElement);
+        }
     }
 }

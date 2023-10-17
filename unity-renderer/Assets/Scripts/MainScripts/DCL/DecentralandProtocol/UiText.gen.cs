@@ -27,19 +27,18 @@ namespace DCL.ECSComponents {
             "CilkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfdGV4dC5wcm90bxIb",
             "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxhbmQvY29t",
             "bW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25lbnRz",
-            "L2NvbW1vbi90ZXh0cy5wcm90byLNAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
+            "L2NvbW1vbi90ZXh0cy5wcm90byKbAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
             "KAkSLwoFY29sb3IYAiABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9y",
             "NEgAiAEBEkoKCnRleHRfYWxpZ24YAyABKA4yMS5kZWNlbnRyYWxhbmQuc2Rr",
             "LmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbk1vZGVIAYgBARI7CgRmb250",
             "GAQgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5G",
-            "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQESHAoPcG9pbnRlcl9i",
-            "bG9ja2VyGAYgASgISASIAQFCCAoGX2NvbG9yQg0KC190ZXh0X2FsaWduQgcK",
-            "BV9mb250QgwKCl9mb250X3NpemVCEgoQX3BvaW50ZXJfYmxvY2tlckIUqgIR",
-            "RENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQFCCAoGX2NvbG9yQg0K",
+            "C190ZXh0X2FsaWduQgcKBV9mb250QgwKCl9mb250X3NpemVCFKoCEURDTC5F",
+            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize", "PointerBlocker" }, new[]{ "Color", "TextAlign", "Font", "FontSize", "PointerBlocker" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
           }));
     }
     #endregion
@@ -87,7 +86,6 @@ namespace DCL.ECSComponents {
       textAlign_ = other.textAlign_;
       font_ = other.font_;
       fontSize_ = other.fontSize_;
-      pointerBlocker_ = other.pointerBlocker_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -211,34 +209,6 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~4;
     }
 
-    /// <summary>Field number for the "pointer_blocker" field.</summary>
-    public const int PointerBlockerFieldNumber = 6;
-    private bool pointerBlocker_;
-    /// <summary>
-    /// default=false
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool PointerBlocker {
-      get { if ((_hasBits0 & 8) != 0) { return pointerBlocker_; } else { return false; } }
-      set {
-        _hasBits0 |= 8;
-        pointerBlocker_ = value;
-      }
-    }
-    /// <summary>Gets whether the "pointer_blocker" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPointerBlocker {
-      get { return (_hasBits0 & 8) != 0; }
-    }
-    /// <summary>Clears the value of the "pointer_blocker" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPointerBlocker() {
-      _hasBits0 &= ~8;
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -259,7 +229,6 @@ namespace DCL.ECSComponents {
       if (TextAlign != other.TextAlign) return false;
       if (Font != other.Font) return false;
       if (FontSize != other.FontSize) return false;
-      if (PointerBlocker != other.PointerBlocker) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -272,7 +241,6 @@ namespace DCL.ECSComponents {
       if (HasTextAlign) hash ^= TextAlign.GetHashCode();
       if (HasFont) hash ^= Font.GetHashCode();
       if (HasFontSize) hash ^= FontSize.GetHashCode();
-      if (HasPointerBlocker) hash ^= PointerBlocker.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -311,10 +279,6 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(40);
         output.WriteInt32(FontSize);
       }
-      if (HasPointerBlocker) {
-        output.WriteRawTag(48);
-        output.WriteBool(PointerBlocker);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -345,10 +309,6 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(40);
         output.WriteInt32(FontSize);
       }
-      if (HasPointerBlocker) {
-        output.WriteRawTag(48);
-        output.WriteBool(PointerBlocker);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -373,9 +333,6 @@ namespace DCL.ECSComponents {
       }
       if (HasFontSize) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(FontSize);
-      }
-      if (HasPointerBlocker) {
-        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -406,9 +363,6 @@ namespace DCL.ECSComponents {
       }
       if (other.HasFontSize) {
         FontSize = other.FontSize;
-      }
-      if (other.HasPointerBlocker) {
-        PointerBlocker = other.PointerBlocker;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -448,10 +402,6 @@ namespace DCL.ECSComponents {
             FontSize = input.ReadInt32();
             break;
           }
-          case 48: {
-            PointerBlocker = input.ReadBool();
-            break;
-          }
         }
       }
     #endif
@@ -488,10 +438,6 @@ namespace DCL.ECSComponents {
           }
           case 40: {
             FontSize = input.ReadInt32();
-            break;
-          }
-          case 48: {
-            PointerBlocker = input.ReadBool();
             break;
           }
         }

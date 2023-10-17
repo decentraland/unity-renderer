@@ -5,7 +5,6 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements.Image;
-using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
 {
@@ -45,7 +44,7 @@ namespace DCL.ECSComponents
             image.Slices = model.GetBorder().ToUnityBorder();
             image.UVs = model.Uvs.ToDCLUVs();
             image.ScaleMode = model.TextureMode.ToDCLImageScaleMode();
-            image.canvas.pickingMode = model.PointerBlocker ? PickingMode.Position : PickingMode.Ignore;
+            // image.canvas.pickingMode = model.PointerBlocker ? PickingMode.Position : PickingMode.Ignore;
         }
     }
 }

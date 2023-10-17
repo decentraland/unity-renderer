@@ -28,21 +28,20 @@ namespace DCL.ECSComponents {
             "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxh",
             "bmQvY29tbW9uL2NvbG9ycy5wcm90bxohZGVjZW50cmFsYW5kL2NvbW1vbi90",
             "ZXh0dXJlLnByb3RvGiVkZWNlbnRyYWxhbmQvY29tbW9uL2JvcmRlcl9yZWN0",
-            "LnByb3RvIuoCCg5QQlVpQmFja2dyb3VuZBIvCgVjb2xvchgBIAEoCzIbLmRl",
+            "LnByb3RvIrgCCg5QQlVpQmFja2dyb3VuZBIvCgVjb2xvchgBIAEoCzIbLmRl",
             "Y2VudHJhbGFuZC5jb21tb24uQ29sb3I0SACIAQESNwoHdGV4dHVyZRgCIAEo",
             "CzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVyZVVuaW9uSAGIAQESSAoM",
             "dGV4dHVyZV9tb2RlGAMgASgOMjIuZGVjZW50cmFsYW5kLnNkay5jb21wb25l",
             "bnRzLkJhY2tncm91bmRUZXh0dXJlTW9kZRI8Cg50ZXh0dXJlX3NsaWNlcxgE",
             "IAEoCzIfLmRlY2VudHJhbGFuZC5jb21tb24uQm9yZGVyUmVjdEgCiAEBEgsK",
-            "A3V2cxgFIAMoAhIcCg9wb2ludGVyX2Jsb2NrZXIYBiABKAhIA4gBAUIICgZf",
-            "Y29sb3JCCgoIX3RleHR1cmVCEQoPX3RleHR1cmVfc2xpY2VzQhIKEF9wb2lu",
-            "dGVyX2Jsb2NrZXIqQQoVQmFja2dyb3VuZFRleHR1cmVNb2RlEg8KC05JTkVf",
-            "U0xJQ0VTEAASCgoGQ0VOVEVSEAESCwoHU1RSRVRDSBACQhSqAhFEQ0wuRUNT",
-            "Q29tcG9uZW50c2IGcHJvdG8z"));
+            "A3V2cxgFIAMoAkIICgZfY29sb3JCCgoIX3RleHR1cmVCEQoPX3RleHR1cmVf",
+            "c2xpY2VzKkEKFUJhY2tncm91bmRUZXh0dXJlTW9kZRIPCgtOSU5FX1NMSUNF",
+            "UxAAEgoKBkNFTlRFUhABEgsKB1NUUkVUQ0gQAkIUqgIRRENMLkVDU0NvbXBv",
+            "bmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, global::Decentraland.Common.BorderRectReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.BackgroundTextureMode), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiBackground), global::DCL.ECSComponents.PBUiBackground.Parser, new[]{ "Color", "Texture", "TextureMode", "TextureSlices", "Uvs", "PointerBlocker" }, new[]{ "Color", "Texture", "TextureSlices", "PointerBlocker" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiBackground), global::DCL.ECSComponents.PBUiBackground.Parser, new[]{ "Color", "Texture", "TextureMode", "TextureSlices", "Uvs" }, new[]{ "Color", "Texture", "TextureSlices" }, null, null, null)
           }));
     }
     #endregion
@@ -80,7 +79,6 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBUiBackground> _parser = new pb::MessageParser<PBUiBackground>(() => new PBUiBackground());
     private pb::UnknownFieldSet _unknownFields;
-    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBUiBackground> Parser { get { return _parser; } }
@@ -108,13 +106,11 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiBackground(PBUiBackground other) : this() {
-      _hasBits0 = other._hasBits0;
       color_ = other.color_ != null ? other.color_.Clone() : null;
       texture_ = other.texture_ != null ? other.texture_.Clone() : null;
       textureMode_ = other.textureMode_;
       textureSlices_ = other.textureSlices_ != null ? other.textureSlices_.Clone() : null;
       uvs_ = other.uvs_.Clone();
-      pointerBlocker_ = other.pointerBlocker_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -192,34 +188,6 @@ namespace DCL.ECSComponents {
       get { return uvs_; }
     }
 
-    /// <summary>Field number for the "pointer_blocker" field.</summary>
-    public const int PointerBlockerFieldNumber = 6;
-    private bool pointerBlocker_;
-    /// <summary>
-    /// default=false
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool PointerBlocker {
-      get { if ((_hasBits0 & 1) != 0) { return pointerBlocker_; } else { return false; } }
-      set {
-        _hasBits0 |= 1;
-        pointerBlocker_ = value;
-      }
-    }
-    /// <summary>Gets whether the "pointer_blocker" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasPointerBlocker {
-      get { return (_hasBits0 & 1) != 0; }
-    }
-    /// <summary>Clears the value of the "pointer_blocker" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearPointerBlocker() {
-      _hasBits0 &= ~1;
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -240,7 +208,6 @@ namespace DCL.ECSComponents {
       if (TextureMode != other.TextureMode) return false;
       if (!object.Equals(TextureSlices, other.TextureSlices)) return false;
       if(!uvs_.Equals(other.uvs_)) return false;
-      if (PointerBlocker != other.PointerBlocker) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -253,7 +220,6 @@ namespace DCL.ECSComponents {
       if (TextureMode != global::DCL.ECSComponents.BackgroundTextureMode.NineSlices) hash ^= TextureMode.GetHashCode();
       if (textureSlices_ != null) hash ^= TextureSlices.GetHashCode();
       hash ^= uvs_.GetHashCode();
-      if (HasPointerBlocker) hash ^= PointerBlocker.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -289,10 +255,6 @@ namespace DCL.ECSComponents {
         output.WriteMessage(TextureSlices);
       }
       uvs_.WriteTo(output, _repeated_uvs_codec);
-      if (HasPointerBlocker) {
-        output.WriteRawTag(48);
-        output.WriteBool(PointerBlocker);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -320,10 +282,6 @@ namespace DCL.ECSComponents {
         output.WriteMessage(TextureSlices);
       }
       uvs_.WriteTo(ref output, _repeated_uvs_codec);
-      if (HasPointerBlocker) {
-        output.WriteRawTag(48);
-        output.WriteBool(PointerBlocker);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -347,9 +305,6 @@ namespace DCL.ECSComponents {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(TextureSlices);
       }
       size += uvs_.CalculateSize(_repeated_uvs_codec);
-      if (HasPointerBlocker) {
-        size += 1 + 1;
-      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -384,9 +339,6 @@ namespace DCL.ECSComponents {
         TextureSlices.MergeFrom(other.TextureSlices);
       }
       uvs_.Add(other.uvs_);
-      if (other.HasPointerBlocker) {
-        PointerBlocker = other.PointerBlocker;
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -432,10 +384,6 @@ namespace DCL.ECSComponents {
             uvs_.AddEntriesFrom(input, _repeated_uvs_codec);
             break;
           }
-          case 48: {
-            PointerBlocker = input.ReadBool();
-            break;
-          }
         }
       }
     #endif
@@ -479,10 +427,6 @@ namespace DCL.ECSComponents {
           case 42:
           case 45: {
             uvs_.AddEntriesFrom(ref input, _repeated_uvs_codec);
-            break;
-          }
-          case 48: {
-            PointerBlocker = input.ReadBool();
             break;
           }
         }

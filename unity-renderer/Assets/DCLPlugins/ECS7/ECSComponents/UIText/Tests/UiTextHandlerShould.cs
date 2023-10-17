@@ -92,28 +92,6 @@ namespace Tests
         }
 
         [Test]
-        public void UpdatePointerBlockingCorrectly()
-        {
-            var model = new PBUiText()
-            {
-                Value = "temptation",
-                FontSize = 34,
-                Color = new Color4() { R = 0.1f, G = 0.2f, B = 0.3f, A = 1 },
-                TextAlign = TextAlignMode.TamMiddleRight
-            };
-
-            handler.OnComponentCreated(scene, entity);
-            handler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.AreEqual(PickingMode.Ignore, handler.uiElement.pickingMode);
-
-            model.PointerBlocker = true;
-            handler.OnComponentModelUpdated(scene, entity, model);
-
-            Assert.AreEqual(PickingMode.Position, handler.uiElement.pickingMode);
-        }
-
-        [Test]
         public void RemoveCorrectly()
         {
             handler.OnComponentCreated(scene, entity);
