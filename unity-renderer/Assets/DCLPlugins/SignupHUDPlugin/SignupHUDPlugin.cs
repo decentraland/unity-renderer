@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Providers;
 using SignupHUD;
 
@@ -35,13 +36,14 @@ namespace DCLPlugins.SignupHUDPlugin
                 var analytics = DCL.Environment.i.platform.serviceProviders.analytics;
                 var loadingScreenDataStore = DataStore.i.Get<DataStore_LoadingScreen>();
                 var hudsDataStore = DataStore.i.HUDs;
+                var browserBridge = new WebInterfaceBrowserBridge();
 
                 bool isNewTermsOfServiceAndEmailSubscriptionEnabled = current.IsFeatureEnabled("new_terms_of_service_and_email_subscription");
                 var view = await assetsProvider.Instantiate<ISignupHUDView>(
                     isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD,
                     $"_{(isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD)}");
 
-                controller = new SignupHUDController(analytics, view, loadingScreenDataStore, hudsDataStore);
+                controller = new SignupHUDController(analytics, view, loadingScreenDataStore, hudsDataStore, browserBridge);
                 controller.Initialize();
             }
 

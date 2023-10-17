@@ -1,4 +1,5 @@
 ﻿using DCL;
+using DCL.Browser;
 using NSubstitute;
 using NUnit.Framework;
 using SignupHUD;
@@ -22,7 +23,8 @@ namespace Tests.SignupHUD
             hudController = new SignupHUDController(Substitute.For<IAnalytics>(),
                 hudView,
                 new DataStore_LoadingScreen(),
-                dataStoreHUDs);
+                dataStoreHUDs,
+                Substitute.For<IBrowserBridge>());
             hudController.Initialize();
         }
 

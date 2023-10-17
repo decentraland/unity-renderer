@@ -2031,6 +2031,7 @@ MonoBehaviour:
   emailInputInvalidLabel: {fileID: 7132642172324504402}
   colorForCharLimit: {r: 1, g: 0.07058824, b: 0.38431373, a: 1}
   agreeTosAndPrivacyPolicyToggle: {fileID: 2654011316450251598}
+  tosAndPrivacyPolicyText: {fileID: 7762126982973327232}
   termsOfServiceAgreeButton: {fileID: 2910859052875627039}
 --- !u!1 &5639800636375264322
 GameObject:
@@ -2678,7 +2679,8 @@ PrefabInstance:
     - target: {fileID: 3005862737368832046, guid: 364e5896a70df11418dc18e8fa2049c7,
         type: 3}
       propertyPath: m_text
-      value: I agree with Decentraland Terms of Service and Privacy Policy
+      value: I agree with Decentraland <color=#FF2D55><u><link=tosUrl>Terms of Service</link></u></color>
+        and <color=#FF2D55><u><link=privacyPolicyUrl>Privacy Policy</link></u></color>
       objectReference: {fileID: 0}
     - target: {fileID: 5365640620524202394, guid: 364e5896a70df11418dc18e8fa2049c7,
         type: 3}
@@ -2793,7 +2795,8 @@ PrefabInstance:
     - target: {fileID: 7411399265605913824, guid: 364e5896a70df11418dc18e8fa2049c7,
         type: 3}
       propertyPath: model.text
-      value: I agree with Decentraland Terms of Service and Privacy Policy
+      value: I agree with Decentraland <color=#FF2D55><u><link=tosUrl>Terms of Service</link></u></color>
+        and <color=#FF2D55><u><link=privacyPolicyUrl>Privacy Policy</link></u></color>
       objectReference: {fileID: 0}
     - target: {fileID: 8448182982039922279, guid: 364e5896a70df11418dc18e8fa2049c7,
         type: 3}
@@ -2821,6 +2824,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49868df02d62a428c8aa5b2dd1a1ce20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7762126982973327232 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3005862737368832046, guid: 364e5896a70df11418dc18e8fa2049c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4759853346849447854}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7966104259838049269

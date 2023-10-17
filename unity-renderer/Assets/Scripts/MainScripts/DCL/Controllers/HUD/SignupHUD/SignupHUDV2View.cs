@@ -3,12 +3,12 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace SignupHUD
 {
-    public class SignupHUDV2View : BaseComponentView, ISignupHUDView
+    public class SignupHUDV2View : BaseComponentView, ISignupHUDView, IPointerClickHandler
     {
         private const int MIN_NAME_LENGTH = 1;
         private const int MAX_NAME_LENGTH = 15;
@@ -17,6 +17,7 @@ namespace SignupHUD
         public event Action OnEditAvatar;
         public event Action OnTermsOfServiceAgreed;
         public event Action OnTermsOfServiceBack;
+        public event Action<string> OnLinkClicked;
 
         [SerializeField] internal TMP_InputField nameInputField;
         [SerializeField] internal GameObject nameInputFieldFullOrInvalid;
@@ -27,6 +28,7 @@ namespace SignupHUD
         [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal Color colorForCharLimit;
         [SerializeField] internal ToggleComponentView agreeTosAndPrivacyPolicyToggle;
+        [SerializeField] internal TMP_Text tosAndPrivacyPolicyText;
         [SerializeField] internal Button termsOfServiceAgreeButton;
 
         public override void Awake()
@@ -118,6 +120,16 @@ namespace SignupHUD
             nameInputField.text = string.Empty;
             emailInputField.text = string.Empty;
             agreeTosAndPrivacyPolicyToggle.isOn = false;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(tosAndPrivacyPolicyText, Input.mousePosition, null);
+            if (linkIndex == -1)
+                return;
+
+            TMP_LinkInfo linkInfo = tosAndPrivacyPolicyText.textInfo.linkInfo[linkIndex];
+            OnLinkClicked?.Invoke(linkInfo.GetLinkID());
         }
     }
 }
