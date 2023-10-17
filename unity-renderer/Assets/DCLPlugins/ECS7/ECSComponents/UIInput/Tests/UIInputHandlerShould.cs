@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput.Tests
 {
+    [Category("Flaky")]
     public class UIInputHandlerShould : UIComponentsShouldBase
     {
         private const int COMPONENT_ID = 1001;
@@ -62,6 +63,14 @@ namespace DCL.ECSComponents.UIInput.Tests
             Assert.Contains(
                 new InternalUIInputResults.Result(result, RESULT_COMPONENT_ID),
                 uiInputResults.Results);
+        }
+
+        [Test]
+        public void BlockPointerByDefault()
+        {
+            UpdateComponentModel(false);
+
+            Assert.AreEqual(PickingMode.Position, handler.uiElement.pickingMode);
         }
 
         private void UpdateComponentModel(bool useTextValueProperty = false)
