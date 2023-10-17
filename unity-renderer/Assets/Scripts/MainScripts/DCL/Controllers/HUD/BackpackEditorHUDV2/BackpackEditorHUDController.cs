@@ -102,6 +102,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.common.isSignUpFlow.OnChange += OnSignUpFlowFinished;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -126,7 +127,7 @@ namespace DCL.Backpack
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
             view.OnVRMExport += OnVrmExport;
-            view.OnBackToWallets += OnBackToWallets;
+            view.OnSignUpBackClicked += OnSignUpBack;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
@@ -188,6 +189,7 @@ namespace DCL.Backpack
             ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.common.isSignUpFlow.OnChange -= OnSignUpFlowFinished;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
@@ -282,8 +284,6 @@ namespace DCL.Backpack
 
                     wearableGridController.CancelWearableLoading();
                 }
-
-                view.SetNextButtonActive(visible);
             }
 
             setVisibilityCancellationToken = setVisibilityCancellationToken.SafeRestart();
@@ -300,6 +300,9 @@ namespace DCL.Backpack
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
+
+        private void OnSignUpFlowFinished(bool current, bool previous) =>
+            CloseView();
 
         private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
         {
@@ -485,6 +488,7 @@ namespace DCL.Backpack
             if (dataStore.common.isSignUpFlow.Get())
             {
                 dataStore.HUDs.signupVisible.Set(true);
+                view.SetSignUpStage(SignUpStage.SetNameAndEmail);
                 backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
             }
 
@@ -790,8 +794,20 @@ namespace DCL.Backpack
             VrmExport(vrmExportCts.Token).Forget();
         }
 
-        private void OnBackToWallets() =>
-            userProfileBridge.LogOut();
+        private void OnSignUpBack(SignUpStage stage)
+        {
+            switch (stage)
+            {
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    dataStore.HUDs.signupVisible.Set(false);
+                    view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+                    break;
+            }
+        }
 
         internal async UniTask VrmExport(CancellationToken ct)
         {

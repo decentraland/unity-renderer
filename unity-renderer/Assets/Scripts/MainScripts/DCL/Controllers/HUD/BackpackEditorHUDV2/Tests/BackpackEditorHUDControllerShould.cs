@@ -345,7 +345,6 @@ namespace DCL.Backpack
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
-            view.Received(1).SetNextButtonActive(true);
             if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
                 view.Received(1).HideContinueSignup();
             else
@@ -359,7 +358,6 @@ namespace DCL.Backpack
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
-            view.Received(1).SetNextButtonActive(false);
             view.Received(1).HideContinueSignup();
         }
 
@@ -445,13 +443,24 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void BackToWalletsCorrectly()
+        [TestCase(SignUpStage.CustomizeAvatar)]
+        [TestCase(SignUpStage.SetNameAndEmail)]
+        public void SignUpBackCorrectly(SignUpStage currentStage)
         {
             // Act
-            view.OnBackToWallets += Raise.Event<Action>();
+            view.OnSignUpBackClicked += Raise.Event<Action<SignUpStage>>(currentStage);
 
-            // Assert
-            userProfileBridge.Received(1).LogOut();
+            switch (currentStage)
+            {
+                // Assert
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.Received(1).LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    Assert.IsFalse(dataStore.HUDs.signupVisible.Get());
+                    break;
+            }
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

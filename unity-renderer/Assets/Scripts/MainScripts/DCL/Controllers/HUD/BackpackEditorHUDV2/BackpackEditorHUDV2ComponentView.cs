@@ -8,7 +8,6 @@ using System.Threading;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.Backpack
@@ -21,7 +20,7 @@ namespace DCL.Backpack
         public event Action OnAvatarUpdated;
         public event Action OnOutfitsOpened;
         public event Action OnVRMExport;
-        public event Action OnBackToWallets;
+        public event Action<SignUpStage> OnSignUpBackClicked;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -49,7 +48,7 @@ namespace DCL.Backpack
 
         [Header("Sign Up Mode")]
         [SerializeField] internal GameObject signUpHeader;
-        [SerializeField] internal Button backToWalletsButton;
+        [SerializeField] internal Button backButton;
         [SerializeField] internal Button nextButton;
         [SerializeField] internal GameObject[] objectsToDeactivateInSignUpMode;
 
@@ -68,6 +67,7 @@ namespace DCL.Backpack
         private AvatarModel avatarModelToUpdate;
         private CancellationTokenSource updateAvatarCts = new ();
         private CancellationTokenSource snapshotsCts = new ();
+        private SignUpStage currentStage;
 
         public override void Awake()
         {
@@ -77,7 +77,7 @@ namespace DCL.Backpack
             backpackPreviewPanel.SetLoadingActive(false);
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
             nextButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
-            backToWalletsButton.onClick.AddListener(() => OnBackToWallets?.Invoke());
+            backButton.onClick.AddListener(() => OnSignUpBackClicked?.Invoke(currentStage));
         }
 
         public void Initialize(
@@ -260,9 +260,6 @@ namespace DCL.Backpack
         public void HideContinueSignup() =>
             saveAvatarButton.gameObject.SetActive(false);
 
-        public void SetNextButtonActive(bool isActive) =>
-            nextButton.gameObject.SetActive(isActive);
-
         public void SetVRMButtonActive(bool enabled)
         {
             vrmExportButton.gameObject.SetActive(enabled);
@@ -284,6 +281,12 @@ namespace DCL.Backpack
 
             foreach (GameObject go in objectsToDeactivateInSignUpMode)
                 go.SetActive(!isActive);
+        }
+
+        public void SetSignUpStage(SignUpStage stage)
+        {
+            currentStage = stage;
+            nextButton.gameObject.SetActive(stage == SignUpStage.CustomizeAvatar);
         }
 
         public void OnPointerDown(PointerEventData eventData)

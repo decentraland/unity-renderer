@@ -1,6 +1,5 @@
 using DCL;
 using DCL.Interface;
-using UnityEngine;
 
 namespace SignupHUD
 {

@@ -5,6 +5,12 @@ using UnityEngine;
 
 namespace DCL.Backpack
 {
+    public enum SignUpStage
+    {
+        CustomizeAvatar,
+        SetNameAndEmail,
+    }
+
     public interface IBackpackEditorHUDView
     {
         event Action<Color> OnColorChanged;
@@ -13,7 +19,7 @@ namespace DCL.Backpack
         event Action OnAvatarUpdated;
         event Action OnOutfitsOpened;
         event Action OnVRMExport;
-        event Action OnBackToWallets;
+        event Action<SignUpStage> OnSignUpBackClicked;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
         IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers { get; }
@@ -37,10 +43,10 @@ namespace DCL.Backpack
         void SetColorPickerValue(Color color);
         void ShowContinueSignup();
         void HideContinueSignup();
-        void SetNextButtonActive(bool isActive);
         void SetVRMButtonActive(bool enabled);
         void SetVRMButtonEnabled(bool enabled);
         void SetVRMSuccessToastActive(bool active);
         void SetSignUpModeActive(bool isActive);
+        void SetSignUpStage(SignUpStage stage);
     }
 }

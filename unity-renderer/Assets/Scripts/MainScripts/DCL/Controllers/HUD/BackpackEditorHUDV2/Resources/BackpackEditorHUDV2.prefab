@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 813070099672572821}
   - component: {fileID: 7177588579789046480}
   m_Layer: 5
-  m_Name: BackToWalletsButton
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2010,7 +2010,7 @@ MonoBehaviour:
   vrmExportButton: {fileID: 2441708800504307716}
   vrmExportedToast: {fileID: 1332459953862512925}
   signUpHeader: {fileID: 6032775923198393604}
-  backToWalletsButton: {fileID: 1230887024710601160}
+  backButton: {fileID: 1230887024710601160}
   nextButton: {fileID: 77436869593246426}
   objectsToDeactivateInSignUpMode:
   - {fileID: 1801116622221139394}
@@ -4651,7 +4651,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5910900519288670340
 RectTransform:
   m_ObjectHideFlags: 0
