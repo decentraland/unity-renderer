@@ -211,12 +211,15 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
 
             var containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
-            Assert.AreEqual(PickingMode.Ignore, containerModel.rootElement);
+            Assert.AreEqual(PickingMode.Ignore, containerModel.rootElement.pickingMode);
 
             model.PointerFilter = PointerFilterMode.PfmBlock;
             handler.OnComponentModelUpdated(scene, entity, model);
+            Assert.AreEqual(PickingMode.Position, containerModel.rootElement.pickingMode);
 
-            Assert.AreEqual(PickingMode.Position, containerModel.rootElement);
+            model.PointerFilter = PointerFilterMode.PfmNone;
+            handler.OnComponentModelUpdated(scene, entity, model);
+            Assert.AreEqual(PickingMode.Ignore, containerModel.rootElement.pickingMode);
         }
     }
 }
