@@ -20,6 +20,8 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDControllerShould
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private UserProfile userProfile;
         private IBackpackEditorHUDView view;
         private DataStore dataStore;
@@ -140,7 +142,7 @@ namespace DCL.Backpack
             // Arrange
             dataStore.common.isSignUpFlow.Set(isSignUpFlow, false);
             dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld, false);
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_terms_of_service_and_email_subscription"] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             // Act
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
@@ -341,7 +343,7 @@ namespace DCL.Backpack
         public void ShowSignup(bool isNewTermsOfServiceAndEmailSubscriptionEnabled)
         {
             dataStore.common.isSignUpFlow.Set(true);
-            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { ["new_terms_of_service_and_email_subscription"] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 

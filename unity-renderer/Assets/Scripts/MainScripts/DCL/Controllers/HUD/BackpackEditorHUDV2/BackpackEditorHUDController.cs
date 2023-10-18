@@ -15,6 +15,8 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
@@ -58,7 +60,7 @@ namespace DCL.Backpack
         private CancellationTokenSource outfitLoadCancellationToken = new ();
         private string categoryPendingToPlayEmote;
 
-        private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_terms_of_service_and_email_subscription");
+        private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 

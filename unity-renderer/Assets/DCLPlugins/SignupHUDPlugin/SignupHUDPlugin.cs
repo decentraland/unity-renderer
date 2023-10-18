@@ -8,6 +8,7 @@ namespace DCLPlugins.SignupHUDPlugin
 {
     public class SignupHUDPlugin : IPlugin
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
         private const string SIGNUP_HUD = "SignupHUD";
         private const string SIGNUP_HUD_V2 = "SignupHUDV2";
 
@@ -38,7 +39,7 @@ namespace DCLPlugins.SignupHUDPlugin
                 var hudsDataStore = DataStore.i.HUDs;
                 var browserBridge = new WebInterfaceBrowserBridge();
 
-                bool isNewTermsOfServiceAndEmailSubscriptionEnabled = current.IsFeatureEnabled("new_terms_of_service_and_email_subscription");
+                bool isNewTermsOfServiceAndEmailSubscriptionEnabled = current.IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
                 var view = await assetsProvider.Instantiate<ISignupHUDView>(
                     isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD,
                     $"_{(isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD)}");
