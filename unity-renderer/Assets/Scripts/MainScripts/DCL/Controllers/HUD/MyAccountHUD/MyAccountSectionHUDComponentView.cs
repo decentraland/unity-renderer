@@ -14,7 +14,7 @@ namespace DCL.MyAccount
 
         [SerializeField] internal GameObject sectionsMenu;
         [SerializeField] internal MyProfileComponentView myProfileComponentView;
-        [SerializeField] internal GameObject emailNotificationsComponentView;
+        [SerializeField] internal EmailNotificationsComponentView emailNotificationsComponentView;
         [SerializeField] internal ShowHideAnimator accountSettingsUpdatedToast;
 
         [Header("Sections Menu Configuration")]
@@ -30,6 +30,7 @@ namespace DCL.MyAccount
         [SerializeField] internal Image emailNotificationsButtonSelectedImage;
 
         public IMyProfileComponentView CurrentMyProfileView => myProfileComponentView;
+        public IEmailNotificationsComponentView CurrentEmailNotificationsView => emailNotificationsComponentView;
 
         private Transform thisTransform;
         private CancellationTokenSource showAccountSettingsCancellationToken = new ();
@@ -107,13 +108,13 @@ namespace DCL.MyAccount
                     SetMyProfileButtonStatus(true);
                     SetEmailNotificationsButtonStatus(false);
                     myProfileComponentView.Show();
-                    emailNotificationsComponentView.SetActive(false);
+                    emailNotificationsComponentView.Hide();
                     break;
                 case MyAccountSection.EmailNotifications:
                     SetMyProfileButtonStatus(false);
                     SetEmailNotificationsButtonStatus(true);
                     myProfileComponentView.Hide();
-                    emailNotificationsComponentView.SetActive(true);
+                    emailNotificationsComponentView.Show();
                     break;
             }
         }

@@ -13,6 +13,7 @@ namespace DCL.MyAccount
 
         private MyAccountSectionHUDController myAccountSectionHUDController;
         private MyProfileController myProfileController;
+        private EmailNotificationsController emailNotificationsController;
 
         public MyAccountPlugin()
         {
@@ -70,12 +71,17 @@ namespace DCL.MyAccount
                 relationshipStatusProvider,
                 languageListProvider,
                 pronounListProvider);
+
+            emailNotificationsController = new EmailNotificationsController(
+                myAccountSectionView.CurrentEmailNotificationsView,
+                myAccountSectionHUDController);
         }
 
         public void Dispose()
         {
             cts.SafeCancelAndDispose();
             myProfileController.Dispose();
+            emailNotificationsController.Dispose();
             myAccountSectionHUDController.Dispose();
         }
     }

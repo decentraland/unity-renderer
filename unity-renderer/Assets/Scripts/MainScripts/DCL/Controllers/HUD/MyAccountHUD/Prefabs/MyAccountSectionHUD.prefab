@@ -1300,7 +1300,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   sectionsMenu: {fileID: 2562870807502328264}
   myProfileComponentView: {fileID: 4575446210914794904}
-  emailNotificationsComponentView: {fileID: 5069970608277856501}
+  emailNotificationsComponentView: {fileID: 3545138090583190189}
   accountSettingsUpdatedToast: {fileID: 6610558860221813516}
   myProfileButton: {fileID: 5765207209131397594}
   myProfileButtonDeselected: {fileID: 2718019705717952361}
@@ -3427,12 +3427,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10785685f82bbec4f997b67b38841089, type: 3}
---- !u!1 &5069970608277856501 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 716215124352047014, guid: 10785685f82bbec4f997b67b38841089,
+--- !u!114 &3545138090583190189 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9123865113910861310, guid: 10785685f82bbec4f997b67b38841089,
     type: 3}
   m_PrefabInstance: {fileID: 5741146918857652051}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 659a6aee3e5b47788b88ac6edbd4559d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8747905691023710764 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3948086035216379263, guid: 10785685f82bbec4f997b67b38841089,

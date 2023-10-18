@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3948086035216379263}
   - component: {fileID: 2465450626800158119}
   - component: {fileID: 6615085707077701300}
+  - component: {fileID: 9123865113910861310}
   m_Layer: 5
   m_Name: EmailNotifications
   m_TagString: Untagged
@@ -77,6 +78,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9123865113910861310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716215124352047014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 659a6aee3e5b47788b88ac6edbd4559d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  emailInputField: {fileID: 7052528522511472501}
+  subscribeToNewsletterToggle: {fileID: 368864323035404216}
 --- !u!1 &1678130139285422832
 GameObject:
   m_ObjectHideFlags: 0
@@ -2017,6 +2033,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 364e5896a70df11418dc18e8fa2049c7, type: 3}
+--- !u!114 &368864323035404216 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7411399265605913824, guid: 364e5896a70df11418dc18e8fa2049c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 7189130908079692632}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49868df02d62a428c8aa5b2dd1a1ce20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3947726465870671033 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6128774804984969185, guid: 364e5896a70df11418dc18e8fa2049c7,
