@@ -22,5 +22,6 @@ public enum InternalECSComponentsId
     ENGINE_INFO = 20,
     ANIMATION_PLAYER = 21,
     ANIMATION = 22,
-    TWEEN = 23
+    TWEEN = 23,
+    AVATAR_MODIFIER_AREA = 24
 }

@@ -10,11 +10,11 @@ namespace DCL.ECSComponents
         private readonly int componentId;
         private readonly AvatarModifierFactory modifierFactory;
 
-        public AvatarModifierAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter)
+        public AvatarModifierAreaRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter, IInternalECSComponents internalComponents)
         {
             modifierFactory = new AvatarModifierFactory();
-            
-            factory.AddOrReplaceComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(Environment.i.platform.updateEventHandler, DataStore.i.player, modifierFactory));
+
+            factory.AddOrReplaceComponent(componentId, AvatarModifierAreaSerializer.Deserialize, () => new AvatarModifierAreaComponentHandler(internalComponents.AvatarModifierAreaComponent, modifierFactory));
             componentWriter.AddOrReplaceComponentSerializer<PBAvatarModifierArea>(componentId, AvatarModifierAreaSerializer.Serialize);
 
             this.factory = factory;
