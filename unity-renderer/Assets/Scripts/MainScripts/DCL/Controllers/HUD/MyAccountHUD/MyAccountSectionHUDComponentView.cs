@@ -3,6 +3,8 @@ using DCL.Tasks;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.MyAccount
 {
@@ -10,8 +12,22 @@ namespace DCL.MyAccount
     {
         private const float COPY_TOAST_VISIBLE_TIME = 3;
 
+        [SerializeField] internal GameObject sectionsMenu;
         [SerializeField] internal MyProfileComponentView myProfileComponentView;
+        [SerializeField] internal GameObject emailNotificationsComponentView;
         [SerializeField] internal ShowHideAnimator accountSettingsUpdatedToast;
+
+        [Header("Sections Menu Configuration")]
+        [SerializeField] internal Button myProfileButton;
+        [SerializeField] internal GameObject myProfileButtonDeselected;
+        [SerializeField] internal Image myProfileButtonDeselectedImage;
+        [SerializeField] internal GameObject myProfileButtonSelected;
+        [SerializeField] internal Image myProfileButtonSelectedImage;
+        [SerializeField] internal Button emailNotificationsButton;
+        [SerializeField] internal GameObject emailNotificationsButtonDeselected;
+        [SerializeField] internal Image emailNotificationsButtonDeselectedImage;
+        [SerializeField] internal GameObject emailNotificationsButtonSelected;
+        [SerializeField] internal Image emailNotificationsButtonSelectedImage;
 
         public IMyProfileComponentView CurrentMyProfileView => myProfileComponentView;
 
@@ -23,6 +39,11 @@ namespace DCL.MyAccount
             base.Awake();
 
             thisTransform = transform;
+
+            myProfileButton.onClick.AddListener(() => OpenSection(MyAccountSection.MyProfile));
+            emailNotificationsButton.onClick.AddListener(() => OpenSection(MyAccountSection.EmailNotifications));
+
+            OpenSection(MyAccountSection.MyProfile);
         }
 
         public override void Dispose()
@@ -30,6 +51,8 @@ namespace DCL.MyAccount
             base.Dispose();
 
             showAccountSettingsCancellationToken.SafeCancelAndDispose();
+            myProfileButton.onClick.RemoveAllListeners();
+            emailNotificationsButton.onClick.RemoveAllListeners();
         }
 
         public override void RefreshControl() { }
@@ -68,6 +91,53 @@ namespace DCL.MyAccount
 
             showAccountSettingsCancellationToken = showAccountSettingsCancellationToken.SafeRestart();
             ShowAccountSettingsUpdatedToastAsync(showAccountSettingsCancellationToken.Token).Forget();
+        }
+
+        public void SetSectionsMenuActive(bool isActive) =>
+            sectionsMenu.SetActive(isActive);
+
+        private void OpenSection(MyAccountSection section)
+        {
+            DeselectButtons();
+
+            switch (section)
+            {
+                default:
+                case MyAccountSection.MyProfile:
+                    SetMyProfileButtonStatus(true);
+                    SetEmailNotificationsButtonStatus(false);
+                    myProfileComponentView.Show();
+                    emailNotificationsComponentView.SetActive(false);
+                    break;
+                case MyAccountSection.EmailNotifications:
+                    SetMyProfileButtonStatus(false);
+                    SetEmailNotificationsButtonStatus(true);
+                    myProfileComponentView.Hide();
+                    emailNotificationsComponentView.SetActive(true);
+                    break;
+            }
+        }
+
+        private void SetMyProfileButtonStatus(bool isSelected)
+        {
+            myProfileButton.targetGraphic = isSelected ? myProfileButtonSelectedImage : myProfileButtonDeselectedImage;
+            myProfileButtonDeselected.SetActive(!isSelected);
+            myProfileButtonSelected.SetActive(isSelected);
+        }
+
+        private void SetEmailNotificationsButtonStatus(bool isSelected)
+        {
+            emailNotificationsButton.targetGraphic = isSelected ? emailNotificationsButtonSelectedImage : emailNotificationsButtonDeselectedImage;
+            emailNotificationsButtonDeselected.SetActive(!isSelected);
+            emailNotificationsButtonSelected.SetActive(isSelected);
+        }
+
+        private static void DeselectButtons()
+        {
+            if (EventSystem.current == null)
+                return;
+
+            EventSystem.current.SetSelectedGameObject(null);
         }
     }
 }
