@@ -55,7 +55,6 @@ namespace DCL.ECSComponents.UIDropdown
             uiElement.AddToClassList(CLASS);
 
             AddElementToRoot(scene, entity, uiElement);
-            uiElement.pickingMode = PickingMode.Position; // force pointer blocking
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             // it seems strange but `DropdownField` notifies with `string`, not `int`
