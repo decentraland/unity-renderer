@@ -39,6 +39,8 @@ namespace DCL.ECSComponents
 
             internalComponentModel.area = ProtoConvertUtils.PBVectorToUnityVector(model.Area);
 
+            internalComponentModel.OnAvatarEnter = null;
+            internalComponentModel.OnAvatarExit = null;
             foreach (AvatarModifierType modifierKey in model.Modifiers)
             {
                 var modifier = factory.GetOrCreateAvatarModifier(modifierKey);
