@@ -21,6 +21,7 @@ namespace DCL.Backpack
         private const string CATEGORY_FILTER_REF = "category=";
         private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
         private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
+        private const string EMPTY_WEARABLE_DESCRIPTION = "This item doesn’t have a description.";
 
         private readonly IWearableGridView view;
         private readonly IUserProfileBridge userProfileBridge;
@@ -402,7 +403,7 @@ namespace DCL.Backpack
             {
                 rarity = wearable.rarity,
                 category = wearable.data.category,
-                description = wearable.description,
+                description = string.IsNullOrEmpty(wearable.description) ? EMPTY_WEARABLE_DESCRIPTION : wearable.description,
                 imageUri = wearable.ComposeThumbnailUrl(),
 
                 // TODO: solve hidden by field

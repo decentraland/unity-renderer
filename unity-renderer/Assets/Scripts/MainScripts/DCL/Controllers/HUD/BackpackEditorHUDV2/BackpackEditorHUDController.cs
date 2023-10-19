@@ -271,6 +271,9 @@ namespace DCL.Backpack
 
                             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
                                 CloseView();
+
+                            if (dataStore.common.isSignUpFlow.Get() && isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                                view.PlayPreviewEmote("wave");
                         }
                         catch (OperationCanceledException) { }
                         catch (Exception e)
