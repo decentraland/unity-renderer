@@ -18,6 +18,7 @@ namespace SignupHUD
         internal string name;
         internal string email;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private BaseVariable<bool> backpackVisible => DataStore.i.HUDs.avatarEditorVisible;
 
         public SignupHUDController(IAnalytics analytics, ISignupHUDView view, DataStore_LoadingScreen loadingScreenDataStore,
             DataStore_HUDs dataStoreHUDs, IBrowserBridge browserBridge)
@@ -49,8 +50,11 @@ namespace SignupHUD
 
         private void OnLoadingScreenAppear(bool current, bool previous)
         {
-            if(signupVisible.Get() && current)
+            if (signupVisible.Get() && current)
+            {
                 signupVisible.Set(false);
+                backpackVisible.Set(false);
+            }
         }
 
         private void OnSignupVisibleChanged(bool current, bool previous)

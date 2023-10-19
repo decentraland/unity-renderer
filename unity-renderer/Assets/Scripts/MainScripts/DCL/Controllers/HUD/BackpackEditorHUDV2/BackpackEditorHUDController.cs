@@ -104,7 +104,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
-            dataStore.common.isSignUpFlow.OnChange += OnSignUpFlowFinished;
+            dataStore.common.isSignUpFlow.OnChange += OnSignUpFlowChanged;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -191,7 +191,7 @@ namespace DCL.Backpack
             ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
-            dataStore.common.isSignUpFlow.OnChange -= OnSignUpFlowFinished;
+            dataStore.common.isSignUpFlow.OnChange -= OnSignUpFlowChanged;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
@@ -303,9 +303,11 @@ namespace DCL.Backpack
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
 
-        private void OnSignUpFlowFinished(bool current, bool previous)
+        private void OnSignUpFlowChanged(bool current, bool previous)
         {
-            CloseView();
+            if (current)
+                return;
+
             view.SetSignUpStage(SignUpStage.CustomizeAvatar);
         }
 
