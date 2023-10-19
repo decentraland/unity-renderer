@@ -359,4 +359,15 @@ namespace DCL.ECS7.InternalComponents
         public PBTween.ModeOneofCase tweenMode;
         public PBTween lastModel;
     }
+
+    public struct InternalAvatarModifierArea : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public bool removed;
+        public Vector3 area;
+        public HashSet<string> excludedIds;
+        public Action<GameObject> OnAvatarEnter;
+        public Action<GameObject> OnAvatarExit;
+        public HashSet<GameObject> avatarsInArea;
+    }
 }
