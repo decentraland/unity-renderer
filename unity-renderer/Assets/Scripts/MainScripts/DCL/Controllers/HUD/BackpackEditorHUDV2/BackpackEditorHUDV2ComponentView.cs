@@ -5,6 +5,7 @@ using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,6 +15,9 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView, IPointerDownHandler
     {
+        private const string SIGN_UP_HEADER_TITLE_FOR_FISRT_STEP = "Customize Your Avatar";
+        private const string SIGN_UP_HEADER_TITLE_FOR_SECOND_STEP = "Final Details";
+        
         public event Action<Color> OnColorChanged;
         public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
@@ -45,9 +49,12 @@ namespace DCL.Backpack
         [SerializeField] internal Image outfitButtonIcon;
         [SerializeField] internal Button vrmExportButton;
         [SerializeField] internal RectTransform vrmExportedToast;
+        [SerializeField] internal GameObject background;
 
         [Header("Sign Up Mode")]
         [SerializeField] internal GameObject signUpHeader;
+        [SerializeField] internal TMP_Text signUpHeaderTitle;
+        [SerializeField] internal GameObject backgroundForSignUp;
         [SerializeField] internal Button backButton;
         [SerializeField] internal Button nextButton;
         [SerializeField] internal GameObject[] objectsToDeactivateInSignUpMode;
@@ -278,6 +285,8 @@ namespace DCL.Backpack
         public void SetSignUpModeActive(bool isActive)
         {
             signUpHeader.SetActive(isActive);
+            backgroundForSignUp.SetActive(isActive);
+            background.SetActive(!isActive);
 
             foreach (GameObject go in objectsToDeactivateInSignUpMode)
                 go.SetActive(!isActive);
@@ -288,6 +297,7 @@ namespace DCL.Backpack
             currentStage = stage;
             nextButton.gameObject.SetActive(stage == SignUpStage.CustomizeAvatar);
             wearablesSection.SetActive(stage == SignUpStage.CustomizeAvatar);
+            signUpHeaderTitle.text = stage == SignUpStage.CustomizeAvatar ? SIGN_UP_HEADER_TITLE_FOR_FISRT_STEP : SIGN_UP_HEADER_TITLE_FOR_SECOND_STEP;
         }
 
         public void OnPointerDown(PointerEventData eventData)
