@@ -80,14 +80,18 @@ namespace SignupHUD
                 UpdateNameAndEmailNextButton();
             });
 
-            agreeTosAndPrivacyPolicyToggle.OnSelectedChanged += (isOn, id, text) =>
+            agreeTosAndPrivacyPolicyToggle.OnSelectedChanged += (_, _, _) =>
                 UpdateNameAndEmailNextButton();
         }
 
         private void InitTermsOfServicesScreen()
         {
             termsOfServiceAgreeButton.interactable = false;
-            termsOfServiceAgreeButton.onClick.AddListener(() => OnTermsOfServiceAgreed?.Invoke());
+            termsOfServiceAgreeButton.onClick.AddListener(() =>
+            {
+                OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text);
+                OnTermsOfServiceAgreed?.Invoke();
+            });
         }
 
         private void UpdateNameAndEmailNextButton()
