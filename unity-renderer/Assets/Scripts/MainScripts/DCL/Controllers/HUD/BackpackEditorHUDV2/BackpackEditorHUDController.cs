@@ -271,9 +271,6 @@ namespace DCL.Backpack
 
                             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
                                 CloseView();
-
-                            if (dataStore.common.isSignUpFlow.Get() && isNewTermsOfServiceAndEmailSubscriptionEnabled)
-                                view.PlayPreviewEmote("wave");
                         }
                         catch (OperationCanceledException) { }
                         catch (Exception e)
@@ -755,7 +752,12 @@ namespace DCL.Backpack
         private void OnAvatarUpdated()
         {
             if (string.IsNullOrEmpty(categoryPendingToPlayEmote))
+            {
+                if (isNewTermsOfServiceAndEmailSubscriptionEnabled && dataStore.HUDs.signupVisible.Get())
+                    view.PlayPreviewEmote("wave");
+
                 return;
+            }
 
             PlayEquipAnimation(categoryPendingToPlayEmote);
             categoryPendingToPlayEmote = null;
