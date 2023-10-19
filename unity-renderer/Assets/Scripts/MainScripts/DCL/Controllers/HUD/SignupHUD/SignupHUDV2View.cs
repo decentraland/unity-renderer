@@ -42,6 +42,11 @@ namespace SignupHUD
         public void SetVisibility(bool visible)
         {
             gameObject.SetActive(visible);
+
+            if (!visible)
+                return;
+
+            nameInputField.Select();
             CleanForm();
         }
 
