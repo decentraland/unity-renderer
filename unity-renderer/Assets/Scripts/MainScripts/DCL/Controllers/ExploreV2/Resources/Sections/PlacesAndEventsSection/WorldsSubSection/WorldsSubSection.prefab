@@ -145,8 +145,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 354.62994, y: -27}
-  m_SizeDelta: {x: 645.2599, y: 46}
+  m_AnchoredPosition: {x: 361.19177, y: -24}
+  m_SizeDelta: {x: 658.3835, y: 59.0881}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5414737497678830102
 CanvasRenderer:
@@ -176,9 +176,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Claim your own corner of the Metaverse outside of Genesis City, where
-    you can build, experiment, host events\u2014whatever you want, it\u2019s your
-    World! "
+  m_text: With just a Decentraland NAME, you can claim your own World, a personal
+    3D space separate from Genesis City, where you can unleash your creativity, host
+    events, and more! Browse the directory and explore how others have used their
+    Worlds.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
@@ -582,7 +583,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 162, y: 29}
+  m_AnchoredPosition: {x: 162, y: 34}
   m_SizeDelta: {x: 260, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3890308096992435626
@@ -1139,9 +1140,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Only Worlds belonging to LAND owners or renters appear here. The decision
-    was taken by the community through <color=#FF2D55><u><link="dao"><b>this DAO
-    proposal.</b></link></u></color>
+  m_text: Only Worlds belonging to LAND owners or renters appear here as per <color=#FF2D55><u><link="dao"><b>this
+    DAO proposal.</b></link></u></color>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -1517,7 +1517,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 800, y: -27}
+  m_AnchoredPosition: {x: 800, y: -21}
   m_SizeDelta: {x: 160, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4060694181056187896
