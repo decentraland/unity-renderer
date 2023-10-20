@@ -16,8 +16,8 @@ namespace DCLServices.SubscriptionsAPIService
 
     public class SubscriptionsAPIClient : ISubscriptionsAPIClient
     {
-        private const string PUBLICATION_ID = "pub_9a0ea9f4-8e14-4f2a-a9c7-fc88512427d4";
-        private const string TOKEN_ID = "hvG5KRhqXQ1PnggzKUh6ceh6uIUtOVYy3FybRjp5XoDLfVzAl4ar1G7U2qsKQIc4";
+        private const string PUBLICATION_ID = "";
+        private const string TOKEN_ID = "";
         private const string UTM_SOURCE = "explorer";
         private const string CREATE_SUBSCRIPTION_URL = "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions";
 
