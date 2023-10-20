@@ -1,5 +1,6 @@
 ﻿using DCL;
 using DCL.Browser;
+using DCLServices.SubscriptionsAPIService;
 using NSubstitute;
 using NUnit.Framework;
 using SignupHUD;
@@ -12,6 +13,7 @@ namespace Tests.SignupHUD
         private SignupHUDController hudController;
         private ISignupHUDView hudView;
         private DataStore_HUDs dataStoreHUDs;
+        private DataStore_FeatureFlag dataStoreFeatureFlag;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
 
         [SetUp]
@@ -19,12 +21,16 @@ namespace Tests.SignupHUD
         {
             hudView = Substitute.For<ISignupHUDView>();
             dataStoreHUDs = new DataStore_HUDs();
+            dataStoreFeatureFlag = new DataStore_FeatureFlag();
 
             hudController = new SignupHUDController(Substitute.For<IAnalytics>(),
                 hudView,
                 new DataStore_LoadingScreen(),
                 dataStoreHUDs,
-                Substitute.For<IBrowserBridge>());
+                dataStoreFeatureFlag,
+                Substitute.For<IBrowserBridge>(),
+                Substitute.For<ISubscriptionsAPIService>(),
+                Substitute.For<IUserProfileBridge>());
             hudController.Initialize();
         }
 

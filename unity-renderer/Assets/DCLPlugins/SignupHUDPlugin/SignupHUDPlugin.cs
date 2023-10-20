@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Browser;
 using DCL.Providers;
+using DCLServices.SubscriptionsAPIService;
 using SignupHUD;
 
 namespace DCLPlugins.SignupHUDPlugin
@@ -37,14 +38,26 @@ namespace DCLPlugins.SignupHUDPlugin
                 var analytics = DCL.Environment.i.platform.serviceProviders.analytics;
                 var loadingScreenDataStore = DataStore.i.Get<DataStore_LoadingScreen>();
                 var hudsDataStore = DataStore.i.HUDs;
+                var featureFlagDataStore = DataStore.i.Get<DataStore_FeatureFlag>();
                 var browserBridge = new WebInterfaceBrowserBridge();
+                var subscriptionsAPIService = Environment.i.serviceLocator.Get<ISubscriptionsAPIService>();
+                var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
                 bool isNewTermsOfServiceAndEmailSubscriptionEnabled = current.IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
                 var view = await assetsProvider.Instantiate<ISignupHUDView>(
                     isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD,
                     $"_{(isNewTermsOfServiceAndEmailSubscriptionEnabled ? SIGNUP_HUD_V2 : SIGNUP_HUD)}");
 
-                controller = new SignupHUDController(analytics, view, loadingScreenDataStore, hudsDataStore, browserBridge);
+                controller = new SignupHUDController(
+                    analytics,
+                    view,
+                    loadingScreenDataStore,
+                    hudsDataStore,
+                    featureFlagDataStore,
+                    browserBridge,
+                    subscriptionsAPIService,
+                    userProfileWebInterfaceBridge);
+
                 controller.Initialize();
             }
 
