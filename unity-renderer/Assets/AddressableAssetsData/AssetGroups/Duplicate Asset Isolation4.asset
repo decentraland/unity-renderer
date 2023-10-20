@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: fa816dc15a72a754ea7ef5e0838a10a2
-  m_SerializeEntries:
-  - m_GUID: 11f766998dd0ca24dbe445905db26bc9
-    m_Address: Assets/DCLServices/MapRendererV2/Textures/MapContainer12.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
