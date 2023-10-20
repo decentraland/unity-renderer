@@ -125,7 +125,7 @@ function* reportRealmChangeToRenderer() {
   }
 }
 
-async function fetchAndReportRealmsInfo(url: string) {
+export async function fetchAndReportRealmsInfo(url: string) {
   try {
     const response = await fetch(url)
     if (response.ok) {
