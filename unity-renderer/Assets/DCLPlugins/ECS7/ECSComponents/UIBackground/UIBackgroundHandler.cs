@@ -44,7 +44,6 @@ namespace DCL.ECSComponents
             image.Slices = model.GetBorder().ToUnityBorder();
             image.UVs = model.Uvs.ToDCLUVs();
             image.ScaleMode = model.TextureMode.ToDCLImageScaleMode();
-            // image.canvas.pickingMode = model.PointerBlocker ? PickingMode.Position : PickingMode.Ignore;
         }
     }
 }
