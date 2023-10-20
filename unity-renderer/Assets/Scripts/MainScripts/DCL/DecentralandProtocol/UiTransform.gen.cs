@@ -25,7 +25,7 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfdHJhbnNmb3JtLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMikhIKDVBCVWlUcmFu",
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMi8hIKDVBCVWlUcmFu",
             "c2Zvcm0SDgoGcGFyZW50GAEgASgFEhAKCHJpZ2h0X29mGAIgASgFEkAKDWFs",
             "aWduX2NvbnRlbnQYAyABKA4yJC5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
             "dHMuWUdBbGlnbkgAiAEBEj4KC2FsaWduX2l0ZW1zGAQgASgOMiQuZGVjZW50",
@@ -75,32 +75,35 @@ namespace DCL.ECSComponents {
             "Ej8KEnBhZGRpbmdfcmlnaHRfdW5pdBgwIAEoDjIjLmRlY2VudHJhbGFuZC5z",
             "ZGsuY29tcG9uZW50cy5ZR1VuaXQSFQoNcGFkZGluZ19yaWdodBgxIAEoAhJA",
             "ChNwYWRkaW5nX2JvdHRvbV91bml0GDIgASgOMiMuZGVjZW50cmFsYW5kLnNk",
-            "ay5jb21wb25lbnRzLllHVW5pdBIWCg5wYWRkaW5nX2JvdHRvbRgzIAEoAkIQ",
-            "Cg5fYWxpZ25fY29udGVudEIOCgxfYWxpZ25faXRlbXNCDAoKX2ZsZXhfd3Jh",
-            "cEIOCgxfZmxleF9zaHJpbmsqNgoOWUdQb3NpdGlvblR5cGUSEQoNWUdQVF9S",
-            "RUxBVElWRRAAEhEKDVlHUFRfQUJTT0xVVEUQASqdAQoHWUdBbGlnbhIMCghZ",
-            "R0FfQVVUTxAAEhIKDllHQV9GTEVYX1NUQVJUEAESDgoKWUdBX0NFTlRFUhAC",
-            "EhAKDFlHQV9GTEVYX0VORBADEg8KC1lHQV9TVFJFVENIEAQSEAoMWUdBX0JB",
-            "U0VMSU5FEAUSFQoRWUdBX1NQQUNFX0JFVFdFRU4QBhIUChBZR0FfU1BBQ0Vf",
-            "QVJPVU5EEAcqSQoGWUdVbml0EhEKDVlHVV9VTkRFRklORUQQABINCglZR1Vf",
-            "UE9JTlQQARIPCgtZR1VfUEVSQ0VOVBACEgwKCFlHVV9BVVRPEAMqXwoPWUdG",
-            "bGV4RGlyZWN0aW9uEgwKCFlHRkRfUk9XEAASDwoLWUdGRF9DT0xVTU4QARIX",
-            "ChNZR0ZEX0NPTFVNTl9SRVZFUlNFEAISFAoQWUdGRF9ST1dfUkVWRVJTRRAD",
-            "Kj0KBllHV3JhcBIPCgtZR1dfTk9fV1JBUBAAEgwKCFlHV19XUkFQEAESFAoQ",
-            "WUdXX1dSQVBfUkVWRVJTRRACKoQBCglZR0p1c3RpZnkSEgoOWUdKX0ZMRVhf",
-            "U1RBUlQQABIOCgpZR0pfQ0VOVEVSEAESEAoMWUdKX0ZMRVhfRU5EEAISFQoR",
-            "WUdKX1NQQUNFX0JFVFdFRU4QAxIUChBZR0pfU1BBQ0VfQVJPVU5EEAQSFAoQ",
-            "WUdKX1NQQUNFX0VWRU5MWRAFKj0KCllHT3ZlcmZsb3cSDwoLWUdPX1ZJU0lC",
-            "TEUQABIOCgpZR09fSElEREVOEAESDgoKWUdPX1NDUk9MTBACKicKCVlHRGlz",
-            "cGxheRIMCghZR0RfRkxFWBAAEgwKCFlHRF9OT05FEAEqkQEKBllHRWRnZRIM",
-            "CghZR0VfTEVGVBAAEgsKB1lHRV9UT1AQARINCglZR0VfUklHSFQQAhIOCgpZ",
-            "R0VfQk9UVE9NEAMSDQoJWUdFX1NUQVJUEAQSCwoHWUdFX0VORBAFEhIKDllH",
-            "RV9IT1JJWk9OVEFMEAYSEAoMWUdFX1ZFUlRJQ0FMEAcSCwoHWUdFX0FMTBAI",
-            "QhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJvdG8z"));
+            "ay5jb21wb25lbnRzLllHVW5pdBIWCg5wYWRkaW5nX2JvdHRvbRgzIAEoAhJL",
+            "Cg5wb2ludGVyX2ZpbHRlchg0IAEoDjIuLmRlY2VudHJhbGFuZC5zZGsuY29t",
+            "cG9uZW50cy5Qb2ludGVyRmlsdGVyTW9kZUgEiAEBQhAKDl9hbGlnbl9jb250",
+            "ZW50Qg4KDF9hbGlnbl9pdGVtc0IMCgpfZmxleF93cmFwQg4KDF9mbGV4X3No",
+            "cmlua0IRCg9fcG9pbnRlcl9maWx0ZXIqNgoOWUdQb3NpdGlvblR5cGUSEQoN",
+            "WUdQVF9SRUxBVElWRRAAEhEKDVlHUFRfQUJTT0xVVEUQASqdAQoHWUdBbGln",
+            "bhIMCghZR0FfQVVUTxAAEhIKDllHQV9GTEVYX1NUQVJUEAESDgoKWUdBX0NF",
+            "TlRFUhACEhAKDFlHQV9GTEVYX0VORBADEg8KC1lHQV9TVFJFVENIEAQSEAoM",
+            "WUdBX0JBU0VMSU5FEAUSFQoRWUdBX1NQQUNFX0JFVFdFRU4QBhIUChBZR0Ff",
+            "U1BBQ0VfQVJPVU5EEAcqSQoGWUdVbml0EhEKDVlHVV9VTkRFRklORUQQABIN",
+            "CglZR1VfUE9JTlQQARIPCgtZR1VfUEVSQ0VOVBACEgwKCFlHVV9BVVRPEAMq",
+            "XwoPWUdGbGV4RGlyZWN0aW9uEgwKCFlHRkRfUk9XEAASDwoLWUdGRF9DT0xV",
+            "TU4QARIXChNZR0ZEX0NPTFVNTl9SRVZFUlNFEAISFAoQWUdGRF9ST1dfUkVW",
+            "RVJTRRADKj0KBllHV3JhcBIPCgtZR1dfTk9fV1JBUBAAEgwKCFlHV19XUkFQ",
+            "EAESFAoQWUdXX1dSQVBfUkVWRVJTRRACKoQBCglZR0p1c3RpZnkSEgoOWUdK",
+            "X0ZMRVhfU1RBUlQQABIOCgpZR0pfQ0VOVEVSEAESEAoMWUdKX0ZMRVhfRU5E",
+            "EAISFQoRWUdKX1NQQUNFX0JFVFdFRU4QAxIUChBZR0pfU1BBQ0VfQVJPVU5E",
+            "EAQSFAoQWUdKX1NQQUNFX0VWRU5MWRAFKj0KCllHT3ZlcmZsb3cSDwoLWUdP",
+            "X1ZJU0lCTEUQABIOCgpZR09fSElEREVOEAESDgoKWUdPX1NDUk9MTBACKicK",
+            "CVlHRGlzcGxheRIMCghZR0RfRkxFWBAAEgwKCFlHRF9OT05FEAEqkQEKBllH",
+            "RWRnZRIMCghZR0VfTEVGVBAAEgsKB1lHRV9UT1AQARINCglZR0VfUklHSFQQ",
+            "AhIOCgpZR0VfQk9UVE9NEAMSDQoJWUdFX1NUQVJUEAQSCwoHWUdFX0VORBAF",
+            "EhIKDllHRV9IT1JJWk9OVEFMEAYSEAoMWUdFX1ZFUlRJQ0FMEAcSCwoHWUdF",
+            "X0FMTBAIKjAKEVBvaW50ZXJGaWx0ZXJNb2RlEgwKCFBGTV9OT05FEAASDQoJ",
+            "UEZNX0JMT0NLEAFCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "RightOf", "AlignContent", "AlignItems", "FlexWrap", "FlexShrink", "PositionType", "AlignSelf", "FlexDirection", "JustifyContent", "Overflow", "Display", "FlexBasisUnit", "FlexBasis", "FlexGrow", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom" }, new[]{ "AlignContent", "AlignItems", "FlexWrap", "FlexShrink" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.YGPositionType), typeof(global::DCL.ECSComponents.YGAlign), typeof(global::DCL.ECSComponents.YGUnit), typeof(global::DCL.ECSComponents.YGFlexDirection), typeof(global::DCL.ECSComponents.YGWrap), typeof(global::DCL.ECSComponents.YGJustify), typeof(global::DCL.ECSComponents.YGOverflow), typeof(global::DCL.ECSComponents.YGDisplay), typeof(global::DCL.ECSComponents.YGEdge), typeof(global::DCL.ECSComponents.PointerFilterMode), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiTransform), global::DCL.ECSComponents.PBUiTransform.Parser, new[]{ "Parent", "RightOf", "AlignContent", "AlignItems", "FlexWrap", "FlexShrink", "PositionType", "AlignSelf", "FlexDirection", "JustifyContent", "Overflow", "Display", "FlexBasisUnit", "FlexBasis", "FlexGrow", "WidthUnit", "Width", "HeightUnit", "Height", "MinWidthUnit", "MinWidth", "MinHeightUnit", "MinHeight", "MaxWidthUnit", "MaxWidth", "MaxHeightUnit", "MaxHeight", "PositionLeftUnit", "PositionLeft", "PositionTopUnit", "PositionTop", "PositionRightUnit", "PositionRight", "PositionBottomUnit", "PositionBottom", "MarginLeftUnit", "MarginLeft", "MarginTopUnit", "MarginTop", "MarginRightUnit", "MarginRight", "MarginBottomUnit", "MarginBottom", "PaddingLeftUnit", "PaddingLeft", "PaddingTopUnit", "PaddingTop", "PaddingRightUnit", "PaddingRight", "PaddingBottomUnit", "PaddingBottom", "PointerFilter" }, new[]{ "AlignContent", "AlignItems", "FlexWrap", "FlexShrink", "PointerFilter" }, null, null, null)
           }));
     }
     #endregion
@@ -173,6 +176,11 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("YGE_HORIZONTAL")] YgeHorizontal = 6,
     [pbr::OriginalName("YGE_VERTICAL")] YgeVertical = 7,
     [pbr::OriginalName("YGE_ALL")] YgeAll = 8,
+  }
+
+  public enum PointerFilterMode {
+    [pbr::OriginalName("PFM_NONE")] PfmNone = 0,
+    [pbr::OriginalName("PFM_BLOCK")] PfmBlock = 1,
   }
 
   #endregion
@@ -265,6 +273,7 @@ namespace DCL.ECSComponents {
       paddingRight_ = other.paddingRight_;
       paddingBottomUnit_ = other.paddingBottomUnit_;
       paddingBottom_ = other.paddingBottom_;
+      pointerFilter_ = other.pointerFilter_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1025,6 +1034,34 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "pointer_filter" field.</summary>
+    public const int PointerFilterFieldNumber = 52;
+    private global::DCL.ECSComponents.PointerFilterMode pointerFilter_;
+    /// <summary>
+    /// default: PointerFilterMode.PFM_NONE
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.PointerFilterMode PointerFilter {
+      get { if ((_hasBits0 & 16) != 0) { return pointerFilter_; } else { return global::DCL.ECSComponents.PointerFilterMode.PfmNone; } }
+      set {
+        _hasBits0 |= 16;
+        pointerFilter_ = value;
+      }
+    }
+    /// <summary>Gets whether the "pointer_filter" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasPointerFilter {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "pointer_filter" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearPointerFilter() {
+      _hasBits0 &= ~16;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1091,6 +1128,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PaddingRight, other.PaddingRight)) return false;
       if (PaddingBottomUnit != other.PaddingBottomUnit) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PaddingBottom, other.PaddingBottom)) return false;
+      if (PointerFilter != other.PointerFilter) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1149,6 +1187,7 @@ namespace DCL.ECSComponents {
       if (PaddingRight != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingRight);
       if (PaddingBottomUnit != global::DCL.ECSComponents.YGUnit.YguUndefined) hash ^= PaddingBottomUnit.GetHashCode();
       if (PaddingBottom != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PaddingBottom);
+      if (HasPointerFilter) hash ^= PointerFilter.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1371,6 +1410,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(157, 3);
         output.WriteFloat(PaddingBottom);
       }
+      if (HasPointerFilter) {
+        output.WriteRawTag(160, 3);
+        output.WriteEnum((int) PointerFilter);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1585,6 +1628,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(157, 3);
         output.WriteFloat(PaddingBottom);
       }
+      if (HasPointerFilter) {
+        output.WriteRawTag(160, 3);
+        output.WriteEnum((int) PointerFilter);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1747,6 +1794,9 @@ namespace DCL.ECSComponents {
       }
       if (PaddingBottom != 0F) {
         size += 2 + 4;
+      }
+      if (HasPointerFilter) {
+        size += 2 + pb::CodedOutputStream.ComputeEnumSize((int) PointerFilter);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1912,6 +1962,9 @@ namespace DCL.ECSComponents {
       }
       if (other.PaddingBottom != 0F) {
         PaddingBottom = other.PaddingBottom;
+      }
+      if (other.HasPointerFilter) {
+        PointerFilter = other.PointerFilter;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -2132,6 +2185,10 @@ namespace DCL.ECSComponents {
             PaddingBottom = input.ReadFloat();
             break;
           }
+          case 416: {
+            PointerFilter = (global::DCL.ECSComponents.PointerFilterMode) input.ReadEnum();
+            break;
+          }
         }
       }
     #endif
@@ -2349,6 +2406,10 @@ namespace DCL.ECSComponents {
           }
           case 413: {
             PaddingBottom = input.ReadFloat();
+            break;
+          }
+          case 416: {
+            PointerFilter = (global::DCL.ECSComponents.PointerFilterMode) input.ReadEnum();
             break;
           }
         }

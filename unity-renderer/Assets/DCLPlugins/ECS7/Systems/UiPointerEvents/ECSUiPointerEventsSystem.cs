@@ -114,6 +114,9 @@ namespace ECSSystems.ECSUiPointerEventsSystem
                 IDCLEntity entity = groupElement.entity;
                 VisualElement visualElement = groupElement.componentData1.model.rootElement;
 
+                // Force pointer blocking
+                visualElement.pickingMode = PickingMode.Position;
+
                 var registeredEventsData = registeredUiPointerEventsComponent.GetFor(scene, entity);
 
                 if (registeredEventsData != null)
