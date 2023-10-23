@@ -24,9 +24,6 @@ namespace DCL.ECSComponents.UIAbstractElements
         protected internal InternalUiContainer AddElementToRoot(IParcelScene scene, IDCLEntity entity, VisualElement uiElement)
         {
             var internalContainer = AddComponentToEntity(scene, entity);
-
-            // uiElement.style.position = new StyleEnum<Position>(Position.Relative);
-
             internalContainer.rootElement.Add(uiElement);
             return internalContainer;
         }

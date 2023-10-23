@@ -2,7 +2,6 @@ using UnityEngine.UIElements;
 
 public static class UiElementUtils
 {
-    // TODO: Use with other root-element-children kind of Ui Components???
     public static void SetElementDefaultStyle(IStyle elementStyle)
     {
         elementStyle.right = 0;
@@ -11,7 +10,6 @@ public static class UiElementUtils
         elementStyle.bottom = 0;
         elementStyle.width = new StyleLength(StyleKeyword.Auto);
         elementStyle.height = new StyleLength(StyleKeyword.Auto);
-        // elementStyle.position = new StyleEnum<Position>(Position.Absolute);
         elementStyle.position = new StyleEnum<Position>(Position.Relative);
         elementStyle.justifyContent = new StyleEnum<Justify>(Justify.Center);
         elementStyle.alignItems = new StyleEnum<Align>(Align.Center);
