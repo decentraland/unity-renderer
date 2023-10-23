@@ -23,7 +23,8 @@ namespace AvatarSystem
         {
             try
             {
-                WearableItem[] allItems = await Resolve(wearableIds, ct);
+                var parsedWearablesIds = wearableIds.Select((wearableId) => ExtendedUrnParser.GetShortenedUrn(wearableId));
+                WearableItem[] allItems = await Resolve(parsedWearablesIds, ct);
 
                 List<WearableItem> wearables = new List<WearableItem>();
                 List<WearableItem> emotes = new List<WearableItem>();

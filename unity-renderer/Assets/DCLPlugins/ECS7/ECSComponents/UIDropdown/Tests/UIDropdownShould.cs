@@ -61,26 +61,6 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             Assert.AreEqual("OPTION1", handler.uiElement.text);
         }
 
-        private void UpdateComponentModel(bool acceptEmpty, int selectedIndex)
-        {
-            handler.OnComponentCreated(scene, entity);
-
-            var c = new PBUiDropdown
-            {
-                AcceptEmpty = acceptEmpty,
-                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.5f, A = 0.5f },
-                Disabled = false,
-                FontSize = 16,
-                TextAlign = TextAlignMode.TamBottomCenter,
-                EmptyLabel = "EMPTY",
-                Options = { "OPTION1", "OPTION2", "OPTION3", "OPTION4" },
-            };
-
-            c.SelectedIndex = selectedIndex;
-
-            handler.OnComponentModelUpdated(scene, entity, c);
-        }
-
         [Test]
         public void EmitResult()
         {
@@ -102,6 +82,34 @@ namespace DCL.ECSComponents.UIDropdown.Tests
             }
 
             Assert.IsTrue(found);
+        }
+
+        [Test]
+        public void BlockPointerByDefault()
+        {
+            UpdateComponentModel(true, 2);
+
+            Assert.AreEqual(PickingMode.Position, handler.uiElement.pickingMode);
+        }
+
+        private void UpdateComponentModel(bool acceptEmpty, int selectedIndex)
+        {
+            handler.OnComponentCreated(scene, entity);
+
+            var c = new PBUiDropdown
+            {
+                AcceptEmpty = acceptEmpty,
+                Color = new Color4 { R = 0.5f, G = 0.5f, B = 0.5f, A = 0.5f },
+                Disabled = false,
+                FontSize = 16,
+                TextAlign = TextAlignMode.TamBottomCenter,
+                EmptyLabel = "EMPTY",
+                Options = { "OPTION1", "OPTION2", "OPTION3", "OPTION4" },
+            };
+
+            c.SelectedIndex = selectedIndex;
+
+            handler.OnComponentModelUpdated(scene, entity, c);
         }
     }
 }

@@ -20,13 +20,14 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         }
 
         [Test]
-        public void AddElementToRoot()
+        public void AddElementToRootCorrectly()
         {
             handler.AddElementToRoot(scene, entity, uiElement);
 
             internalUiContainer.Received(1)
                                .PutFor(scene, entity, Arg.Is<InternalUiContainer>(i => i.rootElement.Contains(uiElement)
-                                                                                       && i.components.Contains(COMPONENT_ID)));
+                                                                                       && i.components.Contains(COMPONENT_ID)
+                                                                                       && i.rootElement.pickingMode == PickingMode.Ignore));
         }
 
         [Test]

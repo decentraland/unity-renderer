@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using DCL.Interface;
 using UnityEngine;
 using System;
 using Variables.RealmsInfo;
@@ -5,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Decentraland.Bff;
 using Google.Protobuf;
+using System.Threading;
 
 namespace DCL
 {
-    public class RealmsInfoHandler
+    public class RealmsInfoHandler : IRealmsInfoBridge
     {
         private RealmsInfoModel model = new RealmsInfoModel();
 
@@ -19,6 +22,7 @@ namespace DCL
         private BaseVariable<AboutResponse.Types.ContentInfo> playerRealmAboutContent => DataStore.i.realm.playerRealmAboutContent;
 
         private BaseVariable<string> realmName => DataStore.i.realm.realmName;
+        private UniTaskCompletionSource<IReadOnlyList<RealmModel>> fetchRealmsTask;
 
         public void Set(string json)
         {
@@ -36,7 +40,14 @@ namespace DCL
                 realmName.Set(DataStore.i.realm.playerRealm.Get().serverName);
             }
 
-            DataStore.i.realm.realmsInfo.Set(newModel.realms != null ? newModel.realms.ToList() : new List<RealmModel>());
+            List<RealmModel> realms = newModel.realms != null ? newModel.realms.ToList() : new List<RealmModel>();
+            DataStore.i.realm.realmsInfo.Set(realms);
+
+            if (fetchRealmsTask != null)
+            {
+                fetchRealmsTask.TrySetResult(realms);
+                fetchRealmsTask = null;
+            }
         }
 
         public void SetAbout(string json)
@@ -47,6 +58,28 @@ namespace DCL
             playerRealmAboutContent.Set(aboutResponse.Content);
             playerRealmAboutLambda.Set(aboutResponse.Lambdas);
             realmName.Set(aboutResponse.Configurations.RealmName);
+        }
+
+        public UniTask<IReadOnlyList<RealmModel>> FetchRealmsInfo(CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (fetchRealmsTask != null)
+                    return fetchRealmsTask.Task.AttachExternalCancellation(cancellationToken)
+                                          .Timeout(TimeSpan.FromSeconds(30));
+
+                fetchRealmsTask = new UniTaskCompletionSource<IReadOnlyList<RealmModel>>();
+
+                WebInterface.FetchRealmsInfo();
+
+                return fetchRealmsTask.Task.AttachExternalCancellation(cancellationToken)
+                                      .Timeout(TimeSpan.FromSeconds(30));
+            }
+            catch (Exception)
+            {
+                fetchRealmsTask = null;
+                throw;
+            }
         }
     }
 

@@ -335,7 +335,7 @@ namespace DCL.Backpack
 
                     for (var i = 0; i < wearablesCount; i++)
                     {
-                        string wearableId = userProfile.avatar.wearables[i];
+                        string wearableId = ExtendedUrnParser.GetShortenedUrn(userProfile.avatar.wearables[i]);
 
                         if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
                         {
