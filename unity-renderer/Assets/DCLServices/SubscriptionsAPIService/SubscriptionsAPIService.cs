@@ -6,7 +6,8 @@ namespace DCLServices.SubscriptionsAPIService
 {
     public interface ISubscriptionsAPIService : IService
     {
-        UniTask<CreateSubscriptionAPIResponse> CreateSubscription(string email, string walletId, string claimedName, CancellationToken ct);
+        UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct);
+        UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct);
     }
 
     public class SubscriptionsAPIService : ISubscriptionsAPIService
@@ -20,7 +21,10 @@ namespace DCLServices.SubscriptionsAPIService
 
         public void Dispose() { }
 
-        public async UniTask<CreateSubscriptionAPIResponse> CreateSubscription(string email, string walletId, string claimedName, CancellationToken ct) =>
-            await client.CreateSubscription(email, walletId, claimedName, ct);
+        public async UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct) =>
+            await client.CreateSubscription(email, ct);
+
+        public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct) =>
+            await client.GetSubscription(subscriptionId, ct);
     }
 }

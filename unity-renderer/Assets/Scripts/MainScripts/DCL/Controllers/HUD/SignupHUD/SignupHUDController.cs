@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
+using DCL.Helpers;
 using DCL.Interface;
 using DCL.Tasks;
 using DCLServices.SubscriptionsAPIService;
@@ -15,6 +16,7 @@ namespace SignupHUD
         private const string TOS_URL = "https://decentraland.org/terms/";
         private const string PRIVACY_POLICY_URL = "https://decentraland.org/privacy/";
         private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+        private const string CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY = "currentSubscriptionId";
 
         private readonly NewUserExperienceAnalytics newUserExperienceAnalytics;
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
@@ -22,7 +24,6 @@ namespace SignupHUD
         private readonly DataStore_FeatureFlag dataStoreFeatureFlag;
         private readonly IBrowserBridge browserBridge;
         private readonly ISubscriptionsAPIService subscriptionsAPIService;
-        private readonly IUserProfileBridge userProfileBridge;
         internal readonly ISignupHUDView view;
 
         internal string name;
@@ -40,8 +41,7 @@ namespace SignupHUD
             DataStore_HUDs dataStoreHUDs,
             DataStore_FeatureFlag dataStoreFeatureFlag,
             IBrowserBridge browserBridge,
-            ISubscriptionsAPIService subscriptionsAPIService,
-            IUserProfileBridge userProfileBridge)
+            ISubscriptionsAPIService subscriptionsAPIService)
         {
             newUserExperienceAnalytics = new NewUserExperienceAnalytics(analytics);
             this.view = view;
@@ -50,7 +50,6 @@ namespace SignupHUD
             this.dataStoreFeatureFlag = dataStoreFeatureFlag;
             this.browserBridge = browserBridge;
             this.subscriptionsAPIService = subscriptionsAPIService;
-            this.userProfileBridge = userProfileBridge;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
         }
 
@@ -114,12 +113,18 @@ namespace SignupHUD
             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
                 return;
 
+            createSubscriptionCts = createSubscriptionCts.SafeRestart();
+            CreateSubscriptionAsync(email, createSubscriptionCts.Token).Forget();
+        }
+
+        private async UniTaskVoid CreateSubscriptionAsync(string emailAddress, CancellationToken cancellationToken)
+        {
             try
             {
-                createSubscriptionCts = createSubscriptionCts.SafeRestart();
-                subscriptionsAPIService.CreateSubscription(email, userProfileBridge.GetOwn().userId, null, createSubscriptionCts.Token).Forget();
+                var newSubscription = await subscriptionsAPIService.CreateSubscription(emailAddress, cancellationToken);
+                PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
             }
-            catch (Exception ex) { Debug.LogError($"An error occurred while creating the subscription for {email}: {ex.Message}"); }
+            catch (Exception ex) { Debug.LogError($"An error occurred while creating the subscription for {emailAddress}: {ex.Message}"); }
         }
 
         internal void OnTermsOfServiceBack() { StartSignupProcess(); }

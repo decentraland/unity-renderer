@@ -2,6 +2,7 @@
 using DCL.Providers;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.SubscriptionsAPIService;
 using SocialFeaturesAnalytics;
 using System.Threading;
 
@@ -74,7 +75,9 @@ namespace DCL.MyAccount
 
             emailNotificationsController = new EmailNotificationsController(
                 myAccountSectionView.CurrentEmailNotificationsView,
-                myAccountSectionHUDController);
+                myAccountSectionHUDController,
+                dataStore,
+                Environment.i.serviceLocator.Get<ISubscriptionsAPIService>());
         }
 
         public void Dispose()

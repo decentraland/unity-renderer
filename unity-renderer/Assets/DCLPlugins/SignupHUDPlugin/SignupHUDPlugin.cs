@@ -55,8 +55,7 @@ namespace DCLPlugins.SignupHUDPlugin
                     hudsDataStore,
                     featureFlagDataStore,
                     browserBridge,
-                    subscriptionsAPIService,
-                    userProfileWebInterfaceBridge);
+                    subscriptionsAPIService);
 
                 controller.Initialize();
             }

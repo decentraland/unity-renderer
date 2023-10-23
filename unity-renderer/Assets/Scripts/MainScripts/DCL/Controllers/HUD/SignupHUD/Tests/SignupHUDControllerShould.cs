@@ -29,8 +29,7 @@ namespace Tests.SignupHUD
                 dataStoreHUDs,
                 dataStoreFeatureFlag,
                 Substitute.For<IBrowserBridge>(),
-                Substitute.For<ISubscriptionsAPIService>(),
-                Substitute.For<IUserProfileBridge>());
+                Substitute.For<ISubscriptionsAPIService>());
             hudController.Initialize();
         }
 

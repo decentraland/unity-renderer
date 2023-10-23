@@ -6,30 +6,53 @@ namespace DCL.MyAccount
 {
     public class EmailNotificationsComponentView : BaseComponentView, IEmailNotificationsComponentView
     {
+        [SerializeField] internal GameObject mainContainer;
+        [SerializeField] internal GameObject loadingContainer;
         [SerializeField] internal TMP_InputField emailInputField;
-        [SerializeField] internal ToggleComponentView subscribeToNewsletterToggle;
+        [SerializeField] internal GameObject emailEditionLogo;
+        [SerializeField] internal GameObject emailInputFieldInvalid;
+        [SerializeField] internal GameObject emailInputInvalidLabel;
+        [SerializeField] internal GameObject pendingStatusWarning;
 
         public event Action<string> OnEmailEdited;
-        public event Action<bool> OnSubscribeToNewsletterEdited;
+        public event Action<string> OnEmailSubmitted;
 
         public override void Awake()
         {
             base.Awake();
 
-            emailInputField.onValueChanged.AddListener(OnEmailInputField);
-            subscribeToNewsletterToggle.OnSelectedChanged += OnSubscribeToNewsletterToggleChanged;
+            emailInputField.onValueChanged.AddListener(OnEmailTextChanged);
+            emailInputField.onSelect.AddListener(_ => emailEditionLogo.SetActive(false));
+            emailInputField.onDeselect.AddListener(OnEmailTextSubmitted);
+            emailInputField.onSubmit.AddListener(OnEmailTextSubmitted);
         }
 
         public override void RefreshControl() { }
 
-        public void SetEmail(string email)
+        public void SetLoadingActive(bool isActive)
         {
-            emailInputField.text = email;
+            loadingContainer.SetActive(isActive);
+            mainContainer.SetActive(!isActive);
         }
 
-        public void SetSubscribeToNewsletter(bool isSubscribed)
+        public void SetEmail(string email) =>
+            emailInputField.text = email;
+
+        public void SetStatusAsPending(bool isPending) =>
+            pendingStatusWarning.SetActive(isPending);
+
+        public void SetEmailFormValid(bool isValid)
         {
-            subscribeToNewsletterToggle.isOn = isSubscribed;
+            emailInputFieldInvalid.SetActive(!isValid);
+            emailInputInvalidLabel.SetActive(!isValid);
+        }
+
+        public void ResetForm()
+        {
+            emailEditionLogo.SetActive(true);
+            emailInputFieldInvalid.SetActive(false);
+            emailInputInvalidLabel.SetActive(false);
+            SetStatusAsPending(false);
         }
 
         public override void Show(bool instant = false) =>
@@ -41,15 +64,21 @@ namespace DCL.MyAccount
         public override void Dispose()
         {
             emailInputField.onValueChanged.RemoveAllListeners();
-            subscribeToNewsletterToggle.OnSelectedChanged -= OnSubscribeToNewsletterToggleChanged;
+            emailInputField.onDeselect.RemoveAllListeners();
+            emailInputField.onSubmit.RemoveAllListeners();
 
             base.Dispose();
         }
 
-        private void OnEmailInputField(string newEmail) =>
-            OnEmailEdited?.Invoke(newEmail);
+        private void OnEmailTextChanged(string newName)
+        {
+            OnEmailEdited?.Invoke(newName);
+        }
 
-        private void OnSubscribeToNewsletterToggleChanged(bool isOn, string id, string text) =>
-            OnSubscribeToNewsletterEdited?.Invoke(isOn);
+        private void OnEmailTextSubmitted(string newName)
+        {
+            emailEditionLogo.SetActive(true);
+            OnEmailSubmitted?.Invoke(newName);
+        }
     }
 }
