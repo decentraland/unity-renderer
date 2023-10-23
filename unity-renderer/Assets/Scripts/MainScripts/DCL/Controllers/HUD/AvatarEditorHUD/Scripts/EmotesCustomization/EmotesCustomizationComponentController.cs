@@ -225,7 +225,6 @@ namespace DCL.EmotesCustomization
             {
                 id = wearable.id,
                 name = wearable.GetName(),
-                amount = wearable.amount > 1 ? $"x{wearable.amount.ToString()}" : "",
                 description = wearable.description,
                 pictureUri = wearable.ComposeThumbnailUrl(),
                 pictureSprite = wearable.thumbnailSprite,

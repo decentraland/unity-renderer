@@ -142,7 +142,6 @@ public class WearableItem
     public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
-    public int amount;
     public string rarity;
     public string description;
     public int issuedId;
