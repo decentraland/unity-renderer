@@ -66,6 +66,9 @@ namespace DCL.ECSComponents
             element.style.display = GetDisplay(model.Display);
             element.style.overflow = GetOverflow(model.Overflow);
 
+            // Pointer blocking
+            element.pickingMode = model.PointerFilter == PointerFilterMode.PfmBlock ? PickingMode.Position : PickingMode.Ignore;
+
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
             if (model.FlexBasisUnit != YGUnit.YguUndefined)

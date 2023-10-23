@@ -371,12 +371,13 @@ namespace DCL.Backpack
                 Rarity = rarity,
                 Category = wearable.data.category,
                 ImageUrl = wearable.ComposeThumbnailUrl(),
-                IsEquipped = IsEquipped(wearable.id),
+                IsEquipped = IsEquipped(ExtendedUrnParser.GetShortenedUrn(wearable.id)),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
                 UnEquipAllowed = CanWearableBeUnEquipped(wearable),
                 IsCompatibleWithBodyShape = IsCompatibleWithBodyShape(currentBodyShapeId, wearable),
                 IsSmartWearable = wearable.IsSmart(),
+                Amount = wearable.amount > 1 ? $"x{wearable.amount.ToString()}" : "",
             };
         }
 

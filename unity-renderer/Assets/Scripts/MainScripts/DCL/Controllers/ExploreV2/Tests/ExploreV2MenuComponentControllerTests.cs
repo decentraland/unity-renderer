@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using DCL;
@@ -7,6 +8,8 @@ using ExploreV2Analytics;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NUnit.Framework;
+using System.Threading;
+using UnityEngine.UI;
 using Variables.RealmsInfo;
 
 public class ExploreV2MenuComponentControllerTests
@@ -14,13 +17,22 @@ public class ExploreV2MenuComponentControllerTests
     private IExploreV2Analytics exploreV2Analytics;
     private ExploreV2MenuComponentController exploreV2MenuController;
     private IExploreV2MenuComponentView exploreV2MenuView;
+    private IRealmViewerComponentView realmViewerComponentView;
 
     [SetUp]
     public void SetUp()
     {
         exploreV2MenuView = Substitute.For<IExploreV2MenuComponentView>();
+        realmViewerComponentView = Substitute.For<IRealmViewerComponentView>();
+        realmViewerComponentView.onLogoClick.Returns(new Button.ButtonClickedEvent());
+        exploreV2MenuView.currentRealmViewer.Returns(realmViewerComponentView);
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>(Substitute.For<IPlacesAPIService>(), Substitute.For<IWorldsAPIService>(), Substitute.For<IPlacesAnalytics>());
+        IRealmsInfoBridge realmsInfoBridge = Substitute.For<IRealmsInfoBridge>();
+        realmsInfoBridge.FetchRealmsInfo(Arg.Any<CancellationToken>())
+                        .Returns(UniTask.FromResult<IReadOnlyList<RealmModel>>(new List<RealmModel>()));
+
+        exploreV2MenuController = Substitute.ForPartsOf<ExploreV2MenuComponentController>(Substitute.For<IPlacesAPIService>(), Substitute.For<IWorldsAPIService>(), Substitute.For<IPlacesAnalytics>(),
+            realmsInfoBridge);
         exploreV2MenuController.Configure().CreateView().Returns(info => exploreV2MenuView);
         exploreV2MenuController.Configure().CreateAnalyticsController().Returns(info => exploreV2Analytics);
         exploreV2MenuController.Initialize();
@@ -355,5 +367,13 @@ public class ExploreV2MenuComponentControllerTests
         // Assert
         exploreV2Analytics.Received().SendStartMenuVisibility(false, fromShortcut ? ExploreUIVisibilityMethod.FromShortcut : ExploreUIVisibilityMethod.FromClick);
         Assert.IsFalse(DataStore.i.exploreV2.isOpen.Get());
+    }
+
+    [Test]
+    public void RequestRealmInfoThenShowRealmSelector()
+    {
+        realmViewerComponentView.onLogoClick.Invoke();
+
+        exploreV2MenuView.Received(1).ShowRealmSelectorModal();
     }
 }
