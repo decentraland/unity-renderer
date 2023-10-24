@@ -20,7 +20,6 @@ namespace DCLServices.EmotesCatalog
             public class EmoteRequestDto
             {
                 public string urn;
-                public int amount;
             }
 
             public EmoteRequestDto[] elements;
@@ -73,15 +72,10 @@ namespace DCLServices.EmotesCatalog
 
             var tempList = PoolUtils.RentList<string>();
             var emoteUrns = tempList.GetList();
-
-            Dictionary<string, int> urnToAmountMap = new Dictionary<string, int>();
             foreach (OwnedEmotesRequestDto.EmoteRequestDto emoteRequestDto in result.response.elements)
-            {
                 emoteUrns.Add(emoteRequestDto.urn);
-                urnToAmountMap[emoteRequestDto.urn] = emoteRequestDto.amount;
-            }
 
-            var emotes = await FetchEmotes(emoteUrns, urnToAmountMap);
+            var emotes = await FetchEmotes(emoteUrns);
 
             tempList.Dispose();
 
@@ -120,7 +114,7 @@ namespace DCLServices.EmotesCatalog
             OnEmotesReceived?.Invoke(result);
         }
 
-        private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids, Dictionary<string, int> urnToAmountMap = null)
+        private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids)
         {
             // the copy of the list is intentional
             var request = new LambdasEmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
@@ -134,12 +128,6 @@ namespace DCLServices.EmotesCatalog
             {
                 var contentUrl = $"{catalyst.contentUrl}contents/";
                 var wearableItem = dto.ToWearableItem(contentUrl);
-
-                if (urnToAmountMap != null && urnToAmountMap.TryGetValue(dto.id, out int amount))
-                {
-                    wearableItem.amount = amount;
-                }
-
                 wearableItem.baseUrl = contentUrl;
                 wearableItem.baseUrlBundles = assetBundlesUrl;
                 return wearableItem;
