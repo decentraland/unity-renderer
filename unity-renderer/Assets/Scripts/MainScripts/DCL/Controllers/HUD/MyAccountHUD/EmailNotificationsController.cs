@@ -11,9 +11,17 @@ namespace DCL.MyAccount
 {
     public class EmailNotificationsController
     {
+        private enum ConfirmationModalStatus
+        {
+            None,
+            Accepted,
+            Rejected,
+        }
+
         private const string CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY = "currentSubscriptionId";
 
         private readonly IEmailNotificationsComponentView view;
+        private readonly IUpdateEmailConfirmationHUDComponentView updateEmailConfirmationHUDComponentView;
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly DataStore dataStore;
         private readonly ISubscriptionsAPIService subscriptionsAPIService;
@@ -23,14 +31,17 @@ namespace DCL.MyAccount
 
         private string savedEmail;
         private bool savedIsPending;
+        private ConfirmationModalStatus confirmationModalStatus = ConfirmationModalStatus.None;
 
         public EmailNotificationsController(
             IEmailNotificationsComponentView view,
+            IUpdateEmailConfirmationHUDComponentView updateEmailConfirmationHUDComponentView,
             MyAccountSectionHUDController myAccountSectionHUDController,
             DataStore dataStore,
             ISubscriptionsAPIService subscriptionsAPIService)
         {
             this.view = view;
+            this.updateEmailConfirmationHUDComponentView = updateEmailConfirmationHUDComponentView;
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.dataStore = dataStore;
             this.subscriptionsAPIService = subscriptionsAPIService;
@@ -40,6 +51,7 @@ namespace DCL.MyAccount
             view.OnEmailEdited += OnEmailEdited;
             view.OnEmailSubmitted += OnEmailSubmitted;
             view.OnReSendConfirmationEmailClicked += OnReSendConfirmationEmailClicked;
+            updateEmailConfirmationHUDComponentView.OnConfirmationModalAccepted += isAccepted => confirmationModalStatus = isAccepted ? ConfirmationModalStatus.Accepted : ConfirmationModalStatus.Rejected;
         }
 
         public void Dispose()
@@ -74,6 +86,7 @@ namespace DCL.MyAccount
             view.ResetForm();
             loadEmailCancellationToken = loadEmailCancellationToken.SafeRestart();
             LoadEmailAsync(loadEmailCancellationToken.Token).Forget();
+            updateEmailConfirmationHUDComponentView.HideConfirmationModal();
         }
 
         private void OnEmailEdited(string newEmail)
@@ -86,9 +99,7 @@ namespace DCL.MyAccount
         {
             if (!IsValidEmail(newEmail))
             {
-                view.SetEmail(savedEmail);
-                view.SetStatusAsPending(savedIsPending);
-                view.SetEmailFormValid(true);
+                SetOriginalEmail();
                 return;
             }
 
@@ -96,13 +107,21 @@ namespace DCL.MyAccount
                 return;
 
             updateEmailCancellationToken = updateEmailCancellationToken.SafeRestart();
-            UpdateEmailAsync(newEmail, updateEmailCancellationToken.Token).Forget();
+            UpdateEmailAsync(newEmail, true, updateEmailCancellationToken.Token).Forget();
+        }
+
+        private void SetOriginalEmail()
+        {
+            view.SetEmail(savedEmail);
+            view.SetStatusAsPending(savedIsPending);
+            view.SetEmailFormValid(true);
+            view.SetEmailInputInteractable(true);
         }
 
         private void OnReSendConfirmationEmailClicked()
         {
             updateEmailCancellationToken = updateEmailCancellationToken.SafeRestart();
-            UpdateEmailAsync(savedEmail, updateEmailCancellationToken.Token).Forget();
+            UpdateEmailAsync(savedEmail, false, updateEmailCancellationToken.Token).Forget();
         }
 
         private static bool IsValidEmail(string email)
@@ -150,15 +169,30 @@ namespace DCL.MyAccount
                 }
             }
 
-            view.SetEmail(savedEmail);
-            view.SetStatusAsPending(savedIsPending);
+            SetOriginalEmail();
             view.SetLoadingActive(false);
         }
 
-        private async UniTaskVoid UpdateEmailAsync(string newEmail, CancellationToken cancellationToken)
+        private async UniTaskVoid UpdateEmailAsync(string newEmail, bool needConfirmation, CancellationToken cancellationToken)
         {
             var wasSuccessfullyUpdated = false;
             view.SetEmailInputInteractable(false);
+
+            if (needConfirmation && !string.IsNullOrEmpty(savedEmail))
+            {
+                confirmationModalStatus = ConfirmationModalStatus.None;
+                updateEmailConfirmationHUDComponentView.ShowConfirmationModal(
+                    string.IsNullOrEmpty(newEmail) ? view.deleteEmailLogo : view.updateEmailLogo,
+                    string.IsNullOrEmpty(newEmail) ? "Are you sure you want to unsubscribe Decentraland's newsletter?" : "Are you sure you want to update your Email Address?");
+
+                await UniTask.WaitUntil(() => confirmationModalStatus != ConfirmationModalStatus.None, cancellationToken: cancellationToken);
+            }
+
+            if (confirmationModalStatus == ConfirmationModalStatus.Rejected)
+            {
+                SetOriginalEmail();
+                return;
+            }
 
             if (!string.IsNullOrEmpty(PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY)))
             {
@@ -188,7 +222,7 @@ namespace DCL.MyAccount
                     PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
                     PlayerPrefsBridge.Save();
                     savedEmail = newEmail;
-                    savedIsPending = newSubscription.status == "pending";
+                    savedIsPending = newSubscription.status is "pending" or "validating";
                     wasSuccessfullyUpdated = true;
                 }
                 catch (Exception ex)

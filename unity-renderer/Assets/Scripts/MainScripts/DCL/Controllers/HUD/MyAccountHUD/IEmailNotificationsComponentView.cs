@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace DCL.MyAccount
 {
@@ -7,6 +8,9 @@ namespace DCL.MyAccount
         event Action<string> OnEmailEdited;
         public event Action<string> OnEmailSubmitted;
         public event Action OnReSendConfirmationEmailClicked;
+
+        Sprite deleteEmailLogo { get; }
+        Sprite updateEmailLogo { get; }
 
         void SetLoadingActive(bool isActive);
         void SetEmail(string email);

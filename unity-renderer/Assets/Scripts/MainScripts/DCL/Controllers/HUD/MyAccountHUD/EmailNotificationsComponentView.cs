@@ -15,10 +15,15 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal GameObject pendingStatusWarning;
         [SerializeField] internal TMP_Text pendingStatuWarningText;
+        [SerializeField] internal Sprite deleteEmailSprite;
+        [SerializeField] internal Sprite updateEmailSprite;
 
         public event Action<string> OnEmailEdited;
         public event Action<string> OnEmailSubmitted;
         public event Action OnReSendConfirmationEmailClicked;
+
+        public Sprite deleteEmailLogo => deleteEmailSprite;
+        public Sprite updateEmailLogo => updateEmailSprite;
 
         public override void Awake()
         {

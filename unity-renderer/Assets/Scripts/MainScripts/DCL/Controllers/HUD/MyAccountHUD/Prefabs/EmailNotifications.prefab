@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 20.5, y: 0}
-  m_SizeDelta: {x: 20, y: 20}
+  m_AnchoredPosition: {x: 31, y: 0}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4708843174647929116
 CanvasRenderer:
@@ -174,6 +174,8 @@ MonoBehaviour:
   emailInputInvalidLabel: {fileID: 4223244232111858960}
   pendingStatusWarning: {fileID: 5446535916202093448}
   pendingStatuWarningText: {fileID: 6755730615616916033}
+  deleteEmailSprite: {fileID: 21300000, guid: d6a96908978f04454a0eb99ff0e659a0, type: 3}
+  updateEmailSprite: {fileID: 21300000, guid: 0725572a788b244b484b3e28ea72e08b, type: 3}
 --- !u!1 &835793214861672301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,7 +1095,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3568244130854974258
 CanvasRenderer:
@@ -2108,9 +2110,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 18.25, y: 0}
-  m_SizeDelta: {x: -36.5, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 56, y: -10}
+  m_SizeDelta: {x: -66, y: -20}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &1662089006788897575
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2139,9 +2141,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: We sent you an email to confirm your address. If you haven't received it,
-    click <b><color=#FF2D55><u><link=reSendConfirmationEmail>here</link></u></b></color>
-    to send it again.
+  m_text: Check your email and confirm your account by clicking the verification
+    link. If you missed it check your spam folder or click <b><color=#FF2D55><u><link=reSendConfirmationEmail>here</link></u></b></color>
+    to resend the verification email.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,
@@ -2177,7 +2179,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0

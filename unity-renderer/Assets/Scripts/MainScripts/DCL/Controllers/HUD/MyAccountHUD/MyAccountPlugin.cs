@@ -26,6 +26,9 @@ namespace DCL.MyAccount
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                         .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
 
+            var updateEmailConfirmationHUD = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                              .Instantiate<UpdateEmailConfirmationHUDComponentView>("UpdateEmailConfirmationHUD", "UpdateEmailConfirmationHUD", cancellationToken: ct);
+
             ProfileAdditionalInfoValueListScriptableObject countryListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                                                                   .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileCountries", ct);
 
@@ -75,6 +78,7 @@ namespace DCL.MyAccount
 
             emailNotificationsController = new EmailNotificationsController(
                 myAccountSectionView.CurrentEmailNotificationsView,
+                updateEmailConfirmationHUD,
                 myAccountSectionHUDController,
                 dataStore,
                 Environment.i.serviceLocator.Get<ISubscriptionsAPIService>());
