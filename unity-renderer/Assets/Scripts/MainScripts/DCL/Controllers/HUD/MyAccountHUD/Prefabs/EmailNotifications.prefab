@@ -173,6 +173,7 @@ MonoBehaviour:
   emailInputFieldInvalid: {fileID: 2355204908624164975}
   emailInputInvalidLabel: {fileID: 4223244232111858960}
   pendingStatusWarning: {fileID: 5446535916202093448}
+  pendingStatuWarningText: {fileID: 6755730615616916033}
 --- !u!1 &835793214861672301
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,7 +2140,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: We sent you an email to confirm your address. If you haven't received it,
-    click here to send it again.
+    click <b><color=#FF2D55><u><link=reSendConfirmationEmail>here</link></u></b></color>
+    to send it again.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: -6676260188536263158, guid: 6708c7eadd49b49f4ac3469e5104e7c9,

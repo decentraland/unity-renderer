@@ -1,10 +1,11 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace DCL.MyAccount
 {
-    public class EmailNotificationsComponentView : BaseComponentView, IEmailNotificationsComponentView
+    public class EmailNotificationsComponentView : BaseComponentView, IEmailNotificationsComponentView, IPointerClickHandler
     {
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
@@ -13,9 +14,11 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject emailInputFieldInvalid;
         [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal GameObject pendingStatusWarning;
+        [SerializeField] internal TMP_Text pendingStatuWarningText;
 
         public event Action<string> OnEmailEdited;
         public event Action<string> OnEmailSubmitted;
+        public event Action OnReSendConfirmationEmailClicked;
 
         public override void Awake()
         {
@@ -55,11 +58,25 @@ namespace DCL.MyAccount
             SetStatusAsPending(false);
         }
 
+        public void SetEmailInputInteractable(bool isInteractable) =>
+            emailInputField.interactable = isInteractable;
+
         public override void Show(bool instant = false) =>
             gameObject.SetActive(true);
 
         public override void Hide(bool instant = false) =>
             gameObject.SetActive(false);
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pendingStatuWarningText, Input.mousePosition, null);
+            if (linkIndex == -1)
+                return;
+
+            TMP_LinkInfo linkInfo = pendingStatuWarningText.textInfo.linkInfo[linkIndex];
+            if (linkInfo.GetLinkID() == "reSendConfirmationEmail")
+                OnReSendConfirmationEmailClicked?.Invoke();
+        }
 
         public override void Dispose()
         {

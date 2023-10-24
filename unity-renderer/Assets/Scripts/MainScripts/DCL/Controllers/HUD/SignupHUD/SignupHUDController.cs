@@ -123,6 +123,7 @@ namespace SignupHUD
             {
                 var newSubscription = await subscriptionsAPIService.CreateSubscription(emailAddress, cancellationToken);
                 PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
+                PlayerPrefsBridge.Save();
             }
             catch (Exception ex) { Debug.LogError($"An error occurred while creating the subscription for {emailAddress}: {ex.Message}"); }
         }

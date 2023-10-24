@@ -7,6 +7,7 @@ namespace DCLServices.SubscriptionsAPIService
     public interface ISubscriptionsAPIService : IService
     {
         UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct);
+        UniTask DeleteSubscription(string subscriptionId, CancellationToken ct);
         UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct);
     }
 
@@ -23,6 +24,9 @@ namespace DCLServices.SubscriptionsAPIService
 
         public async UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct) =>
             await client.CreateSubscription(email, ct);
+
+        public async UniTask DeleteSubscription(string subscriptionId, CancellationToken ct) =>
+            await client.DeleteSubscription(subscriptionId, ct);
 
         public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct) =>
             await client.GetSubscription(subscriptionId, ct);

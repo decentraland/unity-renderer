@@ -117,6 +117,8 @@ namespace DCL.MyAccount
                     emailNotificationsComponentView.Show();
                     break;
             }
+
+            DataStore.i.myAccount.openSection.Set(section.ToString());
         }
 
         private void SetMyProfileButtonStatus(bool isSelected)

@@ -12,6 +12,7 @@ namespace DCLServices.SubscriptionsAPIService
     public interface ISubscriptionsAPIClient
     {
         UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct);
+        UniTask DeleteSubscription(string subscriptionId, CancellationToken ct);
         UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct);
     }
 
@@ -20,8 +21,7 @@ namespace DCLServices.SubscriptionsAPIService
         private const string PUBLICATION_ID = "";
         private const string TOKEN_ID = "";
         private const string UTM_SOURCE = "explorer";
-        private const string CREATE_SUBSCRIPTION_URL = "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions";
-        private const string GET_SUBSCRIPTION_URL =    "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions/{subscriptionId}";
+        private const string SUBSCRIPTION_BASE_URL = "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions";
 
         private readonly IWebRequestController webRequestController;
 
@@ -39,7 +39,7 @@ namespace DCLServices.SubscriptionsAPIService
             });
 
             UnityWebRequest postResult = await webRequestController.PostAsync(
-                url: CREATE_SUBSCRIPTION_URL.Replace("{publicationId}", PUBLICATION_ID),
+                url: SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID),
                 postData: postData,
                 cancellationToken: ct,
                 headers: new Dictionary<string, string>
@@ -59,12 +59,10 @@ namespace DCLServices.SubscriptionsAPIService
             return postResponse.data;
         }
 
-        public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
+        public async UniTask DeleteSubscription(string subscriptionId, CancellationToken ct)
         {
-            UnityWebRequest result = await webRequestController.GetAsync(
-                url: GET_SUBSCRIPTION_URL
-                    .Replace("{publicationId}", PUBLICATION_ID)
-                    .Replace("{subscriptionId}", subscriptionId),
+            UnityWebRequest deleteResult = await webRequestController.DeleteAsync(
+                url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",
                 cancellationToken: ct,
                 headers: new Dictionary<string, string>
                 {
@@ -72,12 +70,29 @@ namespace DCLServices.SubscriptionsAPIService
                     { "Authorization", $"Bearer {TOKEN_ID}" },
                 });
 
-            var response = Utils.SafeFromJson<GetSubscriptionAPIResponse>(result.downloadHandler.text);
+            if (deleteResult.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error deleting subscription:\n{deleteResult.error}");
+        }
 
-            if (response == null)
-                throw new Exception($"Error parsing get subscription response:\n{result.downloadHandler.text}");
+        public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
+        {
+            UnityWebRequest getResult = await webRequestController.GetAsync(
+                url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",
+                cancellationToken: ct,
+                headers: new Dictionary<string, string>
+                {
+                    { "Accept", "application/json" },
+                    { "Authorization", $"Bearer {TOKEN_ID}" },
+                });
 
-            return response.data;
+            if (getResult.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error getting subscription:\n{getResult.error}");
+
+            var getResponse = Utils.SafeFromJson<GetSubscriptionAPIResponse>(getResult.downloadHandler.text);
+            if (getResponse == null)
+                throw new Exception($"Error parsing get subscription response:\n{getResult.downloadHandler.text}");
+
+            return getResponse.data;
         }
     }
 }

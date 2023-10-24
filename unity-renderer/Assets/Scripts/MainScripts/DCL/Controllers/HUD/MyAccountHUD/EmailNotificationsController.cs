@@ -19,8 +19,8 @@ namespace DCL.MyAccount
         private readonly ISubscriptionsAPIService subscriptionsAPIService;
 
         private CancellationTokenSource loadEmailCancellationToken;
+        private CancellationTokenSource updateEmailCancellationToken;
 
-        private static string savedSubscription => PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY);
         private string savedEmail;
         private bool savedIsPending;
 
@@ -35,66 +35,45 @@ namespace DCL.MyAccount
             this.dataStore = dataStore;
             this.subscriptionsAPIService = subscriptionsAPIService;
 
-            dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
+            dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionOpen;
+            dataStore.myAccount.openSection.OnChange += OnMyAccountSectionTabChanged;
             view.OnEmailEdited += OnEmailEdited;
             view.OnEmailSubmitted += OnEmailSubmitted;
+            view.OnReSendConfirmationEmailClicked += OnReSendConfirmationEmailClicked;
         }
 
         public void Dispose()
         {
             loadEmailCancellationToken.SafeCancelAndDispose();
-            dataStore.myAccount.isMyAccountSectionVisible.OnChange -= OnMyAccountSectionVisibleChanged;
+            updateEmailCancellationToken.SafeCancelAndDispose();
+            dataStore.myAccount.isMyAccountSectionVisible.OnChange -= OnMyAccountSectionOpen;
+            dataStore.myAccount.openSection.OnChange -= OnMyAccountSectionTabChanged;
             view.OnEmailEdited -= OnEmailEdited;
             view.OnEmailSubmitted -= OnEmailSubmitted;
+            view.OnReSendConfirmationEmailClicked -= OnReSendConfirmationEmailClicked;
         }
 
-        private void OnMyAccountSectionVisibleChanged(bool isVisible, bool _)
+        private void OnMyAccountSectionOpen(bool isVisible, bool _)
         {
-            if (isVisible)
-                OpenSection();
-            else
-                CloseSection();
+            if (!isVisible || dataStore.myAccount.openSection.Get() != MyAccountSection.EmailNotifications.ToString())
+                return;
+
+            RefreshForm();
         }
 
-        private void OpenSection()
+        private void OnMyAccountSectionTabChanged(string currentOpenSection, string _)
+        {
+            if (currentOpenSection != MyAccountSection.EmailNotifications.ToString())
+                return;
+
+            RefreshForm();
+        }
+
+        private void RefreshForm()
         {
             view.ResetForm();
             loadEmailCancellationToken = loadEmailCancellationToken.SafeRestart();
             LoadEmailAsync(loadEmailCancellationToken.Token).Forget();
-        }
-
-        private void CloseSection()
-        {
-            loadEmailCancellationToken.SafeCancelAndDispose();
-        }
-
-        private async UniTaskVoid LoadEmailAsync(CancellationToken cancellationToken)
-        {
-            view.SetLoadingActive(true);
-            savedEmail = string.Empty;
-            savedIsPending = false;
-
-            if (PlayerPrefsBridge.HasKey(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY))
-            {
-                try
-                {
-                    var existingSubscription = await subscriptionsAPIService.GetSubscription(savedSubscription, cancellationToken);
-
-                    if (existingSubscription != null)
-                    {
-                        savedEmail = existingSubscription.email;
-                        savedIsPending = existingSubscription.status == "pending";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"An error occurred while getting the email subscription '{savedSubscription}': {ex.Message}");
-                }
-            }
-
-            view.SetEmail(savedEmail);
-            view.SetStatusAsPending(savedIsPending);
-            view.SetLoadingActive(false);
         }
 
         private void OnEmailEdited(string newEmail)
@@ -116,13 +95,14 @@ namespace DCL.MyAccount
             if (newEmail == savedEmail)
                 return;
 
-            if (string.IsNullOrEmpty(newEmail))
-                Debug.Log($"SANTI ---> UNSUBSCRIBE [{savedEmail}]");
-            else
-            {
-                Debug.Log($"SANTI ---> UNSUBSCRIBE [{savedEmail}]");
-                Debug.Log($"SANTI ---> SUBSCRIBE [{newEmail}]");
-            }
+            updateEmailCancellationToken = updateEmailCancellationToken.SafeRestart();
+            UpdateEmailAsync(newEmail, updateEmailCancellationToken.Token).Forget();
+        }
+
+        private void OnReSendConfirmationEmailClicked()
+        {
+            updateEmailCancellationToken = updateEmailCancellationToken.SafeRestart();
+            UpdateEmailAsync(savedEmail, updateEmailCancellationToken.Token).Forget();
         }
 
         private static bool IsValidEmail(string email)
@@ -139,6 +119,90 @@ namespace DCL.MyAccount
             {
                 return false;
             }
+        }
+
+        private async UniTaskVoid LoadEmailAsync(CancellationToken cancellationToken)
+        {
+            view.SetLoadingActive(true);
+            savedEmail = string.Empty;
+            savedIsPending = false;
+
+            if (!string.IsNullOrEmpty(PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY)))
+            {
+                string subscriptionToGet = PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY);
+
+                try
+                {
+                    var existingSubscription = await subscriptionsAPIService.GetSubscription(subscriptionToGet, cancellationToken);
+
+                    if (existingSubscription != null)
+                    {
+                        savedEmail = existingSubscription.email;
+                        savedIsPending = existingSubscription.status == "pending";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("404"))
+                        PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, string.Empty);
+                    else
+                        Debug.LogError($"An error occurred while getting the email subscription '{subscriptionToGet}': {ex.Message}");
+                }
+            }
+
+            view.SetEmail(savedEmail);
+            view.SetStatusAsPending(savedIsPending);
+            view.SetLoadingActive(false);
+        }
+
+        private async UniTaskVoid UpdateEmailAsync(string newEmail, CancellationToken cancellationToken)
+        {
+            var wasSuccessfullyUpdated = false;
+            view.SetEmailInputInteractable(false);
+
+            if (!string.IsNullOrEmpty(PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY)))
+            {
+                string subscriptionToDelete = PlayerPrefsBridge.GetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY);
+
+                try
+                {
+                    await subscriptionsAPIService.DeleteSubscription(subscriptionToDelete, cancellationToken);
+                    PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, string.Empty);
+                    PlayerPrefsBridge.Save();
+                    savedEmail = string.Empty;
+                    savedIsPending = false;
+                    wasSuccessfullyUpdated = true;
+                }
+                catch (Exception ex)
+                {
+                    wasSuccessfullyUpdated = false;
+                    Debug.LogError($"An error occurred while deleting the email subscription '{subscriptionToDelete}': {ex.Message}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(newEmail))
+            {
+                try
+                {
+                    var newSubscription = await subscriptionsAPIService.CreateSubscription(newEmail, cancellationToken);
+                    PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
+                    PlayerPrefsBridge.Save();
+                    savedEmail = newEmail;
+                    savedIsPending = newSubscription.status == "pending";
+                    wasSuccessfullyUpdated = true;
+                }
+                catch (Exception ex)
+                {
+                    wasSuccessfullyUpdated = false;
+                    Debug.LogError($"An error occurred while creating the subscription for {newEmail}: {ex.Message}");
+                }
+            }
+
+            view.SetEmailInputInteractable(true);
+            view.SetStatusAsPending(savedIsPending);
+
+            if (wasSuccessfullyUpdated)
+                myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
         }
     }
 }
