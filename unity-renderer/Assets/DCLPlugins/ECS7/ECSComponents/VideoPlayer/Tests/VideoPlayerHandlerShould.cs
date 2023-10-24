@@ -72,6 +72,7 @@ namespace Tests
         public IEnumerator TryToStartVideo()
         {
             videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
@@ -105,6 +106,7 @@ namespace Tests
         public IEnumerator VideoUpdateOnRuntime()
         {
             videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "video.mp4"
@@ -137,6 +139,7 @@ namespace Tests
             Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
 
             videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "other-video.mp4",
@@ -216,6 +219,7 @@ namespace Tests
         public IEnumerator StopVideoIfRenderingIsDisabled()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
@@ -231,6 +235,30 @@ namespace Tests
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
 
             Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
+        }
+
+        [UnityTest]
+        public IEnumerator StartVideoAfterUserInteraction()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = false;
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "video.mp4",
+                Playing = true
+            };
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
+
+            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            // change user interaction bool
+            DCL.Helpers.Utils.LockCursor();
+
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
             videoPlayerHandler.OnComponentRemoved(scene, entity);
         }

@@ -192,6 +192,7 @@ namespace DCL.ECS7.InternalComponents
             this.shouldSort = false;
 
             this.rootElement = new VisualElement();
+            this.rootElement.pickingMode = PickingMode.Ignore; // ignore pointer by default
             rootElement.name += $"(Id: {entityId})";
         }
     }
@@ -358,5 +359,16 @@ namespace DCL.ECS7.InternalComponents
         public Tweener tweener;
         public PBTween.ModeOneofCase tweenMode;
         public PBTween lastModel;
+    }
+
+    public struct InternalAvatarModifierArea : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public bool removed;
+        public Vector3 area;
+        public HashSet<string> excludedIds;
+        public Action<GameObject> OnAvatarEnter;
+        public Action<GameObject> OnAvatarExit;
+        public HashSet<GameObject> avatarsInArea;
     }
 }

@@ -28,4 +28,5 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
     IInternalECSComponent<InternalAnimation> Animation { get; }
     IInternalECSComponent<InternalTween> TweenComponent { get; }
+    IInternalECSComponent<InternalAvatarModifierArea> AvatarModifierAreaComponent { get; }
 }

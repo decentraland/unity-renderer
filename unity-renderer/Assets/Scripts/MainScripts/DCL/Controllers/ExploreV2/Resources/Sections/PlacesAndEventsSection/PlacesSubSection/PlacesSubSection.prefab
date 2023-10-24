@@ -432,7 +432,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 47, y: 30}
+  m_AnchoredPosition: {x: 47, y: 35}
   m_SizeDelta: {x: 42, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &623369209086634543
@@ -901,8 +901,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 382.13397, y: -27}
-  m_SizeDelta: {x: 700.2679, y: 46}
+  m_AnchoredPosition: {x: 418.24573, y: -24}
+  m_SizeDelta: {x: 772.4914, y: 59}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9037340069108881467
 CanvasRenderer:
@@ -932,8 +932,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Genesis City is a massive open world created and owned by its community.
-    Make friends, play games, explore, and discover all Decentraland has to offer!
+  m_text: Decentraland's Genesis City map is made up of thousands of parcels owned
+    and populated with dynamic content by its diverse community. Browse through some
+    of the virtual world's most popular locations and jump directly to places of
+    interest.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
@@ -1037,7 +1039,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 148, y: 29}
+  m_AnchoredPosition: {x: 148, y: 34}
   m_SizeDelta: {x: 150, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7865865505972316471
