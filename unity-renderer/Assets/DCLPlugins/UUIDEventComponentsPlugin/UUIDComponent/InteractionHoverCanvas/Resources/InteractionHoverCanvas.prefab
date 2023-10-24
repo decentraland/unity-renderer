@@ -561,7 +561,7 @@ PrefabInstance:
     - target: {fileID: 3417136854026590096, guid: e176613fd203f4bf281c28eb1a281524,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 50
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 3417136854026590096, guid: e176613fd203f4bf281c28eb1a281524,
         type: 3}
@@ -888,6 +888,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6432359610209792728}
     m_Modifications:
+    - target: {fileID: 209109665322294884, guid: 4dd25573aa6f5440892c022173d6e68b,
+        type: 3}
+      propertyPath: m_MinWidth
+      value: 17.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 209109665322294884, guid: 4dd25573aa6f5440892c022173d6e68b,
+        type: 3}
+      propertyPath: m_MinHeight
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 209109665322294884, guid: 4dd25573aa6f5440892c022173d6e68b,
+        type: 3}
+      propertyPath: m_PreferredWidth
+      value: 17.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 209109665322294884, guid: 4dd25573aa6f5440892c022173d6e68b,
+        type: 3}
+      propertyPath: m_PreferredHeight
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 278215944123915646, guid: 4dd25573aa6f5440892c022173d6e68b,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -952,7 +972,7 @@ PrefabInstance:
     - target: {fileID: 3417136854026590096, guid: 4dd25573aa6f5440892c022173d6e68b,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 16
+      value: 17.5
       objectReference: {fileID: 0}
     - target: {fileID: 3417136854026590096, guid: 4dd25573aa6f5440892c022173d6e68b,
         type: 3}
@@ -997,7 +1017,7 @@ PrefabInstance:
     - target: {fileID: 3417136854026590096, guid: 4dd25573aa6f5440892c022173d6e68b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 20
+      value: 20.75
       objectReference: {fileID: 0}
     - target: {fileID: 3417136854026590096, guid: 4dd25573aa6f5440892c022173d6e68b,
         type: 3}
