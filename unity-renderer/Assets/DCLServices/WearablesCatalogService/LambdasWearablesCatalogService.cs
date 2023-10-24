@@ -222,7 +222,7 @@ namespace DCLServices.WearablesCatalogService
             IList<WearableItem> wearableItems = poolList.GetList();
 
             foreach (EntityDto entityDto in request.response.entities)
-                wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl, 1));
+                wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
 
             MapLambdasDataIntoWearableItem(wearableItems);
             AddWearablesToCatalog(wearableItems);
@@ -338,7 +338,7 @@ namespace DCLServices.WearablesCatalogService
                 IList<WearableItem> wearableItems = poolList.GetList();
 
                 foreach (EntityDto entityDto in response.entities)
-                    wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl, 1));
+                    wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
 
                 MapLambdasDataIntoWearableItem(wearableItems);
                 AddWearablesToCatalog(wearableItems);
@@ -506,14 +506,7 @@ namespace DCLServices.WearablesCatalogService
                         ? wearableIds.Count
                         : MAX_WEARABLES_PER_REQUEST;
 
-                    var wearablesToRequest = new List<string>();
-                    int count = Math.Min(wearableIds.Count, numberOfWearablesToRequest);
-
-                    for (int x = 0; i < count; i++)
-                    {
-                        var urnAndTokenId = ExtendedUrnParser.GetShortenedUrn(wearableIds[x]);
-                        wearablesToRequest.Add(urnAndTokenId);
-                    }
+                    var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
 
                     var request = new WearableRequest { pointers = wearablesToRequest };
                     var url = $"{catalyst.contentUrl}entities/active";
@@ -551,7 +544,7 @@ namespace DCLServices.WearablesCatalogService
 
                     string contentBaseUrl = $"{catalyst.contentUrl}contents/";
 
-                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl, 1)).ToList();
+                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
 
                     MapLambdasDataIntoWearableItem(wearables);
                     AddWearablesToCatalog(wearables);
