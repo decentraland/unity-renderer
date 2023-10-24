@@ -214,7 +214,8 @@ namespace DCL.Rendering
                         shadowlessRenderers.Add(r);
                 }
 
-                SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
+                // SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
+                SetCullingForRenderer(r, true, shouldHaveShadow);
 #if UNITY_EDITOR
                 if (DRAW_GIZMOS)
                     DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
