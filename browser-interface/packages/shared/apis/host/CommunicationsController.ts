@@ -27,14 +27,28 @@ export function registerCommunicationsControllerServiceServerImplementation(port
     const commsController: ICommunicationsController = {
       cid: ctx.sceneData.id,
       receiveCommsMessage(data: Uint8Array, sender: PeerInformation) {
-        if (data.byteLength) {
-          eventsToProcess.push(data)
-        }
         const message = new TextDecoder().decode(data)
-        ctx.sendSceneEvent('comms', {
-          message,
-          sender: sender.ethereumAddress
-        })
+
+        // String CommsMessages (old MessageBus)
+        if (message) {
+          ctx.sendSceneEvent('comms', {
+            message,
+            sender: sender.ethereumAddress
+          })
+        }
+
+        // Uint8Array CommsMessage (BinaryMessageBus)
+        if (data.byteLength) {
+          const senderBytes = new TextEncoder().encode(sender.ethereumAddress)
+          const messageLength = senderBytes.byteLength + data.byteLength + 1
+
+          const serializedMessage = new Uint8Array(messageLength)
+          serializedMessage.set(new Uint8Array([senderBytes.byteLength]), 0)
+          serializedMessage.set(senderBytes, 1)
+          serializedMessage.set(data, senderBytes.byteLength + 1)
+
+          eventsToProcess.push(serializedMessage)
+        }
       }
     }
 
@@ -54,7 +68,9 @@ export function registerCommunicationsControllerServiceServerImplementation(port
         return {}
       },
       async sendBinary(req, ctx) {
-        sendParcelSceneCommsMessage(ctx.sceneData.id, req.data)
+        for (const data of req.data) {
+          sendParcelSceneCommsMessage(ctx.sceneData.id, data)
+        }
         const messages = [...eventsToProcess]
 
         // clean messages
