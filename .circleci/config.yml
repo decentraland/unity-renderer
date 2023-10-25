@@ -451,36 +451,43 @@ workflows:
     jobs:
       - checkout:
           <<: *all_branches
+          context: unity-builder
 
       - build-unity-for-linux:
           <<: *only_dev_and_main
           requires:
             - checkout
+          context: unity-builder
 
       - build-unity-for-windows:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - build-unity-for-mac:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - build-unity-for-webgl:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - test-unity-playmode:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - test-unity-editmode:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - publish-desktop-artifacts-release:
           <<: *only_dev_and_main
@@ -493,6 +500,7 @@ workflows:
             - test-browser-file-size
             - test-unity-playmode
             - test-unity-editmode
+          context: unity-builder
 
       - publish-desktop-artifacts:
           <<: *except_dev_and_main
@@ -501,22 +509,26 @@ workflows:
             - build-unity-for-windows
             - build-unity-for-mac
             - build-browser-interface
+          context: unity-builder
 
       - build-browser-interface:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - test-browser-interface:
           <<: *all_branches
           requires:
             - checkout
+          context: unity-builder
 
       - publish-webgl-artifacts:
           <<: *except_dev_and_main
           requires:
             - build-unity-for-webgl
             - build-browser-interface
+          context: unity-builder
 
       - publish-webgl-artifacts-release:
           <<: *only_dev_and_main
@@ -527,9 +539,11 @@ workflows:
             - test-browser-file-size
             - test-unity-playmode
             - test-unity-editmode
+          context: unity-builder
 
       - test-browser-file-size:
           <<: *only_dev_and_main
           requires:
             - build-unity-for-webgl
             - build-browser-interface
+          context: unity-builder

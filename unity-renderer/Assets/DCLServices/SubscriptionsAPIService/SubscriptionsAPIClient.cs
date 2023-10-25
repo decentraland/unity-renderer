@@ -18,12 +18,13 @@ namespace DCLServices.SubscriptionsAPIService
 
     public class SubscriptionsAPIClient : ISubscriptionsAPIClient
     {
-        private const string PUBLICATION_ID = "";
-        private const string TOKEN_ID = "";
+        private const string PUBLICATION_ID = "pub_9a0ea9f4-8e14-4f2a-a9c7-fc88512427d4";
         private const string UTM_SOURCE = "explorer";
         private const string SUBSCRIPTION_BASE_URL = "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions";
 
         private readonly IWebRequestController webRequestController;
+
+        private static string bearerToken => CommonScriptableObjects.subscriptionsBearerToken.Get();
 
         public SubscriptionsAPIClient(IWebRequestController webRequestController)
         {
@@ -45,7 +46,7 @@ namespace DCLServices.SubscriptionsAPIService
                 headers: new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
-                    { "Authorization", $"Bearer {TOKEN_ID}" },
+                    { "Authorization", $"Bearer {bearerToken}" },
                     { "Content-Type", "application/json" },
                 });
 
@@ -67,7 +68,7 @@ namespace DCLServices.SubscriptionsAPIService
                 headers: new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
-                    { "Authorization", $"Bearer {TOKEN_ID}" },
+                    { "Authorization", $"Bearer {bearerToken}" },
                 });
 
             if (deleteResult.result != UnityWebRequest.Result.Success)
@@ -76,13 +77,15 @@ namespace DCLServices.SubscriptionsAPIService
 
         public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
         {
+            Debug.Log($"[SANTI LOG] bearerToken: {bearerToken}");
+
             UnityWebRequest getResult = await webRequestController.GetAsync(
                 url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",
                 cancellationToken: ct,
                 headers: new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
-                    { "Authorization", $"Bearer {TOKEN_ID}" },
+                    { "Authorization", $"Bearer {bearerToken}" },
                 });
 
             if (getResult.result != UnityWebRequest.Result.Success)

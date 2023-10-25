@@ -148,6 +148,8 @@ static class BuildCommand
         AddressableAssetSettings.BuildPlayerContent();
         Console.WriteLine(":: Performing build");
 
+        CommonScriptableObjects.subscriptionsBearerToken.Set(getEnv("SUBSCRIPTIONS_BEARER_TOKEN", true));
+
         var buildTarget = GetBuildTarget();
         var buildPath = GetBuildPath();
         var buildName = GetBuildName();
