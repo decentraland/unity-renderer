@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.SubscriptionsAPIService;
@@ -183,7 +183,7 @@ namespace DCL.MyAccount
                 confirmationModalStatus = ConfirmationModalStatus.None;
                 updateEmailConfirmationHUDComponentView.ShowConfirmationModal(
                     string.IsNullOrEmpty(newEmail) ? view.deleteEmailLogo : view.updateEmailLogo,
-                    string.IsNullOrEmpty(newEmail) ? "Are you sure you want to unsubscribe Decentraland's newsletter?" : "Are you sure you want to update your Email Address?");
+                    string.IsNullOrEmpty(newEmail) ? "Are you sure you want to unsubscribe from Decentraland's newsletter?" : "Are you sure you want to update your Email Address?");
 
                 await UniTask.WaitUntil(() => confirmationModalStatus != ConfirmationModalStatus.None, cancellationToken: cancellationToken);
             }
