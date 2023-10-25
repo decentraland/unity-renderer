@@ -2038,5 +2038,10 @@ namespace DCL.Interface
         {
             SendMessage("GetWithItemsUrlParam");
         }
+
+        public static void FetchRealmsInfo()
+        {
+            SendMessage("FetchRealmsInfo");
+        }
     }
 }

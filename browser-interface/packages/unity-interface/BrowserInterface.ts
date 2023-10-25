@@ -26,7 +26,7 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { sendMessage } from 'shared/chat/actions'
 import { sendPublicChatMessage } from 'shared/comms'
 import { changeRealm } from 'shared/dao'
-import { getSelectedNetwork } from 'shared/dao/selectors'
+import {getExploreRealmsService, getSelectedNetwork} from 'shared/dao/selectors'
 import { getERC20Balance } from 'lib/web3/EthereumService'
 import { leaveChannel, updateUserData } from 'shared/friends/actions'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
@@ -120,6 +120,7 @@ import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
 import { encodeParcelPosition } from 'lib/decentraland'
 import { Vector2 } from 'shared/protocol/decentraland/common/vectors.gen'
+import {fetchAndReportRealmsInfo} from "../shared/renderer/sagas";
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -1075,6 +1076,13 @@ export class BrowserInterface {
         defaultLogger.error(e)
       }
     )
+  }
+
+  public async FetchRealmsInfo() {
+    const url = getExploreRealmsService(store.getState());
+    if (url) {
+      await fetchAndReportRealmsInfo(url)
+    }
   }
 
   public async UpdateMemoryUsage() {
