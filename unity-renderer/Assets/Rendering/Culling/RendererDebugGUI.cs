@@ -1,4 +1,5 @@
 using DCL.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,6 +17,14 @@ namespace DCL.Rendering
 
         private Vector2 scroll = Vector2.zero;
         private GUIStyle labelStyle;
+
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.N))
+                scroll.y += 500 * Time.deltaTime;
+            else if (Input.GetKey(KeyCode.J))
+                scroll.y -= 500 * Time.deltaTime;
+        }
 
         private void OnGUI()
         {
@@ -69,6 +78,7 @@ namespace DCL.Rendering
                     DrawLabelAsList(POS_X, ref yPos, $"shadowTexelSize: {shadowTexelSize}");
                     DrawLabelAsList(POS_X, ref yPos, $"isEmissive: {isEmissive}");
                     DrawLabelAsList(POS_X, ref yPos, $"isOpaque: {isOpaque}");
+                    DrawLabelAsList(POS_X, ref yPos, "-----------------------------");
                 }
             }
 
