@@ -11,17 +11,18 @@ namespace DCLServices.SubscriptionsAPIService
 {
     public interface ISubscriptionsAPIClient
     {
-        UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct);
+        UniTask<SubscriptionResponseData> CreateSubscription(string email, CancellationToken ct);
         UniTask DeleteSubscription(string subscriptionId, CancellationToken ct);
-        UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct);
+        UniTask<SubscriptionResponseData> GetSubscription(string subscriptionId, CancellationToken ct);
     }
 
     public class SubscriptionsAPIClient : ISubscriptionsAPIClient
     {
-        private const string PUBLICATION_ID = "";
+        private const string PUBLICATION_ID = "pub_9a0ea9f4-8e14-4f2a-a9c7-fc88512427d4";
         private const string TOKEN_ID = "";
         private const string UTM_SOURCE = "explorer";
         private const string SUBSCRIPTION_BASE_URL = "https://api.beehiiv.com/v2/publications/{publicationId}/subscriptions";
+        private const string CREATE_SUBSCRIPTION_URL = "https://builder-api.decentraland.org/v1/newsletter";
 
         private readonly IWebRequestController webRequestController;
 
@@ -30,33 +31,28 @@ namespace DCLServices.SubscriptionsAPIService
             this.webRequestController = webRequestController;
         }
 
-        public async UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct)
+        public async UniTask<SubscriptionResponseData> CreateSubscription(string email, CancellationToken ct)
         {
             string postData = JsonUtility.ToJson(new CreateSubscriptionPayload
             {
                 email = email,
-                utm_source = UTM_SOURCE,
+                source = UTM_SOURCE,
             });
 
             UnityWebRequest postResult = await webRequestController.PostAsync(
-                url: SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID),
+                url: CREATE_SUBSCRIPTION_URL,
                 postData: postData,
                 cancellationToken: ct,
-                headers: new Dictionary<string, string>
-                {
-                    { "Accept", "application/json" },
-                    { "Authorization", $"Bearer {TOKEN_ID}" },
-                    { "Content-Type", "application/json" },
-                });
+                headers: new Dictionary<string, string> { { "Content-Type", "application/json" } });
 
             if (postResult.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error creating subscription:\n{postResult.error}");
 
-            var postResponse = Utils.SafeFromJson<CreateSubscriptionAPIResponse>(postResult.downloadHandler.text);
-            if (postResponse?.data == null)
+            var postResponse = Utils.SafeFromJson<CreateSubscriptionResponse>(postResult.downloadHandler.text);
+            if (postResponse?.data?.data == null)
                 throw new Exception($"Error creating subscription:\n{postResult.downloadHandler.text}");
 
-            return postResponse.data;
+            return postResponse.data.data;
         }
 
         public async UniTask DeleteSubscription(string subscriptionId, CancellationToken ct)
@@ -74,7 +70,7 @@ namespace DCLServices.SubscriptionsAPIService
                 throw new Exception($"Error deleting subscription:\n{deleteResult.error}");
         }
 
-        public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
+        public async UniTask<SubscriptionResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
         {
             UnityWebRequest getResult = await webRequestController.GetAsync(
                 url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",

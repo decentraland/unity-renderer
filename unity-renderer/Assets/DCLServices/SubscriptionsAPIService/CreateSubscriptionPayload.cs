@@ -6,6 +6,6 @@ namespace DCLServices.SubscriptionsAPIService
     public class CreateSubscriptionPayload
     {
         public string email;
-        public string utm_source;
+        public string source;
     }
 }

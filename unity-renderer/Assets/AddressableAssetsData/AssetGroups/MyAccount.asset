@@ -21,34 +21,47 @@ MonoBehaviour:
     m_Address: MyAccountSectionHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99407e78aaf4f4651bbc1994d3727d5a
     m_Address: ProfileCountries
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9abce1a9234047fab509631245558ea
     m_Address: ProfileEmploymentStatus
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 853a257eba7a74f4db47236ae49f29b4
     m_Address: ProfileGenders
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6282385abcabb43899e02dc2c3640283
     m_Address: ProfileLanguages
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3bcd7e62b195469a9b3e1dcc1ee39b8
     m_Address: ProfilePronouns
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2352ca3d532b4418ea29122f66f04d51
     m_Address: ProfileRelationshipStatus
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 158b9f8b14ee641fab8eccc25b314376
     m_Address: ProfileSexualOrientations
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2bc8f09d15597c54eafedcf481d7c2fa
+    m_Address: UpdateEmailConfirmationHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:
