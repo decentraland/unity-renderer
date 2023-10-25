@@ -24,6 +24,9 @@ namespace DCL.EmotesCustomization
         [SerializeField] internal Transform emoteInfoAnchor;
         [SerializeField] internal GameObject loadingSpinnerGO;
         [SerializeField] internal GameObject soundIcon;
+        [SerializeField] internal GameObject secondaryItem;
+        [SerializeField] internal GameObject amountLabel;
+        [SerializeField] internal TMP_Text amountText;
 
         [Header("Configuration")]
         [SerializeField] internal Sprite defaultEmotePicture;
@@ -63,6 +66,9 @@ namespace DCL.EmotesCustomization
             if (model == null)
                 return;
 
+            amountText.text = model.amount;
+            secondaryItem.SetActive(!string.IsNullOrEmpty(amountText.text));
+            amountLabel.SetActive(!string.IsNullOrEmpty(amountText.text));
             SetEmoteId(model.id);
             SetEmoteName(model.name);
             SetEmoteDescription(model.description);
