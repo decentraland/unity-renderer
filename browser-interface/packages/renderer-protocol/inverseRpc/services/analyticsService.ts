@@ -33,6 +33,9 @@ export function registerAnalyticsKernelService(port: RpcServerPort<RendererProto
       trackEvent('performance report', perfReport)
       return {}
     },
+    async setDelightedSurveyEnabled(req, _) {
+      return {}
+    },
     async systemInfoReport(req, _) {
       trackEvent('system info report', req)
 
