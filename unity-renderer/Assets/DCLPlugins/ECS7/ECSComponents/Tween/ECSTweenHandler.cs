@@ -145,7 +145,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         internalTweenComponent.PutFor(scene, entity, internalComponentModel);
     }
 
-    private bool AreSameModels(PBTween modelA, PBTween modelB)
+    private static bool AreSameModels(PBTween modelA, PBTween modelB)
     {
         if (modelB == null || modelA == null)
             return false;
