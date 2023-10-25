@@ -33,6 +33,8 @@ namespace DCLServices.SubscriptionsAPIService
 
         public async UniTask<SubscriptionAPIResponseData> CreateSubscription(string email, CancellationToken ct)
         {
+            Debug.Log($"[SANTI LOG - CreateSubscription] bearerToken: {bearerToken}");
+
             string postData = JsonUtility.ToJson(new CreateSubscriptionPayload
             {
                 email = email,
@@ -62,6 +64,8 @@ namespace DCLServices.SubscriptionsAPIService
 
         public async UniTask DeleteSubscription(string subscriptionId, CancellationToken ct)
         {
+            Debug.Log($"[SANTI LOG - DeleteSubscription] bearerToken: {bearerToken}");
+
             UnityWebRequest deleteResult = await webRequestController.DeleteAsync(
                 url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",
                 cancellationToken: ct,
@@ -77,7 +81,7 @@ namespace DCLServices.SubscriptionsAPIService
 
         public async UniTask<SubscriptionAPIResponseData> GetSubscription(string subscriptionId, CancellationToken ct)
         {
-            Debug.Log($"[SANTI LOG] bearerToken: {bearerToken}");
+            Debug.Log($"[SANTI LOG - GetSubscription] bearerToken: {bearerToken}");
 
             UnityWebRequest getResult = await webRequestController.GetAsync(
                 url: $"{SUBSCRIPTION_BASE_URL.Replace("{publicationId}", PUBLICATION_ID)}/{subscriptionId}",
