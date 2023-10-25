@@ -274,9 +274,6 @@ public static class CommonScriptableObjects
     private static BooleanVariable adultContentSettingDeactivatedValue;
     public static BooleanVariable adultContentSettingDeactivated => GetOrLoad(ref adultContentSettingDeactivatedValue, "ScriptableObjects/AdultContentSettingDeactivated");
 
-    private static StringVariable subscriptionsBearerTokenValue;
-    public static StringVariable subscriptionsBearerToken => GetOrLoad(ref subscriptionsBearerTokenValue, "ScriptableObjects/SubscriptionsBearerToken");
-
     public static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)
@@ -322,6 +319,5 @@ public static class CommonScriptableObjects
         Resources.UnloadAsset(emailPromptActiveValue);
         Resources.UnloadAsset(voiceChatDisabledValue);
         Resources.UnloadAsset(adultContentSettingDeactivatedValue);
-        Resources.UnloadAsset(subscriptionsBearerTokenValue);
     }
 }
