@@ -351,8 +351,9 @@ namespace DCL.Rendering
         {
             var targetMode = shouldHaveShadow ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
-            if (r.forceRenderingOff != !shouldBeVisible)
-                r.forceRenderingOff = !shouldBeVisible;
+            // if (r.forceRenderingOff != !shouldBeVisible)
+            //     r.forceRenderingOff = !shouldBeVisible;
+            r.forceRenderingOff = false;
 
             if (r.shadowCastingMode != targetMode)
                 r.shadowCastingMode = targetMode;
