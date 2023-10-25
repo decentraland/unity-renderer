@@ -12,9 +12,7 @@ using static DG.Tweening.Ease;
 
 public class ECSTweenHandler : IECSComponentHandler<PBTween>
 {
-    private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
-    private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
-    private readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>()
+    private static readonly Dictionary<EasingFunction, Ease> easingFunctionsMap = new Dictionary<EasingFunction,Ease>()
     {
         [EfLinear] = Linear,
         [EfEaseinsine] = InSine,
@@ -48,6 +46,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         [EfEaseoutback] = OutBack,
         [EfEaseback] = InOutBack
     };
+
+    private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
+    private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
 
     public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
@@ -144,7 +145,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         internalTweenComponent.PutFor(scene, entity, internalComponentModel);
     }
 
-    private bool AreSameModels(PBTween modelA, PBTween modelB)
+    private static bool AreSameModels(PBTween modelA, PBTween modelB)
     {
         if (modelB == null || modelA == null)
             return false;
