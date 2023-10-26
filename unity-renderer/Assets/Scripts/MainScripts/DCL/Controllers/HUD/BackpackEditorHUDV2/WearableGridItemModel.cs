@@ -9,6 +9,7 @@ namespace DCL.Backpack
         public bool IsSelected { get; set; }
         public bool IsEquipped { get; set; }
         public string ImageUrl { get; set; }
+        public string Amount { get; set; }
         public NftRarity Rarity { get; set; }
         public bool IsNew { get; set; }
         public string Category { get; set; }
