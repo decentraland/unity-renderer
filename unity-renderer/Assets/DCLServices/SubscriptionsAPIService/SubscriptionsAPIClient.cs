@@ -19,7 +19,7 @@ namespace DCLServices.SubscriptionsAPIService
     public class SubscriptionsAPIClient : ISubscriptionsAPIClient
     {
         private const string UTM_SOURCE = "explorer";
-        private const string BASE_SUBSCRIPTION_URL = "https://builder-api.decentraland.zone/v1/newsletter"; // TODO (Santi): Change it to .org when the endpoints are deployed
+        private const string BASE_SUBSCRIPTION_URL = "https://builder-api.decentraland.org/v1/newsletter";
 
         private readonly IWebRequestController webRequestController;
 

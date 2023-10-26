@@ -99,7 +99,7 @@ namespace DCL.MyAccount
         {
             if (!IsValidEmail(newEmail))
             {
-                SetOriginalEmail();
+                SetSavedEmail();
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace DCL.MyAccount
             UpdateEmailAsync(newEmail, true, updateEmailCancellationToken.Token).Forget();
         }
 
-        private void SetOriginalEmail()
+        private void SetSavedEmail()
         {
             view.SetEmail(savedEmail);
             view.SetStatusAsPending(savedIsPending);
@@ -156,8 +156,13 @@ namespace DCL.MyAccount
 
                     if (existingSubscription != null)
                     {
-                        savedEmail = existingSubscription.email;
-                        savedIsPending = existingSubscription.status == "pending";
+                        if (existingSubscription.status == "inactive")
+                            PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, string.Empty);
+                        else
+                        {
+                            savedEmail = existingSubscription.email;
+                            savedIsPending = existingSubscription.status is "pending" or "validating";
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -169,7 +174,7 @@ namespace DCL.MyAccount
                 }
             }
 
-            SetOriginalEmail();
+            SetSavedEmail();
             view.SetLoadingActive(false);
         }
 
@@ -190,7 +195,7 @@ namespace DCL.MyAccount
 
             if (confirmationModalStatus == ConfirmationModalStatus.Rejected)
             {
-                SetOriginalEmail();
+                SetSavedEmail();
                 return;
             }
 
