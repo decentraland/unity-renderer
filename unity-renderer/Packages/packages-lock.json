@@ -50,11 +50,11 @@
       "hash": "f2621a8b09b68f3a7639eea40a7aba18571f3f28"
     },
     "com.decentraland.unity-shared-dependencies": {
-      "version": "https://github.com/decentraland/unity-shared-dependencies.git#fix/shadow-mats",
+      "version": "https://github.com/decentraland/unity-shared-dependencies.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "8d83395c6da951c36292aac897411687de1d4d22"
+      "hash": "4d15dacda41f1e2f3bd5ef77c1dcb5abfa7d238f"
     },
     "com.decentraland.videoplayer": {
       "version": "https://github.com/decentraland/DCLVideoPlayerUnity.git?path=Assets#main",
