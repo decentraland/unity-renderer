@@ -509,7 +509,7 @@ namespace DCLServices.WearablesCatalogService
                     var wearablesToRequest = new List<string>();
                     int count = Math.Min(wearableIds.Count, numberOfWearablesToRequest);
 
-                    for (int x = 0; i < count; i++)
+                    for (int x = 0; x < count; x++)
                     {
                         var urnAndTokenId = ExtendedUrnParser.GetShortenedUrn(wearableIds[x]);
                         wearablesToRequest.Add(urnAndTokenId);
