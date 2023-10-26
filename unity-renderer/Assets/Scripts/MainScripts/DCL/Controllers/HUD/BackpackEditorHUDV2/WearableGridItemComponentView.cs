@@ -1,5 +1,5 @@
 using System;
-using System.Threading;
+using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +22,9 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject incompatibleContainer;
         [SerializeField] internal GameObject incompatibleTooltip;
         [SerializeField] internal GameObject smartWearableFlag;
+        [SerializeField] internal GameObject secondaryItem;
+        [SerializeField] internal GameObject amountLabel;
+        [SerializeField] internal TMP_Text amountText;
 
         private IButtonDoubleClick interactDoubleClick;
         private string lastThumbnailUrl;
@@ -81,6 +84,9 @@ namespace DCL.Backpack
 
         public override void RefreshControl()
         {
+            amountText.text = model.Amount;
+            secondaryItem.SetActive(!string.IsNullOrEmpty(amountText.text));
+            amountLabel.SetActive(!string.IsNullOrEmpty(amountText.text));
             selectedContainer.SetActive(model.IsSelected);
             equippedContainer.SetActive(model.IsEquipped);
             isNewContainer.SetActive(model.IsNew);
