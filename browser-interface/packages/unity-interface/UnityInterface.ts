@@ -50,7 +50,6 @@ import {
   WorldPosition
 } from 'shared/types'
 import { futures } from './BrowserInterface'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
@@ -530,7 +529,6 @@ export class UnityInterface implements IUnityInterface {
         this.SetTutorialEnabled(tutorialConfig)
       } else {
         this.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(tutorialConfig)
-        setDelightedSurveyEnabled(true)
       }
     }
   }
