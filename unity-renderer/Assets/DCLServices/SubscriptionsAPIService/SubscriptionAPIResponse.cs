@@ -3,25 +3,20 @@
 namespace DCLServices.SubscriptionsAPIService
 {
     [Serializable]
-    public class CreateSubscriptionResponse
+    public class SubscriptionAPIResponse
     {
-        public CreateSubscriptionResponseData data;
+        public bool ok;
+        public SubscriptionData data;
     }
 
     [Serializable]
-    public class CreateSubscriptionResponseData
+    public class SubscriptionData
     {
-        public SubscriptionResponseData data;
+        public Subscription data;
     }
 
     [Serializable]
-    public class GetSubscriptionAPIResponse
-    {
-        public SubscriptionResponseData data;
-    }
-
-    [Serializable]
-    public class SubscriptionResponseData
+    public class Subscription
     {
         public string id;
         public string email;
