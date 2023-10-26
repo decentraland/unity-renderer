@@ -221,5 +221,23 @@ namespace Tests
             handler.OnComponentModelUpdated(scene, entity, model);
             Assert.AreEqual(PickingMode.Ignore, containerModel.rootElement.pickingMode);
         }
+
+        [Test]
+        public void ApplyAutoSizeCorrectly()
+        {
+            var model = new PBUiTransform()
+            {
+                WidthUnit = YGUnit.YguAuto,
+                HeightUnit = YGUnit.YguAuto,
+                PositionType = YGPositionType.YgptAbsolute
+            };
+
+            handler.OnComponentCreated(scene, entity);
+            handler.OnComponentModelUpdated(scene, entity, model);
+
+            var containerModel = internalUiContainer.GetFor(scene, entity).Value.model;
+            Assert.AreEqual(StyleKeyword.Auto, containerModel.rootElement.style.width.keyword);
+            Assert.AreEqual(StyleKeyword.Auto, containerModel.rootElement.style.height.keyword);
+        }
     }
 }
