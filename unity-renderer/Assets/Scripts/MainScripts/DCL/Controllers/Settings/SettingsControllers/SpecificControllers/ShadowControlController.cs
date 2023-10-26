@@ -24,23 +24,10 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue()
-        {
-            // TODO: force shadows always enabled on webgl until we fix the problem when rendering models with shadows disabled
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return true;
-#else
-            return currentQualitySetting.shadows;
-#endif
-        }
+        public override object GetStoredValue() { return currentQualitySetting.shadows; }
 
         public override void UpdateSetting(object newValue)
         {
-            // TODO: force shadows always enabled on webgl until we fix the problem when rendering models with shadows disabled
-#if UNITY_WEBGL && !UNITY_EDITOR
-            newValue = true;
-#endif
-
             currentQualitySetting.shadows = (bool)newValue;
 
             if (lightweightRenderPipelineAsset != null)
