@@ -20,7 +20,7 @@ namespace DCL
     /// </summary>
     public class AssetPromise_GLTFast_Loader : AssetPromise_WithUrl<Asset_GLTFast_Loader>
     {
-        private const string SHADER_DCL_LIT = "Universal Render Pipeline/Unlit";
+        private const string SHADER_DCL_LIT = "DCL/Universal Render Pipeline/Unlit";
         private const string GLTFAST_THROTTLER_NAME = "GLTFastThrottler";
         private readonly ContentProvider contentProvider;
         private readonly string assetDirectoryPath;
