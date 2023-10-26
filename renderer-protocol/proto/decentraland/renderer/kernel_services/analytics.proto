@@ -55,15 +55,8 @@ message AnalyticsEventRequest {
 
 message AnalyticsEventResponse {}
 
-message DelightedSurveyRequest {
-    bool enabled = 1;
-}
-
-message DelightedSurveyResponse {}
-
 service AnalyticsKernelService {
     rpc PerformanceReport(PerformanceReportRequest) returns (PerformanceReportResponse) {}
     rpc SystemInfoReport(SystemInfoReportRequest) returns (SystemInfoReportResponse) {}
     rpc AnalyticsEvent(AnalyticsEventRequest) returns (AnalyticsEventResponse) {}
-    rpc SetDelightedSurveyEnabled(DelightedSurveyRequest) returns (DelightedSurveyResponse) {}
 }
