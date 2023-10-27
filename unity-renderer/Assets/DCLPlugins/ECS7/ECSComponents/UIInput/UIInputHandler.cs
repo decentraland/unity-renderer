@@ -1,4 +1,5 @@
-﻿using DCL.Controllers;
+﻿using Castle.Core.Logging;
+using DCL.Controllers;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
@@ -7,6 +8,7 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
@@ -23,6 +25,7 @@ namespace DCL.ECSComponents.UIInput
         private readonly WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool;
 
         private EventCallback<ChangeEvent<string>> onValueChanged;
+        private EventCallback<KeyDownEvent> onSubmit;
 
         internal TextField uiElement { get; private set; }
 
@@ -61,19 +64,55 @@ namespace DCL.ECSComponents.UIInput
                     entity,
                     uiElement,
                     resultComponentId);
+
+            // Can be optimized using <NavigationSubmitEvent> (a lot less calls) but somehow checking the
+            // last keycode read from user input, exiting if it's not KeyCode.Return
+            onSubmit = UIPointerEventsUtils
+               .RegisterFeedback<KeyDownEvent>
+                (inputResults,
+                    CreateInputResultOnSubmit,
+                    scene,
+                    entity,
+                    uiElement,
+                    resultComponentId);
+
+            /*uiElement.RegisterCallback<KeyDownEvent>(ev =>
+            {
+                if (ev.keyCode != KeyCode.Return) return;
+
+                Debug.Log($"ENTER KEY EVENT! - submitted string: {uiElement.value}");
+            });*/
+
+            /*uiElement.RegisterCallback<NavigationSubmitEvent>(ev =>
+            {
+                Debug.Log($"NAV SUBMIT EVENT! - submitted string: {uiElement.value}");
+            });*/
         }
 
-        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
+        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> evt)
         {
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
-            componentModel.Value = onValueChange.newValue;
+            componentModel.Value = evt.newValue;
+            return componentPooled;
+        }
+
+        private IPooledWrappedComponent CreateInputResultOnSubmit(KeyDownEvent evt)
+        {
+            if (evt.keyCode != KeyCode.Return) return null;
+
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.Value = uiElement.value;
+            // TODO: set 'isSubmit'
+            uiElement.value = string.Empty;
             return componentPooled;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             uiElement.UnregisterFeedback(onValueChanged);
+            uiElement.UnregisterFeedback(onSubmit);
             RemoveElementFromRoot(scene, entity, uiElement);
             uiElement = null;
             fontUpdater.Dispose();
