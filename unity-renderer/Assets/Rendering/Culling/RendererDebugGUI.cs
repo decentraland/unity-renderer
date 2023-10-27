@@ -44,6 +44,16 @@ namespace DCL.Rendering
 
             scroll = GUI.BeginScrollView(scrollArea, scroll, viewRectArea);
 
+            if (SceneReferences.i?.environmentLight != null)
+                DrawLabelAsList(POS_X, ref yPos, $"env light shadow mode: {SceneReferences.i?.environmentLight.shadows}");
+
+            DrawLabelAsList(POS_X, ref yPos, $"urp.supportsSoftShadows: {urp.supportsSoftShadows}");
+            DrawLabelAsList(POS_X, ref yPos, $"urp.supportsMainLightShadows: {urp.supportsMainLightShadows}");
+            DrawLabelAsList(POS_X, ref yPos, $"urp.supportsAdditionalLightShadows: {urp.supportsAdditionalLightShadows}");
+            DrawLabelAsList(POS_X, ref yPos, $"urp.shadowDistance: {urp.shadowDistance}");
+            DrawLabelAsList(POS_X, ref yPos, $"urp.mainLightShadowmapResolution: {urp.mainLightShadowmapResolution}");
+            DrawLabelAsList(POS_X, ref yPos, $"urp.additionalLightsShadowmapResolution: {urp.additionalLightsShadowmapResolution}");
+
             foreach (KeyValuePair<int, DataStore_WorldObjects.SceneData> entry in DataStore.i.sceneWorldObjects.sceneData)
             {
                 foreach (Renderer renderer in entry.Value.renderers.Get())
