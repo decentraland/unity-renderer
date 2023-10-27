@@ -23,7 +23,8 @@ namespace DCL.ECSComponents.UIInput
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
         private readonly WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool;
 
-        private EventCallback<KeyDownEvent> onValueChanged;
+        private EventCallback<ChangeEvent<string>> onValueChanged;
+        private EventCallback<NavigationSubmitEvent> onSubmit;
 
         internal TextField uiElement { get; private set; }
 
@@ -55,40 +56,51 @@ namespace DCL.ECSComponents.UIInput
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils
-               .RegisterFeedback<KeyDownEvent>
+               .RegisterFeedback<ChangeEvent<string>>
                 (inputResults,
-                    CreateInputResult,
+                    CreateOnChangeInputResult,
+                    scene,
+                    entity,
+                    uiElement,
+                    resultComponentId);
+
+            // We don't use <KeyDownEvent> because that one is called a lot more and is
+            // triggered twice for some reason (probably a unity bug)
+            onSubmit = UIPointerEventsUtils
+               .RegisterFeedback<NavigationSubmitEvent>
+                (inputResults,
+                    CreateOnSubmitInputResult,
                     scene,
                     entity,
                     uiElement,
                     resultComponentId);
         }
 
-        private int lastFrameCalled = 0;
-        private IPooledWrappedComponent CreateInputResult(KeyDownEvent evt)
+        private IPooledWrappedComponent CreateOnChangeInputResult(ChangeEvent<string> evt)
         {
-            int currentFrame = Time.frameCount;
-            if (lastFrameCalled == currentFrame) return null;
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.Value = uiElement.value;
+            componentModel.IsSubmit = false;
+            return componentPooled;
+        }
 
-            lastFrameCalled = currentFrame;
+        private IPooledWrappedComponent CreateOnSubmitInputResult(NavigationSubmitEvent evt)
+        {
+            // Space-bar is also detected as a navigation "submit" event
+            if (!Input.GetKeyDown(KeyCode.Return)) return null;
 
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.value;
-
-            // bool isSubmit = evt.keyCode == KeyCode.Return;
-            bool isSubmit = Input.GetKeyDown(KeyCode.Return);
-
-            componentModel.IsSubmit = isSubmit;
-            if (isSubmit)
-                uiElement.value = string.Empty;
-
+            componentModel.IsSubmit = true;
             return componentPooled;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             uiElement.UnregisterFeedback(onValueChanged);
+            uiElement.UnregisterFeedback(onSubmit);
             RemoveElementFromRoot(scene, entity, uiElement);
             uiElement = null;
             fontUpdater.Dispose();
