@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
@@ -24,8 +23,7 @@ namespace DCL.ECSComponents.UIInput
         private readonly AssetPromiseKeeper_Font fontPromiseKeeper;
         private readonly WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool;
 
-        private EventCallback<ChangeEvent<string>> onValueChanged;
-        private EventCallback<KeyDownEvent> onSubmit;
+        private EventCallback<KeyDownEvent> onValueChanged;
 
         internal TextField uiElement { get; private set; }
 
@@ -57,57 +55,33 @@ namespace DCL.ECSComponents.UIInput
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils
-               .RegisterFeedback<ChangeEvent<string>>
+               .RegisterFeedback<KeyDownEvent>
                 (inputResults,
                     CreateInputResult,
                     scene,
                     entity,
                     uiElement,
                     resultComponentId);
-
-            // Can be optimized using <NavigationSubmitEvent> (a lot less calls) but somehow checking the
-            // last keycode read from user input, exiting if it's not KeyCode.Return
-            onSubmit = UIPointerEventsUtils
-               .RegisterFeedback<KeyDownEvent>
-                (inputResults,
-                    CreateInputResultOnSubmit,
-                    scene,
-                    entity,
-                    uiElement,
-                    resultComponentId);
-
-            /*uiElement.RegisterCallback<KeyDownEvent>(ev =>
-            {
-                if (ev.keyCode != KeyCode.Return) return;
-
-                Debug.Log($"ENTER KEY EVENT! - submitted string: {uiElement.value}");
-            });*/
-
-            /*uiElement.RegisterCallback<NavigationSubmitEvent>(ev =>
-            {
-                Debug.Log($"NAV SUBMIT EVENT! - submitted string: {uiElement.value}");
-            });*/
         }
 
-        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> evt)
+        private int lastFrameCalled = 0;
+        private IPooledWrappedComponent CreateInputResult(KeyDownEvent evt)
         {
-            var componentPooled = componentPool.Get();
-            var componentModel = componentPooled.WrappedComponent.Model;
-            componentModel.Value = evt.newValue;
-            componentModel.IsSubmit = false;
-            return componentPooled;
-        }
+            int currentFrame = Time.frameCount;
+            if (lastFrameCalled == currentFrame) return null;
 
-        private IPooledWrappedComponent CreateInputResultOnSubmit(KeyDownEvent evt)
-        {
-            if (evt.keyCode != KeyCode.Return) return null;
+            lastFrameCalled = currentFrame;
 
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.value;
-            componentModel.IsSubmit = true;
 
-            uiElement.value = string.Empty;
+            // bool isSubmit = evt.keyCode == KeyCode.Return;
+            bool isSubmit = Input.GetKeyDown(KeyCode.Return);
+
+            componentModel.IsSubmit = isSubmit;
+            if (isSubmit)
+                uiElement.value = string.Empty;
 
             return componentPooled;
         }
@@ -115,7 +89,6 @@ namespace DCL.ECSComponents.UIInput
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             uiElement.UnregisterFeedback(onValueChanged);
-            uiElement.UnregisterFeedback(onSubmit);
             RemoveElementFromRoot(scene, entity, uiElement);
             uiElement = null;
             fontUpdater.Dispose();
