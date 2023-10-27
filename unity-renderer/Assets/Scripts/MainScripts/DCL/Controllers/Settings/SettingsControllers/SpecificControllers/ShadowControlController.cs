@@ -21,7 +21,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             if (lightweightRenderPipelineAsset == null)
                 return;
 
-            lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
+            // lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         public override object GetStoredValue() { return currentQualitySetting.shadows; }
@@ -30,8 +30,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentQualitySetting.shadows = (bool)newValue;
 
-            if (lightweightRenderPipelineAsset != null)
-                lwrpaShadowField?.SetValue(lightweightRenderPipelineAsset, currentQualitySetting.shadows);
+            // if (lightweightRenderPipelineAsset != null)
+            //     lwrpaShadowField?.SetValue(lightweightRenderPipelineAsset, currentQualitySetting.shadows);
 
             if (SceneReferences.i.environmentLight)
             {

@@ -21,7 +21,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             if (lightweightRenderPipelineAsset == null)
                 return;
 
-            lwrpaSoftShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
+            // lwrpaSoftShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         public override object GetStoredValue() { return currentQualitySetting.softShadows; }
@@ -30,8 +30,8 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             currentQualitySetting.softShadows = (bool)newValue;
 
-            if (lightweightRenderPipelineAsset != null)
-                lwrpaSoftShadowField?.SetValue(lightweightRenderPipelineAsset, currentQualitySetting.softShadows);
+            // if (lightweightRenderPipelineAsset != null)
+            //     lwrpaSoftShadowField?.SetValue(lightweightRenderPipelineAsset, currentQualitySetting.softShadows);
 
             if (SceneReferences.i.environmentLight)
             {
