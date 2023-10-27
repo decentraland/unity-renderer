@@ -94,6 +94,7 @@ namespace DCL.ECSComponents.UIInput
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = evt.newValue;
+            componentModel.IsSubmit = false;
             return componentPooled;
         }
 
@@ -104,8 +105,10 @@ namespace DCL.ECSComponents.UIInput
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.value;
-            // TODO: set 'isSubmit'
+            componentModel.IsSubmit = true;
+
             uiElement.value = string.Empty;
+
             return componentPooled;
         }
 
