@@ -23,7 +23,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
                 SceneReferences.i.environmentLight.shadows = shadowType;
             }
             else
-                Debug.LogError("Cannot set shadow mode to current light, SceneReferences.i.environmentLight is null");
+                Debug.LogWarning("Cannot set shadow mode to current light, SceneReferences.i.environmentLight is null");
 
             CommonSettingsScriptableObjects.shadowsDisabled.Set(!currentQualitySetting.shadows);
         }
