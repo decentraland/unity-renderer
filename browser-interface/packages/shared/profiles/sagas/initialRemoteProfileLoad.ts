@@ -18,11 +18,14 @@ export function* initialRemoteProfileLoad() {
 
   let profile: Avatar | null = yield call(fetchLocalProfile)
   try {
-    profile = yield call(
+    let profileFromCatalyst = yield call(
       fetchProfileFromCatalyst,
       userId,
       profile && profile.userId === userId ? profile.version : 0
     )
+    if (profileFromCatalyst) {
+      profile = profileFromCatalyst
+    }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
     throw e
