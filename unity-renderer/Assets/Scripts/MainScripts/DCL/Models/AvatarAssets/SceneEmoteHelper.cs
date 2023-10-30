@@ -46,6 +46,6 @@ namespace AvatarAssets
         }
 
         public static bool IsSceneEmote(string emoteId) =>
-            emoteId.StartsWith(SCENE_EMOTE_PREFIX);
+            emoteId.Contains(SCENE_EMOTE_PREFIX, StringComparison.OrdinalIgnoreCase);
     }
 }
