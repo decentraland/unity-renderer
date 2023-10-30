@@ -114,7 +114,6 @@ import {
 import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
 import { setAudioStream } from './audioStream'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
@@ -762,11 +761,6 @@ export class BrowserInterface {
    * @deprecated
    */
   public UserAcceptedCollectibles(_data: { id: string }) {}
-
-  /** @deprecated */
-  public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
-    setDelightedSurveyEnabled(data.enabled)
-  }
 
   public SetScenesLoadRadius(data: { newRadius: number }) {
     store.dispatch(setWorldLoadingRadius(Math.max(Math.round(data.newRadius), 1)))

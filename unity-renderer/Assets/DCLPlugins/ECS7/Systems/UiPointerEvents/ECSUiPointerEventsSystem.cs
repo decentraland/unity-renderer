@@ -76,13 +76,16 @@ namespace ECSSystems.ECSUiPointerEventsSystem
                 var unregisteredGroupElement = unregisteredUiPointerEvents[i];
                 IParcelScene scene = unregisteredGroupElement.scene;
                 IDCLEntity entity = unregisteredGroupElement.entity;
+                VisualElement visualElement = unregisteredGroupElement.componentData1.model.rootElement;
+
+                // Force pointer blocking
+                visualElement.pickingMode = PickingMode.Position;
 
                 InternalRegisteredUiPointerEvents uiPointerEvents;
 
                 // if `InternalPointerEvents` is dirty we delegate the callback setup to "InternalPointerEvents dirty" handler
                 if (!unregisteredGroupElement.componentData2.model.dirty)
                 {
-                    VisualElement visualElement = unregisteredGroupElement.componentData1.model.rootElement;
                     InternalPointerEvents events = unregisteredGroupElement.componentData2.model;
                     uiPointerEvents = CreateUiPointerEvents(scene, entity, inputResultsComponent, events);
                     RegisterUiPointerEvents(visualElement, uiPointerEvents);
@@ -106,16 +109,16 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             for (int i = 0; i < group.Count; i++)
             {
                 var groupElement = group[i];
+                VisualElement visualElement = groupElement.componentData1.model.rootElement;
+
+                // Force pointer blocking
+                visualElement.pickingMode = PickingMode.Position;
 
                 if (!groupElement.componentData2.model.dirty)
                     continue;
 
                 IParcelScene scene = groupElement.scene;
                 IDCLEntity entity = groupElement.entity;
-                VisualElement visualElement = groupElement.componentData1.model.rootElement;
-
-                // Force pointer blocking
-                visualElement.pickingMode = PickingMode.Position;
 
                 var registeredEventsData = registeredUiPointerEventsComponent.GetFor(scene, entity);
 

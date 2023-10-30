@@ -105,6 +105,21 @@ namespace DCL.Backpack
                     allEmotes.AddRange(embeddedEmotesSo.GetAllEmotes());
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
+                    Dictionary<string, WearableItem> consolidatedEmotes = new Dictionary<string, WearableItem>();
+                    foreach (var emote in allEmotes)
+                    {
+                        if (consolidatedEmotes.ContainsKey(emote.id))
+                        {
+                            consolidatedEmotes[emote.id].amount += emote.amount + 1;
+                        }
+                        else
+                        {
+                            emote.amount++;
+                            consolidatedEmotes[emote.id] = emote;
+                        }
+                    }
+                    allEmotes = consolidatedEmotes.Values.ToList();
+
                     try
                     {
                         await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
