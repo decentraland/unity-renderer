@@ -26,7 +26,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
 
-    public string userId => model.userId;
+    public string userId
+    {
+        get
+        {
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
+                return DebugConfigComponent.i.overrideUserID;
+#endif
+            return model.userId;
+        }
+    }
+
     public string ethAddress => model.ethAddress;
     public string userName => model.name;
     public string description => model.description;
@@ -129,6 +140,10 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.avatar.CopyFrom(newModel);
         this.snapshotObserver.RefreshWithTexture(newFaceSnapshot);
 
+#if UNITY_EDITOR
+        if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
+            return;
+#endif
         OnUpdate?.Invoke(this);
     }
 
@@ -147,6 +162,10 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         if (!rpcOnly)
         {
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
+                return;
+#endif
             OnUpdate?.Invoke(this);
             OnAvatarEmoteSet?.Invoke(id, timestamp, source);
         }
