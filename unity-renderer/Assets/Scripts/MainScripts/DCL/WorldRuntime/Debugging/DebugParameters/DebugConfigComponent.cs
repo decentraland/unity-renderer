@@ -39,6 +39,7 @@ namespace DCL
             ZONE,
             ORG,
             LOCAL_HOST,
+            SDK_TEST_SCENES,
             CUSTOM,
         }
 
@@ -188,6 +189,7 @@ namespace DCL
                     return;
                 }
             }
+            else if (baseUrlMode.Equals(BaseUrl.SDK_TEST_SCENES)) { baseUrl = "http://sdk-test-scenes.decentraland.zone/?"; }
             else
             {
                 baseUrl = "http://play.decentraland.zone/?";
