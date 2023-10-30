@@ -26,7 +26,7 @@ namespace DCL.ECSComponents.UIInput
         private EventCallback<ChangeEvent<string>> onValueChanged;
         private EventCallback<NavigationSubmitEvent> onSubmit;
 
-        internal TextField uiElement { get; private set; }
+        public TextField uiElement { get; private set; }
 
         internal TextFieldPlaceholder placeholder { get; private set; }
 
