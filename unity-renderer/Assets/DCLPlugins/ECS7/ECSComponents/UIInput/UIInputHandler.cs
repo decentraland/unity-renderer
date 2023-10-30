@@ -92,7 +92,9 @@ namespace DCL.ECSComponents.UIInput
             evt.StopPropagation();
 
             // Space-bar is also detected as a navigation "submit" event
-            if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter)) return null;
+            if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.commandKey
+                || (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter)))
+                return null;
 
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;

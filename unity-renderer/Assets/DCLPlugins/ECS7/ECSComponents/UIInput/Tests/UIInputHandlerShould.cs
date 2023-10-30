@@ -1,6 +1,6 @@
-﻿using DCL.ECS7.ComponentWrapper;
+﻿using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
-using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using Decentraland.Common;
 using NUnit.Framework;
@@ -56,19 +56,17 @@ namespace DCL.ECSComponents.UIInput.Tests
         }
 
         [Test]
-        public void EmitResult()
+        public void EmitOnChangeInputResult()
         {
             const string TEST_VALUE = "TEST_TEXT";
 
             UpdateComponentModel();
 
-            handler.uiElement.value = TEST_VALUE;
-            var result = pool.Get();
-            result.WrappedComponent.Model.Value = TEST_VALUE;
+            Assert.IsFalse(ContainsInputResult(TEST_VALUE));
 
-            // Assert.Contains(
-            //     new InternalUIInputResults.Result(result, RESULT_COMPONENT_ID),
-            //     uiInputResults.Results);
+            handler.uiElement.value = TEST_VALUE;
+
+            Assert.IsTrue(ContainsInputResult(TEST_VALUE));
         }
 
         [Test]
@@ -97,6 +95,19 @@ namespace DCL.ECSComponents.UIInput.Tests
                 model.Value = "TEXT-VALUE";
 
             handler.OnComponentModelUpdated(scene, entity, model);
+        }
+
+        private bool ContainsInputResult(string targetTextValue, bool targetSubmitValue = false)
+        {
+            foreach (var inputResult in uiInputResults.Results)
+            {
+                if (inputResult.Message.WrappedComponentBase is IWrappedComponent<PBUiInputResult> comp
+                    && inputResult.ComponentId == RESULT_COMPONENT_ID
+                    && comp.Model.Value == targetTextValue
+                    && comp.Model.IsSubmit == targetSubmitValue) return true;
+            }
+
+            return false;
         }
     }
 }
