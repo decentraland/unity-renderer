@@ -78,6 +78,8 @@ namespace DCL.ECSComponents.UIInput
 
         private IPooledWrappedComponent CreateOnChangeInputResult(ChangeEvent<string> evt)
         {
+            evt.StopPropagation();
+
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.value;
@@ -87,13 +89,19 @@ namespace DCL.ECSComponents.UIInput
 
         private IPooledWrappedComponent CreateOnSubmitInputResult(NavigationSubmitEvent evt)
         {
+            evt.StopPropagation();
+
             // Space-bar is also detected as a navigation "submit" event
-            if (!Input.GetKeyDown(KeyCode.Return)) return null;
+            if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter)) return null;
 
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
             componentModel.Value = uiElement.value;
             componentModel.IsSubmit = true;
+
+            // Clear text field without triggering its onChange event
+            uiElement.SetValueWithoutNotify(string.Empty);
+
             return componentPooled;
         }
 
