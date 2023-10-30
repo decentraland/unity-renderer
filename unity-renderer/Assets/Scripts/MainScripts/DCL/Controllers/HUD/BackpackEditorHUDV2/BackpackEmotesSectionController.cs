@@ -119,16 +119,24 @@ namespace DCL.Backpack
                         }
                     }
                     allEmotes = consolidatedEmotes.Values.ToList();
+                    UpdateEmotes();
 
                     try
                     {
-                        await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
-                            FetchCustomEmoteItems(allEmotes, ct));
+                        await FetchCustomEmoteItems(allEmotes, ct);
+                        await FetchCustomEmoteCollections(allEmotes, ct);
+                        UpdateEmotes();
                     }
-                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    catch (Exception e) when (e is not OperationCanceledException)
+                    {
+                        Debug.LogException(e);
+                    }
 
-                    dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
-                    emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
+                    void UpdateEmotes()
+                    {
+                        dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
+                        emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
+                    }
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e) { Debug.LogError($"Error loading emotes: {e.Message}"); }
