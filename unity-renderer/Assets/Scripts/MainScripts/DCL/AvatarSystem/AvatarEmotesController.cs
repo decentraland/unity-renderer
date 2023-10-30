@@ -86,7 +86,7 @@ namespace AvatarSystem
             catch (Exception e) { Debug.LogException(e); }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool ignoreTimestamp)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool forcePlay)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
             if (!CanPlayEmote()) return;
@@ -95,7 +95,7 @@ namespace AvatarSystem
             if (!equippedEmotes.ContainsKey(emoteKey)) return;
 
             float volume = GetEmoteVolume();
-            animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, ignoreTimestamp);
+            animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, forcePlay);
         }
 
         private bool CanPlayEmote()

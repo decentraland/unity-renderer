@@ -458,7 +458,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public void SetIdleFrame() { animation.Play(currentLocomotions.idle.name); }
 
     public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
-        bool ignoreTimestamp)
+        bool forcePlay)
     {
         if (animation == null)
             return;
@@ -470,9 +470,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             return;
 
         bool loop = emoteClipDataMap.TryGetValue(emoteId, out var clipData) && clipData.Loop;
-        bool mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && (blackboard.expressionTriggerTimestamp != timestamps || ignoreTimestamp);
+        bool mustTriggerAnimation = !string.IsNullOrEmpty(emoteId) && (blackboard.expressionTriggerTimestamp != timestamps || forcePlay);
 
-        if (loop && blackboard.expressionTriggerId == emoteId)
+        bool isTheSameLoopingEmote = loop && blackboard.expressionTriggerId == emoteId;
+
+        // Triggering an emote manually updates the timestamp, the looping emote by itself sends a timestamp of -1
+        // so if we are already using an emote that looped and we receive the play emote command with that timestamp, we ignore
+        if (isTheSameLoopingEmote && timestamps < 0)
             return;
 
         blackboard.expressionTriggerId = emoteId;

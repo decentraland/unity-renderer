@@ -140,10 +140,6 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.avatar.CopyFrom(newModel);
         this.snapshotObserver.RefreshWithTexture(newFaceSnapshot);
 
-#if UNITY_EDITOR
-        if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
-            return;
-#endif
         OnUpdate?.Invoke(this);
     }
 
@@ -157,15 +153,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
-            Timestamp = timestamp
+            Timestamp = rpcOnly ? -1 : timestamp
         });
 
         if (!rpcOnly)
         {
-#if UNITY_EDITOR
-            if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
-                return;
-#endif
             OnUpdate?.Invoke(this);
             OnAvatarEmoteSet?.Invoke(id, timestamp, source);
         }
