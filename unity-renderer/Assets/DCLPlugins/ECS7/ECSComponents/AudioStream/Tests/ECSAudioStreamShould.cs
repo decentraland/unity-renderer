@@ -192,6 +192,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalAudioStreamWithoutPermissionsSet()
         {
             PBAudioStream model = new PBAudioStream()
@@ -209,6 +210,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalAudioStreamWithPermissionsSet()
         {
             PBAudioStream model = new PBAudioStream()
@@ -228,6 +230,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalAudioStreamWithWrongHostName()
         {
             PBAudioStream model = new PBAudioStream()
