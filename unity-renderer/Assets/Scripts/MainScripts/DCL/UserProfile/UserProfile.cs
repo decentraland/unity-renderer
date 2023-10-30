@@ -31,6 +31,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         get
         {
 #if UNITY_EDITOR
+            if (DebugConfigComponent.i == null) return model.userId;
             if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
                 return DebugConfigComponent.i.overrideUserID;
 #endif
