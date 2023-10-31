@@ -2,6 +2,7 @@
 using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.SubscriptionsAPIService;
+using SocialFeaturesAnalytics;
 using System;
 using System.Net.Mail;
 using System.Threading;
@@ -25,6 +26,7 @@ namespace DCL.MyAccount
         private readonly MyAccountSectionHUDController myAccountSectionHUDController;
         private readonly DataStore dataStore;
         private readonly ISubscriptionsAPIService subscriptionsAPIService;
+        private readonly ISocialAnalytics socialAnalytics;
 
         private CancellationTokenSource loadEmailCancellationToken;
         private CancellationTokenSource updateEmailCancellationToken;
@@ -38,13 +40,15 @@ namespace DCL.MyAccount
             IUpdateEmailConfirmationHUDComponentView updateEmailConfirmationHUDComponentView,
             MyAccountSectionHUDController myAccountSectionHUDController,
             DataStore dataStore,
-            ISubscriptionsAPIService subscriptionsAPIService)
+            ISubscriptionsAPIService subscriptionsAPIService,
+            ISocialAnalytics socialAnalytics)
         {
             this.view = view;
             this.updateEmailConfirmationHUDComponentView = updateEmailConfirmationHUDComponentView;
             this.myAccountSectionHUDController = myAccountSectionHUDController;
             this.dataStore = dataStore;
             this.subscriptionsAPIService = subscriptionsAPIService;
+            this.socialAnalytics = socialAnalytics;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionOpen;
             dataStore.myAccount.openSection.OnChange += OnMyAccountSectionTabChanged;
@@ -241,7 +245,10 @@ namespace DCL.MyAccount
             view.SetStatusAsPending(savedIsPending);
 
             if (wasSuccessfullyUpdated)
+            {
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
+                socialAnalytics.SendProfileEdit(0, false, PlayerActionSource.EmailNotifications, ProfileField.Email);
+            }
         }
     }
 }

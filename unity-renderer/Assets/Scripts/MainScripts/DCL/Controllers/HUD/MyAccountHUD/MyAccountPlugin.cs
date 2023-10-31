@@ -54,6 +54,8 @@ namespace DCL.MyAccount
 
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
+            var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge);
+
             myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
                 dataStore);
@@ -67,7 +69,7 @@ namespace DCL.MyAccount
                 myAccountSectionHUDController,
                 KernelConfig.i,
                 new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics),
-                new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge),
+                socialAnalytics,
                 countryListProvider,
                 genderListProvider,
                 sexualOrientationProvider,
@@ -81,7 +83,8 @@ namespace DCL.MyAccount
                 updateEmailConfirmationHUD,
                 myAccountSectionHUDController,
                 dataStore,
-                Environment.i.serviceLocator.Get<ISubscriptionsAPIService>());
+                Environment.i.serviceLocator.Get<ISubscriptionsAPIService>(),
+                socialAnalytics);
         }
 
         public void Dispose()
