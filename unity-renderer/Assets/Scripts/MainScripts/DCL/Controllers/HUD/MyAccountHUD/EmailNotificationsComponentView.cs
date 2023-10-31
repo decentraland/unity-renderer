@@ -12,6 +12,7 @@ namespace DCL.MyAccount
         [SerializeField] internal TMP_InputField emailInputField;
         [SerializeField] internal GameObject emailEditionLogo;
         [SerializeField] internal GameObject emailInputFieldInvalid;
+        [SerializeField] internal GameObject emailInputFieldEditing;
         [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal GameObject pendingStatusWarning;
         [SerializeField] internal TMP_Text pendingStatuWarningText;
@@ -30,7 +31,11 @@ namespace DCL.MyAccount
             base.Awake();
 
             emailInputField.onValueChanged.AddListener(OnEmailTextChanged);
-            emailInputField.onSelect.AddListener(_ => emailEditionLogo.SetActive(false));
+            emailInputField.onSelect.AddListener(_ =>
+            {
+                emailEditionLogo.SetActive(false);
+                emailInputFieldEditing.SetActive(true);
+            });
             emailInputField.onDeselect.AddListener(OnEmailTextSubmitted);
             emailInputField.onSubmit.AddListener(OnEmailTextSubmitted);
         }
@@ -58,6 +63,7 @@ namespace DCL.MyAccount
         public void ResetForm()
         {
             emailEditionLogo.SetActive(true);
+            emailInputFieldEditing.SetActive(false);
             emailInputFieldInvalid.SetActive(false);
             emailInputInvalidLabel.SetActive(false);
             SetStatusAsPending(false);
@@ -100,6 +106,7 @@ namespace DCL.MyAccount
         private void OnEmailTextSubmitted(string newName)
         {
             emailEditionLogo.SetActive(true);
+            emailInputFieldEditing.SetActive(false);
             OnEmailSubmitted?.Invoke(newName);
         }
     }
