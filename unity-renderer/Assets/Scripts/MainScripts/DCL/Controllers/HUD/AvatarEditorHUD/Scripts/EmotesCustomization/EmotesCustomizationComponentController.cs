@@ -99,6 +99,8 @@ namespace DCL.EmotesCustomization
                 AddEmote(emote);
 
             UpdateEmoteSlots();
+
+            view.Refresh();
         }
 
         public void SetEquippedBodyShape(string bodyShapeId)
