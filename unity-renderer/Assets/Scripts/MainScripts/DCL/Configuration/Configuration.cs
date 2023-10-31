@@ -208,13 +208,14 @@ namespace DCL.Configuration
         public static float RESERVED_CANVAS_TOP_PERCENTAGE = 10f;
     }
 
-    public static class NFTDataFetchingSettings
+    public static class ExternalDataFetchingSettings
     {
         public static UnityEngine.Vector2
             NORMALIZED_DIMENSIONS =
                 new UnityEngine.Vector2(512f, 512f); // The image dimensions that correspond to Vector3.One scale
 
         public static string DAR_API_URL = "https://schema.decentraland.org/dar";
+        public const bool CHECK_ALLOWED_MEDIA_HOSTNAMES = false;
     }
 
     public static class PhysicsLayers

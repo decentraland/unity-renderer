@@ -156,6 +156,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalVideoWithoutPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -176,6 +177,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalVideoWithRightPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -195,6 +197,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalVideoWithWrongHostName()
         {
             PBVideoPlayer model = new PBVideoPlayer()
