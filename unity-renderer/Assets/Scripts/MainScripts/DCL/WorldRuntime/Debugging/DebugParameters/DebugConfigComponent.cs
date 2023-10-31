@@ -39,6 +39,7 @@ namespace DCL
             ZONE,
             ORG,
             LOCAL_HOST,
+            SDK_TEST_SCENES,
             CUSTOM,
         }
 
@@ -68,9 +69,6 @@ namespace DCL
 
         public Vector2 startInCoords = new Vector2(-99, 109);
 
-        [Tooltip("Set this value to load the catalog from another wallet for debug purposes")]
-        public string overrideUserID = "";
-
         [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
 
         public bool enableTutorial = false;
@@ -95,7 +93,6 @@ namespace DCL
             DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
             DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
-            DataStore.i.debugConfig.overrideUserID = overrideUserID;
             DataStore.i.performance.multithreading.Set(multithreaded);
             if (disableGLTFDownloadThrottle) DataStore.i.performance.maxDownloads.Set(999);
             Texture.allowThreadedTextureCreation = multithreaded;
@@ -188,6 +185,7 @@ namespace DCL
                     return;
                 }
             }
+            else if (baseUrlMode.Equals(BaseUrl.SDK_TEST_SCENES)) { baseUrl = "http://sdk-test-scenes.decentraland.zone/?"; }
             else
             {
                 baseUrl = "http://play.decentraland.zone/?";

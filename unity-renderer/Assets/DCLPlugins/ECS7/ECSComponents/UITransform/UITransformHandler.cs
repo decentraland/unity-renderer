@@ -89,11 +89,11 @@ namespace DCL.ECSComponents
             // Layout size
             if (model.HeightUnit != YGUnit.YguUndefined)
             {
-                element.style.height = new Length(model.Height, GetUnit(model.HeightUnit));
+                element.style.height = model.HeightUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.Height, GetUnit(model.HeightUnit));
             }
             if (model.WidthUnit != YGUnit.YguUndefined)
             {
-                element.style.width = new Length(model.Width, GetUnit(model.WidthUnit));
+                element.style.width = model.WidthUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.Width, GetUnit(model.WidthUnit));
             }
             if (model.MaxWidthUnit != YGUnit.YguUndefined)
             {

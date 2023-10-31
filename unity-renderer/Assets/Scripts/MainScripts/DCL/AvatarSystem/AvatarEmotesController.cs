@@ -15,6 +15,7 @@ namespace AvatarSystem
     public class AvatarEmotesController : IAvatarEmotesController
     {
         private const float BASE_VOLUME = 0.2f;
+        private const string INSIDE_CAMERA = "INSIDE_CAMERA";
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
 
@@ -38,7 +39,9 @@ namespace AvatarSystem
         public void AddVisibilityConstraint(string key)
         {
             visibilityConstraints.Add(key);
-            StopEmote();
+
+            if (!CanPlayEmote())
+                StopEmote();
         }
 
         public void RemoveVisibilityConstraint(string key)
@@ -83,16 +86,23 @@ namespace AvatarSystem
             catch (Exception e) { Debug.LogException(e); }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool ignoreTimestamp)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool forcePlay)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
-            if (visibilityConstraints.Count > 0) return;
+            if (!CanPlayEmote()) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
             if (!equippedEmotes.ContainsKey(emoteKey)) return;
 
             float volume = GetEmoteVolume();
-            animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, ignoreTimestamp);
+            animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, forcePlay);
+        }
+
+        private bool CanPlayEmote()
+        {
+            if (visibilityConstraints.Count == 0) return true;
+            if (visibilityConstraints.Count > 1) return false;
+            return visibilityConstraints.Contains(INSIDE_CAMERA);
         }
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere

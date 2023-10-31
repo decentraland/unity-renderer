@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DCLServices.EmotesCatalog
 {
@@ -24,6 +25,9 @@ namespace DCLServices.EmotesCatalog
             }
 
             public EmoteRequestDto[] elements;
+            public int totalAmount;
+            public int pageSize;
+            public int pageNum;
         }
 
         public event Action<IReadOnlyList<WearableItem>> OnEmotesReceived;
@@ -61,21 +65,18 @@ namespace DCLServices.EmotesCatalog
         private async UniTask RequestOwnedEmotesAsync(string userId)
         {
             var url = $"{catalyst.lambdasUrl}/users/{userId}/emotes";
-            var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url, cancellationToken: cts.Token);
 
-            if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
+            List<OwnedEmotesRequestDto.EmoteRequestDto> requestedEmotes = new List<OwnedEmotesRequestDto.EmoteRequestDto>();
 
-            if (result.response.elements.Length <= 0)
-            {
-                OnOwnedEmotesReceived?.Invoke(new List<WearableItem>(), userId);
+            if (!await FullListEmoteFetch(userId, url, requestedEmotes))
                 return;
-            }
 
             var tempList = PoolUtils.RentList<string>();
             var emoteUrns = tempList.GetList();
 
             Dictionary<string, int> urnToAmountMap = new Dictionary<string, int>();
-            foreach (OwnedEmotesRequestDto.EmoteRequestDto emoteRequestDto in result.response.elements)
+
+            foreach (OwnedEmotesRequestDto.EmoteRequestDto emoteRequestDto in requestedEmotes)
             {
                 emoteUrns.Add(emoteRequestDto.urn);
                 urnToAmountMap[emoteRequestDto.urn] = emoteRequestDto.amount;
@@ -86,6 +87,40 @@ namespace DCLServices.EmotesCatalog
             tempList.Dispose();
 
             OnOwnedEmotesReceived?.Invoke(emotes, userId);
+        }
+
+        // This recursiveness is horrible, we should add proper pagination
+        private async UniTask<bool> FullListEmoteFetch(string userId, string url, List<OwnedEmotesRequestDto.EmoteRequestDto> requestedEmotes)
+        {
+            int requestedCount = 0;
+            int totalEmotes = 99999;
+            int pageNum = 1;
+
+            while (requestedCount < totalEmotes)
+            {
+                var queryParams = new List<(string name, string value)>
+                {
+                    ("pageNum", pageNum.ToString())
+                }.ToArray();
+
+                var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url,
+                    cancellationToken: cts.Token, urlEncodedParams: queryParams);
+
+                if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
+
+                if (result.response.elements.Length <= 0 && requestedCount <= 0)
+                {
+                    OnOwnedEmotesReceived?.Invoke(new List<WearableItem>(), userId);
+                    return false;
+                }
+
+                requestedCount += result.response.elements.Length;
+                totalEmotes = result.response.totalAmount;
+                pageNum++;
+                requestedEmotes.AddRange(result.response.elements);
+            }
+
+            return true;
         }
 
         public void RequestEmote(string emoteId)
@@ -135,10 +170,7 @@ namespace DCLServices.EmotesCatalog
                 var contentUrl = $"{catalyst.contentUrl}contents/";
                 var wearableItem = dto.ToWearableItem(contentUrl);
 
-                if (urnToAmountMap != null && urnToAmountMap.TryGetValue(dto.id, out int amount))
-                {
-                    wearableItem.amount = amount;
-                }
+                if (urnToAmountMap != null && urnToAmountMap.TryGetValue(dto.id, out int amount)) { wearableItem.amount = amount; }
 
                 wearableItem.baseUrl = contentUrl;
                 wearableItem.baseUrlBundles = assetBundlesUrl;

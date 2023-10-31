@@ -142,7 +142,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
-            Timestamp = timestamp
+            Timestamp = rpcOnly ? -1 : timestamp
         });
 
         if (!rpcOnly)
