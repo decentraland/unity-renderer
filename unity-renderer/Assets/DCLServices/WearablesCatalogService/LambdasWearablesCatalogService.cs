@@ -173,13 +173,6 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
-#if UNITY_EDITOR
-            string debugUserId = dataStore.debugConfig.overrideUserID;
-
-            if (!string.IsNullOrEmpty(debugUserId))
-                userId = debugUserId;
-#endif
-
             var createNewPointer = false;
 
             if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer)) { createNewPointer = true; }
