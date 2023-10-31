@@ -30,6 +30,7 @@ namespace SignupHUD
         [SerializeField] internal ToggleComponentView agreeTosAndPrivacyPolicyToggle;
         [SerializeField] internal TMP_Text tosAndPrivacyPolicyText;
         [SerializeField] internal Button termsOfServiceAgreeButton;
+        [SerializeField] internal Image termsOfServiceAgreeButtonIcon;
 
         public override void Awake()
         {
@@ -56,7 +57,7 @@ namespace SignupHUD
 
         private void InitNameAndEmailScreen()
         {
-            termsOfServiceAgreeButton.interactable = false;
+            SetTermsOfServiceAgreeButtonInteractable(false);
             nameCurrentCharacters.text = $"{0}/{MAX_NAME_LENGTH}";
             nameInputField.characterLimit = MAX_NAME_LENGTH;
             nameInputInvalidLabel.SetActive(false);
@@ -86,7 +87,7 @@ namespace SignupHUD
 
         private void InitTermsOfServicesScreen()
         {
-            termsOfServiceAgreeButton.interactable = false;
+            SetTermsOfServiceAgreeButtonInteractable(false);
             termsOfServiceAgreeButton.onClick.AddListener(() =>
             {
                 OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text);
@@ -99,10 +100,10 @@ namespace SignupHUD
             string nameText = nameInputField.text;
             string emailText = emailInputField.text;
 
-            termsOfServiceAgreeButton.interactable =
+            SetTermsOfServiceAgreeButtonInteractable(
                 nameText.Length >= MIN_NAME_LENGTH &&
                 IsValidName(nameText) && IsValidEmail(emailText) &&
-                agreeTosAndPrivacyPolicyToggle.isOn;
+                agreeTosAndPrivacyPolicyToggle.isOn);
         }
 
         private bool IsValidEmail(string email)
@@ -139,6 +140,12 @@ namespace SignupHUD
 
             TMP_LinkInfo linkInfo = tosAndPrivacyPolicyText.textInfo.linkInfo[linkIndex];
             OnLinkClicked?.Invoke(linkInfo.GetLinkID());
+        }
+
+        private void SetTermsOfServiceAgreeButtonInteractable(bool isInteractable)
+        {
+            termsOfServiceAgreeButton.interactable = isInteractable;
+            termsOfServiceAgreeButtonIcon.color = new Color(termsOfServiceAgreeButtonIcon.color.r, termsOfServiceAgreeButtonIcon.color.g, termsOfServiceAgreeButtonIcon.color.b, isInteractable ? 1f : 0.1f);
         }
     }
 }

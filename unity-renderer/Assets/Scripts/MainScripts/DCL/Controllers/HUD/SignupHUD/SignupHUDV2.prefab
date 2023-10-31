@@ -2137,6 +2137,7 @@ MonoBehaviour:
   agreeTosAndPrivacyPolicyToggle: {fileID: 2654011316450251598}
   tosAndPrivacyPolicyText: {fileID: 7762126982973327232}
   termsOfServiceAgreeButton: {fileID: 2910859052875627039}
+  termsOfServiceAgreeButtonIcon: {fileID: 493961233402157412}
 --- !u!1 &5639800636375264322
 GameObject:
   m_ObjectHideFlags: 0
@@ -3384,6 +3385,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb037d81b9c10ad439a13e356a17bab6, type: 3}
+--- !u!114 &493961233402157412 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7518669975530283665, guid: fb037d81b9c10ad439a13e356a17bab6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7966104259838049269}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2910859052875627039 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5109399184885072362, guid: fb037d81b9c10ad439a13e356a17bab6,
