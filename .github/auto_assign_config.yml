@@ -9,14 +9,13 @@ reviewGroups:
     - sandrade-dcl    
     - lorux0
     - davidejensen
-    - dalkia
     - popuz
     - Kinerius
     - mikhail-dcl
     - pravusjif
   qa:
-    - kwssbocian
-    - kwsskulinski
+    - Ludmilafantaniella
+    - LucasLioyQA
     - anicalbano
 
 filterLabels:
