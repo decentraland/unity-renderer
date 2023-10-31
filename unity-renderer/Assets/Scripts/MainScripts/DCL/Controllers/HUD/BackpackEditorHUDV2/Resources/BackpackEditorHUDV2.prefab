@@ -2217,6 +2217,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   sectionSelector: {fileID: 4937913390550088837}
   wearablesSection: {fileID: 8694961808569182621}
+  wearablesSectionBackground: {fileID: 3183983164897129620}
   emotesSection: {fileID: 8105447645029322740}
   backpackPreviewPanel: {fileID: 1525771720304835258}
   wearableGridComponentView: {fileID: 1749780642349599266}
@@ -9524,6 +9525,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 036f9ab7337445c7825161e4d11fbfbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3183983164897129620 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6347199185060100180, guid: 7987c409c7fea4189954a35a350cfd2a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8375023868890549440}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8694961808569182621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &3816535422934981372 stripped

@@ -32,6 +32,7 @@ namespace DCL.Backpack
 
         [SerializeField] internal SectionSelectorComponentView sectionSelector;
         [SerializeField] internal GameObject wearablesSection;
+        [SerializeField] internal Image wearablesSectionBackground;
         [SerializeField] internal GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
@@ -287,6 +288,7 @@ namespace DCL.Backpack
             signUpHeader.SetActive(isActive);
             backgroundForSignUp.SetActive(isActive);
             background.SetActive(!isActive);
+            wearablesSectionBackground.enabled = !isActive;
 
             foreach (GameObject go in objectsToDeactivateInSignUpMode)
                 go.SetActive(!isActive);
