@@ -18,5 +18,6 @@ namespace DCL.MyAccount
         void SetEmailFormValid(bool isValid);
         void ResetForm();
         void SetEmailInputInteractable(bool isInteractable);
+        void SetEmailUpdateLoadingActive(bool isActive);
     }
 }

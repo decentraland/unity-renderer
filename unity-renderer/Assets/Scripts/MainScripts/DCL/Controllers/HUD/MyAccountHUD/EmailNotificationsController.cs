@@ -120,6 +120,7 @@ namespace DCL.MyAccount
             view.SetStatusAsPending(savedIsPending);
             view.SetEmailFormValid(true);
             view.SetEmailInputInteractable(true);
+            view.SetEmailUpdateLoadingActive(false);
         }
 
         private void OnReSendConfirmationEmailClicked()
@@ -186,6 +187,7 @@ namespace DCL.MyAccount
         {
             var wasSuccessfullyUpdated = false;
             view.SetEmailInputInteractable(false);
+            view.SetEmailUpdateLoadingActive(true);
 
             if (needConfirmation && !string.IsNullOrEmpty(savedEmail))
             {
@@ -243,6 +245,7 @@ namespace DCL.MyAccount
 
             view.SetEmailInputInteractable(true);
             view.SetStatusAsPending(savedIsPending);
+            view.SetEmailUpdateLoadingActive(false);
 
             if (wasSuccessfullyUpdated)
             {

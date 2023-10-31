@@ -10,12 +10,14 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
         [SerializeField] internal TMP_InputField emailInputField;
+        [SerializeField] internal GameObject emailEditionLogoContainer;
         [SerializeField] internal GameObject emailEditionLogo;
+        [SerializeField] internal GameObject emailEditionLoadingSpinner;
         [SerializeField] internal GameObject emailInputFieldInvalid;
         [SerializeField] internal GameObject emailInputFieldEditing;
         [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal GameObject pendingStatusWarning;
-        [SerializeField] internal TMP_Text pendingStatuWarningText;
+        [SerializeField] internal TMP_Text pendingStatusWarningText;
         [SerializeField] internal Sprite deleteEmailSprite;
         [SerializeField] internal Sprite updateEmailSprite;
 
@@ -72,6 +74,12 @@ namespace DCL.MyAccount
         public void SetEmailInputInteractable(bool isInteractable) =>
             emailInputField.interactable = isInteractable;
 
+        public void SetEmailUpdateLoadingActive(bool isActive)
+        {
+            emailEditionLogoContainer.SetActive(!isActive);
+            emailEditionLoadingSpinner.SetActive(isActive);
+        }
+
         public override void Show(bool instant = false) =>
             gameObject.SetActive(true);
 
@@ -80,11 +88,11 @@ namespace DCL.MyAccount
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pendingStatuWarningText, Input.mousePosition, null);
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pendingStatusWarningText, Input.mousePosition, null);
             if (linkIndex == -1)
                 return;
 
-            TMP_LinkInfo linkInfo = pendingStatuWarningText.textInfo.linkInfo[linkIndex];
+            TMP_LinkInfo linkInfo = pendingStatusWarningText.textInfo.linkInfo[linkIndex];
             if (linkInfo.GetLinkID() == "reSendConfirmationEmail")
                 OnReSendConfirmationEmailClicked?.Invoke();
         }
