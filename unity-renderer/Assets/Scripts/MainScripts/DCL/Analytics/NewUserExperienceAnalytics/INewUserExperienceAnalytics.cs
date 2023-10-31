@@ -2,4 +2,5 @@
 {
     void AvatarEditSuccessNux();
     void SendTermsOfServiceAcceptedNux();
+    void SendClickOnboardingJumpIn(string nameChosen, string email);
 }
