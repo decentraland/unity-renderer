@@ -7,7 +7,7 @@ namespace AvatarSystem
     {
         bool Prepare(string bodyshapeId, GameObject container);
         void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
-            bool ignoreTimestamp);
+            bool forcePlay);
         void StopEmote();
         void EquipEmote(string emoteId, EmoteClipData emoteClipData);
         void UnequipEmote(string emoteId);

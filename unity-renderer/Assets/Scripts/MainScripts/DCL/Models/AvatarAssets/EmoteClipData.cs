@@ -55,6 +55,8 @@ namespace DCL.Emotes
             {
                 foreach (Renderer renderer in renderers)
                 {
+                    if (renderer.name.Contains("_reference", StringComparison.OrdinalIgnoreCase)) continue;
+
                     renderer.enabled = true;
                     renderer.gameObject.layer = gameObjectLayer;
                     renderer.allowOcclusionWhenDynamic = occlude;
