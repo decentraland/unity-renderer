@@ -26,19 +26,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public event Action<UserProfile> OnUpdate;
     public event Action<string, long, EmoteSource> OnAvatarEmoteSet;
 
-    public string userId
-    {
-        get
-        {
-#if UNITY_EDITOR
-            if (DebugConfigComponent.i == null) return model.userId;
-            if (!string.IsNullOrEmpty(DebugConfigComponent.i.overrideUserID))
-                return DebugConfigComponent.i.overrideUserID;
-#endif
-            return model.userId;
-        }
-    }
-
+    public string userId => model.userId;
     public string ethAddress => model.ethAddress;
     public string userName => model.name;
     public string description => model.description;

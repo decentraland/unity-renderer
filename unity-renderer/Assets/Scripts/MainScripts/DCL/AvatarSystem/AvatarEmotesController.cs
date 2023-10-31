@@ -100,13 +100,9 @@ namespace AvatarSystem
 
         private bool CanPlayEmote()
         {
-            var isHiddenByConstraint = false;
-
-            foreach (string constraint in visibilityConstraints)
-                if (constraint != INSIDE_CAMERA)
-                    isHiddenByConstraint = true;
-
-            return !isHiddenByConstraint;
+            if (visibilityConstraints.Count == 0) return true;
+            if (visibilityConstraints.Count > 1) return false;
+            return visibilityConstraints.Contains(INSIDE_CAMERA);
         }
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
