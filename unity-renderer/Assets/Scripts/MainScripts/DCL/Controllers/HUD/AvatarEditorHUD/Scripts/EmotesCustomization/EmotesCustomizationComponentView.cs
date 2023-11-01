@@ -52,7 +52,7 @@ namespace DCL.EmotesCustomization
         {
             emoteSlotSelector.RefreshControl();
             emotesGrid.RefreshControl();
-            columnsOrganizerComponentView.RefreshControl();
+            columnsOrganizerComponentView?.RefreshControl();
         }
 
         public override void Dispose()
