@@ -471,16 +471,16 @@ namespace DCL.Backpack
             TakeSnapshots(
                 onSuccess: (face256Snapshot, bodySnapshot) =>
                 {
-                    isTakingSnapshot = false;
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(face256Snapshot, bodySnapshot);
+                    isTakingSnapshot = false;
                     task.TrySetResult();
                 },
                 onFailed: () =>
                 {
-                    isTakingSnapshot = false;
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(new Texture2D(256, 256), new Texture2D(256, 256));
+                    isTakingSnapshot = false;
                     task.TrySetException(new Exception("Error taking avatar screenshots."));
                 });
 
