@@ -909,6 +909,7 @@ MonoBehaviour:
   emoteSlotSelector: {fileID: 5504772256985452013}
   emotesGrid: {fileID: 737305017821576015}
   emoteInfoPanel: {fileID: 7906939378484150054}
+  columnsOrganizerComponentView: {fileID: 6831564234207524114}
 --- !u!1 &2672119976802274059
 GameObject:
   m_ObjectHideFlags: 0
@@ -2245,6 +2246,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6831564234207524114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5588409793679400621, guid: cfed952f63812a44d86ff7609367aceb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1387269628721425343}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709709442490280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db117b813acf0fd4490217bd16761fe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7777758932990698070 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8696649798073764329, guid: cfed952f63812a44d86ff7609367aceb,
@@ -2332,7 +2345,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 845.5
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2377,7 +2390,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
