@@ -214,6 +214,12 @@ namespace DCL.Backpack
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.OnContinueSignup -= SaveAvatarAndContinueSignupProcess;
+            view.OnColorPickerToggle -= OnColorPickerToggled;
+            view.OnAvatarUpdated -= OnAvatarUpdated;
+            view.OnOutfitsOpened -= OnOutfitsOpened;
+            view.OnVRMExport -= OnVrmExport;
+            view.OnSignUpBackClicked -= OnSignUpBack;
+            outfitsController.OnOutfitEquipped -= OnOutfitEquipped;
             view.Dispose();
         }
 
