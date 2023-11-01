@@ -108,8 +108,7 @@ namespace SignupHUD
         {
             WebInterface.SendPassport(name, email);
             DataStore.i.common.isSignUpFlow.Set(false);
-            newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux();
-            newUserExperienceAnalytics?.SendClickOnboardingJumpIn(name, email);
+            newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux(name, email);
 
             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
                 return;
