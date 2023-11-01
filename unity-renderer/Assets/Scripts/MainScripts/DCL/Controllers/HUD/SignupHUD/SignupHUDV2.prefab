@@ -189,6 +189,7 @@ GameObject:
   m_Component:
   - component: {fileID: 149386893471877362}
   - component: {fileID: 3601352428064510698}
+  - component: {fileID: 1917803039412694563}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -228,6 +229,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 728680869327105183}
   m_CullTransparentMesh: 1
+--- !u!225 &1917803039412694563
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728680869327105183}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &800595759923128664
 GameObject:
   m_ObjectHideFlags: 0
@@ -2138,6 +2151,11 @@ MonoBehaviour:
   tosAndPrivacyPolicyText: {fileID: 7762126982973327232}
   termsOfServiceAgreeButton: {fileID: 2910859052875627039}
   termsOfServiceAgreeButtonIcon: {fileID: 493961233402157412}
+  signUpRectTransform: {fileID: 149386893471877362}
+  signUpCanvasGroup: {fileID: 1917803039412694563}
+  transitionEase: 19
+  transitionDuration: 0.5
+  transitionDistance: 200
 --- !u!1 &5639800636375264322
 GameObject:
   m_ObjectHideFlags: 0

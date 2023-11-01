@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -32,8 +33,19 @@ namespace SignupHUD
         [SerializeField] internal Button termsOfServiceAgreeButton;
         [SerializeField] internal Image termsOfServiceAgreeButtonIcon;
 
+        [Header("SignUp Mode Transitions")]
+        [SerializeField] internal RectTransform signUpRectTransform;
+        [SerializeField] internal CanvasGroup signUpCanvasGroup;
+        [SerializeField] internal Ease transitionEase = Ease.InOutExpo;
+        [SerializeField] internal float transitionDuration = 0.5f;
+        [SerializeField] internal float transitionDistance = 200f;
+
+        private Vector2 originalAnchorPositionOfSignUp;
+
         public override void Awake()
         {
+            originalAnchorPositionOfSignUp = signUpRectTransform.anchoredPosition;
+
             InitNameAndEmailScreen();
             InitTermsOfServicesScreen();
         }
@@ -42,7 +54,7 @@ namespace SignupHUD
 
         public void SetVisibility(bool visible)
         {
-            gameObject.SetActive(visible);
+            PlayTransitionAnimation(visible);
 
             if (!visible)
                 return;
@@ -146,6 +158,16 @@ namespace SignupHUD
         {
             termsOfServiceAgreeButton.interactable = isInteractable;
             termsOfServiceAgreeButtonIcon.color = new Color(termsOfServiceAgreeButtonIcon.color.r, termsOfServiceAgreeButtonIcon.color.g, termsOfServiceAgreeButtonIcon.color.b, isInteractable ? 1f : 0.1f);
+        }
+
+        private void PlayTransitionAnimation(bool visible)
+        {
+            Vector2 signUpEndPosition = originalAnchorPositionOfSignUp;
+            if (!visible)
+                signUpEndPosition.x -= transitionDistance;
+            signUpRectTransform.DOAnchorPos(signUpEndPosition, transitionDuration).SetEase(transitionEase);
+            signUpCanvasGroup.DOFade(visible ? 1f : 0f, transitionDuration).SetEase(transitionEase);
+            signUpCanvasGroup.blocksRaycasts = visible;
         }
     }
 }

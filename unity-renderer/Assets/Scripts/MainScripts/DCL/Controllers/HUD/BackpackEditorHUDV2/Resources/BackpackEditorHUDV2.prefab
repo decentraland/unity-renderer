@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 4342889036681528669}
   - component: {fileID: 7517409048018998757}
   - component: {fileID: 6268815766397813910}
+  - component: {fileID: 180354113003941719}
   m_Layer: 5
   m_Name: WearablesContainer
   m_TagString: Untagged
@@ -420,6 +421,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &180354113003941719
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516418156273752100}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &673456029672021538
 GameObject:
   m_ObjectHideFlags: 0
@@ -2217,6 +2230,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 0}
   sectionSelector: {fileID: 4937913390550088837}
   wearablesSection: {fileID: 8694961808569182621}
+  wearablesSectionCanvasGroup: {fileID: 488015403376276380}
   wearablesSectionBackground: {fileID: 3183983164897129620}
   emotesSection: {fileID: 8105447645029322740}
   backpackPreviewPanel: {fileID: 1525771720304835258}
@@ -2246,6 +2260,11 @@ MonoBehaviour:
   - {fileID: 8302108287862786213}
   - {fileID: 9051742950965977207}
   - {fileID: 4501634856494230904}
+  wearablesBackgroundForSignUp: {fileID: 4342889036681528669}
+  wearablesBackgroundForSignUpCanvasGroup: {fileID: 180354113003941719}
+  transitionEase: 19
+  transitionDuration: 0.5
+  transitionDistance: 1800
 --- !u!114 &8774932851833110932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9495,7 +9514,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 905428465606010205, guid: 7987c409c7fea4189954a35a350cfd2a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 488015403376276380}
   m_SourcePrefab: {fileID: 100100000, guid: 7987c409c7fea4189954a35a350cfd2a, type: 3}
 --- !u!1 &211765849088223244 stripped
 GameObject:
@@ -9599,6 +9622,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8375023868890549440}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &488015403376276380
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8694961808569182621}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &9051742950965977207 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 694767754441043127, guid: 7987c409c7fea4189954a35a350cfd2a,
