@@ -58,7 +58,9 @@ namespace DCL.Backpack
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
         private CancellationTokenSource outfitLoadCancellationToken = new ();
+        private CancellationTokenSource saveCancellationToken = new ();
         private string categoryPendingToPlayEmote;
+        private bool isTakingSnapshot;
 
         private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
 
@@ -264,23 +266,7 @@ namespace DCL.Backpack
                 else
                 {
                     if (saveAvatar)
-                    {
-                        try
-                        {
-                            await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
-
-                            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
-                                CloseView();
-                        }
-                        catch (OperationCanceledException) { }
-                        catch (Exception e)
-                        {
-                            Debug.LogException(e);
-
-                            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
-                                CloseView();
-                        }
-                    }
+                        await SaveAsync(cancellationToken);
                     else
                         CloseView();
 
@@ -294,6 +280,9 @@ namespace DCL.Backpack
 
         private void CloseView()
         {
+            if (isTakingSnapshot)
+                return;
+
             view.Hide();
             view.ResetPreviewPanel();
             wearableGridController.ResetFilters();
@@ -309,6 +298,8 @@ namespace DCL.Backpack
                 return;
 
             view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+            saveCancellationToken = saveCancellationToken.SafeRestart();
+            SaveAsync(saveCancellationToken.Token).Forget();
         }
 
         private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
@@ -436,22 +427,52 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
         }
 
-        private void SaveAvatarAndContinueSignupProcess() =>
-            SetVisibility(false, saveAvatar: true);
+        private void SaveAvatarAndContinueSignupProcess()
+        {
+            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+            {
+                SetVisibility(false, saveAvatar: true);
+                return;
+            }
+
+            dataStore.HUDs.signupVisible.Set(true);
+            view.SetSignUpStage(SignUpStage.SetNameAndEmail);
+            view.SetAvatarPreviewFocus(PreviewCameraFocus.FaceEditing);
+            view.PlayPreviewEmote("wave");
+            backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+        }
+
+        private async UniTask SaveAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
+                CloseView();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                CloseView();
+            }
+        }
 
         private UniTask TakeSnapshotsAndSaveAvatarAsync(CancellationToken cancellationToken)
         {
             UniTaskCompletionSource task = new ();
+            isTakingSnapshot = true;
 
             TakeSnapshots(
                 onSuccess: (face256Snapshot, bodySnapshot) =>
                 {
+                    isTakingSnapshot = false;
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(face256Snapshot, bodySnapshot);
                     task.TrySetResult();
                 },
                 onFailed: () =>
                 {
+                    isTakingSnapshot = false;
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(new Texture2D(256, 256), new Texture2D(256, 256));
                     task.TrySetException(new Exception("Error taking avatar screenshots."));
@@ -495,8 +516,9 @@ namespace DCL.Backpack
             if (dataStore.common.isSignUpFlow.Get())
             {
                 dataStore.HUDs.signupVisible.Set(true);
-                view.SetSignUpStage(SignUpStage.SetNameAndEmail);
-                backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+
+                if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                    backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
             }
 
             avatarIsDirty = false;
@@ -754,12 +776,7 @@ namespace DCL.Backpack
         private void OnAvatarUpdated()
         {
             if (string.IsNullOrEmpty(categoryPendingToPlayEmote))
-            {
-                if (isNewTermsOfServiceAndEmailSubscriptionEnabled && dataStore.HUDs.signupVisible.Get())
-                    view.PlayPreviewEmote("wave");
-
                 return;
-            }
 
             PlayEquipAnimation(categoryPendingToPlayEmote);
             categoryPendingToPlayEmote = null;
@@ -817,6 +834,7 @@ namespace DCL.Backpack
                 case SignUpStage.SetNameAndEmail:
                     dataStore.HUDs.signupVisible.Set(false);
                     view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+                    view.SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing);
                     break;
             }
         }
