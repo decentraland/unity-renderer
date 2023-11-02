@@ -24,6 +24,7 @@ namespace SignupHUD
         [SerializeField] internal GameObject nameInputFieldFullOrInvalid;
         [SerializeField] internal GameObject nameInputInvalidLabel;
         [SerializeField] internal TextMeshProUGUI nameCurrentCharacters;
+        [SerializeField] internal GameObject nameCurrentCharactersReachedLimit;
         [SerializeField] internal GameObject emailInputFieldInvalid;
         [SerializeField] internal TMP_InputField emailInputField;
         [SerializeField] internal GameObject emailInputInvalidLabel;
@@ -75,12 +76,14 @@ namespace SignupHUD
             nameInputFieldFullOrInvalid.SetActive(false);
             emailInputFieldInvalid.SetActive(false);
             emailInputInvalidLabel.SetActive(false);
+            nameCurrentCharactersReachedLimit.SetActive(false);
 
             nameInputField.onValueChanged.AddListener((text) =>
             {
                 UpdateNameAndEmailNextButton();
                 nameCurrentCharacters.text = $"{text.Length} / {MAX_NAME_LENGTH}";
                 nameCurrentCharacters.color = text.Length < MAX_NAME_LENGTH ? Color.black : colorForCharLimit;
+                nameCurrentCharactersReachedLimit.SetActive(text.Length >= MAX_NAME_LENGTH);
                 nameInputInvalidLabel.SetActive(!IsValidName(text));
                 nameInputFieldFullOrInvalid.SetActive(text.Length >= MAX_NAME_LENGTH || !IsValidName(text));
             });
