@@ -60,7 +60,6 @@ namespace SignupHUD
                 return;
 
             nameInputField.Select();
-            CleanForm();
         }
 
         public void ShowNameScreen() { }
@@ -136,13 +135,6 @@ namespace SignupHUD
 
         private static bool IsValidName(string nameText) =>
             Regex.IsMatch(nameText, "^[a-zA-Z0-9]*$");
-
-        private void CleanForm()
-        {
-            nameInputField.text = string.Empty;
-            emailInputField.text = string.Empty;
-            agreeTosAndPrivacyPolicyToggle.isOn = false;
-        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
