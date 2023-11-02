@@ -2250,6 +2250,7 @@ MonoBehaviour:
   vrmExportButton: {fileID: 2441708800504307716}
   vrmExportedToast: {fileID: 1332459953862512925}
   background: {fileID: 877741989302552789}
+  hints: {fileID: 4019917794035596556}
   signUpHeader: {fileID: 6032775923198393604}
   signUpHeaderTitle: {fileID: 3299006008772291472}
   backgroundForSignUp: {fileID: 4055525242982503514}

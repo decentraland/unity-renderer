@@ -53,6 +53,7 @@ namespace DCL.Backpack
         [SerializeField] internal Button vrmExportButton;
         [SerializeField] internal RectTransform vrmExportedToast;
         [SerializeField] internal GameObject background;
+        [SerializeField] internal GameObject hints;
 
         [Header("Sign Up Mode")]
         [SerializeField] internal GameObject signUpHeader;
@@ -312,6 +313,7 @@ namespace DCL.Backpack
             currentStage = stage;
             nextButton.gameObject.SetActive(stage == SignUpStage.CustomizeAvatar);
             signUpHeaderTitle.text = stage == SignUpStage.CustomizeAvatar ? SIGN_UP_HEADER_TITLE_FOR_FISRT_STEP : SIGN_UP_HEADER_TITLE_FOR_SECOND_STEP;
+            hints.SetActive(stage == SignUpStage.CustomizeAvatar);
             PlayTransitionAnimation(stage);
         }
 
