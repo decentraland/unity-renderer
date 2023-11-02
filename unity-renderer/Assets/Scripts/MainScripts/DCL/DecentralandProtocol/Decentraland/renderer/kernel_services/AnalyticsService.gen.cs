@@ -18,8 +18,6 @@ public interface IAnalyticsKernelService<Context>
 
   UniTask<AnalyticsEventResponse> AnalyticsEvent(AnalyticsEventRequest request, Context context, CancellationToken ct);
 
-  UniTask<DelightedSurveyResponse> SetDelightedSurveyEnabled(DelightedSurveyRequest request, Context context, CancellationToken ct);
-
 }
 
 public static class AnalyticsKernelServiceCodeGen
@@ -33,7 +31,6 @@ public static class AnalyticsKernelServiceCodeGen
     result.definition.Add("PerformanceReport", async (payload, context, ct) => { var res = await service.PerformanceReport(PerformanceReportRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("SystemInfoReport", async (payload, context, ct) => { var res = await service.SystemInfoReport(SystemInfoReportRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
     result.definition.Add("AnalyticsEvent", async (payload, context, ct) => { var res = await service.AnalyticsEvent(AnalyticsEventRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
-    result.definition.Add("SetDelightedSurveyEnabled", async (payload, context, ct) => { var res = await service.SetDelightedSurveyEnabled(DelightedSurveyRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

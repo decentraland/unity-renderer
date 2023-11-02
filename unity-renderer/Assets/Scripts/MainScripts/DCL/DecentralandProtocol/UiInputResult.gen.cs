@@ -25,13 +25,14 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjFkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfaW5wdXRfcmVzdWx0",
-            "LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiIAoPUEJVaUlu",
-            "cHV0UmVzdWx0Eg0KBXZhbHVlGAEgASgJQhSqAhFEQ0wuRUNTQ29tcG9uZW50",
-            "c2IGcHJvdG8z"));
+            "LnByb3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiRgoPUEJVaUlu",
+            "cHV0UmVzdWx0Eg0KBXZhbHVlGAEgASgJEhYKCWlzX3N1Ym1pdBgCIAEoCEgA",
+            "iAEBQgwKCl9pc19zdWJtaXRCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiInputResult), global::DCL.ECSComponents.PBUiInputResult.Parser, new[]{ "Value" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiInputResult), global::DCL.ECSComponents.PBUiInputResult.Parser, new[]{ "Value", "IsSubmit" }, new[]{ "IsSubmit" }, null, null, null)
           }));
     }
     #endregion
@@ -45,6 +46,7 @@ namespace DCL.ECSComponents {
   {
     private static readonly pb::MessageParser<PBUiInputResult> _parser = new pb::MessageParser<PBUiInputResult>(() => new PBUiInputResult());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PBUiInputResult> Parser { get { return _parser; } }
@@ -72,7 +74,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBUiInputResult(PBUiInputResult other) : this() {
+      _hasBits0 = other._hasBits0;
       value_ = other.value_;
+      isSubmit_ = other.isSubmit_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -94,6 +98,34 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "is_submit" field.</summary>
+    public const int IsSubmitFieldNumber = 2;
+    private bool isSubmit_;
+    /// <summary>
+    /// default: false
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool IsSubmit {
+      get { if ((_hasBits0 & 1) != 0) { return isSubmit_; } else { return false; } }
+      set {
+        _hasBits0 |= 1;
+        isSubmit_ = value;
+      }
+    }
+    /// <summary>Gets whether the "is_submit" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasIsSubmit {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "is_submit" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearIsSubmit() {
+      _hasBits0 &= ~1;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -110,6 +142,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if (Value != other.Value) return false;
+      if (IsSubmit != other.IsSubmit) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -118,6 +151,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       if (Value.Length != 0) hash ^= Value.GetHashCode();
+      if (HasIsSubmit) hash ^= IsSubmit.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -140,6 +174,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Value);
       }
+      if (HasIsSubmit) {
+        output.WriteRawTag(16);
+        output.WriteBool(IsSubmit);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -154,6 +192,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(10);
         output.WriteString(Value);
       }
+      if (HasIsSubmit) {
+        output.WriteRawTag(16);
+        output.WriteBool(IsSubmit);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -166,6 +208,9 @@ namespace DCL.ECSComponents {
       int size = 0;
       if (Value.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Value);
+      }
+      if (HasIsSubmit) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -181,6 +226,9 @@ namespace DCL.ECSComponents {
       }
       if (other.Value.Length != 0) {
         Value = other.Value;
+      }
+      if (other.HasIsSubmit) {
+        IsSubmit = other.IsSubmit;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -201,6 +249,10 @@ namespace DCL.ECSComponents {
             Value = input.ReadString();
             break;
           }
+          case 16: {
+            IsSubmit = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -218,6 +270,10 @@ namespace DCL.ECSComponents {
             break;
           case 10: {
             Value = input.ReadString();
+            break;
+          }
+          case 16: {
+            IsSubmit = input.ReadBool();
             break;
           }
         }

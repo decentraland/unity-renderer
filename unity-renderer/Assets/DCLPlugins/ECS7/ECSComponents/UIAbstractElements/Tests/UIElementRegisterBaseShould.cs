@@ -29,12 +29,20 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
                 (COMPONENT_ID, RESULT_COMPONENT_ID, factory, writer, internalUiContainer, handlerBuilder);
         }
 
+        [TearDown]
+        public void RegisterTearDown()
+        {
+            factory.ClearReceivedCalls();
+            writer.ClearReceivedCalls();
+            register.ClearReceivedCalls();
+        }
+
         [Test]
         public void AddDeserializer()
         {
             factory.Received(1)
                    .AddOrReplaceComponent(COMPONENT_ID,
-                        Arg.Any<Func<object, PBUiBackground>>(), default);
+                        (o) => { return new PBUiBackground(); }, default);
 
             Assert.IsTrue(factory.componentBuilders.TryGetValue(COMPONENT_ID, out var componentBuilder));
             Assert.AreEqual(typeof(ECSComponent<PBUiBackground>), componentBuilder().GetType());
