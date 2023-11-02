@@ -10,7 +10,7 @@ public static class UiElementUtils
         elementStyle.bottom = 0;
         elementStyle.width = new StyleLength(StyleKeyword.Auto);
         elementStyle.height = new StyleLength(StyleKeyword.Auto);
-        elementStyle.position = new StyleEnum<Position>(Position.Relative);
+        elementStyle.position = new StyleEnum<Position>(Position.Absolute);
         elementStyle.justifyContent = new StyleEnum<Justify>(Justify.Center);
         elementStyle.alignItems = new StyleEnum<Align>(Align.Center);
     }

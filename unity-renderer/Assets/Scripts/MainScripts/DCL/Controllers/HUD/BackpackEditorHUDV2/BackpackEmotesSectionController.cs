@@ -102,36 +102,46 @@ namespace DCL.Backpack
                 {
                     EmbeddedEmotesSO embeddedEmotesSo = await emotesCatalogService.GetEmbeddedEmotes();
                     List<WearableItem> allEmotes = new ();
-                    allEmotes.AddRange(embeddedEmotesSo.GetAllEmotes());
                     allEmotes.AddRange(await emotesCatalogService.RequestOwnedEmotesAsync(userProfileBridge.GetOwn().userId, ct) ?? Array.Empty<WearableItem>());
 
                     Dictionary<string, WearableItem> consolidatedEmotes = new Dictionary<string, WearableItem>();
+
+                    foreach (EmbeddedEmote emote in embeddedEmotesSo.GetAllEmotes())
+                        consolidatedEmotes[emote.id] = emote;
+
                     foreach (var emote in allEmotes)
                     {
-                        if (consolidatedEmotes.ContainsKey(emote.id))
-                        {
-                            consolidatedEmotes[emote.id].amount += emote.amount + 1;
-                        }
+                        if (consolidatedEmotes.TryGetValue(emote.id, out WearableItem consolidatedEmote))
+                            consolidatedEmote.amount += emote.amount + 1;
                         else
                         {
                             emote.amount++;
                             consolidatedEmotes[emote.id] = emote;
                         }
                     }
+
                     allEmotes = consolidatedEmotes.Values.ToList();
+                    UpdateEmotes();
 
                     try
                     {
-                        await UniTask.WhenAll(FetchCustomEmoteCollections(allEmotes, ct),
-                            FetchCustomEmoteItems(allEmotes, ct));
+                        await FetchCustomEmoteItems(allEmotes, ct);
+                        await FetchCustomEmoteCollections(allEmotes, ct);
+                        UpdateEmotes();
                     }
-                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    catch (Exception e) when (e is not OperationCanceledException)
+                    {
+                        Debug.LogException(e);
+                    }
 
-                    dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
-                    emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
+                    void UpdateEmotes()
+                    {
+                        dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
+                        emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
+                    }
                 }
                 catch (OperationCanceledException) { }
-                catch (Exception e) { Debug.LogError($"Error loading emotes: {e.Message}"); }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             loadEmotesCts = loadEmotesCts.SafeRestart();
