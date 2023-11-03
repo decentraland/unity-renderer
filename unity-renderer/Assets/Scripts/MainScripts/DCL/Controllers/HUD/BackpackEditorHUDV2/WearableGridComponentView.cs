@@ -14,6 +14,7 @@ namespace DCL.Backpack
         [SerializeField] internal PageSelectorComponentView wearablePageSelector;
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
         [SerializeField] internal GameObject emptyStateContainer;
+        [SerializeField] internal GameObject emptyStateContainerForSignUp;
         [SerializeField] internal Button goToMarketplaceButton;
         [SerializeField] internal GameObject loadingSpinner;
 
@@ -185,7 +186,9 @@ namespace DCL.Backpack
             bool isEmpty = wearablesById.Count == 0;
 
             wearablesGridContainer.gameObject.SetActive(!isEmpty && !loadingSpinner.activeSelf);
-            emptyStateContainer.SetActive(isEmpty && !loadingSpinner.activeSelf);
+
+            emptyStateContainer.SetActive(isEmpty && !loadingSpinner.activeSelf && !DataStore.i.common.isSignUpFlow.Get());
+            emptyStateContainerForSignUp.SetActive(isEmpty && !loadingSpinner.activeSelf && DataStore.i.common.isSignUpFlow.Get());
         }
     }
 }

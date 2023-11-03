@@ -16,6 +16,7 @@ namespace SignupHUD
         event Action OnEditAvatar;
         event Action OnTermsOfServiceAgreed;
         event Action OnTermsOfServiceBack;
+        event Action<string> OnLinkClicked;
 
         void SetVisibility(bool visible);
         void ShowNameScreen();
@@ -31,6 +32,7 @@ namespace SignupHUD
         public event Action OnEditAvatar;
         public event Action OnTermsOfServiceAgreed;
         public event Action OnTermsOfServiceBack;
+        public event Action<string> OnLinkClicked;
 
         [Header("Name and Email Screen")]
         [SerializeField] internal RectTransform nameAndEmailPanel;
