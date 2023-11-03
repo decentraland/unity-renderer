@@ -2282,7 +2282,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -8268,7 +8268,7 @@ PrefabInstance:
     - target: {fileID: 738039486349030909, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 193
       objectReference: {fileID: 0}
     - target: {fileID: 738039486349030909, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -8393,7 +8393,7 @@ PrefabInstance:
     - target: {fileID: 1890805608724576694, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 40.55
       objectReference: {fileID: 0}
     - target: {fileID: 1890805608724576694, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -9053,7 +9053,7 @@ PrefabInstance:
     - target: {fileID: 6258616889928861707, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 162
       objectReference: {fileID: 0}
     - target: {fileID: 6258616889928861707, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
@@ -9208,7 +9208,7 @@ PrefabInstance:
     - target: {fileID: 7515513290973518823, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 264
       objectReference: {fileID: 0}
     - target: {fileID: 7515513290973518823, guid: 7987c409c7fea4189954a35a350cfd2a,
         type: 3}
