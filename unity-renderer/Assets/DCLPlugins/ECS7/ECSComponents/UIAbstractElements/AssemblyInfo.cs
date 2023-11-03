@@ -1,2 +1,2 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly: InternalsVisibleTo("DCL.ECSComponents.AbstractElements.Tests")]
+[assembly: InternalsVisibleTo("ECS7Plugin.Tests")]
