@@ -353,7 +353,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wearablesBreadcrumbComponentView: {fileID: 3396448617856098410}
-  wearablesGridContainer: {fileID: 216720716380197272}
+  wearablesGridContainer: {fileID: 3039406833206794006}
   wearableGridItemPrefab: {fileID: 5451991589991224328, guid: 8e2403ba0995d41e5834c8766a8aec8a,
     type: 3}
   wearablePageSelector: {fileID: 1869699820219046859}
@@ -1060,7 +1060,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 375, y: -70}
-  m_SizeDelta: {x: -374, y: -70}
+  m_SizeDelta: {x: -400, y: -70}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &4277697280183425078
 GameObject:
@@ -2052,6 +2052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5711676711565938686}
   - component: {fileID: 216720716380197272}
+  - component: {fileID: 3039406833206794006}
   m_Layer: 5
   m_Name: WearablesGridContainer
   m_TagString: Untagged
@@ -2076,7 +2077,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -120}
-  m_SizeDelta: {x: 830, y: 500}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &216720716380197272
 MonoBehaviour:
@@ -2100,8 +2101,35 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 140, y: 140}
   m_Spacing: {x: 32, y: 32}
-  m_Constraint: 0
+  m_Constraint: 1
   m_ConstraintCount: 5
+--- !u!114 &3039406833206794006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8760655797402333076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d49a3b742109ef0499aa2a13d3e0bedf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHideAnimator: {fileID: 0}
+  gridLayoutGroup: {fileID: 216720716380197272}
+  externalParentToAdaptSize: {fileID: 8122654311339567853}
+  model:
+    constraint: 1
+    constraintCount: 5
+    adaptHorizontallyItemSizeToContainer: 1
+    adaptVerticallyItemSizeToContainer: 0
+    itemSize: {x: 140, y: 140}
+    spaceBetweenItems: {x: 32, y: 32}
+    minWidthForFlexibleItems: 140
+    minHeightForFlexibleItems: 140
+    recommendedWidthForFlexibleItems: 140
+    recommendedHeightForFlexibleItems: 140
+    sameHeightAndWidhtFlexibleItem: 0
 --- !u!1 &9014161498785448899
 GameObject:
   m_ObjectHideFlags: 0
@@ -3599,7 +3627,7 @@ PrefabInstance:
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
@@ -3609,7 +3637,7 @@ PrefabInstance:
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
@@ -3659,7 +3687,7 @@ PrefabInstance:
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 828
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5955730194940385775, guid: f5f14a07355bcff46ac345f4d95ec24a,
         type: 3}
