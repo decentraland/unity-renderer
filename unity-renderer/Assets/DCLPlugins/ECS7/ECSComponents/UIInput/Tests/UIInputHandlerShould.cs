@@ -1,6 +1,6 @@
-﻿using DCL.ECS7.ComponentWrapper;
+﻿using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
 using DCL.ECS7.ComponentWrapper.Generic;
-using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents.UIAbstractElements.Tests;
 using Decentraland.Common;
 using NUnit.Framework;
@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput.Tests
 {
-    [Category("Flaky")]
     public class UIInputHandlerShould : UIComponentsShouldBase
     {
         private const int COMPONENT_ID = 1001;
@@ -22,7 +21,6 @@ namespace DCL.ECSComponents.UIInput.Tests
         public void CreateHandler()
         {
             pool = new WrappedComponentPool<IWrappedComponent<PBUiInputResult>>(0, () => new ProtobufWrappedComponent<PBUiInputResult>(new PBUiInputResult()));
-
             handler = new UIInputHandler(
                 internalUiContainer,
                 RESULT_COMPONENT_ID,
@@ -33,7 +31,13 @@ namespace DCL.ECSComponents.UIInput.Tests
             );
         }
 
-        [Test][Category("ToFix")]
+        [TearDown]
+        public void TearDown()
+        {
+            handler.OnComponentRemoved(scene, entity);
+        }
+
+        [Test]
         [TestCase(false)]
         [TestCase(true)]
         public void ConformToSchema(bool useTextValue)
@@ -51,18 +55,18 @@ namespace DCL.ECSComponents.UIInput.Tests
                 Assert.AreEqual("PLACEHOLDER", handler.uiElement.text);
         }
 
-        [Test][Category("ToFix")]
-        public void EmitResult()
+        [Test]
+        public void EmitOnChangeInputResult()
         {
             const string TEST_VALUE = "TEST_TEXT";
 
-            handler.uiElement.value = TEST_VALUE;
-            var result = pool.Get();
-            result.WrappedComponent.Model.Value = TEST_VALUE;
+            UpdateComponentModel();
 
-            Assert.Contains(
-                new InternalUIInputResults.Result(result, RESULT_COMPONENT_ID),
-                uiInputResults.Results);
+            Assert.IsFalse(ContainsInputResult(TEST_VALUE));
+
+            handler.uiElement.value = TEST_VALUE;
+
+            Assert.IsTrue(ContainsInputResult(TEST_VALUE));
         }
 
         [Test]
@@ -91,6 +95,19 @@ namespace DCL.ECSComponents.UIInput.Tests
                 model.Value = "TEXT-VALUE";
 
             handler.OnComponentModelUpdated(scene, entity, model);
+        }
+
+        private bool ContainsInputResult(string targetTextValue, bool targetSubmitValue = false)
+        {
+            foreach (var inputResult in uiInputResults.Results)
+            {
+                if (inputResult.Message.WrappedComponentBase is IWrappedComponent<PBUiInputResult> comp
+                    && inputResult.ComponentId == RESULT_COMPONENT_ID
+                    && comp.Model.Value == targetTextValue
+                    && comp.Model.IsSubmit == targetSubmitValue) return true;
+            }
+
+            return false;
         }
     }
 }

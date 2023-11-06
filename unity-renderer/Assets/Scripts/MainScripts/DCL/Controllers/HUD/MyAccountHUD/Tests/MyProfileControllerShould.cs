@@ -335,7 +335,7 @@ namespace DCL.MyAccount
 
             userProfileBridge.SaveDescription(ANOTHER_DESCRIPTION, Arg.Any<CancellationToken>());
             myAccountAnalyticsService.Received(1).SendProfileInfoEditAnalytic(ANOTHER_DESCRIPTION.Length);
-            socialAnalytics.Received(1).SendProfileEdit(ANOTHER_DESCRIPTION.Length, false, PlayerActionSource.MyProfile);
+            socialAnalytics.Received(1).SendProfileEdit(ANOTHER_DESCRIPTION.Length, false, PlayerActionSource.MyProfile, ProfileField.Description);
         }
 
         [TestCase("l1", "http://whatever.com", "l0")]

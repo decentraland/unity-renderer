@@ -12,7 +12,9 @@ import type { PortContext } from './context'
 export const defaultParcelPermissions: PermissionItem[] = [
   PermissionItem.PI_USE_WEB3_API,
   PermissionItem.PI_USE_FETCH,
-  PermissionItem.PI_USE_WEBSOCKET
+  PermissionItem.PI_USE_WEBSOCKET,
+  PermissionItem.PI_ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE,
+  PermissionItem.PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE
 ]
 export const defaultPortableExperiencePermissions: PermissionItem[] = []
 

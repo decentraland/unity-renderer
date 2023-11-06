@@ -61,6 +61,9 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
                                     if (!uiDoc.rootVisualElement.Contains(internalCompData.Value.model.rootElement))
                                         uiDoc.rootVisualElement.Add(internalCompData.Value.model.rootElement);
                                 });
+
+            var serviceLocator = ServiceLocatorTestFactory.CreateMocked();
+            Environment.Setup(serviceLocator);
         }
 
         protected static UIDocument InstantiateUiDocument() =>
@@ -70,6 +73,7 @@ namespace DCL.ECSComponents.UIAbstractElements.Tests
         public void TearDown()
         {
             sceneTestHelper.Dispose();
+            Environment.Dispose();
         }
     }
 }

@@ -29,4 +29,15 @@ public class NFTTypeIconsAndColors : ScriptableObject
 
         return defaultColor;
     }
+
+    public bool DoesRarityExist(string rarity)
+    {
+        foreach (var color in nftColors)
+        {
+            if (color.key == rarity)
+                return true;
+        }
+
+        return false;
+    }
 }

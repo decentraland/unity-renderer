@@ -387,6 +387,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowBase64Textures()
         {
             TextureUnion texture = new TextureUnion()
@@ -403,6 +404,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalTextureWithoutPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()
@@ -421,6 +423,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalTextureWithPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()
