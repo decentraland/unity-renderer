@@ -1,6 +1,7 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Tasks;
+using DG.Tweening;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,16 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDV2ComponentView : BaseComponentView<BackpackEditorHUDModel>, IBackpackEditorHUDView, IPointerDownHandler
     {
+        private const string SIGN_UP_HEADER_TITLE_FOR_FISRT_STEP = "Customize Your Avatar";
+        private const string SIGN_UP_HEADER_TITLE_FOR_SECOND_STEP = "Final Details";
+
         public event Action<Color> OnColorChanged;
         public event Action OnColorPickerToggle;
         public event Action OnContinueSignup;
         public event Action OnAvatarUpdated;
         public event Action OnOutfitsOpened;
         public event Action OnVRMExport;
+        public event Action<SignUpStage> OnSignUpBackClicked;
 
         private const int AVATAR_SECTION_INDEX = 0;
         private const int EMOTES_SECTION_INDEX = 1;
@@ -28,6 +33,8 @@ namespace DCL.Backpack
 
         [SerializeField] internal SectionSelectorComponentView sectionSelector;
         [SerializeField] internal GameObject wearablesSection;
+        [SerializeField] internal CanvasGroup wearablesSectionCanvasGroup;
+        [SerializeField] internal Image wearablesSectionBackground;
         [SerializeField] internal GameObject emotesSection;
         [SerializeField] private BackpackPreviewPanel backpackPreviewPanel;
         [SerializeField] private WearableGridComponentView wearableGridComponentView;
@@ -45,6 +52,23 @@ namespace DCL.Backpack
         [SerializeField] internal Image outfitButtonIcon;
         [SerializeField] internal Button vrmExportButton;
         [SerializeField] internal RectTransform vrmExportedToast;
+        [SerializeField] internal GameObject background;
+        [SerializeField] internal GameObject hints;
+
+        [Header("Sign Up Mode")]
+        [SerializeField] internal GameObject signUpHeader;
+        [SerializeField] internal TMP_Text signUpHeaderTitle;
+        [SerializeField] internal GameObject backgroundForSignUp;
+        [SerializeField] internal Button backButton;
+        [SerializeField] internal Button nextButton;
+        [SerializeField] internal GameObject[] objectsToDeactivateInSignUpMode;
+
+        [Header("SignUp Mode Transitions")]
+        [SerializeField] internal RectTransform wearablesBackgroundForSignUp;
+        [SerializeField] internal CanvasGroup wearablesBackgroundForSignUpCanvasGroup;
+        [SerializeField] internal Ease transitionEase = Ease.InOutExpo;
+        [SerializeField] internal float transitionDuration = 0.5f;
+        [SerializeField] internal float transitionDistance = 1800f;
 
         public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => backpackPreviewPanel?.originalVisibleRenderers;
         public IAvatarEmotesController EmotesController => backpackPreviewPanel?.EmotesController;
@@ -61,6 +85,9 @@ namespace DCL.Backpack
         private AvatarModel avatarModelToUpdate;
         private CancellationTokenSource updateAvatarCts = new ();
         private CancellationTokenSource snapshotsCts = new ();
+        private SignUpStage currentStage;
+        private Vector2 originalAnchorPositionOfWearablesBackgroundForSignUp;
+        private Vector2 originalAnchorPositionOfWearablesSection;
 
         public override void Awake()
         {
@@ -68,7 +95,11 @@ namespace DCL.Backpack
 
             thisTransform = transform;
             backpackPreviewPanel.SetLoadingActive(false);
+            originalAnchorPositionOfWearablesBackgroundForSignUp = wearablesBackgroundForSignUp.anchoredPosition;
+            originalAnchorPositionOfWearablesSection = ((RectTransform)wearablesSection.transform).anchoredPosition;
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
+            nextButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
+            backButton.onClick.AddListener(() => OnSignUpBackClicked?.Invoke(currentStage));
         }
 
         public void Initialize(
@@ -266,6 +297,26 @@ namespace DCL.Backpack
             vrmExportedToast.gameObject.SetActive(active);
         }
 
+        public void SetSignUpModeActive(bool isActive)
+        {
+            signUpHeader.SetActive(isActive);
+            backgroundForSignUp.SetActive(isActive);
+            background.SetActive(!isActive);
+            wearablesSectionBackground.enabled = !isActive;
+
+            foreach (GameObject go in objectsToDeactivateInSignUpMode)
+                go.SetActive(!isActive);
+        }
+
+        public void SetSignUpStage(SignUpStage stage)
+        {
+            currentStage = stage;
+            nextButton.gameObject.SetActive(stage == SignUpStage.CustomizeAvatar);
+            signUpHeaderTitle.text = stage == SignUpStage.CustomizeAvatar ? SIGN_UP_HEADER_TITLE_FOR_FISRT_STEP : SIGN_UP_HEADER_TITLE_FOR_SECOND_STEP;
+            hints.SetActive(stage == SignUpStage.CustomizeAvatar);
+            PlayTransitionAnimation(stage);
+        }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.pointerPressRaycast.gameObject != colorPickerComponentView.gameObject)
@@ -337,5 +388,22 @@ namespace DCL.Backpack
 
         private void ColorPickerToggle() =>
             OnColorPickerToggle?.Invoke();
+
+        private void PlayTransitionAnimation(SignUpStage stage)
+        {
+            Vector2 wearablesBackgroundForSignUpEndPosition = originalAnchorPositionOfWearablesBackgroundForSignUp;
+            if (stage == SignUpStage.SetNameAndEmail)
+                wearablesBackgroundForSignUpEndPosition.x += transitionDistance;
+            wearablesBackgroundForSignUp.DOAnchorPos(wearablesBackgroundForSignUpEndPosition, transitionDuration).SetEase(transitionEase);
+            wearablesBackgroundForSignUpCanvasGroup.DOFade(stage == SignUpStage.CustomizeAvatar ? 1f : 0f, transitionDuration).SetEase(transitionEase);
+            wearablesBackgroundForSignUpCanvasGroup.blocksRaycasts = stage == SignUpStage.CustomizeAvatar;
+
+            Vector2 wearablesSectionEndPosition = originalAnchorPositionOfWearablesSection;
+            if (stage == SignUpStage.SetNameAndEmail)
+                wearablesSectionEndPosition.x += transitionDistance;
+            (wearablesSection.transform as RectTransform).DOAnchorPos(wearablesSectionEndPosition, transitionDuration).SetEase(transitionEase);
+            wearablesSectionCanvasGroup.DOFade(stage == SignUpStage.CustomizeAvatar ? 1f : 0f, transitionDuration).SetEase(transitionEase);
+            wearablesSectionCanvasGroup.blocksRaycasts = stage == SignUpStage.CustomizeAvatar;
+        }
     }
 }

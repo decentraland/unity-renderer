@@ -20,6 +20,8 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDControllerShould
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private UserProfile userProfile;
         private IBackpackEditorHUDView view;
         private DataStore dataStore;
@@ -131,10 +133,16 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void ShowBackpackCorrectly()
+        [TestCase(true, true)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(false, false)]
+        public void ShowBackpackCorrectly(bool isSignUpFlow, bool isNewTermsOfServiceAndEmailSubscriptionEnabled)
         {
             // Arrange
+            dataStore.common.isSignUpFlow.Set(isSignUpFlow, false);
             dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld, false);
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             // Act
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
@@ -144,6 +152,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).RestoreEmoteSlots();
             backpackEmotesSectionController.Received(1).LoadEmotes();
             view.Received(1).Show();
+            view.Received(1).SetSignUpModeActive(isSignUpFlow && isNewTermsOfServiceAndEmailSubscriptionEnabled);
         }
 
         [Test]
@@ -329,13 +338,19 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void ShowSignup()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShowSignup(bool isNewTermsOfServiceAndEmailSubscriptionEnabled)
         {
             dataStore.common.isSignUpFlow.Set(true);
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
-            view.Received(1).ShowContinueSignup();
+            if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                view.Received(1).HideContinueSignup();
+            else
+                view.Received(1).ShowContinueSignup();
         }
 
         [Test]
@@ -427,6 +442,27 @@ namespace DCL.Backpack
             Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:sneakers"));
             Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_sweater"));
             Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_jeans"));
+        }
+
+        [Test]
+        [TestCase(SignUpStage.CustomizeAvatar)]
+        [TestCase(SignUpStage.SetNameAndEmail)]
+        public void SignUpBackCorrectly(SignUpStage currentStage)
+        {
+            // Act
+            view.OnSignUpBackClicked += Raise.Event<Action<SignUpStage>>(currentStage);
+
+            switch (currentStage)
+            {
+                // Assert
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.Received(1).LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    Assert.IsFalse(dataStore.HUDs.signupVisible.Get());
+                    break;
+            }
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

@@ -252,7 +252,7 @@ namespace DCL.MyAccount
 
                 myAccountSectionHUDController.ShowAccountSettingsUpdatedToast();
                 myAccountAnalyticsService.SendProfileInfoEditAnalytic(newDesc.Length);
-                socialAnalytics.SendProfileEdit(newDesc.Length, false, PlayerActionSource.MyProfile);
+                socialAnalytics.SendProfileEdit(newDesc.Length, false, PlayerActionSource.MyProfile, ProfileField.Description);
             }
 
             saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();

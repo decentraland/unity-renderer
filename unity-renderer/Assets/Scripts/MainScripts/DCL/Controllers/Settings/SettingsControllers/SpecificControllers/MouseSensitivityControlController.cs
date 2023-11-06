@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
 {
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Mouse Sensitivity", fileName = "MouseSensitivityControlController")]
-    public class MouseSensivityControlController : SliderSettingsControlController
+    public class MouseSensitivityControlController : SliderSettingsControlController
     {
         internal const float FIRST_PERSON_MIN_SPEED = 25f / 100f;
         internal const float FIRST_PERSON_MAX_SPEED = 350f / 100f;

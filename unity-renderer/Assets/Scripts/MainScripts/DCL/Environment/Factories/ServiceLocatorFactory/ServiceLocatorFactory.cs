@@ -28,6 +28,7 @@ using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.PlacesAPIService;
 using DCLServices.PortableExperiences.Analytics;
 using DCLServices.ScreencaptureCamera.Service;
+using DCLServices.SubscriptionsAPIService;
 using DCLServices.WearablesCatalogService;
 using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.AssetManager;
@@ -213,6 +214,7 @@ namespace DCL
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
             result.Register<IWorldsAPIService>(() => new WorldsAPIService(new WorldsAPIClient(webRequestController)));
             result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
+            result.Register<ISubscriptionsAPIService>(() => new SubscriptionsAPIService(new SubscriptionsAPIClient(webRequestController)));
 
             var screencaptureCameraExternalDependencies = new ScreencaptureCameraExternalDependencies(CommonScriptableObjects.allUIHidden,
                 CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked,
