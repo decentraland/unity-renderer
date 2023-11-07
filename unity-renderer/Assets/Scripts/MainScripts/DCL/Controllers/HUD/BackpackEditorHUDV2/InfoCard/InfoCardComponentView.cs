@@ -74,7 +74,12 @@ namespace DCL.Backpack
         public void SetCategory(string category)
         {
             model.category = category;
-            categoryImage.sprite = typeIcons.GetTypeImage(category);
+
+            var categoryIcon = typeIcons.GetTypeImage(category);
+            if (categoryIcon == null)
+                return;
+
+            categoryImage.sprite = categoryIcon;
         }
 
         public void SetNftImage(string imageUri)
@@ -104,7 +109,13 @@ namespace DCL.Backpack
 
             hidesList.gameObject.SetActive(hideList.Count != 0);
             foreach (string hideCategory in hideList)
-                hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
+            {
+                var categoryIcon = typeIcons.GetTypeImage(hideCategory);
+                if (categoryIcon == null)
+                    continue;
+
+                hidesList.AddIcon(categoryIcon);
+            }
 
             Utils.ForceRebuildLayoutImmediate(dynamicSection);
         }
@@ -151,7 +162,12 @@ namespace DCL.Backpack
 
             hiddenByDynamicList.gameObject.SetActive(true);
             hiddenByDynamicList.RemoveIcons();
-            hiddenByDynamicList.AddIcon(typeIcons.GetTypeImage(hiddenBy));
+
+            var categoryIcon = typeIcons.GetTypeImage(hiddenBy);
+            if (categoryIcon == null)
+                return;
+
+            hiddenByDynamicList.AddIcon(categoryIcon);
         }
 
         public void SetVisible(bool visible) =>
