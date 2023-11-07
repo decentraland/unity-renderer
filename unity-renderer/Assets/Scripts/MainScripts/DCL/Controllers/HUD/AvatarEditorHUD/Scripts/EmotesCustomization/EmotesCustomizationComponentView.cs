@@ -158,8 +158,9 @@ namespace DCL.EmotesCustomization
             emoteInfoPanel.SetBackgroundColor(backgroundColor);
             emoteInfoPanel.SetRarityName(emoteModel.rarity);
             SetEmoteInfoPanelActive(true);
-            emoteInfoPanel.transform.SetParent(anchorTransform);
-            emoteInfoPanel.transform.localPosition = Vector3.zero;
+            var emoteInfoPanelTransform = emoteInfoPanel.transform;
+            emoteInfoPanelTransform.SetParent(anchorTransform);
+            emoteInfoPanelTransform.localPosition = Vector3.zero;
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.AddListener(() => onSellEmoteClicked?.Invoke(emoteModel.id));
         }
