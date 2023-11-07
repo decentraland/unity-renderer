@@ -28,7 +28,7 @@ MonoBehaviour:
   - key: feet
     value: {fileID: 21300000, guid: 2bd9c7cbf6f504ad89e22e7f1f497fd2, type: 3}
   - key: head
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 9b13173961ced41b287b3ec0d724c585, type: 3}
   - key: facial_hair
     value: {fileID: 21300000, guid: 81132a1626c0d43aabeeec2414a68945, type: 3}
   - key: tiara
@@ -54,4 +54,4 @@ MonoBehaviour:
   - key: hands_wear
     value: {fileID: 21300000, guid: 16866e729ce1061429170517e80ef313, type: 3}
   - key: hands
-    value: {fileID: 21300000, guid: 16866e729ce1061429170517e80ef313, type: 3}
+    value: {fileID: 21300000, guid: 1b8e5d35e0b2d46379b97bb7e7ab2c97, type: 3}
