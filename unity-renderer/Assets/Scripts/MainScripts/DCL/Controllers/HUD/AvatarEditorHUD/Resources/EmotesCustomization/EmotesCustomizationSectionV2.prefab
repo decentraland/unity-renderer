@@ -2081,7 +2081,7 @@ PrefabInstance:
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1455
+      value: 1327
       objectReference: {fileID: 0}
     - target: {fileID: 2026062374757361563, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
@@ -2171,7 +2171,7 @@ PrefabInstance:
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
       propertyPath: model.constraintCount
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4071603596337262758, guid: a0b08d9ca8421644db83c1bd3f2e2e48,
         type: 3}
