@@ -1,4 +1,3 @@
-/*
 using DCL;
 using DCL.Components;
 using DCL.Components.Video.Plugin;
@@ -7,12 +6,15 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.SettingsCommon;
+using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Environment = DCL.Environment;
 using VideoState = DCL.Components.Video.Plugin.VideoState;
 
@@ -44,7 +46,9 @@ namespace Tests
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
-                loadingScreenDataStore.decoupledLoadingHUD, null, null);
+                loadingScreenDataStore.decoupledLoadingHUD,
+                Substitute.For<ISettingsRepository<AudioSettings>>(),
+                new DataStore_VirtualAudioMixer());
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -268,4 +272,3 @@ namespace Tests
         }
     }
 }
-*/
