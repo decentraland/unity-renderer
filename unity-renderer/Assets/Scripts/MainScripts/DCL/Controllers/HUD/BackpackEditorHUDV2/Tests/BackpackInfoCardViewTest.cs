@@ -41,9 +41,9 @@ namespace DCL.Backpack
         [Test]
         public void SetCategory()
         {
-            infoCard.SetCategory("head");
+            infoCard.SetCategory("hair");
 
-            Assert.AreEqual(infoCard.categoryImage.sprite, infoCard.typeIcons.GetTypeImage("head"));
+            Assert.AreEqual(infoCard.categoryImage.sprite, infoCard.typeIcons.GetTypeImage("hair"));
         }
     }
 }
