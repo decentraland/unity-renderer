@@ -52,7 +52,7 @@ namespace DCL.Components
                 if (pbModel.VideoTexture.HasSeek) pb.seek = pbModel.VideoTexture.Seek;
                 if (pbModel.VideoTexture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.VideoTexture.Wrap;
                 if (pbModel.VideoTexture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.VideoTexture.SamplingMode;
-                
+
                 return pb;
             }
         }
@@ -307,8 +307,10 @@ namespace DCL.Components
                 float sceneSFXSetting = Settings.i.audioSettings.Data.sceneSFXVolume;
                 float masterSetting = Settings.i.audioSettings.Data.masterVolume;
                 targetVolume *= Utils.ToVolumeCurve(virtualMixerVolume * sceneSFXSetting * masterSetting);
+                Debug.Log($"DCLVideoTexture.UpdateVolume.IsPlayerInSameSceneAsComponent.targetVolume: {targetVolume}");
             }
 
+            Debug.Log($"DCLVideoTexture.UpdateVolume.texturePlayer.SetVolume.targetVolume: {targetVolume}");
             texturePlayer.SetVolume(targetVolume);
         }
 

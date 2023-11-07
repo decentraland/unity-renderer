@@ -108,6 +108,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
+            Debug.Log($"WebVideoPlayer.SetVolume: {volume}, {videoPlayerId}, {plugin}");
             plugin.SetVolume(videoPlayerId, volume);
             this.volume = volume;
         }
