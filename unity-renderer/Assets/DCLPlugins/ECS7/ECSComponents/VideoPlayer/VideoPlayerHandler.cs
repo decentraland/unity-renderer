@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace DCL.ECSComponents
         private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
 
         internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
+        private readonly ISettingsRepository<AudioSettings> audioSettings;
+        private readonly DataStore_VirtualAudioMixer audioMixerDataStore;
         internal PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
@@ -28,10 +31,14 @@ namespace DCL.ECSComponents
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
-            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
+            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
+            ISettingsRepository<AudioSettings> audioSettings,
+            DataStore_VirtualAudioMixer audioMixerDataStore)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
+            this.audioSettings = audioSettings;
+            this.audioMixerDataStore = audioMixerDataStore;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -96,7 +103,13 @@ namespace DCL.ECSComponents
             float lastPosition = lastModel?.GetPosition() ?? 0.0f;
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
-            videoPlayer.SetVolume(model.GetVolume());
+
+            float virtualMixerVolume = audioMixerDataStore.sceneSFXVolume.Get();
+            AudioSettings audioSettings = this.audioSettings.Data;
+            float sceneSFXSetting = audioSettings.sceneSFXVolume;
+            float masterSetting = audioSettings.masterVolume;
+            float volume = Helpers.Utils.ToVolumeCurve(model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting);
+            videoPlayer.SetVolume(volume);
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
