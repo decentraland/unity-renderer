@@ -4,9 +4,11 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
@@ -15,6 +17,8 @@ namespace DCL.ECSComponents
         private static readonly string[] NO_STREAM_EXTENSIONS = new[] { ".mp4", ".ogg", ".mov", ".webm" };
 
         internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
+        private readonly ISettingsRepository<AudioSettings> audioSettings;
+        private readonly DataStore_VirtualAudioMixer audioMixerDataStore;
         internal PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
@@ -28,10 +32,14 @@ namespace DCL.ECSComponents
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
-            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen)
+            DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
+            ISettingsRepository<AudioSettings> audioSettings,
+            DataStore_VirtualAudioMixer audioMixerDataStore)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
+            this.audioSettings = audioSettings;
+            this.audioMixerDataStore = audioMixerDataStore;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -45,12 +53,16 @@ namespace DCL.ECSComponents
             if (!hadUserInteraction)
                 Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
             loadingScreen.visible.OnChange += OnLoadingScreenStateChanged;
+            audioSettings.OnChanged += OnAudioSettingsChanged;
+            audioMixerDataStore.sceneSFXVolume.OnChange += OnSceneSfxVolumeChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
+            audioSettings.OnChanged -= OnAudioSettingsChanged;
+            audioMixerDataStore.sceneSFXVolume.OnChange -= OnSceneSfxVolumeChanged;
 
             // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
             videoPlayerInternalComponent.RemoveFor(scene, entity, new InternalVideoPlayer()
@@ -96,7 +108,8 @@ namespace DCL.ECSComponents
             float lastPosition = lastModel?.GetPosition() ?? 0.0f;
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
-            videoPlayer.SetVolume(model.GetVolume());
+
+            UpdateVolume(model, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get());
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
@@ -132,6 +145,23 @@ namespace DCL.ECSComponents
         {
             isRendererActive = !isScreenEnabled;
             ConditionsToPlayVideoChanged();
+        }
+
+        private void OnSceneSfxVolumeChanged(float current, float previous) =>
+            UpdateVolume(lastModel, audioSettings.Data, current);
+
+        private void OnAudioSettingsChanged(AudioSettings settings) =>
+            UpdateVolume(lastModel, settings, audioMixerDataStore.sceneSFXVolume.Get());
+
+        private void UpdateVolume(PBVideoPlayer model, AudioSettings settings, float sceneMixerSfxVolume)
+        {
+            if (model == null) return;
+            if (videoPlayer == null) return;
+
+            float sceneSFXSetting = settings.sceneSFXVolume;
+            float masterSetting = settings.masterVolume;
+            float volume = model.GetVolume() * sceneMixerSfxVolume * sceneSFXSetting * masterSetting;
+            videoPlayer.SetVolume(volume);
         }
     }
 }
