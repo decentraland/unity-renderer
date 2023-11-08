@@ -1,11 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
-using System.Collections.Generic;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.SettingsCommon;
 using DCL.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
@@ -49,6 +48,17 @@ namespace AvatarSystem
             visibilityConstraints.Remove(key);
         }
 
+        public void UpdateEmoteStatus(string currentEmoteId, long timestamp)
+        {
+            bool isPlayingEmote = !string.IsNullOrEmpty(animator.GetCurrentEmoteId());
+            bool emoteIsValid = !string.IsNullOrEmpty(currentEmoteId);
+
+            if (isPlayingEmote && !emoteIsValid) { animator.StopEmote(); }
+
+            if (emoteIsValid)
+                PlayEmote(currentEmoteId, timestamp);
+        }
+
         public void Prepare(string bodyShapeId, GameObject container)
         {
             this.bodyShapeId = bodyShapeId;
@@ -86,7 +96,7 @@ namespace AvatarSystem
             catch (Exception e) { Debug.LogException(e); }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool forcePlay)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool forcePlay = false)
         {
             if (string.IsNullOrEmpty(emoteId)) return;
             if (!CanPlayEmote()) return;

@@ -56,7 +56,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     // Minimum vertical speed used to consider whether an avatar is on air
     private const float MIN_VERTICAL_SPEED_AIR = 0.025f;
-    private const string STOP_EMOTE = "stop-emote";
 
     [Serializable]
     public class AvatarLocomotion
@@ -405,7 +404,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
         {
             DCLCharacterController.i.ForceReportMovement();
-            UserProfile.GetOwnUserProfile().SetAvatarExpression(STOP_EMOTE, UserProfile.EmoteSource.EmoteCancel, true);
+            UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteCancel, true);
         }
 
         blackboard.expressionTriggerId = null;
@@ -455,12 +454,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (string.IsNullOrEmpty(emoteId))
             return;
-
-        if (emoteId == STOP_EMOTE)
-        {
-            StopEmoteInternal(false);
-            return;
-        }
 
         if (animation.GetClip(emoteId) == null)
             return;
@@ -547,6 +540,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
                 emoteClipData.ExtraContent.transform.SetParent(null, false);
         }
     }
+
+    public string GetCurrentEmoteId() =>
+        blackboard.expressionTriggerId;
 
     private void InitializeAvatarAudioAndParticleHandlers(Animation createdAnimation)
     {

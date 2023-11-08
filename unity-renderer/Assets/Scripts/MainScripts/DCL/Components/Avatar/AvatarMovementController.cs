@@ -8,12 +8,14 @@ namespace DCL
 {
     public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
-        private const float WALK_SPEED = 4.5f;
-        private const float RUN_SPEED = 11.0f;
+        // Speed values are slightly slower than the player
+        private const float WALK_SPEED = 4f;
+        private const float RUN_SPEED = 10.0f;
+
         private const float SPEED_GRAVITY = 11.0f;
         private const float ROTATION_SPEED = 6.25f;
         private const float SPEED_EPSILON = 0.0001f;
-        private const int WALK_DISTANCE = 1;
+        private const float WALK_DISTANCE = 1.5f;
         private float movementSpeed = WALK_SPEED;
 
         private Transform avatarTransformValue;
@@ -128,9 +130,9 @@ namespace DCL
             if (distance >= 50 || immediate)
                 movementSpeed = float.MaxValue;
             else if (distance >= WALK_DISTANCE)
-                movementSpeed = RUN_SPEED;
+                movementSpeed = Mathf.MoveTowards(movementSpeed, RUN_SPEED, Time.deltaTime * 2);
             else
-                movementSpeed = WALK_SPEED;
+                movementSpeed = Mathf.MoveTowards(movementSpeed, WALK_SPEED, Time.deltaTime * 6);
         }
 
         void UpdateLerp(float deltaTime)
@@ -166,8 +168,6 @@ namespace DCL
 
             Vector3 direction = (targetPosition - CurrentPosition).normalized;
             Vector3 delta = direction * (movementSpeed * deltaTime);
-
-            Debug.Log($"Delta {delta} MS " + movementSpeed);
 
             //NOTE(Brian): We need a separate value for Y movement because the gravity has to be lerped faster.
             delta.y = direction.y * SPEED_GRAVITY * deltaTime;

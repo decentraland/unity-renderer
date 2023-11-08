@@ -12,5 +12,6 @@ namespace AvatarSystem
         void EquipEmote(string emoteId, EmoteClipData emoteClipData);
         void UnequipEmote(string emoteId);
 
+        string GetCurrentEmoteId();
     }
 }
