@@ -52,7 +52,7 @@ namespace DCL.Components
                 if (pbModel.VideoTexture.HasSeek) pb.seek = pbModel.VideoTexture.Seek;
                 if (pbModel.VideoTexture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.VideoTexture.Wrap;
                 if (pbModel.VideoTexture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.VideoTexture.SamplingMode;
-                
+
                 return pb;
             }
         }
