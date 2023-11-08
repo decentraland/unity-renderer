@@ -32,6 +32,7 @@ namespace Tests
         private DataStore_LoadingScreen loadingScreenDataStore;
         private DataStore_VirtualAudioMixer virtualAudioMixerDatastore;
         private ISettingsRepository<AudioSettings> audioSettingsRepository;
+        private IntVariable currentPlayerSceneNumber;
 
         [SetUp]
         public void SetUp()
@@ -58,11 +59,15 @@ namespace Tests
                 sceneSFXVolume = 1,
             });
 
+            currentPlayerSceneNumber = ScriptableObject.CreateInstance<IntVariable>();
+            currentPlayerSceneNumber.Set(666);
+
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
                 loadingScreenDataStore.decoupledLoadingHUD,
                 audioSettingsRepository,
-                virtualAudioMixerDatastore);
+                virtualAudioMixerDatastore,
+                currentPlayerSceneNumber);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -113,6 +118,7 @@ namespace Tests
                 Src = "video.mp4"
             };
 
+            videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
             yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
             videoPlayerHandler.videoPlayer.Update();
@@ -126,6 +132,7 @@ namespace Tests
         {
             videoPlayerHandler.isRendererActive = true;
             videoPlayerHandler.hadUserInteraction = true;
+            videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "video.mp4"

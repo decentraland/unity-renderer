@@ -18,7 +18,8 @@ namespace DCL.ECSComponents
                     internalComponents.videoPlayerComponent,
                     DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD,
                     Settings.i.audioSettings,
-                    DataStore.i.virtualAudioMixer));
+                    DataStore.i.virtualAudioMixer,
+                    CommonScriptableObjects.sceneNumber));
             componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;
