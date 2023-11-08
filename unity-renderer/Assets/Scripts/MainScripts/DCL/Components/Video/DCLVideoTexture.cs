@@ -307,10 +307,8 @@ namespace DCL.Components
                 float sceneSFXSetting = Settings.i.audioSettings.Data.sceneSFXVolume;
                 float masterSetting = Settings.i.audioSettings.Data.masterVolume;
                 targetVolume *= Utils.ToVolumeCurve(virtualMixerVolume * sceneSFXSetting * masterSetting);
-                Debug.Log($"DCLVideoTexture.UpdateVolume.IsPlayerInSameSceneAsComponent.targetVolume: {targetVolume}");
             }
 
-            Debug.Log($"DCLVideoTexture.UpdateVolume.texturePlayer.SetVolume.targetVolume: {targetVolume}");
             texturePlayer.SetVolume(targetVolume);
         }
 
