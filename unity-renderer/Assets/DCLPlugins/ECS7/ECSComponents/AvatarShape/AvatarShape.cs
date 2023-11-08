@@ -203,10 +203,7 @@ namespace DCL.ECSComponents
 
             // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
             if (model.HasExpressionTriggerId)
-            {
-                OnEntityTransformChanged(entity.gameObject.transform.localPosition, entity.gameObject.transform.localRotation, true);
                 avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
-            }
 
             UpdatePlayerStatus(entity, model);
 

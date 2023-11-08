@@ -56,6 +56,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     // Minimum vertical speed used to consider whether an avatar is on air
     private const float MIN_VERTICAL_SPEED_AIR = 0.025f;
+    private const string STOP_EMOTE = "stop-emote";
 
     [Serializable]
     public class AvatarLocomotion
@@ -281,13 +282,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         runAnimationState.normalizedSpeed = movementSpeed * bb.runSpeedFactor;
         walkAnimationState.normalizedSpeed = movementSpeed * bb.walkSpeedFactor;
 
-        if (movementSpeed >= WALK_MAX_SPEED) { CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME); }
+        if (movementSpeed >= WALK_MAX_SPEED)
+            CrossFadeTo(AvatarAnimation.RUN, runAnimationName, RUN_TRANSITION_TIME);
         else if (movementSpeed >= RUN_MIN_SPEED && movementSpeed < WALK_MAX_SPEED)
-        {
-            // Keep current animation, leave empty
-        }
-        else if (movementSpeed > WALK_MIN_SPEED) { CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME); }
-        else { CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, IDLE_TRANSITION_TIME); }
+            CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME);
+        else if (movementSpeed > WALK_MIN_SPEED)
+            CrossFadeTo(AvatarAnimation.WALK, walkAnimationName, WALK_TRANSITION_TIME);
+        else
+            CrossFadeTo(AvatarAnimation.IDLE, idleAnimationName, IDLE_TRANSITION_TIME);
 
         if (!bb.isGrounded)
         {
@@ -394,25 +396,24 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     private void StopEmoteInternal(bool immediate)
     {
-        if (string.IsNullOrEmpty(blackboard.expressionTriggerId)) return;
-        if (animation.GetClip(blackboard.expressionTriggerId) == null) return;
+        if (animation == null) return;
 
-        animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
+        if (!string.IsNullOrEmpty(blackboard.expressionTriggerId))
+            animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
+
+        // Instantly replicate our emote status and position
+        if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
+        {
+            DCLCharacterController.i.ForceReportMovement();
+            UserProfile.GetOwnUserProfile().SetAvatarExpression(STOP_EMOTE, UserProfile.EmoteSource.EmoteCancel, true);
+        }
+
         blackboard.expressionTriggerId = null;
         blackboard.shouldLoop = false;
         lastExtendedEmoteData?.Stop();
 
-        // Instantly replicate our emote status and position
-        if (isOwnPlayer)
-        {
-            DCLCharacterController.i.ForceReportMovement();
-            UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteLoop, true);
-        }
-
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
-
-    private float lastEmotePlayTime = 0;
 
     private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
     {
@@ -423,7 +424,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             if (emoteClipDataMap.TryGetValue(emoteId, out var emoteClipData))
             {
                 lastExtendedEmoteData = emoteClipData;
-                lastEmotePlayTime = Time.time;
 
                 emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
             }
@@ -455,6 +455,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (string.IsNullOrEmpty(emoteId))
             return;
+
+        if (emoteId == STOP_EMOTE)
+        {
+            StopEmoteInternal(false);
+            return;
+        }
 
         if (animation.GetClip(emoteId) == null)
             return;

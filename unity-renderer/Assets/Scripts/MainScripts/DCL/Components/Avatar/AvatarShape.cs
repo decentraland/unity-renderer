@@ -237,21 +237,11 @@ namespace DCL
             sceneEmoteHandler.SetExpressionLamportTimestamp(model.expressionTriggerTimestamp);
 
             if (sceneEmoteHandler.IsSceneEmote(model.expressionTriggerId))
-            {
-                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
-                    entity.gameObject.transform.localRotation, true);
-
                 sceneEmoteHandler
                    .LoadAndPlayEmote(model.bodyShape, model.expressionTriggerId)
                    .Forget();
-            }
             else
-            {
-                OnEntityTransformChanged(entity.gameObject.transform.localPosition,
-                    entity.gameObject.transform.localRotation, true);
-
                 emotesController.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
-            }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
@@ -393,8 +383,6 @@ namespace DCL
 
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
-            Debug.Log(position);
-
             if (isGlobalSceneAvatar)
             {
                 avatarMovementController.OnTransformChanged(position, rotation, inmediate);

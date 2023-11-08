@@ -128,9 +128,9 @@ namespace DCL
             if (distance >= 50 || immediate)
                 movementSpeed = float.MaxValue;
             else if (distance >= WALK_DISTANCE)
-                movementSpeed = WALK_SPEED;
-            else
                 movementSpeed = RUN_SPEED;
+            else
+                movementSpeed = WALK_SPEED;
         }
 
         void UpdateLerp(float deltaTime)
@@ -166,6 +166,8 @@ namespace DCL
 
             Vector3 direction = (targetPosition - CurrentPosition).normalized;
             Vector3 delta = direction * (movementSpeed * deltaTime);
+
+            Debug.Log($"Delta {delta} MS " + movementSpeed);
 
             //NOTE(Brian): We need a separate value for Y movement because the gravity has to be lerped faster.
             delta.y = direction.y * SPEED_GRAVITY * deltaTime;
