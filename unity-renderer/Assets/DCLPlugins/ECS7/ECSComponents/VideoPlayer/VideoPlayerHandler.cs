@@ -109,7 +109,7 @@ namespace DCL.ECSComponents
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
 
-            UpdateVolume(model);
+            UpdateVolume(model, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get());
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
@@ -148,21 +148,19 @@ namespace DCL.ECSComponents
         }
 
         private void OnSceneSfxVolumeChanged(float current, float previous) =>
-            UpdateVolume(lastModel);
+            UpdateVolume(lastModel, audioSettings.Data, current);
 
-        private void OnAudioSettingsChanged(AudioSettings obj) =>
-            UpdateVolume(lastModel);
+        private void OnAudioSettingsChanged(AudioSettings settings) =>
+            UpdateVolume(lastModel, settings, audioMixerDataStore.sceneSFXVolume.Get());
 
-        private void UpdateVolume(PBVideoPlayer model)
+        private void UpdateVolume(PBVideoPlayer model, AudioSettings settings, float sceneMixerSfxVolume)
         {
             if (model == null) return;
             if (videoPlayer == null) return;
 
-            float virtualMixerVolume = audioMixerDataStore.sceneSFXVolume.Get();
-            AudioSettings audioSettings = this.audioSettings.Data;
-            float sceneSFXSetting = audioSettings.sceneSFXVolume;
-            float masterSetting = audioSettings.masterVolume;
-            float volume = model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting;
+            float sceneSFXSetting = settings.sceneSFXVolume;
+            float masterSetting = settings.masterVolume;
+            float volume = model.GetVolume() * sceneMixerSfxVolume * sceneSFXSetting * masterSetting;
             videoPlayer.SetVolume(volume);
         }
     }
