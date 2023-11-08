@@ -8,6 +8,8 @@ using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
 {
@@ -108,7 +110,8 @@ namespace DCL.ECSComponents
             AudioSettings audioSettings = this.audioSettings.Data;
             float sceneSFXSetting = audioSettings.sceneSFXVolume;
             float masterSetting = audioSettings.masterVolume;
-            float volume = Helpers.Utils.ToVolumeCurve(model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting);
+            float volume = model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting;
+            Debug.Log($"VideoPlayerHandler.OnComponentModelUpdated.volume: {volume}, {model.GetVolume()}");
             videoPlayer.SetVolume(volume);
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
