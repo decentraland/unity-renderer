@@ -8,7 +8,6 @@ using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents
@@ -54,12 +53,16 @@ namespace DCL.ECSComponents
             if (!hadUserInteraction)
                 Helpers.Utils.OnCursorLockChanged += OnCursorLockChanged;
             loadingScreen.visible.OnChange += OnLoadingScreenStateChanged;
+            audioSettings.OnChanged += OnAudioSettingsChanged;
+            audioMixerDataStore.sceneSFXVolume.OnChange += OnSceneSfxVolumeChanged;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             Helpers.Utils.OnCursorLockChanged -= OnCursorLockChanged;
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
+            audioSettings.OnChanged -= OnAudioSettingsChanged;
+            audioMixerDataStore.sceneSFXVolume.OnChange -= OnSceneSfxVolumeChanged;
 
             // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
             videoPlayerInternalComponent.RemoveFor(scene, entity, new InternalVideoPlayer()
@@ -106,13 +109,7 @@ namespace DCL.ECSComponents
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
 
-            float virtualMixerVolume = audioMixerDataStore.sceneSFXVolume.Get();
-            AudioSettings audioSettings = this.audioSettings.Data;
-            float sceneSFXSetting = audioSettings.sceneSFXVolume;
-            float masterSetting = audioSettings.masterVolume;
-            float volume = model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting;
-            Debug.Log($"VideoPlayerHandler.OnComponentModelUpdated.volume: {volume}, {model.GetVolume()}");
-            videoPlayer.SetVolume(volume);
+            UpdateVolume(model);
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
@@ -148,6 +145,25 @@ namespace DCL.ECSComponents
         {
             isRendererActive = !isScreenEnabled;
             ConditionsToPlayVideoChanged();
+        }
+
+        private void OnSceneSfxVolumeChanged(float current, float previous) =>
+            UpdateVolume(lastModel);
+
+        private void OnAudioSettingsChanged(AudioSettings obj) =>
+            UpdateVolume(lastModel);
+
+        private void UpdateVolume(PBVideoPlayer model)
+        {
+            if (model == null) return;
+            if (videoPlayer == null) return;
+
+            float virtualMixerVolume = audioMixerDataStore.sceneSFXVolume.Get();
+            AudioSettings audioSettings = this.audioSettings.Data;
+            float sceneSFXSetting = audioSettings.sceneSFXVolume;
+            float masterSetting = audioSettings.masterVolume;
+            float volume = model.GetVolume() * virtualMixerVolume * sceneSFXSetting * masterSetting;
+            videoPlayer.SetVolume(volume);
         }
     }
 }
