@@ -125,14 +125,18 @@ namespace DCL
             targetPosition = position;
             targetRotation = rotation;
 
-            float distance = Vector3.Distance(targetPosition, currentWorldPosition);
+            float distance = Vector3.Distance(targetPosition, CurrentPosition);
 
-            if (distance >= 50 || immediate)
-                movementSpeed = float.MaxValue;
-            else if (distance >= WALK_DISTANCE)
-                movementSpeed = Mathf.MoveTowards(movementSpeed, RUN_SPEED, Time.deltaTime * 2);
+            if (distance >= 50)
+            {
+                CurrentPosition = position;
+                AvatarTransform.rotation = rotation;
+            }
+
+            if (distance >= WALK_DISTANCE)
+                movementSpeed = Mathf.MoveTowards(movementSpeed, RUN_SPEED, Time.deltaTime * RUN_SPEED * 10);
             else
-                movementSpeed = Mathf.MoveTowards(movementSpeed, WALK_SPEED, Time.deltaTime * 6);
+                movementSpeed = Mathf.MoveTowards(movementSpeed, WALK_SPEED, Time.deltaTime * RUN_SPEED * 30);
         }
 
         void UpdateLerp(float deltaTime)

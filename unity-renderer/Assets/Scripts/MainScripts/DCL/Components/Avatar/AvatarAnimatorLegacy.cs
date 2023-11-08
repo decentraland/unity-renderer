@@ -135,7 +135,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     // AvatarSystem entry points
     public bool Prepare(string bodyshapeId, GameObject container)
     {
-        StopEmote();
+        StopEmote(true);
 
         animation = container.gameObject.GetOrCreateComponent<Animation>();
         container.gameObject.GetOrCreateComponent<StickerAnimationListener>();
@@ -388,9 +388,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         return Mathf.RoundToInt(currentEmote.time / currentEmote.length);
     }
 
-    public void StopEmote()
+    public void StopEmote(bool immediate)
     {
-        StopEmoteInternal(true);
+        StopEmoteInternal(immediate);
     }
 
     private void StopEmoteInternal(bool immediate)
@@ -447,8 +447,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
     public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
         bool forcePlay)
     {
-        Debug.Log($"Playing {emoteId} ts: {timestamps} force: {forcePlay}");
-
         if (animation == null)
             return;
 

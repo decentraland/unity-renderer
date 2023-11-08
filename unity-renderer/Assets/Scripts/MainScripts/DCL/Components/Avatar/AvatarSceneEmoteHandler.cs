@@ -51,7 +51,10 @@ namespace DCL
                 //avoid playing emote if timestamp has change,
                 //meaning a new emote was trigger while this one was loading
                 if (timestamp == lamportTimestamp)
+                {
                     emotesController.PlayEmote(emoteId, lamportTimestamp);
+                    UserProfile.GetOwnUserProfile().SetAvatarExpression(emoteId, UserProfile.EmoteSource.EmoteLoop, true);
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception e) { Debug.LogException(e); }

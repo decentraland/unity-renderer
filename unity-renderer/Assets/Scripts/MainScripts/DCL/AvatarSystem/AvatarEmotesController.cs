@@ -40,7 +40,7 @@ namespace AvatarSystem
             visibilityConstraints.Add(key);
 
             if (!CanPlayEmote())
-                StopEmote();
+                StopEmote(true);
         }
 
         public void RemoveVisibilityConstraint(string key)
@@ -53,7 +53,7 @@ namespace AvatarSystem
             bool isPlayingEmote = !string.IsNullOrEmpty(animator.GetCurrentEmoteId());
             bool emoteIsValid = !string.IsNullOrEmpty(currentEmoteId);
 
-            if (isPlayingEmote && !emoteIsValid) { animator.StopEmote(); }
+            if (isPlayingEmote && !emoteIsValid) { animator.StopEmote(false); }
 
             if (emoteIsValid)
                 PlayEmote(currentEmoteId, timestamp);
@@ -125,9 +125,9 @@ namespace AvatarSystem
             return baseVolume;
         }
 
-        public void StopEmote()
+        public void StopEmote(bool immediate)
         {
-            animator.StopEmote();
+            animator.StopEmote(immediate);
         }
 
         public void EquipEmote(string emoteId, IEmoteReference emoteReference)

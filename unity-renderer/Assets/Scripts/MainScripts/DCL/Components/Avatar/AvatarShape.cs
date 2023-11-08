@@ -240,8 +240,7 @@ namespace DCL
                 sceneEmoteHandler
                    .LoadAndPlayEmote(model.bodyShape, model.expressionTriggerId)
                    .Forget();
-            else
-                emotesController.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
+            else { avatar.GetEmotesController().UpdateEmoteStatus(model.expressionTriggerId, model.expressionTriggerTimestamp); }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;
