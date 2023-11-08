@@ -20,6 +20,7 @@ namespace DCL.ECSComponents
                     Settings.i.audioSettings,
                     DataStore.i.virtualAudioMixer,
                     CommonScriptableObjects.sceneNumber));
+
             componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

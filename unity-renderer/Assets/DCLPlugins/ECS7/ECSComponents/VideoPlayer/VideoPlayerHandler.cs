@@ -20,6 +20,7 @@ namespace DCL.ECSComponents
         private readonly ISettingsRepository<AudioSettings> audioSettings;
         private readonly DataStore_VirtualAudioMixer audioMixerDataStore;
         private readonly IntVariable currentPlayerSceneNumber;
+
         internal PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
@@ -118,6 +119,7 @@ namespace DCL.ECSComponents
                 videoPlayer.SetTime(model.GetPosition());
 
             UpdateVolume(model, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get(), currentPlayerSceneNumber);
+
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
