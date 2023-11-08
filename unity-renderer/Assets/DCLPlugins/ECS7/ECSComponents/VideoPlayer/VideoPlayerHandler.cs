@@ -19,6 +19,8 @@ namespace DCL.ECSComponents
         internal DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen;
         private readonly ISettingsRepository<AudioSettings> audioSettings;
         private readonly DataStore_VirtualAudioMixer audioMixerDataStore;
+        private readonly IntVariable currentPlayerSceneNumber;
+
         internal PBVideoPlayer lastModel = null;
         internal WebVideoPlayer videoPlayer;
 
@@ -28,18 +30,21 @@ namespace DCL.ECSComponents
         internal bool isValidUrl = false;
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent;
+        private IParcelScene currentScene;
         private bool canVideoBePlayed => isRendererActive && hadUserInteraction && isValidUrl;
 
         public VideoPlayerHandler(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerInternalComponent,
             DataStore_LoadingScreen.DecoupledLoadingScreen loadingScreen,
             ISettingsRepository<AudioSettings> audioSettings,
-            DataStore_VirtualAudioMixer audioMixerDataStore)
+            DataStore_VirtualAudioMixer audioMixerDataStore,
+            IntVariable currentPlayerSceneNumber)
         {
             this.videoPlayerInternalComponent = videoPlayerInternalComponent;
             this.loadingScreen = loadingScreen;
             this.audioSettings = audioSettings;
             this.audioMixerDataStore = audioMixerDataStore;
+            this.currentPlayerSceneNumber = currentPlayerSceneNumber;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -55,6 +60,8 @@ namespace DCL.ECSComponents
             loadingScreen.visible.OnChange += OnLoadingScreenStateChanged;
             audioSettings.OnChanged += OnAudioSettingsChanged;
             audioMixerDataStore.sceneSFXVolume.OnChange += OnSceneSfxVolumeChanged;
+            currentPlayerSceneNumber.OnChange += OnPlayerSceneChanged;
+            currentScene = scene;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
@@ -63,6 +70,7 @@ namespace DCL.ECSComponents
             loadingScreen.visible.OnChange -= OnLoadingScreenStateChanged;
             audioSettings.OnChanged -= OnAudioSettingsChanged;
             audioMixerDataStore.sceneSFXVolume.OnChange -= OnSceneSfxVolumeChanged;
+            currentPlayerSceneNumber.OnChange -= OnPlayerSceneChanged;
 
             // ECSVideoPlayerSystem.Update() will run a video events check before the component is removed
             videoPlayerInternalComponent.RemoveFor(scene, entity, new InternalVideoPlayer()
@@ -71,6 +79,7 @@ namespace DCL.ECSComponents
             });
 
             videoPlayer?.Dispose();
+            currentScene = null;
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBVideoPlayer model)
@@ -109,7 +118,8 @@ namespace DCL.ECSComponents
             if (Math.Abs(lastPosition - model.GetPosition()) > 0.01f) // 0.01s of tolerance
                 videoPlayer.SetTime(model.GetPosition());
 
-            UpdateVolume(model, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get());
+            UpdateVolume(model, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get(), currentPlayerSceneNumber);
+
             videoPlayer.SetPlaybackRate(model.GetPlaybackRate());
             videoPlayer.SetLoop(model.GetLoop());
 
@@ -148,20 +158,40 @@ namespace DCL.ECSComponents
         }
 
         private void OnSceneSfxVolumeChanged(float current, float previous) =>
-            UpdateVolume(lastModel, audioSettings.Data, current);
+            UpdateVolume(lastModel, audioSettings.Data, current, currentPlayerSceneNumber);
 
         private void OnAudioSettingsChanged(AudioSettings settings) =>
-            UpdateVolume(lastModel, settings, audioMixerDataStore.sceneSFXVolume.Get());
+            UpdateVolume(lastModel, settings, audioMixerDataStore.sceneSFXVolume.Get(), currentPlayerSceneNumber);
 
-        private void UpdateVolume(PBVideoPlayer model, AudioSettings settings, float sceneMixerSfxVolume)
+        private void OnPlayerSceneChanged(int current, int previous) =>
+            UpdateVolume(lastModel, audioSettings.Data, audioMixerDataStore.sceneSFXVolume.Get(), current);
+
+        private void UpdateVolume(PBVideoPlayer model, AudioSettings settings, float sceneMixerSfxVolume, int currentSceneNumber)
         {
             if (model == null) return;
             if (videoPlayer == null) return;
 
-            float sceneSFXSetting = settings.sceneSFXVolume;
-            float masterSetting = settings.masterVolume;
-            float volume = model.GetVolume() * sceneMixerSfxVolume * sceneSFXSetting * masterSetting;
+            float volume = 0;
+
+            if (IsPlayerInSameSceneAsComponent(currentSceneNumber))
+            {
+                float sceneSFXSetting = settings.sceneSFXVolume;
+                float masterSetting = settings.masterVolume;
+                volume = model.GetVolume() * sceneMixerSfxVolume * sceneSFXSetting * masterSetting;
+            }
+
             videoPlayer.SetVolume(volume);
+        }
+
+        private bool IsPlayerInSameSceneAsComponent(int currentSceneNumber)
+        {
+            if (currentScene == null)
+                return false;
+
+            if (currentSceneNumber <= 0)
+                return false;
+
+            return currentScene.sceneData?.sceneNumber == currentSceneNumber || currentScene.isPersistent;
         }
     }
 }
