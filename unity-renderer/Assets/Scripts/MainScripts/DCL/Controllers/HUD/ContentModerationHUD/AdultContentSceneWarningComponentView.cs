@@ -14,7 +14,7 @@ namespace DCL.ContentModeration
         [SerializeField] internal TMP_Text subTitle;
 
         private const string RESTRICTED_MODE_SUBTITLE = "This scene has been restricted by our community as it potentially contains prohibited content for the users.";
-        private const string ADULT_MODE_SUBTITLE = "This Scene has been flagged by our community as NSFW and it may contains adult or inappropriate content for some users. Please confirm your age at Settings Screen.";
+        private const string ADULT_MODE_SUBTITLE = @"This scene has been flagged by the community as containing 18+ Adult content that may be inappropriate for some users.\n\nTo see this and other Adult-rated scenes, please confirm your choice under 'Adult Content' in the General Settings.";
 
         public event Action OnGoToSettingsClicked;
 

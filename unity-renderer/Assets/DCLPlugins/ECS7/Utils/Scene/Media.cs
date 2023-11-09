@@ -3,6 +3,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.Configuration;
 
 /*
 * Scene utils file for media related stuff
@@ -53,15 +54,17 @@ public static partial class UtilsScene
             return true;
         }
 
-        if (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null)
+        if (ExternalDataFetchingSettings.CHECK_ALLOWED_MEDIA_HOSTNAMES
+        && (sceneRequiredPermissions == null || sceneAllowedMediaHostnames == null))
         {
             url = string.Empty;
             Debug.LogError("External media asset url error: 'allowedMediaHostnames' missing in scene.json file.");
             return false;
         }
 
-        if (HasRequiredPermission(sceneRequiredPermissions, ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES)
-            && IsUrlDomainAllowed(sceneAllowedMediaHostnames, inputUrl))
+        if (!ExternalDataFetchingSettings.CHECK_ALLOWED_MEDIA_HOSTNAMES
+            || (HasRequiredPermission(sceneRequiredPermissions, ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES)
+            && IsUrlDomainAllowed(sceneAllowedMediaHostnames, inputUrl)))
         {
             url = inputUrl;
             return true;

@@ -14,6 +14,7 @@ namespace SocialFeaturesAnalytics
         Conversation,
         ProfileEditHUD,
         MyProfile,
+        EmailNotifications,
     }
 
     public enum AvatarOpenSource

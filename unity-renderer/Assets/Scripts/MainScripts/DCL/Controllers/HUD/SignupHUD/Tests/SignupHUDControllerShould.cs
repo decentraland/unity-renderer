@@ -1,4 +1,6 @@
 ﻿using DCL;
+using DCL.Browser;
+using DCLServices.SubscriptionsAPIService;
 using NSubstitute;
 using NUnit.Framework;
 using SignupHUD;
@@ -10,19 +12,28 @@ namespace Tests.SignupHUD
     {
         private SignupHUDController hudController;
         private ISignupHUDView hudView;
+        private IBrowserBridge browserBridge;
+        private ISubscriptionsAPIService subscriptionsAPIService;
         private DataStore_HUDs dataStoreHUDs;
+        private DataStore_FeatureFlag dataStoreFeatureFlag;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
 
         [SetUp]
         public void SetUp()
         {
             hudView = Substitute.For<ISignupHUDView>();
+            browserBridge = Substitute.For<IBrowserBridge>();
+            subscriptionsAPIService = Substitute.For<ISubscriptionsAPIService>();
             dataStoreHUDs = new DataStore_HUDs();
+            dataStoreFeatureFlag = new DataStore_FeatureFlag();
 
             hudController = new SignupHUDController(Substitute.For<IAnalytics>(),
                 hudView,
                 new DataStore_LoadingScreen(),
-                dataStoreHUDs);
+                dataStoreHUDs,
+                dataStoreFeatureFlag,
+                browserBridge,
+                subscriptionsAPIService);
             hudController.Initialize();
         }
 
@@ -107,6 +118,19 @@ namespace Tests.SignupHUD
             Assert.IsNull(hudController.name);
             Assert.IsNull(hudController.email);
             hudView.Received().ShowNameScreen();
+        }
+
+        [Test]
+        [TestCase("tosUrl")]
+        [TestCase("privacyPolicyUrl")]
+        public void ReactsToLinkClicked(string linkId)
+        {
+            hudController.name = "this_will_be_null";
+            hudController.email = "this_will_be_null";
+
+            hudView.OnLinkClicked += Raise.Event<Action<string>>(linkId);
+
+            browserBridge.Received(1).OpenUrl(Arg.Any<string>());
         }
 
         [TearDown]

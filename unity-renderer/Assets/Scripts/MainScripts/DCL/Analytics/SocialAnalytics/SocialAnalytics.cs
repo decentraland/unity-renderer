@@ -184,13 +184,14 @@ namespace SocialFeaturesAnalytics
             analytics.SendAnalytic(PASSPORT_JUMP_IN, data);
         }
 
-        public void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source)
+        public void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source, ProfileField fieldChanged)
         {
             var data = new Dictionary<string, string>
             {
                 { "source", source.ToString() },
                 { "descriptionLength", descriptionLength.ToString() },
                 { "hasLinks", hasLinks.ToString() },
+                { "field", fieldChanged.ToString() },
             };
 
             analytics.SendAnalytic(PASSPORT_EDIT_PROFILE, data);

@@ -18,6 +18,7 @@ namespace DCL.EmotesCustomization
         [SerializeField] internal EmoteSlotSelectorComponentView emoteSlotSelector;
         [SerializeField] internal GridContainerComponentView emotesGrid;
         [SerializeField] internal NFTItemInfo emoteInfoPanel;
+        [SerializeField] internal ColumnsOrganizerComponentView columnsOrganizerComponentView;
 
         public event Action<string, int> onEmoteEquipped;
         public event Action<string, int> onEmoteUnequipped;
@@ -51,6 +52,7 @@ namespace DCL.EmotesCustomization
         {
             emoteSlotSelector.RefreshControl();
             emotesGrid.RefreshControl();
+            columnsOrganizerComponentView?.RefreshControl();
         }
 
         public override void Dispose()
@@ -169,6 +171,11 @@ namespace DCL.EmotesCustomization
         public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
         public EmoteSlotCardComponentView GetSlot(int slotNumber) { return currentSlots.FirstOrDefault(x => x.model.slotNumber == slotNumber); }
+
+        public void Refresh()
+        {
+            RefreshControl();
+        }
 
         internal void ClickOnEmote(string emoteId, string emoteName, int slotNumber, bool isAssignedInSelectedSlot)
         {

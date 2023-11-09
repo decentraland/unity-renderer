@@ -3,6 +3,12 @@ using static DCL.SettingsCommon.GeneralSettings;
 
 namespace SocialFeaturesAnalytics
 {
+    public enum ProfileField
+    {
+        Description,
+        Email
+    }
+
     public interface ISocialAnalytics
     {
         void SendPlayerMuted(string toUserId);
@@ -19,7 +25,7 @@ namespace SocialFeaturesAnalytics
         void SendCopyWallet(PlayerActionSource source);
         void SendCopyUsername(PlayerActionSource source);
         void SendJumpInToPlayer(PlayerActionSource source, string recipientId);
-        void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source);
+        void SendProfileEdit(int descriptionLength, bool hasLinks, PlayerActionSource source, ProfileField fieldChanged);
         void SendVoiceChatPreferencesChanged(VoiceChatAllow preference);
         void SendFriendRequestSent(string fromUserId, string toUserId, double messageLength, PlayerActionSource source, string friendRequestId);
         void SendFriendRequestApproved(string fromUserId, string toUserId, string source, bool hasBodyMessage, string friendRequestId);

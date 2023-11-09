@@ -43,7 +43,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 430, y: 400}
+  m_SizeDelta: {x: 430, y: 437}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5026964471211828302
 CanvasRenderer:
@@ -533,7 +533,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -173}
-  m_SizeDelta: {x: -80, y: 97.9967}
+  m_SizeDelta: {x: -80, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &7716796331833123203
 CanvasRenderer:
@@ -563,9 +563,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: This scene has been flagged by our community as NSFW, meaning that it may
-    contain adult or inappropriate content for some users. To see this type of scenes
-    enable adult content filter in Settings.
+  m_text: This scene has been flagged by the community as containing 18+ Adult content
+    that may be inappropriate for some users.\n\nTo see this and other Adult-rated
+    scenes, please confirm your choice under 'Adult Content' in the General Settings.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -600,7 +600,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1330,7 +1330,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
+      objectReference: {fileID: -1532326820724739884, guid: 6b705423dc77d4fceb4122f6d7e571d6,
+        type: 2}
     - target: {fileID: 4469143239268576428, guid: df2ca57878cc0834088cff37f213e619,
         type: 3}
       propertyPath: m_enableAutoSizing
@@ -1536,7 +1537,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
+      objectReference: {fileID: -1532326820724739884, guid: 6b705423dc77d4fceb4122f6d7e571d6,
+        type: 2}
     - target: {fileID: 4469143239268576428, guid: df2ca57878cc0834088cff37f213e619,
         type: 3}
       propertyPath: m_enableAutoSizing
@@ -1742,7 +1744,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 74b83fa9a54124695b9bdd8bea96fa17, type: 2}
+      objectReference: {fileID: -1532326820724739884, guid: 6b705423dc77d4fceb4122f6d7e571d6,
+        type: 2}
     - target: {fileID: 4469143239268576428, guid: df2ca57878cc0834088cff37f213e619,
         type: 3}
       propertyPath: m_enableAutoSizing

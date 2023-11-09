@@ -1347,7 +1347,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: REPORT RATING
+  m_text: FLAG FOR REVIEW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a02669827dd9144f39b4b164e753a21a, type: 2}
   m_sharedMaterial: {fileID: 1196159134475820439, guid: a02669827dd9144f39b4b164e753a21a,
@@ -1486,7 +1486,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d254a3a3b9d5642e1ad6432c441d7f43, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3490,7 +3490,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8120350213068474246}
   m_HandleRect: {fileID: 5331743487443924042}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4244,21 +4244,21 @@ MonoBehaviour:
   reportSentModal: {fileID: 6783898561910975655}
   modalHeaderImage: {fileID: 2642339653663756838}
   teenHeaderSprite: {fileID: 21300000, guid: 60d50773a2ca4e240899c9b43cd770d7, type: 3}
-  teenOptionTitle: PG 13+ TEENS
-  teenOptionSubtitle: Content for everyone in the Metaverse
+  teenOptionTitle: PG 13+ TEEN
+  teenOptionSubtitle: Content for everyone in the metaverse
   teenOptions:
   - Moderate Violence
   - Suggestive or Horror-Themed
   - Frequent or Intense Cartoons
   - Simulated Gambling
   - Mild Language
-  teenDescription: "Scenarios in this category may contain mild or infrequent occurrences
+  teenDescription: Scenes in this category may contain mild or infrequent occurrences
     of cartoon, fantasy, or realistic violence, as well as infrequent or mild mature,
-    suggestive, or horror-themed content.\L\LAll content is in line with Decentraland's
-    terms, which require users to be 13 or older."
+    suggestive, or horror-themed content.\n\nAll content is in line with Decentraland's
+    terms and conditions, which require users to be 13 or older.
   adultHeaderSprite: {fileID: 21300000, guid: 93e14674749996744b80c0f1bae996f3, type: 3}
-  adultOptionTitle: PG 18+ ADULTS
-  adultOptionSubtitle: Categorized as NSFW
+  adultOptionTitle: PG 18+ ADULT
+  adultOptionSubtitle: Content categorized as NSFW
   adultOptions:
   - Intense Offensive Language
   - Graphic Violence
@@ -4267,11 +4267,11 @@ MonoBehaviour:
   - Alcohol, Tobacco and Drugs
   adultDescription: Content in this category is intended for mature audiences and
     may include strong language, graphic violence, or explicit themes. Users should
-    be 18 or older to access these scenes, as per Decentraland's guidelines.
+    be 18 or older to access these scenes, as per Decentraland's Terms & Conditions.
   restrictedHeaderSprite: {fileID: 21300000, guid: 93e1efcab17a8de4ba733f92f79f6a5e,
     type: 3}
-  restrictedOptionTitle: BLOCKED CONTENT
-  restrictedOptionSubtitle: "Content that shouldn\u2019t exist in DCL"
+  restrictedOptionTitle: RESTRICTED
+  restrictedOptionSubtitle: "Content that shouldn\u2019t exist in Decentraland"
   restrictedOptions:
   - Suspicious content or spam
   - Abusive or hateful content
@@ -4281,7 +4281,7 @@ MonoBehaviour:
   - Promotion of terrorism / violence
   - IP / Copyright infringement
   restrictedDescription: This scene contains content that violates Decentraland's
-    community standards. It may include harmful or illegal activities such as harassment,
+    Terms & Conditions. It may include harmful or illegal activities such as harassment,
     hate speech, or promotion of violence.
   optionButtonPrefab: {fileID: 288046275904441194, guid: 6cc071fca6faf1b47b25479682dad8d2,
     type: 3}

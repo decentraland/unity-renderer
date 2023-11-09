@@ -4,6 +4,8 @@ namespace DCL.MyAccount
 {
     public class MyAccountSectionHUDController
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private readonly IMyAccountSectionHUDComponentView view;
         private readonly DataStore dataStore;
 
@@ -28,7 +30,10 @@ namespace DCL.MyAccount
         public void ShowAccountSettingsUpdatedToast() =>
             view.ShowAccountSettingsUpdatedToast();
 
-        private void ConfigureMyAccountSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _) =>
+        private void ConfigureMyAccountSectionInFullscreenMenuChanged(Transform currentParentTransform, Transform _)
+        {
             view.SetAsFullScreenMenuMode(currentParentTransform);
+            view.SetSectionsMenuActive(dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF));
+        }
     }
 }

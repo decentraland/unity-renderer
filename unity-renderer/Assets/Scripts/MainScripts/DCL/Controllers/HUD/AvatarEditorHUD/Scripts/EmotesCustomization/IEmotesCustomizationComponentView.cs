@@ -118,5 +118,7 @@ namespace DCL.EmotesCustomization
         /// <param name="slotNumber">Slot number to get.</param>
         /// <returns></returns>
         EmoteSlotCardComponentView GetSlot(int slotNumber);
+
+        void Refresh();
     }
 }
