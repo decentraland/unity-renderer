@@ -106,13 +106,14 @@ namespace DCL.ECSComponents
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
 
-            emotesController = avatar.GetEmotesController();
-            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
 
             //Ensure base avatar references
             var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
+
+            emotesController = avatar.GetEmotesController();
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
