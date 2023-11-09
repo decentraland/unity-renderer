@@ -14,7 +14,8 @@ namespace AvatarSystem
     public class AvatarEmotesController : IAvatarEmotesController
     {
         private const float BASE_VOLUME = 0.2f;
-        private const string INSIDE_CAMERA = "INSIDE_CAMERA";
+        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
 
@@ -108,12 +109,8 @@ namespace AvatarSystem
             animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, forcePlay);
         }
 
-        private bool CanPlayEmote()
-        {
-            if (visibilityConstraints.Count == 0) return true;
-            if (visibilityConstraints.Count > 1) return false;
-            return visibilityConstraints.Contains(INSIDE_CAMERA);
-        }
+        private bool CanPlayEmote() =>
+            !visibilityConstraints.Contains(IN_HIDE_AREA);
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
         // Using AudioMixer does not work in WebGL so we calculate the volume manually

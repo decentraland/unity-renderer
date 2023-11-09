@@ -398,7 +398,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null) return;
 
         if (!string.IsNullOrEmpty(blackboard.expressionTriggerId))
+        {
+            Debug.Log($"Emote stopped {blackboard.expressionTriggerId}");
             animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
+        }
 
         // Instantly replicate our emote status and position
         if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))

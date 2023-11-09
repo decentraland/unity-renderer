@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
@@ -86,6 +87,8 @@ namespace DCL.ECSComponents
 
         private Service<IAvatarFactory> avatarFactory;
         private Service<IEmotesCatalogService> emotesCatalog;
+        private IAvatarEmotesController emotesController;
+        private AvatarSceneEmoteHandler sceneEmoteHandler;
         public IAvatar internalAvatar => avatar;
 
         private void Awake()
@@ -102,6 +105,9 @@ namespace DCL.ECSComponents
             // AvatarsLodController are no taking them into account. It needs product definition and a refactor to include them
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
+
+            emotesController = avatar.GetEmotesController();
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
 
             //Ensure base avatar references
             var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
@@ -201,7 +207,12 @@ namespace DCL.ECSComponents
                 }
             }
 
-            avatar.GetEmotesController().UpdateEmoteStatus(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+            if (sceneEmoteHandler.IsSceneEmote(model.ExpressionTriggerId))
+                sceneEmoteHandler
+                   .LoadAndPlayEmote(model.BodyShape, model.ExpressionTriggerId)
+                   .Forget();
+            else
+                avatar.GetEmotesController().UpdateEmoteStatus(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
 
