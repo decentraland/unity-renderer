@@ -20,16 +20,16 @@ export function* initialRemoteProfileLoad() {
   const isGuest = yield select(isGuestLogin)
   let profile: Avatar | null = yield call(fetchLocalProfile, isGuest)
   try {
-    if (isGuest && !profile) {
-      if (!profile) {
-        profile = generateRandomUserProfile(userId)
-      }
-    } else {
+    if (!isGuest) {
       profile = yield call(
         fetchProfileFromCatalyst,
         userId,
         profile && profile.userId === userId ? profile.version : 0
       )
+    }
+
+    if (!profile) {
+      profile = generateRandomUserProfile(userId)
     }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
