@@ -344,6 +344,9 @@ public class WearableItem
         {
             WearableItem wearableItem = wearables[index];
 
+            if (wearableItem == null)
+                continue;
+
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
