@@ -10,6 +10,7 @@ import {profileSuccess, saveProfileDelta} from '../actions'
 import {fetchProfileFromCatalyst} from './fetchProfile'
 import {fetchLocalProfile} from './local/index'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
+import {generateRandomUserProfile} from "../../../lib/decentraland/profiles";
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
@@ -19,7 +20,11 @@ export function* initialRemoteProfileLoad() {
   const isGuest = yield select(isGuestLogin)
   let profile: Avatar | null = yield call(fetchLocalProfile, isGuest)
   try {
-    if (!isGuest) {
+    if (isGuest && !profile) {
+      if (!profile) {
+        profile = generateRandomUserProfile(userId)
+      }
+    } else {
       profile = yield call(
         fetchProfileFromCatalyst,
         userId,
