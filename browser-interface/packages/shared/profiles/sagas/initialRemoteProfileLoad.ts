@@ -30,9 +30,7 @@ export function* initialRemoteProfileLoad() {
 
     if (!profile) {
       profile = generateRandomUserProfile(userId)
-      if (profile) {
-        yield put(profileSuccess(profile))
-      }
+      yield put(profileSuccess(profile))
     }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
