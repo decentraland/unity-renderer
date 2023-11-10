@@ -3,7 +3,7 @@ import {ETHEREUM_NETWORK, ethereumConfigurations, RESET_TUTORIAL} from 'config'
 import defaultLogger from 'lib/logger'
 import {call, put, select} from 'redux-saga/effects'
 import {BringDownClientAndReportFatalError, ErrorContext} from 'shared/loading/ReportFatalError'
-import {getCurrentIdentity, getCurrentNetwork} from 'shared/session/selectors'
+import {getCurrentIdentity, getCurrentNetwork, isGuestLogin} from 'shared/session/selectors'
 import type {ExplorerIdentity} from 'shared/session/types'
 import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
 import {profileSuccess, saveProfileDelta} from '../actions'
@@ -16,13 +16,16 @@ export function* initialRemoteProfileLoad() {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
-  let profile: Avatar | null = yield call(fetchLocalProfile)
+  const isGuest = yield select(isGuestLogin)
+  let profile: Avatar | null = yield call(fetchLocalProfile, isGuest)
   try {
-    profile = yield call(
-      fetchProfileFromCatalyst,
-      userId,
-      profile && profile.userId === userId ? profile.version : 0
-    )
+    if (!isGuest) {
+      profile = yield call(
+        fetchProfileFromCatalyst,
+        userId,
+        profile && profile.userId === userId ? profile.version : 0
+      )
+    }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
     throw e
