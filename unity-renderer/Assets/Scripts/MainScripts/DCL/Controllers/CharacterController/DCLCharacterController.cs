@@ -554,7 +554,7 @@ public class DCLCharacterController : MonoBehaviour
         return result;
     }
 
-    void ReportMovement()
+    public void ReportMovement()
     {
         var reportPosition = characterPosition.worldPosition;
         var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
@@ -588,10 +588,5 @@ public class DCLCharacterController : MonoBehaviour
     bool IsLastCollisionGround()
     {
         return (lastCharacterControllerCollision & CollisionFlags.Below) != 0;
-    }
-
-    public void ForceReportMovement()
-    {
-        ReportMovement();
     }
 }

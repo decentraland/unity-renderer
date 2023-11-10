@@ -406,7 +406,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         // Instantly replicate our emote status and position
         if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
         {
-            DCLCharacterController.i.ForceReportMovement();
+            DCLCharacterController.i.ReportMovement();
             UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteCancel, true);
         }
 

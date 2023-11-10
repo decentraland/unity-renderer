@@ -27,7 +27,5 @@ namespace AvatarSystem
         void AddVisibilityConstraint(string key);
 
         void RemoveVisibilityConstraint(string key);
-
-        void UpdateEmoteStatus(string currentEmoteId, long timestamp);
     }
 }

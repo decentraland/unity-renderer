@@ -113,7 +113,11 @@ namespace DCL.ECSComponents
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
 
             emotesController = avatar.GetEmotesController();
-            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
+
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(
+                emotesController,
+                Environment.i.serviceLocator.Get<IEmotesService>(),
+                new UserProfileWebInterfaceBridge());
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
@@ -213,7 +217,7 @@ namespace DCL.ECSComponents
                    .LoadAndPlayEmote(model.BodyShape, model.ExpressionTriggerId)
                    .Forget();
             else
-                avatar.GetEmotesController().UpdateEmoteStatus(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+                avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
 

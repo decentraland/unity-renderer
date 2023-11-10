@@ -14,15 +14,17 @@ namespace DCL
     {
         private readonly IAvatarEmotesController emotesController;
         private readonly IEmotesService emotesService;
+        private readonly IUserProfileBridge userProfileBridge;
         private readonly HashSet<EmoteBodyId> equippedEmotes;
 
         private long lamportTimestamp;
         internal CancellationTokenSource cts;
 
-        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService)
+        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService, IUserProfileBridge userProfileBridge)
         {
             this.emotesController = emotesController;
             this.emotesService = emotesService;
+            this.userProfileBridge = userProfileBridge;
             this.equippedEmotes = new HashSet<EmoteBodyId>();
         }
 
@@ -53,7 +55,7 @@ namespace DCL
                 if (timestamp == lamportTimestamp)
                 {
                     emotesController.PlayEmote(emoteId, lamportTimestamp);
-                    UserProfile.GetOwnUserProfile().SetAvatarExpression(emoteId, UserProfile.EmoteSource.EmoteLoop, true);
+                    userProfileBridge.GetOwn().SetAvatarExpression(emoteId, UserProfile.EmoteSource.EmoteLoop, true);
                 }
             }
             catch (OperationCanceledException) { }

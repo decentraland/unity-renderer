@@ -49,17 +49,6 @@ namespace AvatarSystem
             visibilityConstraints.Remove(key);
         }
 
-        public void UpdateEmoteStatus(string currentEmoteId, long timestamp)
-        {
-            bool isPlayingEmote = !string.IsNullOrEmpty(animator.GetCurrentEmoteId());
-            bool emoteIsValid = !string.IsNullOrEmpty(currentEmoteId);
-
-            if (isPlayingEmote && !emoteIsValid) { animator.StopEmote(false); }
-
-            if (emoteIsValid)
-                PlayEmote(currentEmoteId, timestamp);
-        }
-
         public void Prepare(string bodyShapeId, GameObject container)
         {
             this.bodyShapeId = bodyShapeId;
@@ -99,7 +88,13 @@ namespace AvatarSystem
 
         public void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool forcePlay = false)
         {
-            if (string.IsNullOrEmpty(emoteId)) return;
+            bool isPlayingEmote = !string.IsNullOrEmpty(animator.GetCurrentEmoteId());
+            bool emoteIsValid = !string.IsNullOrEmpty(emoteId);
+
+            if (isPlayingEmote && !emoteIsValid)
+                animator.StopEmote(false);
+
+            if (!emoteIsValid) return;
             if (!CanPlayEmote()) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
