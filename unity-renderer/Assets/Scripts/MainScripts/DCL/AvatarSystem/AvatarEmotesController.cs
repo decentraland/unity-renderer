@@ -1,11 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
-using DCL;
-using System.Collections.Generic;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCL.SettingsCommon;
 using DCL.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
@@ -15,7 +14,8 @@ namespace AvatarSystem
     public class AvatarEmotesController : IAvatarEmotesController
     {
         private const float BASE_VOLUME = 0.2f;
-        private const string INSIDE_CAMERA = "INSIDE_CAMERA";
+        private const string IN_HIDE_AREA = "IN_HIDE_AREA";
+
         public event Action<string, IEmoteReference> OnEmoteEquipped;
         public event Action<string> OnEmoteUnequipped;
 
@@ -41,7 +41,7 @@ namespace AvatarSystem
             visibilityConstraints.Add(key);
 
             if (!CanPlayEmote())
-                StopEmote();
+                StopEmote(true);
         }
 
         public void RemoveVisibilityConstraint(string key)
@@ -86,9 +86,15 @@ namespace AvatarSystem
             catch (Exception e) { Debug.LogException(e); }
         }
 
-        public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude, bool forcePlay)
+        public void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool forcePlay = false)
         {
-            if (string.IsNullOrEmpty(emoteId)) return;
+            bool isPlayingEmote = !string.IsNullOrEmpty(animator.GetCurrentEmoteId());
+            bool emoteIsValid = !string.IsNullOrEmpty(emoteId);
+
+            if (isPlayingEmote && !emoteIsValid)
+                animator.StopEmote(false);
+
+            if (!emoteIsValid) return;
             if (!CanPlayEmote()) return;
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
@@ -98,12 +104,8 @@ namespace AvatarSystem
             animator.PlayEmote(emoteId, timestamps, spatial, volume, occlude, forcePlay);
         }
 
-        private bool CanPlayEmote()
-        {
-            if (visibilityConstraints.Count == 0) return true;
-            if (visibilityConstraints.Count > 1) return false;
-            return visibilityConstraints.Contains(INSIDE_CAMERA);
-        }
+        private bool CanPlayEmote() =>
+            !visibilityConstraints.Contains(IN_HIDE_AREA);
 
         // TODO: We have to decouple this volume logic into an IAudioMixer.GetVolume(float, Channel) since we are doing the same calculations everywhere
         // Using AudioMixer does not work in WebGL so we calculate the volume manually
@@ -115,9 +117,9 @@ namespace AvatarSystem
             return baseVolume;
         }
 
-        public void StopEmote()
+        public void StopEmote(bool immediate)
         {
-            animator.StopEmote();
+            animator.StopEmote(immediate);
         }
 
         public void EquipEmote(string emoteId, IEmoteReference emoteReference)

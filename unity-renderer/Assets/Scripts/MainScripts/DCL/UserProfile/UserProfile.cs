@@ -19,6 +19,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         Command,
         Backpack,
         EmoteLoop,
+        EmoteCancel,
     }
 
     private const string FALLBACK_NAME = "fallback";
