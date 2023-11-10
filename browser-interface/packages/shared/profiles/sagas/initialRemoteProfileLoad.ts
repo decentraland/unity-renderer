@@ -11,6 +11,7 @@ import {fetchProfileFromCatalyst} from './fetchProfile'
 import {fetchLocalProfile} from './local/index'
 import {getFeatureFlagEnabled} from 'shared/meta/selectors'
 import {generateRandomUserProfile} from "../../../lib/decentraland/profiles";
+import {ensureAvatarCompatibilityFormat} from "../../../lib/decentraland/profiles/transformations";
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
@@ -29,7 +30,7 @@ export function* initialRemoteProfileLoad() {
     }
 
     if (!profile) {
-      profile = generateRandomUserProfile(userId)
+      profile = ensureAvatarCompatibilityFormat(generateRandomUserProfile(userId))
       yield put(profileSuccess(profile))
     }
   } catch (e: any) {
