@@ -14,15 +14,17 @@ namespace DCL
     {
         private readonly IAvatarEmotesController emotesController;
         private readonly IEmotesService emotesService;
+        private readonly IUserProfileBridge userProfileBridge;
         private readonly HashSet<EmoteBodyId> equippedEmotes;
 
         private long lamportTimestamp;
         internal CancellationTokenSource cts;
 
-        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService)
+        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService, IUserProfileBridge userProfileBridge)
         {
             this.emotesController = emotesController;
             this.emotesService = emotesService;
+            this.userProfileBridge = userProfileBridge;
             this.equippedEmotes = new HashSet<EmoteBodyId>();
         }
 
@@ -51,7 +53,10 @@ namespace DCL
                 //avoid playing emote if timestamp has change,
                 //meaning a new emote was trigger while this one was loading
                 if (timestamp == lamportTimestamp)
+                {
                     emotesController.PlayEmote(emoteId, lamportTimestamp);
+                    userProfileBridge.GetOwn().SetAvatarExpression(emoteId, UserProfile.EmoteSource.EmoteLoop, true);
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception e) { Debug.LogException(e); }

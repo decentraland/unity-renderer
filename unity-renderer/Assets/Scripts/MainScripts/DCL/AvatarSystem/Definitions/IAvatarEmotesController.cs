@@ -13,7 +13,7 @@ namespace AvatarSystem
 
         void PlayEmote(string emoteId, long timestamps, bool spatial = true, bool occlude = true, bool forcePlay = false);
 
-        void StopEmote();
+        void StopEmote(bool immediate);
 
         void EquipEmote(string emoteId, IEmoteReference emoteReference);
 
