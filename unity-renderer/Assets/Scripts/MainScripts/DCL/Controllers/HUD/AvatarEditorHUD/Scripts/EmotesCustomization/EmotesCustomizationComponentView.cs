@@ -178,6 +178,9 @@ namespace DCL.EmotesCustomization
             RefreshControl();
         }
 
+        public void RefreshEmotesGrid() =>
+            emotesGrid.RefreshControl();
+
         internal void ClickOnEmote(string emoteId, string emoteName, int slotNumber, bool isAssignedInSelectedSlot)
         {
             if (!isAssignedInSelectedSlot)

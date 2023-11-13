@@ -100,7 +100,7 @@ namespace DCL.EmotesCustomization
 
             UpdateEmoteSlots();
 
-            view.Refresh();
+            view.RefreshEmotesGrid();
         }
 
         public void SetEquippedBodyShape(string bodyShapeId)
