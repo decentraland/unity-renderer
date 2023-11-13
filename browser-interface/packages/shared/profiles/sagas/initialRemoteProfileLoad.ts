@@ -30,6 +30,8 @@ export function* initialRemoteProfileLoad() {
 
       if (profileFromCatalyst) {
         profile = profileFromCatalyst;
+      } else if (profile) {
+        yield put(profileSuccess(profile))
       }
     }
 
