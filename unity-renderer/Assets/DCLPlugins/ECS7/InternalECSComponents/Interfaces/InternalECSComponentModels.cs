@@ -242,8 +242,8 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public EventCallback<PointerDownEvent> OnPointerDownCallback;
         public EventCallback<PointerUpEvent> OnPointerUpCallback;
-        public EventCallback<PointerEnterEvent> OnPointerEnterCallback;
-        public EventCallback<PointerLeaveEvent> OnPointerLeaveCallback;
+        public EventCallback<PointerEnterEvent> OnHoverEnterCallback;
+        public EventCallback<PointerLeaveEvent> OnHoverLeaveCallback;
     }
 
     public struct InternalRaycast : IInternalComponent

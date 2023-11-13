@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents
@@ -14,10 +15,23 @@ namespace DCL.ECSComponents
         public UITransformHandler(IInternalECSComponent<InternalUiContainer> internalUiContainer, int componentId)
         {
             this.internalUiContainer = internalUiContainer;
+            // this.componentWriter = componentWriter;
             this.componentId = componentId;
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+
+        /*private void mouseOverCallback (MouseOverEvent evt)
+        {
+            evt.StopPropagation();
+            Debug.Log($"Mouse over!");
+        }
+
+        private void mouseOutCallback (MouseOutEvent evt)
+        {
+            evt.StopPropagation();
+            Debug.Log($"Mouse OUT!");
+        }*/
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
@@ -25,6 +39,8 @@ namespace DCL.ECSComponents
             if (containerData != null)
             {
                 var containerModel = containerData.Value.model;
+                /*containerModel.rootElement.UnregisterCallback<MouseOverEvent>(mouseOverCallback);
+                containerModel.rootElement.UnregisterCallback<MouseOutEvent>(mouseOutCallback);*/
                 containerModel.components.Remove(componentId);
 
                 // do parent detach only if not child of root entity
@@ -40,11 +56,18 @@ namespace DCL.ECSComponents
             }
         }
 
+
+
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiTransform model)
         {
             var containerModel = internalUiContainer.GetFor(scene, entity)?.model ?? new InternalUiContainer(entity.entityId);
 
             containerModel.components.Add(componentId);
+
+            /*containerModel.rootElement.UnregisterCallback<MouseOverEvent>(mouseOverCallback);
+            containerModel.rootElement.RegisterCallback<MouseOverEvent>(mouseOverCallback);
+            containerModel.rootElement.UnregisterCallback<MouseOutEvent>(mouseOutCallback);
+            containerModel.rootElement.RegisterCallback<MouseOutEvent>(mouseOutCallback);*/
 
             if (containerModel.parentId != model.Parent)
             {

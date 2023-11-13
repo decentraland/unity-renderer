@@ -75,8 +75,8 @@ namespace Tests
 
             var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
             Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.NotNull(callbackModel.Value.OnHoverLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnHoverEnterCallback);
             Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
         }
 
@@ -157,8 +157,8 @@ namespace Tests
 
             var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
             Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.NotNull(callbackModel.Value.OnHoverLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnHoverEnterCallback);
             Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
         }
 
@@ -258,8 +258,8 @@ namespace Tests
                 events);
 
             Assert.NotNull(result.OnPointerDownCallback);
-            Assert.NotNull(result.OnPointerLeaveCallback);
-            Assert.IsNull(result.OnPointerEnterCallback);
+            Assert.NotNull(result.OnHoverLeaveCallback);
+            Assert.IsNull(result.OnHoverEnterCallback);
             Assert.IsNull(result.OnPointerUpCallback);
 
             // unsupported input action
@@ -282,8 +282,8 @@ namespace Tests
                 events);
 
             Assert.IsNull(result.OnPointerDownCallback);
-            Assert.IsNull(result.OnPointerLeaveCallback);
-            Assert.IsNull(result.OnPointerEnterCallback);
+            Assert.IsNull(result.OnHoverLeaveCallback);
+            Assert.IsNull(result.OnHoverEnterCallback);
             Assert.IsNull(result.OnPointerUpCallback);
         }
 

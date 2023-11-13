@@ -198,7 +198,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
 
                         break;
                     case PointerEventType.PetHoverEnter:
-                        model.OnPointerEnterCallback += evt => SetInputResult(
+                        model.OnHoverEnterCallback += evt => SetInputResult(
                             scene,
                             entity,
                             inputResultsComponent,
@@ -208,7 +208,7 @@ namespace ECSSystems.ECSUiPointerEventsSystem
 
                         break;
                     case PointerEventType.PetHoverLeave:
-                        model.OnPointerLeaveCallback += evt => SetInputResult(
+                        model.OnHoverLeaveCallback += evt => SetInputResult(
                             scene,
                             entity,
                             inputResultsComponent,
@@ -231,11 +231,11 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             if (uiEvents.OnPointerUpCallback != null)
                 visualElement.RegisterCallback(uiEvents.OnPointerUpCallback);
 
-            if (uiEvents.OnPointerEnterCallback != null)
-                visualElement.RegisterCallback(uiEvents.OnPointerEnterCallback);
+            if (uiEvents.OnHoverEnterCallback != null)
+                visualElement.RegisterCallback(uiEvents.OnHoverEnterCallback);
 
-            if (uiEvents.OnPointerLeaveCallback != null)
-                visualElement.RegisterCallback(uiEvents.OnPointerLeaveCallback);
+            if (uiEvents.OnHoverLeaveCallback != null)
+                visualElement.RegisterCallback(uiEvents.OnHoverLeaveCallback);
         }
 
         internal static void UnregisterUiPointerEvents(VisualElement visualElement, InternalRegisteredUiPointerEvents uiEvents)
@@ -246,17 +246,19 @@ namespace ECSSystems.ECSUiPointerEventsSystem
             if (uiEvents.OnPointerUpCallback != null)
                 visualElement.UnregisterCallback(uiEvents.OnPointerUpCallback);
 
-            if (uiEvents.OnPointerEnterCallback != null)
-                visualElement.UnregisterCallback(uiEvents.OnPointerEnterCallback);
+            if (uiEvents.OnHoverEnterCallback != null)
+                visualElement.UnregisterCallback(uiEvents.OnHoverEnterCallback);
 
-            if (uiEvents.OnPointerLeaveCallback != null)
-                visualElement.UnregisterCallback(uiEvents.OnPointerLeaveCallback);
+            if (uiEvents.OnHoverLeaveCallback != null)
+                visualElement.UnregisterCallback(uiEvents.OnHoverLeaveCallback);
         }
 
         private static void SetInputResult(IParcelScene scene, IDCLEntity entity,
             IInternalECSComponent<InternalInputEventResults> inputResultsComponent,
             InputAction button, PointerEventType pointerEventType, Vector3 position)
         {
+            Debug.Log($"SetInputResult: {pointerEventType}");
+
             var eventData = new InternalInputEventResults.EventData
             {
                 button = button,

@@ -95,7 +95,7 @@ namespace ECSSystems.InputSenderSystem
                 return false;
 
             return hit != null
-                   && (evtType == PointerEventType.PetDown || evtType == PointerEventType.PetUp)
+                   // && (evtType == PointerEventType.PetDown || evtType == PointerEventType.PetUp)
                    && actionButton != InputAction.IaAny;
         }
     }
