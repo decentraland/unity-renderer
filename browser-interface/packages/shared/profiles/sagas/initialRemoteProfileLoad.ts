@@ -22,11 +22,15 @@ export function* initialRemoteProfileLoad() {
   let profile: Avatar | null = yield call(fetchLocalProfile, isGuest)
   try {
     if (!isGuest) {
-      profile = yield call(
+      const profileFromCatalyst = yield call(
         fetchProfileFromCatalyst,
         userId,
         profile && profile.userId === userId ? profile.version : 0
       )
+
+      if (profileFromCatalyst) {
+        profile = profileFromCatalyst;
+      }
     }
 
     if (!profile) {
