@@ -30,14 +30,11 @@ export function* initialRemoteProfileLoad() {
 
       if (profileFromCatalyst) {
         profile = profileFromCatalyst;
-      } else if (profile) {
-        yield put(profileSuccess(profile))
       }
     }
 
     if (!profile) {
       profile = ensureAvatarCompatibilityFormat(generateRandomUserProfile(userId))
-      yield put(profileSuccess(profile))
     }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
