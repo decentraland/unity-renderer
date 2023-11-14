@@ -204,6 +204,7 @@ SpriteAtlas:
     - 6d5f6edc2bfb441e1969ee1e10c3c572: 21300000
     - 45e823eca8727410d947ff8af56eb13a: 21300000
     - 654b9c0dd7f12442687bd4d4b034ece7: 21300000
+    - ccff713df52bf45b5b10c8fcfb44fee7: 21300000
     - 8191374d830c647edb5ed715100f2b48: 21300000
     - cf43c05d20914491481a6f7736f2eec6: 21300000
     - 871dd18d15e4c4712985e30bc63a6168: 21300000
@@ -212,7 +213,6 @@ SpriteAtlas:
     - 68f5b9dd92031414ab32a5fe3238ca08: 21300000
     - ffdb9ddd1a2d940e5a6daf599ae1c755: 21300000
     - 44bac0edc4fa04134a635701947adb48: 21300000
-    - c3c5b20e67f164ab08adfebe8f01d208: 21300000
     - 4fec551e960ee4ccca8b3390ea2d3071: 21300000
     - ee23632e4a71040eea4378f310a5eaef: 21300000
     - 590e1b5ec5d7e45379b7d1f4f3f4e1af: 21300000
@@ -373,6 +373,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6d5f6edc2bfb441e1969ee1e10c3c572, type: 3}
   - {fileID: 21300000, guid: 45e823eca8727410d947ff8af56eb13a, type: 3}
   - {fileID: 21300000, guid: 654b9c0dd7f12442687bd4d4b034ece7, type: 3}
+  - {fileID: 21300000, guid: ccff713df52bf45b5b10c8fcfb44fee7, type: 3}
   - {fileID: 21300000, guid: 8191374d830c647edb5ed715100f2b48, type: 3}
   - {fileID: 21300000, guid: cf43c05d20914491481a6f7736f2eec6, type: 3}
   - {fileID: 21300000, guid: 871dd18d15e4c4712985e30bc63a6168, type: 3}
@@ -381,7 +382,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 68f5b9dd92031414ab32a5fe3238ca08, type: 3}
   - {fileID: 21300000, guid: ffdb9ddd1a2d940e5a6daf599ae1c755, type: 3}
   - {fileID: 21300000, guid: 44bac0edc4fa04134a635701947adb48, type: 3}
-  - {fileID: 21300000, guid: c3c5b20e67f164ab08adfebe8f01d208, type: 3}
   - {fileID: 21300000, guid: 4fec551e960ee4ccca8b3390ea2d3071, type: 3}
   - {fileID: 21300000, guid: ee23632e4a71040eea4378f310a5eaef, type: 3}
   - {fileID: 21300000, guid: 590e1b5ec5d7e45379b7d1f4f3f4e1af, type: 3}
@@ -541,6 +541,7 @@ SpriteAtlas:
   - ArrowGradient
   - FavouriteToggleOff
   - MarketplaceOn
+  - LeftClick
   - EventsIcn
   - EllipticalShadow
   - LikeStrokeIcn
@@ -549,7 +550,6 @@ SpriteAtlas:
   - LinkIcn
   - Container24Shadow4
   - FavouriteToggleStrokeOn
-  - NameIcn
   - UnfriendIcon
   - QuitIconOutline
   - Container12RectTop
