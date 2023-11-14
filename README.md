@@ -14,14 +14,14 @@ This repository contains the reference implementation of the [decentraland explo
     git lfs install
     git lfs pull
 
-* The [Unity](https://unity.com) engine and IDE, currently using version 2022.3.10f1
+* The [Unity](https://unity.com) engine and IDE, currently using version 2022.3.12f1
 * [node.js](https://nodejs.org), version 16 or later
 
 ### Steps
 
 Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
 
-1. Download and install Unity 2022.3.10f1
+1. Download and install Unity 2022.3.12f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
