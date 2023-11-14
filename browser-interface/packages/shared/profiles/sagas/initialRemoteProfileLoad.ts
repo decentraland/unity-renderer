@@ -1,27 +1,41 @@
-import type { Avatar } from '@dcl/schemas'
-import { ethereumConfigurations, ETHEREUM_NETWORK, RESET_TUTORIAL } from 'config'
+import type {Avatar} from '@dcl/schemas'
+import {ETHEREUM_NETWORK, ethereumConfigurations, RESET_TUTORIAL} from 'config'
 import defaultLogger from 'lib/logger'
-import { call, put, select } from 'redux-saga/effects'
-import { BringDownClientAndReportFatalError, ErrorContext } from 'shared/loading/ReportFatalError'
-import { getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
-import type { ExplorerIdentity } from 'shared/session/types'
-import { fetchOwnedENS } from 'lib/web3/fetchOwnedENS'
-import { profileRequest, profileSuccess, saveProfileDelta } from '../actions'
-import { fetchProfile } from './fetchProfile'
-import { fetchLocalProfile } from './local/index'
-import { getFeatureFlagEnabled } from 'shared/meta/selectors'
+import {call, put, select} from 'redux-saga/effects'
+import {BringDownClientAndReportFatalError, ErrorContext} from 'shared/loading/ReportFatalError'
+import {getCurrentIdentity, getCurrentNetwork, isGuestLogin} from 'shared/session/selectors'
+import type {ExplorerIdentity} from 'shared/session/types'
+import {fetchOwnedENS} from 'lib/web3/fetchOwnedENS'
+import {profileSuccess, saveProfileDelta} from '../actions'
+import {fetchProfileFromCatalyst} from './fetchProfile'
+import {fetchLocalProfile} from './local/index'
+import {getFeatureFlagEnabled} from 'shared/meta/selectors'
+import {generateRandomUserProfile} from "../../../lib/decentraland/profiles";
+import {ensureAvatarCompatibilityFormat} from "../../../lib/decentraland/profiles/transformations";
 
 export function* initialRemoteProfileLoad() {
   // initialize profile
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId = identity.address
 
-  let profile: Avatar | null = yield call(fetchLocalProfile)
+  const isGuest = yield select(isGuestLogin)
+  let profile: Avatar | null = yield call(fetchLocalProfile, isGuest)
   try {
-    profile = yield call(
-      fetchProfile,
-      profileRequest(userId, profile && profile.userId === userId ? profile.version : 0)
-    )
+    if (!isGuest) {
+      const profileFromCatalyst = yield call(
+        fetchProfileFromCatalyst,
+        userId,
+        profile && profile.userId === userId ? profile.version : 0
+      )
+
+      if (profileFromCatalyst) {
+        profile = profileFromCatalyst;
+      }
+    }
+
+    if (!profile) {
+      profile = ensureAvatarCompatibilityFormat(generateRandomUserProfile(userId))
+    }
   } catch (e: any) {
     BringDownClientAndReportFatalError(e, ErrorContext.KERNEL_INIT, { userId })
     throw e

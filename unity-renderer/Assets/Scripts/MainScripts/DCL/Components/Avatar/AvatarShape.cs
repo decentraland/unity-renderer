@@ -75,7 +75,11 @@ namespace DCL
                 avatar = GetStandardAvatar();
 
             emotesController = avatar.GetEmotesController();
-            sceneEmoteHandler = new AvatarSceneEmoteHandler(emotesController, Environment.i.serviceLocator.Get<IEmotesService>());
+
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(
+                emotesController,
+                Environment.i.serviceLocator.Get<IEmotesService>(),
+                new UserProfileWebInterfaceBridge());
 
             if (avatarReporterController == null)
             {
@@ -237,15 +241,10 @@ namespace DCL
             sceneEmoteHandler.SetExpressionLamportTimestamp(model.expressionTriggerTimestamp);
 
             if (sceneEmoteHandler.IsSceneEmote(model.expressionTriggerId))
-            {
                 sceneEmoteHandler
                    .LoadAndPlayEmote(model.bodyShape, model.expressionTriggerId)
                    .Forget();
-            }
-            else
-            {
-                emotesController.PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp);
-            }
+            else { avatar.GetEmotesController().PlayEmote(model.expressionTriggerId, model.expressionTriggerTimestamp); }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerDownReport += PlayerClicked;

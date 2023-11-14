@@ -3,13 +3,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
@@ -87,6 +87,8 @@ namespace DCL.ECSComponents
 
         private Service<IAvatarFactory> avatarFactory;
         private Service<IEmotesCatalogService> emotesCatalog;
+        private IAvatarEmotesController emotesController;
+        private AvatarSceneEmoteHandler sceneEmoteHandler;
         public IAvatar internalAvatar => avatar;
 
         private void Awake()
@@ -104,10 +106,18 @@ namespace DCL.ECSComponents
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
 
+
             //Ensure base avatar references
             var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
+
+            emotesController = avatar.GetEmotesController();
+
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(
+                emotesController,
+                Environment.i.serviceLocator.Get<IEmotesService>(),
+                new UserProfileWebInterfaceBridge());
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
@@ -202,8 +212,11 @@ namespace DCL.ECSComponents
                 }
             }
 
-            // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
-            if(model.HasExpressionTriggerId)
+            if (sceneEmoteHandler.IsSceneEmote(model.ExpressionTriggerId))
+                sceneEmoteHandler
+                   .LoadAndPlayEmote(model.BodyShape, model.ExpressionTriggerId)
+                   .Forget();
+            else
                 avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
