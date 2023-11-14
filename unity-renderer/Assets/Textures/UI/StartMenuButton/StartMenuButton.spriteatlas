@@ -36,14 +36,6 @@ SpriteAtlas:
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
-    packedSpriteRenderDataKeys:
-    - 8be7de606f9c7ca4cbc9d31a3a82dfd5: 21300000
-    - 193e9383359b56b4da3f682336ed6cec: 21300000
-    - 51517794ebfef5b49b08d321c661cee2: 21300000
-    - 3bdf32a4d196e1d429119d1477906987: 21300000
-    - b24c28e9e04cdb24aa579e22a738c402: 21300000
-    - 5e3b705ca4d7f6b45ba6ea1b7cf43785: 21300000
-    - 665522fd810d78f4c91dd7e9a0ce6e3b: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 8be7de606f9c7ca4cbc9d31a3a82dfd5, type: 3}
@@ -60,7 +52,7 @@ SpriteAtlas:
   - DclLogoLine3
   - DclLogoLine2
   - DclLogoLine1
-  - Outline128
+  - Ellipse128Stroke
   m_RenderDataMap: {}
   m_Tag: StartMenuButton
   m_IsVariant: 0
