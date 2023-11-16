@@ -1,10 +1,10 @@
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB;
+using System;
+using System.Threading;
 using UnityEngine;
 
 namespace AvatarSystem
@@ -39,7 +39,9 @@ namespace AvatarSystem
                 if (IsNewAssetBundleFlagEnabled())
                 {
                     if (string.IsNullOrEmpty(wearable.entityId))
-                        Debug.LogWarning(mainFile + " has no entity ID, ignore this message if you are on a testnet");
+                    {
+                        //Debug.LogWarning(mainFile + " has no entity ID, ignore this message if you are on a testnet");
+                    }
                     else
                     {
                         var sceneAb = await FetchSceneAssetBundles(wearable.entityId, contentProvider.assetBundlesBaseUrl);
