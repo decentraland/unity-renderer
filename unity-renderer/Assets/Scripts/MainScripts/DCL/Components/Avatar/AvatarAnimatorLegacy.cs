@@ -354,7 +354,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             int emoteLoop = GetCurrentEmoteLoopCount();
 
-            if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
+            // Disabled temporally
+            //if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
 
             lastEmoteLoopCount = emoteLoop;
         }
@@ -403,12 +404,13 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
         }
 
+        // Disabled Temporally
         // Instantly replicate our emote status and position
-        if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
+        /*if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
         {
             DCLCharacterController.i.ReportMovement();
             UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteCancel, true);
-        }
+        }*/
 
         blackboard.expressionTriggerId = null;
         blackboard.shouldLoop = false;
