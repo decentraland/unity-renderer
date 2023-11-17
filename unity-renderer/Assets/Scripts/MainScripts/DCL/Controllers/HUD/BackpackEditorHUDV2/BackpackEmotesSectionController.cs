@@ -121,18 +121,14 @@ namespace DCL.Backpack
                     }
 
                     allEmotes = consolidatedEmotes.Values.ToList();
-                    UpdateEmotes();
 
                     try
                     {
                         await FetchCustomEmoteItems(allEmotes, ct);
                         await FetchCustomEmoteCollections(allEmotes, ct);
-                        UpdateEmotes();
                     }
-                    catch (Exception e) when (e is not OperationCanceledException)
-                    {
-                        Debug.LogException(e);
-                    }
+                    catch (Exception e) when (e is not OperationCanceledException) { Debug.LogException(e); }
+                    finally { UpdateEmotes(); }
 
                     void UpdateEmotes()
                     {
