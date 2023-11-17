@@ -13,7 +13,7 @@ public class TeleportPromptHUDController : IHUD
     private const string TELEPORT_COMMAND_MAGIC = "magic";
     private const string TELEPORT_COMMAND_CROWD = "crowd";
 
-    private const string EVENT_STRING_LIVE = "Current event";
+    private const string EVENT_STRING_LIVE = "LIVE";
     private const string EVENT_STRING_TODAY = "Today @ {0:HH:mm}";
     private const int INITIAL_ANIMATION_DELAY = 500;
 
