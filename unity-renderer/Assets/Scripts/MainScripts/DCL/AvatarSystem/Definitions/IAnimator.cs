@@ -6,7 +6,8 @@ namespace AvatarSystem
     public interface IAnimator
     {
         bool Prepare(string bodyshapeId, GameObject container);
-        void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
+
+        void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude,
             bool forcePlay);
 
         void StopEmote(bool immediate);

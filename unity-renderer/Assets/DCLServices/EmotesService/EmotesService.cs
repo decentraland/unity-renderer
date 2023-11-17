@@ -1,6 +1,7 @@
 ﻿using AvatarAssets;
 using Cysharp.Threading.Tasks;
 using DCL.Configuration;
+using DCLServices.EmotesService;
 using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace DCL.Emotes
         private readonly IWearablesCatalogService wearablesCatalogService;
         private readonly ICatalyst catalyst;
         private GameObject animationsModelsContainer;
+        private readonly EmoteVolumeHandler audioVolumeHandler;
 
         private readonly Dictionary<EmoteBodyId, IEmoteReference> embeddedEmotes = new ();
         private readonly Dictionary<EmoteBodyId, ExtendedEmote> extendedEmotes = new ();
