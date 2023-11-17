@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Emotes;
@@ -9,6 +7,8 @@ using DCLServices.EmotesCatalog;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class LambdasEmotesCatalogService : IEmotesCatalogService
@@ -160,23 +160,14 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default)
     {
-        const int TIMEOUT = 60;
-        CancellationTokenSource timeoutCTS = new CancellationTokenSource();
-        var timeout = timeoutCTS.CancelAfterSlim(TimeSpan.FromSeconds(TIMEOUT));
         var promise = RequestOwnedEmotes(userId);
 
         try
         {
             ct.ThrowIfCancellationRequested();
-            var linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCTS.Token);
-            await promise.WithCancellation(linkedCt.Token);
+            await promise.WithCancellation(ct);
         }
         catch (OperationCanceledException e) { return null; }
-        finally
-        {
-            timeout?.Dispose();
-            timeoutCTS?.Dispose();
-        }
 
         return promise.value;
     }
@@ -307,9 +298,10 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         try
         {
             var tasks = ids.Select(x => RequestEmoteAsync(x, ct));
-            return await UniTask.WhenAll(tasks).AttachExternalCancellation(ct);
+            WearableItem[] result = await UniTask.WhenAll(tasks).AttachExternalCancellation(ct);
+            return result;
         }
-        catch (OperationCanceledException e) { return null; }
+        catch (OperationCanceledException) { return null; }
     }
 
     public void ForgetEmote(string id)
