@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 060c1aa63ccfe124aa3cd640f9286a0b, type: 3}
   m_Name: AvatarSFXVolumeControlConfiguration
   m_EditorClassIdentifier: 
-  title: AVATAR SFX
+  title: AVATAR & EMOTE SFX
   controlPrefab: {fileID: 6783608136250682537, guid: b07edc69073d61d4bbfb5c70a6b0c833,
     type: 3}
   controlController: {fileID: 11400000, guid: 0a8ca3291ff98c44caeda6bfa12fa322, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
+  flagsThatOverrideMe: []
   isBeta: 0
+  infoButtonEnabled: 0
+  infoTooltipMessage: 
   sliderMinValue: 0
   sliderMaxValue: 100
   storeValueAsNormalized: 0

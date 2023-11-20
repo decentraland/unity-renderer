@@ -1,9 +1,10 @@
 ﻿using AvatarSystem;
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Providers;
+using DCLServices.EmotesService;
+using System;
+using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -20,9 +21,11 @@ namespace DCL.Emotes
 
         private AudioClip audioClip;
         private AssetPromise_AudioClip audioClipPromise;
+        private readonly EmoteVolumeHandler emoteVolumeHandler;
 
-        public EmoteAnimationLoader(IWearableRetriever retriever, AddressableResourceProvider resourceProvider)
+        public EmoteAnimationLoader(IWearableRetriever retriever, AddressableResourceProvider resourceProvider, EmoteVolumeHandler emoteVolumeHandler)
         {
+            this.emoteVolumeHandler = emoteVolumeHandler;
             this.retriever = retriever;
             this.resourceProvider = resourceProvider;
         }
@@ -140,6 +143,8 @@ namespace DCL.Emotes
             audioSource.clip = audioClip;
             audioSource.transform.SetParent(audioSourceParent.transform, false);
             audioSource.transform.ResetLocalTRS();
+
+            emoteVolumeHandler.AddAudioSource(audioSource);
         }
 
         private bool IsValidAudioClip(string fileName) =>
@@ -155,6 +160,7 @@ namespace DCL.Emotes
 
         public void Dispose()
         {
+            emoteVolumeHandler.RemoveAudioSource(audioSource);
             AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
             retriever?.Dispose();
         }

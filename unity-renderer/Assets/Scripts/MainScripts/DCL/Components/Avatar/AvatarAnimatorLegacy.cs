@@ -399,10 +399,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null) return;
 
         if (!string.IsNullOrEmpty(blackboard.expressionTriggerId))
-        {
-            Debug.Log($"Emote stopped {blackboard.expressionTriggerId}");
             animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
-        }
 
         // Disabled Temporally
         // Instantly replicate our emote status and position
@@ -419,7 +416,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
-    private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
+    private void StartEmote(string emoteId, bool spatial, bool occlude)
     {
         if (!string.IsNullOrEmpty(emoteId))
         {
@@ -429,7 +426,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             {
                 lastExtendedEmoteData = emoteClipData;
 
-                emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
+                emoteClipData.Play(gameObject.layer, spatial, occlude);
             }
         }
         else { lastExtendedEmoteData?.Stop(); }
@@ -449,7 +446,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.Play(currentLocomotions.idle.name);
     }
 
-    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude,
         bool forcePlay)
     {
         if (animation == null)
@@ -476,7 +473,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (mustTriggerAnimation || loop)
         {
-            StartEmote(emoteId, spatial, volume, occlude);
+            StartEmote(emoteId, spatial, occlude);
 
             if (!string.IsNullOrEmpty(emoteId))
             {
