@@ -1,20 +1,25 @@
+using DCL.CameraTool;
+using DCL.SettingsCommon;
 using System;
 using System.Collections.Generic;
-using DCL.CameraTool;
 using UnityEngine;
+using QualitySettings = DCL.SettingsCommon.QualitySettings;
 
 namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
-        internal const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
+        private const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
+        private const float AVATARS_INVISIBILITY_DISTANCE = 1.75f;
         private const float MIN_DISTANCE_BETWEEN_NAMES_PIXELS = 70f;
+        private const float MIN_ANIMATION_FRAME_SKIP_DISTANCE_MULTIPLIER = 0.3f;
+        private const float MAX_ANIMATION_FRAME_SKIP_DISTANCE_MULTIPLIER = 2f;
 
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
         private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
         private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
+        private QualitySettings qualitySettings => Settings.i.qualitySettings.Data;
 
         private readonly GPUSkinningThrottlingCurveSO gpuSkinningThrottlingCurve;
         private readonly SimpleOverlappingTracker overlappingTracker = new (MIN_DISTANCE_BETWEEN_NAMES_PIXELS);
@@ -114,7 +119,7 @@ namespace DCL
 
                 if (avatarsCount < maxAvatars)
                 {
-                    lodController.SetAnimationThrottling((int)gpuSkinningThrottlingCurve.curve.Evaluate(distance));
+                    lodController.SetAnimationThrottling(CalculateAnimationTrhottle(distance));
 
                     if (distance < simpleAvatarDistance)
                         lodController.SetLOD0();
@@ -140,6 +145,22 @@ namespace DCL
 
                 lodController.SetInvisible();
             }
+        }
+
+        private int CalculateAnimationTrhottle(float distance)
+        {
+            if (!qualitySettings.enableDetailObjectCulling) return 1;
+
+            float culling = qualitySettings.detailObjectCullingLimit;
+
+            // The higher the culling, the higher distance multiplier we give to the calculation
+            float distanceNerf = Mathf.Lerp(
+                MIN_ANIMATION_FRAME_SKIP_DISTANCE_MULTIPLIER,
+                MAX_ANIMATION_FRAME_SKIP_DISTANCE_MULTIPLIER,
+                culling / 100f);
+
+            // The curve starts adding frame skips at 15 distance (one parcel)
+            return (int)gpuSkinningThrottlingCurve.curve.Evaluate(distance * distanceNerf);
         }
 
         private void GetMainCamera()
@@ -195,7 +216,7 @@ namespace DCL
 
             otherPlayers.OnAdded -= RegisterAvatar;
             otherPlayers.OnRemoved -= UnregisterAvatar;
-            DCL.Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
+            Environment.i.platform.updateEventHandler.RemoveListener(IUpdateEventHandler.EventType.Update, Update);
         }
     }
 }

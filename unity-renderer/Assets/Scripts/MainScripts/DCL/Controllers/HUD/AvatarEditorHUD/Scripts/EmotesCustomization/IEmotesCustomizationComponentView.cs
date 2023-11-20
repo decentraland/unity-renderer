@@ -120,5 +120,7 @@ namespace DCL.EmotesCustomization
         EmoteSlotCardComponentView GetSlot(int slotNumber);
 
         void Refresh();
+
+        void RefreshEmotesGrid();
     }
 }
