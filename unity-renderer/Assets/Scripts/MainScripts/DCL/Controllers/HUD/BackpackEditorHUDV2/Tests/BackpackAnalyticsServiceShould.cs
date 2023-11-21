@@ -32,7 +32,7 @@ namespace DCL.Backpack
         [Test]
         public void SendEquipAnalyticCorrectly()
         {
-            backpackAnalyticsService.SendEquipWearableAnalytic("testcat", "rare", EquipWearableSource.Wearable);
+            backpackAnalyticsService.SendEquipWearableAnalytic("testid", "testcat", "rare", EquipWearableSource.Wearable);
 
             analytics.Received(1).SendAnalytic("equip_wearable", Arg.Any<Dictionary<string, string>>());
         }
@@ -40,7 +40,7 @@ namespace DCL.Backpack
         [Test]
         public void SendUnEquipAnalyticCorrectly()
         {
-            backpackAnalyticsService.SendUnequippedWearableAnalytic("testcat", "rare", UnequipWearableSource.AvatarSlot);
+            backpackAnalyticsService.SendUnequippedWearableAnalytic("testid", "testcat", "rare", UnequipWearableSource.AvatarSlot);
 
             analytics.Received(1).SendAnalytic("unequip_wearable", Arg.Any<Dictionary<string, string>>());
         }
