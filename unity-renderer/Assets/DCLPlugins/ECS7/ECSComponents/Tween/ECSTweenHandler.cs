@@ -89,11 +89,11 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 // There may be a tween running for the entity transform, even though internalComponentModel.tweener
                 // is null, e.g: during preview mode hot-reload.
                 var transformTweens = DOTween.TweensByTarget(entityTransform, true);
-                transformTweens?[0].Rewind();
+                transformTweens?[0].Rewind(false);
             }
             else
             {
-                tweener.Rewind();
+                tweener.Rewind(false);
             }
 
             internalComponentModel.transform = entityTransform;
