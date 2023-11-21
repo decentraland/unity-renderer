@@ -35,6 +35,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<IReadOnlyList<string>> GetPointsOfInterestCoords(CancellationToken ct, bool renewCache = false);
 
         UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct);
+        UniTask<List<PlaceCategoryInfo>> GetPlaceCategories(CancellationToken ct, bool renewCache = false);
     }
 
     public class PlacesAPIService : IPlacesAPIService, ILambdaServiceConsumer<IHotScenesController.PlacesAPIResponse>
@@ -45,6 +46,7 @@ namespace DCLServices.PlacesAPIService
         internal readonly Dictionary<string, IHotScenesController.PlaceInfo> placesById = new ();
         internal readonly Dictionary<Vector2Int, IHotScenesController.PlaceInfo> placesByCoords = new ();
         private List<string> pointsOfInterestCoords;
+        private List<PlaceCategoryInfo> placeCategories;
 
         //Favorites
         internal bool composedFavoritesDirty = true;
@@ -297,6 +299,14 @@ namespace DCLServices.PlacesAPIService
 
         public async UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct) =>
             await client.ReportPlace(placeContentReportPayload, ct);
+
+        public async UniTask<List<PlaceCategoryInfo>> GetPlaceCategories(CancellationToken ct, bool renewCache = false)
+        {
+            if (renewCache || placeCategories == null)
+                placeCategories = await client.GetPlaceCategories(ct);
+
+            return placeCategories;
+        }
 
         public void Dispose()
         {

@@ -35,6 +35,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal readonly List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
+    private CancellationTokenSource getCategoriesCts;
     private CancellationTokenSource getPlacesCts = new ();
     private CancellationTokenSource showMoreCts = new ();
     private CancellationTokenSource disposeCts = new ();
@@ -81,6 +82,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         disposeCts?.SafeCancelAndDispose();
         showMoreCts?.SafeCancelAndDispose();
+        getCategoriesCts?.SafeCancelAndDispose();
         getPlacesCts?.SafeCancelAndDispose();
 
         view.OnReady -= FirstLoading;
@@ -140,6 +142,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnFilterChanged += ApplyFilters;
         view.OnSortingChanged += ApplySorting;
         cardsReloader.Initialize();
+
+        getCategoriesCts = getCategoriesCts.SafeRestart();
+        RequestPlaceCategoriesAsync(getCategoriesCts.Token).Forget();
     }
 
     private void OpenTab()
@@ -181,11 +186,22 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
     }
 
+    private async UniTaskVoid RequestPlaceCategoriesAsync(CancellationToken ct)
+    {
+        try
+        {
+            var allCategories = await placesAPIService.GetPlaceCategories(ct);
+            view.SetPlaceCategories(allCategories.Select(x => x.name).ToList());
+        }
+        catch (OperationCanceledException) { }
+    }
+
     private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
     {
         try
         {
             allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(ct);
+
             if (allPointOfInterest != null)
                 view.SetPOICoords(allPointOfInterest.ToList());
 
