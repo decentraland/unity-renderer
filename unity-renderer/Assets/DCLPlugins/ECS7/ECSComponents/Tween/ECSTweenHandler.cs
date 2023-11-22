@@ -6,7 +6,6 @@ using DCL.Models;
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-
 using static DCL.ECSComponents.EasingFunction;
 using static DG.Tweening.Ease;
 
@@ -49,6 +48,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
     private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
+    private Tweener currentTweener;
 
     public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
@@ -60,29 +60,20 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
+        currentTweener.Kill(false);
         internalTweenComponent.RemoveFor(scene, entity, new InternalTween()
         {
             removed = true
         });
-
-        var transformTweens = DOTween.TweensByTarget(entity.gameObject.transform, true);
-        transformTweens?[0].Kill(false);
-
-        // var tweens = DOTween.PlayingTweens();
-        // if (tweens.Count > 1)
-        // {
-        //     Debug.Log($"PLAYING TWEENS: {tweens.Count}");
-        //     for (int i = 0; i < tweens.Count; i++)
-        //     {
-        //         Debug.Log($"TWEEN {i}", tweens[i].target as Transform);
-        //     }
-        // }
 
         // SBC Internal Component is reset when the Transform component is removed, not here.
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTween model)
     {
+        if (model.ModeCase == PBTween.ModeOneofCase.None)
+            return;
+
         // by default it's playing
         bool isPlaying = !model.HasPlaying || model.Playing;
 
@@ -91,9 +82,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         {
             Transform entityTransform = entity.gameObject.transform;
             float durationInSeconds = model.Duration / 1000;
-            Tweener tweener = internalComponentModel.tweener;
+            currentTweener = internalComponentModel.tweener;
 
-            if (tweener == null)
+            if (currentTweener == null)
             {
                 // There may be a tween running for the entity transform, even though internalComponentModel.tweener
                 // is null, e.g: during preview mode hot-reload.
@@ -102,11 +93,8 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             }
             else
             {
-                tweener.Rewind(false);
+                currentTweener.Rewind(false);
             }
-
-            if (model.ModeCase == PBTween.ModeOneofCase.None)
-                return;
 
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
@@ -117,45 +105,34 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             switch (model.ModeCase)
             {
                 case PBTween.ModeOneofCase.Rotate:
-                    tweener = SetupRotationTween(scene, entity,
+                    currentTweener = SetupRotationTween(scene, entity,
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start),
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
                         durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Scale:
-                    tweener = SetupScaleTween(scene, entity,
+                    currentTweener = SetupScaleTween(scene, entity,
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start),
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
                         durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Move:
                 default:
-                    tweener = SetupPositionTween(scene, entity,
+                    currentTweener = SetupPositionTween(scene, entity,
                         ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start),
                         ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
                         durationInSeconds, ease, model.Move.HasFaceDirection && model.Move.FaceDirection);
                     break;
             }
 
-            tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
-            internalComponentModel.tweener = tweener;
+            currentTweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
+            internalComponentModel.tweener = currentTweener;
             internalComponentModel.tweenMode = model.ModeCase;
         }
         else if (internalComponentModel.playing == isPlaying)
         {
             return;
         }
-
-        // var tweens = DOTween.PlayingTweens();
-        // if (tweens.Count > 2)
-        // {
-        //     Debug.Log($"TWEEN ATTACHED TO ENTITY: {entity.entityId}", entity.gameObject);
-        //     Debug.Log($"PLAYING TWEENS: {tweens.Count}");
-        //     for (int i = 0; i < tweens.Count; i++)
-        //     {
-        //         Debug.Log($"TWEEN {i}", tweens[i].target as Transform);
-        //     }
-        // }
 
         internalComponentModel.playing = isPlaying;
 
@@ -201,7 +178,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         return tweener;
     }
 
-    Tweener SetupScaleTween(IParcelScene scene, IDCLEntity entity, Vector3 startScale,
+    private Tweener SetupScaleTween(IParcelScene scene, IDCLEntity entity, Vector3 startScale,
         Vector3 endScale, float durationInSeconds, Ease ease)
     {
         var entityTransform = entity.gameObject.transform;
@@ -213,7 +190,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         return tweener;
     }
 
-    Tweener SetupPositionTween(IParcelScene scene, IDCLEntity entity, Vector3 startPosition,
+    private Tweener SetupPositionTween(IParcelScene scene, IDCLEntity entity, Vector3 startPosition,
         Vector3 endPosition, float durationInSeconds, Ease ease, bool faceDirection)
     {
         var entityTransform = entity.gameObject.transform;
