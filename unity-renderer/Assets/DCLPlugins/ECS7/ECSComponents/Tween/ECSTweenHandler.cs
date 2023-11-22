@@ -65,19 +65,28 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             removed = true
         });
 
+        var transformTweens = DOTween.TweensByTarget(entity.gameObject.transform, true);
+        transformTweens?[0].Kill(false);
+
+        // var tweens = DOTween.PlayingTweens();
+        // if (tweens.Count > 1)
+        // {
+        //     Debug.Log($"PLAYING TWEENS: {tweens.Count}");
+        //     for (int i = 0; i < tweens.Count; i++)
+        //     {
+        //         Debug.Log($"TWEEN {i}", tweens[i].target as Transform);
+        //     }
+        // }
+
         // SBC Internal Component is reset when the Transform component is removed, not here.
     }
 
     public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBTween model)
     {
-        if (model.ModeCase == PBTween.ModeOneofCase.None)
-            return;
-
         // by default it's playing
         bool isPlaying = !model.HasPlaying || model.Playing;
 
         var internalComponentModel = internalTweenComponent.GetFor(scene, entity)?.model ?? new InternalTween();
-
         if (!AreSameModels(model, internalComponentModel.lastModel))
         {
             Transform entityTransform = entity.gameObject.transform;
@@ -95,6 +104,9 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             {
                 tweener.Rewind(false);
             }
+
+            if (model.ModeCase == PBTween.ModeOneofCase.None)
+                return;
 
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
@@ -133,6 +145,17 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         {
             return;
         }
+
+        // var tweens = DOTween.PlayingTweens();
+        // if (tweens.Count > 2)
+        // {
+        //     Debug.Log($"TWEEN ATTACHED TO ENTITY: {entity.entityId}", entity.gameObject);
+        //     Debug.Log($"PLAYING TWEENS: {tweens.Count}");
+        //     for (int i = 0; i < tweens.Count; i++)
+        //     {
+        //         Debug.Log($"TWEEN {i}", tweens[i].target as Transform);
+        //     }
+        // }
 
         internalComponentModel.playing = isPlaying;
 
