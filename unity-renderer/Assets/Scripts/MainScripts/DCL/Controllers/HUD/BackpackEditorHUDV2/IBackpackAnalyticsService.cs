@@ -15,8 +15,8 @@ namespace DCL.Backpack
         void SendWearablePreviewRotated();
         void SendWearableCreatorGoTo(string creatorName);
         void SendAvatarEditSuccessNuxAnalytic();
-        void SendEquipWearableAnalytic(string category, string rarity, EquipWearableSource source);
-        void SendUnequippedWearableAnalytic(string category, string rarity, UnequipWearableSource source);
+        void SendEquipWearableAnalytic(string id, string category, string rarity, EquipWearableSource source);
+        void SendUnequippedWearableAnalytic(string id, string category, string rarity, UnequipWearableSource source);
         void SendAvatarColorPick();
         void SendForceHideWearable(string category);
         void SendForceShowWearable(string category);

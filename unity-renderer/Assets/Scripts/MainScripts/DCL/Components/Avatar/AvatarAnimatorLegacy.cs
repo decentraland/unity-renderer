@@ -354,7 +354,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             int emoteLoop = GetCurrentEmoteLoopCount();
 
-            if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
+            // Disabled temporally
+            //if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
 
             lastEmoteLoopCount = emoteLoop;
         }
@@ -398,17 +399,15 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (animation == null) return;
 
         if (!string.IsNullOrEmpty(blackboard.expressionTriggerId))
-        {
-            Debug.Log($"Emote stopped {blackboard.expressionTriggerId}");
             animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
-        }
 
+        // Disabled Temporally
         // Instantly replicate our emote status and position
-        if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
+        /*if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
         {
             DCLCharacterController.i.ReportMovement();
             UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteCancel, true);
-        }
+        }*/
 
         blackboard.expressionTriggerId = null;
         blackboard.shouldLoop = false;
@@ -417,7 +416,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!immediate) OnUpdateWithDeltaTime(blackboard.deltaTime);
     }
 
-    private void StartEmote(string emoteId, bool spatial, float volume, bool occlude)
+    private void StartEmote(string emoteId, bool spatial, bool occlude)
     {
         if (!string.IsNullOrEmpty(emoteId))
         {
@@ -427,7 +426,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
             {
                 lastExtendedEmoteData = emoteClipData;
 
-                emoteClipData.Play(gameObject.layer, spatial, volume, occlude);
+                emoteClipData.Play(gameObject.layer, spatial, occlude);
             }
         }
         else { lastExtendedEmoteData?.Stop(); }
@@ -447,7 +446,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         animation.Play(currentLocomotions.idle.name);
     }
 
-    public void PlayEmote(string emoteId, long timestamps, bool spatial, float volume, bool occlude,
+    public void PlayEmote(string emoteId, long timestamps, bool spatial, bool occlude,
         bool forcePlay)
     {
         if (animation == null)
@@ -466,7 +465,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         // Triggering an emote manually updates the timestamp, the looping emote by itself sends a timestamp of -1
         // so if we are already using an emote that looped and we receive the play emote command with that timestamp, we ignore
-        if (isTheSameLoopingEmote && timestamps < 0)
+        if ( /*isTheSameLoopingEmote && */timestamps < 0)
             return;
 
         blackboard.expressionTriggerId = emoteId;
@@ -474,7 +473,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (mustTriggerAnimation || loop)
         {
-            StartEmote(emoteId, spatial, volume, occlude);
+            StartEmote(emoteId, spatial, occlude);
 
             if (!string.IsNullOrEmpty(emoteId))
             {
