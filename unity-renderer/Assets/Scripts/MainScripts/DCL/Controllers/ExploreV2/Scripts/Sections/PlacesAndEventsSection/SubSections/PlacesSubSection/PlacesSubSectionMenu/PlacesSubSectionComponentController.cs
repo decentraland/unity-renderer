@@ -216,6 +216,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
             view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
             view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
+            view.SetResultCounter(firstPage.total);
         }
         catch (OperationCanceledException) { }
     }
