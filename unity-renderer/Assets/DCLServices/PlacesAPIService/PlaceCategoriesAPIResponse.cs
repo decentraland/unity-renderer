@@ -14,5 +14,12 @@ namespace DCLServices.PlacesAPIService
     public class PlaceCategoryInfo
     {
         public string name;
+        public PlaceCategoryLocalization i18n;
+    }
+
+    [Serializable]
+    public class PlaceCategoryLocalization
+    {
+        public string en;
     }
 }

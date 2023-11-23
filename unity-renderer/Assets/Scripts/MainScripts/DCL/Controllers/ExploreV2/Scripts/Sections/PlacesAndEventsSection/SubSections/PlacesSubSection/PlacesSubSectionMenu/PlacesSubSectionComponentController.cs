@@ -190,7 +190,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         try
         {
             var allCategories = await placesAPIService.GetPlaceCategories(ct);
-            view.SetPlaceCategories(allCategories.Select(x => x.name).ToList());
+            view.SetPlaceCategories(allCategories.Select(x => (x.name, x.i18n.en)).ToList());
         }
         catch (OperationCanceledException) { }
     }

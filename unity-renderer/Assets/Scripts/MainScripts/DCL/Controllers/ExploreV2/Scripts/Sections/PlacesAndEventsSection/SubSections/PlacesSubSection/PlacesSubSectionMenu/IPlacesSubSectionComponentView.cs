@@ -101,7 +101,7 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
 
     void SetPOICoords(List<string> poiList);
 
-    void SetPlaceCategories(List<string> placeCategories);
+    void SetPlaceCategories(List<(string id, string nameToShow)> placeCategories);
 
     void SetResultCounter(int totalResults);
 }

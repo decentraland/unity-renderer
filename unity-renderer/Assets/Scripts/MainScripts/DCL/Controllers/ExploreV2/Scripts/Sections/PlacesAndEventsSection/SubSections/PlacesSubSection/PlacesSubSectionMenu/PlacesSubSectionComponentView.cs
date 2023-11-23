@@ -39,7 +39,7 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal GameObject showMorePlacesButtonContainer;
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
     [SerializeField] internal DropdownComponentView sortByDropdown;
-    [SerializeField] internal GridContainerComponentView placeCategoriesGrid;
+    [SerializeField] internal Transform placeCategoriesGrid;
     [SerializeField] internal TMP_Text totalResultsCounter;
 
     [SerializeField] private Canvas canvas;
@@ -257,13 +257,12 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    public void SetPlaceCategories(List<string> placeCategories)
+    public void SetPlaceCategories(List<(string id, string nameToShow)> placeCategories)
     {
-        foreach (string categoryName in placeCategories)
+        foreach (var category in placeCategories)
         {
-            var categoryButton = Instantiate(placeCategoryButtonPrefab, placeCategoriesGrid.transform);
-            categoryButton.SetCategory(categoryName);
-            categoryButton.SetText(categoryName.ToUpper());
+            var categoryButton = Instantiate(placeCategoryButtonPrefab, placeCategoriesGrid);
+            categoryButton.SetCategory(category.id, category.nameToShow);
             categoryButton.SetStatus(false);
             categoryButton.OnClick += OnCategoryButtonClicked;
             placeCategoryButtons.Add(categoryButton);
