@@ -6,7 +6,6 @@ using DCL.Models;
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-
 using static DCL.ECSComponents.EasingFunction;
 using static DG.Tweening.Ease;
 
@@ -49,6 +48,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     private readonly IInternalECSComponent<InternalTween> internalTweenComponent;
     private readonly IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent;
+    private Tweener currentTweener;
 
     public ECSTweenHandler(IInternalECSComponent<InternalTween> internalTweenComponent, IInternalECSComponent<InternalSceneBoundsCheck> sbcInternalComponent)
     {
@@ -60,6 +60,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
 
     public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
     {
+        currentTweener.Kill(false);
         internalTweenComponent.RemoveFor(scene, entity, new InternalTween()
         {
             removed = true
@@ -77,23 +78,22 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         bool isPlaying = !model.HasPlaying || model.Playing;
 
         var internalComponentModel = internalTweenComponent.GetFor(scene, entity)?.model ?? new InternalTween();
-
         if (!AreSameModels(model, internalComponentModel.lastModel))
         {
             Transform entityTransform = entity.gameObject.transform;
             float durationInSeconds = model.Duration / 1000;
-            Tweener tweener = internalComponentModel.tweener;
+            currentTweener = internalComponentModel.tweener;
 
-            if (tweener == null)
+            if (currentTweener == null)
             {
                 // There may be a tween running for the entity transform, even though internalComponentModel.tweener
                 // is null, e.g: during preview mode hot-reload.
                 var transformTweens = DOTween.TweensByTarget(entityTransform, true);
-                transformTweens?[0].Rewind();
+                transformTweens?[0].Rewind(false);
             }
             else
             {
-                tweener.Rewind();
+                currentTweener.Rewind(false);
             }
 
             internalComponentModel.transform = entityTransform;
@@ -105,28 +105,28 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             switch (model.ModeCase)
             {
                 case PBTween.ModeOneofCase.Rotate:
-                    tweener = SetupRotationTween(scene, entity,
+                    currentTweener = SetupRotationTween(scene, entity,
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.Start),
                         ProtoConvertUtils.PBQuaternionToUnityQuaternion(model.Rotate.End),
                         durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Scale:
-                    tweener = SetupScaleTween(scene, entity,
+                    currentTweener = SetupScaleTween(scene, entity,
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.Start),
                         ProtoConvertUtils.PBVectorToUnityVector(model.Scale.End),
                         durationInSeconds, ease);
                     break;
                 case PBTween.ModeOneofCase.Move:
                 default:
-                    tweener = SetupPositionTween(scene, entity,
+                    currentTweener = SetupPositionTween(scene, entity,
                         ProtoConvertUtils.PBVectorToUnityVector(model.Move.Start),
                         ProtoConvertUtils.PBVectorToUnityVector(model.Move.End),
                         durationInSeconds, ease, model.Move.HasFaceDirection && model.Move.FaceDirection);
                     break;
             }
 
-            tweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
-            internalComponentModel.tweener = tweener;
+            currentTweener.Goto(model.CurrentTime * durationInSeconds, isPlaying);
+            internalComponentModel.tweener = currentTweener;
             internalComponentModel.tweenMode = model.ModeCase;
         }
         else if (internalComponentModel.playing == isPlaying)
@@ -178,7 +178,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         return tweener;
     }
 
-    Tweener SetupScaleTween(IParcelScene scene, IDCLEntity entity, Vector3 startScale,
+    private Tweener SetupScaleTween(IParcelScene scene, IDCLEntity entity, Vector3 startScale,
         Vector3 endScale, float durationInSeconds, Ease ease)
     {
         var entityTransform = entity.gameObject.transform;
@@ -190,7 +190,7 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
         return tweener;
     }
 
-    Tweener SetupPositionTween(IParcelScene scene, IDCLEntity entity, Vector3 startPosition,
+    private Tweener SetupPositionTween(IParcelScene scene, IDCLEntity entity, Vector3 startPosition,
         Vector3 endPosition, float durationInSeconds, Ease ease, bool faceDirection)
     {
         var entityTransform = entity.gameObject.transform;
