@@ -129,7 +129,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         CleanFriendHeadsItems();
 
-        if (isPlaceCardModal)
+        if (placeCategoryLabelPrefab != null)
             placeCategoriesPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(PLACE_CATEGORIES_POOL_NAME, placeCategoryLabelPrefab, PLACE_CATEGORIES_POOL_PREWARM);
     }
 
