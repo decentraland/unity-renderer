@@ -12,6 +12,8 @@ namespace DCL.ECSComponents
 {
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
+        private IDCLEntity entity;
+        private IParcelScene scene;
         private PBMaterial lastModel = null;
         internal AssetPromise_Material promiseMaterial;
 
@@ -25,7 +27,11 @@ namespace DCL.ECSComponents
             this.videoMaterialInternalComponent = videoMaterialInternalComponent;
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            this.entity = entity;
+            this.scene = scene;
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
@@ -34,7 +40,12 @@ namespace DCL.ECSComponents
 
             while (activePromises.Count > 0)
             {
-                AssetPromiseKeeper_Material.i.Forget(activePromises.Dequeue());
+                var promise = activePromises.Dequeue();
+
+                // TODO: CHECK IF PREVIEW MODE
+                DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+
+                AssetPromiseKeeper_Material.i.Forget(promise);
             }
         }
 
@@ -124,6 +135,9 @@ namespace DCL.ECSComponents
                     await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
                     ForgetPreviousPromises(activePromises, materialAsset);
                 });
+
+                // TODO: CHECK IF PREVIEW MODE
+                DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.sceneNumber, entity.entityId, materialAsset.material);
             };
             promiseMaterial.OnFailEvent += (material, exception) =>
             {
@@ -133,14 +147,19 @@ namespace DCL.ECSComponents
             AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
         }
 
-        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
+        private void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
         {
             if (promises.Count <= 1)
                 return;
 
             while (promises.Count > 1 && promises.Peek().asset != currentAppliedMaterial)
             {
-                AssetPromiseKeeper_Material.i.Forget(promises.Dequeue());
+                var promise = promises.Dequeue();
+
+                // TODO: CHECK IF PREVIEW MODE
+                DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+
+                AssetPromiseKeeper_Material.i.Forget(promise);
             }
         }
 
