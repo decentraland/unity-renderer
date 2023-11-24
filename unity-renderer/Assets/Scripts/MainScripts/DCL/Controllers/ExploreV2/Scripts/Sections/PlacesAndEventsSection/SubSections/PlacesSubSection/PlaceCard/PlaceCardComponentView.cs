@@ -87,7 +87,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     private bool thumbnailFromMarketPlaceRequested;
     private readonly List<(string id, string nameToShow)> allPlaceCategories = new ();
-    internal Pool placeCategoriesPool;
+    private Pool placeCategoriesPool;
 
     public event Action<string, bool?> OnVoteChanged;
     public event Action<Vector2Int> OnPressedLinkCopy;
@@ -339,7 +339,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetAppearsOn(string[] categories)
     {
-        placeCategoriesPool.ReleaseAll();
+        if (placeCategoriesPool != null)
+            placeCategoriesPool.ReleaseAll();
 
         foreach (GameObject categoryItem in placeCategoriesGroup)
         {
