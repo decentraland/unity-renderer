@@ -339,8 +339,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
     public void SetAppearsOn(string[] categories)
     {
-        if (placeCategoriesPool != null)
-            placeCategoriesPool.ReleaseAll();
+        if (placeCategoriesPool == null)
+            return;
+
+        placeCategoriesPool.ReleaseAll();
+
+        if (categories == null)
+            return;
 
         foreach (GameObject categoryItem in placeCategoriesGroup)
         {
