@@ -14,10 +14,13 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     internal const int THMBL_MARKETPLACE_HEIGHT = 143;
     internal const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
     private const string NO_DESCRIPTION_TEXT = "No description.";
+    private const string PLACE_CATEGORIES_POOL_NAME = "PlaceCardModal_CategoriesPool";
+    private const int PLACE_CATEGORIES_POOL_PREWARM = 5;
 
     [Header("Assets References")]
     [SerializeField] internal FriendHeadForPlaceCardComponentView friendHeadPrefab;
     [SerializeField] internal UserProfile ownUserProfile;
+    [SerializeField] internal PlaceCategoryButton placeCategoryLabelPrefab;
 
     [Header("Prefab References")]
     [SerializeField] internal GameObject poiMark;
@@ -63,6 +66,8 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     [SerializeField] internal PlaceCopyContextualMenu placeCopyContextualMenu;
     [SerializeField] internal TMP_Text ageRatingText;
     [SerializeField] internal GameObject ageRatingOutline;
+    [SerializeField] internal Transform placeCategoriesGrid;
+    [SerializeField] internal List<GameObject> placeCategoriesGroup;
 
     [Header("Configuration")]
     [SerializeField] internal Sprite defaultPicture;
@@ -81,6 +86,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
     public event Action<string, bool> OnFavoriteChanged;
 
     private bool thumbnailFromMarketPlaceRequested;
+    private readonly List<(string id, string nameToShow)> allPlaceCategories = new ();
+    internal Pool placeCategoriesPool;
+
     public event Action<string, bool?> OnVoteChanged;
     public event Action<Vector2Int> OnPressedLinkCopy;
     public event Action<Vector2Int, string> OnPressedTwitterButton;
@@ -120,6 +128,9 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
             placeCopyContextualMenu.OnPlaceLinkCopied += CopiedLink;
 
         CleanFriendHeadsItems();
+
+        if (isPlaceCardModal)
+            placeCategoriesPool = PlacesAndEventsCardsFactory.GetCardsPoolLazy(PLACE_CATEGORIES_POOL_NAME, placeCategoryLabelPrefab, PLACE_CATEGORIES_POOL_PREWARM);
     }
 
     private void ToggleContextMenu()
@@ -214,6 +225,7 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
         SetDeployedAt(model.deployedAt);
         SetIsPOI(model.isPOI);
         SetAgeRating(model.ageRating);
+        SetAppearsOn(model.categories);
         ResetScrollPosition();
         RebuildCardLayouts();
     }
@@ -317,6 +329,43 @@ public class PlaceCardComponentView : BaseComponentView, IPlaceCardComponentView
 
         if (ageRatingOutline != null)
             ageRatingOutline.SetActive(contentCategory != SceneContentCategory.RESTRICTED);
+    }
+
+    public void SetAllPlaceCategories(List<(string id, string nameToShow)> placeCategories)
+    {
+        allPlaceCategories.Clear();
+        allPlaceCategories.AddRange(placeCategories);
+    }
+
+    public void SetAppearsOn(string[] categories)
+    {
+        placeCategoriesPool.ReleaseAll();
+
+        foreach (GameObject categoryItem in placeCategoriesGroup)
+        {
+            if (categoryItem == null)
+                continue;
+
+            categoryItem.SetActive(categories.Length > 0);
+        }
+
+        if (placeCategoriesGrid == null)
+            return;
+
+        foreach (string category in categories)
+        {
+            foreach ((string id, string nameToShow) categoryInfo in allPlaceCategories)
+            {
+                if (categoryInfo.id != category)
+                    continue;
+
+                var categoryLabel = placeCategoriesPool.Get<PlaceCategoryButton>();
+                categoryLabel.transform.SetParent(placeCategoriesGrid.transform, false);
+                categoryLabel.SetCategory(categoryInfo.id, categoryInfo.nameToShow);
+                categoryLabel.SetStatus(false);
+                break;
+            }
+        }
     }
 
     private void FavoriteValueChanged(string placeUUID, bool isFavorite)

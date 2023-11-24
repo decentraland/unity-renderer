@@ -267,6 +267,8 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             categoryButton.OnClick += OnCategoryButtonClicked;
             placeCategoryButtons.Add(categoryButton);
         }
+
+        placeModal.SetAllPlaceCategories(placeCategories);
     }
 
     public void SetResultCounter(int totalResults) =>

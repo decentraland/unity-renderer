@@ -1,5 +1,4 @@
-﻿using DCL.Helpers;
-using System;
+﻿using System;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -24,8 +23,13 @@ public class PlaceCategoryButton : MonoBehaviour
 
     private bool isCurrentlySelected;
 
-    private void Awake() =>
+    private void Awake()
+    {
+        if (button == null)
+            return;
+
         button.onClick.AddListener(() => OnClick?.Invoke(currenCategory, !isCurrentlySelected));
+    }
 
     public void SetCategory(string categoryId, string nameToShow)
     {
