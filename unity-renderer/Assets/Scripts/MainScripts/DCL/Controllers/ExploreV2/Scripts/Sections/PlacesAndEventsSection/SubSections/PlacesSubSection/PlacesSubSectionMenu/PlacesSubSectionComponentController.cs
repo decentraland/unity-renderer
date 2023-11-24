@@ -155,7 +155,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private void ApplyFilters()
     {
         if (!string.IsNullOrEmpty(view.filter))
-            placesAnalytics.Filter(view.filter);
+            placesAnalytics.Filter(view.filter.Replace("categories=", ""));
 
         RequestAllPlaces();
     }
