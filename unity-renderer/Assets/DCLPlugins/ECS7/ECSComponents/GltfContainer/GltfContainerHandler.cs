@@ -37,6 +37,7 @@ namespace DCL.ECSComponents
 
         private readonly ActiveCollidersData visibleActiveColliders = new ActiveCollidersData();
         private readonly ActiveCollidersData invisibleActiveColliders = new ActiveCollidersData();
+        private readonly bool isDebugMode = false;
 
         public RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
@@ -56,7 +57,8 @@ namespace DCL.ECSComponents
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
             IInternalECSComponent<InternalAnimation> animationComponent,
             DataStore_ECS7 dataStoreEcs7,
-            DataStore_FeatureFlag featureFlags)
+            DataStore_FeatureFlag featureFlags,
+            DebugConfig debugConfig)
         {
             this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
@@ -66,6 +68,7 @@ namespace DCL.ECSComponents
             this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
             this.animationComponent = animationComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
+            this.isDebugMode = debugConfig.isDebugMode.Get();
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
@@ -227,8 +230,8 @@ namespace DCL.ECSComponents
             gltfLoader.ClearEvents();
             gltfLoader.Unload();
 
-            // TODO: CHECK IF PREVIEW MODE
-            RemoveCurrentRendereableFromSceneMetrics();
+            if (isDebugMode)
+                RemoveCurrentRendereableFromSceneMetrics();
         }
 
         private static void InitColliders(
@@ -414,9 +417,11 @@ namespace DCL.ECSComponents
                 dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             }
 
-            // TODO: CHECK IF PREVIEW MODE
-            currentRendereable = rendereable;
-            AddCurrentRendereableToSceneMetrics();
+            if (isDebugMode)
+            {
+                currentRendereable = rendereable;
+                AddCurrentRendereableToSceneMetrics();
+            }
         }
 
         private static void OnLoadFail(

@@ -30,7 +30,7 @@ namespace Tests
         {
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
             internalVideoMaterial = Substitute.For<IInternalECSComponent<InternalVideoMaterial>>();
-            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial);
+            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial, new DebugConfig());
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);

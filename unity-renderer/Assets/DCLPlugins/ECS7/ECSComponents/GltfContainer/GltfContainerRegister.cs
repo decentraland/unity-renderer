@@ -12,9 +12,6 @@ namespace DCL.ECSComponents
         public GltfContainerRegister(int componentId, ECSComponentsFactory factory, IECSComponentWriter componentWriter,
             IInternalECSComponents internalComponents)
         {
-            var dataStoreEcs7 = DataStore.i.ecs7;
-            var featureFlags = DataStore.i.featureFlags;
-
             factory.AddOrReplaceComponent(componentId, ProtoSerialization.Deserialize<PBGltfContainer>,
                 () => new GltfContainerHandler(
                     internalComponents.onPointerColliderComponent,
@@ -23,8 +20,9 @@ namespace DCL.ECSComponents
                     internalComponents.renderersComponent,
                     internalComponents.GltfContainerLoadingStateComponent,
                     internalComponents.Animation,
-                    dataStoreEcs7,
-                    featureFlags));
+                    DataStore.i.ecs7,
+                    DataStore.i.featureFlags,
+                    DataStore.i.debugConfig));
 
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);
 
