@@ -110,6 +110,7 @@ namespace ECSSystems.TweenSystem
             transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newPosition, ref currentWorldOffset);
             transformComponentModel.rotation = entityTransform.localRotation;
             transformComponentModel.scale = entityTransform.localScale;
+            transformComponentModel.parentId = scene.GetEntityById(entity).parentId;
             writer.Put(entity, ComponentID.TRANSFORM, transformComponent);
         }
     }
