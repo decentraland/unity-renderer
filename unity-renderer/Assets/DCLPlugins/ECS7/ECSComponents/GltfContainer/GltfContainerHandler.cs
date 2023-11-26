@@ -149,7 +149,7 @@ namespace DCL.ECSComponents
                 gltfContainerLoadingStateComponent.PutFor(scene, entity,
                     new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Loading });
 
-                gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(entity, rendereable, model);
+                gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(rendereable, model);
 
                 gltfLoader.OnFailEvent += exception => OnLoadFail(scene, entity, newGltfSrc, exception,
                     dataStoreEcs7, gltfContainerLoadingStateComponent);
@@ -160,7 +160,6 @@ namespace DCL.ECSComponents
         }
 
         private void OnLoadSuccess(
-            IDCLEntity entity,
             Rendereable rendereable,
             PBGltfContainer model)
         {
@@ -192,7 +191,7 @@ namespace DCL.ECSComponents
                 invisibleActiveColliders.PhysicColliders,
                 invisibleActiveColliders.CustomLayerColliders);
 
-            SetGltfLoaded(entity, gameObject, model.Src, rendereable);
+            SetGltfLoaded(gameObject, model.Src, rendereable);
         }
 
         private void UnloadGltf(IDCLEntity entity, string gltfSrc)
@@ -396,7 +395,6 @@ namespace DCL.ECSComponents
         }
 
         private void SetGltfLoaded(
-            IDCLEntity entity,
             GameObject rootGameObject,
             string prevLoadedGltf,
             Rendereable rendereable)
@@ -418,7 +416,7 @@ namespace DCL.ECSComponents
 
             // TODO: CHECK IF PREVIEW MODE
             currentRendereable = rendereable;
-            AddCurrentRendereableToSceneMetrics(entity);
+            AddCurrentRendereableToSceneMetrics();
         }
 
         private static void OnLoadFail(
@@ -435,7 +433,7 @@ namespace DCL.ECSComponents
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, gltfSrc);
         }
 
-        private void AddCurrentRendereableToSceneMetrics(IDCLEntity entity)
+        private void AddCurrentRendereableToSceneMetrics()
         {
             DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
 
