@@ -97,8 +97,9 @@ namespace Tests
         }
 
         [Test]
-        public void UpdateTransformComponent()
+        public void UpdateTransformComponentCorrectly()
         {
+            entity.parentId = 6966;
             float currentTime = 0.666f;
             Transform entityTransform = entity.gameObject.transform;
 
@@ -121,6 +122,7 @@ namespace Tests
                 ComponentID.TRANSFORM,
                 componentModel =>
                     componentModel.position == entityTransform.localPosition
+                    && componentModel.parentId == entity.parentId
             );
         }
 
