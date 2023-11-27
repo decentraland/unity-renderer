@@ -51,6 +51,7 @@ namespace SignupHUD
             this.browserBridge = browserBridge;
             this.subscriptionsAPIService = subscriptionsAPIService;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
+            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange += OnTermsOfServiceAgreedStepAfterSaveBackpack;
         }
 
         public void Initialize()
@@ -62,7 +63,7 @@ namespace SignupHUD
 
             view.OnNameScreenNext += OnNameScreenNext;
             view.OnEditAvatar += OnEditAvatar;
-            view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
+            view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreedStepBeforeSaveBackpack;
             view.OnTermsOfServiceBack += OnTermsOfServiceBack;
             view.OnLinkClicked += OnLinkClicked;
 
@@ -104,10 +105,10 @@ namespace SignupHUD
             dataStoreHUDs.avatarEditorVisible.Set(true, true);
         }
 
-        internal void OnTermsOfServiceAgreed()
+        private void OnTermsOfServiceAgreedStepBeforeSaveBackpack()
         {
             WebInterface.SendPassport(name, email);
-            DataStore.i.common.isSignUpFlow.Set(false);
+            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.Set(true);
             newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux(name, email);
 
             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
@@ -115,6 +116,14 @@ namespace SignupHUD
 
             createSubscriptionCts = createSubscriptionCts.SafeRestart();
             CreateSubscriptionAsync(email, createSubscriptionCts.Token).Forget();
+        }
+
+        private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            DataStore.i.common.isSignUpFlow.Set(false);
         }
 
         private async UniTaskVoid CreateSubscriptionAsync(string emailAddress, CancellationToken cancellationToken)
@@ -157,9 +166,10 @@ namespace SignupHUD
                 return;
             view.OnNameScreenNext -= OnNameScreenNext;
             view.OnEditAvatar -= OnEditAvatar;
-            view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreed;
+            view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreedStepBeforeSaveBackpack;
             view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnLoadingScreenAppear;
+            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange -= OnTermsOfServiceAgreedStepAfterSaveBackpack;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenAppear;
             createSubscriptionCts.SafeCancelAndDispose();
             view.Dispose();
