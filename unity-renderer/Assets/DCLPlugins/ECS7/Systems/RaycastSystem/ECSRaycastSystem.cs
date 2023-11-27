@@ -210,21 +210,24 @@ namespace ECSSystems.ECSRaycastSystem
 
         private RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, UnityEngine.RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
         {
-            if (hitEntity == null) return null;
-
-            // TODO: figure out how we can cache or pool this hit instance to reduce allocations.
-            // since is part of a protobuf message it life span is uncertain, it could be disposed
-            // after message is sent to the scene or dropped for a new message
             RaycastHit hit = new RaycastHit();
-            IDCLEntity entity = hitEntity.Value.Key;
-            uint collisionMask = hitEntity.Value.Value;
 
-            // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
-            // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-            if ((model.GetCollisionMask() & collisionMask) == 0)
-                return null;
+            if (hitEntity != null) // SDK7 entity, otherwise the ray hit an SDK6 entity
+            {
+                // TODO: figure out how we can cache or pool this hit instance to reduce allocations.
+                // since is part of a protobuf message it life span is uncertain, it could be disposed
+                // after message is sent to the scene or dropped for a new message
+                IDCLEntity entity = hitEntity.Value.Key;
+                uint collisionMask = hitEntity.Value.Value;
 
-            hit.EntityId = (uint)entity.entityId;
+                // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
+                // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
+                if ((model.GetCollisionMask() & collisionMask) == 0)
+                    return null;
+
+                hit.EntityId = (uint)entity.entityId;
+            }
+
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;
