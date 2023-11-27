@@ -108,9 +108,9 @@ namespace SignupHUD
         private void OnTermsOfServiceAgreedStepBeforeSaveBackpack() =>
             DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.Set(true);
 
-        private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool current, bool previous)
+        private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool isBackpackWaitingToBeSaved, bool _)
         {
-            if (current)
+            if (isBackpackWaitingToBeSaved)
                 return;
 
             WebInterface.SendPassport(name, email);
