@@ -105,10 +105,16 @@ namespace SignupHUD
             dataStoreHUDs.avatarEditorVisible.Set(true, true);
         }
 
-        private void OnTermsOfServiceAgreedStepBeforeSaveBackpack()
-        {
-            WebInterface.SendPassport(name, email);
+        private void OnTermsOfServiceAgreedStepBeforeSaveBackpack() =>
             DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.Set(true);
+
+        private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool current, bool previous)
+        {
+            if (current)
+                return;
+
+            WebInterface.SendPassport(name, email);
+            DataStore.i.common.isSignUpFlow.Set(false);
             newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux(name, email);
 
             if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
@@ -116,14 +122,6 @@ namespace SignupHUD
 
             createSubscriptionCts = createSubscriptionCts.SafeRestart();
             CreateSubscriptionAsync(email, createSubscriptionCts.Token).Forget();
-        }
-
-        private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool current, bool previous)
-        {
-            if (current)
-                return;
-
-            DataStore.i.common.isSignUpFlow.Set(false);
         }
 
         private async UniTaskVoid CreateSubscriptionAsync(string emailAddress, CancellationToken cancellationToken)
