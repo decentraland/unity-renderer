@@ -66,10 +66,12 @@ namespace ECSSystems.TweenSystem
             if (currentTime.Equals(1f) && model.currentTime.Equals(1f))
                 return;
 
+            scene.entities.TryGetValue(entityId, out IDCLEntity entity);
+
             if (model.playing)
             {
                 tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
-                UpdatePlayingTweenComponentModel(tweenStateComponentModel, currentTime, scene, entityId, model);
+                UpdatePlayingTweenComponentModel(tweenStateComponentModel, currentTime, scene, entity, model);
             }
             else
             {
@@ -78,17 +80,16 @@ namespace ECSSystems.TweenSystem
 
             writer.Put(entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
-            UpdateTransformComponent(scene, entityId, model.transform, writer);
+            UpdateTransformComponent(scene, entity, model.transform, writer);
 
             model.currentTime = currentTime;
             tweenInternalComponent.PutFor(scene, entityId, model);
         }
 
         private void UpdatePlayingTweenComponentModel(PBTweenState tweenStateComponentModel, float currentTime,
-            IParcelScene scene, long entityId, InternalTween model)
+            IParcelScene scene, IDCLEntity entity, InternalTween model)
         {
             tweenStateComponentModel.CurrentTime = currentTime;
-            scene.entities.TryGetValue(entityId, out IDCLEntity entity);
             switch (model.tweenMode)
             {
                 case PBTween.ModeOneofCase.Move:
@@ -101,7 +102,7 @@ namespace ECSSystems.TweenSystem
             }
         }
 
-        private void UpdateTransformComponent(IParcelScene scene, long entity, Transform entityTransform, ComponentWriter writer)
+        private void UpdateTransformComponent(IParcelScene scene, IDCLEntity entity, Transform entityTransform, ComponentWriter writer)
         {
             var transformComponent = transformComponentPool.Get();
             var transformComponentModel = transformComponent.WrappedComponent.Model;
@@ -110,7 +111,8 @@ namespace ECSSystems.TweenSystem
             transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newPosition, ref currentWorldOffset);
             transformComponentModel.rotation = entityTransform.localRotation;
             transformComponentModel.scale = entityTransform.localScale;
-            writer.Put(entity, ComponentID.TRANSFORM, transformComponent);
+            transformComponentModel.parentId = entity.parentId;
+            writer.Put(entity.entityId, ComponentID.TRANSFORM, transformComponent);
         }
     }
 }
