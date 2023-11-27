@@ -614,7 +614,7 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
 
             if (source != EquipWearableSource.None)
-                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
             {
@@ -685,7 +685,7 @@ namespace DCL.Backpack
             string wearableId = wearable.id;
 
             if (source != UnequipWearableSource.None)
-                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
