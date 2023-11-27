@@ -437,5 +437,33 @@ namespace Tests
             var transformTweens = DOTween.TweensByTarget(entityTransform, true);
             Assert.AreEqual(initialTime, transformTweens[0].ElapsedPercentage());
         }
+
+        [Test]
+        public void KillTweenerImmediatelyOnComponentRemove()
+        {
+            Vector3 startScale = Vector3.one;
+            Vector3 endScale = new Vector3(5f, 5f, 5f);
+
+            var model = new PBTween()
+            {
+                Duration = 3000,
+                Scale = new Scale()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startScale.x, Y = startScale.y, Z = startScale.z },
+                    End = new Decentraland.Common.Vector3() { X = endScale.x, Y = endScale.y, Z = endScale.z }
+                },
+                Playing = true
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check tween is running
+            var tweens = DOTween.PlayingTweens();
+            Assert.AreEqual(1, tweens.Count);
+
+            componentHandler.OnComponentRemoved(scene, entity);
+            tweens = DOTween.PlayingTweens();
+            Assert.IsNull(tweens);
+        }
     }
 }

@@ -58,7 +58,6 @@ namespace ECSSystems.TweenSystem
 
             if (model.removed)
             {
-                model.tweener.Kill();
                 writer.Remove(entityId, ComponentID.TWEEN_STATE);
                 return;
             }
