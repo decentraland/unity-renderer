@@ -16,6 +16,8 @@ namespace Tests.SignupHUD
         private ISubscriptionsAPIService subscriptionsAPIService;
         private DataStore_HUDs dataStoreHUDs;
         private DataStore_FeatureFlag dataStoreFeatureFlag;
+        private DataStore_BackpackV2 dataStoreBackpack;
+        private DataStore_Common dataStoreCommon;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
 
         [SetUp]
@@ -26,12 +28,16 @@ namespace Tests.SignupHUD
             subscriptionsAPIService = Substitute.For<ISubscriptionsAPIService>();
             dataStoreHUDs = new DataStore_HUDs();
             dataStoreFeatureFlag = new DataStore_FeatureFlag();
+            dataStoreBackpack = new DataStore_BackpackV2();
+            dataStoreCommon = new DataStore_Common();
 
             hudController = new SignupHUDController(Substitute.For<IAnalytics>(),
                 hudView,
                 new DataStore_LoadingScreen(),
                 dataStoreHUDs,
                 dataStoreFeatureFlag,
+                dataStoreBackpack,
+                dataStoreCommon,
                 browserBridge,
                 subscriptionsAPIService);
             hudController.Initialize();

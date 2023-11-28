@@ -22,14 +22,16 @@ namespace SignupHUD
         private readonly DataStore_LoadingScreen loadingScreenDataStore;
         private readonly DataStore_HUDs dataStoreHUDs;
         private readonly DataStore_FeatureFlag dataStoreFeatureFlag;
+        private readonly DataStore_BackpackV2 dataStoreBackpack;
+        private readonly DataStore_Common dataStoreCommon;
         private readonly IBrowserBridge browserBridge;
         private readonly ISubscriptionsAPIService subscriptionsAPIService;
         internal readonly ISignupHUDView view;
 
         internal string name;
         internal string email;
-        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
-        private BaseVariable<bool> backpackVisible => DataStore.i.HUDs.avatarEditorVisible;
+        private BaseVariable<bool> signupVisible => dataStoreHUDs.signupVisible;
+        private BaseVariable<bool> backpackVisible => dataStoreHUDs.avatarEditorVisible;
         private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStoreFeatureFlag.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
 
         private CancellationTokenSource createSubscriptionCts;
@@ -40,6 +42,8 @@ namespace SignupHUD
             DataStore_LoadingScreen loadingScreenDataStore,
             DataStore_HUDs dataStoreHUDs,
             DataStore_FeatureFlag dataStoreFeatureFlag,
+            DataStore_BackpackV2 dataStoreBackpack,
+            DataStore_Common dataStoreCommon,
             IBrowserBridge browserBridge,
             ISubscriptionsAPIService subscriptionsAPIService)
         {
@@ -48,10 +52,12 @@ namespace SignupHUD
             this.loadingScreenDataStore = loadingScreenDataStore;
             this.dataStoreHUDs = dataStoreHUDs;
             this.dataStoreFeatureFlag = dataStoreFeatureFlag;
+            this.dataStoreBackpack = dataStoreBackpack;
+            this.dataStoreCommon = dataStoreCommon;
             this.browserBridge = browserBridge;
             this.subscriptionsAPIService = subscriptionsAPIService;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange += OnLoadingScreenAppear;
-            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange += OnTermsOfServiceAgreedStepAfterSaveBackpack;
+            dataStoreBackpack.isWaitingToBeSavedAfterSignUp.OnChange += OnTermsOfServiceAgreedStepAfterSaveBackpack;
         }
 
         public void Initialize()
@@ -108,7 +114,7 @@ namespace SignupHUD
         private void OnTermsOfServiceAgreedStepBeforeSaveBackpack()
         {
             WebInterface.SendPassport(name, email);
-            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.Set(true);
+            dataStoreBackpack.isWaitingToBeSavedAfterSignUp.Set(true);
 
             newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux(name, email);
 
@@ -124,7 +130,7 @@ namespace SignupHUD
             if (isBackpackWaitingToBeSaved)
                 return;
 
-            DataStore.i.common.isSignUpFlow.Set(false);
+            dataStoreCommon.isSignUpFlow.Set(false);
         }
 
         private async UniTaskVoid CreateSubscriptionAsync(string emailAddress, CancellationToken cancellationToken)
@@ -170,7 +176,7 @@ namespace SignupHUD
             view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreedStepBeforeSaveBackpack;
             view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
             CommonScriptableObjects.isFullscreenHUDOpen.OnChange -= OnLoadingScreenAppear;
-            DataStore.i.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange -= OnTermsOfServiceAgreedStepAfterSaveBackpack;
+            dataStoreBackpack.isWaitingToBeSavedAfterSignUp.OnChange -= OnTermsOfServiceAgreedStepAfterSaveBackpack;
             loadingScreenDataStore.decoupledLoadingHUD.visible.OnChange -= OnLoadingScreenAppear;
             createSubscriptionCts.SafeCancelAndDispose();
             view.Dispose();
