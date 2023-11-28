@@ -26,6 +26,7 @@ public class PlaceCardComponentModel : BaseComponentModel
     public string deployedAt;
     public bool isPOI;
     public SceneContentCategory ageRating;
+    public string[] categories;
 
     [HideInInspector]
     public IHotScenesController.PlaceInfo placeInfo;

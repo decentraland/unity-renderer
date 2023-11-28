@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -140,4 +141,8 @@ public interface IPlaceCardComponentView
     void SetActive(bool isActive);
 
     void SetAgeRating(SceneContentCategory contentCategory);
+
+    void SetAllPlaceCategories(List<(string id, string nameToShow)> placeCategories);
+
+    void SetAppearsOn(string[] categories);
 }

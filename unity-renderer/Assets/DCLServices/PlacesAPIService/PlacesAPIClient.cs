@@ -20,6 +20,7 @@ namespace DCLServices.PlacesAPIService
         UniTask<List<IHotScenesController.PlaceInfo>> GetAllFavorites(CancellationToken ct);
         UniTask<List<IHotScenesController.PlaceInfo>> GetPlacesByCoordsList(List<Vector2Int> coordsList, CancellationToken ct);
         UniTask ReportPlace(PlaceContentReportPayload placeContentReportPayload, CancellationToken ct);
+        UniTask<List<PlaceCategoryInfo>> GetPlaceCategories(CancellationToken ct);
 
 
         UniTask SetPlaceFavorite(string placeUUID, bool isFavorite, CancellationToken ct);
@@ -33,6 +34,7 @@ namespace DCLServices.PlacesAPIService
         private const string BASE_URL_ZONE = "https://places.decentraland.zone/api/places";
         private const string POI_URL = "https://dcl-lists.decentraland.org/pois";
         private const string CONTENT_MODERATION_REPORT_URL = "https://places.decentraland.org/api/report";
+        private const string PLACE_CATEGORIES_URL = "https://places.decentraland.org/api/categories";
         private readonly IWebRequestController webRequestController;
 
         public PlacesAPIClient(IWebRequestController webRequestController)
@@ -231,6 +233,20 @@ namespace DCLServices.PlacesAPIService
             UnityWebRequest putResult = await webRequestController.PutAsync(postResponse.data.signed_url, putData, isSigned: true, cancellationToken: ct);
             if (putResult.result != UnityWebRequest.Result.Success)
                 throw new Exception($"Error reporting place:\n{putResult.error}");
+        }
+
+        public async UniTask<List<PlaceCategoryInfo>> GetPlaceCategories(CancellationToken ct)
+        {
+            UnityWebRequest result = await webRequestController.GetAsync(PLACE_CATEGORIES_URL, isSigned: false, cancellationToken: ct);
+            var response = Utils.SafeFromJson<PlaceCategoriesAPIResponse>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing get place categories response:\n{result.downloadHandler.text}");
+
+            if (response.data == null)
+                throw new Exception($"No place categories info retrieved:\n{result.downloadHandler.text}");
+
+            return response.data;
         }
     }
 }
