@@ -39,6 +39,8 @@ namespace DCLPlugins.SignupHUDPlugin
                 var loadingScreenDataStore = DataStore.i.Get<DataStore_LoadingScreen>();
                 var hudsDataStore = DataStore.i.HUDs;
                 var featureFlagDataStore = DataStore.i.Get<DataStore_FeatureFlag>();
+                var backpackDataStore = DataStore.i.Get<DataStore_BackpackV2>();
+                var commonDataStore = DataStore.i.Get<DataStore_Common>();
                 var browserBridge = new WebInterfaceBrowserBridge();
                 var subscriptionsAPIService = Environment.i.serviceLocator.Get<ISubscriptionsAPIService>();
                 var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
@@ -54,6 +56,8 @@ namespace DCLPlugins.SignupHUDPlugin
                     loadingScreenDataStore,
                     hudsDataStore,
                     featureFlagDataStore,
+                    backpackDataStore,
+                    commonDataStore,
                     browserBridge,
                     subscriptionsAPIService);
 
