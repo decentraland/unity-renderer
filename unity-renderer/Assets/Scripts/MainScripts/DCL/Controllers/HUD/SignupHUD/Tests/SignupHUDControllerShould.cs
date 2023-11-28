@@ -18,7 +18,7 @@ namespace Tests.SignupHUD
         private DataStore_FeatureFlag dataStoreFeatureFlag;
         private DataStore_BackpackV2 dataStoreBackpack;
         private DataStore_Common dataStoreCommon;
-        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private BaseVariable<bool> signupVisible => dataStoreHUDs.signupVisible;
 
         [SetUp]
         public void SetUp()
@@ -110,7 +110,7 @@ namespace Tests.SignupHUD
             hudView.OnTermsOfServiceAgreed += Raise.Event<Action>();
             //TODO assert webinterface interaction
             Assert.IsFalse(signupVisible.Get());
-            Assert.IsFalse(DataStore.i.common.isSignUpFlow.Get());
+            Assert.IsFalse(dataStoreCommon.isSignUpFlow.Get());
         }
 
         [Test]
