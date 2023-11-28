@@ -112,11 +112,11 @@ namespace SignupHUD
 
             newUserExperienceAnalytics?.SendTermsOfServiceAcceptedNux(name, email);
 
-                        if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
-                            return;
+            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                return;
 
-                        createSubscriptionCts = createSubscriptionCts.SafeRestart();
-                        CreateSubscriptionAsync(email, createSubscriptionCts.Token).Forget();
+            createSubscriptionCts = createSubscriptionCts.SafeRestart();
+            CreateSubscriptionAsync(email, createSubscriptionCts.Token).Forget();
         }
 
         private void OnTermsOfServiceAgreedStepAfterSaveBackpack(bool isBackpackWaitingToBeSaved, bool _)
