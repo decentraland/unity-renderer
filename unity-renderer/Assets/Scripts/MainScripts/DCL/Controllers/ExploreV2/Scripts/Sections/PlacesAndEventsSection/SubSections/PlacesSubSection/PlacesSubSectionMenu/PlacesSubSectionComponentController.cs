@@ -19,7 +19,6 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
-    private const string ONLY_POI_FILTER = "only_pois=true";
     private const string MOST_ACTIVE_FILTER_ID = "most_active";
 
     internal readonly IPlacesSubSectionComponentView view;
@@ -35,6 +34,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     internal readonly List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
+    private CancellationTokenSource getCategoriesCts;
     private CancellationTokenSource getPlacesCts = new ();
     private CancellationTokenSource showMoreCts = new ();
     private CancellationTokenSource disposeCts = new ();
@@ -81,6 +81,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         disposeCts?.SafeCancelAndDispose();
         showMoreCts?.SafeCancelAndDispose();
+        getCategoriesCts?.SafeCancelAndDispose();
         getPlacesCts?.SafeCancelAndDispose();
 
         view.OnReady -= FirstLoading;
@@ -140,6 +141,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         view.OnFilterChanged += ApplyFilters;
         view.OnSortingChanged += ApplySorting;
         cardsReloader.Initialize();
+
+        getCategoriesCts = getCategoriesCts.SafeRestart();
+        RequestPlaceCategoriesAsync(getCategoriesCts.Token).Forget();
     }
 
     private void OpenTab()
@@ -151,7 +155,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     private void ApplyFilters()
     {
         if (!string.IsNullOrEmpty(view.filter))
-            placesAnalytics.Filter(view.filter == ONLY_POI_FILTER ? IPlacesAnalytics.FilterType.PointOfInterest : IPlacesAnalytics.FilterType.Featured);
+            placesAnalytics.Filter(view.filter.Replace("categories=", ""));
 
         RequestAllPlaces();
     }
@@ -181,30 +185,38 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
     }
 
+    private async UniTaskVoid RequestPlaceCategoriesAsync(CancellationToken ct)
+    {
+        try
+        {
+            var allCategories = await placesAPIService.GetPlaceCategories(ct);
+            view.SetPlaceCategories(allCategories.Select(x => (x.name, x.i18n.en)).ToList());
+        }
+        catch (OperationCanceledException) { }
+    }
+
     private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
     {
         try
         {
             allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(ct);
+
             if (allPointOfInterest != null)
                 view.SetPOICoords(allPointOfInterest.ToList());
 
-            string filter = view.filter;
-            if (filter == ONLY_POI_FILTER)
-                filter = BuildPointOfInterestFilter();
-
-            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, filter, view.sort, ct);
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, view.filter, view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             placesFromAPI.Clear();
             placesFromAPI.AddRange(firstPage.places);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, filter, view.sort, ct);
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, view.filter, view.sort, ct);
                 placesFromAPI.AddRange(secondPage.places);
             }
 
             view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
             view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
+            view.SetResultCounter(firstPage.total);
         }
         catch (OperationCanceledException) { }
     }
@@ -218,11 +230,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
-        string filter = view.filter;
-        if (filter == ONLY_POI_FILTER)
-            filter = BuildPointOfInterestFilter();
-
-        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, filter, view.sort, showMoreCts.Token);
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, view.filter, view.sort, showMoreCts.Token);
 
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
@@ -286,22 +294,5 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
             Environment.i.world.teleportController.Teleport(position.x, position.y);
         else
             Environment.i.world.teleportController.JumpIn(position.x, position.y, realm.serverName, realm.layer);
-    }
-
-    private string BuildPointOfInterestFilter()
-    {
-        string resultFilter = string.Empty;
-
-        if (allPointOfInterest == null)
-            return resultFilter;
-
-        foreach (string poi in allPointOfInterest)
-        {
-            string x = poi.Split(",")[0];
-            string y = poi.Split(",")[1];
-            resultFilter = string.Concat(resultFilter, $"&positions={x},{y}");
-        }
-
-        return resultFilter;
     }
 }

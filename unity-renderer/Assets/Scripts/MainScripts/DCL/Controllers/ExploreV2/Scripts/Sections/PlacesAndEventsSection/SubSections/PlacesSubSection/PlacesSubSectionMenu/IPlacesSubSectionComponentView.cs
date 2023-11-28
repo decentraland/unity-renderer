@@ -100,4 +100,8 @@ public interface IPlacesSubSectionComponentView:IPlacesAndEventsSubSectionCompon
     void SetShowMoreButtonActive(bool isActive);
 
     void SetPOICoords(List<string> poiList);
+
+    void SetPlaceCategories(List<(string id, string nameToShow)> placeCategories);
+
+    void SetResultCounter(int totalResults);
 }
