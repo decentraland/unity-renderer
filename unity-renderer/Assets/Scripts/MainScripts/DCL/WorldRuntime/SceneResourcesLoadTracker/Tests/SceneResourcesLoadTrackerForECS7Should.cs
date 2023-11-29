@@ -52,6 +52,7 @@ namespace Tests
                 DataStore.i.ecs7,
                 internalComponents.texturizableComponent,
                 internalComponents.renderersComponent,
+                new DataStore_WorldObjects(),
                 new DebugConfig());
         }
 

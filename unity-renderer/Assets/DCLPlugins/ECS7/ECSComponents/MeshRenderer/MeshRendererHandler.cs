@@ -13,6 +13,7 @@ namespace DCL.ECSComponents
         private readonly IInternalECSComponent<InternalTexturizable> texturizableInternalComponent;
         private readonly IInternalECSComponent<InternalRenderers> renderersInternalComponent;
         private readonly DataStore_ECS7 ecs7DataStore;
+        private readonly DataStore_WorldObjects dataStoreWorldObjects;
         private readonly bool isDebugMode = false;
         private IParcelScene scene;
         private GameObject componentGameObject;
@@ -26,11 +27,13 @@ namespace DCL.ECSComponents
             DataStore_ECS7 dataStoreEcs7,
             IInternalECSComponent<InternalTexturizable> texturizableComponent,
             IInternalECSComponent<InternalRenderers> renderersComponent,
+            DataStore_WorldObjects dataStoreWorldObjects,
             DebugConfig debugConfig)
         {
             texturizableInternalComponent = texturizableComponent;
             renderersInternalComponent = renderersComponent;
             ecs7DataStore = dataStoreEcs7;
+            this.dataStoreWorldObjects = dataStoreWorldObjects;
             isDebugMode = debugConfig.isDebugMode.Get();
         }
 
@@ -126,12 +129,12 @@ namespace DCL.ECSComponents
             currentRendereable.meshes = new HashSet<Mesh>() { mesh };
             currentRendereable.meshToTriangleCount = new Dictionary<Mesh, int>() { { mesh, triangleCount } };
             currentRendereable.ownerId = entity.entityId;
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
+            dataStoreWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
         }
 
         private void RemoveMeshFromDatastoreSceneMetrics()
         {
-            DataStore.i.sceneWorldObjects.RemoveRendereable(scene.sceneData.sceneNumber, currentRendereable);
+            dataStoreWorldObjects.RemoveRendereable(scene.sceneData.sceneNumber, currentRendereable);
         }
     }
 }

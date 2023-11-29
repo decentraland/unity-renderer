@@ -40,6 +40,7 @@ namespace Tests
                 new DataStore_ECS7(),
                 texturizableComponent,
                 internalComponent.renderersComponent,
+                new DataStore_WorldObjects(),
                 new DebugConfig());
 
             var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(

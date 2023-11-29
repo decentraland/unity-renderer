@@ -17,6 +17,7 @@ namespace DCL.ECSComponents
                     DataStore.i.ecs7,
                     internalComponents.texturizableComponent,
                     internalComponents.renderersComponent,
+                    DataStore.i.sceneWorldObjects,
                     DataStore.i.debugConfig));
             componentWriter.AddOrReplaceComponentSerializer<PBMeshRenderer>(componentId, ProtoSerialization.Serialize);
 
