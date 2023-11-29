@@ -210,7 +210,8 @@ namespace ECSSystems.ECSRaycastSystem
 
         private RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, UnityEngine.RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
         {
-            RaycastHit hit = new RaycastHit();
+            RaycastHit hit = null;
+            uint modelCollisionLayerMask = model.GetCollisionMask();
 
             if (hitEntity != null) // SDK7 entity, otherwise the ray hit an SDK6 entity
             {
@@ -222,12 +223,18 @@ namespace ECSSystems.ECSRaycastSystem
 
                 // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
                 // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-                if ((model.GetCollisionMask() & collisionMask) == 0)
+                if ((modelCollisionLayerMask & collisionMask) == 0)
                     return null;
 
+                hit = new RaycastHit();
                 hit.EntityId = (uint)entity.entityId;
             }
+            else if ((modelCollisionLayerMask & (int)ColliderLayer.ClPhysics) == 0) // 'Physics' layer for non-sdk7 colliders
+            {
+                return null;
+            }
 
+            hit ??= new RaycastHit();
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;
