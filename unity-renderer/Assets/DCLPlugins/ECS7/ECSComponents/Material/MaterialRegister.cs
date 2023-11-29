@@ -16,6 +16,7 @@ namespace DCL.ECSComponents
                 () => new MaterialHandler(
                     internalComponents.materialComponent,
                     internalComponents.videoMaterialComponent,
+                    DataStore.i.sceneWorldObjects,
                     DataStore.i.debugConfig));
             componentWriter.AddOrReplaceComponentSerializer<PBMaterial>(componentId, ProtoSerialization.Serialize);
 

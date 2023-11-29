@@ -22,6 +22,7 @@ namespace DCL.ECSComponents
                     internalComponents.Animation,
                     DataStore.i.ecs7,
                     DataStore.i.featureFlags,
+                    DataStore.i.sceneWorldObjects,
                     DataStore.i.debugConfig));
 
             componentWriter.AddOrReplaceComponentSerializer<PBGltfContainer>(componentId, ProtoSerialization.Serialize);

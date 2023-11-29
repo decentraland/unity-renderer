@@ -20,15 +20,18 @@ namespace DCL.ECSComponents
         private readonly Queue<AssetPromise_Material> activePromises = new Queue<AssetPromise_Material>();
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialInternalComponent;
+        private readonly DataStore_WorldObjects dataStoreWorldObjects;
         private readonly bool isDebugMode = false;
 
         public MaterialHandler(
             IInternalECSComponent<InternalMaterial> materialInternalComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialInternalComponent,
+            DataStore_WorldObjects dataStoreWorldObjects,
             DebugConfig debugConfig)
         {
             this.materialInternalComponent = materialInternalComponent;
             this.videoMaterialInternalComponent = videoMaterialInternalComponent;
+            this.dataStoreWorldObjects = dataStoreWorldObjects;
             this.isDebugMode = debugConfig.isDebugMode.Get();
         }
 
@@ -48,7 +51,7 @@ namespace DCL.ECSComponents
                 var promise = activePromises.Dequeue();
 
                 if (isDebugMode)
-                    DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+                    dataStoreWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
 
                 AssetPromiseKeeper_Material.i.Forget(promise);
             }
@@ -142,7 +145,7 @@ namespace DCL.ECSComponents
                 });
 
                 if (isDebugMode)
-                    DataStore.i.sceneWorldObjects.AddMaterial(scene.sceneData.sceneNumber, entity.entityId, materialAsset.material);
+                    dataStoreWorldObjects.AddMaterial(scene.sceneData.sceneNumber, entity.entityId, materialAsset.material);
             };
             promiseMaterial.OnFailEvent += (material, exception) =>
             {
@@ -162,7 +165,7 @@ namespace DCL.ECSComponents
                 var promise = promises.Dequeue();
 
                 if (isDebugMode)
-                    DataStore.i.sceneWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+                    dataStoreWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
 
                 AssetPromiseKeeper_Material.i.Forget(promise);
             }

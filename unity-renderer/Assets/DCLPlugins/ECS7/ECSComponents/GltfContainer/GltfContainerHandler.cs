@@ -34,6 +34,7 @@ namespace DCL.ECSComponents
 
         private readonly DataStore_ECS7 dataStoreEcs7;
         private readonly DataStore_FeatureFlag featureFlags;
+        private readonly DataStore_WorldObjects dataStoreWorldObjects;
 
         private readonly ActiveCollidersData visibleActiveColliders = new ActiveCollidersData();
         private readonly ActiveCollidersData invisibleActiveColliders = new ActiveCollidersData();
@@ -58,6 +59,7 @@ namespace DCL.ECSComponents
             IInternalECSComponent<InternalAnimation> animationComponent,
             DataStore_ECS7 dataStoreEcs7,
             DataStore_FeatureFlag featureFlags,
+            DataStore_WorldObjects dataStoreWorldObjects,
             DebugConfig debugConfig)
         {
             this.featureFlags = featureFlags;
@@ -68,6 +70,7 @@ namespace DCL.ECSComponents
             this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
             this.animationComponent = animationComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
+            this.dataStoreWorldObjects = dataStoreWorldObjects;
             this.isDebugMode = debugConfig.isDebugMode.Get();
         }
 
@@ -440,13 +443,13 @@ namespace DCL.ECSComponents
 
         private void AddCurrentRendereableToSceneMetrics()
         {
-            DataStore.i.sceneWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
+            dataStoreWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
 
             foreach (Renderer renderer in renderers)
             {
                 foreach (Material material in renderer.sharedMaterials)
                 {
-                    DataStore.i.sceneWorldObjects.AddMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
+                    dataStoreWorldObjects.AddMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
                 }
             }
         }
@@ -457,11 +460,11 @@ namespace DCL.ECSComponents
             {
                 foreach (Material material in renderer.sharedMaterials)
                 {
-                    DataStore.i.sceneWorldObjects.RemoveMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
+                    dataStoreWorldObjects.RemoveMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
                 }
             }
 
-            DataStore.i.sceneWorldObjects.RemoveRendereable(scene.sceneData.sceneNumber, currentRendereable);
+            dataStoreWorldObjects.RemoveRendereable(scene.sceneData.sceneNumber, currentRendereable);
         }
     }
 }
