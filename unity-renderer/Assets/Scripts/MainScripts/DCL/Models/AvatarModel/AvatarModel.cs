@@ -128,9 +128,19 @@ public class AvatarModel : BaseModel
                 return false;
 
             foreach (AvatarEmoteEntry emote in emotes)
-            foreach (AvatarEmoteEntry x in other.emotes)
-                if (x.urn == emote.urn)
+            {
+                var found = false;
+
+                foreach (AvatarEmoteEntry t in other.emotes)
+                    if (t.urn == emote.urn)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                if (!found)
                     return false;
+            }
         }
 
         return bodyShape == other.bodyShape &&
