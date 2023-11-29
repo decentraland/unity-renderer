@@ -229,7 +229,8 @@ namespace ECSSystems.ECSRaycastSystem
                 hit = new RaycastHit();
                 hit.EntityId = (uint)entity.entityId;
             }
-            else if ((modelCollisionLayerMask & (int)ColliderLayer.ClPhysics) == 0) // 'Physics' layer for non-sdk7 colliders
+            else if ((!scene.isPersistent && !scene.isPortableExperience)
+                     || (modelCollisionLayerMask & (int)ColliderLayer.ClPhysics) == 0) // 'Physics' layer for non-sdk7 colliders
             {
                 return null;
             }
