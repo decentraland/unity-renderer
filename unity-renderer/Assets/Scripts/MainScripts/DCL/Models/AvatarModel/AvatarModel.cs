@@ -1,10 +1,10 @@
-using System;
 using DCL.Helpers;
+using Decentraland.Sdk.Ecs6;
+using MainScripts.DCL.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Decentraland.Sdk.Ecs6;
-using MainScripts.DCL.Components;
 
 [Serializable]
 public class AvatarModel : BaseModel
@@ -79,6 +79,26 @@ public class AvatarModel : BaseModel
         return model;
     }
 
+    private bool IsListContainedIn(List<string> first, List<string> second)
+    {
+        foreach (string item in first)
+
+            // This contains is slow
+            if (!second.Contains(item))
+                return false;
+
+        return true;
+    }
+
+    private bool IsHashSetContainedIn(HashSet<string> first, HashSet<string> second)
+    {
+        foreach (string item in first)
+            if (!second.Contains(item))
+                return false;
+
+        return true;
+    }
+
     public bool HaveSameWearablesAndColors(AvatarModel other)
     {
         if (other == null)
@@ -86,13 +106,13 @@ public class AvatarModel : BaseModel
 
         //wearables are the same
         if (!(wearables.Count == other.wearables.Count
-              && wearables.All(other.wearables.Contains)
-              && other.wearables.All(wearables.Contains)))
+              && IsListContainedIn(wearables, other.wearables)
+              && IsListContainedIn(other.wearables, wearables)))
             return false;
 
         if (!(forceRender.Count == other.forceRender.Count
-              && forceRender.All(other.forceRender.Contains)
-              && other.forceRender.All(forceRender.Contains)))
+              && IsHashSetContainedIn(forceRender, other.forceRender)
+              && IsHashSetContainedIn(other.forceRender, forceRender)))
             return false;
 
         //emotes are the same
@@ -107,13 +127,10 @@ public class AvatarModel : BaseModel
             if (emotes.Count != other.emotes.Count)
                 return false;
 
-            for (var i = 0; i < emotes.Count; i++)
-            {
-                AvatarEmoteEntry emote = emotes[i];
-
-                if (other.emotes.FirstOrDefault(x => x.urn == emote.urn) == null)
+            foreach (AvatarEmoteEntry emote in emotes)
+            foreach (AvatarEmoteEntry x in other.emotes)
+                if (x.urn == emote.urn)
                     return false;
-            }
         }
 
         return bodyShape == other.bodyShape &&

@@ -46,6 +46,12 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
     private IBaseAvatarReferences baseAvatarReferences;
+    private readonly OnPointerEvent.Model pointerEventModel = new ()
+    {
+        type = OnPointerDown.NAME,
+        button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+        hoverText = "View My Profile",
+    };
 
     public IAvatar Avatar => avatar;
 
@@ -262,19 +268,14 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View My Profile",
-                },
+                pointerEventModel,
                 null,
                 player
             );
 
             onPointerDown.ShouldBeInteractableWhenMouseIsLocked = false;
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), null, avatar);
+            outlineOnHover.Initialize(null, avatar);
             outlineOnHover.ShouldBeHoveredWhenMouseIsLocked = false;
 
             bool isClickingOwnAvatarEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("click_own_avatar_passport");

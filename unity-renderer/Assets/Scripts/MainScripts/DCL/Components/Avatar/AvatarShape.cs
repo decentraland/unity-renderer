@@ -62,6 +62,12 @@ namespace DCL
         private AvatarSceneEmoteHandler sceneEmoteHandler;
         private IAvatarEmotesController emotesController;
         private IBaseAvatarReferences baseAvatarReferences;
+        private readonly OnPointerEvent.Model pointerEventModel = new ()
+        {
+            type = OnPointerDown.NAME,
+            button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+            hoverText = "View Profile",
+        };
 
         private void Awake()
         {
@@ -82,10 +88,7 @@ namespace DCL
                 emotesController,
                 Environment.i.serviceLocator.Get<IEmotesService>());
 
-            if (avatarReporterController == null)
-            {
-                avatarReporterController = new AvatarReporterController(Environment.i.world.state);
-            }
+            if (avatarReporterController == null) { avatarReporterController = new AvatarReporterController(Environment.i.world.state); }
         }
 
         public override void Initialize(IParcelScene scene, IDCLEntity entity)
@@ -262,16 +265,11 @@ namespace DCL
             UpdatePlayerStatus(model);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model()
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View Profile"
-                },
+                pointerEventModel,
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player?.avatar);
+            outlineOnHover.Initialize(entity, player?.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -319,10 +317,7 @@ namespace DCL
 
             bool isNew = player == null;
 
-            if (isNew)
-            {
-                player = new Player();
-            }
+            if (isNew) { player = new Player(); }
 
             bool isNameDirty = player.name != model.name;
 
@@ -387,10 +382,7 @@ namespace DCL
 
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
         {
-            if (isGlobalSceneAvatar)
-            {
-                avatarMovementController.OnTransformChanged(position, rotation, inmediate);
-            }
+            if (isGlobalSceneAvatar) { avatarMovementController.OnTransformChanged(position, rotation, inmediate); }
             else
             {
                 var scenePosition = Utils.GridToWorldPosition(entity.scene.sceneData.basePosition.x, entity.scene.sceneData.basePosition.y);
@@ -438,10 +430,7 @@ namespace DCL
 
         public void ApplyHidePassportModifier()
         {
-            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
-            {
-                DisablePassport();
-            }
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT)) { DisablePassport(); }
 
             currentActiveModifiers.AddRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
         }
@@ -450,10 +439,7 @@ namespace DCL
         {
             currentActiveModifiers.RemoveRefCount(AvatarModifierAreaID.DISABLE_PASSPORT);
 
-            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT))
-            {
-                EnablePasssport();
-            }
+            if (!currentActiveModifiers.ContainsKey(AvatarModifierAreaID.DISABLE_PASSPORT)) { EnablePasssport(); }
         }
 
         private void EnablePasssport()
@@ -493,10 +479,7 @@ namespace DCL
             currentLazyObserver?.RemoveListener(avatar.SetImpostorTexture);
             avatar.Dispose();
 
-            if (poolableObject != null)
-            {
-                poolableObject.OnRelease -= Cleanup;
-            }
+            if (poolableObject != null) { poolableObject.OnRelease -= Cleanup; }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             onPointerDown.OnPointerEnterReport -= PlayerPointerEnter;

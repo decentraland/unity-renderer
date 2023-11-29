@@ -90,6 +90,12 @@ namespace DCL.ECSComponents
         private IAvatarEmotesController emotesController;
         private AvatarSceneEmoteHandler sceneEmoteHandler;
         private IBaseAvatarReferences baseAvatarReferences;
+        private readonly OnPointerEvent.Model viewProfilePointerModel = new ()
+        {
+            type = OnPointerDown.NAME,
+            button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+            hoverText = "View Profile",
+        };
         public IAvatar internalAvatar => avatar;
 
         private void Awake()
@@ -222,16 +228,11 @@ namespace DCL.ECSComponents
             UpdatePlayerStatus(entity, model);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model()
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View Profile"
-                },
+                viewProfilePointerModel,
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player.avatar);
+            outlineOnHover.Initialize(entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
