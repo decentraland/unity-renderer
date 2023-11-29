@@ -354,8 +354,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         {
             int emoteLoop = GetCurrentEmoteLoopCount();
 
-            // Disabled temporally
-            //if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
+            if (emoteLoop != lastEmoteLoopCount) { UserProfile.GetOwnUserProfile().SetAvatarExpression(bb.expressionTriggerId, UserProfile.EmoteSource.EmoteLoop, true); }
 
             lastEmoteLoopCount = emoteLoop;
         }
@@ -401,13 +400,12 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
         if (!string.IsNullOrEmpty(blackboard.expressionTriggerId))
             animation.Blend(blackboard.expressionTriggerId, 0, !immediate ? EXPRESSION_EXIT_TRANSITION_TIME : 0);
 
-        // Disabled Temporally
         // Instantly replicate our emote status and position
-        /*if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
+        if (isOwnPlayer && !string.IsNullOrEmpty(blackboard.expressionTriggerId))
         {
             DCLCharacterController.i.ReportMovement();
             UserProfile.GetOwnUserProfile().SetAvatarExpression("", UserProfile.EmoteSource.EmoteCancel, true);
-        }*/
+        }
 
         blackboard.expressionTriggerId = null;
         blackboard.shouldLoop = false;
@@ -465,7 +463,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         // Triggering an emote manually updates the timestamp, the looping emote by itself sends a timestamp of -1
         // so if we are already using an emote that looped and we receive the play emote command with that timestamp, we ignore
-        if ( /*isTheSameLoopingEmote && */timestamps < 0)
+        if (isTheSameLoopingEmote && timestamps < 0)
             return;
 
         blackboard.expressionTriggerId = emoteId;

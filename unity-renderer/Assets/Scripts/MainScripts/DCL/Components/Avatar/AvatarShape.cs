@@ -36,6 +36,7 @@ namespace DCL
         [SerializeField] internal GameObject playerNameContainer;
         [SerializeField] private Transform baseAvatarContainer;
         [SerializeField] internal BaseAvatarReferences baseAvatarReferencesPrefab;
+
         internal IPlayerName playerName;
         internal IAvatarReporterController avatarReporterController;
 
@@ -60,6 +61,7 @@ namespace DCL
         public override string componentName => "avatarShape";
         private AvatarSceneEmoteHandler sceneEmoteHandler;
         private IAvatarEmotesController emotesController;
+        private IBaseAvatarReferences baseAvatarReferences;
 
         private void Awake()
         {
@@ -78,8 +80,7 @@ namespace DCL
 
             sceneEmoteHandler = new AvatarSceneEmoteHandler(
                 emotesController,
-                Environment.i.serviceLocator.Get<IEmotesService>(),
-                new UserProfileWebInterfaceBridge());
+                Environment.i.serviceLocator.Get<IEmotesService>());
 
             if (avatarReporterController == null)
             {
@@ -111,7 +112,7 @@ namespace DCL
             Visibility visibility = new Visibility();
 
             // Due to how we set our pools (and how the objets are cloned in), we might find that the original item already had the baseAvatar when returned to the pool.
-            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+            baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             return Environment.i.serviceLocator.Get<IAvatarFactory>()
                               .CreateAvatarWithHologram(
@@ -356,7 +357,7 @@ namespace DCL
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
-            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), height);
+            anchorPoints.Prepare(avatarContainer.transform, baseAvatarReferences.Anchors, height);
 
             player.playerName.SetIsTalking(model.talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));

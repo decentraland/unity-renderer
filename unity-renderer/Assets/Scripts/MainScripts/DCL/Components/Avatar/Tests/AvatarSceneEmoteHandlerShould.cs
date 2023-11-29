@@ -24,7 +24,7 @@ namespace Tests
             emotesService = Substitute.For<IEmotesService>();
             emotesController = Substitute.For<IAvatarEmotesController>();
             userProfileBridge = Substitute.For<IUserProfileBridge>();
-            handler = new AvatarSceneEmoteHandler(emotesController, emotesService, userProfileBridge);
+            handler = new AvatarSceneEmoteHandler(emotesController, emotesService);
         }
 
         [Test]

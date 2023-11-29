@@ -14,18 +14,16 @@ namespace DCL
     {
         private readonly IAvatarEmotesController emotesController;
         private readonly IEmotesService emotesService;
-        private readonly IUserProfileBridge userProfileBridge;
-        private readonly HashSet<EmoteBodyId> equippedEmotes;
+        private readonly HashSet<string> equippedEmotes;
 
         private long lamportTimestamp;
-        internal CancellationTokenSource cts;
+        private CancellationTokenSource cts;
 
-        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService, IUserProfileBridge userProfileBridge)
+        public AvatarSceneEmoteHandler(IAvatarEmotesController emotesController, IEmotesService emotesService)
         {
             this.emotesController = emotesController;
             this.emotesService = emotesService;
-            this.userProfileBridge = userProfileBridge;
-            this.equippedEmotes = new HashSet<EmoteBodyId>();
+            equippedEmotes = new HashSet<string>();
         }
 
         public bool IsSceneEmote(string emoteId) =>
@@ -43,23 +41,31 @@ namespace DCL
 
             var emoteKey = new EmoteBodyId(bodyShapeId, emoteId);
 
+            if (equippedEmotes.Contains(emoteId))
+            {
+                TriggerEmote(emoteId, timestamp);
+                return;
+            }
+
             try
             {
                 var loadedEmote = await emotesService.RequestEmote(emoteKey, cts.Token);
 
                 emotesController.EquipEmote(emoteId, loadedEmote);
-                equippedEmotes.Add(emoteKey);
+                equippedEmotes.Add(emoteId);
 
-                //avoid playing emote if timestamp has change,
-                //meaning a new emote was trigger while this one was loading
-                if (timestamp == lamportTimestamp)
-                {
-                    emotesController.PlayEmote(emoteId, lamportTimestamp);
-                    userProfileBridge.GetOwn().SetAvatarExpression(emoteId, UserProfile.EmoteSource.EmoteLoop, true);
-                }
+                TriggerEmote(emoteId, timestamp);
             }
             catch (OperationCanceledException) { }
             catch (Exception e) { Debug.LogException(e); }
+        }
+
+        private void TriggerEmote(string emoteId, long timestamp)
+        {
+            //avoid playing emote if timestamp has change,
+            //meaning a new emote was trigger while this one was loading
+            if (timestamp == lamportTimestamp)
+                emotesController.PlayEmote(emoteId, lamportTimestamp);
         }
 
         public void CleanUp()
@@ -67,8 +73,8 @@ namespace DCL
             cts?.SafeCancelAndDispose();
             cts = null;
 
-            foreach (var emoteData in equippedEmotes)
-                emotesController?.UnEquipEmote(emoteData.EmoteId);
+            foreach (string emoteId in equippedEmotes)
+                emotesController?.UnEquipEmote(emoteId);
 
             equippedEmotes.Clear();
         }

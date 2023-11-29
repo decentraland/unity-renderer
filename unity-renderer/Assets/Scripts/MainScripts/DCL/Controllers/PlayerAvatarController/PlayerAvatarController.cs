@@ -45,6 +45,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private ISocialAnalytics socialAnalytics;
     private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
+    private IBaseAvatarReferences baseAvatarReferences;
 
     public IAvatar Avatar => avatar;
 
@@ -94,7 +95,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private IAvatar GetAvatarWithHologram()
     {
-        var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+        baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
@@ -242,7 +243,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         finally
         {
             IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
+            anchorPoints.Prepare(avatarContainer.transform, baseAvatarReferences.Anchors, AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
 
             var player = new Player
             {
