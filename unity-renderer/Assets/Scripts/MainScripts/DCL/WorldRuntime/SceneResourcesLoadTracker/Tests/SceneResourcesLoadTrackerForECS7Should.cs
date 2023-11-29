@@ -48,7 +48,12 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            handler = new MeshRendererHandler(DataStore.i.ecs7, internalComponents.texturizableComponent, internalComponents.renderersComponent);
+            handler = new MeshRendererHandler(
+                DataStore.i.ecs7,
+                internalComponents.texturizableComponent,
+                internalComponents.renderersComponent,
+                new DataStore_WorldObjects(),
+                new DebugConfig());
         }
 
         [TearDown]

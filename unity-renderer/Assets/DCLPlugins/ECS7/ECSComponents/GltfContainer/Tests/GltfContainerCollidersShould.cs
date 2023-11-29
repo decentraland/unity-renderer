@@ -60,7 +60,9 @@ namespace Tests.Components.GltfContainer
                 internalEcsComponents.GltfContainerLoadingStateComponent,
                 internalEcsComponents.Animation,
                 new DataStore_ECS7(),
-                new DataStore_FeatureFlag());
+                new DataStore_FeatureFlag(),
+                new DataStore_WorldObjects(),
+                new DebugConfig());
 
             handler.OnComponentCreated(scene, entity);
         }
