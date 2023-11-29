@@ -13,12 +13,6 @@ namespace DCLServices.PlacesAPIService
             FromFavorites,
         }
 
-        public enum FilterType
-        {
-            PointOfInterest,
-            Featured
-        }
-
         public enum SortingType
         {
             MostActive,
@@ -30,7 +24,7 @@ namespace DCLServices.PlacesAPIService
         void Like(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
         void Dislike(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
         void RemoveVote(string placeUUID, IPlacesAnalytics.ActionSource source, bool isWorld = false);
-        void Filter(FilterType filterType);
+        void Filter(string filterType);
         void Sort(IPlacesAnalytics.SortingType sortingType);
         void SortWorlds(IPlacesAnalytics.SortingType sortingType);
     }
@@ -101,11 +95,11 @@ namespace DCLServices.PlacesAPIService
             GenericAnalytics.SendAnalytic(REMOVE_VOTE_PLACE, data);
         }
 
-        public void Filter(IPlacesAnalytics.FilterType filterType)
+        public void Filter(string filterType)
         {
             var data = new Dictionary<string, string>
             {
-                ["type"] = filterType.ToString()
+                ["type"] = filterType
             };
             GenericAnalytics.SendAnalytic(FILTER_PLACES, data);
         }

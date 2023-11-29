@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d847281cdcc4f7084790590f8b686ae, type: 3}
+  m_Name: PlaceCategoryIcons
+  m_EditorClassIdentifier: 
+  categoryIcons:
+  - category: art
+    icon: {fileID: 21300000, guid: f533d8e050dfcc04baa42ab8c4c728d2, type: 3}
+  - category: crypto
+    icon: {fileID: 21300000, guid: 19b1f227d0d47cc4da69dc72291b20cf, type: 3}
+  - category: social
+    icon: {fileID: 21300000, guid: 155ec4a9f1f9c5341914d3d2bd27033c, type: 3}
+  - category: game
+    icon: {fileID: 21300000, guid: bdebea09a1ec3824dac4516379590330, type: 3}
+  - category: shop
+    icon: {fileID: 21300000, guid: 25baf808957861643acd973eaf4bdfa8, type: 3}
+  - category: education
+    icon: {fileID: 21300000, guid: 1abe04f0c57a2ef468fac1e16ac1c1b5, type: 3}
+  - category: music
+    icon: {fileID: 21300000, guid: 232532fb0c45ddf40ac7c6feb30161a7, type: 3}
+  - category: poi
+    icon: {fileID: 21300000, guid: 77e52c43e0bcdbc49a0fcfe63cd959c6, type: 3}
+  - category: fashion
+    icon: {fileID: 21300000, guid: 1dba1fa3dc9d3a14ab7302fd97d38faa, type: 3}
+  - category: casino
+    icon: {fileID: 21300000, guid: 63c154b42bdc19842b978f2dfffbdd9c, type: 3}
+  - category: sports
+    icon: {fileID: 21300000, guid: 5b19ba60a7bab3947bb273866cb5214f, type: 3}
+  - category: featured
+    icon: {fileID: 21300000, guid: 9c0787f268539554e8cf130e1fc6fe0e, type: 3}
+  - category: business
+    icon: {fileID: 21300000, guid: 4dc63284a8da3664ba557977cc1d186c, type: 3}
