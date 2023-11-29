@@ -7,6 +7,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using MainScripts.DCL.Controllers.HotScenes;
+using TMPro;
 using UnityEngine.EventSystems;
 
 public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectionComponentView
@@ -17,17 +18,17 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     private const string MOST_ACTIVE_FILTER_TEXT = "Most active";
     private const string BEST_FILTER_ID = "like_rate";
     private const string BEST_FILTER_TEXT = "Best";
-    private const string ONLY_FEATURED_FILTER = "only_featured=true";
-    private const string ONLY_POI_FILTER = "only_pois=true";
 
     private readonly CancellationTokenSource disposeCts = new ();
     private CancellationTokenSource setPlacesCts = new ();
+    private readonly List<PlaceCategoryButton> placeCategoryButtons = new ();
 
     private List<string> poiCoords;
 
     [Header("Assets References")]
     [SerializeField] internal PlaceCardComponentView placeCardPrefab;
     [SerializeField] internal PlaceCardComponentView placeCardModalPrefab;
+    [SerializeField] internal PlaceCategoryButton placeCategoryButtonPrefab;
 
     [Header("Prefab References")]
     [SerializeField] internal ScrollRect scrollView;
@@ -37,17 +38,9 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
     [SerializeField] internal Color[] friendColors = null;
     [SerializeField] internal GameObject showMorePlacesButtonContainer;
     [SerializeField] internal ButtonComponentView showMorePlacesButton;
-    [SerializeField] internal Button poiButton;
-    [SerializeField] internal GameObject poiDeselected;
-    [SerializeField] internal Image poiDeselectedImage;
-    [SerializeField] internal GameObject poiSelected;
-    [SerializeField] internal Image poiSelectedImage;
-    [SerializeField] internal Button featuredButton;
-    [SerializeField] internal GameObject featuredDeselected;
-    [SerializeField] internal Image featuredDeselectedImage;
-    [SerializeField] internal GameObject featuredSelected;
-    [SerializeField] internal Image featuredSelectedImage;
     [SerializeField] internal DropdownComponentView sortByDropdown;
+    [SerializeField] internal Transform placeCategoriesGrid;
+    [SerializeField] internal TMP_Text totalResultsCounter;
 
     [SerializeField] private Canvas canvas;
 
@@ -96,10 +89,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
 
         showMorePlacesButton.onClick.RemoveAllListeners();
         showMorePlacesButton.onClick.AddListener(() => OnShowMorePlacesClicked?.Invoke());
-        poiButton.onClick.RemoveAllListeners();
-        poiButton.onClick.AddListener(ClickedOnPOI);
-        featuredButton.onClick.RemoveAllListeners();
-        featuredButton.onClick.AddListener(ClickedOnFeatured);
         sortByDropdown.OnOptionSelectionChanged += SortByDropdownValueChanged;
         filter = "";
         SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
@@ -118,50 +107,6 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         sortByDropdown.SetOptions(sortingMethodsToAdd);
     }
 
-    private void ClickedOnFeatured()
-    {
-        DeselectButtons();
-
-        if (filter == ONLY_FEATURED_FILTER)
-        {
-            filter = "";
-            SetPoiStatus(false);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
-        }
-        else
-        {
-            filter = ONLY_FEATURED_FILTER;
-            SetPoiStatus(false);
-            SetFeaturedStatus(true);
-            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
-        }
-
-        OnFilterChanged?.Invoke();
-    }
-
-    private void ClickedOnPOI()
-    {
-        DeselectButtons();
-
-        if (filter == ONLY_POI_FILTER)
-        {
-            filter = "";
-            SetPoiStatus(false);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
-        }
-        else
-        {
-            filter = ONLY_POI_FILTER;
-            SetPoiStatus(true);
-            SetFeaturedStatus(false);
-            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
-        }
-
-        OnFilterChanged?.Invoke();
-    }
-
     private void SortByDropdownValueChanged(bool isOn, string optionId, string optionName)
     {
         if (!isOn)
@@ -171,24 +116,11 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
         OnSortingChanged?.Invoke();
     }
 
-    private void SetPoiStatus(bool isSelected)
-    {
-        poiButton.targetGraphic = isSelected ? poiSelectedImage : poiDeselectedImage;
-        poiDeselected.SetActive(!isSelected);
-        poiSelected.SetActive(isSelected);
-    }
-
-    private void SetFeaturedStatus(bool isSelected)
-    {
-        featuredButton.targetGraphic = isSelected ? featuredSelectedImage : featuredDeselectedImage;
-        featuredDeselected.SetActive(!isSelected);
-        featuredSelected.SetActive(isSelected);
-    }
-
     public override void OnEnable()
     {
-        SetPoiStatus(false);
-        SetFeaturedStatus(false);
+        foreach (PlaceCategoryButton categoryBtn in placeCategoryButtons)
+            categoryBtn.SetStatus(false);
+
         filter = "";
         SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
         OnPlacesSubSectionEnable?.Invoke();
@@ -323,5 +255,41 @@ public class PlacesSubSectionComponentView : BaseComponentView, IPlacesSubSectio
             return;
 
         EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void SetPlaceCategories(List<(string id, string nameToShow)> placeCategories)
+    {
+        foreach (var category in placeCategories)
+        {
+            var categoryButton = Instantiate(placeCategoryButtonPrefab, placeCategoriesGrid);
+            categoryButton.SetCategory(category.id, category.nameToShow);
+            categoryButton.SetStatus(false);
+            categoryButton.OnClick += OnCategoryButtonClicked;
+            placeCategoryButtons.Add(categoryButton);
+        }
+
+        placeModal.SetAllPlaceCategories(placeCategories);
+    }
+
+    public void SetResultCounter(int totalResults) =>
+        totalResultsCounter.text = $"Result ({totalResults})";
+
+    private void OnCategoryButtonClicked(string category, bool isSelected)
+    {
+        foreach (PlaceCategoryButton categoryBtn in placeCategoryButtons)
+            categoryBtn.SetStatus(category == categoryBtn.currenCategory && isSelected);
+
+        if (isSelected)
+        {
+            filter = $"categories={category}";
+            SetSortDropdownValue(BEST_FILTER_ID, BEST_FILTER_TEXT, false);
+        }
+        else
+        {
+            filter = "";
+            SetSortDropdownValue(MOST_ACTIVE_FILTER_ID, MOST_ACTIVE_FILTER_TEXT, false);
+        }
+
+        OnFilterChanged?.Invoke();
     }
 }
