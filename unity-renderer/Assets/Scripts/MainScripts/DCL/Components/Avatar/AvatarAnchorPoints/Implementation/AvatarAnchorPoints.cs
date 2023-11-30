@@ -1,39 +1,33 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class AvatarAnchorPoints : IAvatarAnchorPoints
 {
-    private static readonly Dictionary<AvatarAnchorPointIds, string> boneMapping = new Dictionary<AvatarAnchorPointIds, string>()
+    private static readonly Dictionary<AvatarAnchorPointIds, string> boneMapping = new ()
     {
         { AvatarAnchorPointIds.LeftHand, "Avatar_LeftHand" },
         { AvatarAnchorPointIds.RightHand, "Avatar_RightHand" },
     };
 
-    private readonly Dictionary<AvatarAnchorPointIds, Transform> boneTransformMapping = new Dictionary<AvatarAnchorPointIds, Transform>();
+    private readonly Dictionary<AvatarAnchorPointIds, Transform> boneTransformMapping = new ();
 
     private Transform avatarTransform;
     private float nameTagY;
 
-    void IAvatarAnchorPoints.Prepare(Transform avatarTransform, Transform[] bones, float nameTagY)
+    void IAvatarAnchorPoints.Prepare(Transform avatarTransform, (string AnchorName, Transform Bone)[] anchors, float nameTagY)
     {
         this.avatarTransform = avatarTransform;
         this.nameTagY = nameTagY;
 
-        boneTransformMapping.Clear();
-        
-        if(bones == null)
+        if (anchors == null)
             return;
 
-        foreach (var bone in bones)
-        {
-            if (TryGetIdFromBoneName(bone.name, out AvatarAnchorPointIds anchorPointId))
-            {
-                boneTransformMapping.Add(anchorPointId, bone);
-            }
-        }
+        foreach ((string AnchorName, Transform Bone) anchor in anchors)
+        foreach (KeyValuePair<AvatarAnchorPointIds, string> boneMap in boneMapping)
+            if (anchor.AnchorName == boneMap.Value)
+                boneTransformMapping[boneMap.Key] = anchor.Bone;
     }
-    
+
     (Vector3 position, Quaternion rotation, Vector3 scale) IAvatarAnchorPoints.GetTransform(AvatarAnchorPointIds anchorPointId)
     {
         if (anchorPointId == AvatarAnchorPointIds.Position && avatarTransform != null)
@@ -54,12 +48,5 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
             }
         }
         return (Vector3.zero, Quaternion.identity, Vector3.one);
-    }
-
-    private static bool TryGetIdFromBoneName(string boneName, out AvatarAnchorPointIds id)
-    {
-        var result = boneMapping.FirstOrDefault(pair => pair.Value == boneName);
-        id = result.Key;
-        return !string.IsNullOrEmpty(result.Value);
     }
 }

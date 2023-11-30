@@ -89,6 +89,13 @@ namespace DCL.ECSComponents
         private Service<IEmotesCatalogService> emotesCatalog;
         private IAvatarEmotesController emotesController;
         private AvatarSceneEmoteHandler sceneEmoteHandler;
+        private IBaseAvatarReferences baseAvatarReferences;
+        private readonly OnPointerEvent.Model viewProfilePointerModel = new ()
+        {
+            type = OnPointerDown.NAME,
+            button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+            hoverText = "View Profile",
+        };
         public IAvatar internalAvatar => avatar;
 
         private void Awake()
@@ -108,7 +115,7 @@ namespace DCL.ECSComponents
 
 
             //Ensure base avatar references
-            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+            baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
 
@@ -116,8 +123,7 @@ namespace DCL.ECSComponents
 
             sceneEmoteHandler = new AvatarSceneEmoteHandler(
                 emotesController,
-                Environment.i.serviceLocator.Get<IEmotesService>(),
-                new UserProfileWebInterfaceBridge());
+                Environment.i.serviceLocator.Get<IEmotesService>());
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
@@ -222,16 +228,11 @@ namespace DCL.ECSComponents
             UpdatePlayerStatus(entity, model);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model()
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View Profile"
-                },
+                viewProfilePointerModel,
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player.avatar);
+            outlineOnHover.Initialize(entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -342,7 +343,7 @@ namespace DCL.ECSComponents
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
-            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), height);
+            anchorPoints.Prepare(avatarContainer.transform, baseAvatarReferences.Anchors, height);
 
             player.playerName.SetIsTalking(model.Talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
