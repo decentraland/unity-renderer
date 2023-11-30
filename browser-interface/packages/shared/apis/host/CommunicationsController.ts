@@ -23,12 +23,10 @@ enum MsgType {
 function decodeMessage(value: Uint8Array): [MsgType, Uint8Array] {
   const msgType = value.at(0) as MsgType
   const data = value.subarray(1)
-  console.log('[decodeMessage]', { msgType, data })
   return [msgType, data]
 }
 
 function encodeMessage(data: Uint8Array, type: MsgType) {
-  console.log('[encodeMessage]', { type, data, length: data.byteLength })
   const message = new Uint8Array(data.byteLength + 1)
   message.set([type])
   message.set(data, 1)
