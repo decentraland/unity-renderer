@@ -62,11 +62,14 @@ namespace DCL
             if (!collidersList.Contains(collider))
                 collidersList.Add(collider);
 
-            ColliderInfo info = new ColliderInfo();
-            info.entity = entity;
-            info.meshName = GetMeshName(collider);
-            info.scene = entity.scene;
-            AddOrUpdateColliderInfo(collider, info);
+            if (!colliderInfo.ContainsKey(collider))
+            {
+                var info = new ColliderInfo();
+                info.entity = entity;
+                info.meshName = GetMeshName(collider);
+                info.scene = entity.scene;
+                AddOrUpdateColliderInfo(collider, info);
+            }
 
             // Note (Zak): avoid adding the event multiple times
             entity.OnCleanupEvent -= OnEntityCleanUpEvent;
@@ -130,7 +133,7 @@ namespace DCL
                 entity.meshesInfo.colliders.Clear();
 
             if (colliderLayer == -1)
-                colliderLayer = DCL.Configuration.PhysicsLayers.defaultLayer;
+                colliderLayer = PhysicsLayers.defaultLayer;
 
             Collider collider;
             int onClickLayer = PhysicsLayers.onPointerEventLayer; // meshes can have an OnPointerEvent child collider that should be ignored

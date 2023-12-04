@@ -36,8 +36,12 @@ namespace Tests
             entity = scene.CreateEntity(100);
             texturizableComponent = internalComponent.texturizableComponent;
 
-            handler = new MeshRendererHandler(new DataStore_ECS7(), texturizableComponent,
-                internalComponent.renderersComponent);
+            handler = new MeshRendererHandler(
+                new DataStore_ECS7(),
+                texturizableComponent,
+                internalComponent.renderersComponent,
+                new DataStore_WorldObjects(),
+                new DebugConfig());
 
             var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
                 0, manager, factory, null, executors, Substitute.For<IComponentDirtySystem>());
