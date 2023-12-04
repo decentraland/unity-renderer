@@ -233,7 +233,7 @@ namespace DCL.MyAccount
                     PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
                     PlayerPrefsBridge.Save();
                     savedEmail = newEmail;
-                    savedIsPending = false;
+                    savedIsPending = newSubscription.status is "pending" or "validating";
                     wasSuccessfullyUpdated = true;
                 }
                 catch (Exception ex)
