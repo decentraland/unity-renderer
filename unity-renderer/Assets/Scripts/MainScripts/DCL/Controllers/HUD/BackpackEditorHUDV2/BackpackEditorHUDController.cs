@@ -162,7 +162,7 @@ namespace DCL.Backpack
 
             foreach (string outfitWearable in outfit.outfit.wearables)
             {
-                if (wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable)) continue;
+                if (wearablesCatalogService.WearablesCatalog.ContainsKey(ExtendedUrnParser.GetShortenedUrn(outfitWearable))) continue;
 
                 try { await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken); }
                 catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
