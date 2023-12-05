@@ -171,7 +171,7 @@ namespace DCL.Backpack
             EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable, EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
+                EquipWearable(ExtendedUrnParser.GetShortenedUrn(outfitWearable), EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
