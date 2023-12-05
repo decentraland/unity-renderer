@@ -253,7 +253,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
         public void ChangeMouseSensivityCorrectly()
         {
             // Arrange
-            settingController = ScriptableObject.CreateInstance<MouseSensivityControlController>();
+            settingController = ScriptableObject.CreateInstance<MouseSensitivityControlController>();
             settingController.Initialize();
 
             // Act
@@ -262,15 +262,15 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
 
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "mouseSensitivity stored value mismatch");
-            var povSpeed = Mathf.Lerp(MouseSensivityControlController.FIRST_PERSON_MIN_SPEED, MouseSensivityControlController.FIRST_PERSON_MAX_SPEED, newValue);
+            var povSpeed = Mathf.Lerp(MouseSensitivityControlController.FIRST_PERSON_MIN_SPEED, MouseSensitivityControlController.FIRST_PERSON_MAX_SPEED, newValue);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(povSpeed, povCamera.m_HorizontalAxis.m_MaxSpeed, "povCamera.m_HorizontalAxis.m_MaxSpeed value mismatch");
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(povSpeed, povCamera.m_VerticalAxis.m_MaxSpeed, "povCamera.m_VerticalAxis.m_MaxSpeed value mismatch");
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(
-                Mathf.Lerp(MouseSensivityControlController.THIRD_PERSON_X_MIN_SPEED, MouseSensivityControlController.THIRD_PERSON_X_MAX_SPEED, newValue),
+                Mathf.Lerp(MouseSensitivityControlController.THIRD_PERSON_X_MIN_SPEED, MouseSensitivityControlController.THIRD_PERSON_X_MAX_SPEED, newValue),
                 freeLookCamera.m_XAxis.m_MaxSpeed,
                 "freeLookCamera.m_XAxis.m_MaxSpeed value mismatch");
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(
-                Mathf.Lerp(MouseSensivityControlController.THIRD_PERSON_Y_MIN_SPEED, MouseSensivityControlController.THIRD_PERSON_Y_MAX_SPEED, newValue),
+                Mathf.Lerp(MouseSensitivityControlController.THIRD_PERSON_Y_MIN_SPEED, MouseSensitivityControlController.THIRD_PERSON_Y_MAX_SPEED, newValue),
                 freeLookCamera.m_YAxis.m_MaxSpeed,
                 "freeLookCamera.m_YAxis.m_MaxSpeed value mismatch");
         }

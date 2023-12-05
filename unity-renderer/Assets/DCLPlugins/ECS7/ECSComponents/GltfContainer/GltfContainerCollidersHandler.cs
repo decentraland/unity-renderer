@@ -101,7 +101,7 @@ namespace DCL.ECSComponents
             return visibleMeshesColliders;
         }
 
-        public IReadOnlyList<Collider> GetInVisibleMeshesColliders()
+        public IReadOnlyList<Collider> GetInvisibleMeshesColliders()
         {
             return invisibleMeshesColliders;
         }

@@ -142,6 +142,7 @@ public class WearableItem
     public Sprite thumbnailSprite;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
+    public int amount;
     public string rarity;
     public string description;
     public int issuedId;
@@ -342,6 +343,9 @@ public class WearableItem
         for (int index = 0; index < wearables.Count; index++)
         {
             WearableItem wearableItem = wearables[index];
+
+            if (wearableItem == null)
+                continue;
 
             if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;

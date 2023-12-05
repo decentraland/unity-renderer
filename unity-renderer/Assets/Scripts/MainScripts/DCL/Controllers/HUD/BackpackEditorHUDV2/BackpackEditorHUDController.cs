@@ -15,6 +15,8 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
@@ -56,7 +58,11 @@ namespace DCL.Backpack
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
         private CancellationTokenSource outfitLoadCancellationToken = new ();
+        private CancellationTokenSource saveCancellationToken = new ();
         private string categoryPendingToPlayEmote;
+        private bool isTakingSnapshot;
+
+        private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
@@ -100,6 +106,7 @@ namespace DCL.Backpack
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange += SaveBackpackBeforeSignUpFinishes;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -124,6 +131,7 @@ namespace DCL.Backpack
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
             view.OnVRMExport += OnVrmExport;
+            view.OnSignUpBackClicked += OnSignUpBack;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
@@ -185,6 +193,7 @@ namespace DCL.Backpack
             ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange -= SaveBackpackBeforeSignUpFinishes;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
@@ -205,6 +214,12 @@ namespace DCL.Backpack
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.OnContinueSignup -= SaveAvatarAndContinueSignupProcess;
+            view.OnColorPickerToggle -= OnColorPickerToggled;
+            view.OnAvatarUpdated -= OnAvatarUpdated;
+            view.OnOutfitsOpened -= OnOutfitsOpened;
+            view.OnVRMExport -= OnVrmExport;
+            view.OnSignUpBackClicked -= OnSignUpBack;
+            outfitsController.OnOutfitEquipped -= OnOutfitEquipped;
             view.Dispose();
         }
 
@@ -240,10 +255,15 @@ namespace DCL.Backpack
                     wearableGridController.LoadCollections();
                     LoadUserProfile(ownUserProfile);
                     view.Show();
+                    view.SetSignUpModeActive(dataStore.common.isSignUpFlow.Get() && isNewTermsOfServiceAndEmailSubscriptionEnabled);
 
                     if (dataStore.common.isSignUpFlow.Get())
                     {
-                        view.ShowContinueSignup();
+                        if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                            view.HideContinueSignup();
+                        else
+                            view.ShowContinueSignup();
+
                         avatarSlotsHUDController.SelectSlot(WearableLiterals.Categories.BODY_SHAPE);
                     }
                     else
@@ -252,19 +272,7 @@ namespace DCL.Backpack
                 else
                 {
                     if (saveAvatar)
-                    {
-                        try
-                        {
-                            await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
-                            CloseView();
-                        }
-                        catch (OperationCanceledException) { }
-                        catch (Exception e)
-                        {
-                            Debug.LogException(e);
-                            CloseView();
-                        }
-                    }
+                        await SaveAsync(cancellationToken);
                     else
                         CloseView();
 
@@ -278,6 +286,9 @@ namespace DCL.Backpack
 
         private void CloseView()
         {
+            if (isTakingSnapshot)
+                return;
+
             view.Hide();
             view.ResetPreviewPanel();
             wearableGridController.ResetFilters();
@@ -286,6 +297,16 @@ namespace DCL.Backpack
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
+
+        private void SaveBackpackBeforeSignUpFinishes(bool isBackpackWaitingToBeSaved, bool _)
+        {
+            if (!isBackpackWaitingToBeSaved)
+                return;
+
+            view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+            saveCancellationToken = saveCancellationToken.SafeRestart();
+            SaveAsync(saveCancellationToken.Token).Forget();
+        }
 
         private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
         {
@@ -335,7 +356,7 @@ namespace DCL.Backpack
 
                     for (var i = 0; i < wearablesCount; i++)
                     {
-                        string wearableId = userProfile.avatar.wearables[i];
+                        string wearableId = ExtendedUrnParser.GetShortenedUrn(userProfile.avatar.wearables[i]);
 
                         if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
                         {
@@ -412,24 +433,58 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
         }
 
-        private void SaveAvatarAndContinueSignupProcess() =>
-            SetVisibility(false, saveAvatar: true);
+        private void SaveAvatarAndContinueSignupProcess()
+        {
+            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+            {
+                SetVisibility(false, saveAvatar: true);
+                return;
+            }
+
+            dataStore.HUDs.signupVisible.Set(true);
+            view.SetSignUpStage(SignUpStage.SetNameAndEmail);
+            view.SetAvatarPreviewFocus(PreviewCameraFocus.FaceEditing);
+            view.PlayPreviewEmote("wave");
+            backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+        }
+
+        private async UniTask SaveAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
+
+                if (dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.Get())
+                    dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.Set(false);
+
+                CloseView();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                CloseView();
+            }
+        }
 
         private UniTask TakeSnapshotsAndSaveAvatarAsync(CancellationToken cancellationToken)
         {
             UniTaskCompletionSource task = new ();
+            isTakingSnapshot = true;
 
             TakeSnapshots(
                 onSuccess: (face256Snapshot, bodySnapshot) =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(face256Snapshot, bodySnapshot);
+                    isTakingSnapshot = false;
                     task.TrySetResult();
                 },
                 onFailed: () =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(new Texture2D(256, 256), new Texture2D(256, 256));
+                    isTakingSnapshot = false;
                     task.TrySetException(new Exception("Error taking avatar screenshots."));
                 });
 
@@ -471,7 +526,9 @@ namespace DCL.Backpack
             if (dataStore.common.isSignUpFlow.Get())
             {
                 dataStore.HUDs.signupVisible.Set(true);
-                backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+
+                if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                    backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
             }
 
             avatarIsDirty = false;
@@ -561,7 +618,7 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
 
             if (source != EquipWearableSource.None)
-                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
             {
@@ -632,7 +689,7 @@ namespace DCL.Backpack
             string wearableId = wearable.id;
 
             if (source != UnequipWearableSource.None)
-                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
@@ -774,6 +831,22 @@ namespace DCL.Backpack
             vrmExportCts?.SafeCancelAndDispose();
             vrmExportCts = new CancellationTokenSource();
             VrmExport(vrmExportCts.Token).Forget();
+        }
+
+        private void OnSignUpBack(SignUpStage stage)
+        {
+            switch (stage)
+            {
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    dataStore.HUDs.signupVisible.Set(false);
+                    view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+                    view.SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing);
+                    break;
+            }
         }
 
         internal async UniTask VrmExport(CancellationToken ct)

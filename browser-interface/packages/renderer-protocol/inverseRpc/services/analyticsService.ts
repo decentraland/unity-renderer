@@ -5,7 +5,6 @@ import { AnalyticsKernelServiceDefinition } from 'shared/protocol/decentraland/r
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { getUnityInstance } from 'unity-interface/IUnityInterface'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { setDelightedSurveyEnabled } from 'unity-interface/delightedSurvey'
 import { browserInterface } from 'unity-interface/BrowserInterface'
 
 type UnityEvent = any
@@ -32,10 +31,6 @@ export function registerAnalyticsKernelService(port: RpcServerPort<RendererProto
       }
       const perfReport = getPerformanceInfo({ ...(req as any), estimatedAllocatedMemory, estimatedTotalMemory })
       trackEvent('performance report', perfReport)
-      return {}
-    },
-    async setDelightedSurveyEnabled(req, _) {
-      setDelightedSurveyEnabled(req.enabled)
       return {}
     },
     async systemInfoReport(req, _) {

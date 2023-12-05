@@ -42,7 +42,6 @@ namespace DCL.ECSComponents.UIText
             uiElement.style.color = model.GetColor().ToUnityColor();
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();
-
             fontUpdater.Update(model.GetFont());
         }
     }

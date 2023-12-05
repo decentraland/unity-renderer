@@ -23,7 +23,7 @@ public static class PlacesAndEventsCardsFactory
     /// <param name="poolName">Name of the pool.</param>
     /// <param name="cardPrefab">Card prefab to use by the pool.</param>
     /// <param name="maxPrewarmCount">Max number of pre-created cards.</param>
-    public static Pool GetCardsPoolLazy(string poolName, BaseComponentView cardPrefab, int maxPrewarmCount)
+    public static Pool GetCardsPoolLazy(string poolName, MonoBehaviour cardPrefab, int maxPrewarmCount)
     {
         Pool pool = PoolManager.i.GetPool(poolName);
 
@@ -116,6 +116,7 @@ public static class PlacesAndEventsCardsFactory
                                     "R" => SceneContentCategory.RESTRICTED,
                                     _ => SceneContentCategory.TEEN,
                                 },
+                    categories = place.categories,
                 });
             count++;
             if(count >= amountToTake)
@@ -171,6 +172,7 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = world.likes + world.dislikes,
                     numberOfFavorites = world.favorites,
                     deployedAt = world.deployed_at,
+                    categories = world.categories,
                 });
             count++;
             if(count >= amountToTake)
@@ -210,6 +212,7 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = place.likes + place.dislikes,
                     numberOfFavorites = place.favorites,
                     deployedAt = place.deployed_at,
+                    categories = place.categories,
                 });
         }
 
@@ -260,6 +263,7 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = world.likes + world.dislikes,
                     numberOfFavorites = world.favorites,
                     deployedAt = world.deployed_at,
+                    categories = world.categories,
                 });
         }
 
@@ -290,6 +294,7 @@ public static class PlacesAndEventsCardsFactory
                     totalVotes = place.likes + place.dislikes,
                     numberOfFavorites = place.favorites,
                     deployedAt = place.deployed_at,
+                    categories = place.categories,
                 });
         }
 

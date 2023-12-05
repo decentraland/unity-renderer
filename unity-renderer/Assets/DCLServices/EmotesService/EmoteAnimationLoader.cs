@@ -1,9 +1,10 @@
 ﻿using AvatarSystem;
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Providers;
+using DCLServices.EmotesService;
+using System;
+using System.Threading;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -20,9 +21,11 @@ namespace DCL.Emotes
 
         private AudioClip audioClip;
         private AssetPromise_AudioClip audioClipPromise;
+        private readonly EmoteVolumeHandler emoteVolumeHandler;
 
-        public EmoteAnimationLoader(IWearableRetriever retriever, AddressableResourceProvider resourceProvider)
+        public EmoteAnimationLoader(IWearableRetriever retriever, AddressableResourceProvider resourceProvider, EmoteVolumeHandler emoteVolumeHandler)
         {
+            this.emoteVolumeHandler = emoteVolumeHandler;
             this.retriever = retriever;
             this.resourceProvider = resourceProvider;
         }
@@ -95,6 +98,8 @@ namespace DCL.Emotes
                 return;
             }
 
+            mainClip = animation.clip;
+
             if (animation.GetClipCount() > 1)
             {
                 this.container = emoteInstance;
@@ -104,6 +109,7 @@ namespace DCL.Emotes
                 {
                     AnimationClip clip = state.clip;
 
+                    // Replace the main clip with the one that's correctly named
                     if (clip.name.Contains("_avatar", StringComparison.OrdinalIgnoreCase) || clip.name == emoteId)
                         mainClip = clip;
 
@@ -111,20 +117,7 @@ namespace DCL.Emotes
                     // our workaround is to play every animation while we load the audio clip and then disable the animator
                     animation.Play(clip.name);
                 }
-
-                // in the case that the animation names are badly named, we just get the first animation that does not contain prop in its name
-                if (mainClip == null)
-                {
-                    foreach (AnimationState animationState in animation)
-                    {
-                        if (animationState.clip.name.Contains("prop", StringComparison.OrdinalIgnoreCase)) continue;
-                        mainClip = animationState.clip;
-                        break;
-                    }
-                }
             }
-            else
-                mainClip = animation.clip;
 
             if (mainClip == null)
             {
@@ -150,6 +143,8 @@ namespace DCL.Emotes
             audioSource.clip = audioClip;
             audioSource.transform.SetParent(audioSourceParent.transform, false);
             audioSource.transform.ResetLocalTRS();
+
+            emoteVolumeHandler.AddAudioSource(audioSource);
         }
 
         private bool IsValidAudioClip(string fileName) =>
@@ -165,6 +160,7 @@ namespace DCL.Emotes
 
         public void Dispose()
         {
+            emoteVolumeHandler.RemoveAudioSource(audioSource);
             AssetPromiseKeeper_AudioClip.i.Forget(audioClipPromise);
             retriever?.Dispose();
         }

@@ -332,6 +332,9 @@ namespace DCL.Social.Passports
 
             foreach (var wearable in wearables)
             {
+                if (wearable == null)
+                    continue;
+
                 if (!hidesList.Contains(wearable.data.category))
                 {
                     PoolableObject poolableObject = nftIconsEntryPool.Get();

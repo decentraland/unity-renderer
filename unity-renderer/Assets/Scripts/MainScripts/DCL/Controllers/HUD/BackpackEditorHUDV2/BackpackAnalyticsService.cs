@@ -74,7 +74,7 @@ namespace DCL.Backpack
         public void SendAvatarEditSuccessNuxAnalytic() =>
             newUserExperienceAnalytics.AvatarEditSuccessNux();
 
-        public void SendEquipWearableAnalytic(string category, string rarity, EquipWearableSource source)
+        public void SendEquipWearableAnalytic(string id, string category, string rarity, EquipWearableSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {
@@ -87,7 +87,7 @@ namespace DCL.Backpack
             analytics.SendAnalytic(EQUIP_WEARABLE_METRIC, data);
         }
 
-        public void SendUnequippedWearableAnalytic(string category, string rarity, UnequipWearableSource source)
+        public void SendUnequippedWearableAnalytic(string id, string category, string rarity, UnequipWearableSource source)
         {
             Dictionary<string, string> data = new Dictionary<string, string>
             {

@@ -115,7 +115,7 @@ namespace DCL.ContentModeration
 
         public void HidePanel(bool isCancelled)
         {
-            if (isLoadingActive)
+            if (isLoadingActive || !isVisible)
                 return;
 
             Hide();

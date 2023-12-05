@@ -2,6 +2,7 @@
 using DCL.Providers;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.SubscriptionsAPIService;
 using SocialFeaturesAnalytics;
 using System.Threading;
 
@@ -13,6 +14,7 @@ namespace DCL.MyAccount
 
         private MyAccountSectionHUDController myAccountSectionHUDController;
         private MyProfileController myProfileController;
+        private EmailNotificationsController emailNotificationsController;
 
         public MyAccountPlugin()
         {
@@ -23,6 +25,9 @@ namespace DCL.MyAccount
         {
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                         .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
+
+            var updateEmailConfirmationHUD = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                              .Instantiate<UpdateEmailConfirmationHUDComponentView>("UpdateEmailConfirmationHUD", "UpdateEmailConfirmationHUD", cancellationToken: ct);
 
             ProfileAdditionalInfoValueListScriptableObject countryListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                                                                   .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileCountries", ct);
@@ -49,6 +54,8 @@ namespace DCL.MyAccount
 
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
+            var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge);
+
             myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
                 dataStore);
@@ -62,7 +69,7 @@ namespace DCL.MyAccount
                 myAccountSectionHUDController,
                 KernelConfig.i,
                 new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics),
-                new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge),
+                socialAnalytics,
                 countryListProvider,
                 genderListProvider,
                 sexualOrientationProvider,
@@ -70,12 +77,21 @@ namespace DCL.MyAccount
                 relationshipStatusProvider,
                 languageListProvider,
                 pronounListProvider);
+
+            emailNotificationsController = new EmailNotificationsController(
+                myAccountSectionView.CurrentEmailNotificationsView,
+                updateEmailConfirmationHUD,
+                myAccountSectionHUDController,
+                dataStore,
+                Environment.i.serviceLocator.Get<ISubscriptionsAPIService>(),
+                socialAnalytics);
         }
 
         public void Dispose()
         {
             cts.SafeCancelAndDispose();
             myProfileController.Dispose();
+            emailNotificationsController.Dispose();
             myAccountSectionHUDController.Dispose();
         }
     }

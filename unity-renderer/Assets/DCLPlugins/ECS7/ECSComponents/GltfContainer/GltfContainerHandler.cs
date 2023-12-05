@@ -34,17 +34,22 @@ namespace DCL.ECSComponents
 
         private readonly DataStore_ECS7 dataStoreEcs7;
         private readonly DataStore_FeatureFlag featureFlags;
+        private readonly DataStore_WorldObjects dataStoreWorldObjects;
 
         private readonly ActiveCollidersData visibleActiveColliders = new ActiveCollidersData();
         private readonly ActiveCollidersData invisibleActiveColliders = new ActiveCollidersData();
+        private readonly bool isDebugMode = false;
 
         public RendereableAssetLoadHelper gltfLoader;
         internal GameObject gameObject;
 
         private IReadOnlyCollection<Renderer> renderers;
+        private Rendereable currentRendereable;
 
         internal GltfContainerCollidersHandler collidersHandler;
         private PBGltfContainer previousModel = null;
+        private IParcelScene scene;
+        private IDCLEntity entity;
 
         public GltfContainerHandler(IInternalECSComponent<InternalColliders> pointerColliderComponent,
             IInternalECSComponent<InternalColliders> physicColliderComponent,
@@ -53,7 +58,9 @@ namespace DCL.ECSComponents
             IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
             IInternalECSComponent<InternalAnimation> animationComponent,
             DataStore_ECS7 dataStoreEcs7,
-            DataStore_FeatureFlag featureFlags)
+            DataStore_FeatureFlag featureFlags,
+            DataStore_WorldObjects dataStoreWorldObjects,
+            DebugConfig debugConfig)
         {
             this.featureFlags = featureFlags;
             this.pointerColliderComponent = pointerColliderComponent;
@@ -63,10 +70,14 @@ namespace DCL.ECSComponents
             this.gltfContainerLoadingStateComponent = gltfContainerLoadingStateComponent;
             this.animationComponent = animationComponent;
             this.dataStoreEcs7 = dataStoreEcs7;
+            this.dataStoreWorldObjects = dataStoreWorldObjects;
+            this.isDebugMode = debugConfig.isDebugMode.Get();
         }
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
+            this.scene = scene;
+            this.entity = entity;
             gameObject = new GameObject("GLTF mesh");
 
             Transform transform = gameObject.transform;
@@ -84,7 +95,7 @@ namespace DCL.ECSComponents
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            UnloadGltf(scene, entity, previousModel?.Src);
+            UnloadGltf(entity, previousModel?.Src);
 
             gltfContainerLoadingStateComponent.RemoveFor(scene, entity,
                 new InternalGltfContainerLoadingState() { GltfContainerRemoved = true });
@@ -100,21 +111,16 @@ namespace DCL.ECSComponents
 
             if (srcChanged)
             {
-                OnGltfSrcChanged(scene, entity, previousModel, model);
+                OnGltfSrcChanged(previousModel, model);
             }
             else
             {
                 if (visibleMeshColliderMaskChanged)
                 {
                     SetUpColliders(
-                        scene,
-                        entity,
                         previousModel?.GetVisibleMeshesCollisionMask() ?? 0,
                         model.GetVisibleMeshesCollisionMask(),
                         collidersHandler.GetVisibleMeshesColliders(),
-                        pointerColliderComponent,
-                        physicColliderComponent,
-                        customLayerColliderComponent,
                         visibleActiveColliders.PointerColliders,
                         visibleActiveColliders.PhysicColliders,
                         visibleActiveColliders.CustomLayerColliders);
@@ -123,14 +129,9 @@ namespace DCL.ECSComponents
                 if (invisibleMeshColliderMaskChanged)
                 {
                     SetUpColliders(
-                        scene,
-                        entity,
                         previousModel?.GetInvisibleMeshesCollisionMask() ?? 0,
                         model.GetInvisibleMeshesCollisionMask(),
-                        collidersHandler.GetInVisibleMeshesColliders(),
-                        pointerColliderComponent,
-                        physicColliderComponent,
-                        customLayerColliderComponent,
+                        collidersHandler.GetInvisibleMeshesColliders(),
                         invisibleActiveColliders.PointerColliders,
                         invisibleActiveColliders.PhysicColliders,
                         invisibleActiveColliders.CustomLayerColliders);
@@ -140,11 +141,11 @@ namespace DCL.ECSComponents
             previousModel = model;
         }
 
-        private void OnGltfSrcChanged(IParcelScene scene, IDCLEntity entity, PBGltfContainer prevModel, PBGltfContainer model)
+        private void OnGltfSrcChanged(PBGltfContainer prevModel, PBGltfContainer model)
         {
             if (!string.IsNullOrEmpty(prevModel?.Src))
             {
-                UnloadGltf(scene, entity, prevModel.Src);
+                UnloadGltf(entity, prevModel.Src);
             }
 
             string newGltfSrc = model.Src;
@@ -154,8 +155,7 @@ namespace DCL.ECSComponents
                 gltfContainerLoadingStateComponent.PutFor(scene, entity,
                     new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Loading });
 
-                gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(scene,
-                    entity, rendereable.renderers, model);
+                gltfLoader.OnSuccessEvent += rendereable => OnLoadSuccess(rendereable, model);
 
                 gltfLoader.OnFailEvent += exception => OnLoadFail(scene, entity, newGltfSrc, exception,
                     dataStoreEcs7, gltfContainerLoadingStateComponent);
@@ -166,53 +166,41 @@ namespace DCL.ECSComponents
         }
 
         private void OnLoadSuccess(
-            IParcelScene scene,
-            IDCLEntity entity,
-            HashSet<Renderer> rendererHashSet,
+            Rendereable rendereable,
             PBGltfContainer model)
         {
-            renderers = rendererHashSet;
+            renderers = rendereable.renderers;
 
             InitColliders(
-                rendererHashSet,
+                rendereable.renderers,
                 gameObject,
                 collidersHandler,
                 model.GetVisibleMeshesCollisionMask() != 0);
 
-            SetUpRenderers(scene, entity, rendererHashSet, renderersComponent);
+            SetUpRenderers(scene, entity, rendereable.renderers, renderersComponent);
 
             // setup colliders for visible meshes
             SetUpColliders(
-                scene,
-                entity,
                 previousModel?.GetVisibleMeshesCollisionMask() ?? 0,
                 model.GetVisibleMeshesCollisionMask(),
                 model.GetVisibleMeshesCollisionMask() != 0 ? collidersHandler.GetVisibleMeshesColliders() : null,
-                pointerColliderComponent,
-                physicColliderComponent,
-                customLayerColliderComponent,
                 visibleActiveColliders.PointerColliders,
                 visibleActiveColliders.PhysicColliders,
                 visibleActiveColliders.CustomLayerColliders);
 
             // setup colliders for invisible meshes
             SetUpColliders(
-                scene,
-                entity,
                 previousModel?.GetInvisibleMeshesCollisionMask() ?? 0,
                 model.GetInvisibleMeshesCollisionMask(),
-                collidersHandler.GetInVisibleMeshesColliders(),
-                pointerColliderComponent,
-                physicColliderComponent,
-                customLayerColliderComponent,
+                collidersHandler.GetInvisibleMeshesColliders(),
                 invisibleActiveColliders.PointerColliders,
                 invisibleActiveColliders.PhysicColliders,
                 invisibleActiveColliders.CustomLayerColliders);
 
-            SetGltfLoaded(scene, entity, gameObject, model.Src, gltfContainerLoadingStateComponent, animationComponent, dataStoreEcs7);
+            SetGltfLoaded(gameObject, model.Src, rendereable);
         }
 
-        private void UnloadGltf(IParcelScene scene, IDCLEntity entity, string gltfSrc)
+        private void UnloadGltf(IDCLEntity entity, string gltfSrc)
         {
             void RemoveActiveColliders(IList<Collider> colliders, IInternalECSComponent<InternalColliders> colliderComponent)
             {
@@ -244,6 +232,9 @@ namespace DCL.ECSComponents
 
             gltfLoader.ClearEvents();
             gltfLoader.Unload();
+
+            if (isDebugMode)
+                RemoveCurrentRendereableFromSceneMetrics();
         }
 
         private static void InitColliders(
@@ -257,41 +248,29 @@ namespace DCL.ECSComponents
             collidersHandler.InitVisibleMeshesColliders(rendererHashSet, createVisibleMeshColliders);
         }
 
-        private static void SetUpColliders(
-            IParcelScene scene,
-            IDCLEntity entity,
+        private void SetUpColliders(
             uint prevColliderLayer,
             uint colliderLayer,
             IReadOnlyList<Collider> gltfColliders,
-            IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            IInternalECSComponent<InternalColliders> physicColliderComponent,
-            IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IList<Collider> currentPointerColliders,
             IList<Collider> currentPhysicColliders,
             IList<Collider> currentCustomLayerColliders)
         {
             if (prevColliderLayer != 0)
             {
-                RemoveColliders(scene, entity, prevColliderLayer, pointerColliderComponent,
-                    physicColliderComponent, customLayerColliderComponent, currentPointerColliders,
+                RemoveColliders(prevColliderLayer, currentPointerColliders,
                     currentPhysicColliders, currentCustomLayerColliders);
             }
 
             if (colliderLayer != 0)
             {
-                SetColliders(scene, entity, colliderLayer, gltfColliders, pointerColliderComponent,
-                    physicColliderComponent, customLayerColliderComponent, currentPointerColliders,
+                SetColliders(colliderLayer, gltfColliders, currentPointerColliders,
                     currentPhysicColliders, currentCustomLayerColliders);
             }
         }
 
-        private static void RemoveColliders(
-            IParcelScene scene,
-            IDCLEntity entity,
+        private void RemoveColliders(
             uint colliderLayer,
-            IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            IInternalECSComponent<InternalColliders> physicColliderComponent,
-            IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IList<Collider> currentPointerColliders,
             IList<Collider> currentPhysicColliders,
             IList<Collider> currentCustomLayerColliders)
@@ -332,14 +311,9 @@ namespace DCL.ECSComponents
             }
         }
 
-        private static void SetColliders(
-            IParcelScene scene,
-            IDCLEntity entity,
+        private void SetColliders(
             uint colliderLayer,
             IReadOnlyList<Collider> gltfColliders,
-            IInternalECSComponent<InternalColliders> pointerColliderComponent,
-            IInternalECSComponent<InternalColliders> physicColliderComponent,
-            IInternalECSComponent<InternalColliders> customLayerColliderComponent,
             IList<Collider> currentPointerColliders,
             IList<Collider> currentPhysicColliders,
             IList<Collider> currentCustomLayerColliders)
@@ -426,14 +400,10 @@ namespace DCL.ECSComponents
             renderersComponent.PutFor(scene, entity, model);
         }
 
-        private static void SetGltfLoaded(
-            IParcelScene scene,
-            IDCLEntity entity,
+        private void SetGltfLoaded(
             GameObject rootGameObject,
             string prevLoadedGltf,
-            IInternalECSComponent<InternalGltfContainerLoadingState> gltfContainerLoadingStateComponent,
-            IInternalECSComponent<InternalAnimation> animationComponent,
-            DataStore_ECS7 dataStoreEcs7)
+            Rendereable rendereable)
         {
             gltfContainerLoadingStateComponent.PutFor(scene, entity,
                 new InternalGltfContainerLoadingState() { LoadingState = LoadingState.Finished });
@@ -449,6 +419,12 @@ namespace DCL.ECSComponents
             {
                 dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, prevLoadedGltf);
             }
+
+            if (isDebugMode)
+            {
+                currentRendereable = rendereable;
+                AddCurrentRendereableToSceneMetrics();
+            }
         }
 
         private static void OnLoadFail(
@@ -463,6 +439,32 @@ namespace DCL.ECSComponents
                 new InternalGltfContainerLoadingState() { LoadingState = LoadingState.FinishedWithError });
 
             dataStoreEcs7.RemovePendingResource(scene.sceneData.sceneNumber, gltfSrc);
+        }
+
+        private void AddCurrentRendereableToSceneMetrics()
+        {
+            dataStoreWorldObjects.AddRendereable(entity.scene.sceneData.sceneNumber, currentRendereable);
+
+            foreach (Renderer renderer in renderers)
+            {
+                foreach (Material material in renderer.sharedMaterials)
+                {
+                    dataStoreWorldObjects.AddMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
+                }
+            }
+        }
+
+        private void RemoveCurrentRendereableFromSceneMetrics()
+        {
+            foreach (Renderer renderer in currentRendereable.renderers)
+            {
+                foreach (Material material in renderer.sharedMaterials)
+                {
+                    dataStoreWorldObjects.RemoveMaterial(entity.scene.sceneData.sceneNumber, entity.entityId, material);
+                }
+            }
+
+            dataStoreWorldObjects.RemoveRendereable(scene.sceneData.sceneNumber, currentRendereable);
         }
     }
 }

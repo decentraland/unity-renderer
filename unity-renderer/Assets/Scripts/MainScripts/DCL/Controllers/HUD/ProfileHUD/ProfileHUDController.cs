@@ -205,7 +205,7 @@ public class ProfileHUDController : IHUD
 
         saveDescriptionCancellationToken = saveDescriptionCancellationToken.SafeRestart();
         userProfileBridge.SaveDescription(description, saveDescriptionCancellationToken.Token).Forget();
-        socialAnalytics.SendProfileEdit(description.Length, ContainsLinks(description), PlayerActionSource.ProfileEditHUD);
+        socialAnalytics.SendProfileEdit(description.Length, ContainsLinks(description), PlayerActionSource.ProfileEditHUD, ProfileField.Description);
     }
 
     private void SetAsFullScreenMenuMode(bool currentIsFullScreenMenuMode, bool previousIsFullScreenMenuMode)

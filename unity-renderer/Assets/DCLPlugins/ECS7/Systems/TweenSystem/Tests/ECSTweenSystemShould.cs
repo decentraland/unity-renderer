@@ -97,14 +97,15 @@ namespace Tests
         }
 
         [Test]
-        public void UpdateTransformComponent()
+        public void UpdateTransformComponentCorrectly()
         {
+            entity.parentId = 6966;
             float currentTime = 0.666f;
+            float duration = 9f;
             Transform entityTransform = entity.gameObject.transform;
 
             // Stuff that the handler does
-            Tweener tweener = entityTransform.DOLocalMove(Vector3.up, 9);
-            tweener.Goto(9 * currentTime);
+            Tweener tweener = entityTransform.DOLocalMove(Vector3.up, duration);
             internalComponents.TweenComponent.PutFor(scene, entity, new InternalTween()
             {
                 transform = entityTransform,
@@ -114,25 +115,39 @@ namespace Tests
                 playing = true,
             });
 
+            tweener.Goto(duration * currentTime);
             systemUpdate();
-
             outgoingMessages.Put_Called<ECSTransform>(
                 entity.entityId,
                 ComponentID.TRANSFORM,
                 componentModel =>
                     componentModel.position == entityTransform.localPosition
+                    && componentModel.parentId == entity.parentId
             );
+            Vector3 midPosition = entityTransform.localPosition;
+
+            currentTime = 1f;
+            tweener.Goto(duration * currentTime);
+            systemUpdate();
+            outgoingMessages.Put_Called<ECSTransform>(
+                entity.entityId,
+                ComponentID.TRANSFORM,
+                componentModel =>
+                    componentModel.position == entityTransform.localPosition
+                    && componentModel.parentId == entity.parentId
+            );
+            Assert.AreNotEqual(midPosition, entityTransform.localPosition);
         }
 
         [Test]
         public void UpdateInternalSBCComponent()
         {
             float currentTime = 0.666f;
+            float duration = 9f;
             Transform entityTransform = entity.gameObject.transform;
 
             // Stuff that the handler does
-            Tweener tweener = entityTransform.DOLocalMove(Vector3.up, 9);
-            tweener.Goto(9 * currentTime);
+            Tweener tweener = entityTransform.DOLocalMove(Vector3.up, duration);
             internalComponents.TweenComponent.PutFor(scene, entity, new InternalTween()
             {
                 transform = entityTransform,
@@ -142,9 +157,15 @@ namespace Tests
                 playing = true,
             });
 
+            tweener.Goto(duration * currentTime);
             systemUpdate();
-
             var sbcModel = internalComponents.sceneBoundsCheckComponent.GetFor(scene, entity).Value.model;
+            Assert.AreEqual(entityTransform.position, sbcModel.entityPosition);
+
+            currentTime = 1f;
+            tweener.Goto(duration * currentTime);
+            systemUpdate();
+            sbcModel = internalComponents.sceneBoundsCheckComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(entityTransform.position, sbcModel.entityPosition);
         }
     }

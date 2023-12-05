@@ -5,8 +5,19 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 353046624100911067, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 353046624100911067, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 24
+      objectReference: {fileID: 0}
     - target: {fileID: 749578138969952630, guid: b681cffe9673cf64482a6cb83368424d,
         type: 3}
       propertyPath: m_Alpha
@@ -52,6 +63,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: FriendHeadForRealmRow
       objectReference: {fileID: 0}
+    - target: {fileID: 2523372156645421838, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2523372156645421838, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 24
+      objectReference: {fileID: 0}
     - target: {fileID: 2683651743952150219, guid: b681cffe9673cf64482a6cb83368424d,
         type: 3}
       propertyPath: m_ChildAlignment
@@ -69,8 +90,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2779385022219802126, guid: b681cffe9673cf64482a6cb83368424d,
         type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a,
+        type: 3}
+    - target: {fileID: 2779385022219802126, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779385022219802126, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2833658273570704779, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 2833658273570704779, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 4141139218842272861, guid: b681cffe9673cf64482a6cb83368424d,
         type: 3}
@@ -111,6 +153,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5122942420635131921, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5122942420635131921, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5122942420635131921, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7105173608688509660, guid: b681cffe9673cf64482a6cb83368424d,
         type: 3}
@@ -219,6 +276,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7087135779539621020, guid: b681cffe9673cf64482a6cb83368424d, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6576774084062198450, guid: b681cffe9673cf64482a6cb83368424d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8558153756387205110}
   m_SourcePrefab: {fileID: 100100000, guid: b681cffe9673cf64482a6cb83368424d, type: 3}
 --- !u!1 &6129381980265396260 stripped
 GameObject:
@@ -243,7 +307,9 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0

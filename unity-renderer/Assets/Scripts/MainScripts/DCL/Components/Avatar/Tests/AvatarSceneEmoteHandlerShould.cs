@@ -16,12 +16,14 @@ namespace Tests
         private AvatarSceneEmoteHandler handler;
         private IAvatarEmotesController emotesController;
         private IEmotesService emotesService;
+        private IUserProfileBridge userProfileBridge;
 
         [SetUp]
         public void SetUp()
         {
             emotesService = Substitute.For<IEmotesService>();
             emotesController = Substitute.For<IAvatarEmotesController>();
+            userProfileBridge = Substitute.For<IUserProfileBridge>();
             handler = new AvatarSceneEmoteHandler(emotesController, emotesService);
         }
 

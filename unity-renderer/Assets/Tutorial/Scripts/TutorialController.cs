@@ -170,8 +170,6 @@ namespace DCL.Tutorial
 
             NotificationsController.disableWelcomeNotification = true;
 
-            WebInterface.SetDelightedSurveyEnabled(false);
-
             if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             else
@@ -209,7 +207,6 @@ namespace DCL.Tutorial
             commonDataStore.isTutorialRunning.Set(false);
             tutorialView.tutorialMusicHandler.StopTutorialMusic();
             ShowTeacher3DModel(false);
-            WebInterface.SetDelightedSurveyEnabled(true);
 
             if (Environment.i is { world: { } })
                 WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.GetCurrentSceneNumber(), "tutorial", "end");

@@ -1335,12 +1335,6 @@ namespace DCL.Interface
             SendMessage("SendScreenshot", onSendScreenshot);
         }
 
-        public static void SetDelightedSurveyEnabled(bool enabled)
-        {
-            delightedSurveyEnabled.enabled = enabled;
-            SendMessage("SetDelightedSurveyEnabled", delightedSurveyEnabled);
-        }
-
         public static void SetScenesLoadRadius(float newRadius)
         {
             setScenesLoadRadiusPayload.newRadius = newRadius;
@@ -2037,6 +2031,11 @@ namespace DCL.Interface
         public static void GetWithItemsUrlParam()
         {
             SendMessage("GetWithItemsUrlParam");
+        }
+
+        public static void FetchRealmsInfo()
+        {
+            SendMessage("FetchRealmsInfo");
         }
     }
 }

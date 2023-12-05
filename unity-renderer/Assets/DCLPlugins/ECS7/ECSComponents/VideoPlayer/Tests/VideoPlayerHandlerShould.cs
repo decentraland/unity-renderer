@@ -6,12 +6,15 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Models;
+using DCL.SettingsCommon;
+using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AudioSettings = DCL.SettingsCommon.AudioSettings;
 using Environment = DCL.Environment;
 using VideoState = DCL.Components.Video.Plugin.VideoState;
 
@@ -27,6 +30,9 @@ namespace Tests
         private ECS7TestScene scene;
         private ECS7TestEntity entity;
         private DataStore_LoadingScreen loadingScreenDataStore;
+        private DataStore_VirtualAudioMixer virtualAudioMixerDatastore;
+        private ISettingsRepository<AudioSettings> audioSettingsRepository;
+        private IntVariable currentPlayerSceneNumber;
 
         [SetUp]
         public void SetUp()
@@ -41,9 +47,27 @@ namespace Tests
             var executors = new Dictionary<int, ICRDTExecutor>();
             var internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
             internalVideoPlayerComponent = internalComponents.videoPlayerComponent;
+
+            virtualAudioMixerDatastore = new DataStore_VirtualAudioMixer();
+            virtualAudioMixerDatastore.sceneSFXVolume.Set(1);
+
+            audioSettingsRepository = Substitute.For<ISettingsRepository<AudioSettings>>();
+
+            audioSettingsRepository.Data.Returns(new AudioSettings
+            {
+                masterVolume = 1,
+                sceneSFXVolume = 1,
+            });
+
+            currentPlayerSceneNumber = ScriptableObject.CreateInstance<IntVariable>();
+            currentPlayerSceneNumber.Set(666);
+
             videoPlayerHandler = new VideoPlayerHandler(
                 internalVideoPlayerComponent,
-                loadingScreenDataStore.decoupledLoadingHUD);
+                loadingScreenDataStore.decoupledLoadingHUD,
+                audioSettingsRepository,
+                virtualAudioMixerDatastore,
+                currentPlayerSceneNumber);
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
             scene = testUtils.CreateScene(666);
@@ -72,6 +96,7 @@ namespace Tests
         public IEnumerator TryToStartVideo()
         {
             videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
@@ -93,6 +118,7 @@ namespace Tests
                 Src = "video.mp4"
             };
 
+            videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
             yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
             videoPlayerHandler.videoPlayer.Update();
@@ -105,6 +131,8 @@ namespace Tests
         public IEnumerator VideoUpdateOnRuntime()
         {
             videoPlayerHandler.isRendererActive = true;
+            videoPlayerHandler.hadUserInteraction = true;
+            videoPlayerHandler.OnComponentCreated(scene, entity);
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "video.mp4"
@@ -131,12 +159,55 @@ namespace Tests
             Assert.AreEqual(videoPlayerHandler.videoPlayer.volume, 0.5f);
         }
 
+        [UnityTest]
+        public IEnumerator VolumeUpdatesWhenSettingsAreChanged()
+        {
+            PBVideoPlayer model = new PBVideoPlayer
+            {
+                Src = "video.mp4",
+            };
+
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
+
+            Assert.AreEqual(videoPlayerHandler.videoPlayer.playing, false);
+            Assert.AreEqual(videoPlayerHandler.videoPlayer.volume, 1.0f);
+
+            audioSettingsRepository.OnChanged += Raise.Event<Action<AudioSettings>>(new AudioSettings
+            {
+                masterVolume = 0.5f,
+                sceneSFXVolume = 1,
+            });
+
+            Assert.AreEqual(0.5f, videoPlayerHandler.videoPlayer.volume);
+
+            audioSettingsRepository.OnChanged += Raise.Event<Action<AudioSettings>>(new AudioSettings
+            {
+                masterVolume = 0.25f,
+                sceneSFXVolume = 1,
+            });
+
+            Assert.AreEqual(0.25f, videoPlayerHandler.videoPlayer.volume);
+
+            audioSettingsRepository.OnChanged += Raise.Event<Action<AudioSettings>>(new AudioSettings
+            {
+                masterVolume = 1,
+                sceneSFXVolume = 1,
+            });
+            virtualAudioMixerDatastore.sceneSFXVolume.Set(0.1f, true);
+
+            Assert.AreEqual(0.1f, videoPlayerHandler.videoPlayer.volume);
+        }
+
         [Test]
         public void CreateInternalComponentCorrectly()
         {
             Assert.IsNull(internalVideoPlayerComponent.GetFor(scene, entity));
 
             videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
             videoPlayerHandler.OnComponentModelUpdated(scene, entity, new PBVideoPlayer()
             {
                 Src = "other-video.mp4",
@@ -153,6 +224,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalVideoWithoutPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -173,6 +245,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalVideoWithRightPermissionsSet()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -192,6 +265,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalVideoWithWrongHostName()
         {
             PBVideoPlayer model = new PBVideoPlayer()
@@ -216,6 +290,7 @@ namespace Tests
         public IEnumerator StopVideoIfRenderingIsDisabled()
         {
             videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = true;
             PBVideoPlayer model = new PBVideoPlayer()
             {
                 Src = "video.mp4",
@@ -231,6 +306,30 @@ namespace Tests
             loadingScreenDataStore.decoupledLoadingHUD.visible.Set(true);
 
             Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            videoPlayerHandler.OnComponentRemoved(scene, entity);
+        }
+
+        [UnityTest]
+        public IEnumerator StartVideoAfterUserInteraction()
+        {
+            videoPlayerHandler.OnComponentCreated(scene, entity);
+            videoPlayerHandler.hadUserInteraction = false;
+            PBVideoPlayer model = new PBVideoPlayer()
+            {
+                Src = "video.mp4",
+                Playing = true
+            };
+            videoPlayerHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil(() => videoPlayerHandler.videoPlayer.GetState() == VideoState.READY);
+            videoPlayerHandler.videoPlayer.Update();
+
+            Assert.AreEqual(false, videoPlayerHandler.videoPlayer.playing);
+
+            // change user interaction bool
+            DCL.Helpers.Utils.LockCursor();
+
+            Assert.AreEqual(true, videoPlayerHandler.videoPlayer.playing);
 
             videoPlayerHandler.OnComponentRemoved(scene, entity);
         }

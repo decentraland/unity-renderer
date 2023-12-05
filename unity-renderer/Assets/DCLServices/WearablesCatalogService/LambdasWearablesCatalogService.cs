@@ -173,13 +173,6 @@ namespace DCLServices.WearablesCatalogService
 
         public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestOwnedWearablesAsync(string userId, int pageNumber, int pageSize, bool cleanCachedPages, CancellationToken ct)
         {
-#if UNITY_EDITOR
-            string debugUserId = dataStore.debugConfig.overrideUserID;
-
-            if (!string.IsNullOrEmpty(debugUserId))
-                userId = debugUserId;
-#endif
-
             var createNewPointer = false;
 
             if (!ownerWearablesPagePointers.TryGetValue((userId, pageSize), out var pagePointer)) { createNewPointer = true; }
@@ -222,7 +215,7 @@ namespace DCLServices.WearablesCatalogService
             IList<WearableItem> wearableItems = poolList.GetList();
 
             foreach (EntityDto entityDto in request.response.entities)
-                wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
+                wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl, 1));
 
             MapLambdasDataIntoWearableItem(wearableItems);
             AddWearablesToCatalog(wearableItems);
@@ -338,7 +331,7 @@ namespace DCLServices.WearablesCatalogService
                 IList<WearableItem> wearableItems = poolList.GetList();
 
                 foreach (EntityDto entityDto in response.entities)
-                    wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl));
+                    wearableItems.Add(entityDto.ToWearableItem(catalyst.contentUrl, assetBundlesUrl, 1));
 
                 MapLambdasDataIntoWearableItem(wearableItems);
                 AddWearablesToCatalog(wearableItems);
@@ -506,7 +499,14 @@ namespace DCLServices.WearablesCatalogService
                         ? wearableIds.Count
                         : MAX_WEARABLES_PER_REQUEST;
 
-                    var wearablesToRequest = wearableIds.Take(numberOfWearablesToRequest).ToList();
+                    var wearablesToRequest = new List<string>();
+                    int count = Math.Min(wearableIds.Count, numberOfWearablesToRequest);
+
+                    for (int x = 0; x < count; x++)
+                    {
+                        var urnAndTokenId = ExtendedUrnParser.GetShortenedUrn(wearableIds[x]);
+                        wearablesToRequest.Add(urnAndTokenId);
+                    }
 
                     var request = new WearableRequest { pointers = wearablesToRequest };
                     var url = $"{catalyst.contentUrl}entities/active";
@@ -544,7 +544,7 @@ namespace DCLServices.WearablesCatalogService
 
                     string contentBaseUrl = $"{catalyst.contentUrl}contents/";
 
-                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl)).ToList();
+                    var wearables = response.Select(dto => dto.ToWearableItem(contentBaseUrl, assetBundlesUrl, 1)).ToList();
 
                     MapLambdasDataIntoWearableItem(wearables);
                     AddWearablesToCatalog(wearables);

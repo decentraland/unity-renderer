@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DCL.ECSComponents.UIBackground.Tests")]
+[assembly: InternalsVisibleTo("ECS7Plugin.Tests")]

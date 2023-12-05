@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Duplicate Asset Isolation5
+  m_EditorClassIdentifier: 
+  m_GroupName: Duplicate Asset Isolation5
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 70d0d2637dad440879faa1e75edc4694
+  m_SerializeEntries:
+  - m_GUID: becc7661af6be4d33b1cc83d8e83bfed
+    m_Address: Assets/Textures/UI/Experiences/ExperienceDefaultThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ccba34508151a453da75b03611db98c6
+    m_Address: Assets/Textures/UI/Experiences/Experiences.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc1386f864ce3b64baafbb1e74763408
+    m_Address: Assets/Textures/UI/Experiences/QuitIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c319fd971d09e1745b925fff3aa3012a
+    m_Address: Assets/Textures/UI/Experiences/ShowIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2cc1bc54dd98f77459c059ab58670f74
+    m_Address: Assets/Textures/UI/Experiences/HideIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e119603a7cc61744b63c95d90495efc
+    m_Address: Assets/Textures/UI/Experiences/ExperienceIconOff.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 631d90c1a84401a4ab1b438f04f37e24
+    m_Address: Assets/Textures/UI/Experiences/ExperienceIconOn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe227f939d22a5941aa33dece9abecab
+    m_Address: Assets/Textures/UI/MyAccount/CheckIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: eb1706ad9a2454154a75b180d6704920, type: 2}
+    - {fileID: 11400000, guid: bffee40eefbd04f8b83edbdb54802ff9, type: 2}

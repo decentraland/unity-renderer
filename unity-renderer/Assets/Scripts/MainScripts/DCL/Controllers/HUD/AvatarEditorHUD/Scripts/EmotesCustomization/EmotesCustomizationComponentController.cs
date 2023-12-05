@@ -99,6 +99,8 @@ namespace DCL.EmotesCustomization
                 AddEmote(emote);
 
             UpdateEmoteSlots();
+
+            view.RefreshEmotesGrid();
         }
 
         public void SetEquippedBodyShape(string bodyShapeId)
@@ -225,6 +227,7 @@ namespace DCL.EmotesCustomization
             {
                 id = wearable.id,
                 name = wearable.GetName(),
+                amount = wearable.amount > 1 ? $"x{wearable.amount.ToString()}" : "",
                 description = wearable.description,
                 pictureUri = wearable.ComposeThumbnailUrl(),
                 pictureSprite = wearable.thumbnailSprite,
