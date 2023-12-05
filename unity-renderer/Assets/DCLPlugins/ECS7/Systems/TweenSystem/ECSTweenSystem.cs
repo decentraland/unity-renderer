@@ -55,6 +55,18 @@ namespace ECSSystems.TweenSystem
 
             long entityId = tweenComponentGroup.key2;
             InternalTween model = tweenComponentGroup.value.model;
+            scene.entities.TryGetValue(entityId, out IDCLEntity entity);
+
+            switch (model.tweenMode)
+            {
+                case PBTween.ModeOneofCase.Move:
+                    sbcInternalComponent.SetPosition(scene, entity, model.transform.position);
+                    break;
+                case PBTween.ModeOneofCase.Rotate:
+                case PBTween.ModeOneofCase.Scale:
+                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+                    break;
+            }
 
             if (model.removed)
             {
@@ -66,12 +78,10 @@ namespace ECSSystems.TweenSystem
             if (currentTime.Equals(1f) && model.currentTime.Equals(1f))
                 return;
 
-            scene.entities.TryGetValue(entityId, out IDCLEntity entity);
-
             if (model.playing)
             {
                 tweenStateComponentModel.State = currentTime.Equals(1f) ? TweenStateStatus.TsCompleted : TweenStateStatus.TsActive;
-                UpdatePlayingTweenComponentModel(tweenStateComponentModel, currentTime, scene, entity, model);
+                tweenStateComponentModel.CurrentTime = currentTime;
             }
             else
             {
@@ -84,22 +94,6 @@ namespace ECSSystems.TweenSystem
 
             model.currentTime = currentTime;
             tweenInternalComponent.PutFor(scene, entityId, model);
-        }
-
-        private void UpdatePlayingTweenComponentModel(PBTweenState tweenStateComponentModel, float currentTime,
-            IParcelScene scene, IDCLEntity entity, InternalTween model)
-        {
-            tweenStateComponentModel.CurrentTime = currentTime;
-            switch (model.tweenMode)
-            {
-                case PBTween.ModeOneofCase.Move:
-                    sbcInternalComponent.SetPosition(scene, entity, model.transform.position);
-                    break;
-                case PBTween.ModeOneofCase.Rotate:
-                case PBTween.ModeOneofCase.Scale:
-                    sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
-                    break;
-            }
         }
 
         private void UpdateTransformComponent(IParcelScene scene, IDCLEntity entity, Transform entityTransform, ComponentWriter writer)
