@@ -171,7 +171,7 @@ namespace DCL.Backpack
             EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(ExtendedUrnParser.GetShortenedUrn(outfitWearable), EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
+                EquipWearable(outfitWearable, EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
@@ -570,12 +570,14 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(ExtendedUrnParser.GetShortenedUrn(wearableId), out WearableItem wearable))
             {
                 Debug.LogError($"Cannot equip wearable {wearableId}");
                 return;
             }
 
+            // we should keep extended urn needed to persist the profile/outfit
+            wearable.id = wearableId;
             EquipWearable(wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
         }
 
