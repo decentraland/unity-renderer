@@ -1,12 +1,9 @@
-using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Map;
-using DCL.Providers;
 using DCL.SettingsCommon;
-using DCl.Social.Friends;
 using DCL.Social.Friends;
 using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
@@ -32,6 +29,7 @@ namespace DCL
         protected IKernelCommunication kernelCommunication;
 
         private PerformanceMetricsController performanceMetricsController;
+        private ILogHandler defaultLogger;
 
         protected PluginSystem pluginSystem;
         public static Main i { get; private set; }
@@ -49,12 +47,14 @@ namespace DCL
             if (!disableSceneDependencies)
                 InitializeSceneDependencies();
 
+            SetupDebugLogger();
 #if UNITY_EDITOR
 
             // Prevent warning when starting on unity editor mode
             // TODO: Are we instantiating 500 different kinds of animations?
             DOTween.SetTweensCapacity(500, 50);
 #endif
+
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 
@@ -179,5 +179,12 @@ namespace DCL
 
         protected virtual void CreateEnvironment() =>
             MainSceneFactory.CreateEnvironment();
+
+        private void SetupDebugLogger()
+        {
+            defaultLogger = Debug.unityLogger.logHandler;
+            var logger = new ReportLogger("DCL UNITY: ", defaultLogger);
+            Debug.unityLogger.logHandler = logger;
+        }
     }
 }

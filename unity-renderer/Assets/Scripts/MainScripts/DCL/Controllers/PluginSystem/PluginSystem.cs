@@ -10,7 +10,7 @@ namespace DCL
     /// <summary>
     /// This class implements a plugin system pattern described in:
     /// https://github.com/decentraland/adr/blob/main/docs/ADR-56-plugin-system.md
-    /// 
+    ///
     /// - Many plugins can share the same feature flag
     /// - Plugins are registered by using a PluginBuilder delegate that must create and return the plugin instance.
     /// - Any active plugin is an instantiated plugin. A disabled plugin is a never created or disposed plugin.
@@ -19,7 +19,6 @@ namespace DCL
     /// </summary>
     public class PluginSystem : IDisposable
     {
-        private static ILogger logger = new Logger(Debug.unityLogger);
         internal PluginGroup allPlugins = new PluginGroup();
         private Dictionary<string, PluginGroup> pluginGroupByFlag = new Dictionary<string, PluginGroup>();
         private BaseVariable<FeatureFlag> featureFlagsDataSource;
@@ -101,7 +100,7 @@ namespace DCL
             allPlugins.Remove(type);
             info.Disable();
         }
-        
+
         /// <summary>
         /// Initialize all enabled and registered plugin.
         /// </summary>
