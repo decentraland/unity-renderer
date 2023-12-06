@@ -9,9 +9,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.FriendsController;
 using UnityEngine;
-#if UNITY_EDITOR
 using DG.Tweening;
-#endif
 
 namespace DCL
 {
@@ -48,13 +46,10 @@ namespace DCL
                 InitializeSceneDependencies();
 
             SetupDebugLogger();
-#if UNITY_EDITOR
 
             // Prevent warning when starting on unity editor mode
             // TODO: Are we instantiating 500 different kinds of animations?
             DOTween.SetTweensCapacity(500, 50);
-#endif
-
 
             Settings.CreateSharedInstance(new DefaultSettingsFactory());
 

@@ -29,7 +29,7 @@
       "url": "https://package.openupm.com"
     },
     "com.coffee.ui-particle": {
-      "version": "4.1.6",
+      "version": "4.4.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
