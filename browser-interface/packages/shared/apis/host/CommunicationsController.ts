@@ -42,6 +42,8 @@ function encodeMessage(data: Uint8Array, type: MsgType) {
 export function registerCommunicationsControllerServiceServerImplementation(port: RpcServerPort<PortContext>) {
   codegen.registerService(port, CommunicationsControllerServiceDefinition, async (port, ctx) => {
     const eventsToProcess: Uint8Array[] = []
+    const textEncoder = new TextEncoder()
+    const textDecoder = new TextDecoder()
     /**
      * The `receiveCommsMessage` relays messages in direction: scene -> comms
      */
@@ -50,7 +52,7 @@ export function registerCommunicationsControllerServiceServerImplementation(port
       receiveCommsMessage(preData: Uint8Array, sender: PeerInformation) {
         const [msgType, data] = decodeMessage(preData)
         if (msgType === MsgType.String) {
-          const message = new TextDecoder().decode(data)
+          const message = textDecoder.decode(data)
 
           ctx.sendSceneEvent('comms', {
             message,
@@ -58,7 +60,7 @@ export function registerCommunicationsControllerServiceServerImplementation(port
           })
         } else if (msgType === MsgType.Uint8Array) {
           if (!data.byteLength) return
-          const senderBytes = new TextEncoder().encode(sender.ethereumAddress)
+          const senderBytes = textEncoder.encode(sender.ethereumAddress)
           const messageLength = senderBytes.byteLength + data.byteLength + 1
 
           const serializedMessage = new Uint8Array(messageLength)
@@ -82,7 +84,7 @@ export function registerCommunicationsControllerServiceServerImplementation(port
 
     return {
       async send(req, ctx) {
-        const message = new TextEncoder().encode(req.message)
+        const message = textEncoder.encode(req.message)
         sendParcelSceneCommsMessage(ctx.sceneData.id, encodeMessage(message, MsgType.String))
         return {}
       },
