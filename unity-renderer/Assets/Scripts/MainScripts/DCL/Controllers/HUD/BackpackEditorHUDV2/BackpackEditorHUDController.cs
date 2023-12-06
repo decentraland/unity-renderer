@@ -162,7 +162,7 @@ namespace DCL.Backpack
 
             foreach (string outfitWearable in outfit.outfit.wearables)
             {
-                if (wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable)) continue;
+                if (wearablesCatalogService.WearablesCatalog.ContainsKey(ExtendedUrnParser.GetShortenedUrn(outfitWearable))) continue;
 
                 try { await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken); }
                 catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
@@ -171,7 +171,7 @@ namespace DCL.Backpack
             EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(outfitWearable, EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
+                EquipWearable(ExtendedUrnParser.GetShortenedUrn(outfitWearable), EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
