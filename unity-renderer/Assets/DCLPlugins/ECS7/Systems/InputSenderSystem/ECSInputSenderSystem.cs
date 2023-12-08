@@ -68,7 +68,6 @@ namespace ECSSystems.InputSenderSystem
                         if (IsValidInputForRestrictedActions(entityId, actionButton, evtType, hit))
                         {
                             restrictedActionEnabled = true;
-                            engineInfoModel.EnableRestrictedActionTick = engineInfoModel.SceneTick;
                             engineInfoComponent.PutFor(currentSceneNumber, SpecialEntityId.SCENE_ROOT_ENTITY, engineInfoModel);
                         }
                     }
