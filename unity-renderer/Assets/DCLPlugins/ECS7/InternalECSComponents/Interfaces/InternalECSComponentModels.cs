@@ -265,7 +265,6 @@ namespace DCL.ECS7.InternalComponents
         public uint SceneTick;
         public float SceneInitialRunTime;
         public int SceneInitialFrameCount;
-        public uint EnableRestrictedActionTick;
 
         public InternalEngineInfo(uint sceneTick, float sceneInitialRunTime)
         {
@@ -273,7 +272,6 @@ namespace DCL.ECS7.InternalComponents
             this.SceneTick = sceneTick;
             this.SceneInitialRunTime = sceneInitialRunTime;
             this.SceneInitialFrameCount = Time.frameCount;
-            this.EnableRestrictedActionTick = 0;
         }
     }
 

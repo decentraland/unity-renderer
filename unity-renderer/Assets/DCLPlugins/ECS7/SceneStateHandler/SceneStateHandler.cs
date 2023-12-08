@@ -96,12 +96,7 @@ namespace DCL.ECS7
             {
                 InternalEngineInfo engineInfo = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY)!.Value.model;
                 uint sceneTick = engineInfo.SceneTick;
-
-                const uint TICK_THRESHOLD = 2;
-
-                return sceneTick != 0
-                       && engineInfo.EnableRestrictedActionTick != 0
-                       && sceneTick <= (engineInfo.EnableRestrictedActionTick + TICK_THRESHOLD);
+                return sceneTick != 0;
             }
 
             return false;
