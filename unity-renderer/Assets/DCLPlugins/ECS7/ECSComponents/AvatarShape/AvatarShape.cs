@@ -433,6 +433,7 @@ namespace DCL.ECSComponents
 
         public void Cleanup()
         {
+            initializedPosition = false;
             playerName?.Hide(true);
             if (player != null)
             {
