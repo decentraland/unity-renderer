@@ -166,7 +166,7 @@ namespace DCL.MyAccount
                         else
                         {
                             savedEmail = existingSubscription.email;
-                            savedIsPending = existingSubscription.status is "pending";
+                            savedIsPending = existingSubscription.status is not "active";
                         }
                     }
                 }
@@ -233,7 +233,7 @@ namespace DCL.MyAccount
                     PlayerPrefsBridge.SetString(CURRENT_SUBSCRIPTION_ID_LOCAL_STORAGE_KEY, newSubscription.id);
                     PlayerPrefsBridge.Save();
                     savedEmail = newEmail;
-                    savedIsPending = newSubscription.status is "pending" or "validating";
+                    savedIsPending = newSubscription.status is not "active";
                     wasSuccessfullyUpdated = true;
                 }
                 catch (Exception ex)
