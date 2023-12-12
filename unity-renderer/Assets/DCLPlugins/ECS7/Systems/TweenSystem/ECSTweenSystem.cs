@@ -94,6 +94,11 @@ namespace ECSSystems.TweenSystem
 
             model.currentTime = currentTime;
             tweenInternalComponent.PutFor(scene, entityId, model);
+
+            // Same AvatarShape interpolation used at DCLTransform from SDK6
+            // We only want to trigger it if there's a method subscribed
+            if (entity.OnTransformChange != null)
+                entity.OnTransformChange.Invoke(model.transform.localPosition, model.transform.localRotation);
         }
 
         private void UpdateTransformComponent(IParcelScene scene, IDCLEntity entity, Transform entityTransform, ComponentWriter writer)

@@ -28,7 +28,7 @@ namespace DCL.Models
         public Action<IDCLEntity> OnShapeUpdated { get; set; }
         public Action<IDCLEntity> OnShapeLoaded { get; set; }
         public Action<object> OnNameChange { get; set; }
-        public Action<object> OnTransformChange { get; set; }
+        public Action<Vector3, Quaternion> OnTransformChange { get; set; }
         public Action<IDCLEntity> OnRemoved { get; set; }
         public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
