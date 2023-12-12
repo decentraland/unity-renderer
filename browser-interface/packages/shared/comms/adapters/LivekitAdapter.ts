@@ -13,7 +13,6 @@ import {
 import mitt from 'mitt'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import type { ILogger } from 'lib/logger'
-import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
 import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { commsLogger } from '../logger'
 import type { ActiveVideoStreams, CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
@@ -94,7 +93,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       return
     }
 
-    incrementCommsMessageSent(data.length)
     const state = this.room.state
 
     if (data.length > MAXIMUM_NETWORK_MSG_LENGTH) {
