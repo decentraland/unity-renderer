@@ -374,10 +374,9 @@ namespace DCL
             }
         }
 
-        private void OnEntityTransformChanged(object newModel)
+        private void OnEntityTransformChanged(Vector3 newPosition, Quaternion newRotation)
         {
-            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
+            OnEntityTransformChanged(newPosition, newRotation, !initializedPosition);
         }
 
         private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)

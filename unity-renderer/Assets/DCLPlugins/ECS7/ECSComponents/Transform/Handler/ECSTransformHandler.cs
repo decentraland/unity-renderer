@@ -92,6 +92,9 @@ namespace DCL.ECSComponents
 
             if (scaleChange || rotationChange)
                 sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+
+            // Same AvatarShape interpolation used at DCLTransform from SDK6
+            entity.OnTransformChange?.Invoke(model.position, model.rotation);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)
