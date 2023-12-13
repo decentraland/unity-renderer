@@ -60,6 +60,8 @@ export function incrementCommsMessageSent(type: string, size: number, sceneId?: 
 
   sentCommsMessages[key] = (sentCommsMessages[key] ?? 0) + size
 
+
+  console.log("HUGO", type, size, sceneId)
   sentCommsMessagesCounter++
 }
 
