@@ -2,6 +2,8 @@
 ### **Issue Description:**
 <!-- Short description of the observed issue -->
 
+### **Explorer Alpha Build Version:**
+
 ### **Steps to reproduce:**
 
   1.
@@ -31,22 +33,12 @@
 - [ ] Medium
 - [ ] Low
 
-### **Platforms:**
-- [ ] Windows
-- [ ] Mac
-- [ ] Not platform specific
+### **Operative System and Version:**
+- [ ] Windows 10
+- [ ] Windows 11
+- [ ] Mac Sonoma
+- [ ] Other (specify on additional notes)
 
-### **Browser:**
-- [ ] Google Chrome
-- [ ] Microsoft Edge
-- [ ] Firefox
-- [ ] Desktop
-- [ ] Not Browser Specific
-
-### **Environment:**
-- [ ] Production
-- [ ] Branch specific
-- [ ] Release Branch
 
 
 #### **Evidence:**
