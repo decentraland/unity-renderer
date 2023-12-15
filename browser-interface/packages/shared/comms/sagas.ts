@@ -21,7 +21,7 @@ import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
@@ -591,11 +591,27 @@ function* checkDisconnectScene(
 
 function* connectSceneToComms(sceneId: string) {
   console.log('[SceneComms]: connectSceneToComms', sceneId)
-  // Fetch connection string
-  // const connectionString = `https://boedo.com/${sceneId}`
-  const connectionString = `offline:offline`
+
+  const realmAdapter = yield select(getRealmAdapter)
+  if (!realmAdapter) {
+    throw new Error('No realm adapter') // TODO
+  }
+  const realmName = realmAdapter.about.configurations?.realmName
+
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-  const sceneRoomConnetion = yield call(connectAdapter, connectionString, identity, sceneId)
+  // TODO: we should change the adapter control to provide this url
+  const url = 'https://comms-gatekeeper.decentraland.zone/get-scene-adapter'
+  const response = yield call(signedFetch,
+    url,
+    identity,
+    { method: 'POST', responseBodyType: 'json' },
+    {
+      realmName,
+      sceneId
+    }
+  )
+
+  const sceneRoomConnetion = yield call(connectAdapter, response.json.adapter, identity, sceneId)
   yield call(bindHandlersToCommsContext, sceneRoomConnetion, false)
   yield put(setSceneRoomConnection(sceneId, sceneRoomConnetion))
 }
