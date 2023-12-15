@@ -10,10 +10,16 @@ export const SET_ROOM_CONNECTION = '[COMMS] setRoomConnection'
 export const setRoomConnection = (room: RoomConnection | undefined) => action(SET_ROOM_CONNECTION, room)
 export type SetRoomConnectionAction = ReturnType<typeof setRoomConnection>
 
+export const SET_SCENE_ROOM_CONNECTION = '[COMMS] setSceneRoomConnection'
+export const setSceneRoomConnection = (sceneId: string, room: RoomConnection) =>
+  action(SET_SCENE_ROOM_CONNECTION, { sceneId, room })
+export type SetSceneRoomConnectionAction = ReturnType<typeof setSceneRoomConnection>
+
 export const HANDLE_ROOM_DISCONNECTION = '[COMMS] handleRoomDisconnection'
 export const handleRoomDisconnection = (room: RoomConnection) => action(HANDLE_ROOM_DISCONNECTION, { context: room })
 export type HandleRoomDisconnection = ReturnType<typeof handleRoomDisconnection>
 
 export const SET_LIVEKIT_ADAPTER = '[COMMS] setLiveKitAdapter'
-export const setLiveKitAdapter = (livekitAdapter: LivekitAdapter | undefined) => action(SET_LIVEKIT_ADAPTER, livekitAdapter)
+export const setLiveKitAdapter = (livekitAdapter: LivekitAdapter | undefined) =>
+  action(SET_LIVEKIT_ADAPTER, livekitAdapter)
 export type SetLiveKitAdapterAction = ReturnType<typeof setLiveKitAdapter>

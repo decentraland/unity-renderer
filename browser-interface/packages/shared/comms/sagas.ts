@@ -36,7 +36,8 @@ import {
   setRoomConnection,
   SET_COMMS_ISLAND,
   SET_ROOM_CONNECTION,
-  setLiveKitAdapter
+  setLiveKitAdapter,
+  setSceneRoomConnection
 } from './actions'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
@@ -48,13 +49,16 @@ import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { getConnectedPeerCount, processAvatarVisibility } from './peers'
-import { getCommsRoom, reconnectionState } from './selectors'
+import { getCommsRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
+import { SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
+import { getSceneLoader } from '../scene-loader/selectors'
+import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -89,6 +93,8 @@ export function* commsSaga() {
   yield fork(handleCommsReconnectionInterval)
   yield fork(pingerProcess)
   yield fork(reportPositionSaga)
+
+  yield fork(sceneRoomComms)
 }
 
 /**
@@ -219,7 +225,11 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
   }
 }
 
-async function connectAdapter(connStr: string, identity: ExplorerIdentity): Promise<RoomConnection> {
+async function connectAdapter(
+  connStr: string,
+  identity: ExplorerIdentity,
+  id: string = 'island'
+): Promise<RoomConnection> {
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
@@ -272,12 +282,12 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       throw new Error(`An unknown error was detected while trying to connect to the selected realm.`)
     }
     case 'offline': {
-      return new Rfc4RoomConnection(new OfflineAdapter())
+      return new Rfc4RoomConnection(new OfflineAdapter(), id)
     }
     case 'ws-room': {
       const finalUrl = !url.startsWith('ws:') && !url.startsWith('wss:') ? 'wss://' + url : url
 
-      return new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity))
+      return new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity), id)
     }
     case 'simulator': {
       return new SimulationRoom(url)
@@ -298,7 +308,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
 
       store.dispatch(setLiveKitAdapter(livekitAdapter))
 
-      return new Rfc4RoomConnection(livekitAdapter)
+      return new Rfc4RoomConnection(livekitAdapter, id)
     }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
@@ -530,4 +540,62 @@ function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
       notifyStatusThroughChat(`Lost connection to realm`)
     }
   }
+}
+
+function* sceneRoomComms() {
+  let currentSceneId: string = ''
+  const commsSceneToRemove = new Map<string, NodeJS.Timeout>()
+
+  while (true) {
+    const reason: { timeout?: unknown; newParcel?: { payload: { position: Vector2 } } } = yield race({
+      newParcel: take(SET_PARCEL_POSITION),
+      timeout: delay(5000)
+    })
+    const sceneLoader: ReturnType<typeof getSceneLoader> = yield select(getSceneLoader)
+    if (!sceneLoader) continue
+    if (reason.newParcel) {
+      const sceneId = yield call(sceneLoader.getSceneId!, reason.newParcel.payload.position)
+      // We are still on the same scene.
+      if (sceneId === currentSceneId) continue
+      const oldSceneId = currentSceneId
+      yield call(checkDisconnectScene, sceneId, oldSceneId, commsSceneToRemove)
+      yield call(connectSceneToComms, sceneId)
+      // Player moved to a new scene. Instanciate new comms
+      currentSceneId = sceneId
+    }
+  }
+}
+
+function* checkDisconnectScene(
+  currentSceneId: string,
+  oldSceneId: string,
+  commsSceneToRemove: Map<string, NodeJS.Timeout>
+) {
+  // avoid deleting an already created comms. Use when the user is switching between two scenes
+  if (commsSceneToRemove.has(currentSceneId)) {
+    clearTimeout(commsSceneToRemove.get(currentSceneId))
+    commsSceneToRemove.delete(currentSceneId)
+  }
+  if (!oldSceneId) return
+
+  console.log('[SceneComms]: will disconnect', oldSceneId)
+  const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
+  const oldRoom = sceneRooms.get(oldSceneId)
+  const timeout = setTimeout(() => {
+    console.log('[SceneComms]: disconnectSceneComms', oldSceneId)
+    void oldRoom?.disconnect()
+    commsSceneToRemove.delete(oldSceneId)
+  }, 1000)
+  commsSceneToRemove.set(oldSceneId, timeout)
+}
+
+function* connectSceneToComms(sceneId: string) {
+  console.log('[SceneComms]: connectSceneToComms', sceneId)
+  // Fetch connection string
+  // const connectionString = `https://boedo.com/${sceneId}`
+  const connectionString = `offline:offline`
+  const identity: ExplorerIdentity = yield select(getCurrentIdentity)
+  const sceneRoomConnetion = yield call(connectAdapter, connectionString, identity, sceneId)
+  yield call(bindHandlersToCommsContext, sceneRoomConnetion, false)
+  yield put(setSceneRoomConnection(sceneId, sceneRoomConnetion))
 }

@@ -1,5 +1,6 @@
 import { Entity } from '@dcl/schemas'
 import { InstancedSpawnPoint, LoadableScene } from 'shared/types'
+import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
 
 export type SetDesiredScenesCommand = {
   scenes: LoadableScene[]
@@ -16,6 +17,7 @@ export interface ISceneLoader {
   fetchScenesByLocation(parcels: string[]): Promise<SetDesiredScenesCommand>
   stop(): Promise<void>
   invalidateCache(sceneId: Entity): void
+  getSceneId?(position: Vector2): Promise<string | undefined>
 }
 
 export type SceneLoaderState = {

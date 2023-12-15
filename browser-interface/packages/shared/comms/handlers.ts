@@ -49,9 +49,11 @@ const sendMyProfileOverCommsChannel = new Observable<Record<string, never>>()
 const pingRequests = new Map<number, PingRequest>()
 let pingIndex = 0
 
-export async function bindHandlersToCommsContext(room: RoomConnection) {
-  removeAllPeers()
-  pingRequests.clear()
+export async function bindHandlersToCommsContext(room: RoomConnection, islandRoom: boolean = true) {
+  if (islandRoom) {
+    removeAllPeers()
+    pingRequests.clear()
+  }
 
   // RFC4 messages
   room.events.on('position', (e) => processPositionMessage(room, e))
