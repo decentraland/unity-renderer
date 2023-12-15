@@ -123,19 +123,6 @@ export class SceneWorker {
   metadata: Scene
   logger: ILogger
 
-  // TBD: we add this here or in the comms saga ?
-  public comms: any = {
-    initialize: async () => {
-      console.log('[Initialize Comms]: ', { sceneId: this.loadableScene.id })
-    },
-    pause: () => {
-      console.log('[Pause Comms]:', { sceneId: this.loadableScene.id })
-    },
-    stop: () => {
-      console.log('[Remove comms]:', { sceneId: this.loadableScene.id })
-    }
-  }
-
   static async createSceneWorker(loadableScene: Readonly<LoadableScene>, rpcClient: RpcClient) {
     ++globalSceneNumberCounter
     const sceneNumber = globalSceneNumberCounter

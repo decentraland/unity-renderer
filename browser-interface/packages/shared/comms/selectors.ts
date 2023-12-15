@@ -64,16 +64,15 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       const scene = sceneRoom?.sendChatMessage(message)
       await Promise.all([island, scene])
     },
-    sendVoiceMessage: async (message: Voice) => {
-      // TBD: Feature flag for backwards compatibility
-      await sceneRoom?.sendVoiceMessage(message)
+    sendVoiceMessage: async (_message: Voice) => {
+      debugger
     },
     createVoiceHandler: async () => {
       // TBD: Feature flag for backwards compatibility
       if (!sceneRoom) debugger
       return sceneRoom!.createVoiceHandler()
     }
-  } as RoomConnection
+  } as any as RoomConnection
 }
 
 export function reconnectionState(state: RootState): {
