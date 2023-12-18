@@ -94,6 +94,9 @@ namespace ECSSystems.TweenSystem
 
             model.currentTime = currentTime;
             tweenInternalComponent.PutFor(scene, entityId, model);
+
+            // Same AvatarShape interpolation used at DCLTransform from SDK6
+            entity.OnTransformChange?.Invoke(model.transform.localPosition, model.transform.localRotation);
         }
 
         private void UpdateTransformComponent(IParcelScene scene, IDCLEntity entity, Transform entityTransform, ComponentWriter writer)

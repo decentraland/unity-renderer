@@ -94,20 +94,19 @@ namespace DCL
             AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
         }
 
-        public void OnTransformChanged(object model)
+        public void OnTransformChanged(Vector3 newPosition, Quaternion newRotation)
         {
-            DCLTransform.Model transformModel = (DCLTransform.Model)model;
-            OnTransformChanged(transformModel.position, transformModel.rotation, false);
+            OnTransformChanged(newPosition, newRotation, false);
         }
 
-        public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        public void OnTransformChanged(Vector3 position, Quaternion rotation, bool immediate)
         {
             float characterMinHeight = DCLCharacterController.i.characterController.height * 0.5f;
 
             MoveTo(
                 new Vector3(position.x, Math.Max(position.y - characterMinHeight, -characterMinHeight), position.z), // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
                 rotation,
-                inmediate);
+                immediate);
         }
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
