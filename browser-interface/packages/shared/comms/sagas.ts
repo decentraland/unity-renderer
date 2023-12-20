@@ -59,6 +59,7 @@ import { isBase64 } from 'lib/encoding/base64ToBlob'
 import { SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
 import { getSceneLoader } from '../scene-loader/selectors'
 import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
+import { DISABLE_SCENE_ROOM } from '../../config'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -266,7 +267,7 @@ async function connectAdapter(
       }
 
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
-        return connectAdapter(response.fixedAdapter, identity)
+        return connectAdapter(response.fixedAdapter, identity, id)
       }
 
       if (typeof response.message === 'string') {
@@ -546,6 +547,8 @@ function* sceneRoomComms() {
   let currentSceneId: string = ''
   const commsSceneToRemove = new Map<string, NodeJS.Timeout>()
 
+  if (DISABLE_SCENE_ROOM) return
+
   while (true) {
     const reason: { timeout?: unknown; newParcel?: { payload: { position: Vector2 } } } = yield race({
       newParcel: take(SET_PARCEL_POSITION),
@@ -601,7 +604,8 @@ function* connectSceneToComms(sceneId: string) {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   // TODO: we should change the adapter control to provide this url
   const url = 'https://comms-gatekeeper.decentraland.zone/get-scene-adapter'
-  const response = yield call(signedFetch,
+  const response = yield call(
+    signedFetch,
     url,
     identity,
     { method: 'POST', responseBodyType: 'json' },

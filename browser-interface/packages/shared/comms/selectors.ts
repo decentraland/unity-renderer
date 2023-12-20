@@ -24,7 +24,9 @@ export const getSceneRooms = (state: RootCommsState): Map<string, RoomConnection
 export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined => {
   const islandRoom = state.comms.context
   const sceneRoom = state.comms.scene
+
   if (!islandRoom) return undefined
+
   return {
     connect: async () => {
       debugger
@@ -34,6 +36,8 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       await islandRoom.disconnect()
       // TBD: should we disconnect from scenes here too ?
     },
+    // TBD: This should be only be sent by the island ?
+    // We may remove this before reach production, but to think about it
     sendProfileMessage: async (profile: AnnounceProfileVersion) => {
       const island = islandRoom.sendProfileMessage(profile)
       const scene = sceneRoom?.sendProfileMessage(profile)
@@ -55,22 +59,30 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       await Promise.all([island, scene])
     },
     sendParcelSceneMessage: async (message: Scene) => {
-      const island = islandRoom.sendParcelSceneMessage(message)
-      const scene = sceneRoom?.sendParcelSceneMessage(message)
-      await Promise.all([island, scene])
+      if (message.sceneId !== sceneRoom?.id) {
+        console.warn('Ignoring Scene Message', { sceneId: message.sceneId, connectedSceneId: sceneRoom?.id })
+        return
+      }
+      // const island = islandRoom.sendParcelSceneMessage(message)
+      await sceneRoom?.sendParcelSceneMessage(message)
     },
     sendChatMessage: async (message: Chat) => {
       const island = islandRoom.sendChatMessage(message)
       const scene = sceneRoom?.sendChatMessage(message)
       await Promise.all([island, scene])
     },
-    sendVoiceMessage: async (_message: Voice) => {
-      debugger
+    // TBD: how voice chat works?
+    sendVoiceMessage: async (message: Voice) => {
+      if (!sceneRoom) debugger
+      return sceneRoom!.sendVoiceMessage(message)
     },
     createVoiceHandler: async () => {
       // TBD: Feature flag for backwards compatibility
-      if (!sceneRoom) debugger
-      return sceneRoom!.createVoiceHandler()
+      if (!sceneRoom) {
+        debugger
+        throw new Error('Scene room not avaialble')
+      }
+      return sceneRoom.createVoiceHandler()
     }
   } as any as RoomConnection
 }

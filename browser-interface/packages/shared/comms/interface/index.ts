@@ -16,6 +16,7 @@ export type CommsEvents = CommsAdapterEvents & {
 }
 
 export interface RoomConnection {
+  id?: string
   // this operation is non-reversible
   disconnect(): Promise<void>
   // @once
