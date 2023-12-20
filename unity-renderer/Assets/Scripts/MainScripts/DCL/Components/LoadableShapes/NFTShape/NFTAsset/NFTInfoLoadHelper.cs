@@ -1,9 +1,9 @@
-using System;
-using System.Collections;
-using System.Text.RegularExpressions;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers.NFT;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
+using System;
+using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 public interface INFTInfoRetriever : IDisposable
@@ -11,7 +11,8 @@ public interface INFTInfoRetriever : IDisposable
     public event Action<NFTInfo> OnFetchInfoSuccess;
     public event Action OnFetchInfoFail;
     void FetchNFTInfo(string contractAddress, string tokenId);
-    UniTask<NFTInfo> FetchNFTInfoAsync(string contractAddress, string tokenId);
+
+    UniTask<NFTInfo?> FetchNFTInfoAsync(string contractAddress, string tokenId);
 }
 
 public class NFTInfoRetriever : INFTInfoRetriever
@@ -44,12 +45,12 @@ public class NFTInfoRetriever : INFTInfoRetriever
         fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(contractAddress, tokenId));
     }
 
-    public async UniTask<NFTInfo> FetchNFTInfoAsync(string contractAddress, string tokenId)
+    public async UniTask<NFTInfo?> FetchNFTInfoAsync(string contractAddress, string tokenId)
     {
         tokenSource = new CancellationTokenSource();
         tokenSource.Token.ThrowIfCancellationRequested();
 
-        NFTInfo nftInformation = null;
+        NFTInfo? nftInformation = null;
 
         var rutine = NFTUtils.FetchNFTInfo(contractAddress, tokenId,
             (info) =>
@@ -63,7 +64,7 @@ public class NFTInfoRetriever : INFTInfoRetriever
 
         await rutine.WithCancellation(tokenSource.Token);
 
-        return nftInformation;
+        return null;
     }
 
     private IEnumerator FetchNFTInfoCoroutine(string contractAddress, string tokenId)

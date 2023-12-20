@@ -1,7 +1,10 @@
+using DCL.Helpers;
+using MainScripts.DCL.ServiceProviders.OpenSea.Requests;
+using MainScripts.DCL.ServiceProviders.OpenSea.RequestScheduler;
 using System;
 using UnityEngine;
 
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers
 {
     internal class SingleAssetRequestHandler : IRequestHandler
     {
@@ -25,15 +28,16 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             schedulableHandler.SetReadyToBeScheduled(this);
         }
 
-        string IRequestHandler.GetUrl() { return $"{Constants.SINGLE_ASSET_URL}/{request.contractAddress}/{request.tokenId}"; }
+        string IRequestHandler.GetUrl() =>
+            OpenSeaAPI.GetSingleAssetUrl(request.contractAddress, request.tokenId);
 
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {
-            SingleAssetResponse response = null;
+            OpenSeaNftDto response = null;
 
             try
             {
-                response = Utils.FromJsonWithNulls<SingleAssetResponse>(responseJson);
+                response = Utils.FromJsonWithNulls<OpenSeaNftDto>(responseJson);
             }
             catch (Exception e)
             {
@@ -58,7 +62,8 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             request.Reject(error);
         }
 
-        bool IRequestHandler.CanRetry() { return retryCount < Constants.REQUESTS_RETRY_ATTEMPS; }
+        bool IRequestHandler.CanRetry() =>
+            retryCount < OpenSeaAPI.REQUESTS_RETRY_ATTEMPS;
 
         void IRequestHandler.Retry()
         {
