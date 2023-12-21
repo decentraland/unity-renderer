@@ -207,7 +207,7 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
 
     const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
 
-    globalThis.__DEBUG_ADAPTER = adapter
+    globalThis.__DEBUG_ISLAND_ADAPTER = adapter
 
     yield put(establishingComms())
     yield apply(adapter, adapter.connect, [])
@@ -618,7 +618,9 @@ function* connectSceneToComms(sceneId: string) {
     }
   )
 
-  const sceneRoomConnetion = yield call(connectAdapter, response.json.adapter, identity, sceneId, false)
-  yield call(bindHandlersToCommsContext, sceneRoomConnetion, false)
-  yield put(setSceneRoomConnection(sceneId, sceneRoomConnetion))
+  const sceneRoomConnection = yield call(connectAdapter, response.json.adapter, identity, sceneId, false)
+  globalThis.__DEBUG_SCENE_ADAPTER = sceneRoomConnection
+  yield apply(sceneRoomConnection, sceneRoomConnection.connect, [])
+  yield call(bindHandlersToCommsContext, sceneRoomConnection, false)
+  yield put(setSceneRoomConnection(sceneId, sceneRoomConnection))
 }
