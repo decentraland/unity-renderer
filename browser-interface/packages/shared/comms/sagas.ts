@@ -229,7 +229,8 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
 async function connectAdapter(
   connStr: string,
   identity: ExplorerIdentity,
-  id: string = 'island'
+  id: string = 'island',
+  dispatchAction = true
 ): Promise<RoomConnection> {
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
@@ -307,7 +308,9 @@ async function connectAdapter(
         globalAudioStream: await getGlobalAudioStream()
       })
 
-      store.dispatch(setLiveKitAdapter(livekitAdapter))
+      if (dispatchAction) {
+        store.dispatch(setLiveKitAdapter(livekitAdapter))
+      }
 
       return new Rfc4RoomConnection(livekitAdapter, id)
     }
@@ -581,11 +584,11 @@ function* checkDisconnectScene(
   }
   if (!oldSceneId) return
 
-  console.log('[SceneComms]: will disconnect', oldSceneId)
+  console.log('[BOEDO SceneComms]: will disconnect', oldSceneId)
   const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
   const oldRoom = sceneRooms.get(oldSceneId)
   const timeout = setTimeout(() => {
-    console.log('[SceneComms]: disconnectSceneComms', oldSceneId)
+    console.log('[BOEDO SceneComms]: disconnectSceneComms', oldSceneId)
     void oldRoom?.disconnect()
     commsSceneToRemove.delete(oldSceneId)
   }, 1000)
@@ -593,7 +596,7 @@ function* checkDisconnectScene(
 }
 
 function* connectSceneToComms(sceneId: string) {
-  console.log('[SceneComms]: connectSceneToComms', sceneId)
+  console.log('[BOEDO SceneComms]: connectSceneToComms', sceneId)
 
   const realmAdapter = yield select(getRealmAdapter)
   if (!realmAdapter) {
@@ -615,7 +618,7 @@ function* connectSceneToComms(sceneId: string) {
     }
   )
 
-  const sceneRoomConnetion = yield call(connectAdapter, response.json.adapter, identity, sceneId)
+  const sceneRoomConnetion = yield call(connectAdapter, response.json.adapter, identity, sceneId, false)
   yield call(bindHandlersToCommsContext, sceneRoomConnetion, false)
   yield put(setSceneRoomConnection(sceneId, sceneRoomConnetion))
 }
