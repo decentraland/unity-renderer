@@ -7,7 +7,7 @@ import { getProfileFromStore } from 'shared/profiles/selectors'
 import { profileToRendererFormat } from 'lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport } from 'shared/world/positionThings'
-import { getIslandRoom, getSceneRooms} from 'shared/comms/selectors'
+import { getIslandRoom, getSceneRooms } from 'shared/comms/selectors'
 // import { MORDOR_POSITION_RFC4 } from './const'
 import type { AvatarMessage, PeerInformation } from './interface/types'
 import { AvatarMessageType } from './interface/types'
@@ -41,7 +41,7 @@ export function getVisiblePeerEthereumAddresses(): Array<{ userId: string }> {
   return result
 }
 
-;(globalThis as any).peerMap = peerInformationMap
+;(globalThis as any).peerMap = getAllPeers
 
 /**
  * Removes both the peer information and the Avatar from the world.
@@ -80,6 +80,7 @@ export function setupPeer(address: string): PeerInformation {
   const ethereumAddress = address.toLowerCase()
 
   if (!peerInformationMap.has(ethereumAddress)) {
+    console.log('[BOEDO] Adding Peer information', ethereumAddress)
     const peer: PeerInformation = {
       ethereumAddress,
       lastPositionIndex: 0,
@@ -212,7 +213,7 @@ function getActiveRooms(): RoomConnection[] {
 export async function onRoomLeft(oldRoom: RoomConnection) {
   const rooms = getActiveRooms()
   const newPeerInformationMap = new Map<string, PeerInformation>()
-
+  console.log('[onRoomLeft] rooms', rooms)
   for (const room of rooms) {
     if (room.id === oldRoom.id) {
       continue
@@ -221,6 +222,7 @@ export async function onRoomLeft(oldRoom: RoomConnection) {
     for (const participant of await room.getParticipants()) {
       const info = peerInformationMap.get(participant)
       if (info) {
+        console.log('[onRoomLeft] addparticipant', participant)
         newPeerInformationMap.set(participant, info)
       }
     }
@@ -228,6 +230,7 @@ export async function onRoomLeft(oldRoom: RoomConnection) {
 
   for (const participant of peerInformationMap.keys()) {
     if (!newPeerInformationMap.has(participant)) {
+      console.log('[onRoomLeft] removeUser', participant)
       avatarMessageObservable.notifyObservers({
         type: AvatarMessageType.USER_REMOVED,
         userId: participant
@@ -256,7 +259,6 @@ export async function onPeerDisconnected(data: PeerDisconnectedEvent) {
     userId: address
   })
 }
-
 
 // export function removeAllPeers() {
 //   for (const alias of peerInformationMap.keys()) {
@@ -301,7 +303,7 @@ export function processAvatarVisibility(maxVisiblePeers: number, myAddress: stri
 
     visiblePeers.push({
       squareDistance: squareDistanceRfc4(pos, trackingInfo.position),
-      alias: peerAlias,
+      alias: peerAlias
       // NOTE (hugo y Gon): this is not used below, should it be?
       // visible: trackingInfo.visible || false
     })

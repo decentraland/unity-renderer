@@ -60,6 +60,8 @@ import { SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
 import { getSceneLoader } from '../scene-loader/selectors'
 import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
 import { DISABLE_SCENE_ROOM } from '../../config'
+import { encodeParcelPosition } from '../../lib/decentraland/parcels/encodeParcelPosition'
+import { SetDesiredScenesCommand } from '../scene-loader/types'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -198,6 +200,7 @@ async function connectAdapter(
   id: string = 'island',
   dispatchAction = true
 ): Promise<RoomConnection> {
+  console.log('[connectAdapter] ', { connStr, identity, id })
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
@@ -526,7 +529,10 @@ function* sceneRoomComms() {
     const sceneLoader: ReturnType<typeof getSceneLoader> = yield select(getSceneLoader)
     if (!sceneLoader) continue
     if (reason.newParcel) {
-      const sceneId = yield call(sceneLoader.getSceneId!, reason.newParcel.payload.position)
+      const scenes: SetDesiredScenesCommand = yield call(sceneLoader.fetchScenesByLocation, [
+        encodeParcelPosition(reason.newParcel.payload.position)
+      ])
+      const sceneId = scenes.scenes[0].id
       // We are still on the same scene.
       if (sceneId === currentSceneId) continue
       const oldSceneId = currentSceneId

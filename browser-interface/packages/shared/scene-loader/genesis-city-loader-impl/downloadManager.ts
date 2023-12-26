@@ -27,6 +27,7 @@ export class SceneDataDownloadManager {
   }
 
   async resolveEntitiesByPointer(pointers: string[]): Promise<Set<LoadableScene>> {
+    console.log('[DownloadManager]resolveEntitiesByPointer ', pointers)
     const futures: Promise<LoadableScene | null>[] = []
 
     const missingPointers: string[] = []
