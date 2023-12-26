@@ -107,7 +107,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       this.config.logger.log(`Skip sending message because connection state is ${state} ${this.room.name}`)
       return
     }
-    this.config.logger.log('Sending message', this.room.name)
+    // this.config.logger.log('Sending message', this.room.name)
 
     try {
       await this.room.localParticipant.publishData(data, reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY)
@@ -129,11 +129,11 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async do_disconnect(kicked: boolean) {
-    this.config.logger.log('[BOEDO]: do_disconnect', this.room.name)
     if (this.disposed) {
       return
     }
 
+    this.config.logger.log('[BOEDO]: do_disconnect', this.room.name)
     this.disposed = true
     await this.room.disconnect().catch(commsLogger.error)
     this.events.emit('DISCONNECTION', { kicked })

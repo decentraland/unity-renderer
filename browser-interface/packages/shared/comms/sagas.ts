@@ -549,7 +549,7 @@ function* checkDisconnectScene(
   const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
   const oldRoom = sceneRooms.get(oldSceneId)
   const timeout = setTimeout(() => {
-    console.log('[BOEDO SceneComms]: disconnectSceneComms', oldSceneId)
+    console.log('[BOEDO SceneComms]: disconnectSceneComms', oldSceneId, !!oldRoom)
     void oldRoom?.disconnect()
     commsSceneToRemove.delete(oldSceneId)
   }, 1000)

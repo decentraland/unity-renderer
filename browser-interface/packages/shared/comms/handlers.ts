@@ -140,7 +140,10 @@ function processChatMessage(message: Package<proto.Chat>) {
   senderPeer.lastUpdate = Date.now()
 
   if (senderPeer.ethereumAddress) {
-    if (message.data.message.startsWith('␐')) {
+    if (message.data.message.startsWith('␆') /* pong */ ||
+      message.data.message.startsWith('␑') /* ping */) {
+        // TODO: remove this
+    } else if (message.data.message.startsWith('␐')) {
       const [id, timestamp] = message.data.message.split(' ')
 
       avatarMessageObservable.notifyObservers({
