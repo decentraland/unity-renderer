@@ -20,6 +20,7 @@ import {
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
 export const getSceneRoomComms = (state: RootCommsState): RoomConnection | undefined => state.comms.scene
 export const getSceneRooms = (state: RootCommsState): Map<string, RoomConnection> => state.comms.scenes
+export const getIslandRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.context
 
 export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined => {
   const islandRoom = state.comms.context

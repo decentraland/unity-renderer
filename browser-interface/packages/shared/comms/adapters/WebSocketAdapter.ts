@@ -231,4 +231,9 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
       })
       .catch(console.error)
   }
+
+  async getParticipants(): Promise<string[]> {
+    // TODO
+    throw new Error('Not implemented')
+  }
 }

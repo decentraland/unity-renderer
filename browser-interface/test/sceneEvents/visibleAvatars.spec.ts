@@ -66,7 +66,7 @@ describe('Avatar observable', () => {
 
   afterEach(() => {
     // clear visible avatars cache
-    peers.removeAllPeers()
+    // peers.removeAllPeers()
 
     sinon.restore()
     sinon.reset()
@@ -102,7 +102,7 @@ describe('Avatar observable', () => {
     peers.receiveUserVisible(userA, true)
     peers.receiveUserVisible(userB, true)
     expect(getVisibleAvatarsUserId()).to.eql([userA, userB])
-    peers.removePeerByAddress(userA)
+    // peers.removePeerByAddress(userA)
     expect(lastEvent).to.deep.eq({ eventType: 'playerDisconnected', payload: { userId: userA } })
     expect(getVisibleAvatarsUserId()).to.eql([userB])
   })

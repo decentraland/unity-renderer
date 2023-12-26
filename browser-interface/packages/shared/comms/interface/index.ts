@@ -33,4 +33,6 @@ export interface RoomConnection {
   sendVoiceMessage(message: proto.Voice): Promise<void>
 
   createVoiceHandler(): Promise<VoiceHandler>
+
+  getParticipants(): Promise<string[]>
 }

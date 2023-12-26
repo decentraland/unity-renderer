@@ -15,16 +15,15 @@ import { processVoiceFragment } from 'shared/voiceChat/handlers'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
 import { messageReceived } from '../chat/actions'
 import { handleRoomDisconnection } from './actions'
-import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
+import { AdapterDisconnectedEvent } from './adapters/types'
 import { RoomConnection } from './interface'
 import { AvatarMessageType, Package } from './interface/types'
 import {
   avatarMessageObservable,
-  ensureTrackingUniqueAndLatest,
   getPeer,
+  onRoomLeft,
   receiveUserPosition,
-  removeAllPeers,
-  removePeerByAddress,
+  onPeerDisconnected,
   setupPeer as setupPeerTrackingInfo
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
@@ -40,11 +39,7 @@ const versionUpdateOverCommsChannel = new Observable<VersionUpdateInformation>()
 const receiveProfileOverCommsChannel = new Observable<Avatar>()
 const sendMyProfileOverCommsChannel = new Observable<Record<string, never>>()
 
-export async function bindHandlersToCommsContext(room: RoomConnection, islandRoom: boolean = true) {
-  if (islandRoom) {
-    removeAllPeers()
-  }
-
+export async function bindHandlersToCommsContext(room: RoomConnection) {
   // RFC4 messages
   room.events.on('position', (e) => processPositionMessage(room, e))
   room.events.on('profileMessage', processProfileUpdatedMessage)
@@ -60,7 +55,7 @@ export async function bindHandlersToCommsContext(room: RoomConnection, islandRoo
   })
 
   // transport messages
-  room.events.on('PEER_DISCONNECTED', handleDisconnectPeer)
+  room.events.on('PEER_DISCONNECTED', onPeerDisconnected)
   room.events.on('DISCONNECTION', (event) => handleDisconnectionEvent(event, room))
 }
 
@@ -83,7 +78,15 @@ export async function requestProfileFromPeers(
   return false
 }
 
-function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
+async function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
+
+  try {
+  await onRoomLeft(room)
+  } catch(err) {
+    console.error(err)
+    // TODO: handle this
+  }
+
   store.dispatch(handleRoomDisconnection(room))
 
   // when we are kicked, the explorer should re-load, or maybe go to offline~offline realm
@@ -95,10 +98,6 @@ function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConn
   }
 }
 
-function handleDisconnectPeer(data: PeerDisconnectedEvent) {
-  removePeerByAddress(data.address)
-}
-
 // TODO: use position message to setupPeerTrackingInfo
 function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVersion>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
@@ -108,8 +107,6 @@ function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVers
   if (message.data.profileVersion > peerTrackingInfo.lastProfileVersion) {
     peerTrackingInfo.lastProfileVersion = message.data.profileVersion
 
-    // remove duplicates
-    ensureTrackingUniqueAndLatest(peerTrackingInfo)
     versionUpdateOverCommsChannel.notifyObservers({ userId: message.address, version: message.data.profileVersion })
   }
 }

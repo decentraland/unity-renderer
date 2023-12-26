@@ -13,4 +13,5 @@ export class OfflineAdapter implements MinimumCommunicationsAdapter {
   async disconnect(_error?: Error | undefined): Promise<void> {}
   send(_data: Uint8Array, _hints: SendHints): void {}
   async connect(): Promise<void> {}
+  async getParticipants() { return [] } 
 }

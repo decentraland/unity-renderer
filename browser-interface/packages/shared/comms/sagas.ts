@@ -582,6 +582,6 @@ function* connectSceneToComms(sceneId: string) {
   const sceneRoomConnection = yield call(connectAdapter, response.json.adapter, identity, sceneId, false)
   globalThis.__DEBUG_SCENE_ADAPTER = sceneRoomConnection
   yield apply(sceneRoomConnection, sceneRoomConnection.connect, [])
-  yield call(bindHandlersToCommsContext, sceneRoomConnection, false)
+  yield call(bindHandlersToCommsContext, sceneRoomConnection)
   yield put(setSceneRoomConnection(sceneId, sceneRoomConnection))
 }

@@ -75,6 +75,10 @@ export class Rfc4RoomConnection implements RoomConnection {
     await this.transport.disconnect()
   }
 
+  async getParticipants(): Promise<string[]> {
+    return this.transport.getParticipants()
+  }
+
   private handleMessage({ data, address }: AdapterMessageEvent) {
     const { message } = proto.Packet.decode(data)
 

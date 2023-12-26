@@ -164,4 +164,8 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
     return result
   }
+
+  async getParticipants(): Promise<string[]> {
+    return Array.from(this.room.participants.values()).map((p) => p.identity)
+  }
 }

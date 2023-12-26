@@ -43,6 +43,7 @@ export class SimulationRoom implements RoomConnection {
   params: URLSearchParams
 
   constructor(param: string) {
+    const peers = this.peers
     this.params = new URLSearchParams(param.startsWith('?') ? param.substring(1) : param)
     this.tick = setInterval(this.update.bind(this), 60)
     this.roomConnection = new Rfc4RoomConnection({
@@ -52,6 +53,9 @@ export class SimulationRoom implements RoomConnection {
       async disconnect(_error?: Error): Promise<void> {},
       async createVoiceHandler() {
         throw new Error('not implemented')
+      },
+      async getParticipants() {
+        return Array.from(peers.keys())
       }
     })
   }
@@ -199,5 +203,9 @@ export class SimulationRoom implements RoomConnection {
 
   async connect(): Promise<void> {
     await Promise.all(new Array(100).fill(0).map(() => this.spawnPeer()))
+  }
+
+  async getParticipants() {
+    return this.roomConnection.getParticipants()
   }
 }

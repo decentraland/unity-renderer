@@ -29,6 +29,8 @@ export interface MinimumCommunicationsAdapter {
   events: Emitter<CommsAdapterEvents>
 
   createVoiceHandler(): Promise<VoiceHandler>
+
+  getParticipants(): Promise<string[]>
 }
 
 export type CommsAdapterEvents = {
