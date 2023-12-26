@@ -217,7 +217,7 @@ export async function onRoomLeft(oldRoom: RoomConnection) {
     if (room.id === oldRoom.id) {
       continue
     }
-    
+
     for (const participant of await room.getParticipants()) {
       const info = peerInformationMap.get(participant)
       if (info) {

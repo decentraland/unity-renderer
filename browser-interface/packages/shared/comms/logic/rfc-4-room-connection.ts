@@ -24,7 +24,7 @@ export class Rfc4RoomConnection implements RoomConnection {
   }
 
   async connect(): Promise<void> {
-    // console.log('[RoomConnection Comms]: connect', this.id)
+    console.log('[RoomConnection Comms]: connect', this.id)
     await this.transport.connect()
   }
 
@@ -71,7 +71,7 @@ export class Rfc4RoomConnection implements RoomConnection {
   }
 
   async disconnect() {
-    // console.log('[RoomConnection Comms]: disconnect', this.id)
+    console.log('[RoomConnection Comms]: disconnect', this.id)
     await this.transport.disconnect()
   }
 

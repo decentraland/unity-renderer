@@ -107,7 +107,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       this.config.logger.log(`Skip sending message because connection state is ${state} ${this.room.name}`)
       return
     }
-    // this.config.logger.log('Sending message', this.room.name)
 
     try {
       await this.room.localParticipant.publishData(data, reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY)

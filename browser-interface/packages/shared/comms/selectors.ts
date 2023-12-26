@@ -40,22 +40,22 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     // TBD: This should be only be sent by the island ?
     // We may remove this before reach production, but to think about it
     sendProfileMessage: async (profile: AnnounceProfileVersion) => {
-      const island = islandRoom.sendProfileMessage(profile)
+      const island = Promise.resolve() || islandRoom.sendProfileMessage(profile)
       const scene = sceneRoom?.sendProfileMessage(profile)
       await Promise.all([island, scene])
     },
     sendProfileRequest: async (request: ProfileRequest) => {
-      const island = islandRoom.sendProfileRequest(request)
+      const island = Promise.resolve() || islandRoom.sendProfileRequest(request)
       const scene = sceneRoom?.sendProfileRequest(request)
       await Promise.all([island, scene])
     },
     sendProfileResponse: async (response: ProfileResponse) => {
-      const island = islandRoom.sendProfileResponse(response)
+      const island = Promise.resolve() || islandRoom.sendProfileResponse(response)
       const scene = sceneRoom?.sendProfileResponse(response)
       await Promise.all([island, scene])
     },
     sendPositionMessage: async (position: Omit<Position, 'index'>) => {
-      const island = islandRoom.sendPositionMessage(position)
+      const island = Promise.resolve() || islandRoom.sendPositionMessage(position)
       const scene = sceneRoom?.sendPositionMessage(position)
       await Promise.all([island, scene])
     },

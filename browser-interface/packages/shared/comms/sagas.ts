@@ -25,7 +25,7 @@ import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'share
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
-import {  overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
+import { overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -43,12 +43,12 @@ import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
 import { WebSocketAdapter } from './adapters/WebSocketAdapter'
-import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel  } from './handlers'
+import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel } from './handlers'
 import type { RoomConnection } from './interface'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import {  processAvatarVisibility } from './peers'
+import { processAvatarVisibility } from './peers'
 import { getCommsRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
@@ -166,7 +166,12 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
     yield put(setCommsIsland(action.payload.event.islandId))
 
-    const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
+    const adapter: RoomConnection = yield call(
+      connectAdapter,
+      action.payload.event.connStr,
+      identity,
+      action.payload.event.islandId
+    )
 
     globalThis.__DEBUG_ISLAND_ADAPTER = adapter
 
