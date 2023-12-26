@@ -4,7 +4,6 @@ import { uuid } from 'lib/javascript/uuid'
 import { Observable } from 'mz-observable'
 import { eventChannel } from 'redux-saga'
 import { getBannedUsers } from 'shared/meta/selectors'
-import { incrementCounter } from 'shared/analytics/occurences'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
@@ -14,7 +13,6 @@ import { store } from 'shared/store/isolatedStore'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
 import { processVoiceFragment } from 'shared/voiceChat/handlers'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
-import { sendPublicChatMessage } from '.'
 import { messageReceived } from '../chat/actions'
 import { handleRoomDisconnection } from './actions'
 import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
@@ -33,11 +31,6 @@ import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
-type PingRequest = {
-  alias: number
-  sentTime: number
-  onPong: (dt: number, address: string) => void
-}
 type VersionUpdateInformation = {
   userId: string
   version: number
@@ -46,13 +39,10 @@ type VersionUpdateInformation = {
 const versionUpdateOverCommsChannel = new Observable<VersionUpdateInformation>()
 const receiveProfileOverCommsChannel = new Observable<Avatar>()
 const sendMyProfileOverCommsChannel = new Observable<Record<string, never>>()
-const pingRequests = new Map<number, PingRequest>()
-let pingIndex = 0
 
 export async function bindHandlersToCommsContext(room: RoomConnection, islandRoom: boolean = true) {
   if (islandRoom) {
     removeAllPeers()
-    pingRequests.clear()
   }
 
   // RFC4 messages
@@ -109,6 +99,7 @@ function handleDisconnectPeer(data: PeerDisconnectedEvent) {
   removePeerByAddress(data.address)
 }
 
+// TODO: use position message to setupPeerTrackingInfo
 function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVersion>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
   peerTrackingInfo.ethereumAddress = message.address
@@ -136,33 +127,6 @@ function processParcelSceneCommsMessage(message: Package<proto.Scene>) {
   }
 }
 
-function pingMessage(nonce: number) {
-  return `␑${nonce}`
-}
-function pongMessage(nonce: number, address: string) {
-  return `␆${nonce} ${address}`
-}
-
-export function sendPing(onPong?: (dt: number, address: string) => void) {
-  const nonce = Math.floor(Math.random() * 0xffffffff)
-  let responses = 0
-  pingRequests.set(nonce, {
-    sentTime: Date.now(),
-    alias: pingIndex++,
-    onPong:
-      onPong ||
-      ((dt, address) => {
-        console.log(
-          `ping got ${++responses} responses (ping: ${dt.toFixed(2)}ms, nonce: ${nonce}, address: ${address})`
-        )
-      })
-  })
-  sendPublicChatMessage(pingMessage(nonce))
-  incrementCounter('ping_sent_counter')
-}
-
-const answeredPings = new Set<number>()
-
 function processChatMessage(message: Package<proto.Chat>) {
   const myProfile = getCurrentUserProfile(store.getState())
   const fromAlias: string = message.address
@@ -179,24 +143,7 @@ function processChatMessage(message: Package<proto.Chat>) {
   senderPeer.lastUpdate = Date.now()
 
   if (senderPeer.ethereumAddress) {
-    if (message.data.message.startsWith('␆') /* pong */) {
-      const [nonceStr, address] = message.data.message.slice(1).split(' ')
-      const nonce = parseInt(nonceStr, 10)
-      const request = pingRequests.get(nonce)
-      if (request) {
-        incrementCounter('pong_received_counter')
-        request.onPong(Date.now() - request.sentTime, address || 'none')
-      }
-    } else if (message.data.message.startsWith('␑') /* ping */) {
-      const nonce = parseInt(message.data.message.slice(1), 10)
-      if (answeredPings.has(nonce)) {
-        incrementCounter('ping_received_twice_counter')
-        return
-      }
-      answeredPings.add(nonce)
-      if (myProfile) sendPublicChatMessage(pongMessage(nonce, myProfile.ethAddress))
-      incrementCounter('pong_sent_counter')
-    } else if (message.data.message.startsWith('␐')) {
+    if (message.data.message.startsWith('␐')) {
       const [id, timestamp] = message.data.message.split(' ')
 
       avatarMessageObservable.notifyObservers({

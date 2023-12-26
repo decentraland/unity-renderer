@@ -14,7 +14,7 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
+import { getMaxVisiblePeers } from 'shared/meta/selectors'
 import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
 import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
@@ -25,7 +25,7 @@ import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'share
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
-import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
+import {  overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -43,12 +43,12 @@ import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
 import { WebSocketAdapter } from './adapters/WebSocketAdapter'
-import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
+import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel  } from './handlers'
 import type { RoomConnection } from './interface'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import { getConnectedPeerCount, processAvatarVisibility } from './peers'
+import {  processAvatarVisibility } from './peers'
 import { getCommsRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
@@ -92,7 +92,6 @@ export function* commsSaga() {
   yield fork(handleAnnounceProfile)
   yield fork(initAvatarVisibilityProcess)
   yield fork(handleCommsReconnectionInterval)
-  yield fork(pingerProcess)
   yield fork(reportPositionSaga)
 
   yield fork(sceneRoomComms)
@@ -156,44 +155,6 @@ function* reportPositionSaga() {
   }
 
   positionObservable.remove(observer)
-}
-
-/**
- * This saga sends random pings to all peers if the conditions are met.
- */
-function* pingerProcess() {
-  yield call(waitForMetaConfigurationInitialization)
-
-  const enabled: boolean = yield select(getFeatureFlagEnabled, 'ping_enabled')
-
-  if (enabled) {
-    while (true) {
-      yield delay(15_000 + Math.random() * 60_000)
-
-      const responses = new Map<string, number[]>()
-      const expectedResponses = getConnectedPeerCount()
-
-      yield call(sendPing, (dt, address) => {
-        const list = responses.get(address) || []
-        responses.set(address, list)
-        list.push(dt)
-        measurePingTime(dt)
-        if (list.length > 1) {
-          incrementCounter('pong_duplicated_response_counter')
-        }
-      })
-
-      yield delay(15_000)
-
-      // measure the response ratio
-      if (expectedResponses) {
-        measurePingTimePercentages(Math.round((responses.size / expectedResponses) * 100))
-      }
-
-      incrementCounter('pong_expected_counter', expectedResponses)
-      incrementCounter('pong_given_counter', responses.size)
-    }
-  }
 }
 
 /**

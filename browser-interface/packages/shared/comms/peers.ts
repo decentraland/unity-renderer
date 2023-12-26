@@ -37,9 +37,6 @@ export function getVisiblePeerEthereumAddresses(): Array<{ userId: string }> {
   }
   return result
 }
-export function getConnectedPeerCount() {
-  return peerInformationMap.size
-}
 
 ;(globalThis as any).peerMap = peerInformationMap
 
