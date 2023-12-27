@@ -210,6 +210,7 @@ function getActiveRooms(): RoomConnection[] {
   return rooms
 }
 
+;(globalThis as any).getActiveRooms = getActiveRooms
 export async function onRoomLeft(oldRoom: RoomConnection) {
   const rooms = getActiveRooms()
   const newPeerInformationMap = new Map<string, PeerInformation>()
