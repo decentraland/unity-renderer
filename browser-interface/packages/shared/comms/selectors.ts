@@ -26,7 +26,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
   const islandRoom = state.comms.context
   const sceneRoom = state.comms.scene
 
-  if (!islandRoom) return undefined
+  // if (!islandRoom) return undefined
 
   return {
     connect: async () => {
@@ -34,28 +34,30 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     },
     // events: islandRoom.events,
     disconnect: async () => {
-      await islandRoom.disconnect()
+      if (islandRoom) {
+        await islandRoom.disconnect()
+      }
       // TBD: should we disconnect from scenes here too ?
     },
     // TBD: This should be only be sent by the island ?
     // We may remove this before reach production, but to think about it
     sendProfileMessage: async (profile: AnnounceProfileVersion) => {
-      const island = islandRoom.sendProfileMessage(profile)
+      const island = islandRoom?.sendProfileMessage(profile)
       const scene = sceneRoom?.sendProfileMessage(profile)
       await Promise.all([island, scene])
     },
     sendProfileRequest: async (request: ProfileRequest) => {
-      const island = islandRoom.sendProfileRequest(request)
+      const island = islandRoom?.sendProfileRequest(request)
       const scene = sceneRoom?.sendProfileRequest(request)
       await Promise.all([island, scene])
     },
     sendProfileResponse: async (response: ProfileResponse) => {
-      const island = islandRoom.sendProfileResponse(response)
+      const island = islandRoom?.sendProfileResponse(response)
       const scene = sceneRoom?.sendProfileResponse(response)
       await Promise.all([island, scene])
     },
     sendPositionMessage: async (position: Omit<Position, 'index'>) => {
-      const island = islandRoom.sendPositionMessage(position)
+      const island = islandRoom?.sendPositionMessage(position)
       const scene = sceneRoom?.sendPositionMessage(position)
       await Promise.all([island, scene])
     },
@@ -68,7 +70,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       await sceneRoom?.sendParcelSceneMessage(message)
     },
     sendChatMessage: async (message: Chat) => {
-      const island = islandRoom.sendChatMessage(message)
+      const island = islandRoom?.sendChatMessage(message)
       const scene = sceneRoom?.sendChatMessage(message)
       await Promise.all([island, scene])
     },
@@ -80,7 +82,6 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     createVoiceHandler: async () => {
       // TBD: Feature flag for backwards compatibility
       if (!sceneRoom) {
-        debugger
         throw new Error('Scene room not avaialble')
       }
       return sceneRoom.createVoiceHandler()
