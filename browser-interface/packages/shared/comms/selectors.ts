@@ -83,7 +83,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
         debugger
         throw new Error('Scene room not avaialble')
       }
-      return sceneRoom.createVoiceHandler()
+      return islandRoom.createVoiceHandler()
     }
   } as any as RoomConnection
 }
