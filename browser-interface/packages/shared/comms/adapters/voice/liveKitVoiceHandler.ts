@@ -56,7 +56,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     if (!info) {
       info = { tracks: new Map<string, ParticipantTrack>() }
       participantsInfo.set(participant.identity, info)
-    } 
+    }
 
     const audioContext = globalAudioStream.getAudioContext()
     const streamNode = audioContext.createMediaStreamSource(track.mediaStream!)
@@ -74,7 +74,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     panNode.coneOuterGain = 0.9
     panNode.rolloffFactor = 1.0
 
-    info.tracks.set(track.sid, { panNode, streamNode})
+    info.tracks.set(track.sid, { panNode, streamNode })
   }
 
   function handleTrackUnsubscribed(
@@ -91,7 +91,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       return
     }
 
-    const track = info.tracks.get(remoteTrack.sid) 
+    const track = info.tracks.get(remoteTrack.sid)
     if (track) {
       track.panNode.disconnect()
       track.streamNode.disconnect()
@@ -103,26 +103,25 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
   function handleParticipantDisconnected(p: RemoteParticipant) {
     const info = participantsInfo.get(p.identity)
     if (!info) {
-      return 
+      return
     }
 
     for (const track of info.tracks.values()) {
       track.panNode.disconnect()
       track.streamNode.disconnect()
     }
-    
-    participantsInfo.delete(p.identity)
-  }
-  
 
-  function handleMediaDevicesError() {
-    if (errorListener) errorListener('Media Device Error')
+    participantsInfo.delete(p.identity)
   }
 
   room
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
     .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
-    .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
+    .on(RoomEvent.MediaDevicesError, () => {
+      if (errorListener) {
+        errorListener('Media Device Error')
+      }
+    })
     .on(RoomEvent.ParticipantDisconnected, handleParticipantDisconnected)
 
   logger.log('initialized')
@@ -134,7 +133,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         if (recordingListener) {
           recordingListener(recording)
         }
-      } catch(err) {
+      } catch (err) {
         logger.error('Error: ', err, ', recording=', recording)
         if (recordingListener) {
           recordingListener(false)
@@ -190,7 +189,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         )
       }
 
-      for (const [_, participant] of room.participants) {
+      for (const participant of room.participants.values()) {
         const address = participant.identity
         const peer = getPeer(address)
         const participantInfo = participantsInfo.get(address)
