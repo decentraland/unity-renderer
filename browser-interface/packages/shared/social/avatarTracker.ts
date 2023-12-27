@@ -14,6 +14,7 @@ type RendererAvatarData = {
   sceneNumber?: number
 }
 
+;(globalThis as any).getRendererAvatars = () => rendererAvatars
 const rendererAvatars: Map<string, RendererAvatarData> = new Map<string, RendererAvatarData>()
 // Tracks avatar state on the renderer side.
 // Set if avatar has change the scene it's in or removed on renderer's side.
