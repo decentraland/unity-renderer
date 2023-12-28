@@ -32,11 +32,10 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
 
   let recordingListener: ((state: boolean) => void) | undefined
   let errorListener: ((message: string) => void) | undefined
+  let onUserTalkingCallback: ((userId: string, talking: boolean) => void) | undefined = undefined
 
   let globalVolume: number = 1.0
   let validInput = false
-  let onUserTalkingCallback: (userId: string, talking: boolean) => void = () => {}
-
   const participantsInfo = new Map<string, ParticipantInfo>()
 
   function handleTrackSubscribed(
@@ -49,7 +48,9 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     }
 
     participant.on(ParticipantEvent.IsSpeakingChanged, (talking: boolean) => {
-      onUserTalkingCallback(participant.identity, talking)
+      if (onUserTalkingCallback) {
+        onUserTalkingCallback(participant.identity, talking)
+      }
     })
 
     let info = participantsInfo.get(participant.identity)
@@ -246,6 +247,10 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     hasInput: () => {
       return validInput
     },
-    async destroy() {}
+    async destroy() {
+      onUserTalkingCallback = undefined
+      recordingListener = undefined
+      errorListener = undefined
+    }
   }
 }
