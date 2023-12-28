@@ -1,5 +1,5 @@
 import { getFatalError } from 'shared/loading/selectors'
-import { getRealmAdapter } from 'shared/realm/selectors'
+import { getRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { IRealmAdapter } from 'shared/realm/types'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { ExplorerIdentity } from 'shared/session/types'
@@ -13,14 +13,20 @@ import {
   ProfileResponse,
   Position,
   Scene,
-  Chat,
-  Voice
+  Chat
 } from '../protocol/decentraland/kernel/comms/rfc4/comms.gen'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
 
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
 export const getSceneRoomComms = (state: RootCommsState): RoomConnection | undefined => state.comms.scene
 export const getSceneRooms = (state: RootCommsState): Map<string, RoomConnection> => state.comms.scenes
 export const getIslandRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.context
+
+async function isWorld() {
+  const adapter: IRealmAdapter = await ensureRealmAdapter()
+  const isWorld = isWorldLoaderActive(adapter)
+  return isWorld
+}
 
 export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined => {
   const islandRoom = state.comms.context
@@ -34,6 +40,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     },
     // events: islandRoom.events,
     disconnect: async () => {
+      console.log('[BOEDO] selectors disconnect')
       await islandRoom.disconnect()
       // TBD: should we disconnect from scenes here too ?
     },
@@ -60,6 +67,10 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       await Promise.all([island, scene])
     },
     sendParcelSceneMessage: async (message: Scene) => {
+      if (await isWorld()) {
+        await islandRoom.sendParcelSceneMessage(message)
+        return
+      }
       if (message.sceneId !== sceneRoom?.id) {
         console.warn('Ignoring Scene Message', { sceneId: message.sceneId, connectedSceneId: sceneRoom?.id })
         return
@@ -73,11 +84,11 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       await Promise.all([island, scene])
     },
     // TBD: how voice chat works?
-    sendVoiceMessage: async (message: Voice) => {
-      if (!sceneRoom) debugger
-      return sceneRoom!.sendVoiceMessage(message)
-    },
     createVoiceHandler: async () => {
+      if (await isWorld()) {
+        return islandRoom.createVoiceHandler()
+      }
+
       // TBD: Feature flag for backwards compatibility
       if (!sceneRoom) {
         debugger

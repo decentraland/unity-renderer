@@ -39,13 +39,6 @@ export function createGenesisCityLoader(options: {
   }
 
   return {
-    async getSceneId(parcel: Vector2): Promise<string | undefined> {
-      const scene = downloadManager.pointerToEntity.get(encodeParcelPosition(parcel))
-      console.log('[DownloadManager] getSceneId', parcel, scene, 'asd')
-      if (scene) {
-        return (await scene)?.id
-      }
-    },
     async fetchScenesByLocation(parcels) {
       const results = await downloadManager.resolveEntitiesByPointer(parcels)
       return {
