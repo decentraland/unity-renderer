@@ -113,6 +113,9 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     try {
       await this.room.localParticipant.publishData(data, reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY)
     } catch (err: any) {
+      if (this.disposed) {
+        return
+      }
       // NOTE: for tracking purposes only, this is not a "code" error, this is a failed connection or a problem with the livekit instance
       trackEvent('error', {
         context: 'livekit-adapter',
@@ -120,7 +123,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         stack: err.stack,
         saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
       })
-      this.config.logger.log('[BOEDO]: error sending data', err, err.mesage)
+      this.config.logger.log(`[BOEDO]: error sending data ${this.room.name}`, err, err.mesage)
       await this.disconnect()
     }
   }
