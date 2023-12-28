@@ -18,7 +18,7 @@ import {
 import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
 
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
-export const getSceneRoomComms = (state: RootCommsState): RoomConnection | undefined => state.comms.scene
+export const getSceneRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.scene
 export const getSceneRooms = (state: RootCommsState): Map<string, RoomConnection> => state.comms.scenes
 export const getIslandRoom = (state: RootCommsState): RoomConnection | undefined => state.comms.context
 
