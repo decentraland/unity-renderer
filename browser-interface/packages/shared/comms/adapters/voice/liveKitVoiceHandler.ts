@@ -124,6 +124,9 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       }
     })
     .on(RoomEvent.ParticipantDisconnected, handleParticipantDisconnected)
+    .on(RoomEvent.AudioPlaybackStatusChanged, (c) => {
+      console.log('audio playback status changed', c)
+    })
 
   logger.log(`initialized ${room.name}`)
 
@@ -145,10 +148,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       onUserTalkingCallback = cb
       try {
         if (!room.canPlaybackAudio) {
-          console.log('START AUDIO')
-          room.startAudio().catch(logger.error)
-        } else {
-          console.log('ELSE')
           room.startAudio().catch(logger.error)
         }
 
