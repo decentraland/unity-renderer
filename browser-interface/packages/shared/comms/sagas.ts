@@ -21,7 +21,7 @@ import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
@@ -49,7 +49,7 @@ import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
 import { processAvatarVisibility } from './peers'
-import { getCommsRoom, getSceneRooms, reconnectionState } from './selectors'
+import { getCommsRoom, getSceneRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 import { getGlobalAudioStream } from './adapters/voice/loopback'
@@ -59,9 +59,9 @@ import { isBase64 } from 'lib/encoding/base64ToBlob'
 import { SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
 import { getSceneLoader } from '../scene-loader/selectors'
 import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
-import { DISABLE_SCENE_ROOM } from '../../config'
 import { encodeParcelPosition } from '../../lib/decentraland/parcels/encodeParcelPosition'
 import { SetDesiredScenesCommand } from '../scene-loader/types'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -516,10 +516,15 @@ function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
 }
 
 function* sceneRoomComms() {
-  let currentSceneId: string = ''
   const commsSceneToRemove = new Map<string, NodeJS.Timeout>()
+  const adapter: IRealmAdapter = yield call(ensureRealmAdapter)
+  const isWorld = isWorldLoaderActive(adapter)
 
-  if (DISABLE_SCENE_ROOM) return
+  if (isWorld) {
+    return
+  }
+
+  console.log('[BOEDO] isWorldLoaderActive(adapter!)', isWorldLoaderActive(adapter!))
 
   while (true) {
     const reason: { timeout?: unknown; newParcel?: { payload: { position: Vector2 } } } = yield race({
@@ -533,38 +538,37 @@ function* sceneRoomComms() {
         encodeParcelPosition(reason.newParcel.payload.position)
       ])
       const sceneId = scenes.scenes[0].id
+      const currentScene: ReturnType<typeof getSceneRoom> = yield select(getSceneRoom)
       // We are still on the same scene.
-      if (sceneId === currentSceneId) continue
-      const oldSceneId = currentSceneId
-      yield call(checkDisconnectScene, sceneId, oldSceneId, commsSceneToRemove)
+      if (sceneId === currentScene?.id) continue
+
+      yield call(checkDisconnectScene, sceneId, commsSceneToRemove)
       yield call(connectSceneToComms, sceneId)
       // Player moved to a new scene. Instanciate new comms
-      currentSceneId = sceneId
     }
   }
 }
 
-function* checkDisconnectScene(
-  currentSceneId: string,
-  oldSceneId: string,
-  commsSceneToRemove: Map<string, NodeJS.Timeout>
-) {
+function* checkDisconnectScene(currentSceneId: string, commsSceneToRemove: Map<string, NodeJS.Timeout>) {
   // avoid deleting an already created comms. Use when the user is switching between two scenes
   if (commsSceneToRemove.has(currentSceneId)) {
     clearTimeout(commsSceneToRemove.get(currentSceneId))
     commsSceneToRemove.delete(currentSceneId)
   }
-  if (!oldSceneId) return
 
-  console.log('[BOEDO SceneComms]: will disconnect', oldSceneId)
+  console.log('[BOEDO SceneComms]: will disconnect')
   const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
-  const oldRoom = sceneRooms.get(oldSceneId)
-  const timeout = setTimeout(() => {
-    console.log('[BOEDO SceneComms]: disconnectSceneComms', oldSceneId, !!oldRoom)
-    void oldRoom?.disconnect()
-    commsSceneToRemove.delete(oldSceneId)
-  }, 1000)
-  commsSceneToRemove.set(oldSceneId, timeout)
+  for (const [roomId, room] of sceneRooms) {
+    if (roomId === currentSceneId) continue
+    if (commsSceneToRemove.has(roomId)) continue
+    const timeout = setTimeout(() => {
+      console.log('[BOEDO SceneComms]: disconnectSceneComms', roomId)
+      void room.disconnect()
+      commsSceneToRemove.delete(roomId)
+      sceneRooms.delete(roomId)
+    }, 1000)
+    commsSceneToRemove.set(roomId, timeout)
+  }
 }
 
 function* connectSceneToComms(sceneId: string) {
