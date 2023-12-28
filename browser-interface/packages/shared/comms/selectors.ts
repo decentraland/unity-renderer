@@ -85,7 +85,7 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     },
     getVoiceHandler: async () => {
       if (await isWorld()) {
-        return islandRoom.createVoiceHandler()
+        return islandRoom.getVoiceHandler()
       }
       if (!sceneRoom) {
         debugger
