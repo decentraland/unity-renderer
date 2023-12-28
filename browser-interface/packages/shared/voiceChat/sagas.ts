@@ -77,11 +77,13 @@ function* handleConnectVoiceChatToRoom() {
   while (true) {
     // wait for next event to happen
     yield take([SET_SCENE_ROOM_CONNECTION, JOIN_VOICE_CHAT, LEAVE_VOICE_CHAT])
+    console.log('HANDLE CONNECT VOICE CHAT TO ROOM')
 
     const joined: boolean = yield select(hasJoinedVoiceChat)
     const prevHandler = yield select(getVoiceHandler)
     let handler: VoiceHandler | null = null
 
+    console.log('HANDLE CONNECT VOICE CHAT TO ROOM, joined', joined)
     // if we are supposed to be joined, then ask the RoomConnection about the handler
     if (joined) {
       const room: RoomConnection = yield select(getCommsRoom)
@@ -91,6 +93,8 @@ function* handleConnectVoiceChatToRoom() {
         } catch (err: any) {
           yield put(setVoiceChatError(err.toString()))
         }
+      } else {
+        console.log('no room')
       }
     } else if (prevHandler) {
       // NOTE: since prevHandler may not be destroyed, we mute it
@@ -145,6 +149,7 @@ function* reactToNewVoiceChatHandler() {
 
   while (true) {
     yield take(SET_VOICE_CHAT_HANDLER)
+    console.log('SET VOICE CHAT HANDLER')
 
     const voiceChatState: VoiceChatState = yield select(getVoiceChatState)
     const voiceHandler = voiceChatState.voiceHandler
