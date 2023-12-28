@@ -44,11 +44,14 @@ import { VoiceHandler } from './VoiceHandler'
 
 import { SET_SCENE_ROOM_CONNECTION } from 'shared/comms/actions'
 import { RoomConnection } from 'shared/comms/interface'
-import { getCommsRoom } from 'shared/comms/selectors'
+import { getCommsRoom, getSceneRoom } from 'shared/comms/selectors'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { incrementCounter } from 'shared/analytics/occurences'
 import { RootWorldState } from 'shared/world/types'
-import { waitForSelector } from 'lib/redux'
+import { waitFor, waitForSelector } from 'lib/redux'
+import { IRealmAdapter } from '../realm/types'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
+import { isWorldLoaderActive } from '../realm/selectors'
 
 let audioRequestInitialized = false
 
@@ -86,6 +89,11 @@ function* handleConnectVoiceChatToRoom() {
     console.log('HANDLE CONNECT VOICE CHAT TO ROOM, joined', joined)
     // if we are supposed to be joined, then ask the RoomConnection about the handler
     if (joined) {
+      const realmAdapter: IRealmAdapter = yield call(ensureRealmAdapter)
+      const isWorld = isWorldLoaderActive(realmAdapter)
+      if (!isWorld) {
+        yield call(waitFor(getSceneRoom, SET_SCENE_ROOM_CONNECTION))
+      }
       const room: RoomConnection = yield select(getCommsRoom)
       if (room) {
         try {

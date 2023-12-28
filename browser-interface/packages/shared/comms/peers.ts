@@ -80,7 +80,6 @@ export function setupPeer(address: string): PeerInformation {
   const ethereumAddress = address.toLowerCase()
 
   if (!peerInformationMap.has(ethereumAddress)) {
-    console.log('[BOEDO] Adding Peer information', ethereumAddress)
     const peer: PeerInformation = {
       ethereumAddress,
       lastPositionIndex: 0,
@@ -213,7 +212,6 @@ function getActiveRooms(): RoomConnection[] {
 export async function onRoomLeft(oldRoom: RoomConnection) {
   const rooms = getActiveRooms()
   const newPeerInformationMap = new Map<string, PeerInformation>()
-  console.log('[onRoomLeft] rooms', rooms)
   for (const room of rooms) {
     if (room.id === oldRoom.id) {
       continue
@@ -222,7 +220,6 @@ export async function onRoomLeft(oldRoom: RoomConnection) {
     for (const participant of await room.getParticipants()) {
       const info = peerInformationMap.get(participant)
       if (info) {
-        console.log('[onRoomLeft] addparticipant', participant)
         newPeerInformationMap.set(participant, info)
       }
     }
@@ -230,7 +227,6 @@ export async function onRoomLeft(oldRoom: RoomConnection) {
 
   for (const participant of peerInformationMap.keys()) {
     if (!newPeerInformationMap.has(participant)) {
-      console.log('[onRoomLeft] removeUser', participant)
       avatarMessageObservable.notifyObservers({
         type: AvatarMessageType.USER_REMOVED,
         userId: participant

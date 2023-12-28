@@ -40,7 +40,6 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     },
     // events: islandRoom.events,
     disconnect: async () => {
-      console.log('[BOEDO] selectors disconnect')
       await islandRoom.disconnect()
       // TBD: should we disconnect from scenes here too ?
     },

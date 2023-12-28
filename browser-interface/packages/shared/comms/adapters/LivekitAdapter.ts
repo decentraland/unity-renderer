@@ -50,7 +50,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         this.config.logger.log(this.room.name, 'connection state changed', state)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
-        this.config.logger.log('[BOEDO]: on disconnect', reason, this.room.name)
         if (this.disposed) {
           return
         }
@@ -123,7 +122,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         stack: err.stack,
         saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
       })
-      this.config.logger.log(`[BOEDO]: error sending data ${this.room.name}`, err, err.mesage)
       await this.disconnect()
     }
   }
@@ -137,7 +135,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       return
     }
 
-    this.config.logger.log('[BOEDO]: do_disconnect', this.room.name)
     this.disposed = true
     await this.room.disconnect().catch(commsLogger.error)
     this.events.emit('DISCONNECTION', { kicked })

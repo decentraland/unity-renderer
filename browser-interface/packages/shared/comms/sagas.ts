@@ -200,7 +200,6 @@ async function connectAdapter(
   id: string = 'island',
   dispatchAction = true
 ): Promise<RoomConnection> {
-  console.log('[connectAdapter] ', { connStr, identity, id })
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
@@ -524,8 +523,6 @@ function* sceneRoomComms() {
     return
   }
 
-  console.log('[BOEDO] isWorldLoaderActive(adapter!)', isWorldLoaderActive(adapter!))
-
   while (true) {
     const reason: { timeout?: unknown; newParcel?: { payload: { position: Vector2 } } } = yield race({
       newParcel: take(SET_PARCEL_POSITION),
@@ -556,13 +553,11 @@ function* checkDisconnectScene(currentSceneId: string, commsSceneToRemove: Map<s
     commsSceneToRemove.delete(currentSceneId)
   }
 
-  console.log('[BOEDO SceneComms]: will disconnect')
   const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
   for (const [roomId, room] of sceneRooms) {
     if (roomId === currentSceneId) continue
     if (commsSceneToRemove.has(roomId)) continue
     const timeout = setTimeout(() => {
-      console.log('[BOEDO SceneComms]: disconnectSceneComms', roomId)
       void room.disconnect()
       commsSceneToRemove.delete(roomId)
       sceneRooms.delete(roomId)
@@ -572,8 +567,6 @@ function* checkDisconnectScene(currentSceneId: string, commsSceneToRemove: Map<s
 }
 
 function* connectSceneToComms(sceneId: string) {
-  console.log('[BOEDO SceneComms]: connectSceneToComms', sceneId)
-
   const realmAdapter = yield select(getRealmAdapter)
   if (!realmAdapter) {
     throw new Error('No realm adapter') // TODO
