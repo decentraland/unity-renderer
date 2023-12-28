@@ -31,10 +31,11 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
   private disposed = false
   private readonly room: Room
-  private voiceHandler: VoiceHandler | undefined = undefined
+  private voiceHandler: VoiceHandler
 
   constructor(private config: LivekitConfig) {
     this.room = new Room()
+    this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
 
     this.room
       .on(RoomEvent.ParticipantConnected, (_: RemoteParticipant) => {
@@ -77,10 +78,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   }
 
   async getVoiceHandler(): Promise<VoiceHandler> {
-    if (!this.voiceHandler) {
-      this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
-    }
-
     return this.voiceHandler
   }
 
