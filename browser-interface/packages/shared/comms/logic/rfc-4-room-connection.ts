@@ -17,7 +17,10 @@ export class Rfc4RoomConnection implements RoomConnection {
 
   private positionIndex: number = 0
 
-  constructor(private transport: MinimumCommunicationsAdapter, public id: string = '-') {
+  constructor(
+    private transport: MinimumCommunicationsAdapter,
+    public id: string = '-'
+  ) {
     this.transport.events.on('message', this.handleMessage.bind(this))
     this.transport.events.on('DISCONNECTION', (event) => this.events.emit('DISCONNECTION', event))
     this.transport.events.on('PEER_DISCONNECTED', (event) => this.events.emit('PEER_DISCONNECTED', event))
@@ -28,9 +31,8 @@ export class Rfc4RoomConnection implements RoomConnection {
     await this.transport.connect()
   }
 
-  createVoiceHandler(): Promise<VoiceHandler> {
-    // console.log('[RoomConnection Comms]: createVoiceHandler', this.id)
-    return this.transport.createVoiceHandler()
+  getVoiceHandler(): Promise<VoiceHandler | undefined> {
+    return this.transport.getVoiceHandler()
   }
 
   sendPositionMessage(p: Omit<proto.Position, 'index'>): Promise<void> {
@@ -65,10 +67,6 @@ export class Rfc4RoomConnection implements RoomConnection {
     // console.log('[RoomConnection Comms]: sendChatMessage', this.id)
     return this.sendMessage(true, { message: { $case: 'chat', chat } })
   }
-  sendVoiceMessage(voice: proto.Voice): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendVoiceMessage', this.id)
-    return this.sendMessage(false, { message: { $case: 'voice', voice } })
-  }
 
   async disconnect() {
     console.log('[RoomConnection Comms]: disconnect', this.id)
@@ -98,10 +96,6 @@ export class Rfc4RoomConnection implements RoomConnection {
       }
       case 'chat': {
         this.events.emit('chatMessage', { address, data: message.chat })
-        break
-      }
-      case 'voice': {
-        this.events.emit('voiceMessage', { address, data: message.voice })
         break
       }
       case 'profileRequest': {

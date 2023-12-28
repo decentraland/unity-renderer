@@ -7,7 +7,6 @@ import { ExplorerIdentity } from 'shared/session/types'
 import { Authenticator } from '@dcl/crypto'
 import mitt from 'mitt'
 import { CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
-import { createOpusVoiceHandler } from './voice/opusVoiceHandler'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { notifyStatusThroughChat } from 'shared/chat'
 import { wsAsAsyncChannel } from '../logic/ws-async-channel'
@@ -36,7 +35,10 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
 
   private ws: WebSocket | null = null
 
-  constructor(public url: string, private identity: ExplorerIdentity) {}
+  constructor(
+    public url: string,
+    private identity: ExplorerIdentity
+  ) {}
 
   async connect(): Promise<void> {
     if (this.ws) throw new Error('Cannot call connect twice per IBrokerTransport')
@@ -131,8 +133,8 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
     }
   }
 
-  async createVoiceHandler(): Promise<VoiceHandler> {
-    return createOpusVoiceHandler()
+  async getVoiceHandler(): Promise<VoiceHandler | undefined> {
+    return undefined
   }
 
   handleWelcomeMessage(welcomeMessage: rfc5.WsWelcome, socket: WebSocket) {

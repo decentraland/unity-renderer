@@ -11,7 +11,6 @@ import { incrementCommsMessageReceived, incrementCommsMessageReceivedByName } fr
 import { getCurrentUserId } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
-import { processVoiceFragment } from 'shared/voiceChat/handlers'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
 import { messageReceived } from '../chat/actions'
 import { handleRoomDisconnection } from './actions'
@@ -47,7 +46,6 @@ export async function bindHandlersToCommsContext(room: RoomConnection) {
   room.events.on('sceneMessageBus', processParcelSceneCommsMessage)
   room.events.on('profileRequest', processProfileRequest)
   room.events.on('profileResponse', processProfileResponse)
-  room.events.on('voiceMessage', processVoiceFragment)
 
   room.events.on('*', (type, _) => {
     incrementCommsMessageReceived()
@@ -79,10 +77,9 @@ export async function requestProfileFromPeers(
 }
 
 async function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
-
   try {
-  await onRoomLeft(room)
-  } catch(err) {
+    await onRoomLeft(room)
+  } catch (err) {
     console.error(err)
     // TODO: handle this
   }
@@ -140,9 +137,8 @@ function processChatMessage(message: Package<proto.Chat>) {
   senderPeer.lastUpdate = Date.now()
 
   if (senderPeer.ethereumAddress) {
-    if (message.data.message.startsWith('␆') /* pong */ ||
-      message.data.message.startsWith('␑') /* ping */) {
-        // TODO: remove this
+    if (message.data.message.startsWith('␆') /* pong */ || message.data.message.startsWith('␑') /* ping */) {
+      // TODO: remove this
     } else if (message.data.message.startsWith('␐')) {
       const [id, timestamp] = message.data.message.split(' ')
 

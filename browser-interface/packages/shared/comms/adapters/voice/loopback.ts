@@ -1,5 +1,3 @@
-import Html from './Html'
-
 export type GlobalAudioStream = {
   setGainVolume(volume: number): void
   getDestinationStream(): MediaStream
@@ -18,8 +16,19 @@ export async function getGlobalAudioStream() {
   return globalAudioStream
 }
 
+function loopbackAudioElement() {
+  const audio = document.getElementById('voice-chat-audio')
+  if (!audio) {
+    console.error('There is no #voice-chat-audio element to use with VoiceChat. Returning a `new Audio()`')
+    const audio = new Audio()
+    document.body.append(audio)
+    return audio
+  }
+  return audio as HTMLAudioElement | undefined
+}
+
 export async function createAudioStream(): Promise<GlobalAudioStream> {
-  const parentElement = Html.loopbackAudioElement()
+  const parentElement = loopbackAudioElement()
   if (!parentElement) {
     throw new Error('Cannot create global audio stream: no parent element')
   }

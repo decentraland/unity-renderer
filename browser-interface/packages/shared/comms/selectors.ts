@@ -13,8 +13,7 @@ import {
   ProfileResponse,
   Position,
   Scene,
-  Chat,
-  Voice
+  Chat
 } from '../protocol/decentraland/kernel/comms/rfc4/comms.gen'
 
 export const getCommsIsland = (store: RootCommsState): string | undefined => store.comms.island
@@ -72,18 +71,13 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       const scene = sceneRoom?.sendChatMessage(message)
       await Promise.all([island, scene])
     },
-    // TBD: how voice chat works?
-    sendVoiceMessage: async (message: Voice) => {
-      if (!sceneRoom) debugger
-      return sceneRoom!.sendVoiceMessage(message)
-    },
-    createVoiceHandler: async () => {
+    getVoiceHandler: async () => {
       // TBD: Feature flag for backwards compatibility
       if (!sceneRoom) {
         debugger
         throw new Error('Scene room not avaialble')
       }
-      return sceneRoom.createVoiceHandler()
+      return sceneRoom.getVoiceHandler()
     }
   } as any as RoomConnection
 }
