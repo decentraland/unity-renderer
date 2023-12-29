@@ -18,7 +18,7 @@ export async function getGlobalAudioStream() {
   return globalAudioStream
 }
 
-function loopbackAudioElement() {
+export function loopbackAudioElement() {
   const audio = document.getElementById('voice-chat-audio')
   if (!audio) {
     console.error('There is no #voice-chat-audio element to use with VoiceChat. Returning a `new Audio()`')
@@ -26,7 +26,7 @@ function loopbackAudioElement() {
     document.body.append(audio)
     return audio
   }
-  return audio as HTMLAudioElement | undefined
+  return audio as HTMLAudioElement
 }
 
 export async function createAudioStream(): Promise<GlobalAudioStream> {
