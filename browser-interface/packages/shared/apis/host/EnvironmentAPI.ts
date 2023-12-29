@@ -103,7 +103,7 @@ export function toEnvironmentRealmType(realm: IRealmAdapter, island: string | un
   const serverName = realmToConnectionString(realm)
   let hostname = new URL(realm.baseUrl).hostname
   
-  if(realm.about.configurations?.realmName == 'main' && realm.about.lambdas?.publicUrl !== undefined){
+  if(realm.about.configurations?.realmName === 'main' && realm.about.lambdas?.publicUrl !=== undefined){
       hostname = new URL(realm.about.lambdas?.publicUrl).hostname
   }
   return {
