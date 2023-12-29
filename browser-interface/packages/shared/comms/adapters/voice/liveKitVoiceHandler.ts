@@ -63,9 +63,6 @@ export function createLiveKitVoiceHandler(room: Room): VoiceHandler {
         errorListener('Media Device Error')
       }
     })
-    .on(RoomEvent.AudioPlaybackStatusChanged, (c) => {
-      console.log('audio playback status changed', c)
-    })
 
   logger.log(`initialized ${room.name}`)
 
