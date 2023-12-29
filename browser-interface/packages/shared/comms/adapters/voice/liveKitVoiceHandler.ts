@@ -10,16 +10,18 @@ import {
   Track
 } from 'livekit-client'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
-import { GlobalAudioStream, loopbackAudioElement } from './loopback'
+import { loopbackAudioElement } from './loopback'
 
-export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalAudioStream): VoiceHandler {
+export function createLiveKitVoiceHandler(room: Room): VoiceHandler {
   const logger = createLogger('🎙 LiveKitVoiceCommunicator: ')
+
+  // const globalAudioStream = await getGlobalAudioStream()
 
   let recordingListener: ((state: boolean) => void) | undefined
   let errorListener: ((message: string) => void) | undefined
   let onUserTalkingCallback: ((userId: string, talking: boolean) => void) | undefined = undefined
 
-  let globalVolume: number = 1.0
+  // let globalVolume: number = 1.0
   let validInput = false
 
   function handleTrackSubscribed(
@@ -85,11 +87,10 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       onUserTalkingCallback = cb
       try {
         if (!room.canPlaybackAudio) {
-          console.log('HERE')
           room.startAudio().catch(logger.error)
         }
 
-        globalAudioStream.play()
+        // globalAudioStream.play()
       } catch (err: any) {
         logger.error(err)
       }
@@ -102,11 +103,13 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     },
     reportPosition(_position: rfc4.Position) {},
     setVolume: function (volume) {
-      globalVolume = volume
-      globalAudioStream.setGainVolume(volume)
+      // TODO
+      // globalVolume = volume
+      // globalAudioStream.setGainVolume(volume)
     },
     setMute: (mute) => {
-      globalAudioStream.setGainVolume(mute ? 0 : globalVolume)
+      // TODO
+      // globalAudioStream.setGainVolume(mute ? 0 : globalVolume)
     },
     setInputStream: async (localStream) => {
       try {

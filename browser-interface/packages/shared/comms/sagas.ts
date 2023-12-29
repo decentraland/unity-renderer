@@ -52,7 +52,6 @@ import { processAvatarVisibility } from './peers'
 import { getCommsRoom, getSceneRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
-import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
@@ -171,6 +170,7 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     const adapter: RoomConnection = yield call(
       connectAdapter,
       action.payload.event.connStr,
+      false,
       identity,
       action.payload.event.islandId
     )
@@ -196,8 +196,9 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
 
 async function connectAdapter(
   connStr: string,
+  voiceChatEnabled: boolean,
   identity: ExplorerIdentity,
-  id: string = 'island',
+  id: string,
   dispatchAction = true
 ): Promise<RoomConnection> {
   const ix = connStr.indexOf(':')
@@ -236,7 +237,7 @@ async function connectAdapter(
       }
 
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
-        return connectAdapter(response.fixedAdapter, identity, id)
+        return connectAdapter(response.fixedAdapter, voiceChatEnabled, identity, id)
       }
 
       if (typeof response.message === 'string') {
@@ -273,7 +274,7 @@ async function connectAdapter(
         logger: commsLogger,
         url: theUrl.origin + theUrl.pathname,
         token,
-        globalAudioStream: await getGlobalAudioStream()
+        voiceChatEnabled
       })
 
       if (dispatchAction) {
@@ -587,7 +588,7 @@ function* connectSceneToComms(sceneId: string) {
     }
   )
 
-  const sceneRoomConnection = yield call(connectAdapter, response.json.adapter, identity, sceneId, false)
+  const sceneRoomConnection = yield call(connectAdapter, response.json.adapter, true, identity, sceneId, false)
   globalThis.__DEBUG_SCENE_ADAPTER = sceneRoomConnection
   yield apply(sceneRoomConnection, sceneRoomConnection.connect, [])
   yield call(bindHandlersToCommsContext, sceneRoomConnection)
