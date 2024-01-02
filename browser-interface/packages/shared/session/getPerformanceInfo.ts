@@ -54,9 +54,9 @@ export function incrementAvatarSceneMessages(value: number) {
 
 export function incrementCommsMessageSent(type: string, size: number, sceneId?: string) {
   if (!sceneId) {
-    sceneId = 'no-scene'
+    sceneId = 'noscene'
   }
-  const key = `${sceneId}:${type}`
+  const key = `${sceneId}-${type}`
 
   sentCommsMessages[key] = (sentCommsMessages[key] ?? 0) + size
 

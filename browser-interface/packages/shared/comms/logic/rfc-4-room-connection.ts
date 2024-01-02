@@ -24,17 +24,14 @@ export class Rfc4RoomConnection implements RoomConnection {
   }
 
   async connect(): Promise<void> {
-    console.log('[RoomConnection Comms]: connect', this.id)
     await this.transport.connect()
   }
 
-  createVoiceHandler(): Promise<VoiceHandler> {
-    // console.log('[RoomConnection Comms]: createVoiceHandler', this.id)
-    return this.transport.createVoiceHandler()
+  getVoiceHandler(): Promise<VoiceHandler | undefined> {
+    return this.transport.getVoiceHandler()
   }
 
   sendPositionMessage(p: Omit<proto.Position, 'index'>): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendPositionMessage', this.id)
     return this.sendMessage(false, {
       message: {
         $case: 'position',
@@ -46,32 +43,22 @@ export class Rfc4RoomConnection implements RoomConnection {
     })
   }
   sendParcelSceneMessage(scene: proto.Scene): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendParcelSceneMessage', this.id)
     return this.sendMessage(false, { message: { $case: 'scene', scene } })
   }
   sendProfileMessage(profileVersion: proto.AnnounceProfileVersion): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendProfileMessage', this.id)
     return this.sendMessage(false, { message: { $case: 'profileVersion', profileVersion } })
   }
   sendProfileRequest(profileRequest: proto.ProfileRequest): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendProfileRequest', this.id)
     return this.sendMessage(false, { message: { $case: 'profileRequest', profileRequest } })
   }
   sendProfileResponse(profileResponse: proto.ProfileResponse): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendProfileResponse', this.id)
     return this.sendMessage(false, { message: { $case: 'profileResponse', profileResponse } })
   }
   sendChatMessage(chat: proto.Chat): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendChatMessage', this.id)
     return this.sendMessage(true, { message: { $case: 'chat', chat } })
-  }
-  sendVoiceMessage(voice: proto.Voice): Promise<void> {
-    // console.log('[RoomConnection Comms]: sendVoiceMessage', this.id)
-    return this.sendMessage(false, { message: { $case: 'voice', voice } })
   }
 
   async disconnect() {
-    console.log('[RoomConnection Comms]: disconnect', this.id)
     await this.transport.disconnect()
   }
 
@@ -86,7 +73,6 @@ export class Rfc4RoomConnection implements RoomConnection {
       return
     }
 
-    // console.log('[RoomConnection Comms]: handleMessage', message.$case, this.id)
     switch (message.$case) {
       case 'position': {
         this.events.emit('position', { address, data: message.position })
@@ -98,10 +84,6 @@ export class Rfc4RoomConnection implements RoomConnection {
       }
       case 'chat': {
         this.events.emit('chatMessage', { address, data: message.chat })
-        break
-      }
-      case 'voice': {
-        this.events.emit('voiceMessage', { address, data: message.voice })
         break
       }
       case 'profileRequest': {

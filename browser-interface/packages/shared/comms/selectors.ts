@@ -40,7 +40,6 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
     },
     // events: islandRoom.events,
     disconnect: async () => {
-      console.log('[BOEDO] selectors disconnect')
       await islandRoom.disconnect()
       // TBD: should we disconnect from scenes here too ?
     },
@@ -83,18 +82,15 @@ export const getCommsRoom = (state: RootCommsState): RoomConnection | undefined 
       const scene = sceneRoom?.sendChatMessage(message)
       await Promise.all([island, scene])
     },
-    // TBD: how voice chat works?
-    createVoiceHandler: async () => {
+    getVoiceHandler: async () => {
       if (await isWorld()) {
-        return islandRoom.createVoiceHandler()
+        return islandRoom.getVoiceHandler()
       }
-
-      // TBD: Feature flag for backwards compatibility
       if (!sceneRoom) {
         debugger
         throw new Error('Scene room not avaialble')
       }
-      return sceneRoom.createVoiceHandler()
+      return sceneRoom.getVoiceHandler()
     }
   } as any as RoomConnection
 }

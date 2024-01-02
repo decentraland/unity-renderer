@@ -17,13 +17,12 @@ import type { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
 import { commsLogger } from '../logger'
 import type { ActiveVideoStreams, CommsAdapterEvents, MinimumCommunicationsAdapter, SendHints } from './types'
 import { createLiveKitVoiceHandler } from './voice/liveKitVoiceHandler'
-import { GlobalAudioStream } from './voice/loopback'
 
 export type LivekitConfig = {
   url: string
   token: string
   logger: ILogger
-  globalAudioStream: GlobalAudioStream
+  voiceChatEnabled: boolean
 }
 
 export class LivekitAdapter implements MinimumCommunicationsAdapter {
@@ -31,12 +30,13 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
   private disposed = false
   private readonly room: Room
-  private voiceHandler: VoiceHandler
+  private voiceHandler: VoiceHandler | undefined = undefined
 
   constructor(private config: LivekitConfig) {
     this.room = new Room()
-
-    this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
+    if (config.voiceChatEnabled) {
+      this.voiceHandler = createLiveKitVoiceHandler(this.room)
+    }
 
     this.room
       .on(RoomEvent.ParticipantConnected, (_: RemoteParticipant) => {
@@ -52,7 +52,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         this.config.logger.log(this.room.name, 'connection state changed', state)
       })
       .on(RoomEvent.Disconnected, (reason: DisconnectReason | undefined) => {
-        this.config.logger.log('[BOEDO]: on disconnect', reason, this.room.name)
         if (this.disposed) {
           return
         }
@@ -79,7 +78,7 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       })
   }
 
-  async createVoiceHandler(): Promise<VoiceHandler> {
+  async getVoiceHandler(): Promise<VoiceHandler | undefined> {
     return this.voiceHandler
   }
 
@@ -111,6 +110,9 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     try {
       await this.room.localParticipant.publishData(data, reliable ? DataPacket_Kind.RELIABLE : DataPacket_Kind.LOSSY)
     } catch (err: any) {
+      if (this.disposed) {
+        return
+      }
       // NOTE: for tracking purposes only, this is not a "code" error, this is a failed connection or a problem with the livekit instance
       trackEvent('error', {
         context: 'livekit-adapter',
@@ -118,7 +120,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
         stack: err.stack,
         saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
       })
-      this.config.logger.log('[BOEDO]: error sending data', err, err.mesage)
       await this.disconnect()
     }
   }
@@ -132,7 +133,6 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
       return
     }
 
-    this.config.logger.log('[BOEDO]: do_disconnect', this.room.name)
     this.disposed = true
     await this.room.disconnect().catch(commsLogger.error)
     this.events.emit('DISCONNECTION', { kicked })

@@ -10,7 +10,6 @@ export type CommsEvents = CommsAdapterEvents & {
   chatMessage: Package<proto.Chat>
   profileMessage: Package<proto.AnnounceProfileVersion>
   position: Package<proto.Position>
-  voiceMessage: Package<proto.Voice>
   profileResponse: Package<proto.ProfileResponse>
   profileRequest: Package<proto.ProfileRequest>
 }
@@ -30,9 +29,8 @@ export interface RoomConnection {
   sendPositionMessage(position: Omit<proto.Position, 'index'>): Promise<void>
   sendParcelSceneMessage(message: proto.Scene): Promise<void>
   sendChatMessage(message: proto.Chat): Promise<void>
-  sendVoiceMessage(message: proto.Voice): Promise<void>
 
-  createVoiceHandler(): Promise<VoiceHandler>
+  getVoiceHandler(): Promise<VoiceHandler | undefined>
 
   getParticipants(): Promise<string[]>
 }
