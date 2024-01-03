@@ -13,23 +13,25 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers
         private readonly SchedulableRequestHandler schedulableHandler = new ();
         private readonly RequestOwnedNFTs request;
         private readonly RequestController requestController;
+        private readonly KernelConfig kernelConfig;
 
         private int retryCount = 0;
 
         SchedulableRequestHandler IRequestHandler.schedulableRequestHandler => schedulableHandler;
 
-        public OwnedNFTRequestHandler(RequestOwnedNFTs request, RequestController requestController)
+        public OwnedNFTRequestHandler(RequestOwnedNFTs request, RequestController requestController, KernelConfig kernelConfig)
         {
             if (VERBOSE)
                 Debug.Log($"OwnedNFTRequestHandler: ({GetHashCode()}) {request.requestId} created");
 
             this.request = request;
             this.requestController = requestController;
+            this.kernelConfig = kernelConfig;
             schedulableHandler.SetReadyToBeScheduled(this);
         }
 
         string IRequestHandler.GetUrl() =>
-            OpenSeaAPI.GetOwnedAssetsUrl(request.address);
+            OpenSeaAPI.GetOwnedAssetsUrl(request.address, kernelConfig.Get().GetTld());
 
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {

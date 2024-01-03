@@ -13,23 +13,25 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers
         private readonly SchedulableRequestHandler schedulableHandler = new SchedulableRequestHandler();
         private readonly RequestAssetSingle request;
         private readonly RequestController requestController;
+        private readonly KernelConfig kernelConfig;
 
         private int retryCount = 0;
 
         SchedulableRequestHandler IRequestHandler.schedulableRequestHandler => schedulableHandler;
 
-        public SingleAssetRequestHandler(RequestAssetSingle request, RequestController requestController)
+        public SingleAssetRequestHandler(RequestAssetSingle request, RequestController requestController, KernelConfig kernelConfig)
         {
             if (VERBOSE)
                 Debug.Log($"SingleAssetRequestHandler: ({GetHashCode()}) {request.requestId} created");
 
             this.request = request;
             this.requestController = requestController;
+            this.kernelConfig = kernelConfig;
             schedulableHandler.SetReadyToBeScheduled(this);
         }
 
         string IRequestHandler.GetUrl() =>
-            OpenSeaAPI.GetSingleAssetUrl(request.contractAddress, request.tokenId);
+            OpenSeaAPI.GetSingleAssetUrl(request.contractAddress, request.tokenId, kernelConfig.Get().GetTld());
 
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {

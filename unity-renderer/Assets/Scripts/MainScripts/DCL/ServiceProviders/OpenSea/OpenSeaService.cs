@@ -8,8 +8,15 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
 {
     public class OpenSeaService : IOpenSea
     {
+        private readonly KernelConfig kernelConfig;
         private readonly MarketInfo openSeaMarketInfo = new () { name = "OpenSea" };
-        private readonly RequestController requestController = new ();
+        private readonly RequestController requestController;
+
+        public OpenSeaService(KernelConfig kernelConfig)
+        {
+            this.kernelConfig = kernelConfig;
+            requestController = new RequestController(this.kernelConfig);
+        }
 
         IEnumerator IOpenSea.FetchNFTsFromOwner(string address, Action<OwnNFTInfo> onSuccess, Action<string> onError)
         {

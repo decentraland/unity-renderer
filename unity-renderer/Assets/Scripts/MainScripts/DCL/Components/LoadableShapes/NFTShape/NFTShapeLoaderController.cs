@@ -20,7 +20,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     internal const string SUPPORTED_PROTOCOL = "The only protocol currently supported is 'ethereum'.";
     internal const string DOES_NOT_SUPPORT_POLYGON = "Warning: OpenSea API does not support fetching Polygon assets.";
     internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{0}/{1}'.";
-    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{0}/{1}': {2}.";
+    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{0}/{1}': {2}";
 
     public enum NoiseType
     {

@@ -11,6 +11,7 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
 {
     public class RequestController : IDisposable
     {
+        private readonly KernelConfig kernelConfig;
         private const bool VERBOSE = false;
 
         private const string EDITOR_USER_AGENT =
@@ -22,7 +23,11 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
         private readonly Dictionary<string, RequestBase<OpenSeaNftDto>> cacheAssetResponses = new ();
         private readonly Dictionary<string, RequestBase<OpenSeaManyNftDto>> cacheSeveralAssetsResponse = new ();
 
-        public RequestController() { requestScheduler.OnRequestReadyToSend += SendRequest; }
+        public RequestController(KernelConfig kernelConfig)
+        {
+            this.kernelConfig = kernelConfig;
+            requestScheduler.OnRequestReadyToSend += SendRequest;
+        }
 
         public void Dispose() { requestScheduler.OnRequestReadyToSend -= SendRequest; }
 
@@ -37,7 +42,7 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
 
             newRequest.OnFail += OnRequestFailed;
 
-            var requestHandler = new SingleAssetRequestHandler(newRequest, this);
+            var requestHandler = new SingleAssetRequestHandler(newRequest, this, kernelConfig);
             requestScheduler.EnqueueRequest(requestHandler);
 
             return newRequest;
@@ -56,7 +61,7 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
 
             newRequest.OnFail += OnRequestFailed;
 
-            var requestHandler = new OwnedNFTRequestHandler(newRequest, this);
+            var requestHandler = new OwnedNFTRequestHandler(newRequest, this, kernelConfig);
             requestScheduler.EnqueueRequest(requestHandler);
 
             return newRequest;
@@ -120,7 +125,7 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
                     }
                     else
                     {
-                        requestHandler.SetApiResponseError(serverResponse);
+                        requestHandler.SetApiResponseError($"[{url}] {serverResponse}");
                     }
                 }
 

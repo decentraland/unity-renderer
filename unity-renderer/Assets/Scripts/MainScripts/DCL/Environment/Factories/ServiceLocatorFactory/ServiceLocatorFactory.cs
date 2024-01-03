@@ -84,7 +84,7 @@ namespace DCL
 
             result.Register<IWebRequestController>(() => webRequestController);
 
-            result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<IServiceProviders>(() => new ServiceProviders(KernelConfig.i));
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
