@@ -137,6 +137,83 @@ namespace Tests
             Assert.IsFalse(applyCalled);
         }
 
+        [Test]
+        public void ReactCorrectlyToExcludedIdsUpdates()
+        {
+            entity.gameObject.transform.position = new Vector3(8, 1, 8);
+            Vector3 entityPosition = entity.gameObject.transform.position;
+            Vector3 area = new Vector3(5f, 5f, 5f);
+
+            var fakeAvatar = CreateFakeAvatar();
+            fakeAvatar.transform.position = new Vector3(100, 100, 100);
+            Physics.SyncTransforms();
+
+            bool applyCalled = false;
+            bool removeCalled = false;
+            void ApplyModifier(GameObject avatarGO)
+            {
+                Assert.AreEqual(fakeAvatar, avatarGO);
+                applyCalled = true;
+            }
+
+            void RemoveModifier(GameObject avatarGO)
+            {
+                Assert.AreEqual(fakeAvatar, avatarGO);
+                removeCalled = true;
+            }
+
+            var model = new InternalAvatarModifierArea()
+            {
+                area = area,
+                OnAvatarEnter = ApplyModifier,
+                OnAvatarExit = RemoveModifier,
+                avatarsInArea = new HashSet<GameObject>(),
+                excludedIds = new HashSet<string>()
+            };
+            internalComponents.AvatarModifierAreaComponent.PutFor(scene, entity, model);
+
+            systemUpdate();
+            Assert.IsFalse(applyCalled);
+            Assert.IsFalse(removeCalled);
+
+            // move avatar inside area
+            fakeAvatar.transform.position = entityPosition + (area * 0.5f);
+            Physics.SyncTransforms();
+
+            systemUpdate();
+            Assert.IsTrue(applyCalled);
+            Assert.IsFalse(removeCalled);
+            applyCalled = false;
+            model = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity).Value.model;
+            Assert.AreEqual(1, model.avatarsInArea.Count);
+
+            // add current avatar user id to the excluded IDs collection
+            string targetUserId = "0x666";
+            dataStorePlayer.otherPlayers.Add(targetUserId, new Player()
+            {
+                id = targetUserId,
+                collider = fakeAvatar.GetComponentInChildren<BoxCollider>(),
+            });
+            model.excludedIds.Add(targetUserId);
+            internalComponents.AvatarModifierAreaComponent.PutFor(scene, entity, model);
+
+            systemUpdate();
+
+            Assert.IsTrue(removeCalled);
+            Assert.IsFalse(applyCalled);
+            removeCalled = false;
+            model = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity).Value.model;
+            Assert.AreEqual(0, model.avatarsInArea.Count);
+
+            // remove current avatar user id from the excluded IDs collection
+            model.excludedIds.Clear();
+            internalComponents.AvatarModifierAreaComponent.PutFor(scene, entity, model);
+
+            systemUpdate();
+            Assert.IsTrue(applyCalled);
+            Assert.IsFalse(removeCalled);
+        }
+
         private GameObject CreateFakeAvatar()
         {
             GameObject fakeAvatarColliderGO = new GameObject();

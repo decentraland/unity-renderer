@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DCL.CRDT;
+using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using NUnit.Framework;
 using UnityEngine;
@@ -62,6 +63,33 @@ namespace DCL.ECSComponents.Test
             Assert.IsNotNull(internalComponent.Value.model.OnAvatarExit);
             Assert.IsTrue(internalComponent.Value.model.excludedIds.Contains(excludedId1.ToLower()));
             Assert.IsTrue(internalComponent.Value.model.excludedIds.Contains(excludedId2.ToLower()));
+        }
+
+        [Test]
+        public void KeepExistentInternalComponentAvatarsInArea()
+        {
+            var internalComponent = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity);
+            Assert.IsNull(internalComponent);
+
+            GameObject dummyGO = new GameObject("avatarInArea");
+            internalComponents.AvatarModifierAreaComponent.PutFor(scene, entity, new InternalAvatarModifierArea()
+            {
+                avatarsInArea = new HashSet<GameObject>(){ dummyGO }
+            });
+
+            var model = new PBAvatarModifierArea()
+            {
+                Area =  new Decentraland.Common.Vector3() { X = 4f, Y = 2.5f, Z = 4f },
+                Modifiers = { AvatarModifierType.AmtHideAvatars },
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            internalComponent = internalComponents.AvatarModifierAreaComponent.GetFor(scene, entity);
+            Assert.IsNotNull(internalComponent);
+            Assert.AreEqual(1, internalComponent.Value.model.avatarsInArea.Count);
+            Assert.IsTrue(internalComponent.Value.model.avatarsInArea.Contains(dummyGO));
+
+            GameObject.DestroyImmediate(dummyGO);
         }
 
         [Test]
