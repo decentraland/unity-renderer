@@ -80,6 +80,10 @@ namespace Tests
             Assert.AreEqual(2, internalComponentModel.Value.model.avatarsInArea.Count);
             Assert.IsTrue(internalComponentModel.Value.model.avatarsInArea.Contains(fakeAvatar1));
             Assert.IsTrue(internalComponentModel.Value.model.avatarsInArea.Contains(fakeAvatar2));
+
+            GameObject.DestroyImmediate(fakeAvatar1);
+            GameObject.DestroyImmediate(fakeAvatar2);
+            GameObject.DestroyImmediate(fakeAvatar3);
         }
 
         [Test]
@@ -135,6 +139,8 @@ namespace Tests
             systemUpdate();
             Assert.IsTrue(removeCalled);
             Assert.IsFalse(applyCalled);
+
+            GameObject.DestroyImmediate(fakeAvatar);
         }
 
         [Test]
@@ -152,13 +158,13 @@ namespace Tests
             bool removeCalled = false;
             void ApplyModifier(GameObject avatarGO)
             {
-                Assert.AreEqual(fakeAvatar.GetHashCode(), avatarGO.GetHashCode());
+                Assert.AreEqual(fakeAvatar, avatarGO);
                 applyCalled = true;
             }
 
             void RemoveModifier(GameObject avatarGO)
             {
-                Assert.AreEqual(fakeAvatar.GetHashCode(), avatarGO.GetHashCode());
+                Assert.AreEqual(fakeAvatar, avatarGO);
                 removeCalled = true;
             }
 
@@ -212,6 +218,8 @@ namespace Tests
             systemUpdate();
             Assert.IsTrue(applyCalled);
             Assert.IsFalse(removeCalled);
+
+            GameObject.DestroyImmediate(fakeAvatar);
         }
 
         private GameObject CreateFakeAvatar()
