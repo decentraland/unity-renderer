@@ -1,6 +1,5 @@
 import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import type { Avatar } from '@dcl/schemas'
-import { uuid } from 'lib/javascript/uuid'
 import { Observable } from 'mz-observable'
 import { eventChannel } from 'redux-saga'
 import { getBannedUsers } from 'shared/meta/selectors'
@@ -158,7 +157,7 @@ function processChatMessage(message: Package<proto.Chat>) {
       if (!isBanned) {
         const messageEntry: InternalChatMessage = {
           messageType: ChatMessageType.PUBLIC,
-          messageId: uuid(),
+          messageId: `${senderPeer.ethereumAddress}-${message.data.timestamp}`,
           sender: senderPeer.ethereumAddress,
           body: message.data.message,
           timestamp: message.data.timestamp
