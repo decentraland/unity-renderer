@@ -40,7 +40,8 @@ namespace Tests
                 { 666, new ComponentWriter(outgoingMessages) }
             };
 
-            scene = testUtils.CreateScene(666);
+            // We use a non-0,0 scene to have realistic transform update checks
+            scene = testUtils.CreateScene(666, new Vector2Int(30, 30), new[] { new Vector2Int(30, 30) });
             entity = scene.CreateEntity(1000);
 
             var system = new ECSTweenSystem(
@@ -117,6 +118,7 @@ namespace Tests
 
             tweener.Goto(duration * currentTime);
             systemUpdate();
+
             outgoingMessages.Put_Called<ECSTransform>(
                 entity.entityId,
                 ComponentID.TRANSFORM,
