@@ -56,7 +56,9 @@ namespace DCL.ECSComponents
                 excludedIds.Add(modelExcludeId.ToLower());
             }
             internalComponentModel.excludedIds = excludedIds;
-            internalComponentModel.avatarsInArea = new HashSet<GameObject>();
+
+            if (internalComponentModel.avatarsInArea?.Count == 0)
+                internalComponentModel.avatarsInArea = new HashSet<GameObject>();
 
             internalAvatarModifierArea.PutFor(scene, entity, internalComponentModel);
         }
