@@ -152,13 +152,13 @@ namespace Tests
             bool removeCalled = false;
             void ApplyModifier(GameObject avatarGO)
             {
-                Assert.AreEqual(fakeAvatar, avatarGO);
+                Assert.AreEqual(fakeAvatar.GetHashCode(), avatarGO.GetHashCode());
                 applyCalled = true;
             }
 
             void RemoveModifier(GameObject avatarGO)
             {
-                Assert.AreEqual(fakeAvatar, avatarGO);
+                Assert.AreEqual(fakeAvatar.GetHashCode(), avatarGO.GetHashCode());
                 removeCalled = true;
             }
 
