@@ -104,8 +104,8 @@ namespace ECSSystems.TweenSystem
             var transformComponent = transformComponentPool.Get();
             var transformComponentModel = transformComponent.WrappedComponent.Model;
             Vector3 currentWorldOffset = worldOffset.Get();
-            var newPosition = entityTransform.localPosition;
-            transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newPosition, ref currentWorldOffset);
+            var newUnityGlobalPosition = entityTransform.position;
+            transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newUnityGlobalPosition, ref currentWorldOffset);
             transformComponentModel.rotation = entityTransform.localRotation;
             transformComponentModel.scale = entityTransform.localScale;
             transformComponentModel.parentId = entity.parentId;

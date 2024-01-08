@@ -33,8 +33,7 @@ namespace ECSSystems.AvatarModifierAreaSystem
                 var model = componentGroup[i].value.model;
                 Transform entityTransform = scene.entities[entityId].gameObject.transform;
 
-                if (model.excludedIds != null && model.excludedIds.Count > 0)
-                    UpdateExcludedCollidersCollection(model.excludedIds);
+                UpdateExcludedCollidersCollection(model.excludedIds);
 
                 HashSet<GameObject> currentAvatarsInArea = ECSAvatarUtils.DetectAvatars(model.area, entityTransform.position,
                     entityTransform.rotation, excludedColliders);
@@ -91,9 +90,11 @@ namespace ECSSystems.AvatarModifierAreaSystem
 
         private void UpdateExcludedCollidersCollection(HashSet<string> excludedIds)
         {
-            var ownPlayer = dataStore.ownPlayer.Get();
             excludedColliders.Clear();
 
+            if (excludedIds == null || excludedIds.Count == 0) return;
+
+            var ownPlayer = dataStore.ownPlayer.Get();
             foreach (string excludedId in excludedIds)
             {
                 if (dataStore.otherPlayers.TryGetValue(excludedId, out Player player))
