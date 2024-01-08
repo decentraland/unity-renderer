@@ -101,7 +101,11 @@ export function getDecentralandTime() {
 
 export function toEnvironmentRealmType(realm: IRealmAdapter, island: string | undefined): EnvironmentRealm {
   const serverName = realmToConnectionString(realm)
-  const hostname = new URL(realm.baseUrl).hostname
+  let hostname = new URL(realm.baseUrl).hostname
+  
+  if(realm.about.configurations?.realmName === 'main' && realm.about.lambdas?.publicUrl !== undefined){
+      hostname = new URL(realm.about.lambdas?.publicUrl).hostname
+  }
   return {
     protocol: realm.about.comms?.protocol || 'v3',
     // domain explicitly expects the URL with the protocol
