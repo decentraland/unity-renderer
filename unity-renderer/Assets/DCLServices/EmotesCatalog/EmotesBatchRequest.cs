@@ -6,10 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine.Pool;
 
 namespace DCLServices.EmotesCatalog
 {
-    public class EmotesRequestWeb : IEmotesRequestSource
+    public class EmotesBatchRequest : IEmotesRequestSource
     {
         [Serializable]
         public class OwnedEmotesRequestDto
@@ -35,18 +36,18 @@ namespace DCLServices.EmotesCatalog
 
         private readonly ILambdasService lambdasService;
         private readonly ICatalyst catalyst;
-        private readonly List<string> pendingRequests = new ();
+        private readonly HashSet<string> pendingRequests = new ();
         private readonly CancellationTokenSource cts;
         private readonly BaseVariable<FeatureFlag> featureFlags;
         private UniTaskCompletionSource<IReadOnlyList<WearableItem>> lastRequestSource;
 
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
 
-        public EmotesRequestWeb(ILambdasService lambdasService, IServiceProviders serviceProviders, BaseVariable<FeatureFlag> featureFlags)
+        public EmotesBatchRequest(ILambdasService lambdasService, IServiceProviders serviceProviders, BaseVariable<FeatureFlag> featureFlags)
         {
             this.featureFlags = featureFlags;
             this.lambdasService = lambdasService;
-            this.catalyst = serviceProviders.catalyst;
+            catalyst = serviceProviders.catalyst;
             cts = new CancellationTokenSource();
         }
 
@@ -65,15 +66,15 @@ namespace DCLServices.EmotesCatalog
         {
             var url = $"{catalyst.lambdasUrl}/users/{userId}/emotes";
 
-            List<OwnedEmotesRequestDto.EmoteRequestDto> requestedEmotes = new List<OwnedEmotesRequestDto.EmoteRequestDto>();
+            var requestedEmotes = new List<OwnedEmotesRequestDto.EmoteRequestDto>();
 
             if (!await FullListEmoteFetch(userId, url, requestedEmotes))
                 return;
 
-            var tempList = PoolUtils.RentList<string>();
-            var emoteUrns = tempList.GetList();
+            PoolUtils.ListPoolRent<string> tempList = PoolUtils.RentList<string>();
+            List<string> emoteUrns = tempList.GetList();
 
-            Dictionary<string, int> urnToAmountMap = new Dictionary<string, int>();
+            var urnToAmountMap = new Dictionary<string, int>();
 
             foreach (OwnedEmotesRequestDto.EmoteRequestDto emoteRequestDto in requestedEmotes)
             {
@@ -81,7 +82,7 @@ namespace DCLServices.EmotesCatalog
                 urnToAmountMap[emoteRequestDto.urn] = emoteRequestDto.amount;
             }
 
-            var emotes = await FetchEmotes(emoteUrns, urnToAmountMap);
+            IReadOnlyList<WearableItem> emotes = await FetchEmotes(emoteUrns, urnToAmountMap);
 
             tempList.Dispose();
 
@@ -91,18 +92,18 @@ namespace DCLServices.EmotesCatalog
         // This recursiveness is horrible, we should add proper pagination
         private async UniTask<bool> FullListEmoteFetch(string userId, string url, List<OwnedEmotesRequestDto.EmoteRequestDto> requestedEmotes)
         {
-            int requestedCount = 0;
-            int totalEmotes = 99999;
-            int pageNum = 1;
+            var requestedCount = 0;
+            var totalEmotes = 99999;
+            var pageNum = 1;
 
             while (requestedCount < totalEmotes)
             {
-                var queryParams = new List<(string name, string value)>
+                (string name, string value)[] queryParams = new List<(string name, string value)>
                 {
-                    ("pageNum", pageNum.ToString())
+                    ("pageNum", pageNum.ToString()),
                 }.ToArray();
 
-                var result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url,
+                (OwnedEmotesRequestDto response, bool success) result = await lambdasService.GetFromSpecificUrl<OwnedEmotesRequestDto>(url, url,
                     cancellationToken: cts.Token, urlEncodedParams: queryParams);
 
                 if (!result.success) throw new Exception($"Fetching owned wearables failed! {url}\nAddress: {userId}");
@@ -130,8 +131,8 @@ namespace DCLServices.EmotesCatalog
         private async UniTask RequestWearableBatchAsync(string id)
         {
             pendingRequests.Add(id);
-            lastRequestSource ??= new ();
-            var sourceToAwait = lastRequestSource;
+            lastRequestSource ??= new UniTaskCompletionSource<IReadOnlyList<WearableItem>>();
+            UniTaskCompletionSource<IReadOnlyList<WearableItem>> sourceToAwait = lastRequestSource;
 
             // we wait for the latest update possible so we buffer all requests into one
             await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, cts.Token);
@@ -142,29 +143,32 @@ namespace DCLServices.EmotesCatalog
             {
                 lastRequestSource = null;
 
-                result = await FetchEmotes(pendingRequests);
-
+                List<string> tempList = ListPool<string>.Get();
+                tempList.AddRange(pendingRequests);
                 pendingRequests.Clear();
 
+                result = await FetchEmotes(tempList);
+                ListPool<string>.Release(tempList);
                 sourceToAwait.TrySetResult(result);
+                OnEmotesReceived?.Invoke(result);
             }
             else
-                result = await sourceToAwait.Task;
-
-            OnEmotesReceived?.Invoke(result);
+                await sourceToAwait.Task;
         }
 
-        private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(List<string> ids, Dictionary<string, int> urnToAmountMap = null)
+        private async UniTask<IReadOnlyList<WearableItem>> FetchEmotes(IReadOnlyCollection<string> ids, Dictionary<string, int> urnToAmountMap = null)
         {
             // the copy of the list is intentional
             var request = new LambdasEmotesCatalogService.WearableRequest { pointers = new List<string>(ids) };
             var url = $"{catalyst.contentUrl}entities/active";
 
-            var response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], LambdasEmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
+            (EmoteEntityDto[] response, bool success) response = await lambdasService.PostFromSpecificUrl<EmoteEntityDto[], LambdasEmotesCatalogService.WearableRequest>(url, url, request, cancellationToken: cts.Token);
 
             if (!response.success) throw new Exception($"Fetching wearables failed! {url}\n{string.Join("\n", request.pointers)}");
 
-            var wearables = response.response.Select(dto =>
+            HashSet<string> receivedIds = HashSetPool<string>.Get();
+
+            IEnumerable<WearableItem> wearables = response.response.Select(dto =>
             {
                 var contentUrl = $"{catalyst.contentUrl}contents/";
                 var wearableItem = dto.ToWearableItem(contentUrl);
@@ -176,6 +180,14 @@ namespace DCLServices.EmotesCatalog
                 return wearableItem;
             });
 
+            foreach (WearableItem wearableItem in wearables)
+                receivedIds.Add(wearableItem.id);
+
+            foreach (string id in ids)
+                if (!receivedIds.Contains(id))
+                    OnEmoteRejected?.Invoke(id, "Empty response from content server");
+
+            HashSetPool<string>.Release(receivedIds);
             return wearables.ToList();
         }
     }
