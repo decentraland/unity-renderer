@@ -1,8 +1,10 @@
+using Cysharp.Threading.Tasks;
+using DCL.Emotes;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Pool;
@@ -13,12 +15,15 @@ namespace AvatarSystem
     {
         private readonly IWearableItemResolver wearableItemResolver;
         private readonly IEmotesCatalogService emotesCatalog;
+        private EmbeddedEmotesSO embedEmotes;
+        private string[] embedEmotesId;
 
         public AvatarCurator(IWearableItemResolver wearableItemResolver, IEmotesCatalogService emotesCatalog)
         {
             Assert.IsNotNull(wearableItemResolver);
             this.wearableItemResolver = wearableItemResolver;
             this.emotesCatalog = emotesCatalog;
+
         }
 
         /// <summary>
@@ -49,9 +54,12 @@ namespace AvatarSystem
                 //New emotes flow use the emotes catalog
                 if (emoteIds != null)
                 {
+                    embedEmotes ??= await emotesCatalog.GetEmbeddedEmotes();
+                    embedEmotesId ??= embedEmotes.GetAllIds();
+
                     DateTime startLoadTime = DateTime.Now;
 
-                    var emoteIdsList = emoteIds.ToList();
+                    var emoteIdsList = emoteIds.Select(ExtendedUrnParser.GetShortenedUrn).ToList();
                     IReadOnlyList<WearableItem> resolvedEmotes = await emotesCatalog.RequestEmotesAsync(emoteIdsList, ct);
                     List<WearableItem> nonPublishedEmotes = ListPool<WearableItem>.Get();
 
@@ -60,6 +68,8 @@ namespace AvatarSystem
                         if (nonPublishedEmoteId.StartsWith("urn")) continue;
                         bool wasResolved = resolvedEmotes?.Any(item => item?.id == nonPublishedEmoteId) ?? false;
                         if (wasResolved) continue;
+                        bool isEmbedded = embedEmotesId.Contains(nonPublishedEmoteId);
+                        if (isEmbedded) continue;
                         WearableItem nonPublishedEmote = await emotesCatalog.RequestEmoteFromBuilderAsync(nonPublishedEmoteId, ct);
                         if (nonPublishedEmote != null)
                             nonPublishedEmotes.Add(nonPublishedEmote);
