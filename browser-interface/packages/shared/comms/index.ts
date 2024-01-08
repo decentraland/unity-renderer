@@ -15,7 +15,6 @@ export function sendPublicChatMessage(message: string) {
 
 export function sendParcelSceneCommsMessage(sceneId: string, data: Uint8Array) {
   const commsContext = getCommsRoom(store.getState())
-
   commsContext
     ?.sendParcelSceneMessage({
       data,

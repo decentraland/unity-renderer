@@ -311,7 +311,7 @@ function* onWorldPositionChange() {
       }
     }
 
-    const reason: { unload: any; reload: SceneReload } = yield race({
+    const reason: { unload: any; reload: SceneReload; newParcel: { payload: { position: Vector2 } } } = yield race({
       timeout: delay(5000),
       newSceneLoader: take(SET_SCENE_LOADER),
       newParcel: take(SET_PARCEL_POSITION),

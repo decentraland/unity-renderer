@@ -12,15 +12,13 @@ import {
   Position,
   ProfileRequest,
   ProfileResponse,
-  Scene,
-  Voice
+  Scene
 } from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { CommsEvents, RoomConnection } from '../interface'
 import { Rfc4RoomConnection } from '../logic/rfc-4-room-connection'
 import { CommsAdapterEvents, SendHints } from './types'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
-import { createOpusVoiceHandler } from './voice/opusVoiceHandler'
 
 export class SimulationRoom implements RoomConnection {
   events = mitt<CommsEvents>()
@@ -43,6 +41,7 @@ export class SimulationRoom implements RoomConnection {
   params: URLSearchParams
 
   constructor(param: string) {
+    const peers = this.peers
     this.params = new URLSearchParams(param.startsWith('?') ? param.substring(1) : param)
     this.tick = setInterval(this.update.bind(this), 60)
     this.roomConnection = new Rfc4RoomConnection({
@@ -50,14 +49,17 @@ export class SimulationRoom implements RoomConnection {
       send(_data: Uint8Array, _hints: SendHints): void {},
       async connect(): Promise<void> {},
       async disconnect(_error?: Error): Promise<void> {},
-      async createVoiceHandler() {
-        throw new Error('not implemented')
+      async getVoiceHandler(): Promise<VoiceHandler | undefined> {
+        return undefined
+      },
+      async getParticipants() {
+        return Array.from(peers.keys())
       }
     })
   }
 
-  async createVoiceHandler(): Promise<VoiceHandler> {
-    return createOpusVoiceHandler()
+  async getVoiceHandler(): Promise<VoiceHandler | undefined> {
+    return this.roomConnection.getVoiceHandler()
   }
 
   async spawnPeer(): Promise<string> {
@@ -131,9 +133,6 @@ export class SimulationRoom implements RoomConnection {
   async sendChatMessage(message: Chat): Promise<void> {
     await this.roomConnection.sendChatMessage(message)
   }
-  async sendVoiceMessage(message: Voice): Promise<void> {
-    await this.roomConnection.sendVoiceMessage(message)
-  }
 
   update() {
     let i = 0
@@ -199,5 +198,9 @@ export class SimulationRoom implements RoomConnection {
 
   async connect(): Promise<void> {
     await Promise.all(new Array(100).fill(0).map(() => this.spawnPeer()))
+  }
+
+  async getParticipants() {
+    return this.roomConnection.getParticipants()
   }
 }

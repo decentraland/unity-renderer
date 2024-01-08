@@ -14,18 +14,18 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
-import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
+import { getMaxVisiblePeers } from 'shared/meta/selectors'
 import { incrementCounter } from 'shared/analytics/occurences'
 import type { SendProfileToRenderer } from 'shared/profiles/actions'
 import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared/profiles/actions'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
-import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
+import { overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
@@ -36,25 +36,31 @@ import {
   setRoomConnection,
   SET_COMMS_ISLAND,
   SET_ROOM_CONNECTION,
-  setLiveKitAdapter
+  setLiveKitAdapter,
+  setSceneRoomConnection
 } from './actions'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
 import { SimulationRoom } from './adapters/SimulatorAdapter'
 import { WebSocketAdapter } from './adapters/WebSocketAdapter'
-import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel, sendPing } from './handlers'
+import { bindHandlersToCommsContext, createSendMyProfileOverCommsChannel } from './handlers'
 import type { RoomConnection } from './interface'
 import { positionReportToCommsPositionRfc4 } from './interface/utils'
 import { commsLogger } from './logger'
 import { Rfc4RoomConnection } from './logic/rfc-4-room-connection'
-import { getConnectedPeerCount, processAvatarVisibility } from './peers'
-import { getCommsRoom, reconnectionState } from './selectors'
+import { processAvatarVisibility } from './peers'
+import { getCommsRoom, getSceneRoom, getSceneRooms, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
-import { getGlobalAudioStream } from './adapters/voice/loopback'
 import { store } from 'shared/store/isolatedStore'
 import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
 import { isBase64 } from 'lib/encoding/base64ToBlob'
+import { SET_PARCEL_POSITION } from 'shared/scene-loader/actions'
+import { getSceneLoader } from '../scene-loader/selectors'
+import { Vector2 } from '../protocol/decentraland/common/vectors.gen'
+import { encodeParcelPosition } from '../../lib/decentraland/parcels/encodeParcelPosition'
+import { SetDesiredScenesCommand } from '../scene-loader/types'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -87,8 +93,9 @@ export function* commsSaga() {
   yield fork(handleAnnounceProfile)
   yield fork(initAvatarVisibilityProcess)
   yield fork(handleCommsReconnectionInterval)
-  yield fork(pingerProcess)
   yield fork(reportPositionSaga)
+
+  yield fork(sceneRoomComms)
 }
 
 /**
@@ -152,44 +159,6 @@ function* reportPositionSaga() {
 }
 
 /**
- * This saga sends random pings to all peers if the conditions are met.
- */
-function* pingerProcess() {
-  yield call(waitForMetaConfigurationInitialization)
-
-  const enabled: boolean = yield select(getFeatureFlagEnabled, 'ping_enabled')
-
-  if (enabled) {
-    while (true) {
-      yield delay(15_000 + Math.random() * 60_000)
-
-      const responses = new Map<string, number[]>()
-      const expectedResponses = getConnectedPeerCount()
-
-      yield call(sendPing, (dt, address) => {
-        const list = responses.get(address) || []
-        responses.set(address, list)
-        list.push(dt)
-        measurePingTime(dt)
-        if (list.length > 1) {
-          incrementCounter('pong_duplicated_response_counter')
-        }
-      })
-
-      yield delay(15_000)
-
-      // measure the response ratio
-      if (expectedResponses) {
-        measurePingTimePercentages(Math.round((responses.size / expectedResponses) * 100))
-      }
-
-      incrementCounter('pong_expected_counter', expectedResponses)
-      incrementCounter('pong_given_counter', responses.size)
-    }
-  }
-}
-
-/**
  * This saga handles the action to connect a specific comms
  * adapter.
  */
@@ -198,9 +167,15 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
     yield put(setCommsIsland(action.payload.event.islandId))
 
-    const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
+    const adapter: RoomConnection = yield call(
+      connectAdapter,
+      action.payload.event.connStr,
+      false,
+      identity,
+      action.payload.event.islandId
+    )
 
-    globalThis.__DEBUG_ADAPTER = adapter
+    globalThis.__DEBUG_ISLAND_ADAPTER = adapter
 
     yield put(establishingComms())
     yield apply(adapter, adapter.connect, [])
@@ -219,7 +194,13 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
   }
 }
 
-async function connectAdapter(connStr: string, identity: ExplorerIdentity): Promise<RoomConnection> {
+async function connectAdapter(
+  connStr: string,
+  voiceChatEnabled: boolean,
+  identity: ExplorerIdentity,
+  id: string,
+  dispatchAction = true
+): Promise<RoomConnection> {
   const ix = connStr.indexOf(':')
   const protocol = connStr.substring(0, ix)
   const url = connStr.substring(ix + 1)
@@ -256,7 +237,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       }
 
       if (typeof response.fixedAdapter === 'string' && !response.fixedAdapter.startsWith('signed-login:')) {
-        return connectAdapter(response.fixedAdapter, identity)
+        return connectAdapter(response.fixedAdapter, voiceChatEnabled, identity, id)
       }
 
       if (typeof response.message === 'string') {
@@ -272,12 +253,12 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       throw new Error(`An unknown error was detected while trying to connect to the selected realm.`)
     }
     case 'offline': {
-      return new Rfc4RoomConnection(new OfflineAdapter())
+      return new Rfc4RoomConnection(new OfflineAdapter(), id)
     }
     case 'ws-room': {
       const finalUrl = !url.startsWith('ws:') && !url.startsWith('wss:') ? 'wss://' + url : url
 
-      return new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity))
+      return new Rfc4RoomConnection(new WebSocketAdapter(finalUrl, identity), id)
     }
     case 'simulator': {
       return new SimulationRoom(url)
@@ -293,12 +274,14 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         logger: commsLogger,
         url: theUrl.origin + theUrl.pathname,
         token,
-        globalAudioStream: await getGlobalAudioStream()
+        voiceChatEnabled
       })
 
-      store.dispatch(setLiveKitAdapter(livekitAdapter))
+      if (dispatchAction) {
+        store.dispatch(setLiveKitAdapter(livekitAdapter))
+      }
 
-      return new Rfc4RoomConnection(livekitAdapter)
+      return new Rfc4RoomConnection(livekitAdapter, id)
     }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
@@ -530,4 +513,84 @@ function* handleRoomDisconnectionSaga(action: HandleRoomDisconnection) {
       notifyStatusThroughChat(`Lost connection to realm`)
     }
   }
+}
+
+function* sceneRoomComms() {
+  const commsSceneToRemove = new Map<string, NodeJS.Timeout>()
+  const adapter: IRealmAdapter = yield call(ensureRealmAdapter)
+  const isWorld = isWorldLoaderActive(adapter)
+
+  if (isWorld) {
+    return
+  }
+
+  while (true) {
+    const reason: { timeout?: unknown; newParcel?: { payload: { position: Vector2 } } } = yield race({
+      newParcel: take(SET_PARCEL_POSITION),
+      timeout: delay(5000)
+    })
+    const sceneLoader: ReturnType<typeof getSceneLoader> = yield select(getSceneLoader)
+    if (!sceneLoader) continue
+    if (reason.newParcel) {
+      const scenes: SetDesiredScenesCommand = yield call(sceneLoader.fetchScenesByLocation, [
+        encodeParcelPosition(reason.newParcel.payload.position)
+      ])
+      const sceneId = scenes.scenes[0].id
+      const currentScene: ReturnType<typeof getSceneRoom> = yield select(getSceneRoom)
+      // We are still on the same scene.
+      if (sceneId === currentScene?.id) continue
+
+      yield call(checkDisconnectScene, sceneId, commsSceneToRemove)
+      yield call(connectSceneToComms, sceneId)
+      // Player moved to a new scene. Instanciate new comms
+    }
+  }
+}
+
+function* checkDisconnectScene(currentSceneId: string, commsSceneToRemove: Map<string, NodeJS.Timeout>) {
+  // avoid deleting an already created comms. Use when the user is switching between two scenes
+  if (commsSceneToRemove.has(currentSceneId)) {
+    clearTimeout(commsSceneToRemove.get(currentSceneId))
+    commsSceneToRemove.delete(currentSceneId)
+  }
+
+  const sceneRooms: ReturnType<typeof getSceneRooms> = yield select(getSceneRooms)
+  for (const [roomId, room] of sceneRooms) {
+    if (roomId === currentSceneId) continue
+    if (commsSceneToRemove.has(roomId)) continue
+    const timeout = setTimeout(() => {
+      void room.disconnect()
+      commsSceneToRemove.delete(roomId)
+      sceneRooms.delete(roomId)
+    }, 1000)
+    commsSceneToRemove.set(roomId, timeout)
+  }
+}
+
+function* connectSceneToComms(sceneId: string) {
+  const realmAdapter = yield select(getRealmAdapter)
+  if (!realmAdapter) {
+    throw new Error('No realm adapter') // TODO
+  }
+  const realmName = realmAdapter.about.configurations?.realmName
+
+  const identity: ExplorerIdentity = yield select(getCurrentIdentity)
+  // TODO: we should change the adapter control to provide this url
+  const url = 'https://comms-gatekeeper.decentraland.zone/get-scene-adapter'
+  const response = yield call(
+    signedFetch,
+    url,
+    identity,
+    { method: 'POST', responseBodyType: 'json' },
+    {
+      realmName,
+      sceneId
+    }
+  )
+
+  const sceneRoomConnection = yield call(connectAdapter, response.json.adapter, true, identity, sceneId, false)
+  globalThis.__DEBUG_SCENE_ADAPTER = sceneRoomConnection
+  yield apply(sceneRoomConnection, sceneRoomConnection.connect, [])
+  yield call(bindHandlersToCommsContext, sceneRoomConnection)
+  yield put(setSceneRoomConnection(sceneId, sceneRoomConnection))
 }

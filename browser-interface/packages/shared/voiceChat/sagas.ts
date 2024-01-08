@@ -42,13 +42,16 @@ import {
 import { RootVoiceChatState, VoiceChatState } from './types'
 import { VoiceHandler } from './VoiceHandler'
 
-import { SET_ROOM_CONNECTION } from 'shared/comms/actions'
+import { SET_SCENE_ROOM_CONNECTION } from 'shared/comms/actions'
 import { RoomConnection } from 'shared/comms/interface'
-import { getCommsRoom } from 'shared/comms/selectors'
+import { getCommsRoom, getSceneRoom } from 'shared/comms/selectors'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { incrementCounter } from 'shared/analytics/occurences'
 import { RootWorldState } from 'shared/world/types'
-import { waitForSelector } from 'lib/redux'
+import { waitFor, waitForSelector } from 'lib/redux'
+import { IRealmAdapter } from '../realm/types'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
+import { isWorldLoaderActive } from '../realm/selectors'
 
 let audioRequestInitialized = false
 
@@ -75,16 +78,24 @@ function* handleConnectVoiceChatToRoom() {
   yield call(waitForMetaConfigurationInitialization)
 
   while (true) {
+    // wait for next event to happen
+    yield take([SET_SCENE_ROOM_CONNECTION, JOIN_VOICE_CHAT, LEAVE_VOICE_CHAT])
+
     const joined: boolean = yield select(hasJoinedVoiceChat)
     const prevHandler = yield select(getVoiceHandler)
     let handler: VoiceHandler | null = null
 
     // if we are supposed to be joined, then ask the RoomConnection about the handler
     if (joined) {
+      const realmAdapter: IRealmAdapter = yield call(ensureRealmAdapter)
+      const isWorld = isWorldLoaderActive(realmAdapter)
+      if (!isWorld) {
+        yield call(waitFor(getSceneRoom, SET_SCENE_ROOM_CONNECTION))
+      }
       const room: RoomConnection = yield select(getCommsRoom)
       if (room) {
         try {
-          handler = yield apply(room, room.createVoiceHandler, [])
+          handler = yield apply(room, room.getVoiceHandler, [])
         } catch (err: any) {
           yield put(setVoiceChatError(err.toString()))
         }
@@ -101,9 +112,6 @@ function* handleConnectVoiceChatToRoom() {
         yield prevHandler.destroy()
       }
     }
-
-    // wait for next event to happen
-    yield take([SET_ROOM_CONNECTION, JOIN_VOICE_CHAT, LEAVE_VOICE_CHAT])
   }
 }
 
@@ -116,7 +124,6 @@ function* handleRecordingRequest() {
 
   if (voiceHandler) {
     if (!isAllowedByScene || !requestedRecording) {
-
       // Ensure that we're recording, to stop recording
       yield call(waitForSelector, isVoiceChatRecording)
       yield call(voiceHandler.setRecording, false)

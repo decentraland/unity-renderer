@@ -120,7 +120,6 @@ export class SceneWorker {
   private readonly startLoadingTime = performance.now()
   // this is the transport for the worker
   public transport?: Transport
-
   metadata: Scene
   logger: ILogger
 
@@ -139,7 +138,6 @@ export class SceneWorker {
     scenePort: RpcClientPort
   ) {
     const skipErrors = ['Transport closed while waiting the ACK']
-
     this.metadata = loadableScene.entity.metadata
 
     const loggerName = getSceneNameFromJsonData(this.metadata) || loadableScene.id

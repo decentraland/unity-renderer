@@ -1,10 +1,8 @@
 import * as proto from 'shared/protocol/decentraland/kernel/comms/rfc4/comms.gen'
 import type { Avatar } from '@dcl/schemas'
-import { uuid } from 'lib/javascript/uuid'
 import { Observable } from 'mz-observable'
 import { eventChannel } from 'redux-saga'
 import { getBannedUsers } from 'shared/meta/selectors'
-import { incrementCounter } from 'shared/analytics/occurences'
 import { validateAvatar } from 'shared/profiles/schemaValidation'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { ensureAvatarCompatibilityFormat } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
@@ -12,32 +10,24 @@ import { incrementCommsMessageReceived, incrementCommsMessageReceivedByName } fr
 import { getCurrentUserId } from 'shared/session/selectors'
 import { store } from 'shared/store/isolatedStore'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
-import { processVoiceFragment } from 'shared/voiceChat/handlers'
 import { isBlockedOrBanned } from 'shared/voiceChat/selectors'
-import { sendPublicChatMessage } from '.'
 import { messageReceived } from '../chat/actions'
 import { handleRoomDisconnection } from './actions'
-import { AdapterDisconnectedEvent, PeerDisconnectedEvent } from './adapters/types'
+import { AdapterDisconnectedEvent } from './adapters/types'
 import { RoomConnection } from './interface'
 import { AvatarMessageType, Package } from './interface/types'
 import {
   avatarMessageObservable,
-  ensureTrackingUniqueAndLatest,
   getPeer,
+  onRoomLeft,
   receiveUserPosition,
-  removeAllPeers,
-  removePeerByAddress,
+  onPeerDisconnected,
   setupPeer as setupPeerTrackingInfo
 } from './peers'
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 
-type PingRequest = {
-  alias: number
-  sentTime: number
-  onPong: (dt: number, address: string) => void
-}
 type VersionUpdateInformation = {
   userId: string
   version: number
@@ -46,13 +36,8 @@ type VersionUpdateInformation = {
 const versionUpdateOverCommsChannel = new Observable<VersionUpdateInformation>()
 const receiveProfileOverCommsChannel = new Observable<Avatar>()
 const sendMyProfileOverCommsChannel = new Observable<Record<string, never>>()
-const pingRequests = new Map<number, PingRequest>()
-let pingIndex = 0
 
 export async function bindHandlersToCommsContext(room: RoomConnection) {
-  removeAllPeers()
-  pingRequests.clear()
-
   // RFC4 messages
   room.events.on('position', (e) => processPositionMessage(room, e))
   room.events.on('profileMessage', processProfileUpdatedMessage)
@@ -60,7 +45,6 @@ export async function bindHandlersToCommsContext(room: RoomConnection) {
   room.events.on('sceneMessageBus', processParcelSceneCommsMessage)
   room.events.on('profileRequest', processProfileRequest)
   room.events.on('profileResponse', processProfileResponse)
-  room.events.on('voiceMessage', processVoiceFragment)
 
   room.events.on('*', (type, _) => {
     incrementCommsMessageReceived()
@@ -68,7 +52,7 @@ export async function bindHandlersToCommsContext(room: RoomConnection) {
   })
 
   // transport messages
-  room.events.on('PEER_DISCONNECTED', handleDisconnectPeer)
+  room.events.on('PEER_DISCONNECTED', onPeerDisconnected)
   room.events.on('DISCONNECTION', (event) => handleDisconnectionEvent(event, room))
 }
 
@@ -91,7 +75,14 @@ export async function requestProfileFromPeers(
   return false
 }
 
-function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
+async function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConnection) {
+  try {
+    await onRoomLeft(room)
+  } catch (err) {
+    console.error(err)
+    // TODO: handle this
+  }
+
   store.dispatch(handleRoomDisconnection(room))
 
   // when we are kicked, the explorer should re-load, or maybe go to offline~offline realm
@@ -103,10 +94,7 @@ function handleDisconnectionEvent(data: AdapterDisconnectedEvent, room: RoomConn
   }
 }
 
-function handleDisconnectPeer(data: PeerDisconnectedEvent) {
-  removePeerByAddress(data.address)
-}
-
+// TODO: use position message to setupPeerTrackingInfo
 function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVersion>) {
   const peerTrackingInfo = setupPeerTrackingInfo(message.address)
   peerTrackingInfo.ethereumAddress = message.address
@@ -115,8 +103,6 @@ function processProfileUpdatedMessage(message: Package<proto.AnnounceProfileVers
   if (message.data.profileVersion > peerTrackingInfo.lastProfileVersion) {
     peerTrackingInfo.lastProfileVersion = message.data.profileVersion
 
-    // remove duplicates
-    ensureTrackingUniqueAndLatest(peerTrackingInfo)
     versionUpdateOverCommsChannel.notifyObservers({ userId: message.address, version: message.data.profileVersion })
   }
 }
@@ -134,33 +120,6 @@ function processParcelSceneCommsMessage(message: Package<proto.Scene>) {
   }
 }
 
-function pingMessage(nonce: number) {
-  return `␑${nonce}`
-}
-function pongMessage(nonce: number, address: string) {
-  return `␆${nonce} ${address}`
-}
-
-export function sendPing(onPong?: (dt: number, address: string) => void) {
-  const nonce = Math.floor(Math.random() * 0xffffffff)
-  let responses = 0
-  pingRequests.set(nonce, {
-    sentTime: Date.now(),
-    alias: pingIndex++,
-    onPong:
-      onPong ||
-      ((dt, address) => {
-        console.log(
-          `ping got ${++responses} responses (ping: ${dt.toFixed(2)}ms, nonce: ${nonce}, address: ${address})`
-        )
-      })
-  })
-  sendPublicChatMessage(pingMessage(nonce))
-  incrementCounter('ping_sent_counter')
-}
-
-const answeredPings = new Set<number>()
-
 function processChatMessage(message: Package<proto.Chat>) {
   const myProfile = getCurrentUserProfile(store.getState())
   const fromAlias: string = message.address
@@ -177,23 +136,8 @@ function processChatMessage(message: Package<proto.Chat>) {
   senderPeer.lastUpdate = Date.now()
 
   if (senderPeer.ethereumAddress) {
-    if (message.data.message.startsWith('␆') /* pong */) {
-      const [nonceStr, address] = message.data.message.slice(1).split(' ')
-      const nonce = parseInt(nonceStr, 10)
-      const request = pingRequests.get(nonce)
-      if (request) {
-        incrementCounter('pong_received_counter')
-        request.onPong(Date.now() - request.sentTime, address || 'none')
-      }
-    } else if (message.data.message.startsWith('␑') /* ping */) {
-      const nonce = parseInt(message.data.message.slice(1), 10)
-      if (answeredPings.has(nonce)) {
-        incrementCounter('ping_received_twice_counter')
-        return
-      }
-      answeredPings.add(nonce)
-      if (myProfile) sendPublicChatMessage(pongMessage(nonce, myProfile.ethAddress))
-      incrementCounter('pong_sent_counter')
+    if (message.data.message.startsWith('␆') /* pong */ || message.data.message.startsWith('␑') /* ping */) {
+      // TODO: remove this
     } else if (message.data.message.startsWith('␐')) {
       const [id, timestamp] = message.data.message.split(' ')
 
@@ -213,7 +157,7 @@ function processChatMessage(message: Package<proto.Chat>) {
       if (!isBanned) {
         const messageEntry: InternalChatMessage = {
           messageType: ChatMessageType.PUBLIC,
-          messageId: uuid(),
+          messageId: `${senderPeer.ethereumAddress}-${message.data.timestamp}`,
           sender: senderPeer.ethereumAddress,
           body: message.data.message,
           timestamp: message.data.timestamp
