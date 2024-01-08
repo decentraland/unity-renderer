@@ -1,10 +1,10 @@
+using Cysharp.Threading.Tasks;
+using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using DCLServices.WearablesCatalogService;
 
 namespace AvatarSystem
 {
@@ -23,7 +23,7 @@ namespace AvatarSystem
         {
             try
             {
-                var parsedWearablesIds = wearableIds.Select((wearableId) => ExtendedUrnParser.GetShortenedUrn(wearableId));
+                IEnumerable<string> parsedWearablesIds = wearableIds.Select(ExtendedUrnParser.GetShortenedUrn);
                 WearableItem[] allItems = await Resolve(parsedWearablesIds, ct);
 
                 List<WearableItem> wearables = new List<WearableItem>();
