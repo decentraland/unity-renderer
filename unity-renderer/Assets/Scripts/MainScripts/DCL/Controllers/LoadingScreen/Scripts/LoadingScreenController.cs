@@ -105,6 +105,12 @@ namespace DCL.LoadingScreen
         {
             onSignUpFlow = current;
 
+            if (realmDataStore.playerRealmAboutConfiguration.Get() != null)
+            {
+                currentRealm = realmDataStore.playerRealmAboutConfiguration.Get().RealmName;
+                currentRealmIsWorld = commonDataStore.isWorld.Get();
+            }
+
             if (current)
                 FadeOutView();
             else
