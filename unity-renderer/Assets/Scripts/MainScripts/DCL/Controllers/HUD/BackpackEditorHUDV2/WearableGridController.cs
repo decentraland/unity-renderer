@@ -411,7 +411,7 @@ namespace DCL.Backpack
                 hiddenBy = null,
                 name = wearable.GetName(),
                 hideList = hidesList != null ? hidesList.ToList() : new List<string>(),
-                isEquipped = IsEquipped(wearable.id),
+                isEquipped = IsEquipped(ExtendedUrnParser.GetShortenedUrn(wearable.id)),
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
                 unEquipAllowed = CanWearableBeUnEquipped(wearable),
