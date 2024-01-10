@@ -40,12 +40,14 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           //  when there is only one method, the `if` should be
           //  implemented in the renderer-side (to check if there is data)
           //  and here should always call the rpc
-
           const ret = await ctx.rpcSceneControllerService.sendCrdt({
             payload: req.data
           })
-
-          return { data: [ret.payload] }
+          const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
+          if (internalAvatarMessages.length) {
+            console.log('[BOEDO] crdtSendToRenderer', ...internalAvatarMessages)
+          }
+          return { data: [ret.payload, ...internalAvatarMessages] }
         },
 
         // @deprecated

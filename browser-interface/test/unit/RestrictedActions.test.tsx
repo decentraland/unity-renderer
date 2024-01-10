@@ -153,6 +153,7 @@ describe('RestrictedActions tests', () => {
       readFile(_path) {
         throw new Error('not implemented')
       },
+      internalEngine: {} as any
     }
   }
 
