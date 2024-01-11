@@ -337,14 +337,12 @@ function* logout() {
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   if (identity && identity.address && network) {
     yield call(() => localProfilesRepo.remove(identity.address, network))
+    yield call(deleteSession, identity.address)
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
   yield put(setRoomConnection(undefined))
 
-  if (identity?.address) {
-    yield call(deleteSession, identity.address)
-  }
   window.location.reload()
 }
 
