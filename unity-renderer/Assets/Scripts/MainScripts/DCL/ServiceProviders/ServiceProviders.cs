@@ -1,10 +1,18 @@
-using System;
 using DCL;
-using DCL.Helpers.NFT.Markets;
+using MainScripts.DCL.ServiceProviders.OpenSea;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 
 public class ServiceProviders : IServiceProviders
 {
-    public INFTMarket openSea { get; } = new OpenSea();
+    private readonly KernelConfig kernelConfig;
+
+    public ServiceProviders(KernelConfig kernelConfig)
+    {
+        this.kernelConfig = kernelConfig;
+        openSea = new OpenSeaService(this.kernelConfig);
+    }
+
+    public IOpenSea openSea { get; }
     public ITheGraph theGraph { get; } = new TheGraph();
     public ICatalyst catalyst { get; } = new Catalyst();
     public IAnalytics analytics { get; } = new Analytics();

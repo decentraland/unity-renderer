@@ -1,10 +1,11 @@
-using DCL.Components;
-using DCL.Helpers.NFT;
+using DCL;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
+using NFTShape_Internal;
+using System;
 using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using DCL;
-using NFTShape_Internal;
+using WaitUntil = DCL.WaitUntil;
 
 public interface INFTShapeLoaderController
 {
@@ -19,7 +20,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     internal const string SUPPORTED_PROTOCOL = "The only protocol currently supported is 'ethereum'.";
     internal const string DOES_NOT_SUPPORT_POLYGON = "Warning: OpenSea API does not support fetching Polygon assets.";
     internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{0}/{1}'.";
-    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{0}/{1}': {2}.";
+    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{0}/{1}': {2}";
 
     public enum NoiseType
     {
@@ -43,8 +44,8 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     private NFTShapeHQImageHandler hqTextureHandler = null;
     private Coroutine loadNftAssetCoroutine;
 
-    public event System.Action OnLoadingAssetSuccess;
-    public event System.Action OnLoadingAssetFail;
+    public event Action OnLoadingAssetSuccess;
+    public event Action OnLoadingAssetFail;
 
     [SerializeField]
     NFTShapeMaterial[] materials;
@@ -56,8 +57,8 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     [SerializeField] bool noiseIs3D = false;
     [SerializeField] bool noiseIsFractal = false;
 
-    System.Action<LoadWrapper> OnSuccess;
-    System.Action<LoadWrapper> OnFail;
+    Action<LoadWrapper> OnSuccess;
+    Action<LoadWrapper> OnFail;
     private string darURLProtocol;
     private string darURLRegistry;
     private string darURLAsset;
@@ -108,7 +109,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
 
     void Update() { hqTextureHandler?.Update(); }
-    
+
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
     {
         if (string.IsNullOrEmpty(url) || (!loadEvenIfAlreadyLoaded && alreadyLoadedAsset))
@@ -171,7 +172,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     }
 
     private void FetchNftInfoSuccess(NFTInfo nftInfo)
-    {   
+    {
         loadNftAssetCoroutine = StartCoroutine(LoadNFTAssetCoroutine(nftInfo));
     }
 
@@ -202,7 +203,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     internal IEnumerator LoadNFTAssetCoroutine(NFTInfo nftInfo)
     {
         var config = DataStore.i.Get<DataStore_NFTShape>();
-        yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
+        yield return new WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
         // We download the "preview" 256px image
         yield return nftAssetRetriever.LoadNFTAsset(
@@ -212,7 +213,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
                 PrepareFrame(result, nftInfo.name, nftInfo.imageUrl);
                 FinishLoading(true);
             },
-            (exc) =>
+            _ =>
             {
                 Debug.LogError(string.Format(COULD_NOT_FETCH_NFT_IMAGE, darURLRegistry, darURLAsset,
                     nftInfo.previewImageUrl));
@@ -285,7 +286,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
         errorFeedback.SetActive(isVisible);
     }
 
-    void InitializeMaterials() 
+    private void InitializeMaterials()
     {
         Material[] meshMaterials = new Material[materials.Length];
         for (int i = 0; i < materials.Length; i++)

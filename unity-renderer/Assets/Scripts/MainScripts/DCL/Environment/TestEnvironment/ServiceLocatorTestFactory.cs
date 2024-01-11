@@ -1,7 +1,6 @@
 ﻿using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Controllers;
-using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
@@ -14,6 +13,7 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
 using Sentry;
 using System;
@@ -91,7 +91,7 @@ namespace DCL
                     mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
                     mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
                     mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
-                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
+                    mockedProviders.openSea.Returns(Substitute.For<IOpenSea>());
                     return mockedProviders;
                 });
 

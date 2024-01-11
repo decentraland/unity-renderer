@@ -1,6 +1,6 @@
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.Requests
 {
-    public class RequestAssetSingle : RequestBase<SingleAssetResponse>
+    public class RequestAssetSingle : RequestBase<OpenSeaNftDto>
     {
         public string contractAddress { get; }
         public string tokenId { get; }
