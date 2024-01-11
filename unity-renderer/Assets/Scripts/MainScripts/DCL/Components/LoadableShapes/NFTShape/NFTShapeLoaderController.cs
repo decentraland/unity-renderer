@@ -1,5 +1,4 @@
 using DCL;
-using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
 using System;
 using System.Collections;
@@ -213,7 +212,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
                 PrepareFrame(result, nftInfo.name, nftInfo.imageUrl);
                 FinishLoading(true);
             },
-            (exc) =>
+            _ =>
             {
                 Debug.LogError(string.Format(COULD_NOT_FETCH_NFT_IMAGE, darURLRegistry, darURLAsset,
                     nftInfo.previewImageUrl));
@@ -221,7 +220,6 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
                 ShowErrorFeedback(true);
                 OnLoadingAssetFail?.Invoke();
                 FinishLoading(false);
-                throw exc;
             });
     }
 

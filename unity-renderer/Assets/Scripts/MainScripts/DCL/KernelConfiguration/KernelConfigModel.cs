@@ -6,6 +6,8 @@ using System.Collections.Generic;
 public class KernelConfigModel
 {
     private const string MAIN_NET = "mainnet";
+    private const string ORG = ".org";
+    private const string ZONE = ".zone";
 
     public Features features = new Features();
     public Comms comms = new Comms();
@@ -50,7 +52,7 @@ public class KernelConfigModel
     }
 
     public string GetTld() =>
-        network.Equals(MAIN_NET, StringComparison.OrdinalIgnoreCase) ? ".org" : ".zone";
+        network.Equals(MAIN_NET, StringComparison.OrdinalIgnoreCase) ? ORG : ZONE;
 
     public KernelConfigModel Clone()
     {
