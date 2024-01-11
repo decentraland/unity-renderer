@@ -1,4 +1,5 @@
 using DCL;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
 using System;
 using System.Collections;
