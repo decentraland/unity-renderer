@@ -26,7 +26,7 @@ export const deleteSession = async (userId?: string) => {
   if (userId) {
     await removeFromPersistentStorage(sessionKey(userId))
 
-    await SingleSignOn.clearIdentity(userId)
+    SingleSignOn.localStorageClearIdentity(userId)
   }
 }
 
@@ -56,7 +56,7 @@ async function getSessionWithSSOIdentity(sessions: StoredSession[]) {
 
   const session = sessions[0]
 
-  const ssoIdentity = await SingleSignOn.getIdentity(session.identity.address)
+  const ssoIdentity = SingleSignOn.localStorageGetIdentity(session.identity.address)
 
   if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
     return null
