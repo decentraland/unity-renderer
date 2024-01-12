@@ -91,10 +91,6 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
                 var transformTweens = DOTween.TweensByTarget(entityTransform, true);
                 transformTweens?[0].Rewind(false);
             }
-            else
-            {
-                currentTweener.Rewind(false);
-            }
 
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
