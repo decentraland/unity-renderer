@@ -1,16 +1,17 @@
 using Cysharp.Threading.Tasks;
-using NUnit.Framework;
-using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Helpers.NFT.Markets;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
+using NUnit.Framework;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
+using WaitUntil = UnityEngine.WaitUntil;
 
 namespace SceneBoundariesCheckerTests
 {
@@ -50,7 +51,7 @@ namespace SceneBoundariesCheckerTests
                     mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
                     mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
                     mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
-                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
+                    mockedProviders.openSea.Returns(Substitute.For<IOpenSea>());
                     return mockedProviders;
                 });
             return result;
@@ -142,7 +143,7 @@ namespace SceneBoundariesCheckerTests
 
             TestUtils.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
-            await new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+            await new WaitUntil(() => gltfShape.alreadyLoaded);
             TestUtils.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             await TestUtils.CreateAudioSourceWithClipForEntity(entity);
 

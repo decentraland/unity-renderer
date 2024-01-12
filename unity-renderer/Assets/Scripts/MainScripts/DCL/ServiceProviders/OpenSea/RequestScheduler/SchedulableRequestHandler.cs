@@ -1,6 +1,7 @@
+using MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers;
 using System;
 
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestScheduler
 {
     internal class SchedulableRequestHandler
     {

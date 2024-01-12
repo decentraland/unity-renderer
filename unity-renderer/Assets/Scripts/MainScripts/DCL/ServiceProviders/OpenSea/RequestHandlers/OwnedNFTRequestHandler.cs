@@ -1,39 +1,45 @@
+using DCL.Helpers;
+using MainScripts.DCL.ServiceProviders.OpenSea.Requests;
+using MainScripts.DCL.ServiceProviders.OpenSea.RequestScheduler;
 using System;
 using UnityEngine;
 
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers
 {
     internal class OwnedNFTRequestHandler : IRequestHandler
     {
         const bool VERBOSE = false;
 
-        private readonly SchedulableRequestHandler schedulableHandler = new SchedulableRequestHandler();
+        private readonly SchedulableRequestHandler schedulableHandler = new ();
         private readonly RequestOwnedNFTs request;
         private readonly RequestController requestController;
+        private readonly KernelConfig kernelConfig;
 
         private int retryCount = 0;
 
         SchedulableRequestHandler IRequestHandler.schedulableRequestHandler => schedulableHandler;
 
-        public OwnedNFTRequestHandler(RequestOwnedNFTs request, RequestController requestController)
+        public OwnedNFTRequestHandler(RequestOwnedNFTs request, RequestController requestController, KernelConfig kernelConfig)
         {
             if (VERBOSE)
                 Debug.Log($"OwnedNFTRequestHandler: ({GetHashCode()}) {request.requestId} created");
 
             this.request = request;
             this.requestController = requestController;
+            this.kernelConfig = kernelConfig;
             schedulableHandler.SetReadyToBeScheduled(this);
         }
 
-        string IRequestHandler.GetUrl() { return $"{Constants.OWNED_ASSETS_URL}{request.address}"; }
+        string IRequestHandler.GetUrl() =>
+            OpenSeaAPI.GetOwnedAssetsUrl(request.address, kernelConfig.Get().GetTld());
 
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {
-            AssetsResponse response = null;
+            OpenSeaManyNftDto response = null;
 
             try
             {
-                response = Utils.FromJsonWithNulls<AssetsResponse>(responseJson);
+                response = Utils.FromJsonWithNulls<OpenSeaManyNftDto>(responseJson);
             }
             catch (Exception e)
             {
@@ -58,7 +64,8 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             request.Reject(error);
         }
 
-        bool IRequestHandler.CanRetry() { return retryCount < Constants.REQUESTS_RETRY_ATTEMPS; }
+        bool IRequestHandler.CanRetry() =>
+            retryCount < OpenSeaAPI.REQUESTS_RETRY_ATTEMPS;
 
         void IRequestHandler.Retry()
         {

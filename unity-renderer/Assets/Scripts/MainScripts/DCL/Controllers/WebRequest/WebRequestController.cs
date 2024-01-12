@@ -410,6 +410,7 @@ namespace DCL
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
 
             UnityWebRequest request = requestFactory.CreateWebRequest(url);
+
             request.timeout = timeout;
 
             if (headers != null)

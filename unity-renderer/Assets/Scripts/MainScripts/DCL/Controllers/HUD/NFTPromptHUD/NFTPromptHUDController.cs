@@ -1,5 +1,5 @@
-using DCL;
 using DCL.Helpers.NFT;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using RPC.Context;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -17,7 +17,7 @@ public class NFTPromptHUDController : IHUD
     private readonly BaseVariable<NFTPromptModel> openNftPromptVariable;
 
     private Coroutine fetchNFTRoutine = null;
-    private NFTInfoSingleAsset? lastNFTInfo = null;
+    private NFTInfo? lastNFTInfo;
 
     private bool isPointerInTooltipArea = false;
     private bool isPointerInOwnerArea = false;
@@ -104,7 +104,7 @@ public class NFTPromptHUDController : IHUD
         openNftPromptVariable.Set(new NFTPromptModel(contractAddress, tokenId, string.Empty));
     }
 
-    private void SetNFT(NFTInfoSingleAsset info, string comment, bool shouldRefreshOwners)
+    private void SetNFT(NFTInfo info, string comment, bool shouldRefreshOwners)
     {
         lastNFTInfo = info;
         view.SetNFTInfo(info, comment);
