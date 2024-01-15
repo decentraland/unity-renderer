@@ -1,5 +1,4 @@
-﻿using System;
-using DCL.Helpers.NFT.Markets;
+﻿using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 
 namespace DCL
 {
@@ -8,6 +7,6 @@ namespace DCL
         ITheGraph theGraph { get; }
         ICatalyst catalyst { get; }
         IAnalytics analytics { get; }
-        INFTMarket openSea { get; }
+        IOpenSea openSea { get; }
     }
 }

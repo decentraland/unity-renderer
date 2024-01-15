@@ -1,13 +1,13 @@
 using System;
 
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.Requests
 {
     public abstract class RequestBase<T>
     {
         public event Action<RequestBase<T>> OnSuccess;
         public event Action<RequestBase<T>> OnFail;
 
-        public bool resolved { private set; get; }  
+        public bool resolved { private set; get; }
         public bool rejected { private set; get; }
         public bool pending => !rejected && !resolved;
         public string error { private set; get; }

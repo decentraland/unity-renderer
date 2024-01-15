@@ -1,6 +1,6 @@
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using System;
 using System.Collections.Generic;
-using DCL.Helpers.NFT;
 using Object = UnityEngine.Object;
 
 internal class OwnersInfoController : IDisposable
@@ -23,14 +23,14 @@ internal class OwnersInfoController : IDisposable
         }
     }
 
-    public void SetOwners(NFTInfoSingleAsset.Owners[] owners)
+    public void SetOwners(NFTOwner[] owners)
     {
         int activeElementsCount = activeElements.Count;
         for (int i = activeElementsCount - 1; i >= 0; i--)
         {
             if (i < owners.Length)
             {
-                activeElements[i].SetOwner(owners[i].owner);
+                activeElements[i].SetOwner(owners[i].address);
             }
             else
             {
@@ -44,7 +44,7 @@ internal class OwnersInfoController : IDisposable
             for (int i = activeElementsCount; i < owners.Length; i++)
             {
                 var element = GetElement();
-                element.SetOwner(owners[i].owner);
+                element.SetOwner(owners[i].address);
                 activeElements.Add(element);
             }
         }

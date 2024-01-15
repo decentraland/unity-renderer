@@ -133,7 +133,7 @@ namespace DCL.Backpack
             unEquipButton.gameObject.SetActive(model.unEquipAllowed && isEquipped);
         }
 
-        public void SetWearableId(string wearableId)
+        private void SetWearableId(string wearableId)
         {
             model.wearableId = wearableId;
         }

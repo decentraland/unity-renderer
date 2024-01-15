@@ -1,12 +1,10 @@
-﻿using System;
-using DCL;
+﻿using DCL;
 using DCL.Components;
-using DCL.Helpers.NFT;
 using DCL.Models;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
 using NSubstitute;
-using UnityEngine;
-using Environment = DCL.Environment;
+using System;
 
 public static class TestUtils_NFT
 {
@@ -14,7 +12,7 @@ public static class TestUtils_NFT
     {
         INFTInfoRetriever infoRetriever = Substitute.For<INFTInfoRetriever>();
         INFTAssetRetriever assetRetriever = Substitute.For<INFTAssetRetriever>();
-        NFTInfo mockedNftInfo = NFTInfo.defaultNFTInfo;
+        NFTInfo mockedNftInfo = NFTInfo.Default;
 
         INFTAsset mockedNftAsset = Substitute.For<INFTAsset>();
 
