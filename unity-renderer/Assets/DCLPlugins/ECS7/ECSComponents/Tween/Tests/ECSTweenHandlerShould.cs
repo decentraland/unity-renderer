@@ -465,5 +465,47 @@ namespace Tests
             tweens = DOTween.PlayingTweens();
             Assert.IsNull(tweens);
         }
+
+        [Test]
+        public void NotResetPreviousTweenerOnComponentUpdate()
+        {
+            Vector3 startPosition = Vector3.zero;
+            Vector3 endPosition = new Vector3(57f, 41f, 5f);
+            float duration = 3000;
+            Transform entityTransform = entity.gameObject.transform;
+
+            var model = new PBTween()
+            {
+                Duration = duration,
+                Move = new Move()
+                {
+                    Start = new Decentraland.Common.Vector3() { X = startPosition.x, Y = startPosition.y, Z = startPosition.z },
+                    End = new Decentraland.Common.Vector3() { X = endPosition.x, Y = endPosition.y, Z = endPosition.z },
+                    FaceDirection = true
+                }
+            };
+
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check it moved
+            var tweener = internalComponents.TweenComponent.GetFor(scene, entity).Value.model.tweener;
+            tweener.Goto(duration / 1000 / 2);
+            Assert.AreEqual(endPosition / 2, entityTransform.position);
+
+            // Put new different component
+            model = new PBTween()
+            {
+                Duration = duration,
+                Rotate = new Rotate()
+                {
+                    Start = new Decentraland.Common.Quaternion() { X = 1f, Y = 1f, Z = 1f, W = 1f },
+                    End = new Decentraland.Common.Quaternion() { X = 5f, Y = 5f, Z = 5f, W = 5f }
+                }
+            };
+            componentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Check transform position hasn't been reset
+            Assert.AreEqual(endPosition / 2, entityTransform.position);
+        }
     }
 }
