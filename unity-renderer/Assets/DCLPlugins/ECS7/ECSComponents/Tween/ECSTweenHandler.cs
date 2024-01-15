@@ -84,13 +84,10 @@ public class ECSTweenHandler : IECSComponentHandler<PBTween>
             float durationInSeconds = model.Duration / 1000;
             currentTweener = internalComponentModel.tweener;
 
-            if (currentTweener == null)
-            {
-                // There may be a tween running for the entity transform, even though internalComponentModel.tweener
-                // is null, e.g: during preview mode hot-reload.
-                var transformTweens = DOTween.TweensByTarget(entityTransform, true);
-                transformTweens?[0].Rewind(false);
-            }
+            // There may be a tween running for the entity transform, even with internalComponentModel.tweener
+            // as null, e.g: during preview mode hot-reload.
+            var transformTweens = DOTween.TweensByTarget(entityTransform, true);
+            transformTweens?[0].Rewind(false);
 
             internalComponentModel.transform = entityTransform;
             internalComponentModel.currentTime = model.CurrentTime;
