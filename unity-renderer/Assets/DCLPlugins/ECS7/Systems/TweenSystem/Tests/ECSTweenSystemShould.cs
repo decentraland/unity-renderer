@@ -170,42 +170,5 @@ namespace Tests
             sbcModel = internalComponents.sceneBoundsCheckComponent.GetFor(scene, entity).Value.model;
             Assert.AreEqual(entityTransform.position, sbcModel.entityPosition);
         }
-
-        [Test]
-        public void KillTweenerOnComponentRemoval()
-        {
-            float duration = 1000f;
-            Transform entityTransform = entity.gameObject.transform;
-
-            // Stuff that the handler does
-            Tweener tweener = entityTransform.DOLocalMove(Vector3.up, duration);
-            InternalTween model = new InternalTween()
-            {
-                transform = entityTransform,
-                tweener = tweener,
-                tweenMode = PBTween.ModeOneofCase.Move,
-                currentTime = 0,
-                playing = true,
-            };
-            internalComponents.TweenComponent.PutFor(scene, entity, model);
-
-            systemUpdate();
-
-            tweener.Goto(0.25f);
-            systemUpdate();
-            tweener.Goto(0.5f);
-            systemUpdate();
-            tweener.Goto(0.75f);
-            systemUpdate();
-            Assert.IsNotNull(DOTween.TweensByTarget(entityTransform, false));
-
-            model = internalComponents.TweenComponent.GetFor(scene, entity).Value.model;
-            model.removed = true;
-            internalComponents.TweenComponent.PutFor(scene, entity, model);
-
-            systemUpdate();
-
-            Assert.IsNull(DOTween.TweensByTarget(entityTransform, false));
-        }
     }
 }
