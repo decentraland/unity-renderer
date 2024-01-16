@@ -20,6 +20,7 @@ import type { DeployProfile } from '../actions'
 import { deployProfileFailure, deployProfileSuccess } from '../actions'
 import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { ContentFile } from '../types'
+import { localProfileChanged } from '../../world/runtime-7/engine'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -28,6 +29,10 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
+
+  // TODO: move this to line :44.
+  yield call(() => localProfileChanged.emit('changeAvatar', profile))
+
   try {
     yield call(deployAvatar, {
       url: profileServiceUrl,

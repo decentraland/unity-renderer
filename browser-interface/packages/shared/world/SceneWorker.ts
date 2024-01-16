@@ -257,6 +257,8 @@ export class SceneWorker {
     const disposingFlags =
       SceneWorkerReadyState.DISPOSING | SceneWorkerReadyState.SYSTEM_DISPOSED | SceneWorkerReadyState.DISPOSED
 
+    this.rpcContext.internalEngine?.destroy()
+
     queueMicrotask(() => {
       // this NEEDS to run in a microtask because sagas control this .dispose
       sceneEvents.emit(SCENE_UNLOAD, signalSceneUnload(this.loadableScene))
