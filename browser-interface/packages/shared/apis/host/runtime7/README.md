@@ -1,0 +1,1 @@
+This code is extracted from `js-sdk-toolchain` where is holded the SDK7 codebase. Importing the all library just for some of behavior doesn't seems to be 

@@ -15,7 +15,7 @@ describe('RestrictedActions tests', () => {
   beforeEach(() => {
     sinon.reset()
     sinon.restore()
-    setUnityInstance({ Teleport: () => { }, TriggerSelfUserExpression: () => { } } as any)
+    setUnityInstance({ Teleport: () => {}, TriggerSelfUserExpression: () => {} } as any)
     buildStore()
   })
 
@@ -139,6 +139,9 @@ describe('RestrictedActions tests', () => {
       permissionGranted: new Set(permissions),
       subscribedEvents: new Set(),
       events: [],
+      avatarEntityInsideScene: new Map(),
+      sendBatchCalled: false,
+      tickNumber: 0,
       sendProtoSceneEvent() {
         throw new Error('not implemented')
       },
@@ -152,7 +155,7 @@ describe('RestrictedActions tests', () => {
       initialEntitiesTick0: Uint8Array.of(),
       readFile(_path) {
         throw new Error('not implemented')
-      },
+      }
     }
   }
 
