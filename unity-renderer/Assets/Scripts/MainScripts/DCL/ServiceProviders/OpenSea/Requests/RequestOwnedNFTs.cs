@@ -1,6 +1,6 @@
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.Requests
 {
-    public class RequestOwnedNFTs : RequestBase<AssetsResponse>
+    public class RequestOwnedNFTs : RequestBase<OpenSeaManyNftDto>
     {
         public string address { private set; get; }
         public override string requestId => GetId(address);

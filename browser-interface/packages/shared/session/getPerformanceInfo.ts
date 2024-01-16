@@ -53,7 +53,8 @@ export function incrementAvatarSceneMessages(value: number) {
 }
 
 export function incrementCommsMessageSent(type: string, size: number, sceneId?: string) {
-  if (!sceneId) {
+  if (!sceneId || type !== 'scene') {
+    // if type is not scene, we don't care about scene id and we prevent extra cardinality in the metric
     sceneId = 'noscene'
   }
   const key = `${sceneId}-${type}`

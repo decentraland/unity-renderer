@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using NFTShape_Internal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Cysharp.Threading.Tasks;
-using DCL.Helpers;
-using NFTShape_Internal;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -22,7 +21,7 @@ namespace DCL
         private const string CONTENT_LENGTH = "Content-Length";
         private const string CONTENT_TYPE_GIF = "image/gif";
         private const string CONTENT_TYPE_WEBP = "image/webp";
-        private const long PREVIEW_IMAGE_SIZE_LIMIT = 500000;
+        private const long PREVIEW_IMAGE_SIZE_LIMIT = 750000;
 
         protected AssetPromise_Texture imagePromise = null;
         protected AssetPromise_Gif gifPromise = null;
@@ -101,7 +100,7 @@ namespace DCL
 
             if (contentLength > PREVIEW_IMAGE_SIZE_LIMIT)
             {
-                OnFail?.Invoke(new System.Exception($"Image is too big! {contentLength} > {PREVIEW_IMAGE_SIZE_LIMIT}"));
+                OnFail?.Invoke(new Exception($"Image is too big! {contentLength} > {PREVIEW_IMAGE_SIZE_LIMIT}"));
                 yield break;
             }
 

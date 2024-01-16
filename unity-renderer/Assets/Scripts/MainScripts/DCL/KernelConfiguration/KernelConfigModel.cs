@@ -1,16 +1,19 @@
 using KernelConfigurationTypes;
 using System;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 [Serializable]
 public class KernelConfigModel
 {
+    private const string MAIN_NET = "mainnet";
+    private const string ORG = ".org";
+    private const string ZONE = ".zone";
+
     public Features features = new Features();
     public Comms comms = new Comms();
     public Profiles profiles = new Profiles();
     public bool gifSupported = false;
-    public string network = "mainnet";
+    public string network = MAIN_NET;
     public List<WorldRange> validWorldRanges = new List<WorldRange>();
     public string kernelVersion = string.Empty;
     public string rendererVersion = string.Empty;
@@ -47,6 +50,9 @@ public class KernelConfigModel
                && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl
                && urlParamsForWearablesDebug == other.urlParamsForWearablesDebug;
     }
+
+    public string GetTld() =>
+        network.Equals(MAIN_NET, StringComparison.OrdinalIgnoreCase) ? ORG : ZONE;
 
     public KernelConfigModel Clone()
     {

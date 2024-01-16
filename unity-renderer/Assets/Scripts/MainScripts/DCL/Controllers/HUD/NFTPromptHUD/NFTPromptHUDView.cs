@@ -1,13 +1,13 @@
-using System;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using DCL;
 using DCL.Helpers;
-using DCL.Helpers.NFT;
 using DCL.Interface;
-using System.Collections;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
+using System;
+using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 internal interface INFTPromptHUDView : IDisposable
 {
@@ -23,7 +23,8 @@ internal interface INFTPromptHUDView : IDisposable
     IOwnersPopupView GetOwnersPopup();
     OwnerInfoElement GetOwnerElementPrefab();
     void SetLoading();
-    void SetNFTInfo(NFTInfoSingleAsset info, string comment);
+
+    void SetNFTInfo(NFTInfo info, string comment);
     void OnError(string error);
 }
 
@@ -172,7 +173,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         ShowMainErrorFeedback(false);
     }
 
-    void INFTPromptHUDView.SetNFTInfo(NFTInfoSingleAsset info, string comment)
+    void INFTPromptHUDView.SetNFTInfo(NFTInfo info, string comment)
     {
         Show();
 
@@ -198,7 +199,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         else
         {
             textOwner.text = info.owners.Length == 1
-                ? NFTPromptHUDController.FormatOwnerAddress(info.owners[0].owner, ADDRESS_MAX_CHARS)
+                ? NFTPromptHUDController.FormatOwnerAddress(info.owners[0].address, ADDRESS_MAX_CHARS)
                 : NFTPromptHUDController.FormatOwnerAddress("0x0000000000000000000000000000000000000000", ADDRESS_MAX_CHARS);
         }
         textOwner.gameObject.SetActive(!hasMultipleOwners);
@@ -274,14 +275,14 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         Utils.UnlockCursor();
     }
 
-    private IEnumerator FetchNFTImage(NFTInfoSingleAsset nftInfo)
+    private IEnumerator FetchNFTImage(NFTInfo nftInfo)
     {
         ShowImageErrorFeedback(false);
         ShowImageLoading(true);
 
         nftAssetRetriever?.Dispose();
         nftAsset?.Dispose();
-        
+
         nftAssetRetriever = new NFTAssetRetriever();
         yield return nftAssetRetriever.LoadNFTAsset(
             nftInfo.previewImageUrl,
@@ -315,9 +316,9 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private void SetNFTImageSize(Texture2D texture)
     {
         RectTransform rt = (RectTransform)imageNft.transform.parent;
-        
+
         float h, w;
-        
+
         if (texture.height > texture.width)
         {
             h = rt.rect.height;
@@ -335,7 +336,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private string ShortDecimals(string value, int decimalCount)
     {
         int pointPosition = value.IndexOf('.');
-        
+
         if (pointPosition <= 0)
             return value;
 
