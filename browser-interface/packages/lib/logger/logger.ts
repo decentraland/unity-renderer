@@ -1,7 +1,3 @@
-import wrap from './wrap'
-
-wrap()
-
 export type ILogger = {
   error(message: string | Error, ...args: any[]): void
   log(message: string, ...args: any[]): void
