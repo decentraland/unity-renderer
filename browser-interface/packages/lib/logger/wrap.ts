@@ -1,6 +1,6 @@
 import { DEBUG_LOGS } from '../../config'
 
-export const METHODS = ['error', 'info', 'log', 'warn', 'trace'] as const
+export const METHODS = ['info', 'log', 'warn', 'trace'] as const
 type Method = (typeof METHODS)[number]
 
 /**
@@ -9,11 +9,12 @@ type Method = (typeof METHODS)[number]
  */
 export const _console = Object.assign({}, console)
 
-export default function wrap(testPrefix?: string) {
+export function wrap(testPrefix?: string) {
+  const prefix = testPrefix ? testPrefix : DEBUG_LOGS ? '*' : 'kernel'
   function logger(method: Method) {
     return function log(...args: any[]): void {
-      const prefix = testPrefix ?? DEBUG_LOGS ? '*' : 'kernel'
       const [logPrefix] = args
+
       function matchPrefix() {
         if (prefix === '*' || !prefix) {
           return true
@@ -26,7 +27,6 @@ export default function wrap(testPrefix?: string) {
 
         return false
       }
-
       if (matchPrefix()) {
         return _console[method](...args)
       }
@@ -37,3 +37,5 @@ export default function wrap(testPrefix?: string) {
     console[method] = logger(method)
   })
 }
+
+export default wrap
