@@ -1,3 +1,5 @@
+import { DEBUG_LOGS } from '../../config'
+
 export const METHODS = ['error', 'info', 'log', 'warn', 'trace'] as const
 type Method = (typeof METHODS)[number]
 
@@ -7,9 +9,10 @@ type Method = (typeof METHODS)[number]
  */
 export const _console = Object.assign({}, console)
 
-export default function wrap(prefix: string) {
+export default function wrap(testPrefix?: string) {
   function logger(method: Method) {
     return function log(...args: any[]): void {
+      const prefix = testPrefix ?? DEBUG_LOGS ? '*' : 'kernel'
       const [logPrefix] = args
       function matchPrefix() {
         if (prefix === '*' || !prefix) {

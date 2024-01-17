@@ -60,7 +60,7 @@ export function logTrace(type: string, payload: string | number | undefined, dir
       if (traceType === 'file') {
         currentTrace.push(text)
       } else if (traceType === 'console') {
-        console.log('[TRACE]', text)
+        defaultLogger.log('[TRACE]', text)
       }
     }
 
