@@ -155,7 +155,7 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
     }
 
     defaultLogger.log(`[BOEDO ${id}] PlayerIdentityData`, { userId, entity })
-    PlayerIdentityData.create(entity, { address: profile.userId, isGuest: !!profile.hasConnectedWeb3 })
+    PlayerIdentityData.create(entity, { address: profile.userId, isGuest: !profile.hasConnectedWeb3 })
     avatarMap.set(userId, entity)
     const avatar = prepareAvatar(profile.avatar)
     updateUser(userId, { avatar, name: profile.name })
