@@ -36,7 +36,7 @@ export const localProfileChanged = mitt<LocalProfileChange>()
  * We used this engine as an internal engine to add information to the worker.
  * It handles the Avatar information for each player
  */
-export function createInternalEngine(id: string, parcels: string[]): IInternalEngine {
+export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
   function changeLocalAvatar(data: Avatar) {
     defaultLogger.log('[BOEO] changeLocalAvatar', data)
     const avatar = prepareAvatar(data.avatar)
@@ -188,10 +188,13 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
   }
 
   function isUserInScene(position: Position) {
+    if (isGlobalScene) return true
+
     const parcel = encodeParcelPosition({
       x: Math.floor(position.positionX / 16.0),
       y: Math.floor(position.positionZ / 16.0)
     })
+
     return parcels.includes(parcel)
   }
 
