@@ -1,9 +1,10 @@
+using MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
+namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestScheduler
 {
     internal class RequestScheduler
     {

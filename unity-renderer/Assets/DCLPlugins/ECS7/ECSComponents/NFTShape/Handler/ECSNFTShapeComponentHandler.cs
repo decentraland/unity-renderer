@@ -1,13 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Models;
 using Decentraland.Common;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -117,16 +118,17 @@ namespace DCL.ECSComponents
             {
                 infoRetrieverDisposed = false;
                 NFTUtils.TryParseUrn(urn, out string contractAddress, out string tokenId);
-                NFTInfo info = await infoRetriever.FetchNFTInfoAsync(contractAddress, tokenId);
+                NFTInfo? info = await infoRetriever.FetchNFTInfoAsync(contractAddress, tokenId);
 
-                if (info == null)
+                if (!info.HasValue)
                 {
                     LoadFailed();
                     return;
                 }
 
                 assetRetrieverDisposed = false;
-                INFTAsset nftAsset = await assetRetriever.LoadNFTAsset(info.previewImageUrl);
+                NFTInfo nftInfo = info.Value;
+                INFTAsset nftAsset = await assetRetriever.LoadNFTAsset(nftInfo.previewImageUrl);
 
                 if (nftAsset == null)
                 {
@@ -134,11 +136,11 @@ namespace DCL.ECSComponents
                     return;
                 }
 
-                shapeFrame.SetImage(info.name, info.imageUrl, nftAsset);
+                shapeFrame.SetImage(nftInfo.name, nftInfo.imageUrl, nftAsset);
                 nftLoadedScr = urn;
             }
-            catch (TaskCanceledException cancellation) { }
-            catch (OperationCanceledException cancellation) { }
+            catch (TaskCanceledException) { }
+            catch (OperationCanceledException) { }
             catch (Exception exception)
             {
                 Debug.LogError(exception);

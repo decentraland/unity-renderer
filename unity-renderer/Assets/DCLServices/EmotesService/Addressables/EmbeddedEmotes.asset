@@ -33,6 +33,7 @@ MonoBehaviour:
       text: Wave
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 5ff44e022ab99054bb0a1f79b2077c4f, type: 3}
+    amount: 0
     rarity: 
     description: wave
     issuedId: 0
@@ -59,6 +60,7 @@ MonoBehaviour:
       text: Fist Pump
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 2b2f4028cd39d984e80dabe0732fdd87, type: 3}
+    amount: 0
     rarity: 
     description: fistpump
     issuedId: 0
@@ -85,6 +87,7 @@ MonoBehaviour:
       text: Robot
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 736224c3cee06814dbf03a9bc3396382, type: 3}
+    amount: 0
     rarity: 
     description: robot
     issuedId: 0
@@ -111,6 +114,7 @@ MonoBehaviour:
       text: Raise Hand
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: ff8a6278dd9d9334da10fa959cdb26dc, type: 3}
+    amount: 0
     rarity: 
     description: raiseHand
     issuedId: 0
@@ -137,6 +141,7 @@ MonoBehaviour:
       text: Clap
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
+    amount: 0
     rarity: 
     description: clap
     issuedId: 0
@@ -163,6 +168,7 @@ MonoBehaviour:
       text: Money
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: e2b6332b93b06ab488a93d40b83c69fe, type: 3}
+    amount: 0
     rarity: 
     description: money
     issuedId: 0
@@ -189,6 +195,7 @@ MonoBehaviour:
       text: Kiss
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 8845b5e9671db49409bf747319c8f5c7, type: 3}
+    amount: 0
     rarity: 
     description: kiss
     issuedId: 0
@@ -215,6 +222,7 @@ MonoBehaviour:
       text: Hammer
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 90d19c500d961c44f8941c69dcdae46a, type: 3}
+    amount: 0
     rarity: 
     description: hammer
     issuedId: 0
@@ -241,6 +249,7 @@ MonoBehaviour:
       text: Tik
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 832a50a328da0294f809c85f37abca0e, type: 3}
+    amount: 0
     rarity: 
     description: tik
     issuedId: 0
@@ -267,6 +276,7 @@ MonoBehaviour:
       text: Tektonik
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 84771a68677a08b43a7247d73aa5a6d8, type: 3}
+    amount: 0
     rarity: 
     description: tektonik
     issuedId: 0
@@ -293,6 +303,7 @@ MonoBehaviour:
       text: Don't See
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 4ee2739d276aba843bd732c5a4a40dad, type: 3}
+    amount: 0
     rarity: 
     description: dontsee
     issuedId: 0
@@ -319,6 +330,7 @@ MonoBehaviour:
       text: Hands Air
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 5d9d324d9b1257f4cbeed858807c2c06, type: 3}
+    amount: 0
     rarity: 
     description: handsair
     issuedId: 0
@@ -345,6 +357,7 @@ MonoBehaviour:
       text: Shrug
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: f992e8febb67b5d47a24e9f16d5cc190, type: 3}
+    amount: 0
     rarity: 
     description: shrug
     issuedId: 0
@@ -371,6 +384,7 @@ MonoBehaviour:
       text: Disco
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 5dc96a095ce3483459044bf3e74ccb59, type: 3}
+    amount: 0
     rarity: 
     description: disco
     issuedId: 0
@@ -397,6 +411,7 @@ MonoBehaviour:
       text: Dab
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: e6a1e80b5ad78344ab7aa751eb27c30d, type: 3}
+    amount: 0
     rarity: 
     description: dab
     issuedId: 0
@@ -423,6 +438,7 @@ MonoBehaviour:
       text: Head Explode
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: db09a3000c06f1e46a56c971875a6aa1, type: 3}
+    amount: 0
     rarity: 
     description: headexplode
     issuedId: 0
@@ -449,6 +465,7 @@ MonoBehaviour:
       text: Dance
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: fb2a51422f4f0f84ca589e9716428e06, type: 3}
+    amount: 0
     rarity: 
     description: dance
     issuedId: 0
@@ -475,6 +492,7 @@ MonoBehaviour:
       text: Snowfall
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 9622f862db0a54f49a26e220aac90cbe, type: 3}
+    amount: 0
     rarity: 
     description: snowfall
     issuedId: 0
@@ -501,6 +519,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 08fb89e42a3f7d44e9b2a391aa41aff6, type: 3}
+    amount: 0
     rarity: 
     description: hohoho
     issuedId: 0
@@ -518,7 +537,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Accessories_v01
+    id: OutfitAccessoriesv01
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -527,6 +546,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Accessories_v01
     issuedId: 0
@@ -544,7 +564,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Accessories_v02
+    id: OutfitAccessoriesv02
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -553,6 +573,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Accessories_v02
     issuedId: 0
@@ -570,7 +591,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Accessories_v03
+    id: OutfitAccessoriesv03
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -579,6 +600,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Accessories_v03
     issuedId: 0
@@ -596,7 +618,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Lower_v01
+    id: OutfitLowerv01
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -605,6 +627,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Shoes_v01
     issuedId: 0
@@ -622,7 +645,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Lower_v02
+    id: OutfitLowerv02
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -631,6 +654,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Lower_v02
     issuedId: 0
@@ -648,7 +672,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Lower_v03
+    id: OutfitLowerv03
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -657,6 +681,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Lower_v03
     issuedId: 0
@@ -674,7 +699,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Shoes_v01
+    id: OutfitShoesv01
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -683,6 +708,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Shoes_v01
     issuedId: 0
@@ -700,7 +726,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Shoes_v02
+    id: OutfitShoesv02
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -709,6 +735,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Shoes_v02
     issuedId: 0
@@ -726,7 +753,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Upper_v01
+    id: OutfitUpperv01
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -735,6 +762,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Upper_v01
     issuedId: 0
@@ -752,7 +780,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Upper_v02
+    id: OutfitUpperv02
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -761,6 +789,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Upper_v02
     issuedId: 0
@@ -778,7 +807,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Outfit_Upper_v03
+    id: OutfitUpperv03
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -787,6 +816,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Outfit_Upper_v03
     issuedId: 0
@@ -804,7 +834,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: Spawn_Pose_v01
+    id: SpawnPosev01
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -813,6 +843,7 @@ MonoBehaviour:
       text: Ho Ho Ho!
     thumbnail: 
     thumbnailSprite: {fileID: 0}
+    amount: 0
     rarity: 
     description: Spawn_Pose_v01
     issuedId: 0
@@ -839,6 +870,7 @@ MonoBehaviour:
       text: Cry
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
+    amount: 0
     rarity: 
     description: cry
     issuedId: 0
@@ -856,7 +888,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: hands_in_the_air
+    id: handsintheair
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -865,6 +897,7 @@ MonoBehaviour:
       text: Hands in the Air
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: ff531623182fec8479d734ac8df22d8f, type: 3}
+    amount: 0
     rarity: 
     description: hands_in_the_air
     issuedId: 0
@@ -883,7 +916,7 @@ MonoBehaviour:
       loop: 0
     emoteDataV0:
       loop: 0
-    id: confetti_popper
+    id: confettipopper
     entityId: 
     baseUrl: 
     baseUrlBundles: 
@@ -892,6 +925,7 @@ MonoBehaviour:
       text: Confetti Popper
     thumbnail: 
     thumbnailSprite: {fileID: 21300000, guid: 52e4def7262db19429d325d7cb5f1a7a, type: 3}
+    amount: 0
     rarity: 
     description: confetti_popper
     issuedId: 0

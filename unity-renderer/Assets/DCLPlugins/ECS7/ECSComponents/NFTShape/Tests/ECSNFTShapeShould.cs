@@ -6,6 +6,7 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Helpers.NFT;
 using Decentraland.Common;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NFTShape_Internal;
 using NSubstitute;
 using NUnit.Framework;
@@ -65,7 +66,7 @@ namespace Tests
         [Test]
         public void UpdateImageCorrectly()
         {
-            infoRetriever.FetchNFTInfoAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(UniTask.FromResult(new NFTInfo()));
+            infoRetriever.FetchNFTInfoAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(UniTask.FromResult((NFTInfo?)new NFTInfo()));
             assetRetriever.LoadNFTAsset(Arg.Any<string>()).Returns(UniTask.FromResult(Substitute.For<INFTAsset>()));
 
             PBNftShape model = new PBNftShape()

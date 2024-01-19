@@ -1,6 +1,6 @@
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using System;
 using System.Collections;
-using DCL.Helpers.NFT.Markets;
 
 namespace DCL.Helpers.NFT
 {
@@ -13,9 +13,9 @@ namespace DCL.Helpers.NFT
         /// <param name="onSuccess">success callback</param>
         /// <param name="onError">error callback</param>
         /// <returns>IEnumerator</returns>
-        public static IEnumerator FetchNFTsFromOwner(string address, Action<NFTOwner> onSuccess, Action<string> onError)
+        public static IEnumerator FetchNFTsFromOwner(string address, Action<OwnNFTInfo> onSuccess, Action<string> onError)
         {
-            INFTMarket selectedMarket = null;
+            IOpenSea selectedMarket = null;
             yield return GetMarket(address, (mkt) => selectedMarket = mkt);
 
             if (selectedMarket != null)
@@ -39,7 +39,7 @@ namespace DCL.Helpers.NFT
         /// <returns>IEnumerator</returns>
         public static IEnumerator FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            INFTMarket selectedMarket = null;
+            IOpenSea selectedMarket = null;
             yield return GetMarket(assetContractAddress, tokenId, (mkt) => selectedMarket = mkt);
 
             if (selectedMarket != null)
@@ -62,14 +62,14 @@ namespace DCL.Helpers.NFT
         /// <param name="onSuccess">success callback</param>
         /// <param name="onError">error callback</param>
         /// <returns>IEnumerator</returns>
-        public static IEnumerator FetchNFTInfoSingleAsset(string assetContractAddress, string tokenId, Action<NFTInfoSingleAsset> onSuccess, Action<string> onError)
+        public static IEnumerator FetchNFTInfoSingleAsset(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            INFTMarket selectedMarket = null;
+            IOpenSea selectedMarket = null;
             yield return GetMarket(assetContractAddress, tokenId, (mkt) => selectedMarket = mkt);
 
             if (selectedMarket != null)
             {
-                yield return selectedMarket.FetchNFTInfoSingleAsset(assetContractAddress, tokenId, onSuccess, onError);
+                yield return selectedMarket.FetchNFTInfo(assetContractAddress, tokenId, onSuccess, onError);
             }
             else
             {
@@ -78,10 +78,10 @@ namespace DCL.Helpers.NFT
         }
 
         // NOTE: this method doesn't make sense now, but it will when support for other market is added
-        public static IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<INFTMarket> onSuccess)
+        public static IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<IOpenSea> onSuccess)
         {
             IServiceProviders serviceProviders = Environment.i.platform.serviceProviders;
-            INFTMarket openSea = null;
+            IOpenSea openSea = null;
 
             if ( serviceProviders != null )
                 openSea = serviceProviders.openSea;
@@ -90,10 +90,10 @@ namespace DCL.Helpers.NFT
             yield break;
         }
 
-        public static IEnumerator GetMarket(string assetContractAddress, Action<INFTMarket> onSuccess)
+        public static IEnumerator GetMarket(string assetContractAddress, Action<IOpenSea> onSuccess)
         {
             IServiceProviders serviceProviders = Environment.i.platform.serviceProviders;
-            INFTMarket openSea = null;
+            IOpenSea openSea = null;
 
             if ( serviceProviders != null )
                 openSea = serviceProviders.openSea;
