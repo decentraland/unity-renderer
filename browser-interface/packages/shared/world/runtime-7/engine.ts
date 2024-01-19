@@ -3,10 +3,9 @@ import {
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
-  AvatarEquippedData as defineAvatarEquippedData,
-
+  AvatarEquippedData as defineAvatarEquippedData
 } from '@dcl/ecs/dist-cjs/components'
-import { Entity, EntityContainer, EntityUtils } from '@dcl/ecs/dist-cjs/engine/entity'
+import { Entity, EntityUtils, createEntityContainer } from '@dcl/ecs/dist-cjs/engine/entity'
 import { avatarMessageObservable, getAllPeers } from '../../comms/peers'
 import { encodeParcelPosition } from '../../../lib/decentraland'
 import { AvatarMessageType } from '../../comms/interface/types'
@@ -68,7 +67,7 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
 
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
   // From 0 to 10 engine reserved entities.
-  const entityContainer = EntityContainer({ reservedStaticEntities: AVATAR_RESERVED_ENTITIES.from })
+  const entityContainer = createEntityContainer({ reservedStaticEntities: AVATAR_RESERVED_ENTITIES.from })
   const engine = Engine({ entityContainer, onChangeFunction: () => {} })
   const Transform = defineTransform(engine)
   const AvatarBase = defineAvatarBase(engine)
