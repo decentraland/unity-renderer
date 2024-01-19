@@ -19,6 +19,7 @@ import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { PBAvatarEquippedData } from '@dcl/ecs'
+import defaultLogger from '../../../lib/logger'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -37,6 +38,7 @@ export const localProfileChanged = mitt<LocalProfileChange>()
  */
 export function createInternalEngine(id: string, parcels: string[]): IInternalEngine {
   function changeLocalAvatar(data: Avatar) {
+    defaultLogger.log('[BOEO] changeLocalAvatar', data)
     const avatar = prepareAvatar(data.avatar)
     updateUser(data.userId, { name: data.name, avatar })
   }
@@ -100,10 +102,9 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
           }
         }
         const oldTransform = Transform.getOrNull(entity)
-        if (JSON.stringify(oldTransform?.position) === JSON.stringify(transform.position)) {
-          return
+        if (!deepEqual(oldTransform?.position, transform.position)) {
+          Transform.createOrReplace(entity, transform)
         }
-        Transform.createOrReplace(entity, transform)
       }
     }
     const oldAvatarBase = AvatarBase.getOrNull(entity)
@@ -117,9 +118,9 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
 
     // [PBAvatarBase Component]
     if (deepEqual(oldAvatarBase, avatarBase)) {
-      console.log('[BOEDO] Same avatar base. no changes', { oldAvatarBase, avatarBase })
+      // defaultLogger.log('[BOEDO] Same avatar base. no changes', { oldAvatarBase, avatarBase })
     } else {
-      console.log('[BOEDO] avatar base changed', { oldAvatarBase, avatarBase })
+      defaultLogger.log('[BOEDO] avatar base changed', { oldAvatarBase, avatarBase })
       AvatarBase.createOrReplace(entity, avatarBase)
     }
     const oldAvatarData = AvatarEquippedData.getOrNull(entity)
@@ -129,15 +130,15 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
     }
     // [AvatarEquippedData Component]
     if (deepEqual(oldAvatarData, avatarData)) {
-      console.log('[BOEDO] Same avatar data. no changes', { oldAvatarBase, avatarBase })
+      // defaultLogger.log('[BOEDO] Same avatar data. no changes', { oldAvatarBase, avatarBase })
     } else {
-      console.log('[BOEDO] avatar data changed', { oldAvatarData, avatarData })
+      defaultLogger.log('[BOEDO] avatar data changed', { oldAvatarData, avatarData })
       AvatarEquippedData.createOrReplace(entity, avatarData)
     }
   }
 
   function addUser(userId: string) {
-    console.log(`[BOEDO ${id}] addUser`, { userId })
+    defaultLogger.log(`[BOEDO ${id}] addUser`, { userId })
     const isIdentity = getCurrentUserId(store.getState()) === userId
     const dataFromStore = getProfileFromStore(store.getState(), userId)
     if (avatarMap.get(userId) || !dataFromStore) {
@@ -153,7 +154,7 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
       return
     }
 
-    console.log(`[BOEDO ${id}] PlayerIdentityData`, { userId, entity })
+    defaultLogger.log(`[BOEDO ${id}] PlayerIdentityData`, { userId, entity })
     PlayerIdentityData.create(entity, { address: profile.userId, isGuest: !!profile.hasConnectedWeb3 })
     avatarMap.set(userId, entity)
     const avatar = prepareAvatar(profile.avatar)
@@ -167,7 +168,7 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
     const isIdentity = getCurrentUserId(store.getState()) === userId
     if (isIdentity) return
 
-    console.log(`[BOEDO ${id}] removeUser`, { userId })
+    defaultLogger.log(`[BOEDO ${id}] removeUser`, { userId })
 
     avatarMap.delete(userId)
     engine.removeEntity(entity)
@@ -182,7 +183,7 @@ export function createInternalEngine(id: string, parcels: string[]): IInternalEn
   for (const [userId, data] of getAllPeers()) {
     if (!data.position || !isUserInScene(data.position)) continue
 
-    console.log(`[BOEDO ${id}] adding user`, { userId })
+    defaultLogger.log(`[BOEDO ${id}] adding user`, { userId })
     addUser(userId)
   }
 
