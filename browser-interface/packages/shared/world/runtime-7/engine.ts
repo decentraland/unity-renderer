@@ -3,7 +3,8 @@ import {
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
-  AvatarEquippedData as defineAvatarEquippedData
+  AvatarEquippedData as defineAvatarEquippedData,
+
 } from '@dcl/ecs/dist-cjs/components'
 import { Entity, EntityContainer, EntityUtils } from '@dcl/ecs/dist-cjs/engine/entity'
 import { avatarMessageObservable, getAllPeers } from '../../comms/peers'
@@ -18,7 +19,6 @@ import mitt from 'mitt'
 import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
-import { PBAvatarEquippedData } from '@dcl/ecs'
 import defaultLogger from '../../../lib/logger'
 
 export type IInternalEngine = {
@@ -124,7 +124,7 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
       AvatarBase.createOrReplace(entity, avatarBase)
     }
     const oldAvatarData = AvatarEquippedData.getOrNull(entity)
-    const avatarData: PBAvatarEquippedData = {
+    const avatarData = {
       emotesUrns: data.avatar.emotes.map(($) => $.urn),
       wearableUrns: data.avatar.wearables
     }
