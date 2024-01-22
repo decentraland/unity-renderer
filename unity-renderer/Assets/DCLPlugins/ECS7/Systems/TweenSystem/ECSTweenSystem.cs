@@ -90,7 +90,7 @@ namespace ECSSystems.TweenSystem
 
             writer.Put(entityId, ComponentID.TWEEN_STATE, tweenStatePooledComponent);
 
-            UpdateTransformComponent(scene, entity, model.transform, writer);
+            UpdateTransformComponent(entity, model.transform, writer);
 
             model.currentTime = currentTime;
             tweenInternalComponent.PutFor(scene, entityId, model);
@@ -99,13 +99,11 @@ namespace ECSSystems.TweenSystem
             entity.OnTransformChange?.Invoke(model.transform.localPosition, model.transform.localRotation);
         }
 
-        private void UpdateTransformComponent(IParcelScene scene, IDCLEntity entity, Transform entityTransform, ComponentWriter writer)
+        private void UpdateTransformComponent(IDCLEntity entity, Transform entityTransform, ComponentWriter writer)
         {
             var transformComponent = transformComponentPool.Get();
             var transformComponentModel = transformComponent.WrappedComponent.Model;
-            Vector3 currentWorldOffset = worldOffset.Get();
-            var newUnityGlobalPosition = entityTransform.position;
-            transformComponentModel.position = UtilsScene.GlobalToScenePosition(ref scene.sceneData.basePosition, ref newUnityGlobalPosition, ref currentWorldOffset);
+            transformComponentModel.position = entityTransform.localPosition;
             transformComponentModel.rotation = entityTransform.localRotation;
             transformComponentModel.scale = entityTransform.localScale;
             transformComponentModel.parentId = entity.parentId;
