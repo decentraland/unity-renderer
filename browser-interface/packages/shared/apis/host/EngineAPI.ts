@@ -44,9 +44,7 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             payload: req.data
           })
           const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
-          if (internalAvatarMessages.length) {
-            console.log('[BOEDO] crdtSendToRenderer', ...internalAvatarMessages)
-          }
+
           return { data: [ret.payload, ...internalAvatarMessages] }
         },
 
@@ -60,13 +58,14 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
 
         async crdtGetState(_, ctx) {
           const response = await ctx.rpcSceneControllerService.getCurrentState({})
+          const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
 
           const { initialEntitiesTick0, hasMainCrdt } = ctx
 
           return {
             hasEntities: response.hasOwnEntities || hasMainCrdt,
             // send the initialEntitiesTick0 (main.crdt) and the response.payload
-            data: [initialEntitiesTick0, response.payload]
+            data: [initialEntitiesTick0, response.payload, ...internalAvatarMessages]
           }
         },
         async isServer(_req, _ctx) {

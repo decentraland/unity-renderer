@@ -60,6 +60,8 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     if (message.type === AvatarMessageType.USER_VISIBLE) {
       if (!message.visible) {
         removeUser(message.userId)
+      } else {
+        addUser(message.userId)
       }
     }
     // TODO: user visible ?

@@ -402,7 +402,11 @@ export class SceneWorker {
       }
     })
     if (this.rpcContext.sdk7) {
-      this.rpcContext.internalEngine = createInternalEngine(this.rpcContext.sceneData.id, this.metadata.scene.parcels, showAsPortableExperience)
+      this.rpcContext.internalEngine = createInternalEngine(
+        this.rpcContext.sceneData.id,
+        this.metadata.scene.parcels,
+        showAsPortableExperience
+      )
     }
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
   }
