@@ -164,8 +164,6 @@ function* reactToNewVoiceChatHandler() {
     yield put(clearVoiceChatError())
 
     if (voiceHandler) {
-      voiceChatLogger.log('Setting new voice handler', voiceHandler)
-
       voiceHandler.onRecording((recording) => {
         queueMicrotask(() => store.dispatch(voiceRecordingUpdate(recording)))
       })

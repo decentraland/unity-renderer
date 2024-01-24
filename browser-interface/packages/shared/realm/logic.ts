@@ -15,7 +15,6 @@ export function hookConnectToFixedAdaptersIfNecessary(realm: IRealmAdapter) {
   }
 
   if (connStr) {
-    console.log('Will connect to ', connStr)
     setTimeout(() => {
       // send the island_changed message
       realm.events.emit('setIsland', {

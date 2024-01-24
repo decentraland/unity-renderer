@@ -32,8 +32,6 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
 
   const urlParamsForWearablesDebug = !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
 
-  console.log('[KERNEL CONFIG LOG] urlParamsForWearablesDebug: ' + urlParamsForWearablesDebug) // temporal log (for debugging purposes)
-
   return {
     ...globalState.meta.config.world,
     comms: {
