@@ -49,7 +49,6 @@ async function bindHandlersToAdapter(realm: IRealmAdapter, _address: string): Pr
   })
 
   realm.events.on('setIsland', (message) => {
-    logger.log('Island message', message)
     store.dispatch(connectToComms(message))
   })
 

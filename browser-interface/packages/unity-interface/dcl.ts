@@ -186,7 +186,7 @@ export async function reloadPlaygroundScene() {
   const playgroundBaseUrl: string = (globalThis as any).PlaygroundBaseUrl || location.origin
 
   if (!playgroundCode) {
-    console.log('There is no playground code')
+    defaultLogger.log('There is no playground code')
     return
   }
 
