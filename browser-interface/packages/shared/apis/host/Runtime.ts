@@ -22,12 +22,8 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
       if (!realmAdapter) {
         return {}
       }
-      let baseUrl = urlWithProtocol(new URL(realmAdapter.baseUrl).hostname)
+      const baseUrl = urlWithProtocol(new URL(realmAdapter.baseUrl).hostname)
 
-      if(realmAdapter.about.configurations?.realmName === 'main' && realmAdapter.about.lambdas?.publicUrl !== undefined){
-        baseUrl = new URL(realmAdapter.about.lambdas?.publicUrl).hostname
-      }
-      
       return {
         realmInfo: {
           baseUrl,
