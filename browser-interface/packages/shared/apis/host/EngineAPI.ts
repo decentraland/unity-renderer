@@ -44,7 +44,6 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
             payload: req.data
           })
           const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
-
           return { data: [ret.payload, ...internalAvatarMessages] }
         },
 

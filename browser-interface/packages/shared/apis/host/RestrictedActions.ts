@@ -81,7 +81,6 @@ export function triggerEmote(req: TriggerEmoteRequest, ctx: PortContext): Trigge
     return {}
   }
 
-  getUnityInstance().TriggerSelfUserExpression(req.predefinedEmote)
   getRendererModules(store.getState())
     ?.emotes?.triggerSelfUserExpression({ id: req.predefinedEmote })
     .catch(defaultLogger.error)
@@ -111,7 +110,6 @@ export async function triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: Port
   }
 
   const response = await emoteService.triggerSceneExpression({ ...request })
-
   return response
 }
 

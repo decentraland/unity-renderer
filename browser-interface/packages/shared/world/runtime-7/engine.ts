@@ -3,7 +3,8 @@ import {
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
-  AvatarEquippedData as defineAvatarEquippedData
+  AvatarEquippedData as defineAvatarEquippedData,
+  AvatarEmoteCommand as defineAvatarEmoteCommand
 } from '@dcl/ecs/dist-cjs/components'
 import { Entity, EntityUtils, createEntityContainer } from '@dcl/ecs/dist-cjs/engine/entity'
 import { avatarMessageObservable, getAllPeers } from '../../comms/peers'
@@ -25,8 +26,15 @@ export type IInternalEngine = {
   update: () => Promise<Uint8Array[]>
   destroy: () => void
 }
+
+type EmoteData = {
+  emoteUrn: string
+  timestamp: number
+}
+
 type LocalProfileChange = {
   changeAvatar: Avatar
+  triggerEmote: EmoteData
 }
 
 export const localProfileChanged = mitt<LocalProfileChange>()
@@ -43,8 +51,17 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   }
 
   localProfileChanged.on('changeAvatar', changeLocalAvatar)
+  localProfileChanged.on('triggerEmote', (emote) => {
+    const userId = getCurrentUserId(store.getState())!
+    addEmote(userId, emote)
+  })
 
   const observerInstance = avatarMessageObservable.add((message) => {
+    if (message.type === AvatarMessageType.USER_EXPRESSION) {
+      defaultLogger.log('[BOEDO] UserExpression', message)
+      addEmote(message.userId, { emoteUrn: message.expressionId, timestamp: message.timestamp })
+    }
+
     if (message.type === AvatarMessageType.USER_DATA) {
       if (message.data.position && isUserInScene(message.data.position)) {
         updateUser(message.userId, message.profile, message.data.position)
@@ -75,7 +92,15 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   const AvatarBase = defineAvatarBase(engine)
   const AvatarEquippedData = defineAvatarEquippedData(engine)
   const PlayerIdentityData = definePlayerIdentityData(engine)
+  const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
   const avatarMap = new Map<string, Entity>()
+
+  function addEmote(userId: string, data: EmoteData) {
+    const entity = avatarMap.get(userId)
+    if (!entity) return
+    AvatarEmoteCommand.addValue(entity, { emoteUrn: data.emoteUrn, timestamp: data.timestamp, loop: false })
+    defaultLogger.log('[BOEDO] add emote', { data, emote: AvatarEmoteCommand.get(entity) })
+  }
 
   function updateUser(
     userId: string,
