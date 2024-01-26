@@ -44,14 +44,15 @@ export const localProfileChanged = mitt<LocalProfileChange>()
  * It handles the Avatar information for each player
  */
 export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
-  function changeLocalAvatar(data: Avatar) {
+  defaultLogger.log('createINternalEngine', id)
+
+  localProfileChanged.on('changeAvatar', (data) => {
     defaultLogger.log('[BOEO] changeLocalAvatar', data)
     const avatar = prepareAvatar(data.avatar)
     updateUser(data.userId, { name: data.name, avatar })
-  }
-
-  localProfileChanged.on('changeAvatar', changeLocalAvatar)
+  })
   localProfileChanged.on('triggerEmote', (emote) => {
+    defaultLogger.log('localProfileChanged', emote)
     const userId = getCurrentUserId(store.getState())!
     addEmote(userId, emote)
   })
@@ -247,8 +248,10 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
       return messages
     },
     destroy: () => {
+      defaultLogger.log('Destroy engine', id)
       avatarMessageObservable.remove(observerInstance)
-      localProfileChanged.off('changeAvatar', changeLocalAvatar)
+      localProfileChanged.off('triggerEmote')
+      localProfileChanged.off('changeAvatar')
     }
   }
 }
