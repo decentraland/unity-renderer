@@ -4,6 +4,7 @@ import { ActiveVideoStreams } from 'shared/comms/adapters/types'
 import { getLivekitActiveVideoStreams } from 'shared/comms/selectors'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
 import { store } from 'shared/store/isolatedStore'
+import defaultLogger from '../lib/logger'
 
 const generatedFiles = {
   frameworkUrl: 'unity.framework.js',
@@ -213,7 +214,7 @@ export async function loadUnity(baseUrl: string, options: CommonRendererOptions)
           BringDownClientAndShowError(error)
         },
         onBinaryMessage: (...args) => {
-          console.log('onBinaryMessage', ...args)
+          defaultLogger.log('onBinaryMessage', ...args)
         },
         extraConfig: {
           antialias: false,

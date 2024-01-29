@@ -730,7 +730,7 @@ export class BrowserInterface {
          * This event is called everytime the renderer deactivates its camera
          */
         store.dispatch(renderingDectivated())
-        console.log('DeactivateRenderingACK')
+        defaultLogger.log('DeactivateRenderingACK')
         break
       }
       /** @deprecated #3642 Will be moved to Renderer */
@@ -739,7 +739,7 @@ export class BrowserInterface {
          * This event is called everytime the renderer activates the main camera
          */
         store.dispatch(renderingActivated())
-        console.log('ActivateRenderingACK')
+        defaultLogger.log('ActivateRenderingACK')
         break
       }
       default: {

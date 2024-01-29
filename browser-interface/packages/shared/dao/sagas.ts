@@ -194,7 +194,7 @@ function* selectRealm() {
     )
   }
 
-  console.log(`Trying to connect to realm `, realm)
+  defaultLogger.log(`Trying to connect to realm `, realm)
 
   return realm
 }

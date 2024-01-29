@@ -32,6 +32,7 @@ import {
 import { scenesSubscribedToCommsEvents } from './sceneSubscriptions'
 import { globalObservable } from 'shared/observables'
 import { BringDownClientAndShowError } from 'shared/loading/ReportFatalError'
+import defaultLogger from '../../lib/logger'
 
 type PingRequest = {
   alias: number
@@ -150,7 +151,7 @@ export function sendPing(onPong?: (dt: number, address: string) => void) {
     onPong:
       onPong ||
       ((dt, address) => {
-        console.log(
+        defaultLogger.log(
           `ping got ${++responses} responses (ping: ${dt.toFixed(2)}ms, nonce: ${nonce}, address: ${address})`
         )
       })

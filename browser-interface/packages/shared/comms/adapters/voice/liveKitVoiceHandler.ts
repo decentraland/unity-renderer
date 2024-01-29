@@ -137,8 +137,6 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
     .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
 
-  logger.log('initialized')
-
   return {
     async setRecording(recording) {
       try {
@@ -146,7 +144,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         if (recordingListener) {
           recordingListener(recording)
         }
-      } catch(err) {
+      } catch (err) {
         logger.error('Error: ', err, ', recording=', recording)
         if (recordingListener) {
           recordingListener(false)
