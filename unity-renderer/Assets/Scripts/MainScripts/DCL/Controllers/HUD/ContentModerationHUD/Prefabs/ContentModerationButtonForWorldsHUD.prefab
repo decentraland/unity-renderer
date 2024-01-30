@@ -297,6 +297,7 @@ GameObject:
   - component: {fileID: 7701240535862692464}
   - component: {fileID: 3256328921040579469}
   - component: {fileID: 8642609557553205796}
+  - component: {fileID: 1478853345263327592}
   m_Layer: 5
   m_Name: ContentModerationButtonForWorldsHUD
   m_TagString: Untagged
@@ -399,7 +400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b939b5bedb9494b806609faeda7d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideOnEnable: 1
+  hideOnEnable: 0
   animSpeedFactor: 1
   disableAfterFadeOut: 0
   canvasGroup: {fileID: 0}
@@ -433,6 +434,18 @@ MonoBehaviour:
   teenFlagIcon: {fileID: 21300000, guid: 7e4043c67aca8734aa052b3aceac93f5, type: 3}
   adultFlagIcon: {fileID: 21300000, guid: 2ae7cdd2f890b7f48a2c50d3daaae1bf, type: 3}
   restrictedFlagIcon: {fileID: 21300000, guid: f37264255f614f34da05229fbc4a7cdb, type: 3}
+--- !u!114 &1478853345263327592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3139467652930296372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3715808482638789153
 GameObject:
   m_ObjectHideFlags: 0
