@@ -151,18 +151,16 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     }
 
     // [PBAvatarBase Component]
-    if (deepEqual(oldAvatarBase, avatarBase)) {
-    } else {
+    if (!deepEqual(oldAvatarBase, avatarBase)) {
       AvatarBase.createOrReplace(entity, avatarBase)
     }
     const oldAvatarData = AvatarEquippedData.getOrNull(entity)
     const avatarData = {
-      emotesUrns: data.avatar.emotes.map(($) => $.urn),
+      emoteUrns: data.avatar.emotes.map(($) => $.urn),
       wearableUrns: data.avatar.wearables
     }
     // [AvatarEquippedData Component]
-    if (deepEqual(oldAvatarData, avatarData)) {
-    } else {
+    if (!deepEqual(oldAvatarData, avatarData)) {
       AvatarEquippedData.createOrReplace(entity, avatarData)
     }
   }
