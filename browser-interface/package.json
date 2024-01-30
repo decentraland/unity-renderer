@@ -63,7 +63,7 @@
     "@dcl/hashing": "^1.1.3",
     "@dcl/kernel-interface": "^2.0.0-20230512115658.commit-b582e05",
     "@dcl/legacy-ecs": "^6.11.11",
-    "@dcl/protocol": "1.0.0-7117237552.commit-82dc93b",
+    "@dcl/protocol": "1.0.0-7713972320.commit-a4aa069",
     "@dcl/rpc": "^1.1.1",
     "@dcl/scene-runtime": "7.0.6-20231206162622.commit-9ff48a9",
     "@dcl/schemas": "^9.1.1",
