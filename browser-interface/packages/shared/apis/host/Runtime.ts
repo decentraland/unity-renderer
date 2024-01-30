@@ -7,10 +7,22 @@ import { RuntimeServiceDefinition } from 'shared/protocol/decentraland/kernel/ap
 import type { PortContextService } from './context'
 import { getDecentralandTime } from './EnvironmentAPI'
 import { urlWithProtocol } from 'shared/realm/resolver'
-import { PREVIEW } from 'config'
+import { PREVIEW, RENDERER_WS, getServerConfigurations } from 'config'
+import { Platform } from '../IEnvironmentAPI'
+import { getSelectedNetwork } from '../../dao/selectors'
 
 export function registerRuntimeServiceServerImplementation(port: RpcServerPort<PortContextService<'sceneData'>>) {
   codegen.registerService(port, RuntimeServiceDefinition, async () => ({
+    async getExplorerInformation() {
+      const questsServerUrl = getServerConfigurations(getSelectedNetwork(store.getState())).questsUrl
+      const platform = RENDERER_WS ? Platform.DESKTOP : Platform.BROWSER
+
+      return {
+        agent: 'explorer-kernel',
+        platform,
+        configurations: { questsServerUrl }
+      }
+    },
     async getWorldTime(): Promise<GetWorldTimeResponse> {
       const time = getDecentralandTime()
 
@@ -24,10 +36,13 @@ export function registerRuntimeServiceServerImplementation(port: RpcServerPort<P
       }
       let baseUrl = urlWithProtocol(new URL(realmAdapter.baseUrl).hostname)
 
-      if(realmAdapter.about.configurations?.realmName === 'main' && realmAdapter.about.lambdas?.publicUrl !== undefined){
+      if (
+        realmAdapter.about.configurations?.realmName === 'main' &&
+        realmAdapter.about.lambdas?.publicUrl !== undefined
+      ) {
         baseUrl = new URL(realmAdapter.about.lambdas?.publicUrl).hostname
       }
-      
+
       return {
         realmInfo: {
           baseUrl,
