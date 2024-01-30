@@ -19,7 +19,7 @@ import mitt from 'mitt'
 import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
-import defaultLogger from '../../../lib/logger'
+import { positionObservable } from '../positionThings'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -44,22 +44,31 @@ export const localProfileChanged = mitt<LocalProfileChange>()
  * It handles the Avatar information for each player
  */
 export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
-  defaultLogger.log('createINternalEngine', id)
-
+  // LOCAL USERID -> engine.PlayerEntity
+  const userId = getCurrentUserId(store.getState())!
+  const userIdPositionObserver = positionObservable.add((data) => {
+    const isInsideScene = isUserInScene({ positionX: data.position.x, positionZ: data.position.z })
+    if (isInsideScene && !AvatarBase.has(engine.PlayerEntity)) {
+      const profile = getUserData(userId)
+      if (profile) {
+        updateUser(userId, profile)
+      }
+    } else if (!isInsideScene && AvatarBase.has(engine.PlayerEntity)) {
+      removeUser(userId)
+    }
+  })
   localProfileChanged.on('changeAvatar', (data) => {
-    defaultLogger.log('[BOEO] changeLocalAvatar', data)
     const avatar = prepareAvatar(data.avatar)
     updateUser(data.userId, { name: data.name, avatar })
   })
   localProfileChanged.on('triggerEmote', (emote) => {
-    defaultLogger.log('localProfileChanged', emote)
-    const userId = getCurrentUserId(store.getState())!
     addEmote(userId, emote)
   })
 
+  // End of LOCAL USER ID handlers
+
   const observerInstance = avatarMessageObservable.add((message) => {
     if (message.type === AvatarMessageType.USER_EXPRESSION) {
-      defaultLogger.log('[BOEDO] UserExpression', message)
       addEmote(message.userId, { emoteUrn: message.expressionId, timestamp: message.timestamp })
     }
 
@@ -82,7 +91,6 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
         addUser(message.userId)
       }
     }
-    // TODO: user visible ?
   })
 
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
@@ -100,7 +108,6 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     const entity = avatarMap.get(userId)
     if (!entity) return
     AvatarEmoteCommand.addValue(entity, { emoteUrn: data.emoteUrn, timestamp: data.timestamp, loop: false })
-    defaultLogger.log('[BOEDO] add emote', { data, emote: AvatarEmoteCommand.get(entity) })
   }
 
   function updateUser(
@@ -145,9 +152,7 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
 
     // [PBAvatarBase Component]
     if (deepEqual(oldAvatarBase, avatarBase)) {
-      // defaultLogger.log('[BOEDO] Same avatar base. no changes', { oldAvatarBase, avatarBase })
     } else {
-      defaultLogger.log('[BOEDO] avatar base changed', { oldAvatarBase, avatarBase })
       AvatarBase.createOrReplace(entity, avatarBase)
     }
     const oldAvatarData = AvatarEquippedData.getOrNull(entity)
@@ -157,21 +162,27 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     }
     // [AvatarEquippedData Component]
     if (deepEqual(oldAvatarData, avatarData)) {
-      // defaultLogger.log('[BOEDO] Same avatar data. no changes', { oldAvatarBase, avatarBase })
     } else {
-      defaultLogger.log('[BOEDO] avatar data changed', { oldAvatarData, avatarData })
       AvatarEquippedData.createOrReplace(entity, avatarData)
     }
   }
 
-  function addUser(userId: string) {
-    defaultLogger.log(`[BOEDO ${id}] addUser`, { userId })
-    const isIdentity = getCurrentUserId(store.getState()) === userId
+  function getUserData(userId: string) {
     const dataFromStore = getProfileFromStore(store.getState(), userId)
-    if (avatarMap.get(userId) || !dataFromStore) {
+    if (!dataFromStore) return undefined
+    return {
+      avatar: prepareAvatar(dataFromStore.data.avatar),
+      name: dataFromStore.data.name,
+      isGuest: !dataFromStore.data.hasConnectedWeb3
+    }
+  }
+
+  function addUser(userId: string) {
+    const isIdentity = getCurrentUserId(store.getState()) === userId
+    const profile = getUserData(userId)
+    if (avatarMap.get(userId) || !profile) {
       return
     }
-    const profile = dataFromStore.data
     const entity = isIdentity ? engine.PlayerEntity : engine.addEntity()
     const [entityId] = EntityUtils.fromEntityId(entity)
 
@@ -180,12 +191,9 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
       console.error(`[BOEDO] Max amount of users reached`, entityId)
       return
     }
-
-    defaultLogger.log(`[BOEDO ${id}] PlayerIdentityData`, { userId, entity })
-    PlayerIdentityData.create(entity, { address: profile.userId, isGuest: !profile.hasConnectedWeb3 })
+    PlayerIdentityData.create(entity, { address: userId, isGuest: profile.isGuest })
     avatarMap.set(userId, entity)
-    const avatar = prepareAvatar(profile.avatar)
-    updateUser(userId, { avatar, name: profile.name })
+    updateUser(userId, { avatar: profile.avatar, name: profile.name })
   }
 
   function removeUser(userId: string) {
@@ -193,28 +201,22 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     if (!entity) return
 
     const isIdentity = getCurrentUserId(store.getState()) === userId
-    if (isIdentity) return
-
-    defaultLogger.log(`[BOEDO ${id}] removeUser`, { userId })
-
-    avatarMap.delete(userId)
-    engine.removeEntity(entity)
-  }
-
-  // User Identity is not being added to the peerInfo map so we have to add it manually.
-  const userId = getCurrentUserId(store.getState())
-  if (userId) {
-    addUser(userId)
+    if (isIdentity) {
+      AvatarBase.deleteFrom(engine.PlayerEntity)
+      AvatarEquippedData.deleteFrom(engine.PlayerEntity)
+    } else {
+      avatarMap.delete(userId)
+      engine.removeEntity(entity)
+    }
   }
 
   for (const [userId, data] of getAllPeers()) {
     if (!data.position || !isUserInScene(data.position)) continue
 
-    defaultLogger.log(`[BOEDO ${id}] adding user`, { userId })
     addUser(userId)
   }
 
-  function isUserInScene(position: Position) {
+  function isUserInScene(position: Pick<Position, 'positionX' | 'positionZ'>) {
     if (isGlobalScene) return true
 
     const parcel = encodeParcelPosition({
@@ -239,6 +241,9 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   engine.addTransport(transport)
   const avatarMessages: Uint8Array[] = []
 
+  // Add local user
+  addUser(userId)
+
   return {
     engine,
     update: async () => {
@@ -248,8 +253,8 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
       return messages
     },
     destroy: () => {
-      defaultLogger.log('Destroy engine', id)
       avatarMessageObservable.remove(observerInstance)
+      positionObservable.remove(userIdPositionObserver)
       localProfileChanged.off('triggerEmote')
       localProfileChanged.off('changeAvatar')
     }
