@@ -14,6 +14,7 @@ using static DCL.SettingsCommon.GeneralSettings;
 public class VoiceChatWindowController : IHUD
 {
     internal const string VOICE_CHAT_FEATURE_FLAG = "voice_chat";
+    internal const string VOICE_CHAT_JOINED_ON_START_FEATURE_FLAG = "voice_chat_joined_on_start";
     internal const float MUTE_STATUS_UPDATE_INTERVAL = 0.3f;
     internal const string TALKING_MESSAGE_YOU = "You";
     internal const string TALKING_MESSAGE_JUST_YOU_IN_THE_VOICE_CHAT = "No one else is here";
@@ -24,6 +25,7 @@ public class VoiceChatWindowController : IHUD
     public IVoiceChatBarComponentView VoiceChatBarView => voiceChatBarView;
 
     private bool isVoiceChatFFEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(VOICE_CHAT_FEATURE_FLAG);
+    private bool isVoiceChatJoinedOnStartFFEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(VOICE_CHAT_JOINED_ON_START_FEATURE_FLAG);
     internal BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
     private UserProfile ownProfile => userProfileBridge.GetOwn();
 
@@ -396,7 +398,8 @@ public class VoiceChatWindowController : IHUD
             return;
 
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
-        RequestJoinVoiceChat(true);
+
+        RequestJoinVoiceChat(isVoiceChatJoinedOnStartFFEnabled);
     }
 
     internal void SetWhichPlayerIsTalking()
