@@ -43,7 +43,14 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           const ret = await ctx.rpcSceneControllerService.sendCrdt({
             payload: req.data
           })
+
+          /**
+           * We add this message here so the player components associated to engine.PlayerEntity
+           * are present on the first tick.
+           * PlayerIdentity.get(engine.PlayerEntity) // Returns the address associated to the current user
+           */
           const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
+
           return { data: [ret.payload, ...internalAvatarMessages] }
         },
 
@@ -56,10 +63,12 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
         },
 
         async crdtGetState(_, ctx) {
+          const { initialEntitiesTick0, hasMainCrdt } = ctx
           const response = await ctx.rpcSceneControllerService.getCurrentState({})
+
+          // PlayerComponents messages
           const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
 
-          const { initialEntitiesTick0, hasMainCrdt } = ctx
 
           return {
             hasEntities: response.hasOwnEntities || hasMainCrdt,
