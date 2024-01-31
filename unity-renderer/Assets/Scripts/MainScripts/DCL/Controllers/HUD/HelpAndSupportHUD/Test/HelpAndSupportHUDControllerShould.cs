@@ -2,6 +2,7 @@ using NUnit.Framework;
 using DCL.HelpAndSupportHUD;
 using NSubstitute;
 using Analytics;
+using DCL.Browser;
 using System;
 
 namespace Tests
@@ -15,7 +16,7 @@ namespace Tests
         protected void SetUp()
         {
             view = Substitute.For<IHelpAndSupportHUDView>();
-            controller = new HelpAndSupportHUDController(view, Substitute.For<ISupportAnalytics>());
+            controller = new HelpAndSupportHUDController(view, Substitute.For<ISupportAnalytics>(), Substitute.For<IBrowserBridge>());
         }
 
         [TearDown]
