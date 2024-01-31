@@ -37,6 +37,16 @@ type LocalProfileChange = {
   triggerEmote: EmoteData
 }
 
+function getUserData(userId: string) {
+  const dataFromStore = getProfileFromStore(store.getState(), userId)
+  if (!dataFromStore) return undefined
+  return {
+    avatar: prepareAvatar(dataFromStore.data.avatar),
+    name: dataFromStore.data.name,
+    isGuest: !dataFromStore.data.hasConnectedWeb3
+  }
+}
+
 export const localProfileChanged = mitt<LocalProfileChange>()
 
 /**
@@ -44,56 +54,9 @@ export const localProfileChanged = mitt<LocalProfileChange>()
  * It handles the Avatar information for each player
  */
 export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
-  // LOCAL USERID -> engine.PlayerEntity
-  const userId = getCurrentUserId(store.getState())!
-  const userIdPositionObserver = positionObservable.add((data) => {
-    const isInsideScene = isUserInScene({ positionX: data.position.x, positionZ: data.position.z })
-    if (isInsideScene && !AvatarBase.has(engine.PlayerEntity)) {
-      const profile = getUserData(userId)
-      if (profile) {
-        updateUser(userId, profile)
-      }
-    } else if (!isInsideScene && AvatarBase.has(engine.PlayerEntity)) {
-      removeUser(userId)
-    }
-  })
-  localProfileChanged.on('changeAvatar', (data) => {
-    const avatar = prepareAvatar(data.avatar)
-    updateUser(data.userId, { name: data.name, avatar })
-  })
-  localProfileChanged.on('triggerEmote', (emote) => {
-    addEmote(userId, emote)
-  })
-
-  // End of LOCAL USER ID handlers
-
-  const observerInstance = avatarMessageObservable.add((message) => {
-    if (message.type === AvatarMessageType.USER_EXPRESSION) {
-      addEmote(message.userId, { emoteUrn: message.expressionId, timestamp: message.timestamp })
-    }
-
-    if (message.type === AvatarMessageType.USER_DATA) {
-      if (message.data.position && isUserInScene(message.data.position)) {
-        updateUser(message.userId, message.profile, message.data.position)
-      } else if (avatarMap.has(message.userId)) {
-        removeUser(message.userId)
-      }
-    }
-
-    if (message.type === AvatarMessageType.USER_REMOVED) {
-      removeUser(message.userId)
-    }
-
-    if (message.type === AvatarMessageType.USER_VISIBLE) {
-      if (!message.visible) {
-        removeUser(message.userId)
-      } else {
-        addUser(message.userId)
-      }
-    }
-  })
-
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
+  const userId = getCurrentUserId(store.getState())!
+
   // From 0 to 10 engine reserved entities.
   const entityContainer = createEntityContainer({ reservedStaticEntities: AVATAR_RESERVED_ENTITIES.from })
   const engine = Engine({ entityContainer, onChangeFunction: () => {} })
@@ -103,6 +66,39 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   const PlayerIdentityData = definePlayerIdentityData(engine)
   const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
   const avatarMap = new Map<string, Entity>()
+
+  function addUser(userId: string) {
+    const isIdentity = getCurrentUserId(store.getState()) === userId
+    const profile = getUserData(userId)
+    if (avatarMap.get(userId) || !profile) {
+      return
+    }
+    const entity = isIdentity ? engine.PlayerEntity : engine.addEntity()
+    const [entityId] = EntityUtils.fromEntityId(entity)
+
+    if (entityId >= AVATAR_RESERVED_ENTITIES.to) {
+      engine.removeEntity(entity)
+      console.error(`[BOEDO] Max amount of users reached`, entityId)
+      return
+    }
+    PlayerIdentityData.create(entity, { address: userId, isGuest: profile.isGuest })
+    avatarMap.set(userId, entity)
+    updateUser(userId, { avatar: profile.avatar, name: profile.name })
+  }
+
+  function removeUser(userId: string) {
+    const entity = avatarMap.get(userId)
+    if (!entity) return
+
+    const isIdentity = getCurrentUserId(store.getState()) === userId
+    if (isIdentity) {
+      AvatarBase.deleteFrom(engine.PlayerEntity)
+      AvatarEquippedData.deleteFrom(engine.PlayerEntity)
+    } else {
+      avatarMap.delete(userId)
+      engine.removeEntity(entity)
+    }
+  }
 
   function addEmote(userId: string, data: EmoteData) {
     const entity = avatarMap.get(userId)
@@ -165,55 +161,6 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     }
   }
 
-  function getUserData(userId: string) {
-    const dataFromStore = getProfileFromStore(store.getState(), userId)
-    if (!dataFromStore) return undefined
-    return {
-      avatar: prepareAvatar(dataFromStore.data.avatar),
-      name: dataFromStore.data.name,
-      isGuest: !dataFromStore.data.hasConnectedWeb3
-    }
-  }
-
-  function addUser(userId: string) {
-    const isIdentity = getCurrentUserId(store.getState()) === userId
-    const profile = getUserData(userId)
-    if (avatarMap.get(userId) || !profile) {
-      return
-    }
-    const entity = isIdentity ? engine.PlayerEntity : engine.addEntity()
-    const [entityId] = EntityUtils.fromEntityId(entity)
-
-    if (entityId >= AVATAR_RESERVED_ENTITIES.to) {
-      engine.removeEntity(entity)
-      console.error(`[BOEDO] Max amount of users reached`, entityId)
-      return
-    }
-    PlayerIdentityData.create(entity, { address: userId, isGuest: profile.isGuest })
-    avatarMap.set(userId, entity)
-    updateUser(userId, { avatar: profile.avatar, name: profile.name })
-  }
-
-  function removeUser(userId: string) {
-    const entity = avatarMap.get(userId)
-    if (!entity) return
-
-    const isIdentity = getCurrentUserId(store.getState()) === userId
-    if (isIdentity) {
-      AvatarBase.deleteFrom(engine.PlayerEntity)
-      AvatarEquippedData.deleteFrom(engine.PlayerEntity)
-    } else {
-      avatarMap.delete(userId)
-      engine.removeEntity(entity)
-    }
-  }
-
-  for (const [userId, data] of getAllPeers()) {
-    if (!data.position || !isUserInScene(data.position)) continue
-
-    addUser(userId)
-  }
-
   function isUserInScene(position: Pick<Position, 'positionX' | 'positionZ'>) {
     if (isGlobalScene) return true
 
@@ -224,6 +171,54 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
 
     return parcels.includes(parcel)
   }
+
+  //// CURRENT USER UPDATES -> engine.PlayerEntity
+  const userIdPositionObserver = positionObservable.add((data) => {
+    const isInsideScene = isUserInScene({ positionX: data.position.x, positionZ: data.position.z })
+    if (isInsideScene && !AvatarBase.has(engine.PlayerEntity)) {
+      const profile = getUserData(userId)
+      if (profile) {
+        updateUser(userId, profile)
+      }
+    } else if (!isInsideScene && AvatarBase.has(engine.PlayerEntity)) {
+      removeUser(userId)
+    }
+  })
+  localProfileChanged.on('changeAvatar', (data) => {
+    const avatar = prepareAvatar(data.avatar)
+    updateUser(data.userId, { name: data.name, avatar })
+  })
+  localProfileChanged.on('triggerEmote', (emote) => {
+    addEmote(userId, emote)
+  })
+  // End of LOCAL USER
+
+  // PlayersConnected observers
+  const observerInstance = avatarMessageObservable.add((message) => {
+    if (message.type === AvatarMessageType.USER_EXPRESSION) {
+      addEmote(message.userId, { emoteUrn: message.expressionId, timestamp: message.timestamp })
+    }
+
+    if (message.type === AvatarMessageType.USER_DATA) {
+      if (message.data.position && isUserInScene(message.data.position)) {
+        updateUser(message.userId, message.profile, message.data.position)
+      } else if (avatarMap.has(message.userId)) {
+        removeUser(message.userId)
+      }
+    }
+
+    if (message.type === AvatarMessageType.USER_REMOVED) {
+      removeUser(message.userId)
+    }
+
+    if (message.type === AvatarMessageType.USER_VISIBLE) {
+      if (!message.visible) {
+        removeUser(message.userId)
+      } else {
+        addUser(message.userId)
+      }
+    }
+  })
 
   /**
    * We used this transport to send only the avatar updates to the client instead of the full state
@@ -239,8 +234,15 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   engine.addTransport(transport)
   const avatarMessages: Uint8Array[] = []
 
-  // Add local user
+  // Add current user
   addUser(userId)
+
+  // Add Players connected to comms that are in the scene
+  for (const [userId, data] of getAllPeers()) {
+    if (!data.position || !isUserInScene(data.position)) continue
+
+    addUser(userId)
+  }
 
   return {
     engine,
