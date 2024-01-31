@@ -29,9 +29,6 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
-  defaultLogger.log('[BOEDO] handleeployProfile')
-  // TODO: move this to line :44.
-  yield call(() => localProfileChanged.emit('changeAvatar', profile))
 
   try {
     yield call(deployAvatar, {
@@ -41,6 +38,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
       profile
     })
     yield put(deployProfileSuccess(userId, profile.version, profile))
+    yield call(() => localProfileChanged.emit('changeAvatar', profile))
   } catch (e: any) {
     trackEvent('error', {
       context: 'kernel#saga',
