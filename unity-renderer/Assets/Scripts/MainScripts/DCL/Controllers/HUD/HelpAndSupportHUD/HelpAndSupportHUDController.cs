@@ -1,5 +1,6 @@
 using DCL.Interface;
 using Analytics;
+using DCL.Browser;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,11 +15,13 @@ namespace DCL.HelpAndSupportHUD
         public IHelpAndSupportHUDView view {  get; }
 
         private ISupportAnalytics analytics;
+        internal readonly IBrowserBridge browserBridge;
 
-        public HelpAndSupportHUDController(IHelpAndSupportHUDView view, ISupportAnalytics analytics)
+        public HelpAndSupportHUDController(IHelpAndSupportHUDView view, ISupportAnalytics analytics, IBrowserBridge browserBridge)
         {
             this.view = view;
             this.analytics = analytics;
+            this.browserBridge = browserBridge;
             view.Initialize();
 
             view.OnDiscordButtonPressed += OpenDiscord;
@@ -49,7 +52,7 @@ namespace DCL.HelpAndSupportHUD
 
         internal void OpenURL(string url)
         {
-            WebInterface.OpenURL(url);
+            browserBridge.OpenUrl(url);
         }
 
         public void Dispose()
