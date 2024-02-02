@@ -41,6 +41,7 @@ import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_inter
 import { joinBuffers } from 'lib/javascript/uint8arrays'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
+import { createInternalEngine } from './runtime-7/engine'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -192,7 +193,8 @@ export class SceneWorker {
       sendBatch: this.sendBatch.bind(this),
       readFile: this.readFile.bind(this),
       initialEntitiesTick0: Uint8Array.of(),
-      hasMainCrdt: false
+      hasMainCrdt: false,
+      internalEngine: undefined
     }
 
     // if the scene metadata has a base parcel, then we set it as the position
@@ -254,6 +256,8 @@ export class SceneWorker {
   dispose() {
     const disposingFlags =
       SceneWorkerReadyState.DISPOSING | SceneWorkerReadyState.SYSTEM_DISPOSED | SceneWorkerReadyState.DISPOSED
+
+    this.rpcContext.internalEngine?.destroy()
 
     queueMicrotask(() => {
       // this NEEDS to run in a microtask because sagas control this .dispose
@@ -397,7 +401,13 @@ export class SceneWorker {
         }
       }
     })
-
+    if (this.rpcContext.sdk7) {
+      this.rpcContext.internalEngine = createInternalEngine(
+        this.rpcContext.sceneData.id,
+        this.metadata.scene.parcels,
+        showAsPortableExperience
+      )
+    }
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
   }
 

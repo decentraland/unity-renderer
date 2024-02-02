@@ -585,7 +585,7 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            string wearableId = wearable.id;
+            string shortenWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
 
             if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
@@ -604,14 +604,14 @@ namespace DCL.Backpack
                     break;
                 }
 
-                model.wearables.Add(wearableId, wearable);
-                previewEquippedWearables.Add(wearableId);
+                model.wearables.Add(shortenWearableId, wearable);
+                previewEquippedWearables.Add(shortenWearableId);
 
                 if (resetOverride)
                     ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
                 avatarSlotsHUDController.Equip(wearable, model.bodyShape.id, model.forceRender);
-                wearableGridController.Equip(wearableId);
+                wearableGridController.Equip(shortenWearableId);
             }
 
             if (setAsDirty)
@@ -686,7 +686,7 @@ namespace DCL.Backpack
             bool setAsDirty = true,
             bool updateAvatarPreview = true)
         {
-            string wearableId = wearable.id;
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
 
             if (source != UnequipWearableSource.None)
                 backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
@@ -694,9 +694,9 @@ namespace DCL.Backpack
             ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
             avatarSlotsHUDController.UnEquip(wearable.data.category, model.forceRender);
-            model.wearables.Remove(wearableId);
-            previewEquippedWearables.Remove(wearableId);
-            wearableGridController.UnEquip(wearableId);
+            model.wearables.Remove(shortenedWearableId);
+            previewEquippedWearables.Remove(shortenedWearableId);
+            wearableGridController.UnEquip(shortenedWearableId);
 
             if (setAsDirty)
                 avatarIsDirty = true;

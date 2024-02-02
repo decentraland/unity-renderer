@@ -6,6 +6,7 @@ import type { RpcClientPort } from '@dcl/rpc'
 import type { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentraland/renderer/renderer_services/scene_controller.gen'
 import type { RpcClientModule } from '@dcl/rpc/dist/codegen'
 import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
+import { IInternalEngine } from '../../world/runtime-7/engine'
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
 
@@ -34,4 +35,7 @@ export type PortContext = {
   hasMainCrdt: boolean
 
   readFile(path: string): Promise<{ content: Uint8Array; hash: string }>
+
+  // Internal engine used to store the user avatar's info
+  internalEngine: IInternalEngine | undefined
 }

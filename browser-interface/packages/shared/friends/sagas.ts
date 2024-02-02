@@ -234,9 +234,7 @@ function* initializeFriendsSaga() {
 
       if (shouldRetry) {
         try {
-          logger.log('[Social client] Initializing')
           yield call(initializePrivateMessaging)
-          logger.log('[Social client] Initialized')
           // restart the debounce
           secondsToRetry = MIN_TIME_BETWEEN_FRIENDS_INITIALIZATION_RETRIES_MILLIS
         } catch (e) {
@@ -624,9 +622,6 @@ function* refreshFriends() {
       channelToJoin: CHANNEL_TO_JOIN_CONFIG_URL?.toString()
     }
 
-    defaultLogger.log('____ initMessage ____', initFriendsMessage)
-    defaultLogger.log('____ initChatMessage ____', initChatMessage)
-
     // all profiles to obtain, deduped
     const allProfilesToObtain: string[] = friendIds
       .concat(requestedFromIds.map((x) => x.userId))
@@ -636,7 +631,7 @@ function* refreshFriends() {
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
 
-    let token = client.getAccessToken()
+    const token = client.getAccessToken()
 
     if (token) {
       getUnityInstance().InitializeMatrix(token)
@@ -1148,7 +1143,6 @@ export function* initializeStatusUpdateInterval() {
     const shouldSendNewStatus = !deepEqual(updateStatus, lastStatus)
 
     if (shouldSendNewStatus) {
-      logger.log('Sending new comms status', updateStatus)
       client.setStatus(updateStatus).catch((e) => logger.error(`error while setting status`, e))
       lastStatus = updateStatus
     }

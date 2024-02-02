@@ -100,10 +100,15 @@ namespace Tests
         [Test]
         public void UpdateTransformComponentCorrectly()
         {
+            var parentEntity = scene.CreateEntity(6966);
             entity.parentId = 6966;
+            parentEntity.gameObject.transform.position = new Vector3(10, 10, 10);
+
             float currentTime = 0.666f;
             float duration = 9f;
             Transform entityTransform = entity.gameObject.transform;
+            entityTransform.SetParent(parentEntity.gameObject.transform);
+            entityTransform.localPosition = Vector3.zero;
 
             // Stuff that the handler does
             Tweener tweener = entityTransform.DOLocalMove(Vector3.up, duration);
@@ -119,12 +124,15 @@ namespace Tests
             tweener.Goto(duration * currentTime);
             systemUpdate();
 
+            // Note: if these `Put_Called<ECSTransform>()` throw a 'System.Exception : Unexpected
+            // component value. was: DCL.ECSComponents.ECSTransform', That's because componentModel.position
+            // values are not the same as entityTransform.localPosition values.
             outgoingMessages.Put_Called<ECSTransform>(
                 entity.entityId,
                 ComponentID.TRANSFORM,
                 componentModel =>
-                    componentModel.position == entityTransform.localPosition
-                    && componentModel.parentId == entity.parentId
+                     componentModel.position.Equals(entityTransform.localPosition)
+                     && componentModel.parentId == entity.parentId
             );
             Vector3 midPosition = entityTransform.localPosition;
 
@@ -135,7 +143,7 @@ namespace Tests
                 entity.entityId,
                 ComponentID.TRANSFORM,
                 componentModel =>
-                    componentModel.position == entityTransform.localPosition
+                    componentModel.position.Equals(entityTransform.localPosition)
                     && componentModel.parentId == entity.parentId
             );
             Assert.AreNotEqual(midPosition, entityTransform.localPosition);

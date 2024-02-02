@@ -1,4 +1,4 @@
-export const METHODS = ['error', 'info', 'log', 'warn', 'trace'] as const
+export const METHODS = ['info', 'log', 'warn', 'trace'] as const
 type Method = (typeof METHODS)[number]
 
 /**
@@ -7,10 +7,12 @@ type Method = (typeof METHODS)[number]
  */
 export const _console = Object.assign({}, console)
 
-export default function wrap(prefix: string) {
+export function wrap(testPrefix?: string) {
+  const prefix = testPrefix ? testPrefix : location.search.includes('DEBUG_LOGS') ? '*' : 'kernel'
   function logger(method: Method) {
     return function log(...args: any[]): void {
       const [logPrefix] = args
+
       function matchPrefix() {
         if (prefix === '*' || !prefix) {
           return true
@@ -23,7 +25,6 @@ export default function wrap(prefix: string) {
 
         return false
       }
-
       if (matchPrefix()) {
         return _console[method](...args)
       }
@@ -34,3 +35,5 @@ export default function wrap(prefix: string) {
     console[method] = logger(method)
   })
 }
+
+export default wrap

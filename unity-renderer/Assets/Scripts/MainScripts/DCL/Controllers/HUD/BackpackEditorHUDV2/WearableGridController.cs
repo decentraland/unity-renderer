@@ -282,7 +282,7 @@ namespace DCL.Backpack
                 view.SetLoadingActive(false);
 
                 currentWearables = wearables.Select(ToWearableGridModel)
-                                            .ToDictionary(item => item.WearableId, model => model);
+                                            .ToDictionary(item => ExtendedUrnParser.GetShortenedUrn(item.WearableId), model => model);
 
                 view.SetWearablePages(page, (totalAmount + PAGE_SIZE - 1) / PAGE_SIZE);
 
@@ -388,9 +388,10 @@ namespace DCL.Backpack
         private void HandleWearableSelected(WearableGridItemModel wearableGridItem)
         {
             string wearableId = wearableGridItem.WearableId;
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearableId);
 
             view.ClearWearableSelection();
-            view.SelectWearable(wearableId);
+            view.SelectWearable(shortenedWearableId);
 
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
             {
@@ -411,7 +412,7 @@ namespace DCL.Backpack
                 hiddenBy = null,
                 name = wearable.GetName(),
                 hideList = hidesList != null ? hidesList.ToList() : new List<string>(),
-                isEquipped = IsEquipped(wearable.id),
+                isEquipped = IsEquipped(shortenedWearableId),
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
                 unEquipAllowed = CanWearableBeUnEquipped(wearable),

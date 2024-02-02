@@ -1,3 +1,4 @@
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
@@ -106,14 +107,16 @@ namespace DCL.Backpack
 
         public void SetWearable(WearableGridItemModel model)
         {
-            if (wearablesById.TryGetValue(model.WearableId, out var view))
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(model.WearableId);
+
+            if (wearablesById.TryGetValue(shortenedWearableId, out var view))
                 view.SetModel(model);
             else
             {
                 PoolableObject poolObj = wearableGridItemsPool.Get();
                 WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
                 wearablePooledObjects[wearableGridItem] = poolObj;
-                wearablesById[model.WearableId] = wearableGridItem;
+                wearablesById[shortenedWearableId] = wearableGridItem;
                 wearableGridItem.SetModel(model);
                 wearablesGridContainer.AddItem(wearableGridItem);
                 wearableGridItem.OnSelected += HandleWearableSelected;
