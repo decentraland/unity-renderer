@@ -117,7 +117,7 @@ namespace DCL.ExperiencesViewer
 
                 view.ShowEnabledToast(scene?.GetSceneName());
             }
-            else
+            else if (scene != null)
             {
                 portableExperiencesBridge.SetDisabledPortableExperiences(disabledPortableExperiences.GetKeys()
                                                                                                     .Concat(new[] { pexId })
