@@ -61,7 +61,6 @@ export function* fetchInitialPortableExperiences() {
   yield waitForAvatarSceneInitialized()
 
   const qs = new URLSearchParams(globalThis.location.search)
-
   const globalPortableExperiences: string[] = qs.has('GLOBAL_PX')
     ? qs.getAll('GLOBAL_PX')
     : yield select(getFeatureFlagVariantValue, 'initial_portable_experiences')
