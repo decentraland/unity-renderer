@@ -88,7 +88,7 @@ namespace DCL.Emotes
             embeddedEmotes.Add(new EmoteBodyId(urnPrefix, embeddedEmote.id), new EmbedEmoteReference(embeddedEmote, clipData));
         }
 
-        public async UniTask<IEmoteReference> RequestEmote(EmoteBodyId emoteBodyId, CancellationToken cancellationToken = default)
+        public async UniTask<IEmoteReference> RequestEmote(EmoteBodyId emoteBodyId, CancellationToken cancellationToken = default, string contentUrl = null)
         {
             if (embeddedEmotes.TryGetValue(emoteBodyId, out var value))
                 return value;
@@ -102,7 +102,7 @@ namespace DCL.Emotes
 
             try
             {
-                var emote = await FetchEmote(emoteBodyId, cancellationToken);
+                var emote = await FetchEmote(emoteBodyId, cancellationToken, contentUrl);
 
                 if (emote == null)
                 {
@@ -128,17 +128,24 @@ namespace DCL.Emotes
             }
         }
 
-        private UniTask<WearableItem> FetchEmote(EmoteBodyId emoteBodyId, CancellationToken ct)
+        private UniTask<WearableItem> FetchEmote(EmoteBodyId emoteBodyId, CancellationToken ct, string contentUrl = null)
         {
             string emoteId = emoteBodyId.EmoteId;
 
             if (!SceneEmoteHelper.IsSceneEmote(emoteId))
+            {
                 return emotesCatalogService.RequestEmoteAsync(emoteId, ct);
+            }
 
             if (!emoteId.StartsWith("urn"))
+            {
                 return emotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, ct);
+            }
 
-            WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(emoteBodyId.BodyShapeId, emoteId, emoteHash, catalyst.contentUrl, loop) : null;
+            string finalContentUrl = catalyst.contentUrl;
+            if (contentUrl != null)
+                finalContentUrl = contentUrl.Remove(contentUrl.Length - 9); // "contents/"
+            WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(emoteBodyId.BodyShapeId, emoteId, emoteHash, finalContentUrl, loop) : null;
 
             return new UniTask<WearableItem>(emoteItem);
         }
