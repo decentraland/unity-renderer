@@ -142,10 +142,14 @@ namespace DCL.Emotes
                 return emotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, ct);
             }
 
-            string finalContentUrl = catalyst.contentUrl;
-            if (contentUrl != null)
-                finalContentUrl = contentUrl.Remove(contentUrl.Length - 9); // "contents/"
-            WearableItem emoteItem = SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop) ? new EmoteItem(emoteBodyId.BodyShapeId, emoteId, emoteHash, finalContentUrl, loop) : null;
+            WearableItem emoteItem = null;
+            if (SceneEmoteHelper.TryGetDataFromEmoteId(emoteId, out string emoteHash, out bool loop))
+            {
+                if (contentUrl != null)
+                    emoteItem = new EmoteItem(emoteBodyId.BodyShapeId, emoteId, emoteHash, contentUrl, loop, false);
+                else
+                    emoteItem = new EmoteItem(emoteBodyId.BodyShapeId, emoteId, emoteHash, catalyst.contentUrl, loop);
+            }
 
             return new UniTask<WearableItem>(emoteItem);
         }

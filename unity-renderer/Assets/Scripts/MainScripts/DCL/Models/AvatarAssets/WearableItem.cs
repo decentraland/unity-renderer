@@ -441,7 +441,7 @@ public class WearableItem
 [Serializable]
 public class EmoteItem : WearableItem
 {
-    public EmoteItem(string bodyShapeId, string emoteId, string emoteHash, string contentUrl, bool loop)
+    public EmoteItem(string bodyShapeId, string emoteId, string emoteHash, string contentUrl, bool loop, bool needUrlAppend = true)
     {
         data = new Data
         {
@@ -466,7 +466,7 @@ public class EmoteItem : WearableItem
         emoteDataV0 = new EmoteDataV0 { loop = loop };
 
         id = emoteId;
-        baseUrl = $"{contentUrl}contents/";
+        baseUrl = needUrlAppend ? $"{contentUrl}contents/" : contentUrl;
     }
 }
 
