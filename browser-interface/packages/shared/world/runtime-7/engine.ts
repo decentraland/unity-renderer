@@ -78,7 +78,6 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
 
     if (entityId >= AVATAR_RESERVED_ENTITIES.to) {
       engine.removeEntity(entity)
-      console.error(`[BOEDO] Max amount of users reached`, entityId)
       return
     }
     PlayerIdentityData.create(entity, { address: userId, isGuest: profile.isGuest })
@@ -115,7 +114,6 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     const entity = avatarMap.get(userId)
 
     if (!entity) {
-      console.error(`[BOEDO] user not found !`, { userId })
       return addUser(userId)
     }
 
