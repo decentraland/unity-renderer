@@ -262,8 +262,17 @@ function fetchOwnedEmotes(ethAddress: string, client: CatalystClient) {
   return client.fetchOwnedEmotes(ethAddress, true)
 }
 
+export function urnWithoutToken(urn: string): string {
+  const value = urn.split(':')
+  if (value.length === 7) {
+    return value.slice(0, 6).join(':')
+  }
+  return urn
+}
+
 async function fetchWearablesByFilters(filters: WearablesRequestFilters, client: CatalystClient) {
-  return client.fetchWearables(filters)
+  const wearableIds = filters.wearableIds?.map(urnWithoutToken)
+  return client.fetchWearables({ ...filters, wearableIds })
 }
 
 async function fetchEmotesByFilters(filters: EmotesRequestFilters, client: CatalystClient) {

@@ -20,6 +20,7 @@ import {
 } from './actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { KeyAndHash } from '../catalogs/types'
+import { urnWithoutToken } from '../catalogs/sagas'
 
 export function* wearablesPortableExperienceSaga(): any {
   yield takeLatest(PROFILE_SUCCESS, handleSelfProfileSuccess)
@@ -29,13 +30,12 @@ export function* wearablesPortableExperienceSaga(): any {
 
 function* handleSelfProfileSuccess(action: ProfileSuccessAction): any {
   const isMyProfile: boolean = yield select(isCurrentUserId, action.payload.profile.userId)
-
   // cancel the saga if we receive a profile from a different user
   if (!isMyProfile) {
     return
   }
 
-  const newProfileWearables = action.payload.profile.avatar?.wearables || []
+  const newProfileWearables = action.payload.profile.avatar?.wearables.map(urnWithoutToken) || []
   const currentDesiredPortableExperiences: Record<string, LoadableScene | null> = yield select(
     getDesiredWearablePortableExpriences
   )
@@ -69,9 +69,9 @@ function* handleProcessWearables(action: ProcessWearablesAction) {
   const currentDesiredPortableExperiences: Record<string, LoadableScene | null> = yield select(
     getDesiredWearablePortableExpriences
   )
-
-  if (payload.wearable.id in currentDesiredPortableExperiences) {
-    yield put(addDesiredPortableExperience(payload.wearable.id, payload.wearable))
+  const wearableId = urnWithoutToken(payload.wearable.id)
+  if (wearableId in currentDesiredPortableExperiences) {
+    yield put(addDesiredPortableExperience(wearableId, payload.wearable))
   }
 }
 
@@ -150,7 +150,7 @@ export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl
   const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson()
 
   return {
-    id: wearable.id,
+    id: urnWithoutToken(wearable.id),
     baseUrl,
     parentCid: 'avatar',
     entity: {
