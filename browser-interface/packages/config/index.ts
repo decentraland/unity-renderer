@@ -82,20 +82,6 @@ export const QS_MAX_VISIBLE_PEERS =
 export const BUILDER_SERVER_URL =
   ensureSingleString(qs.get('BUILDER_SERVER_URL')) ?? 'https://builder-api.decentraland.org/v1'
 
-const SSO_URL = ensureQueryStringUrl(qs.get('SSO_URL')) ?? 'https://id.decentraland.org'
-export function getSSOUrl() {
-  const sso = new URL(SSO_URL)
-  const ssoHost = sso.hostname.split('.').reverse()
-  const currentHost = location.hostname.split('.').reverse()
-
-  // ensures the same top level domain for the SSO
-  if (ssoHost[0] === currentHost[0] && ssoHost[1] === currentHost[1]) {
-    return SSO_URL
-  }
-
-  return null
-}
-
 /**
  * Get the root URL and ensure not to end with slash
  * @returns Root URL with pathname where the index.html is served.

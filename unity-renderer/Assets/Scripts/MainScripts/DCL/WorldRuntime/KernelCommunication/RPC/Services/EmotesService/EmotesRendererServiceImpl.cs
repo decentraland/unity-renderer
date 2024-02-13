@@ -125,7 +125,7 @@ namespace RPC.Services
 
                 if (!emotesByScene[scene].Contains(emoteKey))
                 {
-                    var result = await emotesService.RequestEmote(emoteKey, cancellationTokenSource.Token);
+                    var result = await emotesService.RequestEmote(emoteKey, cancellationTokenSource.Token, scene.contentProvider.baseUrl);
                     emotesController.EquipEmote(emoteId, result);
                     emotesByScene[scene].Add(emoteKey);
                 }

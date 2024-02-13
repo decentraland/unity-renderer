@@ -319,12 +319,12 @@ async function createAuthIdentity(requestManager: RequestManager, isGuest: boole
 
   let auth: AuthIdentity
 
-  const ssoIdentity = await SingleSignOn.getIdentity(address)
+  const ssoIdentity = SingleSignOn.localStorageGetIdentity(address)
 
   if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
     auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
 
-    await SingleSignOn.storeIdentity(address, auth)
+    SingleSignOn.localStorageStoreIdentity(address, auth)
   } else {
     auth = ssoIdentity
   }
@@ -337,14 +337,12 @@ function* logout() {
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   if (identity && identity.address && network) {
     yield call(() => localProfilesRepo.remove(identity.address, network))
+    yield call(deleteSession, identity.address)
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
   yield put(setRoomConnection(undefined))
 
-  if (identity?.address) {
-    yield call(deleteSession, identity.address)
-  }
   window.location.reload()
 }
 
