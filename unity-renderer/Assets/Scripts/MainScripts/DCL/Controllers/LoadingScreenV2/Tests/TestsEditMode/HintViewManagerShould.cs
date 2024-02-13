@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DCL.Models;
 using DCL.Providers;
+using DCLPlugins.LoadingScreenPlugin;
+using MainScripts.DCL.Controllers.AssetManager.Addressables.Editor;
 using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
@@ -9,10 +11,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2.Tests
+namespace DCL.LoadingScreen.V2.Tests
 {
     public class HintViewManagerShould : MonoBehaviour
     {
+        private readonly string HINT_VIEW_PREFAB_ADDRESSABLE = "LoadingScreenV2HintView.prefab";
+        private const string LOADING_SCREEN_ASSET = "_LoadingScreenV2";
+
         private HintRequestService hintRequestService;
         private List<IHintRequestSource> hintRequestSources;
         private ISceneController sceneController;
@@ -20,11 +25,13 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         private CancellationToken cancellationToken;
         private Hint premadeHint1;
         private Hint premadeHint2;
+        private IAddressableResourceProvider addressableProvider;
 
         [SetUp]
         public void Setup()
         {
             // setup sources
+            addressableProvider = new EditorAddressableResourceProvider();
             premadeHint1 = new Hint("https://example.com/image1.png", "title1", "body1", SourceTag.Event);
             premadeHint2 = new Hint("https://example.com/image2.png", "title2", "body2", SourceTag.Dcl);
             var sourceUrlJson = "http://remote_source_url";
@@ -42,6 +49,7 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
 
             // setup the rest
             sceneController = Substitute.For<ISceneController>();
+            sceneController.OnNewSceneAdded += null;
             hintTextureRequestHandler = new HintTextureRequestHandler();
             hintRequestService = new HintRequestService(hintRequestSources, sceneController, hintTextureRequestHandler);
             cancellationToken = new CancellationToken();
@@ -57,7 +65,11 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task StartAndStopHintsCarousel()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            LoadingScreenView loadingScreenView = GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
+            loadingScreenView.ToggleLoadingScreenV2(true);
+            var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
+            loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();
@@ -83,7 +95,12 @@ namespace DCL.Controllers.LoadingScreenV2.Tests
         public async Task CarouselNextAndPreviousHint()
         {
             // Arrange
-            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService);
+            var cts = new CancellationTokenSource();
+            LoadingScreenView loadingScreenView = GameObject.Instantiate(Resources.Load<GameObject>(LOADING_SCREEN_ASSET)).GetComponent<LoadingScreenView>();
+            var loadingScreenHintsController = new LoadingScreenHintsController(hintRequestService, loadingScreenView, addressableProvider);
+            var loadingScreenV2ProxyPlugin = new LoadingScreenV2ProxyPlugin();
+            loadingScreenHintsController = await loadingScreenV2ProxyPlugin.InitializeAsync(loadingScreenView, addressableProvider, cancellationToken);
+            loadingScreenView.ToggleLoadingScreenV2(true);
 
             // Create a TaskCompletionSource to wait for RequestHints to complete
             var requestHintsCompletedTaskSource = new TaskCompletionSource<bool>();

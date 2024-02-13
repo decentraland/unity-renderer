@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     [Serializable]
     public enum SourceTag

@@ -6,7 +6,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     ///     The HintRequestService class is a central manager for retrieving loading screen hints from different sources
@@ -63,9 +63,7 @@ namespace DCL.Controllers.LoadingScreenV2
                 if (ctx.IsCancellationRequested) { return selectedHints; }
 
                 List<Hint> hints = await GetHintsAsync(ctx);
-
                 hints = SelectOptimalHints(hints, totalHints);
-
                 await DownloadTextures(hints, ctx);
             }
             catch (Exception ex) { Debug.LogWarning(ex); }
@@ -117,14 +115,13 @@ namespace DCL.Controllers.LoadingScreenV2
 
             foreach (SourceTag sourceTag in orderedSourceTags)
             {
-                if (hintsDictionary.TryGetValue(sourceTag, out List<Hint> sourceHints))
+                if (!hintsDictionary.TryGetValue(sourceTag, out List<Hint> sourceHints)) continue;
+
+                while (sourceHints.Count > 0 && optimalHints.Count < totalHints)
                 {
-                    while (sourceHints.Count > 0 && optimalHints.Count < totalHints)
-                    {
-                        Hint selectedHint = GetRandomHint(sourceHints);
-                        allAvailableHints.Remove(selectedHint);
-                        optimalHints.Add(selectedHint);
-                    }
+                    Hint selectedHint = GetRandomHint(sourceHints);
+                    allAvailableHints.Remove(selectedHint);
+                    optimalHints.Add(selectedHint);
                 }
             }
 

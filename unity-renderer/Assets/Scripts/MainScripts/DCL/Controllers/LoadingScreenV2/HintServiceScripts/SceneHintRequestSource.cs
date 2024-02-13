@@ -1,11 +1,12 @@
 using Cysharp.Threading.Tasks;
+using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     ///     The SceneHintRequestSource class implements the IHintRequestSource interface for retrieving loading hints from a specific scene.
@@ -20,9 +21,8 @@ namespace DCL.Controllers.LoadingScreenV2
         private LoadParcelScenesMessage.UnityParcelScene currentSceneBeingLoaded;
         private UniTaskCompletionSource<bool> sceneLoadedCompletionSource;
 
-        public SceneHintRequestSource(string sceneJson, SourceTag sourceTag, ISceneController sceneController, Vector2Int currentDestination)
+        public SceneHintRequestSource(SourceTag sourceTag, ISceneController sceneController)
         {
-            Source = sceneJson;
             this.SourceTag = sourceTag;
             LoadingHints = new List<Hint>();
 
@@ -30,7 +30,10 @@ namespace DCL.Controllers.LoadingScreenV2
             this.currentDestination = currentDestination;
 
             sceneLoadedCompletionSource = new UniTaskCompletionSource<bool>();
-            sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
+            if (sceneController != null)
+            {
+                sceneController.OnNewSceneAdded += OnNewSceneAddedToSceneController;
+            }
         }
 
         public string Source { get; }
@@ -41,6 +44,7 @@ namespace DCL.Controllers.LoadingScreenV2
         {
             try
             {
+                // This will wait a maximum of MAX_WAIT_FOR_SCENE seconds for the scene to be loaded before proceeding
                 await UniTask.WhenAny(sceneLoadedCompletionSource.Task, UniTask.Delay(TimeSpan.FromSeconds(MAX_WAIT_FOR_SCENE), cancellationToken: ctx));
 
                 if (ctx.IsCancellationRequested)
@@ -64,11 +68,11 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void Dispose()
         {
-            sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
+            sceneController.OnNewSceneAdded -= OnNewSceneAddedToSceneController;
             LoadingHints.Clear();
         }
 
-        private void SceneController_OnNewSceneAdded(IParcelScene scene)
+        private void OnNewSceneAddedToSceneController(IParcelScene scene)
         {
             if (scene != null && CheckTargetSceneWithCoords(scene))
             {

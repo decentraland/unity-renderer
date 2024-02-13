@@ -1,27 +1,40 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     /// <summary>
     /// View responsible of showing the corresponding provided Hint by LoadingScreenHintsController
     /// </summary>
     public class HintView : MonoBehaviour, IHintView
     {
-        [SerializeField] internal TMP_Text hintText;
-        [SerializeField] internal Image hintImage;
+        [SerializeField] private TMP_Text hintTitleText;
+        [SerializeField] private TMP_Text hintBodyText;
+        [SerializeField] private Image hintImage;
+        [SerializeField] private Image hintBackgroundImage;
+        [SerializeField] private CanvasGroup canvasGroup;
 
-        public void Initialize(Hint hint, Texture2D texture, bool startAsActive = false)
+        private const float FADE_DURATION = 0.5f;
+        private CancellationTokenSource fadeCts;
+
+        public void Initialize(Hint hint, Texture2D texture, float fadeDuration = FADE_DURATION, bool startAsActive = false)
         {
             try
             {
-                if (hintText == null)
-                    throw new System.Exception("HintView - HintText is not assigned!");
+                if (canvasGroup == null)
+                    throw new WarningException("HintView - CanvasGroup has not been found!");
+                if (hintTitleText == null)
+                    throw new WarningException("HintView - HintText is not assigned!");
+                if (hintTitleText == null)
+                    throw new WarningException("HintView - HintBodyText is not assigned!");
                 if (hintImage == null)
-                    throw new System.Exception("HintView - HintImage is not assigned!");
+                    throw new WarningException("HintView - HintImage is not assigned!");
             }
             catch (System.Exception e)
             {
@@ -29,10 +42,15 @@ namespace DCL.Controllers.LoadingScreenV2
                 throw;
             }
 
-            hintText.text = hint.Title;
+            hintTitleText.text = hint.Title;
+            hintBodyText.text = hint.Body;
 
             if (texture != null)
-                hintImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            {
+                var newSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                hintImage.sprite = newSprite;
+                hintBackgroundImage.sprite = newSprite;
+            }
 
             ToggleHint(startAsActive);
         }
@@ -40,7 +58,60 @@ namespace DCL.Controllers.LoadingScreenV2
         public void ToggleHint(bool active)
         {
             if (this != null)
-                gameObject.SetActive(active);
+            {
+                ToggleHintAsync(active);
+            }
         }
+
+        public void ToggleHintAsync(bool fadeIn)
+        {
+            if (fadeCts != null)
+            {
+                fadeCts.Cancel();
+                fadeCts.Dispose();
+            }
+
+            fadeCts = new CancellationTokenSource();
+            Fade(fadeIn, fadeCts.Token).Forget();
+        }
+
+        public void CancelAnyHintToggle()
+        {
+            if (fadeCts == null) return;
+
+            fadeCts.Cancel();
+            fadeCts.Dispose();
+            fadeCts = null;
+        }
+
+        private async UniTask Fade(bool fadeIn, CancellationToken cancellationToken = default)
+        {
+            float startAlpha = fadeIn ? 0 : 1;
+            float endAlpha = fadeIn ? 1 : 0;
+            float elapsedTime = 0;
+
+            if (fadeIn)
+            {
+                gameObject.SetActive(true);
+            }
+
+            while (elapsedTime < FADE_DURATION)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                elapsedTime += Time.unscaledDeltaTime;
+                float newAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / FADE_DURATION);
+                canvasGroup.alpha = newAlpha;
+                await UniTask.Yield(PlayerLoopTiming.Update);
+            }
+
+            canvasGroup.alpha = endAlpha;
+
+            if (!fadeIn)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
     }
 }

@@ -50,23 +50,5 @@ namespace DCL.LoadingScreen.Test
             Assert.AreEqual(loadingScreenPercentageView.loadingPercentage.fillAmount, currentLoadingValue/100f);
         }
 
-        [Category("EditModeCI")]
-        [Test]
-        public void LoadingTipsUpdatedCorrectly()
-        {
-            //Arrange
-            LoadingScreenTipsView loadingScreenTipsView = loadingScreenView.GetTipsView();
-
-            Sprite testSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/LoadingScreen/Sprites/BuilderImg.png");
-            LoadingTip newLoadingTip = new LoadingTip("LoadingTest", testSprite);
-
-            //Act
-            loadingScreenTipsView.ShowTip(newLoadingTip);
-
-            //Assert
-            Assert.AreEqual(loadingScreenTipsView.tipsImage.sprite, testSprite);
-            Assert.AreEqual(loadingScreenTipsView.tipsText.text, "LoadingTest");
-        }
     }
 }

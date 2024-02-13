@@ -1,4 +1,6 @@
+using DCL.LoadingScreen.V2;
 using System;
+using UnityEngine;
 
 namespace DCL.LoadingScreen
 {
@@ -10,10 +12,14 @@ namespace DCL.LoadingScreen
 
         event Action<ShowHideAnimator> OnFadeInFinish;
 
-        LoadingScreenTipsView GetTipsView();
-
         LoadingScreenPercentageView GetPercentageView();
 
         ILoadingScreenTimeoutView GetTimeoutView();
+
+        RectTransform GetHintContainer();
+
+        LoadingScreenV2HintsPanelView GetHintsPanelView();
+
+        void ToggleLoadingScreenV2(bool active);
     }
 }

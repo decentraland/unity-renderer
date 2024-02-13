@@ -55,7 +55,10 @@
         "GUID:6426fc92c49cbb342916620a1009be8d",
         "GUID:fd6a19eb8dfe417a84a27e537222d98d",
         "GUID:c34e38f41494f834abff029ddf82af43",
-        "GUID:43315b150e1df4592868fc0fe58b3429"
+        "GUID:43315b150e1df4592868fc0fe58b3429",
+        "GUID:410d113a616fe7a46bdbf47941da22a4",
+        "GUID:ca4a649888a64e2e9da36b8fb694230b",
+        "GUID:c47bed04ea733c8468297ac85c826cee"
     ],
     "includePlatforms": [
         "Editor"

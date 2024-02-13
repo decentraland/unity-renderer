@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.LoadingScreen.V2;
 using DCL.NotificationModel;
 using MainScripts.DCL.Controllers.ShaderPrewarm;
 using System;
@@ -26,7 +27,6 @@ namespace DCL.LoadingScreen
         private Vector2Int currentDestination;
         private string currentRealm;
         private bool currentRealmIsWorld;
-        private readonly LoadingScreenTipsController tipsController;
         private readonly LoadingScreenPercentageController percentageController;
         internal readonly LoadingScreenTimeoutController timeoutController;
         private readonly NotificationsController notificationsController;
@@ -35,14 +35,16 @@ namespace DCL.LoadingScreen
         private bool isFadingOut;
         private readonly IShaderPrewarm shaderPrewarm;
         private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly ILoadingScreenHintsController loadingScreenHintsController;
 
-        public LoadingScreenController(ILoadingScreenView view, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
+        public LoadingScreenController(ILoadingScreenView view, ILoadingScreenHintsController loadingScreenHintsController, ISceneController sceneController, IWorldState worldState, NotificationsController notificationsController,
             DataStore_Player playerDataStore, DataStore_Common commonDataStore, DataStore_LoadingScreen loadingScreenDataStore, DataStore_Realm realmDataStore, IShaderPrewarm shaderPrewarm)
         {
             cancellationTokenSource = new CancellationTokenSource();
 
             this.shaderPrewarm = shaderPrewarm;
             this.view = view;
+            this.loadingScreenHintsController = loadingScreenHintsController;
             this.sceneController = sceneController;
             this.playerDataStore = playerDataStore;
             this.commonDataStore = commonDataStore;
@@ -51,7 +53,6 @@ namespace DCL.LoadingScreen
             this.realmDataStore = realmDataStore;
             this.notificationsController = notificationsController;
 
-            tipsController = new LoadingScreenTipsController(view.GetTipsView());
             percentageController = new LoadingScreenPercentageController(sceneController, view.GetPercentageView(), commonDataStore);
             timeoutController = new LoadingScreenTimeoutController(view.GetTimeoutView(), worldState, this);
 
@@ -96,7 +97,11 @@ namespace DCL.LoadingScreen
         private void PlayerLoaded(bool loaded, bool _)
         {
             if (loaded)
+            {
                 FadeOutView();
+
+                loadingScreenHintsController?.Dispose();
+            }
 
             commonDataStore.isPlayerRendererLoaded.OnChange -= PlayerLoaded;
         }
@@ -120,23 +125,22 @@ namespace DCL.LoadingScreen
         private void TeleportRequested(Vector3 current, Vector3 previous)
         {
             if (onSignUpFlow) return;
-
             Vector2Int currentDestinationCandidate = Utils.WorldToGridPosition(current);
 
             if (IsNewRealm() || IsNewScene(currentDestinationCandidate))
             {
                 currentDestination = currentDestinationCandidate;
 
-                //On a teleport, to copy previos behaviour, we disable tips entirely and show the teleporting screen
-                //This is probably going to change with the integration of WORLDS loading screen
-                //Temporarily removing tips until V2
-                //tipsController.StopTips();
+                loadingScreenHintsController?.Initialize();
+
                 percentageController.StartLoading(currentDestination);
                 timeoutController.StartTimeout(currentDestination);
                 view.FadeIn(false, true);
             }
             else if (IsSceneLoaded(currentDestinationCandidate))
+            {
                 HandlePlayerLoading();
+            }
         }
 
         //The realm gets changed before the scenes starts to unload. So, if we try to teleport to a world scene in which the destination coordinates are loaded,

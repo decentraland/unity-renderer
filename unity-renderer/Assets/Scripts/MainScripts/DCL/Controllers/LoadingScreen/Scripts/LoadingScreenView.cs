@@ -1,5 +1,7 @@
+using DCL.LoadingScreen.V2;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.LoadingScreen
@@ -9,10 +11,13 @@ namespace DCL.LoadingScreen
     /// </summary>
     public class LoadingScreenView : BaseComponentView, ILoadingScreenView
     {
-        [SerializeField] private LoadingScreenTipsView tipsView;
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
+        [SerializeField] private GameObject containerViewV1;
+        [SerializeField] private GameObject containerViewV2;
+        [SerializeField] private RectTransform hintContainer;
+        [SerializeField] private LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
@@ -33,14 +38,17 @@ namespace DCL.LoadingScreen
             showHideAnimator.OnWillFinishStart -= FadeInFinish;
         }
 
-        public LoadingScreenTipsView GetTipsView() =>
-            tipsView;
+        public RectTransform GetHintContainer() =>
+            hintContainer;
 
         public LoadingScreenPercentageView GetPercentageView() =>
             percentageView;
 
         public ILoadingScreenTimeoutView GetTimeoutView() =>
             timeoutView;
+
+        public LoadingScreenV2HintsPanelView GetHintsPanelView() =>
+            loadingScreenV2HintsPanelView;
 
         public void FadeIn(bool instant, bool blitTexture)
         {
@@ -62,6 +70,12 @@ namespace DCL.LoadingScreen
         }
 
         public override void RefreshControl() { }
+
+        public void ToggleLoadingScreenV2(bool active)
+        {
+            containerViewV1.SetActive(!active);
+            containerViewV2.SetActive(active);
+        }
 
         private void FadeInFinish(ShowHideAnimator obj)
         {

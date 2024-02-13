@@ -4,27 +4,30 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace DCL.Controllers.LoadingScreenV2
+namespace DCL.LoadingScreen.V2
 {
     public class HintViewManager : IHintViewManager
     {
-        private readonly TimeSpan SHOWING_TIME_HINTS = TimeSpan.FromSeconds(5);
         private readonly List<HintView> hintViewList;
-
-        private CancellationTokenSource cancellationTokenSource;
+        private readonly TimeSpan hintShowTime;
+        private readonly LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView;
+        private CancellationTokenSource scheduledUpdateCtxSource;
 
         internal bool isIteratingHints = false;
         internal int currentHintIndex = 0;
 
         public event Action OnHintChanged;
 
-        public HintViewManager(List<HintView> hintViewList)
+        public HintViewManager(List<HintView> hintViewList, TimeSpan hintShowTime, LoadingScreenV2HintsPanelView loadingScreenV2HintsPanelView)
         {
             this.hintViewList = hintViewList;
+            this.hintShowTime = hintShowTime;
+            this.loadingScreenV2HintsPanelView = loadingScreenV2HintsPanelView;
         }
 
         public void StartCarousel()
         {
+            loadingScreenV2HintsPanelView.TogglePanelAsync(true);
             if (isIteratingHints || hintViewList.Count == 0)
                 return;
 
@@ -34,31 +37,32 @@ namespace DCL.Controllers.LoadingScreenV2
 
         public void StopCarousel()
         {
+            if (!isIteratingHints)
+                return;
+
             isIteratingHints = false;
-            cancellationTokenSource?.Cancel();
+
+            var previousTokenSource = Interlocked.Exchange(ref scheduledUpdateCtxSource, null);
+
+            previousTokenSource?.Cancel();
+            previousTokenSource?.Dispose();
         }
 
         public void CarouselNextHint()
         {
-            if (hintViewList.Count == 0)
-                return;
-
+            StopCarousel();
             SetHint((currentHintIndex + 1) % hintViewList.Count);
         }
 
         public void CarouselPreviousHint()
         {
-            if (hintViewList.Count == 0)
-                return;
-
+            StopCarousel();
             SetHint((currentHintIndex - 1 + hintViewList.Count) % hintViewList.Count);
         }
 
         public void SetSpecificHint(int index)
         {
-            if (hintViewList.Count == 0)
-                return;
-
+            StopCarousel();
             SetHint(index);
         }
 
@@ -67,49 +71,46 @@ namespace DCL.Controllers.LoadingScreenV2
             hintViewList[currentHintIndex].ToggleHint(false);
             currentHintIndex = index;
             UpdateHintView();
+
+            // Continue the carousel if it's running.
+            if (isIteratingHints)
+            {
+                ScheduleNextUpdate(CancellationToken.None).Forget();
+            }
         }
 
         private async UniTask ScheduleNextUpdate(CancellationToken token)
         {
-            cancellationTokenSource?.Cancel(); // cancel previous timer
-            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            CancellationTokenSource newTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            // Interlocked exchange to ensure only one CTS at a time
+            var previousTokenSource = Interlocked.Exchange(ref scheduledUpdateCtxSource, newTokenSource);
+
+            previousTokenSource?.Dispose();
 
             try
             {
-                await UniTask.Delay(SHOWING_TIME_HINTS, cancellationToken: cancellationTokenSource.Token);
-                CarouselNextHint();
+                await UniTask.Delay(hintShowTime, cancellationToken: newTokenSource.Token);
+                // Continue with the next hint without stopping the carousel.
+                if (hintViewList.Count > 0)
+                    SetHint((currentHintIndex + 1) % hintViewList.Count);
             }
-            catch (OperationCanceledException)
-            {
-                // Operation was cancelled
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-            }
+            catch (OperationCanceledException) { }
         }
 
         private void UpdateHintView()
         {
             hintViewList[currentHintIndex].ToggleHint(true);
-
-            if (isIteratingHints)
-            {
-                ScheduleNextUpdate(cancellationTokenSource.Token).Forget();
-            }
-
+            loadingScreenV2HintsPanelView.ToggleDot(currentHintIndex);
             OnHintChanged?.Invoke();
         }
 
         public void Dispose()
         {
             StopCarousel();
-            cancellationTokenSource?.Cancel();
-            cancellationTokenSource?.Dispose();
 
             foreach (var hintView in hintViewList)
             {
-                DCL.Helpers.Utils.SafeDestroy(hintView.gameObject);
+                hintView.CancelAnyHintToggle();
             }
 
             hintViewList.Clear();
