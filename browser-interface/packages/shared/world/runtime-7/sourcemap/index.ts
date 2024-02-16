@@ -9,21 +9,30 @@ declare const globalThis: {
 async function getSourcemap() {
   if (initialized) return globalThis.sourceMap
   initialized = true
-  await injectScript('https://unpkg.com/source-map@0.7.3/dist/source-map.js')
+  await injectScript('https://unpkg.com/source-map@0.7.4/dist/source-map.js')
   globalThis.sourceMap.SourceMapConsumer.initialize({
     'lib/mappings.wasm': 'https://unpkg.com/source-map@0.7.4/lib/mappings.wasm'
   })
   return globalThis.sourceMap
 }
 
-export async function initSourcemap(code: string): Promise<Sourcemap | void> {
+export async function initSourcemap(code: string, inlineSourcemaps: boolean = true): Promise<Sourcemap | void> {
   const sourceMap = await getSourcemap()
-  const inlineSourceMapComment = code.match(/\/\/# sourceMappingURL=data:application\/json;base64,(.*)/)
 
-  if (!inlineSourceMapComment || !inlineSourceMapComment[1]) return
-
-  const decodedSourceMap = Buffer.from(inlineSourceMapComment[1], 'base64').toString('utf-8')
-  const sourcemapConsumer = await new sourceMap.SourceMapConsumer(decodedSourceMap as any)
+  function decodeSourcemap(): any {
+    // External source-maps .js.map file
+    if (!inlineSourcemaps) {
+      return code
+    }
+    // Inline sourcemap, find the source-map inside the file encoded in a base64
+    const inlineSourceMapComment = code.match(/\/\/# sourceMappingURL=data:application\/json;base64,(.*)/)
+    if (!inlineSourceMapComment || !inlineSourceMapComment[1]) return
+    const decodedSourceMap = Buffer.from(inlineSourceMapComment[1], 'base64').toString('utf-8')
+    return decodedSourceMap
+  }
+  const sourcemapCode = decodeSourcemap()
+  if (!sourcemapCode) return
+  const sourcemapConsumer = await new sourceMap.SourceMapConsumer(sourcemapCode)
 
   /**
    * Because the scene-runtime uses an eval with a Function, it generates an offset of :2

@@ -233,11 +233,18 @@ export class SceneWorker {
   }
 
   async loadSourcemap() {
-    if (!this.rpcContext.sdk7 || !PREVIEW) return
-    const mainFile = this.loadableScene.entity.metadata.main
-    const { content } = await this.readFile(mainFile, 'text')
-    if (!content) return
-    return (await initSourcemap(content)) ?? undefined
+    // Only sdk7 scenes
+    if (!this.rpcContext.sdk7) return
+
+    // Only preview or production scenes with the DEBUG_MOD or DEBUG_SCENE_LOG param
+    if (!PREVIEW && !DEBUG_SCENE_LOG) return
+
+    const mainFile = PREVIEW
+      ? this.loadableScene.entity.metadata.main
+      : `${this.loadableScene.entity.metadata.main}.map`
+    const file = await this.readFile(mainFile, 'text')
+    if (!file?.content) return
+    return (await initSourcemap(file.content, PREVIEW)) ?? undefined
   }
 
   async readFile<T extends 'text' | 'arraybuffer' = 'arraybuffer'>(
