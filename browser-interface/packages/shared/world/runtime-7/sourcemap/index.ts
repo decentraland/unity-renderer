@@ -1,5 +1,6 @@
-import { injectScript } from 'lib/browser/inject-script'
 import { SourceMapConsumerConstructor, Sourcemap } from './types'
+
+import('./source-map@0.7.4.js')
 
 let initialized = false
 declare const globalThis: {
@@ -9,16 +10,21 @@ declare const globalThis: {
 async function getSourcemap() {
   if (initialized) return globalThis.sourceMap
   initialized = true
-  await injectScript('https://unpkg.com/source-map@0.7.4/dist/source-map.js')
+
+  if (!global.sourceMap) {
+    return
+  }
+
   globalThis.sourceMap.SourceMapConsumer.initialize({
     'lib/mappings.wasm': 'https://unpkg.com/source-map@0.7.4/lib/mappings.wasm'
   })
+
   return globalThis.sourceMap
 }
 
 export async function initSourcemap(code: string, inlineSourcemaps: boolean = true): Promise<Sourcemap | void> {
   const sourceMap = await getSourcemap()
-
+  if (!sourceMap) return
   function decodeSourcemap(): any {
     // External source-maps .js.map file
     if (!inlineSourcemaps) {
