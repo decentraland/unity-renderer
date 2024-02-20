@@ -243,12 +243,10 @@ export class SceneWorker {
       const mainFile = PREVIEW
         ? this.loadableScene.entity.metadata.main
         : `${this.loadableScene.entity.metadata.main}.map`
-      defaultLogger.log('[LoadSourcemap]: ', { mainFile, metadata: this.loadableScene.entity })
       const file = await this.readFile(mainFile, 'text')
       if (!file?.content) return
       return (await initSourcemap(file.content, PREVIEW)) ?? undefined
     } catch (_) {}
-    return undefined
   }
 
   async readFile<T extends 'text' | 'arraybuffer' = 'arraybuffer'>(
