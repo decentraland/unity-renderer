@@ -21,6 +21,18 @@ export function registerDevToolsServiceServerImplementation(port: RpcServerPort<
           const [payload] = params as ProtocolMapping.Events['Runtime.exceptionThrown']
 
           if (payload.exceptionDetails.exception) {
+            // If we have the sourcemaps loaded for the scene, then use it for gettin the correct stack trace.
+            if (context.sourcemap && payload.exceptionDetails.exception.value) {
+              try {
+                const error = JSON.parse(payload.exceptionDetails.exception.value)
+                if (error && error.stack) {
+                  const sourcemapError = context.sourcemap.parseError(error)
+                  context.logger.error(sourcemapError)
+                  break
+                }
+              } catch (_e) {}
+            }
+
             context.logger.error(
               payload.exceptionDetails.text,
               payload.exceptionDetails.exception.value || payload.exceptionDetails.exception.unserializableValue
