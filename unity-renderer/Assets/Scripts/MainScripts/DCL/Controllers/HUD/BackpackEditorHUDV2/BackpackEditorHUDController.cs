@@ -29,6 +29,7 @@ namespace DCL.Backpack
         private readonly OutfitsController outfitsController;
         private readonly IVRMExporter vrmExporter;
         private readonly IDCLFileBrowserService fileBrowser;
+        private readonly Dictionary<string, string> extendedWearableUrns = new ();
         private readonly Dictionary<string, Dictionary<string, string>> fallbackWearables = new ()
         {
             {"urn:decentraland:off-chain:base-avatars:BaseFemale", new Dictionary<string, string>
@@ -356,25 +357,26 @@ namespace DCL.Backpack
 
                     for (var i = 0; i < wearablesCount; i++)
                     {
-                        string wearableId = ExtendedUrnParser.GetShortenedUrn(userProfile.avatar.wearables[i]);
+                        string wearableId = userProfile.avatar.wearables[i];
+                        string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearableId);
 
-                        if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+                        if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
                         {
-                            try { wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, cancellationToken); }
+                            try { wearable = await wearablesCatalogService.RequestWearableAsync(shortenedWearableId, cancellationToken); }
                             catch (OperationCanceledException) { throw; }
                             catch (Exception e)
                             {
-                                Debug.LogError($"Cannot load the wearable {wearableId}");
+                                Debug.LogError($"Cannot load the wearable {shortenedWearableId}");
                                 Debug.LogException(e);
                                 continue;
                             }
                         }
 
-                        try { EquipWearable(wearable, EquipWearableSource.None, false, false, false); }
+                        try { EquipWearable(wearableId, wearable, EquipWearableSource.None, false, false, false); }
                         catch (OperationCanceledException) { throw; }
                         catch (Exception e)
                         {
-                            Debug.LogError($"Cannot equip the wearable {wearableId}");
+                            Debug.LogError($"Cannot equip the wearable {shortenedWearableId}");
                             Debug.LogException(e);
                         }
                     }
@@ -502,6 +504,15 @@ namespace DCL.Backpack
         {
             var avatarModel = model.ToAvatarModel();
 
+            // Restore extended urns
+            for (var i = 0; i < avatarModel.wearables.Count; i++)
+            {
+                string shortenedUrn = avatarModel.wearables[i];
+
+                if (extendedWearableUrns.ContainsKey(shortenedUrn))
+                    avatarModel.wearables[i] = extendedWearableUrns[shortenedUrn];
+            }
+
             // Add the equipped emotes to the avatar model
             List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
             int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
@@ -576,16 +587,21 @@ namespace DCL.Backpack
                 return;
             }
 
-            EquipWearable(wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
+            EquipWearable(wearableId, wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
         }
 
-        private void EquipWearable(WearableItem wearable,
+        private void EquipWearable(
+            string extendedWearableId,
+            WearableItem wearable,
             EquipWearableSource source,
             bool setAsDirty = true,
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
             string shortenWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
+
+            if (ExtendedUrnParser.IsExtendedUrn(extendedWearableId))
+                extendedWearableUrns[shortenWearableId] = extendedWearableId;
 
             if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
