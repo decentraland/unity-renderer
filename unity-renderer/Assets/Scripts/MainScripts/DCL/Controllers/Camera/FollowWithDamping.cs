@@ -1,5 +1,4 @@
-﻿using System;
-using Cinemachine.Utility;
+﻿using Cinemachine.Utility;
 using UnityEngine;
 
 public class FollowWithDamping : MonoBehaviour
@@ -7,6 +6,7 @@ public class FollowWithDamping : MonoBehaviour
     public Transform target;
     public Vector3 damping;
     public float dampingChangeSpeed = 0.5f;
+    public Vector3 offset;
 
     [Header("Debug Zone")]
     public Vector3 currentDamping;
@@ -17,7 +17,7 @@ public class FollowWithDamping : MonoBehaviour
 
         if (target != null)
         {
-            transform.position = target.position;
+            transform.position = target.position + offset;
             transform.forward = target.forward;
         }
 
@@ -39,7 +39,7 @@ public class FollowWithDamping : MonoBehaviour
         if ( target == null ) return;
 
         Vector3 myPosition = transform.position;
-        Vector3 targetPosition = target.position;
+        Vector3 targetPosition = target.position + offset;
         Vector3 finalPosition = myPosition;
 
         currentDamping += Damper.Damp( damping - currentDamping, Vector3.one * dampingChangeSpeed, Time.deltaTime);

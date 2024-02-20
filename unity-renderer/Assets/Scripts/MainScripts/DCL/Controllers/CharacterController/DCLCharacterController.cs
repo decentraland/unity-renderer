@@ -113,7 +113,7 @@ public class DCLCharacterController : MonoBehaviour
         characterYAxis.SetValue(0);
     }
 
-    void Awake()
+    private void Awake()
     {
         if (i != null)
         {
@@ -173,7 +173,7 @@ public class DCLCharacterController : MonoBehaviour
         sprintAction.OnFinished += walkFinishedDelegate;
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         jumpAction.OnStarted -= jumpStartedDelegate;
@@ -201,7 +201,7 @@ public class DCLCharacterController : MonoBehaviour
         // failsafe in case something teleports the player below ground collisions
         if (newPosition.y < minimumYPosition)
         {
-            newPosition.y = minimumYPosition + 2f;
+            newPosition.y = 0;
         }
 
         lastPosition = characterPosition.worldPosition;
@@ -524,10 +524,10 @@ public class DCLCharacterController : MonoBehaviour
         float originScale = scale * bounds.extents.x;
 
         if (!CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers) // center
-            && !CastGroundCheckingRay( transform.position + transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // forward
-            && !CastGroundCheckingRay( transform.position + transform.right * originScale, out hitInfo, rayMagnitude, groundLayers) // right
-            && !CastGroundCheckingRay( transform.position + -transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // back
-            && !CastGroundCheckingRay( transform.position + -transform.right * originScale, out hitInfo, rayMagnitude, groundLayers)) // left
+            && !CastGroundCheckingRay( transform.position + (transform.forward * originScale), out hitInfo, rayMagnitude, groundLayers) // forward
+            && !CastGroundCheckingRay( transform.position + (transform.right * originScale), out hitInfo, rayMagnitude, groundLayers) // right
+            && !CastGroundCheckingRay( transform.position + (-transform.forward * originScale), out hitInfo, rayMagnitude, groundLayers) // back
+            && !CastGroundCheckingRay( transform.position + (-transform.right * originScale), out hitInfo, rayMagnitude, groundLayers)) // left
         {
             return false;
         }
@@ -536,11 +536,13 @@ public class DCLCharacterController : MonoBehaviour
         return true;
     }
 
-    public static bool CastGroundCheckingRay(Vector3 origin, out RaycastHit hitInfo, float rayMagnitude, int groundLayers)
+    private static bool CastGroundCheckingRay(Vector3 origin, out RaycastHit hitInfo, float rayMagnitude, int groundLayers)
     {
-        var ray = new Ray();
-        ray.origin = origin;
-        ray.direction = Vector3.down * rayMagnitude;
+        var ray = new Ray
+            {
+                origin = origin,
+                direction = Vector3.down * rayMagnitude,
+            };
 
         var result = Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
 

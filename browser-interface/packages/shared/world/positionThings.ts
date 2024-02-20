@@ -51,8 +51,7 @@ export function receivePositionReport(
   cameraRotation?: ReadOnlyVector4,
   playerHeight?: number
 ) {
-  const pivotCorrectionOffset = 0.8 // moved it here from renderer to have it send everytime
-  positionEvent.position.set(position.x, position.y + pivotCorrectionOffset, position.z)
+  positionEvent.position.set(position.x, position.y, position.z)
 
   if (rotation) positionEvent.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
   positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
