@@ -524,7 +524,7 @@ MonoBehaviour:
   avatarCollider: {fileID: 7115442889188564318}
   loadingParticlesPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
-  cameraDistanceToDeactivate: 1
+  cameraDistanceToDeactivate: 1.8
   onPointerDown: {fileID: 8531135002084995935}
   outlineOnHover: {fileID: 3247126444794282509}
   baseAvatarContainer: {fileID: 4944901710069794483}
