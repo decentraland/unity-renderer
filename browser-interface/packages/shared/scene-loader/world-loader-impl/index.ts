@@ -22,9 +22,10 @@ function getParcels(position: Vector2, loadingRadius: number): string[] {
 export async function createWorldLoader(options: { urns: string[] }): Promise<ISceneLoader> {
   const mappingScene = new Map<string, LoadableScene>()
   const scenes = await Promise.all(options.urns.map((urn) => getPortableExperienceFromUrn(urn)))
-
-  for (const parcel of scenes[0].entity.metadata.scene.parcels) {
-    mappingScene.set(parcel, scenes[0])
+  for (const scene of scenes) {
+    for (const parcel of scene.entity.metadata.scene.parcels) {
+      mappingScene.set(parcel, scene)
+    }
   }
 
   const emptyParcelController = new EmptyParcelController({ rootUrl: getResourcesURL('.') })
