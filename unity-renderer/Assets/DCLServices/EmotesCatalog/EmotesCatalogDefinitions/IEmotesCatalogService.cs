@@ -27,4 +27,5 @@ public interface IEmotesCatalogService : IService
 
     void ForgetEmotes(IList<string> ids);
 
+    bool TryGetOwnedUrn(string shortenedUrn, out string extendedUrn);
 }

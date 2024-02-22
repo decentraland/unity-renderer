@@ -287,6 +287,12 @@ namespace DCLServices.EmotesCatalog.EmotesCatalogService
             }
         }
 
+        public bool TryGetOwnedUrn(string shortenedUrn, out string extendedUrn)
+        {
+            extendedUrn = "";
+            return false;
+        }
+
         public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
         {
             if(embeddedEmotesSO == null)

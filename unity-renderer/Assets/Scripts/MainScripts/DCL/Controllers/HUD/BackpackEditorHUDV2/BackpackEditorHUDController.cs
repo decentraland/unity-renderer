@@ -29,6 +29,7 @@ namespace DCL.Backpack
         private readonly OutfitsController outfitsController;
         private readonly IVRMExporter vrmExporter;
         private readonly IDCLFileBrowserService fileBrowser;
+        private readonly IEmotesCatalogService emotesCatalogService;
         private readonly Dictionary<string, string> extendedWearableUrns = new ();
         private readonly Dictionary<string, Dictionary<string, string>> fallbackWearables = new ()
         {
@@ -87,7 +88,8 @@ namespace DCL.Backpack
             AvatarSlotsHUDController avatarSlotsHUDController,
             OutfitsController outfitsController,
             IVRMExporter vrmExporter,
-            IDCLFileBrowserService fileBrowser)
+            IDCLFileBrowserService fileBrowser,
+            IEmotesCatalogService emotesCatalogService)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -101,6 +103,7 @@ namespace DCL.Backpack
             this.outfitsController = outfitsController;
             this.vrmExporter = vrmExporter;
             this.fileBrowser = fileBrowser;
+            this.emotesCatalogService = emotesCatalogService;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
@@ -172,7 +175,7 @@ namespace DCL.Backpack
             EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
 
             foreach (string outfitWearable in outfit.outfit.wearables)
-                EquipWearable(ExtendedUrnParser.GetShortenedUrn(outfitWearable), EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
+                EquipWearable(outfitWearable, EquipWearableSource.Outfit, setAsDirty: true, updateAvatarPreview: true);
 
             SetAllColors(outfit.outfit.eyes.color, outfit.outfit.hair.color, outfit.outfit.skin.color);
 
@@ -340,6 +343,14 @@ namespace DCL.Backpack
             {
                 try
                 {
+                    foreach (string w in userProfile.avatar.wearables)
+                        if (ExtendedUrnParser.IsExtendedUrn(w))
+                            extendedWearableUrns[ExtendedUrnParser.GetShortenedUrn(w)] = w;
+
+                    foreach (AvatarModel.AvatarEmoteEntry emote in userProfile.avatar.emotes)
+                        if (ExtendedUrnParser.IsExtendedUrn(emote.urn))
+                            extendedWearableUrns[ExtendedUrnParser.GetShortenedUrn(emote.urn)] = emote.urn;
+
                     wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
                     bodyShape ??= await wearablesCatalogService.RequestWearableAsync(userProfile.avatar.bodyShape, cancellationToken);
 
@@ -511,6 +522,9 @@ namespace DCL.Backpack
 
                 if (extendedWearableUrns.ContainsKey(shortenedUrn))
                     avatarModel.wearables[i] = extendedWearableUrns[shortenedUrn];
+                // else if (wearablesCatalogService.TryGetOwnedUrn(shortenedUrn, out string extendedUrn))
+                //     if (!string.IsNullOrEmpty(extendedUrn))
+                //         avatarModel.wearables[i] = extendedUrn;
             }
 
             // Add the equipped emotes to the avatar model
@@ -524,7 +538,15 @@ namespace DCL.Backpack
                 if (equippedEmote == null)
                     continue;
 
-                emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
+                string id = equippedEmote.id;
+
+                if (extendedWearableUrns.ContainsKey(id))
+                    id = extendedWearableUrns[id];
+                else if (emotesCatalogService.TryGetOwnedUrn(id, out string extendedUrn))
+                    if (!string.IsNullOrEmpty(extendedUrn))
+                        id = extendedUrn;
+
+                emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = id });
             }
 
             avatarModel.emotes = emoteEntries;
@@ -581,10 +603,15 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearableId);
+
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
             {
-                Debug.LogError($"Cannot equip wearable {wearableId}");
-                return;
+                if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out wearable))
+                {
+                    Debug.LogError($"Cannot equip wearable {shortenedWearableId}");
+                    return;
+                }
             }
 
             EquipWearable(wearableId, wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
