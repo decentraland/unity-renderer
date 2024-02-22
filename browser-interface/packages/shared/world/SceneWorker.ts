@@ -42,6 +42,7 @@ import { joinBuffers } from 'lib/javascript/uint8arrays'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
 import { createInternalEngine } from './runtime-7/engine'
+import { forceStopScene } from './parcelSceneManager'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -114,7 +115,6 @@ export class SceneWorker {
   private rpcServer!: RpcServer<PortContext>
 
   private sceneStarted: boolean = false
-
   private position: Vector3 = new Vector3()
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
@@ -130,7 +130,7 @@ export class SceneWorker {
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
     const worker = new SceneWorker(loadableScene, sceneNumber, scenePort)
-    await worker.attachTransport()
+    worker.attachTransport().catch(() => forceStopScene(loadableScene.id))
     return worker
   }
 
@@ -245,7 +245,6 @@ export class SceneWorker {
         const response = await fetch(url)
 
         if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
-
         return { hash, content: new Uint8Array(await response.arrayBuffer()) }
       }
     }
