@@ -44,6 +44,7 @@ import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
 import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
 import { createInternalEngine } from './runtime-7/engine'
 import { initSourcemap } from './runtime-7/sourcemap'
+import { forceStopScene } from './parcelSceneManager'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -131,7 +132,7 @@ export class SceneWorker {
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
     const worker = new SceneWorker(loadableScene, sceneNumber, scenePort)
-    await worker.attachTransport()
+    worker.attachTransport().catch(() => forceStopScene(loadableScene.id))
     return worker
   }
 
