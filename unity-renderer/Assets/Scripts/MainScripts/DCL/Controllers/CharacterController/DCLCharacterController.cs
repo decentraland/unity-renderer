@@ -185,14 +185,15 @@ public class DCLCharacterController : MonoBehaviour
         i = null;
     }
 
-    void OnWorldReposition(Vector3 current, Vector3 previous)
+    private void OnWorldReposition(Vector3 current, Vector3 previous)
     {
-        Vector3 oldPos = this.transform.position;
-        this.transform.position = characterPosition.unityPosition; //CommonScriptableObjects.playerUnityPosition;
+        var t = this.transform;
+        Vector3 oldPos = t.position;
+        t.position = characterPosition.unityPosition;
 
         if (CinemachineCore.Instance.BrainCount > 0)
         {
-            CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera?.OnTargetObjectWarped(transform, transform.position - oldPos);
+            CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera?.OnTargetObjectWarped(transform, t.position - oldPos);
         }
     }
 
@@ -201,7 +202,7 @@ public class DCLCharacterController : MonoBehaviour
         // failsafe in case something teleports the player below ground collisions
         if (newPosition.y < minimumYPosition)
         {
-            newPosition.y = 0;
+            newPosition.y = minimumYPosition + 2f;
         }
 
         lastPosition = characterPosition.worldPosition;
@@ -260,7 +261,7 @@ public class DCLCharacterController : MonoBehaviour
 
     public void SetEnabled(bool enabled) { this.enabled = enabled; }
 
-    bool Moved(Vector3 previousPosition, bool useThreshold = false)
+    private bool Moved(Vector3 previousPosition, bool useThreshold = false)
     {
         if (useThreshold)
             return Vector3.Distance(characterPosition.worldPosition, previousPosition) > 0.001f;
@@ -337,11 +338,11 @@ public class DCLCharacterController : MonoBehaviour
                 CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
             }
 
-            bool jumpButtonPressedWithGraceTime = jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f);
+            bool jumpButtonPressedWithGraceTime = jumpButtonPressed && Time.time - lastJumpButtonPressedTime < 0.15f;
 
             if (jumpButtonPressedWithGraceTime) // almost-grounded jump button press allowed time
             {
-                bool justLeftGround = (Time.time - lastUngroundedTime) < 0.1f;
+                bool justLeftGround = Time.time - lastUngroundedTime < 0.1f;
 
                 if (isGrounded || justLeftGround) // just-left-ground jump allowed time
                 {
@@ -350,7 +351,7 @@ public class DCLCharacterController : MonoBehaviour
             }
 
             //NOTE(Mordi): Detecting when the character hits the ground (for landing-SFX)
-            if (isGrounded && !previouslyGrounded && (Time.time - lastUngroundedTime) > 0.4f)
+            if (isGrounded && !previouslyGrounded && Time.time - lastUngroundedTime > 0.4f)
             {
                 OnHitGround?.Invoke();
             }
@@ -366,7 +367,7 @@ public class DCLCharacterController : MonoBehaviour
 
         SetPosition(PositionUtils.UnityToWorldPosition(transform.position));
 
-        if ((DCLTime.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
+        if (DCLTime.realtimeSinceStartup - lastMovementReportTime > PlayerSettings.POSITION_REPORTING_DELAY)
         {
             ReportMovement();
         }
@@ -384,12 +385,13 @@ public class DCLCharacterController : MonoBehaviour
 
         if (CommonScriptableObjects.characterForward.HasValue())
         {
-            lastCharacterRotation = groundTransform.InverseTransformDirection(CommonScriptableObjects.characterForward.Get().Value);
-            lastGlobalCharacterRotation = CommonScriptableObjects.characterForward.Get().Value;
+            var forwardValue = CommonScriptableObjects.characterForward.Get().Value;
+            lastCharacterRotation = groundTransform.InverseTransformDirection(forwardValue);
+            lastGlobalCharacterRotation = forwardValue;
         }
     }
 
-    void Jump()
+    private void Jump()
     {
         if (isJumping)
             return;
@@ -415,7 +417,7 @@ public class DCLCharacterController : MonoBehaviour
         movingPlatformSpeed = 0;
     }
 
-    void CheckGround()
+    private void CheckGround()
     {
         if (groundTransform == null)
             ResetGround();
@@ -485,11 +487,9 @@ public class DCLCharacterController : MonoBehaviour
         isGrounded = IsLastCollisionGround() || groundTransform != null && groundTransform.gameObject.activeInHierarchy;
     }
 
-    public Transform CastGroundCheckingRays()
+    private Transform CastGroundCheckingRays()
     {
-        RaycastHit hitInfo;
-
-        var result = CastGroundCheckingRays(transform, collider, groundCheckExtraDistance, 0.9f, groundLayers, out hitInfo);
+        var result = CastGroundCheckingRays(transform, collider, groundCheckExtraDistance, 0.9f, groundLayers, out RaycastHit hitInfo);
 
         if ( result )
         {
@@ -507,20 +507,12 @@ public class DCLCharacterController : MonoBehaviour
         return IsLastCollisionGround();
     }
 
-    public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
-    {
-        Bounds bounds = collider.bounds;
-        float rayMagnitude = (bounds.extents.y + extraDistance);
-        bool test = CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers);
-        return IsLastCollisionGround() || test;
-    }
-
-    // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
-    public static bool CastGroundCheckingRays(Transform transform, Collider collider, float extraDistance, float scale, int groundLayers, out RaycastHit hitInfo)
+    // We sequentially cast rays in 4 directions (only if the previous one didn't hit anything)
+    private static bool CastGroundCheckingRays(Transform transform, Collider collider, float extraDistance, float scale, int groundLayers, out RaycastHit hitInfo)
     {
         Bounds bounds = collider.bounds;
 
-        float rayMagnitude = (bounds.extents.y + extraDistance);
+        float rayMagnitude = extraDistance;
         float originScale = scale * bounds.extents.x;
 
         if (!CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers) // center
@@ -544,7 +536,7 @@ public class DCLCharacterController : MonoBehaviour
                 direction = Vector3.down * rayMagnitude,
             };
 
-        var result = Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
+        bool result = Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
 
 #if UNITY_EDITOR
         if ( result )
