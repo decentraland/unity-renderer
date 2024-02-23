@@ -35,6 +35,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
     private readonly ICatalyst catalyst;
     private readonly ILambdasService lambdasService;
     private readonly DataStore dataStore;
+    private readonly Dictionary<string, string> ownedUrns = new ();
 
     private EmbeddedEmotesSO embeddedEmotesSo;
     private CancellationTokenSource addressableCts;
@@ -331,6 +332,9 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         }
     }
 
+    public bool TryGetOwnedUrn(string shortenedUrn, out string extendedUrn) =>
+        ownedUrns.TryGetValue(shortenedUrn, out extendedUrn);
+
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
         if (embeddedEmotesSo == null)
@@ -421,8 +425,12 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         emotes.Remove(emoteId);
     }
 
-    private void OnOwnedEmotesReceived(IReadOnlyList<WearableItem> receivedEmotes, string userId)
+    private void OnOwnedEmotesReceived(IReadOnlyList<WearableItem> receivedEmotes, string userId,
+        IReadOnlyDictionary<string, string> extendedUrns)
     {
+        foreach ((string shortenedUrn, string extendedUrn) in extendedUrns)
+            ownedUrns[shortenedUrn] = extendedUrn;
+
         if (!ownedEmotesPromisesByUser.TryGetValue(userId, out HashSet<Promise<IReadOnlyList<WearableItem>>> ownedEmotesPromises) || ownedEmotesPromises == null)
             ownedEmotesPromises = new HashSet<Promise<IReadOnlyList<WearableItem>>>();
 
