@@ -522,9 +522,6 @@ namespace DCL.Backpack
 
                 if (extendedWearableUrns.ContainsKey(shortenedUrn))
                     avatarModel.wearables[i] = extendedWearableUrns[shortenedUrn];
-                // else if (wearablesCatalogService.TryGetOwnedUrn(shortenedUrn, out string extendedUrn))
-                //     if (!string.IsNullOrEmpty(extendedUrn))
-                //         avatarModel.wearables[i] = extendedUrn;
             }
 
             // Add the equipped emotes to the avatar model
