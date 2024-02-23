@@ -135,4 +135,7 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public void ForgetEmotes(IList<string> ids) =>
         emotesCatalogServiceInUse.ForgetEmotes(ids);
+
+    public bool TryGetOwnedUrn(string shortenedUrn, out string extendedUrn) =>
+        emotesCatalogServiceInUse.TryGetOwnedUrn(shortenedUrn, out extendedUrn);
 }
