@@ -12,6 +12,9 @@
                 ? urnReceived.Substring(0, lastIndex)
                 : urnReceived;
         }
+
+        public static bool IsExtendedUrn(string urn) =>
+            urn.Split(':').Length > QUANTITY_OF_PARTS_ON_SHORTENED_ITEMS_URN;
     }
 
 }
