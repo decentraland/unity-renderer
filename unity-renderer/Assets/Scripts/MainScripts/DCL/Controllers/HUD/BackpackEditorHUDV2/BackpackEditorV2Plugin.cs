@@ -89,7 +89,8 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 outfitsController,
                 new VRMExporter(vrmExporterReferences),
-                Environment.i.platform.serviceLocator.Get<IDCLFileBrowserService>());
+                Environment.i.platform.serviceLocator.Get<IDCLFileBrowserService>(),
+                Environment.i.platform.serviceLocator.Get<IEmotesCatalogService>());
 
         }
 
