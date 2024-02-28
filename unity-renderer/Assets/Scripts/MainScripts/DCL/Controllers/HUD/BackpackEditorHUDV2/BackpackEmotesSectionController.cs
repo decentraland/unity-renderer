@@ -112,10 +112,10 @@ namespace DCL.Backpack
                     foreach (var emote in allEmotes)
                     {
                         if (consolidatedEmotes.TryGetValue(emote.id, out WearableItem consolidatedEmote))
-                            consolidatedEmote.amount += emote.amount + 1;
+                            consolidatedEmote.amount += emote.amount;
                         else
                         {
-                            emote.amount++;
+                            emote.amount = 1;
                             consolidatedEmotes[emote.id] = emote;
                         }
                     }
