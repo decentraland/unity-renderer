@@ -1,9 +1,5 @@
-using Cysharp.Threading.Tasks;
 using DCL.Controllers;
-using DCL.Emotes;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace AvatarAssets
 {
@@ -46,6 +42,6 @@ namespace AvatarAssets
         }
 
         public static bool IsSceneEmote(string emoteId) =>
-            emoteId.Contains(SCENE_EMOTE_PREFIX, StringComparison.OrdinalIgnoreCase);
+            !string.IsNullOrEmpty(emoteId) && emoteId.Contains(SCENE_EMOTE_PREFIX, StringComparison.OrdinalIgnoreCase);
     }
 }
