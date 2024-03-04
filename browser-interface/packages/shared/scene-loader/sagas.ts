@@ -135,15 +135,13 @@ function* teleportHandler(action: TeleportToAction) {
   try {
     // look for the target scene
     const pointer = encodeParcelPosition(worldToGrid(action.payload.position))
-    const command: SetDesiredScenesCommand = yield apply(sceneLoader, sceneLoader.fetchScenesByLocation, [[pointer]])
-
+    const command: SetDesiredScenesCommand = yield call(sceneLoader.fetchScenesByLocation, [pointer])
     // is a target scene, then it will be used to settle the position
     if (command && command.scenes && command.scenes.length) {
       // pick always the first scene to unsettle the position once loaded
       const settlerScene = command.scenes[0].id
 
       const scene: SceneWorker | undefined = yield call(getSceneWorkerBySceneID, settlerScene)
-
       const spawnPoint =
         pickWorldSpawnpoint(
           scene?.metadata || command.scenes[0].entity.metadata,
