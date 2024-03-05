@@ -6,7 +6,7 @@ import defaultLogger from 'lib/logger'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 
 import { store } from 'shared/store/isolatedStore'
-import { getRealmAdapter } from 'shared/realm/selectors'
+import { getRealmAdapter, isWorldLoaderActive } from 'shared/realm/selectors'
 import { Parcel } from 'shared/dao/types'
 import { urlWithProtocol } from 'shared/realm/resolver'
 import { trackTeleportTriggered } from 'shared/loading/types'
@@ -17,6 +17,7 @@ import { lastPlayerPosition } from 'shared/world/positionThings'
 import { homePointKey } from 'shared/atlas/utils'
 import { getFromPersistentStorage } from 'lib/browser/persistentStorage'
 import { changeToMostPopulatedRealm } from '../dao'
+import { ensureRealmAdapter } from '../realm/ensureRealmAdapter'
 
 const descriptiveValidWorldRanges = getWorld()
   .validWorldRanges.map((range) => `(X from ${range.xMin} to ${range.xMax}, and Y from ${range.yMin} to ${range.yMax})`)
@@ -94,9 +95,12 @@ export class TeleportController {
     teleportMessage?: string
   ): Promise<{ message: string; success: boolean }> {
     const tpMessage: string = teleportMessage ? teleportMessage : `Teleporting to ${x}, ${y}...`
+    const realmAdapter = await ensureRealmAdapter()
+    const isWorld = isWorldLoaderActive(realmAdapter)
+
     if (isInsideWorldLimits(x, y)) {
       try {
-        if (goToMostPopulatedRealm) await changeToMostPopulatedRealm()
+        if (goToMostPopulatedRealm && !isWorld) await changeToMostPopulatedRealm()
 
         store.dispatch(trackTeleportTriggered(tpMessage))
         store.dispatch(teleportToAction({ position: gridToWorld(x, y) }))
