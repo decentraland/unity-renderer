@@ -83,6 +83,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
     [SerializeField] internal AvatarLocomotion femaleLocomotions;
     [SerializeField] internal AvatarLocomotion maleLocomotions;
+    [SerializeField] internal string renderingLayer = "Default";
     private AvatarLocomotion currentLocomotions;
 
     public new Animation animation;
@@ -550,7 +551,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler, IAnima
 
         if (audioContainer != null)
         {
-            animationEventHandler.Init(audioContainer);
+            animationEventHandler.Init(audioContainer, LayerMask.NameToLayer(renderingLayer));
 
             //NOTE(Mordi): If this is a remote avatar, pass the animation component so we can keep track of whether it is culled (off-screen) or not
             AvatarAudioHandlerRemote audioHandlerRemote = audioContainer.GetComponent<AvatarAudioHandlerRemote>();

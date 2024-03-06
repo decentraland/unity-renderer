@@ -91,7 +91,6 @@ MonoBehaviour:
   baseAvatarContainer: {fileID: 4288110136316019743}
   baseAvatarReferencesPrefab: {fileID: 4766333532709993497, guid: 7bf2abf753051c34c9e0a568a90fc0f0,
     type: 3}
-  boneAnchors: []
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
 MonoBehaviour:
@@ -165,6 +164,7 @@ MonoBehaviour:
     run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
     jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
     fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
+  renderingLayer: Default
   animation: {fileID: 0}
   blackboard:
     walkSpeedFactor: 0.3
