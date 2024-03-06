@@ -817,7 +817,7 @@ namespace DCL.Backpack
         private void UpdateAvatarModel(AvatarModel avatarModel)
         {
             view.UpdateAvatarPreview(avatarModel);
-            outfitsController.UpdateAvatarPreview(model.ToAvatarModel());
+            outfitsController.UpdateAvatarPreview(model.ToAvatarModel(extendedWearableUrns));
         }
 
         private void OnColorPickerToggled() =>
