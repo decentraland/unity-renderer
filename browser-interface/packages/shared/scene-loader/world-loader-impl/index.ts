@@ -31,8 +31,32 @@ export async function createWorldLoader(options: { urns: string[] }): Promise<IS
   const emptyParcelController = new EmptyParcelController({ rootUrl: getResourcesURL('.') })
 
   return {
-    async fetchScenesByLocation(_parcels) {
-      return { scenes }
+    async fetchScenesByLocation(parcels) {
+      // If the world has only one scene, return always that scene.
+      if (scenes.length === 1) {
+        return { scenes }
+      }
+
+      // Worlds with more than one scene deployed.
+      const newScenes = new Set<LoadableScene>()
+      // First add the scenes based on the location (parcels)
+      // If there is no scene, add an empty scene.
+      for (const parcel of parcels) {
+        const scene = mappingScene.get(parcel)
+        if (scene) {
+          newScenes.add(scene)
+        } else {
+          const scene = await emptyParcelController.createFakeEntity(parcel)
+
+          mappingScene.set(parcel, scene)
+          newScenes.add(scene)
+        }
+      }
+      // Add the rest of the scenes.
+      for (const [_, scene] of mappingScene) {
+        newScenes.add(scene)
+      }
+      return { scenes: [...newScenes] }
     },
     async reportPosition(positionReport) {
       const newScenes: Set<LoadableScene> = new Set()
