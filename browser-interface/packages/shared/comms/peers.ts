@@ -16,6 +16,7 @@ import {
   positionReportToCommsPositionRfc4,
   squareDistanceRfc4
 } from './interface/utils'
+import { isBlocked } from 'shared/friends/utils'
 
 /**
  * peerInformationMap contains data received of the current peers that we have
@@ -123,7 +124,7 @@ function sendPeerUserData(address: string) {
       avatarMessageObservable.notifyObservers({
         type: AvatarMessageType.USER_DATA,
         userId: peer.ethereumAddress,
-        data: peer,
+        data: { ...peer, visible: !isBlocked(profile.userId) },
         profile
       })
     }
