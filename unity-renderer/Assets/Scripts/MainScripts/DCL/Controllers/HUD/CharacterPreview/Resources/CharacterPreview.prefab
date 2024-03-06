@@ -523,6 +523,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6705057966129581724}
   - component: {fileID: 2150367651614698250}
+  - component: {fileID: 6413407505197443195}
   m_Layer: 15
   m_Name: AvatarRenderer
   m_TagString: Untagged
@@ -544,6 +545,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6693538414670061813}
+  - {fileID: 1804747992462565209}
   - {fileID: 4189784172409983158}
   - {fileID: 6330938306941996623}
   m_Father: {fileID: 699008548463003348}
@@ -572,6 +574,7 @@ MonoBehaviour:
     run: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
     jump: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
     fall: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
+  renderingLayer: CharacterPreview
   animation: {fileID: 0}
   blackboard:
     walkSpeedFactor: 0.5
@@ -584,6 +587,18 @@ MonoBehaviour:
     deltaTime: 0
     shouldLoop: 0
   target: {fileID: 6705057966129581724}
+--- !u!114 &6413407505197443195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6856622359626919856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4efd5242010312149afedadae5a61e12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7980198007780976873
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,3 +821,87 @@ Transform:
   - {fileID: 4315422120597451079}
   m_Father: {fileID: 699008548463003348}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &4759326777541242667
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6705057966129581724}
+    m_Modifications:
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634936388402793545, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_Name
+      value: AvatarAudioHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634936388402793545, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3178cc2fd4e9c84d8c74c3984a0b853, type: 3}
+--- !u!4 &1804747992462565209 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+    type: 3}
+  m_PrefabInstance: {fileID: 4759326777541242667}
+  m_PrefabAsset: {fileID: 0}

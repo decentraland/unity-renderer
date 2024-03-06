@@ -30,7 +30,7 @@ namespace DCL
         /// <param name="position"> if following transform, position must be an offset from the target. Otherwise, it's the particle's world position</param>
         /// <param name="direction"></param>
         /// <param name="followTransform"></param>
-        public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform)
+        public void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform, int renderingLayer = 0)
         {
             if (stickersFactory == null || !stickersFactory.TryGet(id, out GameObject prefab) || isInHideArea)
                 return;
@@ -41,6 +41,7 @@ namespace DCL
 
             PoolableObject sticker = pools[id].Get();
             GameObject stickerGo = sticker.gameObject;
+            sticker.gameObject.layer = renderingLayer;
             stickerGo.transform.position = position;
             stickerGo.transform.rotation = Quaternion.Euler(prefab.transform.rotation.eulerAngles + direction);
 
