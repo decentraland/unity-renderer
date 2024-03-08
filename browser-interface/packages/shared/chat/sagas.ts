@@ -216,7 +216,7 @@ function initChatCommands() {
 
     if (isValidPosition) {
       const { x, y } = coordinates
-      TeleportController.goTo(x, y).then(
+      TeleportController.goTo(x, y, false).then(
         ({ message }) => notifyStatusThroughChat(message),
         () => {
           // Do nothing. This is handled inside controller
