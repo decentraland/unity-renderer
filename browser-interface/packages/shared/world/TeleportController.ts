@@ -94,6 +94,7 @@ export class TeleportController {
     teleportMessage?: string
   ): Promise<{ message: string; success: boolean }> {
     const tpMessage: string = teleportMessage ? teleportMessage : `Teleporting to ${x}, ${y}...`
+
     if (isInsideWorldLimits(x, y)) {
       try {
         if (goToMostPopulatedRealm) await changeToMostPopulatedRealm()
