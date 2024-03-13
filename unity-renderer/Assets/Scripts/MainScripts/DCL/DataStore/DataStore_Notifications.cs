@@ -39,6 +39,15 @@ namespace DCL
                 "BLOCK",
                 null,
                 confirmationAction);
+
+        public static GenericConfirmationNotificationData CreateUnBlockUserData(string userName, Action confirmationAction) =>
+            new (
+                $"Are you sure you want to unblock {userName}?",
+                "Once you unblock someone, you and that person would be able to see each other's avatars, messages, and send friend requests.",
+                "CANCEL",
+                "UNBLOCK",
+                null,
+                confirmationAction);
     }
 
     public class DataStore_Notifications
