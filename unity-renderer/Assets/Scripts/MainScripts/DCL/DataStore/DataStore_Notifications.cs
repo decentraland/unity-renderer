@@ -34,7 +34,7 @@ namespace DCL
         public static GenericConfirmationNotificationData CreateBlockUserData(string userName, Action confirmationAction) =>
             new (
                 $"Are you sure you want to block {userName}?",
-                "Blocking will prevent you from seeing their chat messages in public or private conversations.",
+                "Once you block someone, you and that person would be able to see each other's avatars, messages, and send friend requests.",
                 "CANCEL",
                 "BLOCK",
                 null,
