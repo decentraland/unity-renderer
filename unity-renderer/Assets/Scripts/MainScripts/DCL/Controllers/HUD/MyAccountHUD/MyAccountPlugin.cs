@@ -1,5 +1,6 @@
 ﻿using DCL.Browser;
 using DCL.Providers;
+using DCL.Social.Friends;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.SubscriptionsAPIService;
@@ -91,9 +92,9 @@ namespace DCL.MyAccount
                 myAccountSectionView.CurrentBlockedListComponentView,
                 dataStore,
                 userProfileWebInterfaceBridge,
-                new WebInterfaceBlockedListApiBridge(), new SocialAnalytics(
-                    Environment.i.platform.serviceProviders.analytics,
-                    new UserProfileWebInterfaceBridge()));
+                new WebInterfaceBlockedListApiBridge(),
+                socialAnalytics,
+                Environment.i.serviceLocator.Get<IFriendsController>());
         }
 
         public void Dispose()

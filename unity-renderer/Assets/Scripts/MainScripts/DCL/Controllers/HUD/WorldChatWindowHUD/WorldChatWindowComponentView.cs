@@ -451,6 +451,8 @@ namespace DCL.Social.Chat
                     entry.EnableAvatarSnapshotFetching();
                 else
                     entry.DisableAvatarSnapshotFetching();
+
+                entry.RefreshControl();
             }
 
             currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;

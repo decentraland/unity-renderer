@@ -1,4 +1,3 @@
-using DCL.Social.Chat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +13,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal GameObject optionsButtonContainer;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal RectTransform userContextMenuPositionReference;
+        [SerializeField] internal Image playerBlockedImage;
 
         [Header("Configuration")]
         [SerializeField] internal ChannelMemberEntryModel model;
@@ -46,6 +46,8 @@ namespace DCL.Social.Chat
             SetUserThumbnail(model.thumnailUrl);
             SetUserOnlineStatus(model.isOnline);
             SetIsOptionsButtonHidden(model.isOptionsButtonHidden);
+
+            playerBlockedImage.enabled = Model.blocked;
         }
 
         public void SetUserContextMenu(UserContextMenu userContextMenu)

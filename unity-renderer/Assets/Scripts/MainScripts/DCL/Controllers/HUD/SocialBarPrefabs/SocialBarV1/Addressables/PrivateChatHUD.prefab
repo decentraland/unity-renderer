@@ -119,7 +119,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -1442}
+  m_AnchoredPosition: {x: 205, y: -2370}
   m_SizeDelta: {x: 380, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1261448214712527041
@@ -4415,6 +4415,7 @@ MonoBehaviour:
     type: 2}
   chatMentionSuggestions: {fileID: 1011907313089259839}
   webGlImeInput: {fileID: 9143899745818840519}
+  unblockButton: {fileID: 1088608049409071332}
   model:
     isInputFieldFocused: 0
     inputFieldText: 
@@ -4461,6 +4462,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e687e06fa1a744cb887b2453852fb9a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1088608049409071332 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8746823548386143571, guid: bac007ac4ef98284c8cf05867a35ee0f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8536985326357018039}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1379511485321851930 stripped

@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DCL.Social.Friends;
 using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
@@ -15,6 +16,7 @@ namespace DCL.MyAccount
 
         private readonly IBlockedListApiBridge blockedListApiBridge;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly IFriendsController friendsController;
 
         private CancellationTokenSource lifeTimeCancellationToken;
         private readonly CancellationTokenSource showBlockedUsersCancellationToken = new ();
@@ -26,13 +28,15 @@ namespace DCL.MyAccount
             DataStore dataStore,
             IUserProfileBridge userProfileBridge,
             IBlockedListApiBridge blockedListApiBridge,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            IFriendsController friendsController)
         {
             this.view = view;
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
             this.blockedListApiBridge = blockedListApiBridge;
             this.socialAnalytics = socialAnalytics;
+            this.friendsController = friendsController;
 
             dataStore.myAccount.isMyAccountSectionVisible.OnChange += OnMyAccountSectionVisibleChanged;
             dataStore.myAccount.openSection.OnChange += OnMyAccountSectionTabChanged;
@@ -86,7 +90,7 @@ namespace DCL.MyAccount
                     ownUserProfile.Unblock(userId);
                     view.Remove(userId);
                     blockedListApiBridge.SendUnblockPlayer(userId);
-                    socialAnalytics.SendPlayerUnblocked(false, PlayerActionSource.MyProfile, userId);
+                    socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.MyProfile, userId);
 
                 }), true);
         }
