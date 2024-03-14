@@ -6,6 +6,7 @@ using System.Linq;
 using TMPro;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UI;
 
 namespace DCL.Social.Chat
@@ -195,6 +196,23 @@ namespace DCL.Social.Chat
         public void RefreshBlockedDirectMessages(List<string> blockedUsers)
         {
             if (blockedUsers == null) return;
+
+            var keysToUpdate = ListPool<string>.Get();
+
+            foreach (KeyValuePair<string, PrivateChatModel> privateChatModel in privateChatsCreationQueue)
+            {
+                if (blockedUsers.Contains(privateChatModel.Key) != privateChatModel.Value.isBlocked) { keysToUpdate.Add(privateChatModel.Key); }
+            }
+
+            foreach (string key in keysToUpdate)
+            {
+                PrivateChatModel refreshedPrivateChatModel = privateChatsCreationQueue[key];
+                refreshedPrivateChatModel.isBlocked = blockedUsers.Contains(key);
+                privateChatsCreationQueue[key] = refreshedPrivateChatModel;
+            }
+
+            ListPool<string>.Release(keysToUpdate);
+            
             directChatList.RefreshBlockedEntries(blockedUsers);
         }
 
