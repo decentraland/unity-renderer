@@ -25,16 +25,18 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXVkaW9fc291cmNlLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiowEKDVBCQXVkaW9T",
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiiwIKDVBCQXVkaW9T",
             "b3VyY2USFAoHcGxheWluZxgBIAEoCEgAiAEBEhMKBnZvbHVtZRgCIAEoAkgB",
             "iAEBEhEKBGxvb3AYAyABKAhIAogBARISCgVwaXRjaBgEIAEoAkgDiAEBEhYK",
-            "DmF1ZGlvX2NsaXBfdXJsGAUgASgJQgoKCF9wbGF5aW5nQgkKB192b2x1bWVC",
-            "BwoFX2xvb3BCCAoGX3BpdGNoQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "DmF1ZGlvX2NsaXBfdXJsGAUgASgJEhkKDGN1cnJlbnRfdGltZRgGIAEoAkgE",
+            "iAEBEhIKBXNwZWVkGAcgASgCSAWIAQESEgoFZGVjYXkYCCABKAJIBogBAUIK",
+            "CghfcGxheWluZ0IJCgdfdm9sdW1lQgcKBV9sb29wQggKBl9waXRjaEIPCg1f",
+            "Y3VycmVudF90aW1lQggKBl9zcGVlZEIICgZfZGVjYXlCFKoCEURDTC5FQ1ND",
+            "b21wb25lbnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl" }, new[]{ "Playing", "Volume", "Loop", "Pitch" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl", "CurrentTime", "Speed", "Decay" }, new[]{ "Playing", "Volume", "Loop", "Pitch", "CurrentTime", "Speed", "Decay" }, null, null, null)
           }));
     }
     #endregion
@@ -93,6 +95,9 @@ namespace DCL.ECSComponents {
       loop_ = other.loop_;
       pitch_ = other.pitch_;
       audioClipUrl_ = other.audioClipUrl_;
+      currentTime_ = other.currentTime_;
+      speed_ = other.speed_;
+      decay_ = other.decay_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -229,6 +234,90 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "current_time" field.</summary>
+    public const int CurrentTimeFieldNumber = 6;
+    private float currentTime_;
+    /// <summary>
+    /// specifies the current playback time of the clip in seconds (default: 0).
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float CurrentTime {
+      get { if ((_hasBits0 & 16) != 0) { return currentTime_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 16;
+        currentTime_ = value;
+      }
+    }
+    /// <summary>Gets whether the "current_time" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasCurrentTime {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "current_time" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearCurrentTime() {
+      _hasBits0 &= ~16;
+    }
+
+    /// <summary>Field number for the "speed" field.</summary>
+    public const int SpeedFieldNumber = 7;
+    private float speed_;
+    /// <summary>
+    /// the playback speed (default: 1.0).
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float Speed {
+      get { if ((_hasBits0 & 32) != 0) { return speed_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 32;
+        speed_ = value;
+      }
+    }
+    /// <summary>Gets whether the "speed" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasSpeed {
+      get { return (_hasBits0 & 32) != 0; }
+    }
+    /// <summary>Clears the value of the "speed" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearSpeed() {
+      _hasBits0 &= ~32;
+    }
+
+    /// <summary>Field number for the "decay" field.</summary>
+    public const int DecayFieldNumber = 8;
+    private float decay_;
+    /// <summary>
+    /// rate at which the clip volume fades to silence (default: 1.0).
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float Decay {
+      get { if ((_hasBits0 & 64) != 0) { return decay_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 64;
+        decay_ = value;
+      }
+    }
+    /// <summary>Gets whether the "decay" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasDecay {
+      get { return (_hasBits0 & 64) != 0; }
+    }
+    /// <summary>Clears the value of the "decay" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearDecay() {
+      _hasBits0 &= ~64;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -249,6 +338,9 @@ namespace DCL.ECSComponents {
       if (Loop != other.Loop) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Pitch, other.Pitch)) return false;
       if (AudioClipUrl != other.AudioClipUrl) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Speed, other.Speed)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Decay, other.Decay)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -261,6 +353,9 @@ namespace DCL.ECSComponents {
       if (HasLoop) hash ^= Loop.GetHashCode();
       if (HasPitch) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Pitch);
       if (AudioClipUrl.Length != 0) hash ^= AudioClipUrl.GetHashCode();
+      if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
+      if (HasSpeed) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
+      if (HasDecay) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Decay);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -299,6 +394,18 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(42);
         output.WriteString(AudioClipUrl);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(53);
+        output.WriteFloat(CurrentTime);
+      }
+      if (HasSpeed) {
+        output.WriteRawTag(61);
+        output.WriteFloat(Speed);
+      }
+      if (HasDecay) {
+        output.WriteRawTag(69);
+        output.WriteFloat(Decay);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -329,6 +436,18 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(42);
         output.WriteString(AudioClipUrl);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(53);
+        output.WriteFloat(CurrentTime);
+      }
+      if (HasSpeed) {
+        output.WriteRawTag(61);
+        output.WriteFloat(Speed);
+      }
+      if (HasDecay) {
+        output.WriteRawTag(69);
+        output.WriteFloat(Decay);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -353,6 +472,15 @@ namespace DCL.ECSComponents {
       }
       if (AudioClipUrl.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AudioClipUrl);
+      }
+      if (HasCurrentTime) {
+        size += 1 + 4;
+      }
+      if (HasSpeed) {
+        size += 1 + 4;
+      }
+      if (HasDecay) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -380,6 +508,15 @@ namespace DCL.ECSComponents {
       }
       if (other.AudioClipUrl.Length != 0) {
         AudioClipUrl = other.AudioClipUrl;
+      }
+      if (other.HasCurrentTime) {
+        CurrentTime = other.CurrentTime;
+      }
+      if (other.HasSpeed) {
+        Speed = other.Speed;
+      }
+      if (other.HasDecay) {
+        Decay = other.Decay;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -416,6 +553,18 @@ namespace DCL.ECSComponents {
             AudioClipUrl = input.ReadString();
             break;
           }
+          case 53: {
+            CurrentTime = input.ReadFloat();
+            break;
+          }
+          case 61: {
+            Speed = input.ReadFloat();
+            break;
+          }
+          case 69: {
+            Decay = input.ReadFloat();
+            break;
+          }
         }
       }
     #endif
@@ -449,6 +598,18 @@ namespace DCL.ECSComponents {
           }
           case 42: {
             AudioClipUrl = input.ReadString();
+            break;
+          }
+          case 53: {
+            CurrentTime = input.ReadFloat();
+            break;
+          }
+          case 61: {
+            Speed = input.ReadFloat();
+            break;
+          }
+          case 69: {
+            Decay = input.ReadFloat();
             break;
           }
         }

@@ -9,6 +9,22 @@ using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
+
+    public static class AudioSourceExtension {
+        public static bool IsReversePitch(this AudioSource source) {
+            return source.pitch < 0f;
+        }
+
+        public static float GetClipRemainingTime(this AudioSource source) {
+            // Calculate the remainingTime of the given AudioSource,
+            // if we keep playing with the same pitch.
+            float remainingTime = (source.clip.length - source.time) / source.pitch;
+            return source.IsReversePitch() ?
+                (source.clip.length + remainingTime) :
+                remainingTime;
+        }
+    }
+
     public class DCLAudioSource : BaseComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]
@@ -250,6 +266,13 @@ namespace DCL.Components
             {
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
+
+                IEnumerator WaitTillClipDonePlaying()
+                {
+                    yield return new WaitForSeconds(audioSource.GetClipRemainingTime());
+                    model.playing = false;
+
+                }
             }
 
             playedAtTimestamp = model.playedAtTimestamp;

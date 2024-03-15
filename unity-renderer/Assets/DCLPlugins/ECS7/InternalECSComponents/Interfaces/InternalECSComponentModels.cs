@@ -114,6 +114,13 @@ namespace DCL.ECS7.InternalComponents
     public struct InternalAudioSource : IInternalComponent
     {
         public bool dirty { get; set; }
+        public bool isPlaying;
+        public bool loop;
+        public float volume;
+        public float pitch;
+        public string audioClipUrl;
+        public float speed;
+        public float decay;
         public AudioSource audioSource;
     }
 

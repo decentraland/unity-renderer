@@ -16,14 +16,14 @@ public record SystemsContext
     public readonly WrappedComponentPool<IWrappedComponent<ECSTransform>> TransformPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBVideoEvent>> VideoEventPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBRaycastResult>> RaycastResultPool;
+    public readonly WrappedComponentPool<IWrappedComponent<PBAudioSource>> AudioSourcePool;
     public readonly WrappedComponentPool<IWrappedComponent<PBGltfContainerLoadingState>> GltfContainerLoadingStatePool;
     public readonly WrappedComponentPool<IWrappedComponent<PBEngineInfo>> EngineInfoPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> UiCanvasInformationPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> PointerEventsResultPool;
     public readonly WrappedComponentPool<IWrappedComponent<PBTweenState>> TweenStatePool;
 
-    public SystemsContext(
-        IReadOnlyDictionary<int, ComponentWriter> componentWriters,
+    public SystemsContext(IReadOnlyDictionary<int, ComponentWriter> componentWriters,
         IInternalECSComponents internalEcsComponents,
         IComponentGroups componentGroups,
         ECSComponent<PBBillboard> billboards,
@@ -37,7 +37,8 @@ public record SystemsContext
         WrappedComponentPool<IWrappedComponent<PBEngineInfo>> engineInfoPool,
         WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>> uiCanvasInformationPool,
         WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>> pointerEventsResultPool,
-        WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStatePool)
+        WrappedComponentPool<IWrappedComponent<PBTweenState>> tweenStatePool,
+        WrappedComponentPool<IWrappedComponent<PBAudioSource>> audioSourcePool)
     {
         this.internalEcsComponents = internalEcsComponents;
         this.componentGroups = componentGroups;
@@ -54,5 +55,6 @@ public record SystemsContext
         UiCanvasInformationPool = uiCanvasInformationPool;
         PointerEventsResultPool = pointerEventsResultPool;
         TweenStatePool = tweenStatePool;
+        AudioSourcePool = audioSourcePool;
     }
 }
