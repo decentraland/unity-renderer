@@ -25,18 +25,17 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXVkaW9fc291cmNlLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiiwIKDVBCQXVkaW9T",
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMi7wEKDVBCQXVkaW9T",
             "b3VyY2USFAoHcGxheWluZxgBIAEoCEgAiAEBEhMKBnZvbHVtZRgCIAEoAkgB",
             "iAEBEhEKBGxvb3AYAyABKAhIAogBARISCgVwaXRjaBgEIAEoAkgDiAEBEhYK",
             "DmF1ZGlvX2NsaXBfdXJsGAUgASgJEhkKDGN1cnJlbnRfdGltZRgGIAEoAkgE",
-            "iAEBEhIKBXNwZWVkGAcgASgCSAWIAQESEgoFZGVjYXkYCCABKAJIBogBAUIK",
-            "CghfcGxheWluZ0IJCgdfdm9sdW1lQgcKBV9sb29wQggKBl9waXRjaEIPCg1f",
-            "Y3VycmVudF90aW1lQggKBl9zcGVlZEIICgZfZGVjYXlCFKoCEURDTC5FQ1ND",
-            "b21wb25lbnRzYgZwcm90bzM="));
+            "iAEBEhMKBmdsb2JhbBgHIAEoCEgFiAEBQgoKCF9wbGF5aW5nQgkKB192b2x1",
+            "bWVCBwoFX2xvb3BCCAoGX3BpdGNoQg8KDV9jdXJyZW50X3RpbWVCCQoHX2ds",
+            "b2JhbEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl", "CurrentTime", "Speed", "Decay" }, new[]{ "Playing", "Volume", "Loop", "Pitch", "CurrentTime", "Speed", "Decay" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl", "CurrentTime", "Global" }, new[]{ "Playing", "Volume", "Loop", "Pitch", "CurrentTime", "Global" }, null, null, null)
           }));
     }
     #endregion
@@ -53,6 +52,13 @@ namespace DCL.ECSComponents {
   /// Note that the `audio_clip_url` is not actually a URL, but rather the path of a file bundled with
   /// the scene and declared in its manifest. The name was chosen because the URL use-case will
   /// eventually be supported.
+  ///
+  /// `playing=true` when it's previously `playing=true`
+  ///  a) if clip is playing and `current_time` is NOT SET, the clip remains in the current `current_time`
+  ///  b) if clip is stopped or `current_time` is set, the clip is played from the `current_time` (if set) or from the beginning
+  ///
+  /// If other property (volume, loop, pitch) is changed while playing, the clip is keep playing with the new properties
+  /// Changing `audio_clip_url` while playing stops the current clip and plays the new one (as a new instance)
   /// </summary>
   public sealed partial class PBAudioSource : pb::IMessage<PBAudioSource>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -96,8 +102,7 @@ namespace DCL.ECSComponents {
       pitch_ = other.pitch_;
       audioClipUrl_ = other.audioClipUrl_;
       currentTime_ = other.currentTime_;
-      speed_ = other.speed_;
-      decay_ = other.decay_;
+      global_ = other.global_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -262,60 +267,32 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~16;
     }
 
-    /// <summary>Field number for the "speed" field.</summary>
-    public const int SpeedFieldNumber = 7;
-    private float speed_;
+    /// <summary>Field number for the "global" field.</summary>
+    public const int GlobalFieldNumber = 7;
+    private bool global_;
     /// <summary>
-    /// the playback speed (default: 1.0).
+    /// whether the audio plays at constant volume across the scene.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Speed {
-      get { if ((_hasBits0 & 32) != 0) { return speed_; } else { return 0F; } }
+    public bool Global {
+      get { if ((_hasBits0 & 32) != 0) { return global_; } else { return false; } }
       set {
         _hasBits0 |= 32;
-        speed_ = value;
+        global_ = value;
       }
     }
-    /// <summary>Gets whether the "speed" field is set</summary>
+    /// <summary>Gets whether the "global" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasSpeed {
+    public bool HasGlobal {
       get { return (_hasBits0 & 32) != 0; }
     }
-    /// <summary>Clears the value of the "speed" field</summary>
+    /// <summary>Clears the value of the "global" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearSpeed() {
+    public void ClearGlobal() {
       _hasBits0 &= ~32;
-    }
-
-    /// <summary>Field number for the "decay" field.</summary>
-    public const int DecayFieldNumber = 8;
-    private float decay_;
-    /// <summary>
-    /// rate at which the clip volume fades to silence (default: 1.0).
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Decay {
-      get { if ((_hasBits0 & 64) != 0) { return decay_; } else { return 0F; } }
-      set {
-        _hasBits0 |= 64;
-        decay_ = value;
-      }
-    }
-    /// <summary>Gets whether the "decay" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasDecay {
-      get { return (_hasBits0 & 64) != 0; }
-    }
-    /// <summary>Clears the value of the "decay" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDecay() {
-      _hasBits0 &= ~64;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -339,8 +316,7 @@ namespace DCL.ECSComponents {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Pitch, other.Pitch)) return false;
       if (AudioClipUrl != other.AudioClipUrl) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Speed, other.Speed)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Decay, other.Decay)) return false;
+      if (Global != other.Global) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -354,8 +330,7 @@ namespace DCL.ECSComponents {
       if (HasPitch) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Pitch);
       if (AudioClipUrl.Length != 0) hash ^= AudioClipUrl.GetHashCode();
       if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
-      if (HasSpeed) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Speed);
-      if (HasDecay) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Decay);
+      if (HasGlobal) hash ^= Global.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -398,13 +373,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(53);
         output.WriteFloat(CurrentTime);
       }
-      if (HasSpeed) {
-        output.WriteRawTag(61);
-        output.WriteFloat(Speed);
-      }
-      if (HasDecay) {
-        output.WriteRawTag(69);
-        output.WriteFloat(Decay);
+      if (HasGlobal) {
+        output.WriteRawTag(56);
+        output.WriteBool(Global);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -440,13 +411,9 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(53);
         output.WriteFloat(CurrentTime);
       }
-      if (HasSpeed) {
-        output.WriteRawTag(61);
-        output.WriteFloat(Speed);
-      }
-      if (HasDecay) {
-        output.WriteRawTag(69);
-        output.WriteFloat(Decay);
+      if (HasGlobal) {
+        output.WriteRawTag(56);
+        output.WriteBool(Global);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -476,11 +443,8 @@ namespace DCL.ECSComponents {
       if (HasCurrentTime) {
         size += 1 + 4;
       }
-      if (HasSpeed) {
-        size += 1 + 4;
-      }
-      if (HasDecay) {
-        size += 1 + 4;
+      if (HasGlobal) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -512,11 +476,8 @@ namespace DCL.ECSComponents {
       if (other.HasCurrentTime) {
         CurrentTime = other.CurrentTime;
       }
-      if (other.HasSpeed) {
-        Speed = other.Speed;
-      }
-      if (other.HasDecay) {
-        Decay = other.Decay;
+      if (other.HasGlobal) {
+        Global = other.Global;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -557,12 +518,8 @@ namespace DCL.ECSComponents {
             CurrentTime = input.ReadFloat();
             break;
           }
-          case 61: {
-            Speed = input.ReadFloat();
-            break;
-          }
-          case 69: {
-            Decay = input.ReadFloat();
+          case 56: {
+            Global = input.ReadBool();
             break;
           }
         }
@@ -604,12 +561,8 @@ namespace DCL.ECSComponents {
             CurrentTime = input.ReadFloat();
             break;
           }
-          case 61: {
-            Speed = input.ReadFloat();
-            break;
-          }
-          case 69: {
-            Decay = input.ReadFloat();
+          case 56: {
+            Global = input.ReadBool();
             break;
           }
         }
