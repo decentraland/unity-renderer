@@ -1,5 +1,4 @@
 ﻿
-using Cysharp.Threading.Tasks;
 using System;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
@@ -7,7 +6,6 @@ using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
-using System.Collections.Generic;
 using UnityEngine;
 using AudioSettings = DCL.SettingsCommon.AudioSettings;
 

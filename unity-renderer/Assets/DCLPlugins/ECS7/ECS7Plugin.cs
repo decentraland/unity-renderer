@@ -6,7 +6,6 @@ using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using RPC.Context;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DCL.ECS7
 {

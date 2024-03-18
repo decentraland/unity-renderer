@@ -2,9 +2,7 @@
 using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace ECSSystems.AudioSourceSystem
 {
@@ -29,12 +27,14 @@ namespace ECSSystems.AudioSourceSystem
             var audioSourceComponentList = audioSourceComponent.GetForAll();
 
             // Loop through every audio source component
-            foreach (var component in audioSourceComponentList)
+            for(var i = 0; i < audioSourceComponentList.Count; i++)
             {
+                var component = audioSourceComponentList[i];
                 var scene = component.key1;
-                var entity = component.key2;
+                long entity = component.key2;
                 var model = component.value.model;
 
+                if (!componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer)) continue;
                 var wrappedComponent = audioSourcePool.Get();
                 wrappedComponent.WrappedComponent.Model.Playing = model.audioSource.isPlaying;
                 wrappedComponent.WrappedComponent.Model.Loop = model.loop;
@@ -42,11 +42,7 @@ namespace ECSSystems.AudioSourceSystem
                 wrappedComponent.WrappedComponent.Model.Pitch = model.pitch;
                 wrappedComponent.WrappedComponent.Model.AudioClipUrl ??= model.audioClipUrl;
                 wrappedComponent.WrappedComponent.Model.CurrentTime = model.audioSource.time;
-
-                if (componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
-                {
-                    writer.Put(entity, ComponentID.AUDIO_SOURCE, wrappedComponent);
-                }
+                writer.Put(entity, ComponentID.AUDIO_SOURCE, wrappedComponent);
             }
         }
     }
