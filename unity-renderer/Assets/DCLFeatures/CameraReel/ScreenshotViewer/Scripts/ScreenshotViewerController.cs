@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Tasks;
@@ -144,8 +144,8 @@ namespace DCLFeatures.CameraReel.ScreenshotViewer
             }
 
             dataStore.notifications.GenericConfirmation.Set(new GenericConfirmationNotificationData(
-                "Are you sure you want to delete this picture?",
-                "This picture will be removed and you will no longer be able to access it.",
+                "Are you sure you want to delete this photo?",
+                "This photo will be removed and you will no longer be able to access it.",
                 "NO",
                 "YES",
                 () => {},
