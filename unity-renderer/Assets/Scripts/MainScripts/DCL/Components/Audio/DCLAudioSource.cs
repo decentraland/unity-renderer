@@ -9,6 +9,7 @@ using Decentraland.Sdk.Ecs6;
 
 namespace DCL.Components
 {
+
     public class DCLAudioSource : BaseComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]

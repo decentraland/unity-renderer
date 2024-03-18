@@ -25,16 +25,17 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci5kZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXVkaW9fc291cmNlLnBy",
-            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMiowEKDVBCQXVkaW9T",
+            "b3RvEhtkZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMi7wEKDVBCQXVkaW9T",
             "b3VyY2USFAoHcGxheWluZxgBIAEoCEgAiAEBEhMKBnZvbHVtZRgCIAEoAkgB",
             "iAEBEhEKBGxvb3AYAyABKAhIAogBARISCgVwaXRjaBgEIAEoAkgDiAEBEhYK",
-            "DmF1ZGlvX2NsaXBfdXJsGAUgASgJQgoKCF9wbGF5aW5nQgkKB192b2x1bWVC",
-            "BwoFX2xvb3BCCAoGX3BpdGNoQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "DmF1ZGlvX2NsaXBfdXJsGAUgASgJEhkKDGN1cnJlbnRfdGltZRgGIAEoAkgE",
+            "iAEBEhMKBmdsb2JhbBgHIAEoCEgFiAEBQgoKCF9wbGF5aW5nQgkKB192b2x1",
+            "bWVCBwoFX2xvb3BCCAoGX3BpdGNoQg8KDV9jdXJyZW50X3RpbWVCCQoHX2ds",
+            "b2JhbEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl" }, new[]{ "Playing", "Volume", "Loop", "Pitch" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAudioSource), global::DCL.ECSComponents.PBAudioSource.Parser, new[]{ "Playing", "Volume", "Loop", "Pitch", "AudioClipUrl", "CurrentTime", "Global" }, new[]{ "Playing", "Volume", "Loop", "Pitch", "CurrentTime", "Global" }, null, null, null)
           }));
     }
     #endregion
@@ -51,6 +52,13 @@ namespace DCL.ECSComponents {
   /// Note that the `audio_clip_url` is not actually a URL, but rather the path of a file bundled with
   /// the scene and declared in its manifest. The name was chosen because the URL use-case will
   /// eventually be supported.
+  ///
+  /// `playing=true` when it's previously `playing=true`
+  ///  a) if clip is playing and `current_time` is NOT SET, the clip remains in the current `current_time`
+  ///  b) if clip is stopped or `current_time` is set, the clip is played from the `current_time` (if set) or from the beginning
+  ///
+  /// If other property (volume, loop, pitch) is changed while playing, the clip is keep playing with the new properties
+  /// Changing `audio_clip_url` while playing stops the current clip and plays the new one (as a new instance)
   /// </summary>
   public sealed partial class PBAudioSource : pb::IMessage<PBAudioSource>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -93,6 +101,8 @@ namespace DCL.ECSComponents {
       loop_ = other.loop_;
       pitch_ = other.pitch_;
       audioClipUrl_ = other.audioClipUrl_;
+      currentTime_ = other.currentTime_;
+      global_ = other.global_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -229,6 +239,62 @@ namespace DCL.ECSComponents {
       }
     }
 
+    /// <summary>Field number for the "current_time" field.</summary>
+    public const int CurrentTimeFieldNumber = 6;
+    private float currentTime_;
+    /// <summary>
+    /// specifies the current playback time of the clip in seconds (default: 0).
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public float CurrentTime {
+      get { if ((_hasBits0 & 16) != 0) { return currentTime_; } else { return 0F; } }
+      set {
+        _hasBits0 |= 16;
+        currentTime_ = value;
+      }
+    }
+    /// <summary>Gets whether the "current_time" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasCurrentTime {
+      get { return (_hasBits0 & 16) != 0; }
+    }
+    /// <summary>Clears the value of the "current_time" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearCurrentTime() {
+      _hasBits0 &= ~16;
+    }
+
+    /// <summary>Field number for the "global" field.</summary>
+    public const int GlobalFieldNumber = 7;
+    private bool global_;
+    /// <summary>
+    /// whether the audio plays at constant volume across the scene.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Global {
+      get { if ((_hasBits0 & 32) != 0) { return global_; } else { return false; } }
+      set {
+        _hasBits0 |= 32;
+        global_ = value;
+      }
+    }
+    /// <summary>Gets whether the "global" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasGlobal {
+      get { return (_hasBits0 & 32) != 0; }
+    }
+    /// <summary>Clears the value of the "global" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearGlobal() {
+      _hasBits0 &= ~32;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -249,6 +315,8 @@ namespace DCL.ECSComponents {
       if (Loop != other.Loop) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Pitch, other.Pitch)) return false;
       if (AudioClipUrl != other.AudioClipUrl) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CurrentTime, other.CurrentTime)) return false;
+      if (Global != other.Global) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -261,6 +329,8 @@ namespace DCL.ECSComponents {
       if (HasLoop) hash ^= Loop.GetHashCode();
       if (HasPitch) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Pitch);
       if (AudioClipUrl.Length != 0) hash ^= AudioClipUrl.GetHashCode();
+      if (HasCurrentTime) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CurrentTime);
+      if (HasGlobal) hash ^= Global.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -299,6 +369,14 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(42);
         output.WriteString(AudioClipUrl);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(53);
+        output.WriteFloat(CurrentTime);
+      }
+      if (HasGlobal) {
+        output.WriteRawTag(56);
+        output.WriteBool(Global);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -329,6 +407,14 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(42);
         output.WriteString(AudioClipUrl);
       }
+      if (HasCurrentTime) {
+        output.WriteRawTag(53);
+        output.WriteFloat(CurrentTime);
+      }
+      if (HasGlobal) {
+        output.WriteRawTag(56);
+        output.WriteBool(Global);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -353,6 +439,12 @@ namespace DCL.ECSComponents {
       }
       if (AudioClipUrl.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AudioClipUrl);
+      }
+      if (HasCurrentTime) {
+        size += 1 + 4;
+      }
+      if (HasGlobal) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -380,6 +472,12 @@ namespace DCL.ECSComponents {
       }
       if (other.AudioClipUrl.Length != 0) {
         AudioClipUrl = other.AudioClipUrl;
+      }
+      if (other.HasCurrentTime) {
+        CurrentTime = other.CurrentTime;
+      }
+      if (other.HasGlobal) {
+        Global = other.Global;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -416,6 +514,14 @@ namespace DCL.ECSComponents {
             AudioClipUrl = input.ReadString();
             break;
           }
+          case 53: {
+            CurrentTime = input.ReadFloat();
+            break;
+          }
+          case 56: {
+            Global = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -449,6 +555,14 @@ namespace DCL.ECSComponents {
           }
           case 42: {
             AudioClipUrl = input.ReadString();
+            break;
+          }
+          case 53: {
+            CurrentTime = input.ReadFloat();
+            break;
+          }
+          case 56: {
+            Global = input.ReadBool();
             break;
           }
         }
