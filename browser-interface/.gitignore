@@ -82,6 +82,7 @@ test/**/*.js
 test/**/*.js.map
 dist
 !packages/shared/world/runtime-7/sourcemap/source-map@0.7.4.js
+/protocol-temp/
 
 # ============== #
 # Local mappings #
