@@ -17,7 +17,7 @@ namespace DCL.MyAccount
         [SerializeField] private RectTransform linksContainer;
 
         private readonly List<MyProfileLinkComponentView> links = new ();
-        private readonly Regex httpRegex = new ("^((https?:)?\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .%@()\\-]*)*\\/?$");
+        private readonly Regex httpRegex = new (@"^(?:https?):\/\/[^\s\/$.?#].[^\s]*$");
 
         private bool isAddEnabled = true;
 
