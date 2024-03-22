@@ -3,6 +3,7 @@ import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import { now } from 'lib/javascript/now'
 import { isURL } from 'lib/javascript/isURL'
 import { store } from 'shared/store/isolatedStore'
+import logWrapper from '../lib/logger/wrap'
 
 /**
  * Estimated avatar height
@@ -11,6 +12,9 @@ export const playerHeight = 1.6
 
 // Entry points
 export const PREVIEW: boolean = !!(globalThis as any).preview
+// update logger
+logWrapper()
+
 export const WORLD_EXPLORER = !PREVIEW
 
 export const RENDERER_WS = location.search.includes('ws')
@@ -54,7 +58,7 @@ export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
 export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
-export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
+export const DEBUG_KERNEL_LOG = location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 export const DEBUG_VOICE_CHAT = location.search.includes('DEBUG_VOICE_CHAT')
 export const DEBUG_LOGS = location.search.includes('DEBUG_LOGS')
