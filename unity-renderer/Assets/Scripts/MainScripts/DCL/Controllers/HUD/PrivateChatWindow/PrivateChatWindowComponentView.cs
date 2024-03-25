@@ -87,7 +87,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
 
         if (chatView!= null)
-            chatView.OnUnblockUser += HandleUnblockFromButtonInChat;
+            chatView.OnUnblockUser -= HandleUnblockFromButtonInChat;
 
         base.Dispose();
     }

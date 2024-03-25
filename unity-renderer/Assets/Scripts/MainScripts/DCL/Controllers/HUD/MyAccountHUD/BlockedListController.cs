@@ -19,7 +19,6 @@ namespace DCL.MyAccount
         private readonly IFriendsController friendsController;
 
         private CancellationTokenSource lifeTimeCancellationToken;
-        private readonly CancellationTokenSource showBlockedUsersCancellationToken = new ();
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
@@ -56,7 +55,7 @@ namespace DCL.MyAccount
         private void OpenSection()
         {
             lifeTimeCancellationToken = lifeTimeCancellationToken.SafeRestart();
-            UpdateBlockedUserList(ownUserProfile.blocked);
+            UpdateBlockedUserList(ownUserProfile.blocked, lifeTimeCancellationToken.Token);
         }
 
         private void OnMyAccountSectionTabChanged(string currentOpenSection, string _)
@@ -102,7 +101,7 @@ namespace DCL.MyAccount
             ownUserProfile.OnUpdate -= OnOwnUserProfileUpdated;
         }
 
-        private void UpdateBlockedUserList(List<string> blockedUsersList)
+        private async void UpdateBlockedUserList(List<string> blockedUsersList, CancellationToken token)
         {
             view.SetupBlockedList();
 
@@ -144,7 +143,7 @@ namespace DCL.MyAccount
                 view.SetLoadingActive(false);
             }
 
-            UpdateChannelMembersAsync(blockedUsersList, showBlockedUsersCancellationToken.Token).Forget();
+            UpdateChannelMembersAsync(blockedUsersList, token).Forget();
         }
     }
 }
