@@ -193,9 +193,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         if (IsBlocked(userId))
             return;
         blocked.Add(userId);
+        OnUpdate?.Invoke(this);
     }
 
-    public void Unblock(string userId) { blocked.Remove(userId); }
+    public void Unblock(string userId)
+    {
+        if (!IsBlocked(userId))
+            return;
+        blocked.Remove(userId);
+        OnUpdate?.Invoke(this);
+    }
 
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 

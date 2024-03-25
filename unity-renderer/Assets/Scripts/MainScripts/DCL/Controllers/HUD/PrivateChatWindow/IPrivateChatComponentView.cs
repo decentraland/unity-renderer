@@ -13,13 +13,10 @@ public interface IPrivateChatComponentView
     event Action<bool> OnFocused;
     event Action OnRequireMoreMessages;
     event Action OnClickOverWindow;
-
-
     IChatHUDComponentView ChatHUD { get; }
     bool IsActive { get; }
     RectTransform Transform { get; }
     bool IsFocused { get; }
-
     void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics);
     void Setup(UserProfile profile, bool isOnline, bool isBlocked);
     void Show();

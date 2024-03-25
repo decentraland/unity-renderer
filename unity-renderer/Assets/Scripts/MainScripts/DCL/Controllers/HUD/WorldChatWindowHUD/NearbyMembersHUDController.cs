@@ -9,6 +9,7 @@ namespace DCL.Social.Chat
         private readonly IUserProfileBridge userProfileBridge;
         private bool isVisible;
         private string currentSearchText;
+        private readonly UserProfile ownUserProfile;
 
         public IChannelMembersComponentView View => view;
 
@@ -20,6 +21,8 @@ namespace DCL.Social.Chat
             this.view = view;
             this.playerDataStore = playerDataStore;
             this.userProfileBridge = userProfileBridge;
+
+            ownUserProfile = userProfileBridge.GetOwn();
 
             playerDataStore.otherPlayers.OnAdded += OnNearbyPlayersAdded;
             playerDataStore.otherPlayers.OnRemoved += OnNearbyPlayersRemoved;
@@ -86,9 +89,18 @@ namespace DCL.Social.Chat
                 userId = otherProfile.userId,
                 userName = otherProfile.userName,
                 isOptionsButtonHidden = otherProfile.userId == userProfileBridge.GetOwn().userId,
+                blocked = IsUserBlocked(otherProfile.userId)
             };
 
             view.Set(userToAdd);
+        }
+
+        private bool IsUserBlocked(string userId)
+        {
+            if (ownUserProfile != null && ownUserProfile.blocked != null)
+                return ownUserProfile.blocked.Contains(userId);
+
+            return false;
         }
 
         private void OnNearbyPlayersRemoved(string userId, Player _)

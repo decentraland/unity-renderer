@@ -10,5 +10,6 @@ namespace DCL.Social.Chat
         public string thumnailUrl;
         public bool isOnline;
         public bool isOptionsButtonHidden;
+        public bool blocked;
     }
 }

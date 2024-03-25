@@ -37,6 +37,7 @@ namespace DCL.Social.Chat
         private string oldestMessageId;
         private string conversationUserId;
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
+        private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
         public event Action OnBack;
         public event Action OnClosed;
@@ -77,6 +78,7 @@ namespace DCL.Social.Chat
                 mouseCatcher.OnMouseLock += Hide;
 
             view.OnRequireMoreMessages += RequestOldConversations;
+            view.ChatHUD.OnUnblockUser += UnblockUser;
 
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
@@ -114,6 +116,7 @@ namespace DCL.Social.Chat
             conversationUserId = newConversationUserId;
             conversationProfile = newConversationUserProfile;
             chatHudController.ClearAllEntries();
+            View.ChatHUD.SetConversationUserId(newConversationUserId);
             shouldRequestMessages = true;
         }
 
@@ -186,6 +189,9 @@ namespace DCL.Social.Chat
                 View.OnUnfriend -= Unfriend;
                 View.OnFocused -= HandleViewFocused;
                 View.OnRequireMoreMessages -= RequestOldConversations;
+
+                if (View.ChatHUD != null) View.ChatHUD.OnUnblockUser -= UnblockUser;
+
                 View.Dispose();
             }
 
@@ -396,6 +402,21 @@ namespace DCL.Social.Chat
                 return;
 
             View.ChatHUD.AddTextIntoInputField(mention);
+        }
+
+        private void UnblockUser(string userId)
+        {
+            if (!ownUserProfile.IsBlocked(userId)) return;
+
+            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnBlockUserData(
+                userProfileBridge.Get(userId)?.userName,
+                () =>
+                {
+                    ownUserProfile.Unblock(userId);
+                    WebInterface.SendUnblockPlayer(userId);
+                    socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.MyProfile, userId);
+
+                }), true);
         }
     }
 }
