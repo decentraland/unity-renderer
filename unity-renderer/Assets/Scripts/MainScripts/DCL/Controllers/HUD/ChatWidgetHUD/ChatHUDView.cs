@@ -34,6 +34,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal InputAction_Trigger closeMentionSuggestionsInput;
         [SerializeField] internal ChatMentionSuggestionComponentView chatMentionSuggestions;
         [SerializeField] internal WebGLIMEInput webGlImeInput;
+        [SerializeField] internal Button unblockButton;
         [SerializeField] private Model model;
 
         private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -109,7 +110,7 @@ namespace DCL.Social.Chat
         public event Action<string> OnMentionSuggestionSelected;
         public event Action<ChatEntryModel> OnCopyMessageRequested;
         public event Action<ChatMessage> OnSendMessage;
-
+        public event Action<string> OnUnblockUser;
         public int EntryCount => entries.Count;
         public IChatEntryFactory ChatEntryFactory { get; set; }
         public IComparer<ChatEntryModel> SortingStrategy { get; set; }
@@ -126,6 +127,11 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
+
+            unblockButton.onClick.AddListener(() =>
+            {
+                OnUnblockUser?.Invoke(model.conversationUserId);
+            });
 
 #if (UNITY_WEBGL && !UNITY_EDITOR)
             // WebGLInput plugin breaks many features:
@@ -244,6 +250,12 @@ namespace DCL.Social.Chat
             chatMentionSuggestions.Hide();
         }
 
+        public void SetBlockedStatus(bool blocked)
+        {
+            inputField.gameObject.SetActive(!blocked);
+            unblockButton.gameObject.SetActive(blocked);
+        }
+
         public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
         {
             string message = inputField.text;
@@ -340,6 +352,11 @@ namespace DCL.Social.Chat
         {
             entry.Populate(model);
             entry.SetFadeout(this.model.enableFadeoutMode);
+        }
+
+        public void SetConversationUserId(string userId)
+        {
+            model.conversationUserId = userId;
         }
 
         protected void Dock(ChatEntry entry)
@@ -530,6 +547,7 @@ namespace DCL.Social.Chat
             public string inputFieldText;
             public bool enableFadeoutMode;
             public ChatEntryModel[] entries;
+            public string conversationUserId;
         }
     }
 }

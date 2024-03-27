@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +12,7 @@ namespace DCLFeatures.CameraReel.Gallery
 
         public void UpdateStorageBar(int current, int max)
         {
-            storageText.text = $"Storage: {current}/{max} photo taken";
+            storageText.text = $"Storage: {current}/{max} photos taken";
             storageText.gameObject.SetActive(true);
             storageFullMessage.SetActive(current >= max);
 

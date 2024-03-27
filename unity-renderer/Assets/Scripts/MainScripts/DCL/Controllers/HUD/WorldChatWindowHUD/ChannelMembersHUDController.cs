@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DCL.Chat.Channels;
-using DCL.Social.Chat;
 using DCL.Tasks;
 using System.Collections.Generic;
 
@@ -19,6 +18,7 @@ namespace DCL.Social.Chat
         private readonly DataStore_Channels dataStoreChannels;
         private readonly IChannelMembersComponentView view;
         private readonly CancellationTokenSource showMembersCancellationToken = new ();
+        private readonly UserProfile ownUserProfile;
 
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
 
@@ -42,6 +42,8 @@ namespace DCL.Social.Chat
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
             this.dataStoreChannels = dataStoreChannels;
+
+            ownUserProfile = userProfileBridge.GetOwn();
         }
 
         public void SetChannelId(string channelId)
@@ -162,7 +164,8 @@ namespace DCL.Social.Chat
                             thumnailUrl = "",
                             userId = member.userId,
                             userName = member.userId,
-                            isOptionsButtonHidden = member.userId == userProfileBridge.GetOwn().userId
+                            isOptionsButtonHidden = member.userId == userProfileBridge.GetOwn().userId,
+                            blocked = false
                         };
 
                         view.Set(fallbackMemberEntry);
@@ -178,7 +181,8 @@ namespace DCL.Social.Chat
                         thumnailUrl = memberProfile.face256SnapshotURL,
                         userId = memberProfile.userId,
                         userName = memberProfile.userName,
-                        isOptionsButtonHidden = memberProfile.userId == userProfileBridge.GetOwn().userId
+                        isOptionsButtonHidden = memberProfile.userId == userProfileBridge.GetOwn().userId,
+                        blocked = IsUserBlocked(memberProfile.userId)
                     };
 
                     view.Set(userToAdd);
@@ -198,6 +202,14 @@ namespace DCL.Social.Chat
             }
 
             UpdateChannelMembersAsync(channelMembers, showMembersCancellationToken.Token).Forget();
+        }
+
+        private bool IsUserBlocked(string userId)
+        {
+            if (ownUserProfile != null && ownUserProfile.blocked != null)
+                return ownUserProfile.blocked.Contains(userId);
+
+            return false;
         }
 
         private void LoadMoreMembers()
