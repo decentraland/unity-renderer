@@ -15,6 +15,7 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject sectionsMenu;
         [SerializeField] internal MyProfileComponentView myProfileComponentView;
         [SerializeField] internal EmailNotificationsComponentView emailNotificationsComponentView;
+        [SerializeField] internal BlockedListComponentView blockedListComponentView;
         [SerializeField] internal ShowHideAnimator accountSettingsUpdatedToast;
 
         [Header("Sections Menu Configuration")]
@@ -29,8 +30,15 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject emailNotificationsButtonSelected;
         [SerializeField] internal Image emailNotificationsButtonSelectedImage;
 
+        [SerializeField] internal Button blockedListButton;
+        [SerializeField] internal GameObject blockedListButtonDeselected;
+        [SerializeField] internal Image blockedListButtonDeselectedImage;
+        [SerializeField] internal GameObject blockedListButtonSelected;
+        [SerializeField] internal Image blockedListButtonSelectedImage;
+
         public IMyProfileComponentView CurrentMyProfileView => myProfileComponentView;
         public IEmailNotificationsComponentView CurrentEmailNotificationsView => emailNotificationsComponentView;
+        public IBlockedListComponentView CurrentBlockedListComponentView => blockedListComponentView;
 
         private Transform thisTransform;
         private CancellationTokenSource showAccountSettingsCancellationToken = new ();
@@ -43,6 +51,7 @@ namespace DCL.MyAccount
 
             myProfileButton.onClick.AddListener(() => OpenSection(MyAccountSection.MyProfile));
             emailNotificationsButton.onClick.AddListener(() => OpenSection(MyAccountSection.EmailNotifications));
+            blockedListButton.onClick.AddListener(() => OpenSection(MyAccountSection.BlockedList));
 
             OpenSection(MyAccountSection.MyProfile);
         }
@@ -107,14 +116,26 @@ namespace DCL.MyAccount
                 case MyAccountSection.MyProfile:
                     SetMyProfileButtonStatus(true);
                     SetEmailNotificationsButtonStatus(false);
+                    SetBlockedListButtonStatus(false);
                     myProfileComponentView.Show();
                     emailNotificationsComponentView.Hide();
+                    blockedListComponentView.Hide();
                     break;
                 case MyAccountSection.EmailNotifications:
                     SetMyProfileButtonStatus(false);
                     SetEmailNotificationsButtonStatus(true);
+                    SetBlockedListButtonStatus(false);
                     myProfileComponentView.Hide();
                     emailNotificationsComponentView.Show();
+                    blockedListComponentView.Hide();
+                    break;
+                case MyAccountSection.BlockedList:
+                    SetMyProfileButtonStatus(false);
+                    SetEmailNotificationsButtonStatus(false);
+                    SetBlockedListButtonStatus(true);
+                    myProfileComponentView.Hide();
+                    emailNotificationsComponentView.Hide();
+                    blockedListComponentView.Show();
                     break;
             }
 
@@ -133,6 +154,13 @@ namespace DCL.MyAccount
             emailNotificationsButton.targetGraphic = isSelected ? emailNotificationsButtonSelectedImage : emailNotificationsButtonDeselectedImage;
             emailNotificationsButtonDeselected.SetActive(!isSelected);
             emailNotificationsButtonSelected.SetActive(isSelected);
+        }
+
+        private void SetBlockedListButtonStatus(bool isSelected)
+        {
+            blockedListButton.targetGraphic = isSelected ? blockedListButtonSelectedImage : blockedListButtonDeselectedImage;
+            blockedListButtonDeselected.SetActive(!isSelected);
+            blockedListButtonSelected.SetActive(isSelected);
         }
 
         private static void DeselectButtons()

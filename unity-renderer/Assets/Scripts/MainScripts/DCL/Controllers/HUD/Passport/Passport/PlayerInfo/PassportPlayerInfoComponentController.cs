@@ -113,6 +113,9 @@ namespace DCL.Social.Passports
                 {
                     name = filteredName,
                     isGuest = userProfile.isGuest,
+                    userId = userProfile.userId,
+                    isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
+                    hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
                 };
             }
             else
