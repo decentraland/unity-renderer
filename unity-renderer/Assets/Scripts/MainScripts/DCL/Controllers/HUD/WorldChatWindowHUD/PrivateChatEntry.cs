@@ -1,4 +1,3 @@
-using DCL.Social.Chat;
 using System;
 using TMPro;
 using UnityEngine;

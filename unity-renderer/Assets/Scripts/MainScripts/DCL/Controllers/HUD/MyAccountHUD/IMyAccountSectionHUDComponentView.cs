@@ -7,6 +7,7 @@ namespace DCL.MyAccount
     {
         MyProfile,
         EmailNotifications,
+        BlockedList,
     }
 
     public interface IMyAccountSectionHUDComponentView
