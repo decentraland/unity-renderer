@@ -22,6 +22,16 @@ export async function setAudioStream(url: string, play: boolean, volume: number)
   }
 }
 
+export async function setAudioStreamForEntity(url: string, play: boolean, volume: number, sceneNumber: number, entityId: number) {
+  setAudioStream(url, play, volume)
+
+  // TODO: "getSceneWorkerBySceneNumber().rpcContext.internalEngine" to update the AudioEvent component with append
+}
+
+export async function killAudioStream(sceneNumber: number, entityId: number) {
+  // TODO: remove entity from internalEngine...
+}
+
 // audioStreamSource play might be requested without user interaction
 // i.e: spawning in world without clicking on the canvas
 // so me want to keep retrying on play exception until audio starts playing
