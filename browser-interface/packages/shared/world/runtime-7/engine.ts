@@ -219,18 +219,18 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   })
 
   /**
-   * We used this transport to send only the avatar updates to the client instead of the full state
-   * Every time there is an update on a profile, this would add those CRDT messages to avatarMessages
+   * We used this transport to send only kernel-side updates (profile, emotes, audio stream...) to the client instead of the full state
+   * For example: every time there is an update on a profile, this would add those CRDT messages to internalMessages
    * and they'd be append to the crdtSendToRenderer call
    */
   const transport: Transport = {
     filter: (message) => !!message,
     send: async (message: Uint8Array) => {
-      if (message.byteLength) avatarMessages.push(message)
+      if (message.byteLength) internalMessages.push(message)
     }
   }
   engine.addTransport(transport)
-  const avatarMessages: Uint8Array[] = []
+  const internalMessages: Uint8Array[] = []
 
   // Add current user
   addUser(userId)
@@ -246,8 +246,8 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     engine,
     update: async () => {
       await engine.update(1)
-      const messages = [...avatarMessages]
-      avatarMessages.length = 0
+      const messages = [...internalMessages]
+      internalMessages.length = 0
       return messages
     },
     destroy: () => {

@@ -69,7 +69,6 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           // PlayerComponents messages
           const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
 
-
           return {
             hasEntities: response.hasOwnEntities || hasMainCrdt,
             // send the initialEntitiesTick0 (main.crdt) and the response.payload
