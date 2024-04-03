@@ -141,9 +141,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: When you block someone, both you and that person won't be able to see each
-    other's avatars, messages in public or private channels, or send friend requests
-    to each other.
+  m_text: "If you block someone in Decentraland, you will no longer see their avatar
+    in-world, and you will not be able to send friend requests or messages to each
+    other. You will also not see each other\u2019s messages in public or private
+    chats."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -531,7 +532,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 128, y: -200}
-  m_SizeDelta: {x: 713, y: 56.98}
+  m_SizeDelta: {x: 713, y: 76.3574}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3345930943405460214
 CanvasRenderer:
@@ -561,9 +562,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You can block anyone from the menu option that appears when you click the
-    three dots icon within their profile card or private conversation, or when you
-    hover over the person's name in the channel members, chat or friends list.
+  m_text: "To block someone, open their profile card by clicking on their avatar
+    and click on the three dots in the upper right corner above their avatar image,
+    then select the option \u2018Block\u2019. You can also block someone within a
+    chat by clicking on the three dots to the right of their name and selecting \u2018Block\u2019."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6708c7eadd49b49f4ac3469e5104e7c9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: dd1effe058ec94479a0dd10765262662, type: 2}
@@ -911,7 +913,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 511, y: -8}
+  m_AnchoredPosition: {x: 511, y: -7.9999695}
   m_SizeDelta: {x: 8, y: -94}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &1993293957083626822
