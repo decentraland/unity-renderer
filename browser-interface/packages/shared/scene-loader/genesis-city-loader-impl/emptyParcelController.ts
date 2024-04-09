@@ -36,6 +36,7 @@ export class EmptyParcelController {
       id: entityId,
       baseUrl: this.baseUrl + 'contents/',
       entity: {
+        id: entityId,
         content: emptyScenes[sceneName]!,
         pointers: [coordinates],
         timestamp: Date.now(),

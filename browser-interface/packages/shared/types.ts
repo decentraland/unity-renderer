@@ -181,7 +181,7 @@ export type SceneSourcePlacement = {
 export const VOICE_CHAT_FEATURE_TOGGLE: SceneFeatureToggle = { name: 'voiceChat', default: 'enabled' }
 
 export type LoadableScene = {
-  readonly entity: Readonly<Omit<Entity, 'id'>>
+  readonly entity: Readonly<Entity>
   readonly baseUrl: string
   readonly id: string
   /** Id of the parent scene that spawned this scene experience */
