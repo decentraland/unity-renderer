@@ -110,6 +110,7 @@ async function startGlobalScene(cid: string, title: string, fileContentUrl: stri
     id: cid,
     baseUrl,
     entity: {
+      id: cid,
       content: [...extraContent, { file: 'scene.js', hash: fileContentUrl }],
       pointers: [cid],
       timestamp: 0,
