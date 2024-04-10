@@ -95,11 +95,10 @@ public class NFTItemInfo : MonoBehaviour
     {
         this.rarityName.text = rarityName;
         this.rarityName.color = skin.rarityNameColor;
-        backgroundImage.color = skin.backgroundColor;
+        // backgroundImage.color = skin.backgroundColor;
         gradientImage.color = skin.gradientColor;
-        
     }
-    
+
     public void SetModel(Model newModel)
     {
         if (newModel == null)
@@ -176,7 +175,7 @@ public class NFTItemInfo : MonoBehaviour
             thumbnail.sprite = currentModel.thumbnailSprite;
             return;
         }
-        
+
         ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
     }
 
