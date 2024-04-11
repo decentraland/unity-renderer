@@ -1,20 +1,20 @@
 /////////////////////////////////// AUDIO STREAMING ///////////////////////////////////
-import { Entity, IEngine } from '@dcl/ecs/dist-cjs'
-import { AudioEvent as defineAudioEvent, AudioState } from '@dcl/ecs/dist-cjs/components'
-import { SceneWorker } from '../shared/world/SceneWorker'
-import { getSceneWorkerBySceneID, getSceneWorkerBySceneNumber } from '../shared/world/parcelSceneManager'
+import { Entity } from '@dcl/ecs/dist-cjs'
+import { MediaState } from '@dcl/ecs/dist-cjs/components'
+
+import { audioStreamEmitter } from '../shared/world/runtime-7/engine'
 
 type AudioEvents = HTMLMediaElementEventMap
 type GlobalProps = {
   playToken: number
-  entityId: Entity | undefined
-  engine: IEngine | undefined
+  entityId?: Entity
+  sceneId?: string | number
 }
 
 let globalProps: GlobalProps = {
   playToken: 0,
-  entityId: undefined,
-  engine: undefined
+  sceneId: undefined,
+  entityId: undefined
 }
 
 function setGlobalProps(props: GlobalProps) {
@@ -36,46 +36,34 @@ const audioStreamSource = new Audio()
 AUDIO_EVENTS.forEach(($) => audioStreamSource.addEventListener($, listen))
 
 function listen(ev: AudioEvents[keyof AudioEvents]) {
-  const { entityId, engine } = globalProps
+  const { entityId, sceneId } = globalProps
 
-  if (!entityId || !engine) return
+  if (!entityId || !sceneId) return
 
-  const AudioEvent = defineAudioEvent(engine)
   const state = getAudioEvent(ev.type)
-  const timestamp = Date.now()
 
-  AudioEvent.addValue(entityId, { state, timestamp })
+  audioStreamEmitter.emit('changeState', { entityId, state, sceneId })
 }
 
-function getAudioEvent(type: string): AudioState {
+function getAudioEvent(type: string): MediaState {
   switch (type) {
     case 'loadeddata':
-      return AudioState.AS_READY
+      return MediaState.MS_READY
     case 'error':
-      return AudioState.AS_ERROR
+      return MediaState.MS_ERROR
     case 'seeking':
-      return AudioState.AS_SEEKING
+      return MediaState.MS_SEEKING
     case 'loadstart':
-      return AudioState.AS_LOADING
+      return MediaState.MS_LOADING
     case 'waiting':
-      return AudioState.AS_BUFFERING
+      return MediaState.MS_BUFFERING
     case 'playing':
-      return AudioState.AS_PLAYING
+      return MediaState.MS_PLAYING
     case 'pause':
-      return AudioState.AS_PAUSED
+      return MediaState.MS_PAUSED
     default:
-      return AudioState.AS_NONE
+      return MediaState.MS_NONE
   }
-}
-
-function getScene(id: string | number): SceneWorker | undefined {
-  if (typeof id === 'string') return getSceneWorkerBySceneID(id)
-  if (typeof id === 'number') return getSceneWorkerBySceneNumber(id)
-  return undefined
-}
-
-function getEngineFromScene(scene?: SceneWorker): IEngine | undefined {
-  return scene?.rpcContext.internalEngine?.engine
 }
 
 export async function setAudioStream(url: string, play: boolean, volume: number) {
@@ -104,26 +92,14 @@ export async function setAudioStreamForEntity(
   sceneId: string | number,
   entityId: Entity
 ) {
+  setGlobalProps({ ...globalProps, sceneId, entityId })
   void setAudioStream(url, play, volume)
-
-  const scene = getScene(sceneId)
-  const engine = getEngineFromScene(scene)
-
-  setGlobalProps({ ...globalProps, engine, entityId })
 }
 
 export async function killAudioStream(sceneId: number, entityId: Entity) {
+  setGlobalProps({ ...globalProps, sceneId: undefined, entityId: undefined })
   void setAudioStream(audioStreamSource.src, false, audioStreamSource.volume)
-
-  const scene = getScene(sceneId)
-  const engine = getEngineFromScene(scene)
-
-  if (engine) {
-    const AudioEvent = defineAudioEvent(engine)
-    AudioEvent.addValue(entityId, { state: AudioState.AS_NONE, timestamp: Date.now() })
-  }
-
-  setGlobalProps({ ...globalProps, engine: undefined, entityId: undefined })
+  audioStreamEmitter.emit('changeState', { entityId, state: MediaState.MS_NONE, sceneId })
 }
 
 // audioStreamSource play might be requested without user interaction

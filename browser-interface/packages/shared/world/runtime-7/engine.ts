@@ -1,5 +1,7 @@
 import { Engine, IEngine, Transport } from '@dcl/ecs/dist-cjs'
 import {
+  MediaState,
+  AudioEvent as defineAudioEvent,
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
@@ -20,6 +22,8 @@ import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
+import { getSceneWorkerBySceneID, getSceneWorkerBySceneNumber } from '../parcelSceneManager'
+import { SceneWorker } from '../SceneWorker'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -37,6 +41,16 @@ type LocalProfileChange = {
   triggerEmote: EmoteData
 }
 
+type State = {
+  sceneId: string | number
+  entityId: Entity
+  state: MediaState
+}
+
+type AudioStreamChange = {
+  changeState: State
+}
+
 function getUserData(userId: string) {
   const dataFromStore = getProfileFromStore(store.getState(), userId)
   if (!dataFromStore) return undefined
@@ -47,7 +61,30 @@ function getUserData(userId: string) {
   }
 }
 
+function getScene(id: string | number): SceneWorker | undefined {
+  if (typeof id === 'string') return getSceneWorkerBySceneID(id)
+  if (typeof id === 'number') return getSceneWorkerBySceneNumber(id)
+  return undefined
+}
+
+function getEngineFromScene(scene?: SceneWorker): IEngine | undefined {
+  return scene?.rpcContext.internalEngine?.engine
+}
+
 export const localProfileChanged = mitt<LocalProfileChange>()
+export const audioStreamEmitter = mitt<AudioStreamChange>()
+
+// AudioStream updates
+audioStreamEmitter.on('changeState', ({ entityId, sceneId, state }) => {
+  const scene = getScene(sceneId)
+  const engine = getEngineFromScene(scene)
+
+  if (!engine) return
+
+  const AudioEvent = defineAudioEvent(engine)
+  AudioEvent.addValue(entityId, { state, timestamp: Date.now() })
+})
+// end of AudioStream updates
 
 /**
  * We used this engine as an internal engine to add information to the worker.
