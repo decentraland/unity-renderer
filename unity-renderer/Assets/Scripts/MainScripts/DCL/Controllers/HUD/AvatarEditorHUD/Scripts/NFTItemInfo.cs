@@ -95,7 +95,7 @@ public class NFTItemInfo : MonoBehaviour
     {
         this.rarityName.text = rarityName;
         this.rarityName.color = skin.rarityNameColor;
-        // backgroundImage.color = skin.backgroundColor;
+        backgroundImage.color = skin.backgroundColor;
         // gradientImage.color = skin.gradientColor;
     }
 
