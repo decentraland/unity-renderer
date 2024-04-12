@@ -1,4 +1,4 @@
-import { Engine, IEngine, Transport } from '@dcl/ecs/dist-cjs'
+import { Engine, IEngine, PlayerClicked, RealmInfo, Transport } from '@dcl/ecs/dist-cjs'
 import {
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
@@ -20,6 +20,9 @@ import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
+import { realmChangeEvent } from '../../sceneEvents/sagas'
+import { PBPlayerClicked, PBRealmInfo } from '@dcl/ecs'
+import { urlWithProtocol } from '../../realm/resolver'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -48,12 +51,13 @@ function getUserData(userId: string) {
 }
 
 export const localProfileChanged = mitt<LocalProfileChange>()
+export const playerClickedEvent = mitt<{ add: { data: IEvents['playerClicked']; sceneNumber: number } }>()
 
 /**
  * We used this engine as an internal engine to add information to the worker.
  * It handles the Avatar information for each player
  */
-export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
+export function createInternalEngine(sceneNumber: number, parcels: string[], isGlobalScene: boolean): IInternalEngine {
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
   const userId = getCurrentUserId(store.getState())!
 
@@ -218,6 +222,32 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     }
   })
 
+  // Realm Change event
+  realmChangeEvent.on('change', ({ adapter, room }) => {
+    const value: PBRealmInfo = {
+      baseUrl: urlWithProtocol(new URL(adapter.baseUrl).hostname),
+      realmName: adapter.about.configurations?.realmName ?? '',
+      networkId: adapter.about.configurations?.networkId ?? 1,
+      commsAdapter: adapter.about.comms?.adapter ?? '',
+      room
+    }
+    RealmInfo.createOrReplace(engine.RootEntity, value)
+  })
+
+  playerClickedEvent.on('add', (data) => {
+    if (data.sceneNumber !== sceneNumber) return
+    const playerClicked = PlayerClicked.get(engine.PlayerEntity)
+    const lastPlayerClicked = [...playerClicked.values()].pop()
+    const value: PBPlayerClicked = {
+      address: data.data.userId,
+      direction: data.data.ray.direction,
+      distance: data.data.ray.distance,
+      origin: data.data.ray.origin,
+      timestamp: (lastPlayerClicked?.timestamp ?? 0) + 1
+    }
+    PlayerClicked.addValue(engine.PlayerEntity, value)
+  })
+
   /**
    * We used this transport to send only the avatar updates to the client instead of the full state
    * Every time there is an update on a profile, this would add those CRDT messages to avatarMessages
@@ -255,6 +285,8 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
       positionObservable.remove(userIdPositionObserver)
       localProfileChanged.off('triggerEmote')
       localProfileChanged.off('changeAvatar')
+      realmChangeEvent.off('change')
+      playerClickedEvent.off('add')
     }
   }
 }

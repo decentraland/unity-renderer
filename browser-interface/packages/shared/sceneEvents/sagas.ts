@@ -7,18 +7,25 @@ import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { SET_REALM_ADAPTER } from 'shared/realm/actions'
 import { realmToConnectionString } from 'shared/realm/resolver'
 import { getRealmAdapter } from 'shared/realm/selectors'
-import type { RootRealmState } from 'shared/realm/types'
+import type { IRealmAdapter, RootRealmState } from 'shared/realm/types'
 import { toEnvironmentRealmType } from '../apis/host/EnvironmentAPI'
 import { SET_COMMS_ISLAND, SET_ROOM_CONNECTION } from '../comms/actions'
 import { getCommsIsland } from '../comms/selectors'
 import { SAVE_DELTA_PROFILE_REQUEST } from '../profiles/actions'
 import { takeLatestByUserId } from '../profiles/sagas'
 import { allScenesEvent } from '../world/parcelSceneManager'
+import mitt from 'mitt'
 
 export function* sceneEventsSaga() {
   yield takeLatest([SET_COMMS_ISLAND, SET_ROOM_CONNECTION, SET_REALM_ADAPTER], islandChanged)
   yield takeLatestByUserId(SAVE_DELTA_PROFILE_REQUEST, submitProfileToScenes)
 }
+
+// used to notify the scenes that the realm changed using PBRealmInfo component.
+type IRealmChangeEvent = {
+  change: { adapter: IRealmAdapter; room: string }
+}
+export const realmChangeEvent = mitt<IRealmChangeEvent>()
 
 function* islandChanged() {
   const { adapter, island } = (yield select(getRealmAdapterAndIsland)) as ReturnType<typeof getRealmAdapterAndIsland>
@@ -26,10 +33,12 @@ function* islandChanged() {
   if (adapter) {
     const payload = toEnvironmentRealmType(adapter, island)
     yield call(allScenesEvent, { eventType: 'onRealmChanged', payload })
+    yield call(() => realmChangeEvent.emit('change', { adapter, room: island ?? '' }))
   }
 
   yield call(updateLocation, adapter ? realmToConnectionString(adapter) : undefined, island)
 }
+
 export function getRealmAdapterAndIsland(state: RootCommsState & RootRealmState) {
   return {
     adapter: getRealmAdapter(state),
