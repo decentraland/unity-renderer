@@ -54,6 +54,7 @@ public static class WearableLiterals
         public const string LEGENDARY = "legendary";
         public const string MYTHIC = "mythic";
         public const string UNIQUE = "unique";
+        public const string EXOTIC = "exotic";
     }
 
     public static class DefaultWearables

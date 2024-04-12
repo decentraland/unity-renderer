@@ -162,6 +162,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase(WearableLiterals.ItemRarity.LEGENDARY)]
         [TestCase(WearableLiterals.ItemRarity.MYTHIC)]
         [TestCase(WearableLiterals.ItemRarity.UNIQUE)]
+        [TestCase(WearableLiterals.ItemRarity.EXOTIC)]
         public void CreateNFTsButtonsByRarityCorrectly(string rarity)
         {
             WearableItem dummyItem = CreateDummyNFT(rarity);

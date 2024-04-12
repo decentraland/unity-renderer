@@ -31,3 +31,5 @@ MonoBehaviour:
     value: {fileID: 21300000, guid: a239a282af9bf48f7a26a34d76d77155, type: 3}
   - key: default
     value: {fileID: 21300000, guid: a239a282af9bf48f7a26a34d76d77155, type: 3}
+  - key: exotic
+    value: {fileID: 21300000, guid: 08eaea8a23fb84cb78a52c7aa089cdea, type: 3}
