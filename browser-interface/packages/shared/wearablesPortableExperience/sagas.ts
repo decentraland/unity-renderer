@@ -154,6 +154,9 @@ export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl
     baseUrl,
     parentCid: 'avatar',
     entity: {
+      // TODO: the wearable.id is an urn because the wearable was fetched
+      //  from `lambdas/wearables` instead of `content/entities/active`
+      id: wearable.id,
       content,
       metadata,
       pointers: [wearable.id],

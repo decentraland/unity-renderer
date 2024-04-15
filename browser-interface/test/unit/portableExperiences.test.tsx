@@ -22,6 +22,7 @@ describe('Portable experiences sagas test', () => {
     id: urn,
     baseUrl: '',
     entity: {
+      id: urn,
       content: [],
       metadata: {
         menuBarIcon: 'icon'

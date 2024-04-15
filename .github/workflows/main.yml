@@ -25,9 +25,12 @@ jobs:
             - [Open custom protocol](https://renderer-artifacts.decentraland.org/desktop/index.html?dcl://DESKTOP-BRANCH=${{ github.head_ref }})
             - [Open custom protocol with Developer Mode](https://renderer-artifacts.decentraland.org/desktop/index.html?dcl://DESKTOP-BRANCH=${{ github.head_ref }}&DESKTOP-DEVELOPER-MODE)
 
-            ### SDK 6/7:
+            ### SDK 7
             - [Open SDK7 scenes playground](https://playground.decentraland.org/?explorer-branch=${{ github.head_ref }})
-            - [Open SDK7 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=73,-8&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
+            - [Open SDK7 goerli plaza scenes](https://decentraland.org/play/?realm=sdk-team-cdn.decentraland.org/ipfs/goerli-plaza-main-latest&position=72%2C-10&explorer-branch=${{ github.head_ref }})
+            - [Open SDK7 test scenes](https://decentraland.org/play/?realm=sdk-team-cdn.decentraland.org/ipfs/sdk7-test-scenes-main-latest&position=72%2C-10&explorer-branch=${{ github.head_ref }})
+
+            ### SDK 6
             - [Open SDK6 scenes in preview](https://sdk-test-scenes.decentraland.zone/?position=-1,27&realm=LocalPreview&explorer-branch=${{ github.head_ref }})
 
             ### More

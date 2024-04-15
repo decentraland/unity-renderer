@@ -324,6 +324,8 @@ public class WearableItem
                 return 100;
             case ItemRarity.MYTHIC:
                 return 10;
+            case ItemRarity.EXOTIC:
+                return 50;
             case ItemRarity.UNIQUE:
                 return 1;
         }
