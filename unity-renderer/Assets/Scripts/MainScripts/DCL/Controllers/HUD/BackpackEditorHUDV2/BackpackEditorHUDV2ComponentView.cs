@@ -50,10 +50,14 @@ namespace DCL.Backpack
         [SerializeField] internal GameObject outfitSection;
         [SerializeField] internal Button outfitButton;
         [SerializeField] internal Image outfitButtonIcon;
-        [SerializeField] internal Button vrmExportButton;
-        [SerializeField] internal RectTransform vrmExportedToast;
         [SerializeField] internal GameObject background;
         [SerializeField] internal GameObject hints;
+
+        [Header("VRM Export")]
+        [SerializeField] internal Button vrmExportButton;
+        [SerializeField] internal TooltipComponentView vrmExportTooltipComponentView;
+        [SerializeField] internal GameObject vrmWarningBubble;
+        [SerializeField] internal RectTransform vrmExportedToast;
 
         [Header("Sign Up Mode")]
         [SerializeField] internal GameObject signUpHeader;
@@ -295,6 +299,20 @@ namespace DCL.Backpack
         public void SetVRMSuccessToastActive(bool active)
         {
             vrmExportedToast.gameObject.SetActive(active);
+        }
+
+        public void SetVRMExportWarning(bool enable)
+        {
+            if (enable)
+            {
+                vrmWarningBubble.SetActive(true);
+                vrmExportTooltipComponentView.isViewEnabled = true;
+            }
+            else
+            {
+                vrmWarningBubble.SetActive(false);
+                vrmExportTooltipComponentView.isViewEnabled = false;
+            }
         }
 
         public void SetSignUpModeActive(bool isActive)

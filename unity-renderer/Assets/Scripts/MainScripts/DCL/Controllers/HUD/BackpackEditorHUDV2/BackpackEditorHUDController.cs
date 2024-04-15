@@ -76,7 +76,10 @@ namespace DCL.Backpack
 
         private int currentAnimationIndexShown;
         private bool shouldRequestOutfits = true;
+
+        private bool vrmWarningEnabled;
         private CancellationTokenSource vrmExportCts;
+        private readonly HashSet<string> vrmBlockingWearablesList;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -146,6 +149,8 @@ namespace DCL.Backpack
             view.SetVRMButtonActive(vrmFeatureEnabled);
             view.SetVRMButtonEnabled(vrmFeatureEnabled);
             view.SetVRMSuccessToastActive(false);
+
+            vrmBlockingWearablesList = new ();
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
@@ -228,6 +233,8 @@ namespace DCL.Backpack
             view.OnSignUpBackClicked -= OnSignUpBack;
             outfitsController.OnOutfitEquipped -= OnOutfitEquipped;
             view.Dispose();
+
+            vrmBlockingWearablesList.Clear();
         }
 
         private void UpdateOverrideHides(string category, bool toggleOn) =>
@@ -671,6 +678,12 @@ namespace DCL.Backpack
                 UpdateAvatarModel(model.ToAvatarModel());
                 categoryPendingToPlayEmote = wearable.data.category;
             }
+
+            if (wearable.data.blockVrmExport)
+            {
+                vrmBlockingWearablesList.Add(shortenWearableId);
+                CheckVRMExportRequirements();
+            }
         }
 
         private void ReplaceIncompatibleWearablesWithDefaultWearables()
@@ -749,6 +762,18 @@ namespace DCL.Backpack
 
             if (updateAvatarPreview)
                 UpdateAvatarModel(model.ToAvatarModel());
+
+            if (wearable.data.blockVrmExport)
+            {
+                vrmBlockingWearablesList.Remove(shortenedWearableId);
+                CheckVRMExportRequirements();
+            }
+        }
+
+        private void CheckVRMExportRequirements()
+        {
+            vrmWarningEnabled = vrmBlockingWearablesList.Count > 0;
+            view.SetVRMExportWarning(vrmWarningEnabled);
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
@@ -756,7 +781,7 @@ namespace DCL.Backpack
             if (wearable.GetHidesList(ownUserProfile.avatar.bodyShape) != null)
                 foreach (string s in wearable.GetHidesList(ownUserProfile.avatar.bodyShape))
                     UpdateOverrideHides(s, false, setAsDirty);
-                }
+        }
 
         private void ToggleSlot(string slotCategory, bool supportColor, PreviewCameraFocus previewCameraFocus, bool isSelected)
         {
@@ -874,9 +899,17 @@ namespace DCL.Backpack
 
         private void OnVrmExport()
         {
-            vrmExportCts?.SafeCancelAndDispose();
-            vrmExportCts = new CancellationTokenSource();
-            VrmExport(vrmExportCts.Token).Forget();
+            if (vrmWarningEnabled)
+            {
+                // WIP: Show VRM Export details panel.
+                Debug.Log("WIP: Open Details panel.");
+            }
+            else
+            {
+                vrmExportCts?.SafeCancelAndDispose();
+                vrmExportCts = new CancellationTokenSource();
+                VrmExport(vrmExportCts.Token).Forget();
+            }
         }
 
         private void OnSignUpBack(SignUpStage stage)
