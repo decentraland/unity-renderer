@@ -89,7 +89,6 @@ SpriteAtlas:
     - 1f9a3897187df4915860cca7bae48552: 21300000
     - 1f8423c7e44934bc88742ef8c05aa4ee: 21300000
     - 23241d08164d3406e8fb5463625d3c37: 21300000
-    - 8b2e7b282b40cc847b6eaf0ed8ee29b8: 21300000
     - f57d8e78f64d542e098dbaf497a8b139: 21300000
     - 48d5dd980b244494b9f9d9fc540e0b01: 21300000
     - 86700c29929bc4233a4561fb3da6140b: 21300000
@@ -154,7 +153,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1f9a3897187df4915860cca7bae48552, type: 3}
   - {fileID: 21300000, guid: 1f8423c7e44934bc88742ef8c05aa4ee, type: 3}
   - {fileID: 21300000, guid: 23241d08164d3406e8fb5463625d3c37, type: 3}
-  - {fileID: 21300000, guid: 8b2e7b282b40cc847b6eaf0ed8ee29b8, type: 3}
   - {fileID: 21300000, guid: f57d8e78f64d542e098dbaf497a8b139, type: 3}
   - {fileID: 21300000, guid: 48d5dd980b244494b9f9d9fc540e0b01, type: 3}
   - {fileID: 21300000, guid: 86700c29929bc4233a4561fb3da6140b, type: 3}
@@ -207,7 +205,7 @@ SpriteAtlas:
   - Silhouette003
   - FacialHairIcon
   - Silhouette004
-  - VRMBlock x2
+  - VRMBlock
   - EyebrowIcon
   - EmptyIcon
   - LegendaryThumbnail
@@ -218,7 +216,6 @@ SpriteAtlas:
   - CameraIcon
   - EyewareIcon
   - PlusIcn
-  - VRMBlocked
   - Silhouette001
   - TopIcon
   - SoundIcn
