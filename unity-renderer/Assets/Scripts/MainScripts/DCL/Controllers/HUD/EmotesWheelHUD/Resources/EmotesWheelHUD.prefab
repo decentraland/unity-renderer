@@ -3042,6 +3042,8 @@ MonoBehaviour:
     markColor: {r: 0.4509804, g: 0.827451, b: 0.827451, a: 1}
   - rarity: uncommon
     markColor: {r: 1, g: 0.5137255, b: 0.38431373, a: 1}
+  - rarity: exotic
+    markColor: {r: 0.7921569, g: 1, b: 0.4509804, a: 1}
   customizeTitle: {fileID: 0}
 --- !u!222 &5211374839953244563
 CanvasRenderer:

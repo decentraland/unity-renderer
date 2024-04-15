@@ -48,7 +48,7 @@ export function registerCommunicationsControllerServiceServerImplementation(port
      * The `receiveCommsMessage` relays messages in direction: scene -> comms
      */
     const commsController: ICommunicationsController = {
-      cid: ctx.sceneData.id,
+      cid: ctx.sceneData.entity.id || ctx.sceneData.id,
       receiveCommsMessage(preData: Uint8Array, sender: PeerInformation) {
         const [msgType, data] = decodeMessage(preData)
         if (msgType === MsgType.String) {
@@ -85,13 +85,13 @@ export function registerCommunicationsControllerServiceServerImplementation(port
     return {
       async send(req, ctx) {
         const message = textEncoder.encode(req.message)
-        sendParcelSceneCommsMessage(ctx.sceneData.id, encodeMessage(message, MsgType.String))
+        sendParcelSceneCommsMessage(commsController.cid, encodeMessage(message, MsgType.String))
         return {}
       },
       async sendBinary(req, ctx) {
         // Send messages
         for (const data of req.data) {
-          sendParcelSceneCommsMessage(ctx.sceneData.id, encodeMessage(data, MsgType.Uint8Array))
+          sendParcelSceneCommsMessage(commsController.cid, encodeMessage(data, MsgType.Uint8Array))
         }
 
         // Process received messages

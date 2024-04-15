@@ -85,6 +85,10 @@ export async function getPortableExperienceFromUrn(sceneUrn: string): Promise<Lo
 
   const result = await fetch(resolvedUrl)
   const entity = (await result.json()) as Entity
+  if (!entity.id) {
+    entity.id = resolvedEntity.cid
+  }
+
   const baseUrl: string = resolvedEntity.baseUrl || new URL('.', resolvedUrl).toString()
 
   return {

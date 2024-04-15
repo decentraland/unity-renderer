@@ -289,7 +289,7 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
         throw new Error('No access token')
       }
 
-      const livekitAdapter = new LivekitAdapter({
+      const livekitAdapter = await LivekitAdapter.init({
         logger: commsLogger,
         url: theUrl.origin + theUrl.pathname,
         token,

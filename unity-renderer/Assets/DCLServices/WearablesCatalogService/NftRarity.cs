@@ -10,5 +10,6 @@ namespace DCLServices.WearablesCatalogService
         Mythic,
         Unique,
         None,
+        Exotic,
     }
 }

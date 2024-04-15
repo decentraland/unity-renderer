@@ -187,6 +187,7 @@ describe('RestrictedActions tests', () => {
       sceneNumber: 3,
       baseUrl: '',
       entity: {
+        id: 'test',
         version: 'v3',
         content: [],
         pointers: [],
