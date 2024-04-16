@@ -151,6 +151,7 @@ namespace DCL.Backpack
             view.SetVRMSuccessToastActive(false);
 
             vrmBlockingWearablesList = new ();
+            CheckVRMExportRequirements();
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
