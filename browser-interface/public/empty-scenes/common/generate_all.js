@@ -36,16 +36,18 @@ for (let dir of dirs) {
       }
     }
   }
+  let sourceFile = path.join(__dirname, dir, 'bin/game.js')
+  let targetFile = path.join(__dirname, 'contents', dir + '.js')
   if (
     fs
-      .readFileSync(path.join(__dirname, dir, 'bin/game.js'))
+      .readFileSync(sourceFile)
       .toString()
       .startsWith('dcl.subscribe')
   ) {
-    fs.copyFileSync(path.join(__dirname, dir, 'bin/game.js'), path.join(__dirname, 'contents', dir + '.js'))
+    fs.copyFileSync(sourceFile, targetFile)
   } else {
     fs.writeFileSync(
-      path.join(__dirname, 'contents', dir + '.js'),
+      targetFile,
       `
 dcl.subscribe('sceneStart')
 
@@ -91,7 +93,7 @@ var engine = {
       dcl.setParent(entity.id, "0")
     }
   }
-}\n` + fs.readFileSync(path.join(__dirname, dir, 'bin/game.js')).toString()
+}\n` + fs.readFileSync(sourceFile).toString()
     )
   }
   data[dir] = sceneMappings
