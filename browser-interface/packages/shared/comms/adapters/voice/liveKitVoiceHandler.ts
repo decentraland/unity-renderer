@@ -200,7 +200,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         )
       }
 
-      for (const [_, participant] of room.remoteParticipants) {
+      for (const [_, participant] of room.participants) {
         const address = participant.identity
         const peer = getPeer(address)
         const participantInfo = participantsInfo.get(address)

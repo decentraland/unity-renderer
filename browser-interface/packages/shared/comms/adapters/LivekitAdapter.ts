@@ -33,12 +33,10 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
   private voiceHandler: VoiceHandler
 
   static async init(config: LivekitConfig) {
-    const room = new Room()
-    const sid = await room.getSid()
-    return new LivekitAdapter(config, room, sid)
+    return new LivekitAdapter(config, new Room())
   }
 
-  private constructor(private config: LivekitConfig, private readonly room: Room, private sid: string) {
+  private constructor(private config: LivekitConfig, private readonly room: Room) {
     this.voiceHandler = createLiveKitVoiceHandler(this.room, this.config.globalAudioStream)
 
     this.room
@@ -61,13 +59,13 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
         this.config.logger.log(this.room.name, 'disconnected from room', reason, {
           liveKitParticipantSid: this.room.localParticipant.sid,
-          liveKitRoomSid: this.sid
+          liveKitRoomSid: this.room.sid
         })
         trackEvent('disconnection_cause', {
           context: 'livekit-adapter',
           message: `Got RoomEvent.Disconnected. Reason: ${reason}`,
           liveKitParticipantSid: this.room.localParticipant.sid,
-          liveKitRoomSid: this.sid
+          liveKitRoomSid: this.room.sid
         })
         const kicked = reason === DisconnectReason.DUPLICATE_IDENTITY
         this.do_disconnect(kicked).catch((err) => {
@@ -111,14 +109,14 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
     }
 
     try {
-      await this.room.localParticipant.publishData(data, { reliable })
+      await this.room.localParticipant.publishData(data, DataPacket_Kind.RELIABLE)
     } catch (err: any) {
       // NOTE: for tracking purposes only, this is not a "code" error, this is a failed connection or a problem with the livekit instance
       trackEvent('error', {
         context: 'livekit-adapter',
         message: `Error trying to send data. Reason: ${err.message}`,
         stack: err.stack,
-        saga_stack: `room session id: ${this.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
+        saga_stack: `room session id: ${this.room.sid}, participant id: ${this.room.localParticipant.sid}, state: ${state}`
       })
       await this.disconnect()
     }
@@ -147,16 +145,18 @@ export class LivekitAdapter implements MinimumCommunicationsAdapter {
 
   getActiveVideoStreams(): Map<string, ActiveVideoStreams> {
     const result = new Map<string, ActiveVideoStreams>()
-    const participants = this.room.remoteParticipants
+    const participants = this.room.participants
 
     for (const [sid, participant] of participants) {
-      if (participant.videoTrackPublications.size > 0) {
+      if (participant.videoTracks.size > 0) {
         const participantTracks = new Map<string, Track>()
-        for (const [videoSid, track] of participant.videoTrackPublications) {
+
+        for (const [videoSid, track] of participant.videoTracks) {
           if (track.videoTrack?.mediaStream) {
             participantTracks.set(videoSid, track.videoTrack)
           }
         }
+
         result.set(sid, { identity: participant.identity, videoTracks: participantTracks })
       }
     }
