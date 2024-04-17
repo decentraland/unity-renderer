@@ -22,8 +22,6 @@ import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
-import { getSceneWorkerBySceneID, getSceneWorkerBySceneNumber } from '../parcelSceneManager'
-import { SceneWorker } from '../SceneWorker'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -42,7 +40,7 @@ type LocalProfileChange = {
 }
 
 type State = {
-  sceneId: string | number
+  sceneId: number
   entityId: Entity
   state: MediaState
 }
@@ -61,36 +59,14 @@ function getUserData(userId: string) {
   }
 }
 
-function getScene(id: string | number): SceneWorker | undefined {
-  if (typeof id === 'string') return getSceneWorkerBySceneID(id)
-  if (typeof id === 'number') return getSceneWorkerBySceneNumber(id)
-  return undefined
-}
-
-function getEngineFromScene(scene?: SceneWorker): IEngine | undefined {
-  return scene?.rpcContext.internalEngine?.engine
-}
-
 export const localProfileChanged = mitt<LocalProfileChange>()
 export const audioStreamEmitter = mitt<AudioStreamChange>()
-
-// AudioStream updates
-audioStreamEmitter.on('changeState', ({ entityId, sceneId, state }) => {
-  const scene = getScene(sceneId)
-  const engine = getEngineFromScene(scene)
-
-  if (!engine) return
-
-  const AudioEvent = defineAudioEvent(engine)
-  AudioEvent.addValue(entityId, { state, timestamp: Date.now() })
-})
-// end of AudioStream updates
 
 /**
  * We used this engine as an internal engine to add information to the worker.
  * It handles the Avatar information for each player
  */
-export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
+export function createInternalEngine(sceneNumber: number, parcels: string[], isGlobalScene: boolean): IInternalEngine {
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
   const userId = getCurrentUserId(store.getState())!
 
@@ -102,6 +78,7 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   const AvatarEquippedData = defineAvatarEquippedData(engine)
   const PlayerIdentityData = definePlayerIdentityData(engine)
   const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
+  const AudioEvent = defineAudioEvent(engine)
   const avatarMap = new Map<string, Entity>()
 
   function addUser(userId: string) {
@@ -227,6 +204,16 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     addEmote(userId, emote)
   })
   // End of LOCAL USER
+
+  // AudioStream updates
+  audioStreamEmitter.on('changeState', ({ entityId, sceneId, state }) => {
+    if (sceneId !== sceneNumber) return
+    const audioEvent = AudioEvent.get(entityId)
+    const lastAudio = [...audioEvent.values()].pop()
+    const timestamp = (lastAudio?.timestamp ?? 0) + 1
+    AudioEvent.addValue(entityId, { state, timestamp })
+  })
+  // end of AudioStream updates
 
   // PlayersConnected observers
   const observerInstance = avatarMessageObservable.add((message) => {

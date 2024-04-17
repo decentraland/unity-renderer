@@ -8,7 +8,7 @@ type AudioEvents = HTMLMediaElementEventMap
 type GlobalProps = {
   playToken: number
   entityId?: Entity
-  sceneId?: string | number
+  sceneId?: number
 }
 
 let globalProps: GlobalProps = {
@@ -89,7 +89,7 @@ export async function setAudioStreamForEntity(
   url: string,
   play: boolean,
   volume: number,
-  sceneId: string | number,
+  sceneId: number,
   entityId: Entity
 ) {
   setGlobalProps({ ...globalProps, sceneId, entityId })
