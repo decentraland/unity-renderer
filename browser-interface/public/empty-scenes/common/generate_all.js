@@ -36,7 +36,7 @@ for (let dir of dirs) {
       }
     }
   }
-  let sourceFile = path.join(__dirname, dir, 'bin/game.js')
+  let sourceFile = path.join(__dirname, dir, 'src/game.ts')
   let targetFile = path.join(__dirname, 'contents', dir + '.js')
   if (
     fs
