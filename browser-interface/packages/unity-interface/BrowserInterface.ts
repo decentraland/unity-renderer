@@ -26,7 +26,7 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { sendMessage } from 'shared/chat/actions'
 import { sendPublicChatMessage } from 'shared/comms'
 import { changeRealm } from 'shared/dao'
-import {getExploreRealmsService, getSelectedNetwork} from 'shared/dao/selectors'
+import { getExploreRealmsService, getSelectedNetwork } from 'shared/dao/selectors'
 import { getERC20Balance } from 'lib/web3/EthereumService'
 import { leaveChannel, updateUserData } from 'shared/friends/actions'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
@@ -113,13 +113,14 @@ import {
 } from 'shared/world/parcelSceneManager'
 import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
-import { setAudioStream } from './audioStream'
+import { setAudioStream, killAudioStream, setAudioStreamForEntity } from './audioStream'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
 import { encodeParcelPosition } from 'lib/decentraland'
 import { Vector2 } from 'shared/protocol/decentraland/common/vectors.gen'
 import {fetchAndReportRealmsInfo} from "../shared/renderer/sagas";
+import { Entity } from '@dcl/ecs/dist-cjs'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -847,6 +848,14 @@ export class BrowserInterface {
 
   public SetAudioStream(data: { url: string; play: boolean; volume: number }) {
     setAudioStream(data.url, data.play, data.volume).catch((err) => defaultLogger.log(err))
+  }
+
+  public SetAudioStreamForEntity(data: { url: string; play: boolean; volume: number; sceneNumber: number; entityId: Entity }) {
+    setAudioStreamForEntity(data.url, data.play, data.volume, data.sceneNumber, data.entityId).catch((err) => defaultLogger.log(err))
+  }
+
+  public KillAudioStream(data: { sceneNumber: number; entityId: Entity }) {
+    killAudioStream(data.sceneNumber, data.entityId).catch((err) => defaultLogger.log(err))
   }
 
   public SendChatMessage(data: { message: ChatMessage }) {

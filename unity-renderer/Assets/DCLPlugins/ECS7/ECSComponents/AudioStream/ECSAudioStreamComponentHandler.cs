@@ -18,6 +18,7 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal PBAudioStream model;
         internal IParcelScene scene;
+        internal IDCLEntity entity;
         internal string url;
 
         // Flags to check if we can activate the AudioStream
@@ -28,6 +29,7 @@ namespace DCL.ECSComponents
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
+            this.entity = entity;
 
             if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
@@ -48,7 +50,7 @@ namespace DCL.ECSComponents
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
 
-            StopStreaming();
+            WebInterface.KillAudioStream(scene.sceneData.sceneNumber, entity.entityId);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioStream model)
@@ -162,7 +164,7 @@ namespace DCL.ECSComponents
         private void SendUpdateAudioStreamEvent(bool play)
         {
             isPlaying = play;
-            WebInterface.SendAudioStreamEvent(url, isPlaying, currentVolume);
+            WebInterface.SendAudioStreamEventForEntity(url, isPlaying, currentVolume, scene.sceneData.sceneNumber, entity.entityId);
         }
     }
 }

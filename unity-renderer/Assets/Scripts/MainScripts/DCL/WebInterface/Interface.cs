@@ -542,6 +542,20 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class AudioStreamingForEntityPayload : AudioStreamingPayload
+        {
+            public int sceneNumber;
+            public long entityId;
+        }
+
+        [System.Serializable]
+        public class AudioStreamingKillPayload
+        {
+            public int sceneNumber;
+            public long entityId;
+        }
+
+        [System.Serializable]
         public class SetScenesLoadRadiusPayload
         {
             public float newRadius;
@@ -1010,6 +1024,8 @@ namespace DCL.Interface
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
+        private static AudioStreamingForEntityPayload onAudioStreamingEventForEntity = new AudioStreamingForEntityPayload();
+        private static AudioStreamingKillPayload onAudioStreamingKillEvent = new AudioStreamingKillPayload();
         private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
         private static SetScenesLoadRadiusPayload setScenesLoadRadiusPayload = new SetScenesLoadRadiusPayload();
         private static ApplySettingsPayload applySettingsPayload = new ApplySettingsPayload();
@@ -1550,6 +1566,23 @@ namespace DCL.Interface
             onAudioStreamingEvent.play = play;
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
+        }
+
+        public static void SendAudioStreamEventForEntity(string url, bool play, float volume, int sceneNumber, long entityId)
+        {
+            onAudioStreamingEventForEntity.url = url;
+            onAudioStreamingEventForEntity.play = play;
+            onAudioStreamingEventForEntity.volume = volume;
+            onAudioStreamingEventForEntity.sceneNumber = sceneNumber;
+            onAudioStreamingEventForEntity.entityId = entityId;
+            SendMessage("SetAudioStreamForEntity", onAudioStreamingEventForEntity);
+        }
+
+        public static void KillAudioStream(int sceneNumber, long entityId)
+        {
+            onAudioStreamingKillEvent.sceneNumber = sceneNumber;
+            onAudioStreamingKillEvent.entityId = entityId;
+            SendMessage("KillAudioStream", onAudioStreamingKillEvent);
         }
 
         public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
