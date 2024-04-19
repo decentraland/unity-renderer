@@ -82,8 +82,8 @@ namespace DCL.Backpack
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
         public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
         public OutfitsSectionComponentView OutfitsSectionComponentView => outfitsSectionComponentView;
-        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
 
+        private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         private Transform thisTransform;
         private bool isAvatarDirty;
         private AvatarModel avatarModelToUpdate;
@@ -92,6 +92,7 @@ namespace DCL.Backpack
         private SignUpStage currentStage;
         private Vector2 originalAnchorPositionOfWearablesBackgroundForSignUp;
         private Vector2 originalAnchorPositionOfWearablesSection;
+        private bool vrmWarningEnabled;
 
         public override void Awake()
         {
@@ -127,9 +128,15 @@ namespace DCL.Backpack
             outfitButton.onClick.AddListener(ToggleOutfitSection);
 
             vrmExportButton.onClick.RemoveAllListeners();
-            vrmExportButton.onClick.AddListener(() => OnVRMExport?.Invoke());
+            vrmExportButton.onClick.AddListener(OnVRMExportButtonClicked);
 
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
+        }
+
+        private void OnVRMExportButtonClicked()
+        {
+            if (!vrmWarningEnabled)
+                OnVRMExport?.Invoke();
         }
 
         public void SetOutfitsEnabled(bool isEnabled) =>
@@ -303,7 +310,8 @@ namespace DCL.Backpack
 
         public void SetVRMExportWarning(bool enable)
         {
-            if (enable)
+            vrmWarningEnabled = enable;
+            if (vrmWarningEnabled)
             {
                 vrmWarningBubble.SetActive(true);
                 vrmExportTooltipComponentView.isViewEnabled = true;

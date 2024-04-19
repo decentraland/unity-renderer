@@ -56,6 +56,8 @@ namespace DCL.Backpack
                 {WearableLiterals.Categories.EYES, "urn:decentraland:off-chain:base-avatars:eyes_00"},
             }}
         };
+        private readonly BackpackEditorHUDModel model = new ();
+        private readonly HashSet<string> vrmBlockingWearablesList;
 
         private string currentSlotSelected;
         private bool avatarIsDirty;
@@ -72,14 +74,11 @@ namespace DCL.Backpack
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
-        private readonly BackpackEditorHUDModel model = new ();
-
         private int currentAnimationIndexShown;
         private bool shouldRequestOutfits = true;
 
         private bool vrmWarningEnabled;
         private CancellationTokenSource vrmExportCts;
-        private readonly HashSet<string> vrmBlockingWearablesList;
 
         public BackpackEditorHUDController(
             IBackpackEditorHUDView view,
@@ -151,7 +150,7 @@ namespace DCL.Backpack
             view.SetVRMSuccessToastActive(false);
 
             vrmBlockingWearablesList = new ();
-            CheckVRMExportRequirements();
+            UpdateVRMExportWarning();
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
@@ -683,7 +682,7 @@ namespace DCL.Backpack
             if (wearable.data.blockVrmExport)
             {
                 vrmBlockingWearablesList.Add(shortenWearableId);
-                CheckVRMExportRequirements();
+                UpdateVRMExportWarning();
             }
         }
 
@@ -767,11 +766,11 @@ namespace DCL.Backpack
             if (wearable.data.blockVrmExport)
             {
                 vrmBlockingWearablesList.Remove(shortenedWearableId);
-                CheckVRMExportRequirements();
+                UpdateVRMExportWarning();
             }
         }
 
-        private void CheckVRMExportRequirements()
+        private void UpdateVRMExportWarning()
         {
             vrmWarningEnabled = vrmBlockingWearablesList.Count > 0;
             view.SetVRMExportWarning(vrmWarningEnabled);
@@ -900,17 +899,9 @@ namespace DCL.Backpack
 
         private void OnVrmExport()
         {
-            if (vrmWarningEnabled)
-            {
-                // WIP: Show VRM Export details panel.
-                Debug.Log("WIP: Open Details panel.");
-            }
-            else
-            {
-                vrmExportCts?.SafeCancelAndDispose();
-                vrmExportCts = new CancellationTokenSource();
-                VrmExport(vrmExportCts.Token).Forget();
-            }
+            vrmExportCts?.SafeCancelAndDispose();
+            vrmExportCts = new CancellationTokenSource();
+            VrmExport(vrmExportCts.Token).Forget();
         }
 
         private void OnSignUpBack(SignUpStage stage)
