@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UIComponents.Scripts.Components.Tooltip;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,8 +18,10 @@ namespace UIComponents.Scripts.Components
         private RectTransform rectTransform;
         private RectTransform rect => rectTransform ??= GetComponent<RectTransform>();
 
-        private void Start()
+        public override void Awake()
         {
+            base.Awake();
+
             if (activatorComponent == null)
                 return;
 
@@ -37,7 +38,7 @@ namespace UIComponents.Scripts.Components
         {
             base.OnEnable();
 
-            if (EventSystem.current != null)
+            if (EventSystem.current)
                 EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
@@ -45,7 +46,7 @@ namespace UIComponents.Scripts.Components
         {
             base.OnFocus();
 
-            if (EventSystem.current != null)
+            if (EventSystem.current)
                 EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
@@ -53,7 +54,7 @@ namespace UIComponents.Scripts.Components
         {
             base.OnLoseFocus();
 
-            if (EventSystem.current != null)
+            if (EventSystem.current)
                 EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
@@ -89,7 +90,7 @@ namespace UIComponents.Scripts.Components
         {
             model.message = newText;
 
-            if (text != null)
+            if (text)
                 text.text = newText;
         }
 

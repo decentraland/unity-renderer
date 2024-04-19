@@ -46,6 +46,7 @@ namespace DCL.Backpack
         void SetVRMButtonActive(bool enabled);
         void SetVRMButtonEnabled(bool enabled);
         void SetVRMSuccessToastActive(bool active);
+        void SetVRMExportWarning(bool enable);
         void SetSignUpModeActive(bool isActive);
         void SetSignUpStage(SignUpStage stage);
     }
