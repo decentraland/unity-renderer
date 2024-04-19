@@ -1,11 +1,14 @@
-import { Engine, IEngine, PlayerClicked, RealmInfo, Transport } from '@dcl/ecs/dist-cjs'
+import { Engine, IEngine, Transport } from '@dcl/ecs/dist-cjs'
 import {
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
   AvatarEquippedData as defineAvatarEquippedData,
-  AvatarEmoteCommand as defineAvatarEmoteCommand
+  AvatarEmoteCommand as defineAvatarEmoteCommand,
+  PointerEventsResult as definePointerEventsResult,
+  RealmInfo as defineRealmInfo
 } from '@dcl/ecs/dist-cjs/components'
+import { PointerEventType, InputAction, PBRealmInfo } from '@dcl/ecs/dist-cjs'
 import { Entity, EntityUtils, createEntityContainer } from '@dcl/ecs/dist-cjs/engine/entity'
 import { avatarMessageObservable, getAllPeers } from '../../comms/peers'
 import { encodeParcelPosition } from '../../../lib/decentraland'
@@ -21,7 +24,6 @@ import { prepareAvatar } from '../../../lib/decentraland/profiles/transformation
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
 import { realmChangeEvent } from '../../sceneEvents/sagas'
-import { PBPlayerClicked, PBRealmInfo } from '@dcl/ecs'
 import { urlWithProtocol } from '../../realm/resolver'
 
 export type IInternalEngine = {
@@ -69,6 +71,8 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
   const AvatarEquippedData = defineAvatarEquippedData(engine)
   const PlayerIdentityData = definePlayerIdentityData(engine)
   const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
+  const PointerEventsResult = definePointerEventsResult(engine)
+  const RealmInfo = defineRealmInfo(engine)
   const avatarMap = new Map<string, Entity>()
 
   function addUser(userId: string) {
@@ -236,16 +240,24 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
 
   playerClickedEvent.on('add', (data) => {
     if (data.sceneNumber !== sceneNumber) return
-    const playerClicked = PlayerClicked.get(engine.PlayerEntity)
-    const lastPlayerClicked = [...playerClicked.values()].pop()
-    const value: PBPlayerClicked = {
-      address: data.data.userId,
-      direction: data.data.ray.direction,
-      distance: data.data.ray.distance,
-      origin: data.data.ray.origin,
-      timestamp: (lastPlayerClicked?.timestamp ?? 0) + 1
+    const userEntity = avatarMap.get(data.data.userId)
+    if (!userEntity) return
+    const pointerEventResult = PointerEventsResult.get(userEntity)
+    const lastPointerEvent = [...pointerEventResult.values()].pop()
+    const value = {
+      button: InputAction.IA_POINTER,
+      state: PointerEventType.PET_DOWN,
+      tickNumber: Date.now(),
+      hit: {
+        direction: data.data.ray.direction,
+        length: data.data.ray.distance,
+        globalOrigin: data.data.ray.origin,
+        normalHit: undefined,
+        position: undefined
+      },
+      timestamp: (lastPointerEvent?.timestamp ?? 0) + 1
     }
-    PlayerClicked.addValue(engine.PlayerEntity, value)
+    PointerEventsResult.addValue(userEntity, value)
   })
 
   /**
