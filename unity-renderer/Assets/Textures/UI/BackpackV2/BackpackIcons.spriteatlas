@@ -70,6 +70,7 @@ SpriteAtlas:
     - 3e93cfe39d23e4cc1bce8e1621fac43d: 21300000
     - e8bb1d3461346463a8a09e69e9d0b21e: 21300000
     - e0a031647fa194e6690c0749c758613e: 21300000
+    - 47322084c05e74035ae381083f82a781: 21300000
     - dfec25e4cf70a4f408093194340bfcb4: 21300000
     - 1b8e5d35e0b2d46379b97bb7e7ab2c97: 21300000
     - b54d69b54857f44d7acfdc7e428ca94e: 21300000
@@ -78,7 +79,6 @@ SpriteAtlas:
     - b3fcd616f8250405f8bb1aadd61cc220: 21300000
     - 81132a1626c0d43aabeeec2414a68945: 21300000
     - feb17d16b84e84e55a6dc530923024ef: 21300000
-    - c4e6f0f6e84ea3740b4ddae100802883: 21300000
     - 15c01427d7e8f4c72a16e8e1368c82a6: 21300000
     - 17138637340a445fd8f7c55b3e177e8c: 21300000
     - f64af9471f87448c6996cf13d511a0dc: 21300000
@@ -96,6 +96,7 @@ SpriteAtlas:
     - 6bc5be995cfc14e0182a54c5a4fef290: 21300000
     - 075c9dd99649649f9869afece52cd35b: 21300000
     - 8631f81a1b5cb4bfea4f8cd0fcfd6d76: 21300000
+    - 08eaea8a23fb84cb78a52c7aa089cdea: 21300000
     - 2bd9c7cbf6f504ad89e22e7f1f497fd2: 21300000
     - 566238cb65c3147e192bcfd9e1aa7198: 21300000
     - 2d93daeb29e2746d8a0c30203496d9c7: 21300000
@@ -134,6 +135,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3e93cfe39d23e4cc1bce8e1621fac43d, type: 3}
   - {fileID: 21300000, guid: e8bb1d3461346463a8a09e69e9d0b21e, type: 3}
   - {fileID: 21300000, guid: e0a031647fa194e6690c0749c758613e, type: 3}
+  - {fileID: 21300000, guid: 47322084c05e74035ae381083f82a781, type: 3}
   - {fileID: 21300000, guid: dfec25e4cf70a4f408093194340bfcb4, type: 3}
   - {fileID: 21300000, guid: 1b8e5d35e0b2d46379b97bb7e7ab2c97, type: 3}
   - {fileID: 21300000, guid: b54d69b54857f44d7acfdc7e428ca94e, type: 3}
@@ -142,7 +144,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b3fcd616f8250405f8bb1aadd61cc220, type: 3}
   - {fileID: 21300000, guid: 81132a1626c0d43aabeeec2414a68945, type: 3}
   - {fileID: 21300000, guid: feb17d16b84e84e55a6dc530923024ef, type: 3}
-  - {fileID: 21300000, guid: c4e6f0f6e84ea3740b4ddae100802883, type: 3}
   - {fileID: 21300000, guid: 15c01427d7e8f4c72a16e8e1368c82a6, type: 3}
   - {fileID: 21300000, guid: 17138637340a445fd8f7c55b3e177e8c, type: 3}
   - {fileID: 21300000, guid: f64af9471f87448c6996cf13d511a0dc, type: 3}
@@ -160,6 +161,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6bc5be995cfc14e0182a54c5a4fef290, type: 3}
   - {fileID: 21300000, guid: 075c9dd99649649f9869afece52cd35b, type: 3}
   - {fileID: 21300000, guid: 8631f81a1b5cb4bfea4f8cd0fcfd6d76, type: 3}
+  - {fileID: 21300000, guid: 08eaea8a23fb84cb78a52c7aa089cdea, type: 3}
   - {fileID: 21300000, guid: 2bd9c7cbf6f504ad89e22e7f1f497fd2, type: 3}
   - {fileID: 21300000, guid: 566238cb65c3147e192bcfd9e1aa7198, type: 3}
   - {fileID: 21300000, guid: 2d93daeb29e2746d8a0c30203496d9c7, type: 3}
@@ -197,6 +199,7 @@ SpriteAtlas:
   - MythicThumbnail
   - UncommonThumbnail
   - UniqueThumbnail
+  - InfoCardExotic
   - AvatarStyleIcon
   - HandIcn
   - InfoCardEpic
@@ -205,7 +208,6 @@ SpriteAtlas:
   - Silhouette003
   - FacialHairIcon
   - Silhouette004
-  - VRMBlock
   - EyebrowIcon
   - EmptyIcon
   - LegendaryThumbnail
@@ -223,6 +225,7 @@ SpriteAtlas:
   - HelmetIcon
   - MouthIcon
   - Shadow
+  - ExoticThumbnail
   - ShoesIcon
   - OutfitEmpty
   - CommonThumbnail
