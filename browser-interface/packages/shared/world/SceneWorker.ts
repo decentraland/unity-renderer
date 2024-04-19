@@ -429,7 +429,7 @@ export class SceneWorker {
     })
     if (this.rpcContext.sdk7) {
       this.rpcContext.internalEngine = createInternalEngine(
-        this.rpcContext.sceneData.id,
+        this.rpcContext.sceneData.sceneNumber,
         this.metadata.scene.parcels,
         showAsPortableExperience
       )
