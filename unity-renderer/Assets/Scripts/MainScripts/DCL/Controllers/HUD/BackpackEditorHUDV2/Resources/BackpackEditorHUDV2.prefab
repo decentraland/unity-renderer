@@ -8367,7 +8367,7 @@ PrefabInstance:
     - target: {fileID: 980053903516578869, guid: 192c3b0a61eb8ac4ca1842d296756591,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 98.98
+      value: 65.490005
       objectReference: {fileID: 0}
     - target: {fileID: 980053903516578869, guid: 192c3b0a61eb8ac4ca1842d296756591,
         type: 3}
@@ -8508,7 +8508,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: One or more of the items you have\nequipped do <color=#FF2D55>not allow
-        VRM Export.</color>\n\nClick for more details.
+        VRM Export.</color>
       objectReference: {fileID: 0}
     - target: {fileID: 2383634813862937454, guid: 192c3b0a61eb8ac4ca1842d296756591,
         type: 3}
@@ -8524,7 +8524,7 @@ PrefabInstance:
         type: 3}
       propertyPath: <model>k__BackingField.message
       value: One or more of the items you have\nequipped do <color=#FF2D55>not allow
-        VRM Export.</color>\n\nClick for more details.
+        VRM Export.</color>
       objectReference: {fileID: 0}
     - target: {fileID: 2447974467721302299, guid: 192c3b0a61eb8ac4ca1842d296756591,
         type: 3}
