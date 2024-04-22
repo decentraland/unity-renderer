@@ -1,5 +1,7 @@
 import { Engine, IEngine, Transport } from '@dcl/ecs/dist-cjs'
 import {
+  MediaState,
+  AudioEvent as defineAudioEvent,
   Transform as defineTransform,
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
@@ -37,6 +39,16 @@ type LocalProfileChange = {
   triggerEmote: EmoteData
 }
 
+type State = {
+  sceneId: number
+  entityId: Entity
+  state: MediaState
+}
+
+type AudioStreamChange = {
+  changeState: State
+}
+
 function getUserData(userId: string) {
   const dataFromStore = getProfileFromStore(store.getState(), userId)
   if (!dataFromStore) return undefined
@@ -48,12 +60,13 @@ function getUserData(userId: string) {
 }
 
 export const localProfileChanged = mitt<LocalProfileChange>()
+export const audioStreamEmitter = mitt<AudioStreamChange>()
 
 /**
  * We used this engine as an internal engine to add information to the worker.
  * It handles the Avatar information for each player
  */
-export function createInternalEngine(id: string, parcels: string[], isGlobalScene: boolean): IInternalEngine {
+export function createInternalEngine(sceneNumber: number, parcels: string[], isGlobalScene: boolean): IInternalEngine {
   const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
   const userId = getCurrentUserId(store.getState())!
 
@@ -65,6 +78,7 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   const AvatarEquippedData = defineAvatarEquippedData(engine)
   const PlayerIdentityData = definePlayerIdentityData(engine)
   const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
+  const AudioEvent = defineAudioEvent(engine)
   const avatarMap = new Map<string, Entity>()
 
   function addUser(userId: string) {
@@ -191,6 +205,16 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   })
   // End of LOCAL USER
 
+  // AudioStream updates
+  audioStreamEmitter.on('changeState', ({ entityId, sceneId, state }) => {
+    if (sceneId !== sceneNumber) return
+    const audioEvent = AudioEvent.get(entityId)
+    const lastAudio = [...audioEvent.values()].pop()
+    const timestamp = (lastAudio?.timestamp ?? 0) + 1
+    AudioEvent.addValue(entityId, { state, timestamp })
+  })
+  // end of AudioStream updates
+
   // PlayersConnected observers
   const observerInstance = avatarMessageObservable.add((message) => {
     if (message.type === AvatarMessageType.USER_EXPRESSION) {
@@ -219,18 +243,18 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
   })
 
   /**
-   * We used this transport to send only the avatar updates to the client instead of the full state
-   * Every time there is an update on a profile, this would add those CRDT messages to avatarMessages
+   * We used this transport to send only kernel-side updates (profile, emotes, audio stream...) to the client instead of the full state
+   * For example: every time there is an update on a profile, this would add those CRDT messages to internalMessages
    * and they'd be append to the crdtSendToRenderer call
    */
   const transport: Transport = {
     filter: (message) => !!message,
     send: async (message: Uint8Array) => {
-      if (message.byteLength) avatarMessages.push(message)
+      if (message.byteLength) internalMessages.push(message)
     }
   }
   engine.addTransport(transport)
-  const avatarMessages: Uint8Array[] = []
+  const internalMessages: Uint8Array[] = []
 
   // Add current user
   addUser(userId)
@@ -246,8 +270,8 @@ export function createInternalEngine(id: string, parcels: string[], isGlobalScen
     engine,
     update: async () => {
       await engine.update(1)
-      const messages = [...avatarMessages]
-      avatarMessages.length = 0
+      const messages = [...internalMessages]
+      internalMessages.length = 0
       return messages
     },
     destroy: () => {

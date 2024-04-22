@@ -81,14 +81,13 @@ public interface IComponentModelConfig<T> where T: BaseComponentModel
 
 public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 {
-    public ShowHideAnimator showHideAnimator;
-
     internal BaseComponentModel baseModel;
     private bool isDestroyed;
 
+    public ShowHideAnimator showHideAnimator;
     public virtual bool isVisible { get; private set; }
     public bool isFocused { get; private set; }
-
+    public bool isViewEnabled { get; set; } = true;
     public event Action<bool> onFocused;
 
     public virtual void Dispose()
@@ -107,11 +106,15 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnEnable()
     {
+        if(!isViewEnabled) return;
+
         StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
     }
 
     public virtual void OnDisable()
     {
+        if(!isViewEnabled) return;
+
         OnLoseFocus();
     }
 
@@ -125,7 +128,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Show(bool instant = false)
     {
-        if (showHideAnimator == null)
+        if (!isViewEnabled || !showHideAnimator)
             return;
 
         showHideAnimator.Show(instant);
@@ -134,7 +137,7 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void Hide(bool instant = false)
     {
-        if (showHideAnimator == null)
+        if (!isViewEnabled || !showHideAnimator)
             return;
 
         showHideAnimator.Hide(instant);
@@ -143,12 +146,16 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnFocus()
     {
+        if(!isViewEnabled) return;
+
         isFocused = true;
         onFocused?.Invoke(true);
     }
 
     public virtual void OnLoseFocus()
     {
+        if(!isViewEnabled) return;
+
         isFocused = false;
         onFocused?.Invoke(false);
     }
@@ -157,17 +164,21 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
 
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
+        if(!isViewEnabled) return;
+
         OnFocus();
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
+        if(!isViewEnabled) return;
+
         OnLoseFocus();
     }
 
     private void OnScreenSizeModified(Vector2Int current, Vector2Int previous)
     {
-        if (!gameObject.activeInHierarchy)
+        if (!isViewEnabled || !gameObject.activeInHierarchy)
             return;
 
         StartCoroutine(RaiseOnScreenSizeChangedAfterDelay());
@@ -176,7 +187,9 @@ public abstract class BaseComponentView : MonoBehaviour, IBaseComponentView
     private IEnumerator RaiseOnScreenSizeChangedAfterDelay()
     {
         yield return null;
-        OnScreenSizeChanged();
+
+        if(isViewEnabled)
+            OnScreenSizeChanged();
     }
 
     public static T Create<T>(string resourceName) where T: BaseComponentView
