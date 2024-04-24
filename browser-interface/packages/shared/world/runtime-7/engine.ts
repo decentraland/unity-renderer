@@ -25,6 +25,7 @@ import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
 import { realmChangeEvent } from '../../sceneEvents/sagas'
 import { urlWithProtocol } from '../../realm/resolver'
+import { PREVIEW } from '../../../config'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -60,7 +61,7 @@ export const playerClickedEvent = mitt<{ add: { data: IEvents['playerClicked']; 
  * It handles the Avatar information for each player
  */
 export function createInternalEngine(sceneNumber: number, parcels: string[], isGlobalScene: boolean): IInternalEngine {
-  const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
+  const AVATAR_RESERVED_ENTITIES = { from: 32, to: 255 }
   const userId = getCurrentUserId(store.getState())!
 
   // From 0 to 10 engine reserved entities.
@@ -233,7 +234,8 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
       realmName: adapter.about.configurations?.realmName ?? '',
       networkId: adapter.about.configurations?.networkId ?? 1,
       commsAdapter: adapter.about.comms?.adapter ?? '',
-      room
+      room,
+      isPreview: PREVIEW
     }
     RealmInfo.createOrReplace(engine.RootEntity, value)
   })
