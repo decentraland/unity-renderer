@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Rare
   m_EditorClassIdentifier: 
   backgroundColor: {r: 0.20392157, g: 0.80784315, b: 0.4627451, a: 1}
-  rarityNameColor: {r: 0.6745098, g: 1, b: 0.7294118, a: 1}
+  rarityNameColor: {r: 0.19215687, g: 0.78431374, b: 0.3882353, a: 1}
   gradientColor: {r: 0, g: 0, b: 0, a: 0}
+  isBase: 0

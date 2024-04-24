@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Epic
   m_EditorClassIdentifier: 
   backgroundColor: {r: 0.2627451, g: 0.56078434, b: 1, a: 1}
-  rarityNameColor: {r: 0.6039216, g: 0.87058824, b: 0.99607843, a: 1}
+  rarityNameColor: {r: 0.20392157, g: 0.46666667, b: 0.99607843, a: 1}
   gradientColor: {r: 0, g: 0, b: 0, a: 0}
+  isBase: 0

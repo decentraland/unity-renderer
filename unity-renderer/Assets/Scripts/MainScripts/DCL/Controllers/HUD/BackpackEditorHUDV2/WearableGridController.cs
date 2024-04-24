@@ -416,6 +416,7 @@ namespace DCL.Backpack
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
                 unEquipAllowed = CanWearableBeUnEquipped(wearable),
+                blockVrmExport = wearable.data.blockVrmExport,
             });
 
             OnWearableSelected?.Invoke(wearableId);

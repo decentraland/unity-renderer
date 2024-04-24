@@ -67,6 +67,7 @@ namespace DCLServices.WearablesCatalogService
             public string[] hides;
             public string[] tags;
             public Representation[] representations;
+            public bool blockVrmExport;
 
             public WearableItem.Data ToWearableData(string contentUrl, Dictionary<string, string> hashes)
             {
@@ -81,6 +82,7 @@ namespace DCLServices.WearablesCatalogService
 
                     // TODO: builder api does not include this information
                     removesDefaultHiding = Array.Empty<string>(),
+                    blockVrmExport = blockVrmExport,
                 };
             }
         }

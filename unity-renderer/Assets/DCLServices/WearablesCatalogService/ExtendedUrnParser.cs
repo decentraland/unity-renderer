@@ -8,7 +8,7 @@
         {
             int lastIndex = urnReceived.LastIndexOf(':');
 
-            return lastIndex != -1 && urnReceived.Split(':').Length > QUANTITY_OF_PARTS_ON_SHORTENED_ITEMS_URN
+            return lastIndex != -1 && IsExtendedUrn(urnReceived)
                 ? urnReceived.Substring(0, lastIndex)
                 : urnReceived;
         }

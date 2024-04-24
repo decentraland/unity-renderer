@@ -60,30 +60,28 @@ public class ButtonComponentView : BaseComponentView, IButtonComponentView, ICom
         SetIcon(model.icon);
     }
 
-    public bool IsInteractable() =>
-        button.interactable;
+    public bool IsInteractable() => button.interactable;
 
-    public void SetInteractable(bool isActive) =>
-        button.interactable = isActive;
+    public void SetInteractable(bool isActive) => button.interactable = isActive;
 
     public void SetText(string newText)
     {
         model.text = newText;
 
-        if (text == null)
-            return;
-
-        text.text = newText;
+        if (text)
+        {
+            text.text = newText;
+        }
     }
 
     public void SetIcon(Sprite newIcon)
     {
         model.icon = newIcon;
 
-        if (icon == null)
-            return;
-
-        icon.gameObject.SetActive(newIcon != null);
-        icon.sprite = newIcon;
+        if (icon)
+        {
+            icon.gameObject.SetActive(newIcon);
+            icon.sprite = newIcon;
+        }
     }
 }
