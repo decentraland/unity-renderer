@@ -16,8 +16,7 @@ async function copyBuiltFiles() {
   await mkdir(DIST_PATH, { recursive: true })
 
   const basePath = path.resolve(process.env.BUILD_PATH!, 'Build')
-  //Aga commenting it for unity upgrade
-  /*try {
+  try {
     ensureEqualFiles(path.resolve(basePath, 'unity.loader.js'), path.resolve(DIST_PATH, 'unity.loader.js'))
   } catch (e) {
     console.log(`
@@ -27,7 +26,7 @@ async function copyBuiltFiles() {
       updating the unity version).
    `)
     throw e
-  }*/
+  }
 
   for (const file of glob.sync('**/*', { cwd: basePath, absolute: true })) {
     copyFile(file, path.resolve(DIST_PATH, file.replace(basePath + '/', './')))
