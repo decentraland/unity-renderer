@@ -2,7 +2,7 @@ import * as sinon from 'sinon'
 import { expect } from 'chai'
 import { receiveUserVisible } from 'shared/comms/peers'
 import * as peers from 'shared/comms/peers'
-import { TEST_OBJECT_ObservableAllScenesEvent } from 'shared/world/parcelSceneManager'
+import { observableAllScenesEvent } from 'shared/world/parcelSceneManager'
 import { buildStore } from 'shared/store/store'
 import { Color3 } from '@dcl/ecs-math'
 
@@ -42,7 +42,7 @@ describe('Avatar observable', () => {
   let lastEvent: any = null
 
   before(() => {
-    TEST_OBJECT_ObservableAllScenesEvent.add((x) => {
+    observableAllScenesEvent.add((x) => {
       lastEvent = x
     })
   })

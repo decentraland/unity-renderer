@@ -6,8 +6,11 @@ import {
   PlayerIdentityData as definePlayerIdentityData,
   AvatarBase as defineAvatarBase,
   AvatarEquippedData as defineAvatarEquippedData,
-  AvatarEmoteCommand as defineAvatarEmoteCommand
+  AvatarEmoteCommand as defineAvatarEmoteCommand,
+  PointerEventsResult as definePointerEventsResult,
+  RealmInfo as defineRealmInfo
 } from '@dcl/ecs/dist-cjs/components'
+import { PointerEventType, InputAction, PBRealmInfo } from '@dcl/ecs/dist-cjs'
 import { Entity, EntityUtils, createEntityContainer } from '@dcl/ecs/dist-cjs/engine/entity'
 import { avatarMessageObservable, getAllPeers } from '../../comms/peers'
 import { encodeParcelPosition } from '../../../lib/decentraland'
@@ -22,6 +25,9 @@ import { Avatar } from '@dcl/schemas'
 import { prepareAvatar } from '../../../lib/decentraland/profiles/transformations/profileToRendererFormat'
 import { deepEqual } from '../../../lib/javascript/deepEqual'
 import { positionObservable } from '../positionThings'
+import { realmChangeEvent } from '../../sceneEvents/sagas'
+import { urlWithProtocol } from '../../realm/resolver'
+import { PREVIEW } from '../../../config'
 
 export type IInternalEngine = {
   engine: IEngine
@@ -60,6 +66,7 @@ function getUserData(userId: string) {
 }
 
 export const localProfileChanged = mitt<LocalProfileChange>()
+export const playerClickedEvent = mitt<{ add: { data: IEvents['playerClicked']; sceneNumber: number } }>()
 export const audioStreamEmitter = mitt<AudioStreamChange>()
 
 /**
@@ -67,7 +74,7 @@ export const audioStreamEmitter = mitt<AudioStreamChange>()
  * It handles the Avatar information for each player
  */
 export function createInternalEngine(sceneNumber: number, parcels: string[], isGlobalScene: boolean): IInternalEngine {
-  const AVATAR_RESERVED_ENTITIES = { from: 10, to: 200 }
+  const AVATAR_RESERVED_ENTITIES = { from: 32, to: 255 }
   const userId = getCurrentUserId(store.getState())!
 
   // From 0 to 10 engine reserved entities.
@@ -78,6 +85,8 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
   const AvatarEquippedData = defineAvatarEquippedData(engine)
   const PlayerIdentityData = definePlayerIdentityData(engine)
   const AvatarEmoteCommand = defineAvatarEmoteCommand(engine)
+  const PointerEventsResult = definePointerEventsResult(engine)
+  const RealmInfo = defineRealmInfo(engine)
   const AudioEvent = defineAudioEvent(engine)
   const avatarMap = new Map<string, Entity>()
 
@@ -242,6 +251,41 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
     }
   })
 
+  // Realm Change event
+  realmChangeEvent.on('change', ({ adapter, room }) => {
+    const value: PBRealmInfo = {
+      baseUrl: urlWithProtocol(new URL(adapter.baseUrl).hostname),
+      realmName: adapter.about.configurations?.realmName ?? '',
+      networkId: adapter.about.configurations?.networkId ?? 1,
+      commsAdapter: adapter.about.comms?.adapter ?? '',
+      room,
+      isPreview: PREVIEW
+    }
+    RealmInfo.createOrReplace(engine.RootEntity, value)
+  })
+
+  playerClickedEvent.on('add', (data) => {
+    if (data.sceneNumber !== sceneNumber) return
+    const userEntity = avatarMap.get(data.data.userId)
+    if (!userEntity) return
+    const pointerEventResult = PointerEventsResult.get(userEntity)
+    const lastPointerEvent = [...pointerEventResult.values()].pop()
+    const value = {
+      button: InputAction.IA_POINTER,
+      state: PointerEventType.PET_DOWN,
+      tickNumber: Date.now(),
+      hit: {
+        direction: data.data.ray.direction,
+        length: data.data.ray.distance,
+        globalOrigin: data.data.ray.origin,
+        normalHit: undefined,
+        position: undefined
+      },
+      timestamp: (lastPointerEvent?.timestamp ?? 0) + 1
+    }
+    PointerEventsResult.addValue(userEntity, value)
+  })
+
   /**
    * We used this transport to send only kernel-side updates (profile, emotes, audio stream...) to the client instead of the full state
    * For example: every time there is an update on a profile, this would add those CRDT messages to internalMessages
@@ -279,6 +323,9 @@ export function createInternalEngine(sceneNumber: number, parcels: string[], isG
       positionObservable.remove(userIdPositionObserver)
       localProfileChanged.off('triggerEmote')
       localProfileChanged.off('changeAvatar')
+      realmChangeEvent.off('change')
+      playerClickedEvent.off('add')
+      audioStreamEmitter.off('changeState')
     }
   }
 }
