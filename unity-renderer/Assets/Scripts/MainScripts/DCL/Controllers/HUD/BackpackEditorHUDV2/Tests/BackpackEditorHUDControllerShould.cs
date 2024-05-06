@@ -96,6 +96,7 @@ namespace DCL.Backpack
                 Substitute.For<IBackpackAnalyticsService>(),
                 customNftCollectionService);
 
+
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -108,6 +109,7 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
                 vrmExporter,
+                new VRMDetailsController(Substitute.For<IVRMDetailsComponentView>(), userProfileBridge),
                 fileBrowserService,
                 Substitute.For<IEmotesCatalogService>());
         }
