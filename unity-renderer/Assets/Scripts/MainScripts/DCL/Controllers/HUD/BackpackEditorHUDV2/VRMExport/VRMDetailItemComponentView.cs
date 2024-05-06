@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using UIComponents.Scripts.Components;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Backpack
 {
@@ -15,22 +14,41 @@ namespace DCL.Backpack
         [SerializeField] private TMP_Text wearableTypeName;
         [SerializeField] private ImageComponentView wearableCreatorImage;
         [SerializeField] private TMP_Text wearableCreatorName;
-        [SerializeField] private Button actionButton;
+        [SerializeField] private ButtonComponentView actionButton;
+
+        private bool isUnEquipAction;
+        private const string UNEQUIP_TEXT = "unequip";
+        private const string EQUIP_TEXT = "equip";
 
         public event Action OnUnEquipWearable;
+        public event Action OnEquipWearable;
 
         public void Start()
         {
+            isUnEquipAction = true;
+            actionButton.SetText(UNEQUIP_TEXT);
             actionButton.onClick.RemoveAllListeners();
             actionButton.onClick.AddListener(() =>
             {
-                OnUnEquipWearable?.Invoke();
+                if(isUnEquipAction)
+                {
+                    actionButton.SetText(EQUIP_TEXT);
+                    isUnEquipAction = false;
+                    OnUnEquipWearable?.Invoke();
+                }
+                else
+                {
+                    actionButton.SetText(UNEQUIP_TEXT);
+                    isUnEquipAction = true;
+                    OnEquipWearable?.Invoke();
+                }
             });
         }
 
         public void ClearOnWearableUnequippedEvents()
         {
             OnUnEquipWearable = null;
+            OnEquipWearable = null;
         }
 
         public override void RefreshControl()
@@ -79,7 +97,7 @@ namespace DCL.Backpack
 
         private void SetWearableCategoryName(string categoryName)
         {
-            var readableName = WearableItem.CATEGORIES_READABLE_MAPPING[categoryName];
+            string readableName = WearableItem.CATEGORIES_READABLE_MAPPING[categoryName];
             model.wearableCategoryName = readableName;
             wearableTypeName.text = readableName;
         }
