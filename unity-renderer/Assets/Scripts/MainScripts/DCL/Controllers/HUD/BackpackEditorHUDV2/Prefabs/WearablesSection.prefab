@@ -2329,8 +2329,7 @@ MonoBehaviour:
   vrmExportButton: {fileID: 0}
   exportWarningBar: {fileID: 0}
   backButton: {fileID: 1128932950577712203}
-  vrmBlockingWearablePrefab: {fileID: 0}
-  typeIcons: {fileID: 0}
+  vrmDetailPrefab: {fileID: 0}
   wearablesContainer: {fileID: 0}
 --- !u!1 &6990721006023524004
 GameObject:
