@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -18,6 +20,8 @@ namespace DCL.Helpers
         public const string WEARABLES_FETCH_PARAMS = "/wearables?";
         public const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
         public const string THIRD_PARTY_COLLECTIONS_FETCH_URL = "third-party-integrations";
+        public const string NFT_API_FETCH_URL = "https://nft-api.decentraland.org/v1/";
+        public const string NFT_API_FETCH_PARAMS_ITEMS = "items?";
         private static Collection[] collections;
 
         private static IEnumerator EnsureCollectionsData()
@@ -41,15 +45,43 @@ namespace DCL.Helpers
                 });
         }
 
-        public static string GetCollectionsFetchURL()
+        public static async UniTask<string> GetNFTItems(List<string> wearableUrns)
         {
-            return $"{BASE_FETCH_URL}{COLLECTIONS_FETCH_PARAMS}";
+            StringBuilder sb = new (GetItemsFetchURL());
+
+            int urnCount = wearableUrns.Count;
+
+            for (int i = 0; i < urnCount; i++)
+            {
+                sb.Append("urn=");
+                sb.Append(wearableUrns[i]);
+
+                if (i < urnCount - 1)
+                    sb.Append("&");
+            }
+
+            var resultAsync = await Environment.i.platform.webRequest.GetAsync(
+                sb.ToString(),
+                isSigned: true);
+
+            return resultAsync.downloadHandler.text;;
         }
 
-        public static string GetWearablesFetchURL()
+        public static string GetItemsFetchURL()
         {
-            return $"{BASE_FETCH_URL}{WEARABLES_FETCH_PARAMS}";
+            var baseUrl = NFT_API_FETCH_URL;
+#if UNITY_EDITOR
+            var useZone = DebugConfigComponent.i.network == DebugConfigComponent.Network.SEPOLIA;
+
+            if (useZone)
+                baseUrl = baseUrl.Replace("org", "zone");
+#endif
+            return $"{baseUrl}{NFT_API_FETCH_PARAMS_ITEMS}";
         }
+
+        public static string GetCollectionsFetchURL() => $"{BASE_FETCH_URL}{COLLECTIONS_FETCH_PARAMS}";
+
+        public static string GetWearablesFetchURL() => $"{BASE_FETCH_URL}{WEARABLES_FETCH_PARAMS}";
 
         /// <summary>
         /// Fetches base collection ids and adds them to the provided ids list
@@ -68,7 +100,6 @@ namespace DCL.Helpers
 
             List<int> randomizedIndices = new List<int>();
             int randomIndex;
-            bool addedBaseWearablesCollection = false;
 
             for (int i = 0; i < amount; i++)
             {
@@ -78,9 +109,6 @@ namespace DCL.Helpers
                 {
                     randomIndex = Random.Range(0, collections.Length);
                 }
-
-                if (collections[randomIndex].urn == BASE_WEARABLES_COLLECTION_ID)
-                    addedBaseWearablesCollection = true;
 
                 finalCollectionIdsList.Add(collections[randomIndex].urn);
                 randomizedIndices.Add(randomIndex);
@@ -120,7 +148,7 @@ namespace DCL.Helpers
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
                 yield return GetWearableItems(
-                    GetWearablesFetchURL() + $"{nextPageParams}",
+                    $"{GetWearablesFetchURL()}{nextPageParams}",
                     finalWearableItemsList);
             }
         }
