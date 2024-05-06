@@ -77,6 +77,11 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
+            var vrmExportController = new VRMDetailsController(
+                view.VrmDetailsComponentView,
+                userProfileBridge
+                );
+
             hudController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -89,6 +94,7 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 outfitsController,
                 new VRMExporter(vrmExporterReferences),
+                vrmExportController,
                 Environment.i.platform.serviceLocator.Get<IDCLFileBrowserService>(),
                 Environment.i.platform.serviceLocator.Get<IEmotesCatalogService>());
 

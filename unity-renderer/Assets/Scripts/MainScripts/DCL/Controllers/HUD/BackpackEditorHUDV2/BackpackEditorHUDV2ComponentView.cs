@@ -25,6 +25,8 @@ namespace DCL.Backpack
         public event Action OnAvatarUpdated;
         public event Action OnOutfitsOpened;
         public event Action OnVRMExport;
+        public event Action OnVRMDetailsOpened;
+        public event Action OnVRMDetailsClosed;
         public event Action<SignUpStage> OnSignUpBackClicked;
 
         private const int AVATAR_SECTION_INDEX = 0;
@@ -48,6 +50,7 @@ namespace DCL.Backpack
         [SerializeField] internal Button saveAvatarButton;
         [SerializeField] internal GameObject normalSection;
         [SerializeField] internal GameObject outfitSection;
+        [SerializeField] internal GameObject vrmDetailsSection;
         [SerializeField] internal Button outfitButton;
         [SerializeField] internal Image outfitButtonIcon;
         [SerializeField] internal GameObject background;
@@ -58,6 +61,7 @@ namespace DCL.Backpack
         [SerializeField] internal TooltipComponentView vrmExportTooltipComponentView;
         [SerializeField] internal GameObject vrmWarningBubble;
         [SerializeField] internal RectTransform vrmExportedToast;
+        [SerializeField] private VRMDetailsComponentView vrmDetailsComponentView;
 
         [Header("Sign Up Mode")]
         [SerializeField] internal GameObject signUpHeader;
@@ -82,6 +86,7 @@ namespace DCL.Backpack
         public AvatarSlotsView AvatarSlotsView => avatarSlotsView;
         public BackpackFiltersComponentView BackpackFiltersComponentView => backpackFiltersComponentView;
         public OutfitsSectionComponentView OutfitsSectionComponentView => outfitsSectionComponentView;
+        public IVRMDetailsComponentView VrmDetailsComponentView => vrmDetailsComponentView;
 
         private DataStore_EmotesCustomization emotesCustomizationDataStore => DataStore.i.emotesCustomization;
         private Transform thisTransform;
@@ -130,13 +135,29 @@ namespace DCL.Backpack
             vrmExportButton.onClick.RemoveAllListeners();
             vrmExportButton.onClick.AddListener(OnVRMExportButtonClicked);
 
+            vrmDetailsComponentView.OnVRMExportButtonPressed += OnVRMExportButtonClicked;
+            vrmDetailsComponentView.OnBackButtonPressed += BackFromDetails;
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
+        }
+
+        private void BackFromDetails()
+        {
+            ToggleNormalSection();
+            OnVRMDetailsClosed?.Invoke();
         }
 
         private void OnVRMExportButtonClicked()
         {
-            if (!vrmWarningEnabled)
-                OnVRMExport?.Invoke();
+            if (!vrmDetailsSection.activeInHierarchy)
+            {
+                if (vrmWarningEnabled)
+                {
+                    SetWarningForVRMExportButton(false);
+                    ToggleVRMDetailsSection();
+                }
+                else
+                    OnVRMExport?.Invoke();
+            }
         }
 
         public void SetOutfitsEnabled(bool isEnabled) =>
@@ -148,10 +169,12 @@ namespace DCL.Backpack
                 ToggleNormalSection();
             else
             {
-                normalSection.SetActive(false);
                 outfitSection.SetActive(true);
+                normalSection.SetActive(false);
+                vrmDetailsSection.SetActive(false);
                 outfitButton.image.color = selectedOutfitButtonColor;
                 outfitButtonIcon.color = Color.white;
+                vrmExportButton.image.color = Color.white;
                 OnOutfitsOpened?.Invoke();
             }
         }
@@ -160,8 +183,19 @@ namespace DCL.Backpack
         {
             normalSection.SetActive(true);
             outfitSection.SetActive(false);
+            vrmDetailsSection.SetActive(false);
             outfitButton.image.color = Color.white;
             outfitButtonIcon.color = Color.black;
+            vrmExportButton.image.color = Color.white;
+        }
+
+        private void ToggleVRMDetailsSection()
+        {
+            vrmDetailsSection.SetActive(true);
+            outfitSection.SetActive(false);
+            normalSection.SetActive(false);
+            vrmExportButton.image.color = selectedOutfitButtonColor;
+            OnVRMDetailsOpened?.Invoke();
         }
 
         private void Update() =>
@@ -308,7 +342,7 @@ namespace DCL.Backpack
             vrmExportedToast.gameObject.SetActive(active);
         }
 
-        public void SetVRMExportWarning(bool enable)
+        public void SetWarningForVRMExportButton(bool enable)
         {
             vrmWarningEnabled = enable;
             if (vrmWarningEnabled)
