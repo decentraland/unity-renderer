@@ -230,7 +230,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -243,7 +243,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "pointerevent-1";
@@ -277,7 +277,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -290,7 +290,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "pointerevent-1";
@@ -323,7 +323,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -336,7 +336,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "pointerevent-1";
@@ -369,7 +369,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -382,7 +382,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "pointerevent-1";
@@ -414,7 +414,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string shapeId = TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -427,7 +427,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "pointerevent-1";
@@ -458,7 +458,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -481,7 +481,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -502,7 +502,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -524,7 +524,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -545,7 +545,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -569,7 +569,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -590,7 +590,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -613,7 +613,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())
@@ -634,7 +634,7 @@ namespace Tests
             TestUtils.CreateSceneEntity(scene, entityId);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -657,7 +657,7 @@ namespace Tests
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
-                scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
+                scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>() != null,
                 "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>())

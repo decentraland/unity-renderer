@@ -1,9 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
-using DCL.ECSComponents;
-using DCL.ECSRuntime;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.SettingsCommon;
@@ -13,7 +10,6 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AudioSettings = DCL.SettingsCommon.AudioSettings;
 
 namespace DCL.ECSComponents.Test
 {
@@ -37,7 +33,14 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(DataStore.i,Settings.i, AssetPromiseKeeper_AudioClip.i, CommonScriptableObjects.sceneNumber, Substitute.For<IInternalECSComponent<InternalAudioSource>>());
+            Settings.CreateSharedInstance(new DefaultSettingsFactory());
+            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(
+                DataStore.i,
+                Settings.i,
+                AssetPromiseKeeper_AudioClip.i,
+                CommonScriptableObjects.sceneNumber,
+                Substitute.For<IInternalECSComponent<InternalAudioSource>>(),
+                Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -129,12 +132,13 @@ namespace DCL.ECSComponents.Test
             model2.Volume = 1f;
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            Assert.AreEqual(model.Volume, audioSourceComponentHandler.audioSource.volume);
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model2);
 
             // Assert
-            Assert.AreEqual(audioSourceComponentHandler.audioSource.volume, model2.Volume);
+            Assert.AreEqual(model2.Volume, audioSourceComponentHandler.audioSource.volume);
         }
 
         [UnityTest]

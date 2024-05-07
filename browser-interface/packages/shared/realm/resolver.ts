@@ -1,5 +1,5 @@
 import { Candidate, Realm } from 'shared/dao/types'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { ExplorerIdentity } from 'shared/session/types'
 import { createArchipelagoConnection } from './connections/ArchipelagoConnection'
 import { localArchipelago } from './connections/LocalArchipelago'
@@ -46,7 +46,14 @@ export async function adapterForRealmConfig(
   }
 
   if (about.bff?.healthy) {
-    return createArchipelagoConnection(baseUrl, about, identity)
+    if (about.comms?.adapter && about.comms.adapter.startsWith('archipelago:archipelago')) {
+      const archipelagoUrl = about.comms.adapter.substring('archipelago:archipelago:'.length)
+      return createArchipelagoConnection(baseUrl, archipelagoUrl, about, identity)
+    } else {
+      const url = baseUrl + '/archipelago/ws'
+      const wsUrl = url.replace(/^http/, 'ws')
+      return createArchipelagoConnection(baseUrl, wsUrl, about, identity)
+    }
   }
 
   // return a mocked Archipelago
@@ -64,11 +71,11 @@ export function prettyRealmName(realm: string, candidates: Candidate[]) {
   return realm
 }
 
-function isDclEns(str: string | undefined): str is `${string}.dcl.eth` {
-  return !!str?.match(/^[a-zA-Z0-9]+\.dcl\.eth$/)?.length
+export function isEns(str: string | undefined): str is `${string}.eth` {
+  return !!str?.match(/^[a-zA-Z0-9.]+\.eth$/)?.length
 }
 
-function dclWorldUrl(dclName: string) {
+export function dclWorldUrl(dclName: string) {
   return `https://worlds-content-server.decentraland.org/world/${encodeURIComponent(dclName.toLowerCase())}`
 }
 
@@ -79,7 +86,7 @@ export function realmToConnectionString(realm: IRealmAdapter) {
     return realmName
   }
 
-  if (isDclEns(realmName) && realm.baseUrl === dclWorldUrl(realmName)) {
+  if (isEns(realmName) && realm.baseUrl === dclWorldUrl(realmName)) {
     return realmName
   }
 
@@ -98,7 +105,7 @@ export function resolveRealmBaseUrlFromRealmQueryParameter(realmString: string, 
     }
   }
 
-  if (isDclEns(realmString)) {
+  if (isEns(realmString)) {
     return dclWorldUrl(realmString)
   }
 

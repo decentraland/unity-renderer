@@ -4,7 +4,6 @@ using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
 using DCL.Interface;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +23,6 @@ namespace ECSSystems.PointerInputSystem
         private readonly IWorldState worldState;
         private readonly IECSInteractionHoverCanvas interactionHoverCanvas;
         private readonly bool[] inputActionState;
-        private readonly RestrictedActionsContext restrictedActionsRpcContext;
 
         private class EntityInput
         {
@@ -41,8 +39,7 @@ namespace ECSSystems.PointerInputSystem
             IInternalECSComponent<InternalPointerEvents> pointerEvents,
             IECSInteractionHoverCanvas interactionHoverCanvas,
             IWorldState worldState,
-            DataStore_ECS7 dataStoreEcs,
-            RestrictedActionsContext restrictedActionsRpcContext)
+            DataStore_ECS7 dataStoreEcs)
         {
             this.pointerColliderComponent = pointerColliderComponent;
             this.inputResultComponent = inputResultComponent;
@@ -52,7 +49,6 @@ namespace ECSSystems.PointerInputSystem
             this.dataStoreEcs7 = dataStoreEcs;
             this.lastHoverFeedback = new EntityInput() { hasValue = false };
             this.inputActionState = new bool[INPUT_ACTION_ENUM.Length];
-            this.restrictedActionsRpcContext = restrictedActionsRpcContext;
         }
 
         public void Update()
@@ -65,14 +61,14 @@ namespace ECSSystems.PointerInputSystem
             IReadOnlyList<IParcelScene> loadedScenes = dataStoreEcs7.scenes;
 
             // Get the collider that the raycast hit
-            IECSReadOnlyComponentData<InternalColliders> colliderData = doesRaycastHit
+            ECSComponentData<InternalColliders>? colliderData = doesRaycastHit
                 ? GetEntityWithCollider(pointerColliderComponent, raycastHit.collider)
                 : null;
 
             IParcelScene colliderScene = colliderData?.scene;
 
             IReadOnlyList<InternalPointerEvents.Entry> entityPointerEvents = colliderData != null
-                ? pointerEvents.GetFor(colliderData.scene, colliderData.entity)?.model.PointerEvents
+                ? pointerEvents.GetFor(colliderData.Value.scene, colliderData.Value.entity)?.model.PointerEvents
                 : null;
 
             bool isAnyButtonDown = false;
@@ -95,8 +91,8 @@ namespace ECSSystems.PointerInputSystem
                         AddInputResultEvent(
                             inputResultComponent,
                             inputAction,
-                            colliderData.scene,
-                            colliderData.entity.entityId,
+                            colliderData.Value.scene,
+                            colliderData.Value.entity.entityId,
                             raycastRay,
                             raycastHit,
                             pointerEventType,
@@ -116,13 +112,6 @@ namespace ECSSystems.PointerInputSystem
 
                     // update
                     prevState[i] = curState[i];
-
-                    // set current frame count since input is required to prompt modals
-                    // for externalUrl and Nft
-                    if (curState[i] && IsValidInputForUnlockingUiPrompts(inputAction))
-                    {
-                        restrictedActionsRpcContext.LastFrameWithInput = Time.frameCount;
-                    }
                 }
             }
 
@@ -130,7 +119,7 @@ namespace ECSSystems.PointerInputSystem
             // 1) We were hitting a collider A and now we're hitting a collider B
             if (IsColliderDifferent(lastHoverFeedback, colliderData))
             {
-                HandleColliderChanged(colliderData, lastHoverFeedback, raycastEvent, interactionHoverCanvas, inputResultComponent, worldState, entityPointerEvents);
+                HandleColliderChanged(colliderData.Value, lastHoverFeedback, raycastEvent, interactionHoverCanvas, inputResultComponent, worldState, entityPointerEvents);
             }
 
             // 2) We were hitting a collider A and now we're not hitting anything
@@ -142,7 +131,7 @@ namespace ECSSystems.PointerInputSystem
             // 3) We were not hitting anything and now we're hitting collider A
             else if (IsColliderAvailable(lastHoverFeedback, colliderData))
             {
-                HandleAvailableCollider(colliderData, lastHoverFeedback, raycastEvent, inputResultComponent, entityPointerEvents);
+                HandleAvailableCollider(colliderData.Value, lastHoverFeedback, raycastEvent, inputResultComponent, entityPointerEvents);
             }
 
             if (entityPointerEvents != null)
@@ -151,26 +140,26 @@ namespace ECSSystems.PointerInputSystem
             }
         }
 
-        private static bool IsColliderDifferent(EntityInput lastHoverFeedback, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        private static bool IsColliderDifferent(EntityInput lastHoverFeedback, ECSComponentData<InternalColliders>? colliderData)
         {
             return colliderData != null && // current collider
                    lastHoverFeedback.hasValue && // previous collider
-                   (lastHoverFeedback.entityId != colliderData.entity.entityId ||
-                    lastHoverFeedback.sceneNumber != colliderData.scene.sceneData.sceneNumber);
+                   (lastHoverFeedback.entityId != colliderData.Value.entity.entityId ||
+                    lastHoverFeedback.sceneNumber != colliderData.Value.scene.sceneData.sceneNumber);
         }
 
-        private static bool IsColliderMissing(EntityInput lastHoverFeedback, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        private static bool IsColliderMissing(EntityInput lastHoverFeedback, ECSComponentData<InternalColliders>? colliderData)
         {
             return colliderData == null && lastHoverFeedback.hasValue;
         }
 
-        private static bool IsColliderAvailable(EntityInput lastHoverFeedback, IECSReadOnlyComponentData<InternalColliders> colliderData)
+        private static bool IsColliderAvailable(EntityInput lastHoverFeedback, ECSComponentData<InternalColliders>? colliderData)
         {
             return colliderData != null && !lastHoverFeedback.hasValue;
         }
 
         private static void HandleColliderChanged(
-            IECSReadOnlyComponentData<InternalColliders> colliderData,
+            ECSComponentData<InternalColliders> colliderData,
             EntityInput lastHoverFeedback,
             DataStore_ECS7.RaycastEvent lastPointerRayHit,
             IECSInteractionHoverCanvas interactionHoverCanvas,
@@ -244,7 +233,7 @@ namespace ECSSystems.PointerInputSystem
         }
 
         private static void HandleAvailableCollider(
-            IECSReadOnlyComponentData<InternalColliders> colliderData,
+            ECSComponentData<InternalColliders> colliderData,
             EntityInput lastHoverFeedback,
             DataStore_ECS7.RaycastEvent lastPointerRayHit,
             IInternalECSComponent<InternalInputEventResults> inputResultComponent,
@@ -304,7 +293,7 @@ namespace ECSSystems.PointerInputSystem
 
             // If entity has pointer event component for this `pointerEventType` we setup the `hit` data
             // otherwise we leave it empty (global input)
-            if (HasInputEvent(entityEvents, pointerEventType, raycastHit.distance))
+            if (HasInputEvent(entityEvents, pointerEventType, buttonId, raycastHit.distance))
             {
                 ray.origin = WorldStateUtils.ConvertUnityToScenePosition(ray.origin, scene);
 
@@ -332,7 +321,7 @@ namespace ECSSystems.PointerInputSystem
             });
         }
 
-        private static IECSReadOnlyComponentData<InternalColliders> GetEntityWithCollider(
+        private static ECSComponentData<InternalColliders>? GetEntityWithCollider(
             IInternalECSComponent<InternalColliders> pointerColliderComponent,
             Collider collider)
         {
@@ -430,6 +419,7 @@ namespace ECSSystems.PointerInputSystem
         private static bool HasInputEvent(
             IReadOnlyList<InternalPointerEvents.Entry> entityEvents,
             PointerEventType pointerEventType,
+            InputAction actionButton,
             float distance)
         {
             if (entityEvents == null)
@@ -439,13 +429,15 @@ namespace ECSSystems.PointerInputSystem
             {
                 var inputEventEntry = entityEvents[i];
 
-                if (inputEventEntry.EventType == pointerEventType)
-                {
-                    if (distance <= inputEventEntry.EventInfo.MaxDistance)
-                    {
-                        return true;
-                    }
-                }
+                if (inputEventEntry.EventInfo.Button != actionButton
+                    && inputEventEntry.EventInfo.Button != InputAction.IaAny)
+                    continue;
+
+                if (inputEventEntry.EventType != pointerEventType)
+                    continue;
+
+                if (distance <= inputEventEntry.EventInfo.MaxDistance)
+                    return true;
             }
 
             return false;

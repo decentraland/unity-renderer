@@ -4,15 +4,10 @@ using DCL.ECSRuntime;
 using System;
 using System.Collections.Generic;
 
-public class InternalECSComponents : IDisposable, IInternalECSComponents
+public class InternalECSComponents : IDisposable, IInternalECSComponents, IComponentDirtySystem
 {
-    internal readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> markAsDirtyComponents =
-        new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
-
-    private readonly KeyValueSet<ComponentIdentifier, ComponentWriteData> removeAsDirtyComponents =
-        new KeyValueSet<ComponentIdentifier, ComponentWriteData>(100);
-
-    private readonly IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors;
+    public event Action MarkComponentsAsDirty;
+    public event Action RemoveComponentsAsDirty;
 
     public IInternalECSComponent<InternalTexturizable> texturizableComponent { get; }
     public IInternalECSComponent<InternalMaterial> materialComponent { get; }
@@ -32,28 +27,31 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
     public IInternalECSComponent<InternalRegisteredUiPointerEvents> RegisteredUiPointerEventsComponent { get; }
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
+    public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
+    public IInternalECSComponent<InternalAnimation> Animation { get; }
+    public IInternalECSComponent<InternalTween> TweenComponent { get; }
+    public IInternalECSComponent<InternalAvatarModifierArea> AvatarModifierAreaComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
     {
-        this.crdtExecutors = crdtExecutors;
-
         texturizableComponent = new InternalECSComponent<InternalTexturizable>(
             InternalECSComponentsId.TEXTURIZABLE,
             componentsManager,
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalTexturizable>(
                 () => texturizableComponent, model => model.renderers.Count == 0),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         materialComponent = new InternalECSComponent<InternalMaterial>(
             InternalECSComponentsId.MATERIAL,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         onPointerColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_POINTER,
@@ -61,8 +59,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => onPointerColliderComponent, model => model.colliders.Count == 0),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         physicColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_PHYSICAL,
@@ -70,8 +68,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => physicColliderComponent, model => model.colliders.Count == 0),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         customLayerColliderComponent = new InternalECSComponent<InternalColliders>(
             InternalECSComponentsId.COLLIDER_CUSTOM,
@@ -79,8 +77,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalColliders>(
                 () => customLayerColliderComponent, model => model.colliders.Count == 0),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         renderersComponent = new InternalECSComponent<InternalRenderers>(
             InternalECSComponentsId.RENDERERS,
@@ -88,40 +86,40 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsFactory,
             () => new RemoveOnConditionHandler<InternalRenderers>(
                 () => renderersComponent, model => model.renderers.Count == 0),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         visibilityComponent = new InternalECSComponent<InternalVisibility>(
             InternalECSComponentsId.VISIBILITY,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         inputEventResultsComponent = new InternalECSComponent<InternalInputEventResults>(
             InternalECSComponentsId.INPUT_EVENTS_RESULT,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         uiContainerComponent = new InternalECSComponent<InternalUiContainer>(
             InternalECSComponentsId.UI_CONTAINER,
             componentsManager,
             componentsFactory,
             () => new UiContainerHandler(() => uiContainerComponent),
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         uiInputResultsComponent = new InternalECSComponent<InternalUIInputResults>(
             InternalECSComponentsId.UI_INPUT_EVENTS_RESULT,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         videoPlayerComponent = new InternalECSComponent<InternalVideoPlayer>(
@@ -129,24 +127,24 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         videoMaterialComponent = new InternalECSComponent<InternalVideoMaterial>(
             InternalECSComponentsId.VIDEO_MATERIAL,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors);
+            crdtExecutors,
+            this);
 
         sceneBoundsCheckComponent = new InternalECSComponent<InternalSceneBoundsCheck>(
             InternalECSComponentsId.SCENE_BOUNDS_CHECK,
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         audioSourceComponent = new InternalECSComponent<InternalAudioSource>(
@@ -154,8 +152,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         PointerEventsComponent = new InternalECSComponent<InternalPointerEvents>(
@@ -163,8 +161,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         RegisteredUiPointerEventsComponent = new InternalECSComponent<InternalRegisteredUiPointerEvents>(
@@ -172,8 +170,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         raycastComponent = new InternalECSComponent<InternalRaycast>(
@@ -181,8 +179,8 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
         );
 
         GltfContainerLoadingStateComponent = new InternalECSComponent<InternalGltfContainerLoadingState>(
@@ -190,16 +188,58 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
             componentsManager,
             componentsFactory,
             null,
-            markAsDirtyComponents,
-            crdtExecutors
+            crdtExecutors,
+            this
+        );
+
+        EngineInfo = new InternalECSComponent<InternalEngineInfo>(
+            InternalECSComponentsId.ENGINE_INFO,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        AnimationPlayer = new InternalECSComponent<InternalAnimationPlayer>(
+            InternalECSComponentsId.ANIMATION_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        Animation = new InternalECSComponent<InternalAnimation>(
+            InternalECSComponentsId.ANIMATION,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        TweenComponent = new InternalECSComponent<InternalTween>(
+            InternalECSComponentsId.TWEEN,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        AvatarModifierAreaComponent = new InternalECSComponent<InternalAvatarModifierArea>(
+            InternalECSComponentsId.AVATAR_MODIFIER_AREA,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
         );
     }
 
     public void Dispose()
     {
-        markAsDirtyComponents.Clear();
-        removeAsDirtyComponents.Clear();
-
         texturizableComponent.Dispose();
         materialComponent.Dispose();
         onPointerColliderComponent.Dispose();
@@ -216,61 +256,20 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents
         PointerEventsComponent.Dispose();
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
+        EngineInfo.Dispose();
+        AnimationPlayer.Dispose();
+        Animation.Dispose();
+        TweenComponent.Dispose();
+        AvatarModifierAreaComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()
     {
-        var markAsDirty = markAsDirtyComponents.Pairs;
-
-        for (int i = 0; i < markAsDirty.Count; i++)
-        {
-            int sceneNumber = markAsDirty[i].key.SceneNumber;
-            long entityId = markAsDirty[i].key.EntityId;
-            int componentId = markAsDirty[i].key.ComponentId;
-            InternalComponent data = markAsDirty[i].value.Data;
-            bool isRemoval = markAsDirty[i].value.IsDelayedRemoval;
-
-            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
-            {
-                continue;
-            }
-
-            data._dirty = true;
-            crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
-            removeAsDirtyComponents[markAsDirty[i].key] = new ComponentWriteData(data, isRemoval);
-        }
-
-        markAsDirtyComponents.Clear();
+        MarkComponentsAsDirty?.Invoke();
     }
 
     public void ResetDirtyComponentsUpdate()
     {
-        var resetDirtyComponents = removeAsDirtyComponents.Pairs;
-
-        for (int i = 0; i < resetDirtyComponents.Count; i++)
-        {
-            int sceneNumber = resetDirtyComponents[i].key.SceneNumber;
-            long entityId = resetDirtyComponents[i].key.EntityId;
-            int componentId = resetDirtyComponents[i].key.ComponentId;
-            InternalComponent data = resetDirtyComponents[i].value.Data;
-            bool isRemoval = resetDirtyComponents[i].value.IsDelayedRemoval;
-
-            if (!crdtExecutors.TryGetValue(sceneNumber, out ICRDTExecutor crdtExecutor))
-            {
-                continue;
-            }
-
-            if (isRemoval)
-            {
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, null);
-            }
-            else
-            {
-                data._dirty = false;
-                crdtExecutor.ExecuteWithoutStoringState(entityId, componentId, data);
-            }
-        }
-
-        removeAsDirtyComponents.Clear();
+        RemoveComponentsAsDirty?.Invoke();
     }
 }

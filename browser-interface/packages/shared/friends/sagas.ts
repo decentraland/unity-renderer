@@ -89,7 +89,6 @@ import {
   getTotalFriends,
   isFriend,
   isFromPendingRequest,
-  isPendingRequest,
   isToPendingRequest
 } from 'shared/friends/selectors'
 import { FriendRequest, FriendsState, SocialData } from 'shared/friends/types'
@@ -235,9 +234,7 @@ function* initializeFriendsSaga() {
 
       if (shouldRetry) {
         try {
-          logger.log('[Social client] Initializing')
           yield call(initializePrivateMessaging)
-          logger.log('[Social client] Initialized')
           // restart the debounce
           secondsToRetry = MIN_TIME_BETWEEN_FRIENDS_INITIALIZATION_RETRIES_MILLIS
         } catch (e) {
@@ -382,11 +379,6 @@ function* configureMatrixClient(action: SetMatrixClient) {
 
       if (message.sender === ownId && !isChannelType) {
         // ignore messages sent to private chats by the local user
-        return
-      }
-
-      if (isPendingRequest(store.getState(), getUserIdFromMatrix(message.sender))) {
-        // ignore messages sent in the request event
         return
       }
 
@@ -630,9 +622,6 @@ function* refreshFriends() {
       channelToJoin: CHANNEL_TO_JOIN_CONFIG_URL?.toString()
     }
 
-    defaultLogger.log('____ initMessage ____', initFriendsMessage)
-    defaultLogger.log('____ initChatMessage ____', initChatMessage)
-
     // all profiles to obtain, deduped
     const allProfilesToObtain: string[] = friendIds
       .concat(requestedFromIds.map((x) => x.userId))
@@ -642,7 +631,7 @@ function* refreshFriends() {
     const ensureFriendProfilesPromises = allProfilesToObtain.map((userId) => ensureFriendProfile(userId))
     yield Promise.all(ensureFriendProfilesPromises).catch(logger.error)
 
-    let token = client.getAccessToken()
+    const token = client.getAccessToken()
 
     if (token) {
       getUnityInstance().InitializeMatrix(token)
@@ -692,21 +681,8 @@ function getFriendStatusInfo(state: RootState) {
 }
 
 async function getFriendIds(client: SocialAPI): Promise<string[]> {
-  let friends: string[]
-  if (shouldUseSocialServiceForFriendships()) {
-    friends = await client.getAllFriendsAddresses()
-  } else {
-    friends = client.getAllFriends()
-  }
-
+  let friends: string[] = await client.getAllFriendsAddresses()
   return friends.map(($) => parseUserId($)).filter(Boolean) as string[]
-}
-
-function shouldUseSocialServiceForFriendships() {
-  return (
-    !getFeatureFlagEnabled(store.getState(), 'use-synapse-server') &&
-    getFeatureFlagEnabled(store.getState(), 'use-social-server-friendships')
-  )
 }
 
 function getTotalUnseenMessages(client: SocialAPI, ownId: string, friendIds: string[]): number {
@@ -1003,8 +979,8 @@ export async function getPrivateMessages(getPrivateMessagesPayload: GetPrivateMe
   getUnityInstance().AddChatMessages(addChatMessagesPayload)
 }
 
-export function getUnseenMessagesByUser() {
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+export async function getUnseenMessagesByUser() {
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return
@@ -1025,7 +1001,7 @@ export function getUnseenMessagesByUser() {
 export async function getFriendsWithDirectMessages(request: GetFriendsWithDirectMessagesPayload) {
   const realmAdapter = await ensureRealmAdapter()
   const fetchContentServerWithPrefix = getFetchContentUrlPrefixFromRealmAdapter(realmAdapter)
-  const conversationsWithMessages = getAllFriendsConversationsWithMessages(store.getState())
+  const conversationsWithMessages = await getAllFriendsConversationsWithMessages(store.getState())
 
   if (conversationsWithMessages.length === 0) {
     return
@@ -1167,7 +1143,6 @@ export function* initializeStatusUpdateInterval() {
     const shouldSendNewStatus = !deepEqual(updateStatus, lastStatus)
 
     if (shouldSendNewStatus) {
-      logger.log('Sending new comms status', updateStatus)
       client.setStatus(updateStatus).catch((e) => logger.error(`error while setting status`, e))
       lastStatus = updateStatus
     }

@@ -1,18 +1,19 @@
 import { Transport, TransportEvents } from '@dcl/rpc'
 import mitt from 'mitt'
 
+export const _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE: number = 8388608
+
 export type WebTransportOptions = {
   wasmModule: any
 }
 
 export function webTransport(options: WebTransportOptions, unityDclInstance: any) {
   const events = mitt<TransportEvents>()
-  const ALLOC_SIZE = 8388608
   let heapPtr: number
   let sendMessageToRenderer: undefined | ((ptr: number, length: number) => void) = undefined
 
   if (!!options.wasmModule._call_BinaryMessage) {
-    heapPtr = options.wasmModule._malloc(ALLOC_SIZE)
+    heapPtr = options.wasmModule._malloc(_INTERNAL_WEB_TRANSPORT_ALLOC_SIZE)
     sendMessageToRenderer = options.wasmModule.cwrap('call_BinaryMessage', null, ['number', 'number'])
   }
 

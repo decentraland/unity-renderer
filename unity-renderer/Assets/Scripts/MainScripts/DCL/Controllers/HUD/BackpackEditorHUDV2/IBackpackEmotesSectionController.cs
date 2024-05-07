@@ -6,6 +6,8 @@ namespace DCL.Backpack
     {
         event Action<string> OnNewEmoteAdded;
         event Action<string> OnEmotePreviewed;
+        event Action<string> OnEmoteEquipped;
+        event Action<string> OnEmoteUnEquipped;
 
         void LoadEmotes();
         void RestoreEmoteSlots();

@@ -24,6 +24,7 @@ using Object = System.Object;
 
 namespace DCL.Helpers
 {
+
     public class WaitForAllMessagesProcessed : CustomYieldInstruction
     {
         public override bool keepWaiting => Environment.i.messaging.manager.hasPendingMessages;

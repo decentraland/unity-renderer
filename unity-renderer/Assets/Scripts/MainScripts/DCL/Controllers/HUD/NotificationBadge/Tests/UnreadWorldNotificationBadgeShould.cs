@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
 {
-    private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME = "UnreadWorldNotificationBadge";
+    private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_PATH = "Assets/Scripts/MainScripts/DCL/Controllers/HUD/NotificationBadge/Prefabs/UnreadWorldNotificationBadge.prefab";
 
     private UnreadWorldNotificationBadge unreadWorldNotificationBadge;
     private IChatController chatController;
@@ -16,7 +17,7 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
-        GameObject go = Object.Instantiate((GameObject) Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
+        GameObject go = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(UNREAD_NOTIFICATION_BADGE_RESOURCE_PATH));
         unreadWorldNotificationBadge = go.GetComponent<UnreadWorldNotificationBadge>();
         chatController = Substitute.For<IChatController>();
         unreadWorldNotificationBadge.Initialize(chatController);

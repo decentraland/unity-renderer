@@ -1,13 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Chat;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.HelpAndSupportHUD;
-using DCL.Huds.QuestsPanel;
-using DCL.Huds.QuestsTracker;
 using DCL.NotificationModel;
-using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
+using DCL.Social.Chat;
 using DCL.Social.Friends;
 using System;
 using System.Collections.Generic;
@@ -53,7 +51,7 @@ public class HUDController : IHUDController
         toggleUIVisibilityTrigger = Resources.Load<InputAction_Trigger>(TOGGLE_UI_VISIBILITY_ASSET_NAME);
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
 
-        CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenOnOnChange;
+        CommonScriptableObjects.allUIHidden.OnChange += ToggleAllUIHiddenNotification;
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
 
@@ -109,12 +107,6 @@ public class HUDController : IHUDController
     public VoiceChatWindowController voiceChatHud =>
         GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as VoiceChatWindowController;
 
-    public QuestsPanelHUDController questsPanelHUD =>
-        GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
-
-    public QuestsTrackerHUDController questsTrackerHUD =>
-        GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
-
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -141,16 +133,12 @@ public class HUDController : IHUDController
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
     }
 
-    private void AllUIHiddenOnOnChange(bool current, bool previous)
+    public void ToggleAllUIHiddenNotification(bool isHidden, bool _)
     {
-        if (current)
-        {
+        if (isHidden)
             NotificationsController.i?.ShowNotification(hiddenUINotification);
-        }
         else
-        {
             NotificationsController.i?.DismissAllNotifications(hiddenUINotification.groupID);
-        }
     }
 
     public async UniTask ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, CancellationToken cancellationToken = default,
@@ -373,16 +361,6 @@ public class HUDController : IHUDController
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 await CreateHudElement(configuration, hudElementId, cancellationToken);
                 break;
-            case HUDElementID.QUESTS_PANEL:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    questsPanelHUD.Initialize(QuestsController.i);
-                break;
-            case HUDElementID.QUESTS_TRACKER:
-                await CreateHudElement(configuration, hudElementId, cancellationToken);
-                if (configuration.active)
-                    questsTrackerHUD.Initialize(QuestsController.i);
-                break;
             case HUDElementID.AVATAR_NAMES:
                 // TODO Remove the HUDElementId once kernel stops sending the Configure HUD message
                 break;
@@ -469,7 +447,7 @@ public class HUDController : IHUDController
     public void Cleanup()
     {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;
-        CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenOnOnChange;
+        CommonScriptableObjects.allUIHidden.OnChange -= ToggleAllUIHiddenNotification;
 
         if (worldChatWindowHud != null)
         {

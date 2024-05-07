@@ -15,12 +15,16 @@ namespace DCL
         void SetInvisible();
         void UpdateImpostorTint(float distanceToMainPlayer);
         void SetNameVisible(bool visible);
+
+        bool IsInvisible { get; }
     }
 
     public class AvatarLODController : IAvatarLODController
     {
         private const string VISIBILITY_CONSTRAIN = "behind_camera_or_out_of_limits";
         public Player player { get; }
+
+        public bool IsInvisible { get; private set; }
 
         public AvatarLODController(Player player)
         {
@@ -45,6 +49,8 @@ namespace DCL
             player.onPointerDownCollider.SetColliderEnabled(setPointerColliderEnabled);
             player.avatar.SetLODLevel(level);
             player.avatar.RemoveVisibilityConstrain(VISIBILITY_CONSTRAIN);
+
+            IsInvisible = false;
         }
 
         public void SetInvisible()
@@ -54,6 +60,7 @@ namespace DCL
 
             player.avatar.AddVisibilityConstraint(VISIBILITY_CONSTRAIN);
             player.onPointerDownCollider.SetColliderEnabled(false);
+            IsInvisible = true;
         }
 
         public void SetAnimationThrottling(int framesBetweenUpdates) =>
@@ -66,6 +73,7 @@ namespace DCL
             else
                 player?.playerName.Hide();
         }
+
         public void UpdateImpostorTint(float distanceToMainPlayer) =>
             player?.avatar?.SetImpostorTint(AvatarRendererHelpers.CalculateImpostorTint(distanceToMainPlayer));
 

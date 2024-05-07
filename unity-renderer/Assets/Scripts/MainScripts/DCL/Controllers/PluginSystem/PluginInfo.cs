@@ -1,4 +1,7 @@
-﻿namespace DCL
+using System;
+using UnityEngine;
+
+namespace DCL
 {
     public class PluginInfo
     {
@@ -13,8 +16,15 @@
             if ( isEnabled )
                 return;
 
-            instance = builder.Invoke();
-            enableOnInit = false;
+            try
+            {
+                instance = builder.Invoke();
+                enableOnInit = false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         public void Disable()

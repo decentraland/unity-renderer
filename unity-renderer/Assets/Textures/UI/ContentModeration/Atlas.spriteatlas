@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: fb9759b9bb22a3e4aa1dee3eac92a366, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 0fe67f012b80f43418f19657b5358393: 21300000
+    - 2ae7cdd2f890b7f48a2c50d3daaae1bf: 21300000
+    - 60d50773a2ca4e240899c9b43cd770d7: 21300000
+    - 93e14674749996744b80c0f1bae996f3: 21300000
+    - f37264255f614f34da05229fbc4a7cdb: 21300000
+    - 7e4043c67aca8734aa052b3aceac93f5: 21300000
+    - d3817e7758ccb954984f27371c629837: 21300000
+    - 66bf9408193f3024f8db63f42e251dfe: 21300000
+    - 93e1efcab17a8de4ba733f92f79f6a5e: 21300000
+    - 8a63dcab35445e14a93cc252f0595cb6: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 0fe67f012b80f43418f19657b5358393, type: 3}
+  - {fileID: 21300000, guid: 2ae7cdd2f890b7f48a2c50d3daaae1bf, type: 3}
+  - {fileID: 21300000, guid: 60d50773a2ca4e240899c9b43cd770d7, type: 3}
+  - {fileID: 21300000, guid: 93e14674749996744b80c0f1bae996f3, type: 3}
+  - {fileID: 21300000, guid: f37264255f614f34da05229fbc4a7cdb, type: 3}
+  - {fileID: 21300000, guid: 7e4043c67aca8734aa052b3aceac93f5, type: 3}
+  - {fileID: 21300000, guid: d3817e7758ccb954984f27371c629837, type: 3}
+  - {fileID: 21300000, guid: 66bf9408193f3024f8db63f42e251dfe, type: 3}
+  - {fileID: 21300000, guid: 93e1efcab17a8de4ba733f92f79f6a5e, type: 3}
+  - {fileID: 21300000, guid: 8a63dcab35445e14a93cc252f0595cb6, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - RateBottomLine
+  - AdultIcn
+  - FlagTeen
+  - FlagAdult
+  - RestrictedIcn
+  - TeenIcn
+  - UnhiddenEye
+  - ConfirmFlagImg
+  - FlagRestricted
+  - HiddenEye
+  m_RenderDataMap: {}
+  m_Tag: Atlas
+  m_IsVariant: 0

@@ -13,7 +13,6 @@ namespace DCL.LoadingScreen
         [SerializeField] private LoadingScreenPercentageView percentageView;
         [SerializeField] private LoadingScreenTimeoutView timeoutView;
         [SerializeField] private RawImage rawImage;
-        [SerializeField] private GameObject betaTag;
         private RenderTexture renderTexture;
         private RectTransform rawImageRectTransform;
 
@@ -22,8 +21,6 @@ namespace DCL.LoadingScreen
         public void Start()
         {
             showHideAnimator.OnWillFinishStart += FadeInFinish;
-
-            betaTag.SetActive(!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer);
 
             rawImageRectTransform = rawImage.GetComponent<RectTransform>();
             SetupBlitTexture();

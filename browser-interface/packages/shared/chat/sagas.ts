@@ -11,7 +11,7 @@ import { sendPublicChatMessage } from 'shared/comms'
 import { getAllPeers } from 'shared/comms/peers'
 import { changeRealm } from 'shared/dao'
 import { joinOrCreateChannel, leaveChannel, sendChannelMessage } from 'shared/friends/actions'
-import { getSocialClient, isFriend } from 'shared/friends/selectors'
+import { getSocialClient } from 'shared/friends/selectors'
 import { areChannelsEnabled } from 'shared/friends/utils'
 import { EXPERIENCE_STARTED } from 'shared/loading/types'
 import { getExplorerVersion } from 'shared/meta/version'
@@ -89,7 +89,9 @@ function* trackEvents(action: PayloadAction<MessageEvent, ChatMessage>) {
         to: payload.messageType === ChatMessageType.PRIVATE ? ChatMessagePlayerType.WALLET : undefined,
         length: payload.body.length,
         messageType: payload.messageType,
-        source: isChannel ? 'channel' : undefined
+        source: isChannel ? 'channel' : undefined,
+        receiverId: payload.receiverId,
+        channelName: payload.channelName
       })
       break
     }
@@ -214,7 +216,7 @@ function initChatCommands() {
 
     if (isValidPosition) {
       const { x, y } = coordinates
-      TeleportController.goTo(x, y).then(
+      TeleportController.goTo(x, y, false).then(
         ({ message }) => notifyStatusThroughChat(message),
         () => {
           // Do nothing. This is handled inside controller
@@ -390,17 +392,6 @@ function initChatCommands() {
         sender: 'Decentraland',
         timestamp: Date.now(),
         body: `Cannot find user ${userName}`
-      }
-    }
-
-    const _isFriend: ReturnType<typeof isFriend> = isFriend(store.getState(), user.userId)
-    if (!_isFriend) {
-      return {
-        messageId: uuid(),
-        messageType: ChatMessageType.SYSTEM,
-        sender: 'Decentraland',
-        timestamp: Date.now(),
-        body: `Trying to send a message to a non friend ${userName}`
       }
     }
 

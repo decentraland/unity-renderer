@@ -1,21 +1,14 @@
 using Cysharp.Threading.Tasks;
-using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using System.Collections;
-using System.IO;
 using System.Linq;
 using DCL;
-using DCL.Helpers.NFT;
-using NFTShape_Internal;
-using NSubstitute;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityGLTF.Loader;
 using Environment = DCL.Environment;
 
 namespace SceneBoundariesCheckerTests

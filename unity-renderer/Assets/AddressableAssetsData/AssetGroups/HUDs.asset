@@ -21,18 +21,32 @@ MonoBehaviour:
     m_Address: SignupHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 6f8b81a0a0d620743b9e347797e87b53
-    m_Address: QuestsTrackerHUD
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8eeaa25ae02fb784e9b14ed71aae12f5
     m_Address: HelpAndSupportHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 987f12680f06c40d0a902d4004a36e3c
     m_Address: NotificationHUD
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9945fbc075d76034b8836c6068943390
+    m_Address: WalletSectionHUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d73178a7da1894086b95f324c67f7d69
+    m_Address: ExperiencesConfirmationPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66b5961c332b383448f2a142ed0a3dea
+    m_Address: SignupHUDV2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
   m_SchemaSet:

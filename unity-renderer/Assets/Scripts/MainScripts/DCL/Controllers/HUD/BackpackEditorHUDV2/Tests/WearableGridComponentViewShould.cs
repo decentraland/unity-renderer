@@ -206,6 +206,26 @@ namespace DCL.Backpack
         }
 
         [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetInfoCardVisible(bool isVisible)
+        {
+            view.SetInfoCardVisible(isVisible);
+
+            Assert.AreEqual(isVisible, view.infoCardComponentView.gameObject.activeSelf);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetLoadingActive(bool isActive)
+        {
+            view.SetLoadingActive(isActive);
+
+            Assert.AreEqual(isActive, view.loadingSpinner.activeSelf);
+        }
+
+        [Test]
         public void SetBreadcrumb()
         {
             var model = new NftBreadcrumbModel
@@ -224,12 +244,15 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void EnableEmptyStateWhenNoWearables()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void EnableEmptyStateWhenNoWearables(bool isSignIn)
         {
+            DataStore.i.common.isSignUpFlow.Set(isSignIn);
             view.ClearWearables();
             view.ShowWearables(Array.Empty<WearableGridItemModel>());
 
-            Assert.IsTrue(view.emptyStateContainer.activeSelf);
+            Assert.IsTrue(isSignIn ? view.emptyStateContainerForSignUp : view.emptyStateContainer.activeSelf);
             Assert.IsFalse(view.wearablesGridContainer.gameObject.activeSelf);
         }
 

@@ -38,17 +38,17 @@ public class RealmRowComponentViewTests
     }
 
     [Test]
-    public void SetNameCorrectly()
+    [TestCase("Test Name")]
+    [TestCase(null)]
+    public void SetNameCorrectly(string realmName)
     {
-        // Arrange
-        string testName = "Test Name";
-
         // Act
-        realmRowComponent.SetName(testName);
+        realmRowComponent.SetName(realmName);
 
         // Assert
-        Assert.AreEqual(testName, realmRowComponent.model.name, "The realm name does not match in the model.");
-        Assert.AreEqual(testName.ToUpper(), realmRowComponent.nameText.text.ToUpper());
+        string nameResult = string.IsNullOrEmpty(realmName) ? string.Empty : realmName;
+        Assert.AreEqual(nameResult, realmRowComponent.model.name, "The realm name does not match in the model.");
+        Assert.AreEqual(nameResult.ToUpper(), realmRowComponent.nameText.text.ToUpper());
     }
 
     [Test]

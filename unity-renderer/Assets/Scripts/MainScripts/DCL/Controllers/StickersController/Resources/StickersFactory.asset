@@ -37,3 +37,9 @@ MonoBehaviour:
   - id: hohoho
     stickerPrefab: {fileID: 2517955516116662209, guid: 03e7f4b3949a29f4190a223edadc6e59,
       type: 3}
+  - id: hands_in_the_air
+    stickerPrefab: {fileID: 2517955516116662209, guid: 8c0b89188886ef94f9a55061a803c99a,
+      type: 3}
+  - id: cry
+    stickerPrefab: {fileID: 8946916107192316977, guid: 3e36d71cc8e14844aaef3273e51d40dc,
+      type: 3}

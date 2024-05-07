@@ -1,3 +1,4 @@
+using DCLServices.WearablesCatalogService;
 using System;
 using System.Collections.Generic;
 using UIComponents.Scripts.Components;
@@ -14,7 +15,9 @@ namespace DCL.Backpack
         [SerializeField] internal PageSelectorComponentView wearablePageSelector;
         [SerializeField] internal InfoCardComponentView infoCardComponentView;
         [SerializeField] internal GameObject emptyStateContainer;
+        [SerializeField] internal GameObject emptyStateContainerForSignUp;
         [SerializeField] internal Button goToMarketplaceButton;
+        [SerializeField] internal GameObject loadingSpinner;
 
         private readonly Dictionary<WearableGridItemComponentView, PoolableObject> wearablePooledObjects = new ();
         private readonly Dictionary<string, WearableGridItemComponentView> wearablesById = new ();
@@ -85,6 +88,8 @@ namespace DCL.Backpack
 
         public void ClearWearables()
         {
+            wearablesGridContainer.ExtractItems();
+
             foreach ((WearableGridItemComponentView wearableGridItem, PoolableObject poolObj) in wearablePooledObjects)
             {
                 wearableGridItem.OnSelected -= HandleWearableSelected;
@@ -102,17 +107,18 @@ namespace DCL.Backpack
 
         public void SetWearable(WearableGridItemModel model)
         {
-            if (wearablesById.TryGetValue(model.WearableId, out var view))
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(model.WearableId);
+
+            if (wearablesById.TryGetValue(shortenedWearableId, out var view))
                 view.SetModel(model);
             else
             {
                 PoolableObject poolObj = wearableGridItemsPool.Get();
                 WearableGridItemComponentView wearableGridItem = poolObj.gameObject.GetComponent<WearableGridItemComponentView>();
                 wearablePooledObjects[wearableGridItem] = poolObj;
-                wearablesById[model.WearableId] = wearableGridItem;
+                wearablesById[shortenedWearableId] = wearableGridItem;
                 wearableGridItem.SetModel(model);
                 wearablesGridContainer.AddItem(wearableGridItem);
-
                 wearableGridItem.OnSelected += HandleWearableSelected;
                 wearableGridItem.OnEquipped += HandleWearableEquipped;
                 wearableGridItem.OnUnequipped += HandleWearableUnequipped;
@@ -132,21 +138,44 @@ namespace DCL.Backpack
                 view.Unselect();
 
             selectedWearableItem = null;
-            infoCardComponentView.SetVisible(false);
+            SetInfoCardVisible(false);
         }
 
         public void SelectWearable(string wearableId)
         {
             selectedWearableItem = wearablesById[wearableId];
             selectedWearableItem.Select();
-            infoCardComponentView.SetVisible(true);
+            SetInfoCardVisible(true);
         }
 
         public void FillInfoCard(InfoCardComponentModel model) =>
             infoCardComponentView.SetModel(model);
 
+        public void SetInfoCardVisible(bool isVisible) =>
+            infoCardComponentView.SetVisible(isVisible);
+
+        public void SetLoadingActive(bool isActive)
+        {
+            loadingSpinner.SetActive(isActive);
+            UpdateEmptyState();
+        }
+
         public void SetWearableBreadcrumb(NftBreadcrumbModel model) =>
             wearablesBreadcrumbComponentView.SetModel(model);
+
+        public void RefreshWearable(string wearableId)
+        {
+            if (!wearablesById.TryGetValue(wearableId, out var view))
+                return;
+
+            view.RefreshControl();
+        }
+
+        public void RefreshAllWearables()
+        {
+            foreach (WearableGridItemComponentView view in wearablePooledObjects.Keys)
+                view.RefreshControl();
+        }
 
         private void HandleWearableSelected(WearableGridItemModel model) =>
             OnWearableSelected?.Invoke(model);
@@ -161,12 +190,10 @@ namespace DCL.Backpack
         {
             bool isEmpty = wearablesById.Count == 0;
 
-            if (isEmpty)
-                wearablesGridContainer.Hide(true);
-            else
-                wearablesGridContainer.Show(true);
+            wearablesGridContainer.gameObject.SetActive(!isEmpty && !loadingSpinner.activeSelf);
 
-            emptyStateContainer.SetActive(isEmpty);
+            emptyStateContainer.SetActive(isEmpty && !loadingSpinner.activeSelf && !DataStore.i.common.isSignUpFlow.Get());
+            emptyStateContainerForSignUp.SetActive(isEmpty && !loadingSpinner.activeSelf && DataStore.i.common.isSignUpFlow.Get());
         }
     }
 }

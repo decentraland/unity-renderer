@@ -24,6 +24,14 @@ namespace DCL.ECSComponents.UIAbstractElements
         protected internal InternalUiContainer AddElementToRoot(IParcelScene scene, IDCLEntity entity, VisualElement uiElement)
         {
             var internalContainer = AddComponentToEntity(scene, entity);
+
+            uiElement.pickingMode = PickingMode.Ignore;
+            if (internalContainer.rootElement.style.width.keyword == StyleKeyword.Auto
+                || internalContainer.rootElement.style.height.keyword == StyleKeyword.Auto)
+            {
+                uiElement.style.position = new StyleEnum<Position>(Position.Relative);
+            }
+
             internalContainer.rootElement.Add(uiElement);
             return internalContainer;
         }
@@ -42,12 +50,12 @@ namespace DCL.ECSComponents.UIAbstractElements
             RemoveComponentFromEntity(scene, entity)?.rootElement?.Remove(uiElement);
         }
 
-        protected internal InternalUiContainer RemoveComponentFromEntity(IParcelScene scene, IDCLEntity entity)
+        protected internal InternalUiContainer? RemoveComponentFromEntity(IParcelScene scene, IDCLEntity entity)
         {
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
-                var containerModel = containerData.model;
+                var containerModel = containerData.Value.model;
                 containerModel.components.Remove(componentId);
                 internalUiContainer.PutFor(scene, entity, containerModel);
                 return containerModel;

@@ -1,0 +1,698 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Duplicate Asset Isolation1
+  m_EditorClassIdentifier: 
+  m_GroupName: Duplicate Asset Isolation1
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6b63591707d65480d8afebbba05ad986
+  m_SerializeEntries:
+  - m_GUID: db09a3000c06f1e46a56c971875a6aa1
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/head_explode_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 90d19c500d961c44f8941c69dcdae46a
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/mc_hammer_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5ff44e022ab99054bb0a1f79b2077c4f
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/waving_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fb2a51422f4f0f84ca589e9716428e06
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/dance_male2_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9622f862db0a54f49a26e220aac90cbe
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/snowfall_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ff531623182fec8479d734ac8df22d8f
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/clap_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 832a50a328da0294f809c85f37abca0e
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/tiktok_dance_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 736224c3cee06814dbf03a9bc3396382
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/robot_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 08fb89e42a3f7d44e9b2a391aa41aff6
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/hohoho_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2b2f4028cd39d984e80dabe0732fdd87
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/fist_pump_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 84771a68677a08b43a7247d73aa5a6d8
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/tecktonik_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ff8a6278dd9d9334da10fa959cdb26dc
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/raise_hand_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5dc96a095ce3483459044bf3e74ccb59
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/disco_dance_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8845b5e9671db49409bf747319c8f5c7
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/kiss_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e6a1e80b5ad78344ab7aa751eb27c30d
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/dab_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e2b6332b93b06ab488a93d40b83c69fe
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/throw_money_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5d9d324d9b1257f4cbeed858807c2c06
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/waiting_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4ee2739d276aba843bd732c5a4a40dad
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/talk_to_hand_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f992e8febb67b5d47a24e9f16d5cc190
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/shrug_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9ffc1e539f6534362920520ac0be1276
+    m_Address: Assets/Textures/UI/Emotes/EmotesAtlas.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8e5a1950f42154e5dac07dae292d5c6a
+    m_Address: Assets/Textures/UI/Emotes/RarityCornerWheel.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 721c6c734f61b43d0847c2d37a7b6271
+    m_Address: Assets/Textures/UI/Emotes/SelectedEllipticalMenu.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 157bc655b2606c846b7d3f9482dda522
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/snowball_hit_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2d405186c1fa28f4e80f9436098c63c3
+    m_Address: Assets/Textures/UI/Emotes/WheelHighlightIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0dcdab27d9530440f8dd0973134f8717
+    m_Address: Assets/Textures/UI/Emotes/EmptyIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ec2731182caf94ac1a2c3e37bed6c769
+    m_Address: Assets/Textures/UI/Emotes/WheelSlot.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d6787e389abeb437ead1ebad0a81a461
+    m_Address: Assets/Textures/UI/Emotes/WheelSlotHighlighted.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ee4612caf84054bbb9282917b25c1bfc
+    m_Address: Assets/Textures/UI/Emotes/WheelBackground.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7938434e632b598489b8b03e6effa995
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/crafting_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 09fbf61f43e86a94aa4235b8fa7a6171
+    m_Address: Assets/Textures/UI/Emotes/EmbeddedEmotesThumbnails/snowball_throw_256.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c4c1fb78d1c9a4db5ba93b000ce13026
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/Passport/NFTIcons/NFTTypesIcons.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ddce90606ec7d4e5d820390fe246a91b
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/TopIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 98bae2808161c4d678b3f5d109a5ee80
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/BodyIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2de957f05cca04e4aac38646afee2263
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/HatIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 17e4c961a88d74262a222ea008152618
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/TopheadIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b90a97a10e3a7452988bced1ec1aaf84
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/EyesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 06cdeba19874e4ee38010ed40544559d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/MustacheIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 17bc93623e63c4254bb5799cd55f4b96
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/NameIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 16866e729ce1061429170517e80ef313
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HandWearIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4a803782af3694d97b17f31e269c04d1
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/EarringsIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 647c19a2d48324d368a4da9362adedad
+    m_Address: Assets/Textures/TestTexture.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0492c753b33b04474ac2b7e7d18a2c70
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/LandIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0bfef183260d34c50b8d971b1400499e
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/SkinsIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 30c54e14722864c70a0e8c28edc2f7e6
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/HeadIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1b8e5d35e0b2d46379b97bb7e7ab2c97
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HandIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 946f30660ef2f4261b313ca749c4127c
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/HairIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c1bf499699a424df88aa013bd2f32b68
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ShoesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b3148da633cc64974a01bd0083bd1e59
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/CornerFlap.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 15c0a1185bb524f0c9d7b118e081501f
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/HelmetIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4454cae867deb4aea91f4d26c5bc88b1
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/TiaraIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 18cc300911ff74c3c922eb3a9b346f3c
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/EyewareIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d4ee93e9eb8464972b0fd5598a452f50
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/BottomIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 84c790cbe3a484378906dc785b6c5995
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/EyebrowIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 866efedbbcc38498f9e6136d65695c9c
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/MouthICon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e568dcbc864c24ab1a9b731a66e362cb
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/AllIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 90e673ad913664a27b245b61ccdf31bf
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/MaskIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8ca0a3b0a49ae43f4b107c2b8ec50f80
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/AvatarEditorAtlas.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f001af73ea55b4a4bac6909fe0848d1c
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackIcons.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7b670c7dc6ad14243995885dea4d5e38
+    m_Address: Assets/Textures/UI/Passport/PassportAtlas.spriteatlas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 03b05b1004b784dc690bbff5ea268de7
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EyesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6263fa4083e004ded9d5f76e9d971446
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardUncommon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 57f4b3503db7141bea960af5af6aba3f
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ContainerUniqueCard.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d52b4d70a596143e6a8f84723bfb5d27
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/NoCollectiblesImg.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6a3c7a80a921c458c93852cc9cfa33c1
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/TiaraIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9aea7690f97604e91a23067bc1c98693
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/RandomizeIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3cdb1cd0699cc4ee78a0f31f1adc6fb2
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EmptyCloset.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7c57e911f193247528edac05922ca019
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/Silhouette002.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a62bd54126ace4d309526c08cd177fbe
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellUniqueHighlight.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 20f61051b4b2e4e04bbe7ad6d718c376
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CloseButton.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 445c6a51809e44f21a4dbb5e7c36748c
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/UnisexIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 304d49d1f62b94a73958459f29bb51a0
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/WalletIllustration.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: eb045bd1671ab4469815a093d8e7ab8e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/CheckmarkGreen.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bda43422408ca42209dd311b23a1d06f
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/SkinsIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 14b14542e832343729c812d8e4c8cbae
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardCommon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c5bb4072100f84d509e4bbefb758d7c0
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/UniqueHighlighted.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a239a282af9bf48f7a26a34d76d77155
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/BaseThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b86aa5b2e1b3a4e2bb9e3afe59315b46
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/IntroIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 73a448e25759f4f1db4acdf472113ecf
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/UniqueBackground.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0a7bc003ee72446d8b987131213b19f1
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/NFTCorner.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8d9ff403c413748a7a82ca7f9443e988
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HiddenIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 392db073fc28e45fcb6cd495341a8005
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/RealNameIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6084de83d5bc748b9a444a61a7c0b96a
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/TopheadIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8c8891934b1424617b1b798b02fccfc8
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CollectiblesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 29b3c29329eb84defb2412248b12a449
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellUniqueFill.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3f256ac367a7f4a9baa188f3fc73dd76
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CardInfoUniqueContainer.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f49bfce399a8c41568bf017a951a357a
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/CloseButton.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3e93cfe39d23e4cc1bce8e1621fac43d
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/MythicThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 77eb5a24a4b4f43abb387ce6a4ee7e81
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/AccesoriesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 909704347448b41bbab7203f8a6c12c9
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/MarketIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e8bb1d3461346463a8a09e69e9d0b21e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/UncommonThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e0a031647fa194e6690c0749c758613e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/UniqueThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5b3e476476d1b49339a7115d8e55a56d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/UniqueCorner.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1a1d2bd47f28a47c28035a04ee136edd
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ContainerGradientCard.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: dfec25e4cf70a4f408093194340bfcb4
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/AvatarStyleIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d7329df45ca12414f9cc799103d596bf
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/FavIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: fb5041354a9234cab900dc6cc03446ea
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellNFTframe.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f5c69b65210ee4d918cee88989f0b22e
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/PassportBackground.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 57331f65928794d50a05a8610b3a975b
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/DoneIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b54d69b54857f44d7acfdc7e428ca94e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardEpic.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ec6e82c586d96441e9a01726eae9c6f8
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HatIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2dc807c5b399c4301b1732ad95786f55
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/FemaleIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7f02a0d56dde24665b43d5483b653d47
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/BlockedImg.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b3fcd616f8250405f8bb1aadd61cc220
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/Silhouette003.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 81132a1626c0d43aabeeec2414a68945
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/MustacheIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 09fd8686734544b9eb4a37d61ec2890c
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ContainerCard.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 83b23c967c9d94408bbe1479839ea43d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/MaleIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 419076073bb23470898b3a2689515b64
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/FlapShadow.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 15c01427d7e8f4c72a16e8e1368c82a6
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EyebrowIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 17138637340a445fd8f7c55b3e177e8c
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EmptyIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f64af9471f87448c6996cf13d511a0dc
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/LegendaryThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c83f9c57f0b364f2fab4e0e6d20a15b3
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardUnique.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: dc4d2567ba80d4226a9af5d3317c2470
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardLegendary.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f8ce386703bdd44f2b6d80232b03f124
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/LinkIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 98a2ad67412f444ee883c03d3a07dd1e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EarringsIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1f9a3897187df4915860cca7bae48552
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/CameraIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1f8423c7e44934bc88742ef8c05aa4ee
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EyewareIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2b4d7ff7848124b81bf757259f34eea4
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CardInfoContainer.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 23241d08164d3406e8fb5463625d3c37
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/PlusIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 665a0e081e71c4699b07e587f9578d1d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellNFTUniqueframe.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 48d5dd980b244494b9f9d9fc540e0b01
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/TopIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1e29b7d86ba6b4f2296dd5c8024ae520
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/HobbiesIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f0288429bd10b4d738028837ef4041db
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/SaleIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9b13173961ced41b287b3ec0d724c585
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HairIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 18008459efe194e218281bf2964c7771
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/PronounsIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a3837a59671b94a699e1f72ece4c8d8d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/StarIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 199cb6898ee8141a88c5f702ecaa943c
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/RelationshipIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6bc5be995cfc14e0182a54c5a4fef290
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/HelmetIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e845c7c9576f6431595d42da36703a07
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/LanguageIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 075c9dd99649649f9869afece52cd35b
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/MouthIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2a24a45ae661148d2af4bc9f390fdd66
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellGradient.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1ed91f5adb06840648251cc206f8981f
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/CountryIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bac28cca306dd4b91a74c98182dafdd6
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/ProfessionIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cf7f4a0baae9142968ca27a5ed8993d9
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/BirthdayIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a6c2677ba0c2a49de93b1237c458b0b0
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/GenderIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c7f41b8bc4324443a82a0e197610125d
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/InfoIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 59b6b5bb7ec0348ef9f9d2890faa3efe
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ColorSelected.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2bd9c7cbf6f504ad89e22e7f1f497fd2
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/ShoesIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2d93daeb29e2746d8a0c30203496d9c7
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/CommonThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7df132fb4eb304d619c7dd33841261a1
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/BodyIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d680666c4c5134b9f8615ffaaf5da043
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/WearablesIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f88ebb8cd1cd5487ca7c3f4d3e65e76a
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/MaskIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9fb5589c5caac46e5882f2be6709b03d
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/RadialGradient.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 503ad90df363e4587b962551b1fbbae9
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/EpicThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3a17402d714be4824b651c091e883d42
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellFill.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: adff267d131ae403ab9b47206a665a79
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/RareThumbnail.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: be9fdcad4c4cb403eab27ebae8e9c3e1
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/SexOrientationIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4d7db0ddbeffb45699b8fdea65aa4fb4
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/Silhouette005.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2b0a6fdd96915402592ab53957ebf5ac
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/VisibleIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bf9cd8edf950343a9ba38284a615c606
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/BottomIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ae432d6ee3307da4aac59db911ad410f
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/360Icon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0d40d3de4e8af4e7c9c5341e930a45e3
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/UniqueShadow.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: eafeb5ee04f824648b1a9f8b4412d485
+    m_Address: Assets/Textures/UI/Passport/PassportIcons/EmotesIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 43c5d03f6ddc94dd59cebf176b48c9d8
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardBase.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 15e20e3fa5b554b71889a9975ebd4950
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/ThirdPartyIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 01b8d34fbe27846d09b2fe04925a10b3
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/VrmIcn.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 48e6184f4d144486b8a4e6f6e965142e
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardRare.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 189ee65ff87144af8a086869788a4935
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/WearablesGradientBackground.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 94d7328f5583d47d6b961ae666f6db88
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/InfoCardMythic.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 51b361fff7067426a964be4945152c62
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Textures/CellHighlight.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 790097ff4ea2f478e91ecc22ed8814d2
+    m_Address: Assets/Textures/UI/BackpackV2/BackpackTextures/OutfitIcon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 25307fc8924cf8747a2b0fd87a729aca
+    m_Address: Assets/Rendering/UI/ChargeWheel/M_LoadingSpinnerBackground.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e12c11d5f7a2cd845aa17f4f01916655
+    m_Address: Assets/Rendering/UI/ChargeWheel/Spinner.controller
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c77c82b7631304e47a8c0ba64982cebb
+    m_Address: Assets/Rendering/UI/ChargeWheel/M_ChargeBarV2.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2d15225b42a1a44499ea555350bbdb9c
+    m_Address: Assets/Rendering/UI/ChargeWheel/LoadingAnimation.anim
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b1903930fefe4c34482b7518a44ee720
+    m_Address: Assets/Rendering/UI/ChargeWheel/M_LoadingSpinnerBackgroundBlack.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 566dbc1f76938e24489897411732abf0
+    m_Address: Assets/Rendering/UI/ChargeWheel/M_ChargeBarV2Thicker.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c502cfacea4f3d34aa2a4cc730ddfe0b
+    m_Address: Assets/Scripts/MainScripts/DCL/Controllers/HUD/Common/Audio/SFX/UI
+      - Cancel 01.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d7215c6dfa072d74ba8f86f5606e4cd8
+    m_Address: Assets/TextMesh Pro/Shaders/TMP_SDF-ZWrite.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 436e0d4fdc1cdfa4aaef13be2e8bcef8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7d931bd76c4b14aa1a8f8ac70843fe39, type: 2}
+    - {fileID: 11400000, guid: 84cd3abee3fed456897bdb0aeddb1228, type: 2}

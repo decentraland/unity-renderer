@@ -11,28 +11,51 @@ namespace UIComponents.Scripts.Components
         private const int OFFSET = 16;
 
         [SerializeField] private TMP_Text text;
+        [SerializeField] private BaseComponentView activatorComponent;
 
         private bool mouseIsOver;
 
         private RectTransform rectTransform;
         private RectTransform rect => rectTransform ??= GetComponent<RectTransform>();
 
+        public override void Awake()
+        {
+            base.Awake();
+
+            if (activatorComponent == null)
+                return;
+
+            activatorComponent.onFocused += isFocused =>
+            {
+                if (isFocused)
+                    Show();
+                else
+                    Hide();
+            };
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnFocus()
         {
             base.OnFocus();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public override void OnLoseFocus()
         {
             base.OnLoseFocus();
-            EventSystem.current.SetSelectedGameObject(gameObject);
+
+            if (EventSystem.current)
+                EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnDeselect(BaseEventData eventData)
@@ -50,10 +73,14 @@ namespace UIComponents.Scripts.Components
         public override void RefreshControl()
         {
             SetText(model.message);
+            SetAutoAdaptModeActive(model.autoAdaptContainerSize);
             AdjustTooltipSizeToText();
 
             void AdjustTooltipSizeToText()
             {
+                if (!model.autoAdaptContainerSize)
+                    return;
+
                 rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, text.preferredWidth + (OFFSET * 2));
                 rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, text.preferredHeight + (OFFSET * 2));
             }
@@ -63,8 +90,11 @@ namespace UIComponents.Scripts.Components
         {
             model.message = newText;
 
-            if (text != null)
+            if (text)
                 text.text = newText;
         }
+
+        private void SetAutoAdaptModeActive(bool isActive) =>
+            model.autoAdaptContainerSize = isActive;
     }
 }

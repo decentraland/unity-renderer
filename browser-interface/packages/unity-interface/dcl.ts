@@ -15,7 +15,7 @@ import { traceDecoratorUnityGame } from './trace'
 import defaultLogger from 'lib/logger'
 import { ContentMapping, EntityType, Scene, sdk } from '@dcl/schemas'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
-import { reloadScenePortableExperience } from 'shared/portableExperiences/actions'
+import { denyPortableExperiences, reloadScenePortableExperience } from 'shared/portableExperiences/actions'
 import { wearableToSceneEntity } from 'shared/wearablesPortableExperience/sagas'
 import { fetchScenesByLocation } from 'shared/scene-loader/sagas'
 import { sleep } from 'lib/javascript/sleep'
@@ -110,6 +110,7 @@ async function startGlobalScene(cid: string, title: string, fileContentUrl: stri
     id: cid,
     baseUrl,
     entity: {
+      id: cid,
       content: [...extraContent, { file: 'scene.js', hash: fileContentUrl }],
       pointers: [cid],
       timestamp: 0,
@@ -149,7 +150,7 @@ export async function loadPreviewScene(message: sdk.Messages) {
   }
 
   if (message.type === sdk.SCENE_UPDATE && sdk.SceneUpdate.validate(message)) {
-    if (message.payload.sceneType === sdk.ProjectType.PORTABLE_EXPERIENCE) {
+    if ([sdk.ProjectType.PORTABLE_EXPERIENCE, 'smart-wearable'].includes(message.payload.sceneType)) {
       try {
         const { sceneId } = message.payload
         const url = `${rootURLPreviewMode()}/preview-wearables/${sceneId}`
@@ -159,7 +160,7 @@ export async function loadPreviewScene(message: sdk.Messages) {
           const wearable = collection.data[0]
 
           const entity = await wearableToSceneEntity(wearable, wearable.baseUrl)
-
+          store.dispatch(denyPortableExperiences([]))
           store.dispatch(reloadScenePortableExperience(entity))
         }
       } catch (err) {
@@ -186,7 +187,7 @@ export async function reloadPlaygroundScene() {
   const playgroundBaseUrl: string = (globalThis as any).PlaygroundBaseUrl || location.origin
 
   if (!playgroundCode) {
-    console.log('There is no playground code')
+    defaultLogger.log('There is no playground code')
     return
   }
 

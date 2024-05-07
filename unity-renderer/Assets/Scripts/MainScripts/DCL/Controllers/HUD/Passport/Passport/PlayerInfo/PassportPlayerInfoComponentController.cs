@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Threading;
@@ -19,12 +20,12 @@ namespace DCL.Social.Passports
         private readonly IClipboard clipboard;
         private readonly IPassportApiBridge passportApiBridge;
 
+        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource removeFriendCancellationToken;
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
         private string name;
-        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("new_friend_requests");
         private bool isFriendsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
         public event Action OnClosePassport;
-        private CancellationTokenSource cancellationTokenSource;
 
         public PassportPlayerInfoComponentController(
             IPassportPlayerInfoComponentView view,
@@ -84,7 +85,7 @@ namespace DCL.Social.Passports
 
         private void JumpInUser()
         {
-            socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport);
+            socialAnalytics.SendJumpInToPlayer(PlayerActionSource.Passport, currentPlayerId.Get().playerId);
             OnClosePassport?.Invoke();
         }
 
@@ -112,6 +113,9 @@ namespace DCL.Social.Passports
                 {
                     name = filteredName,
                     isGuest = userProfile.isGuest,
+                    userId = userProfile.userId,
+                    isBlocked = ownUserProfile.IsBlocked(userProfile.userId),
+                    hasBlocked = userProfile.IsBlocked(ownUserProfile.userId),
                 };
             }
             else
@@ -146,7 +150,7 @@ namespace DCL.Social.Passports
             return dataStore.settings.profanityChatFilteringEnabled.Get();
         }
 
-        internal void AddPlayerAsFriend()
+        private void AddPlayerAsFriend()
         {
             if (userProfileBridge.GetOwn().isGuest)
             {
@@ -155,14 +159,7 @@ namespace DCL.Social.Passports
             }
 
             string userId = currentPlayerId.Get().playerId;
-
-            if (isNewFriendRequestsEnabled)
-                dataStore.HUDs.sendFriendRequest.Set(userId, true);
-            else
-            {
-                friendsController.RequestFriendship(userId);
-                socialAnalytics.SendFriendRequestSent(ownUserProfile.userId, userId, 0, PlayerActionSource.Passport);
-            }
+            dataStore.HUDs.sendFriendRequest.Set(userId, true);
         }
 
         private void RemoveFriend()
@@ -173,7 +170,8 @@ namespace DCL.Social.Passports
                 UserProfileController.userProfilesCatalog.Get(userId)?.userName,
                 () =>
                 {
-                    friendsController.RemoveFriend(userId);
+                    removeFriendCancellationToken = removeFriendCancellationToken.SafeRestart();
+                    friendsController.RemoveFriendAsync(userId, removeFriendCancellationToken.Token);
                     socialAnalytics.SendFriendDeleted(UserProfile.GetOwnUserProfile().userId, userId, PlayerActionSource.Passport);
                 }), true);
         }
@@ -190,26 +188,21 @@ namespace DCL.Social.Passports
         {
             string userId = currentPlayerId.Get().playerId;
 
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
-                    dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
-                        friendsController, socialAnalytics);
+                var friendRequest = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
+                dataStore.HUDs.openSentFriendRequestDetail.Set(null, true);
 
-                    throw;
-                }
+                socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
+                    PlayerActionSource.Passport.ToString(), friendRequest.FriendRequestId);
             }
-            else
-                friendsController.CancelRequestByUserId(userId);
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
+                    friendsController, socialAnalytics);
 
-            socialAnalytics.SendFriendRequestCancelled(ownUserProfile.userId, userId,
-                PlayerActionSource.Passport.ToString());
+                throw;
+            }
         }
 
         private void AcceptFriendRequest()
@@ -224,31 +217,21 @@ namespace DCL.Social.Passports
         {
             string userId = currentPlayerId.Get().playerId;
 
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
-                    dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
-
-                    socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                        request.HasBodyMessage);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
-            }
-            else
-            {
-                friendsController.AcceptFriendship(userId);
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+                await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
+                dataStore.HUDs.openReceivedFriendRequestDetail.Set(null, true);
 
                 socialAnalytics.SendFriendRequestApproved(ownUserProfile.userId, userId, PlayerActionSource.Passport.ToString(),
-                    false);
+                    request.HasBodyMessage, request.FriendRequestId);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, "modal",
+                    friendsController, socialAnalytics);
+
+                throw;
             }
         }
 
@@ -264,7 +247,7 @@ namespace DCL.Social.Passports
                     ownUserProfile.Block(userId);
                     view.SetIsBlocked(true);
                     passportApiBridge.SendBlockPlayer(userId);
-                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.Passport);
+                    socialAnalytics.SendPlayerBlocked(friendsController.IsFriend(userId), PlayerActionSource.Passport, currentPlayerId.Get().playerId);
                 }), true);
         }
 
@@ -275,19 +258,19 @@ namespace DCL.Social.Passports
             ownUserProfile.Unblock(userId);
             view.SetIsBlocked(false);
             passportApiBridge.SendUnblockPlayer(userId);
-            socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerUnblocked(friendsController.IsFriend(userId), PlayerActionSource.Passport, currentPlayerId.Get().playerId);
         }
 
         private void ReportUser()
         {
             passportApiBridge.SendReportPlayer(currentPlayerId.Get().playerId, name);
-            socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport);
+            socialAnalytics.SendPlayerReport(PlayerReportIssueType.None, 0, PlayerActionSource.Passport, currentPlayerId.Get().playerId);
         }
 
         private void WhisperUser(string userId)
         {
             dataStore.HUDs.openChat.Set(userId, true);
-            socialAnalytics.SendStartedConversation(PlayerActionSource.Passport);
+            socialAnalytics.SendStartedConversation(PlayerActionSource.Passport, currentPlayerId.Get().playerId);
             OnClosePassport?.Invoke();
         }
 

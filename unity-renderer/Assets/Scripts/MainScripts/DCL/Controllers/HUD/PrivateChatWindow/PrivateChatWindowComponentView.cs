@@ -1,5 +1,4 @@
-﻿using DCL.Chat.HUD;
-using DCL.Social.Chat;
+﻿using DCL.Social.Chat;
 using DCL.Social.Friends;
 using SocialBar.UserThumbnail;
 using SocialFeaturesAnalytics;
@@ -49,6 +48,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         remove => onFocused -= value;
     }
     public event Action OnClickOverWindow;
+    public event Action<string> OnUnblockUser;
 
     public IChatHUDComponentView ChatHUD => chatView;
     public bool IsActive => gameObject.activeInHierarchy;
@@ -68,6 +68,8 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
             if (scrollPos.y > REQUEST_MORE_ENTRIES_SCROLL_THRESHOLD)
                 OnRequireMoreMessages?.Invoke();
         });
+
+        chatView.OnUnblockUser += HandleUnblockFromButtonInChat;
     }
 
     public void Initialize(IFriendsController friendsController, ISocialAnalytics socialAnalytics)
@@ -82,9 +84,10 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         if (!gameObject) return;
 
         if (userContextMenu != null)
-        {
             userContextMenu.OnBlock -= HandleBlockFromContextMenu;
-        }
+
+        if (chatView!= null)
+            chatView.OnUnblockUser -= HandleUnblockFromButtonInChat;
 
         base.Dispose();
     }
@@ -116,6 +119,7 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         });
         userNameLabel.SetText(model.userName);
         jumpInButtonContainer.SetActive(model.isUserOnline);
+        chatView.SetBlockedStatus(model.isUserBlocked);
     }
 
     public void Setup(UserProfile profile, bool isOnline, bool isBlocked)
@@ -153,6 +157,12 @@ public class PrivateChatWindowComponentView : BaseComponentView, IPrivateChatCom
         model.isUserBlocked = isBlocked;
         RefreshControl();
     }
+
+    private void HandleUnblockFromButtonInChat(string userId)
+    {
+        HandleBlockFromContextMenu(userId, false);
+    }
+
 
     [Serializable]
     private struct Model

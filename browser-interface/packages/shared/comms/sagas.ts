@@ -11,9 +11,7 @@ import type { EventChannel } from 'redux-saga'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
 import { notifyStatusThroughChat } from 'shared/chat'
-import { setCatalystCandidates } from 'shared/dao/actions'
 import { selectAndReconnectRealm } from 'shared/dao/sagas'
-import { getCatalystCandidates } from 'shared/dao/selectors'
 import { commsEstablished, establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { waitForMetaConfigurationInitialization } from 'shared/meta/sagas'
 import { getFeatureFlagEnabled, getMaxVisiblePeers } from 'shared/meta/selectors'
@@ -23,14 +21,13 @@ import { DEPLOY_PROFILE_SUCCESS, SEND_PROFILE_TO_RENDERER_REQUEST } from 'shared
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import type { ConnectToCommsAction } from 'shared/realm/actions'
 import { CONNECT_TO_COMMS, setRealmAdapter, SET_REALM_ADAPTER } from 'shared/realm/actions'
-import { getFetchContentUrlPrefixFromRealmAdapter, getRealmAdapter } from 'shared/realm/selectors'
+import { getFetchContentUrlPrefixFromRealmAdapter } from 'shared/realm/selectors'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import type { IRealmAdapter } from 'shared/realm/types'
 import { USER_AUTHENTICATED } from 'shared/session/actions'
 import { measurePingTime, measurePingTimePercentages, overrideCommsProtocol } from 'shared/session/getPerformanceInfo'
 import { getCurrentIdentity, isLoginCompleted } from 'shared/session/selectors'
 import type { ExplorerIdentity } from 'shared/session/types'
-import { store } from 'shared/store/isolatedStore'
 import { lastPlayerPositionReport, positionObservable, PositionReport } from 'shared/world/positionThings'
 import type { HandleRoomDisconnection, SetRoomConnectionAction } from './actions'
 import {
@@ -38,7 +35,8 @@ import {
   setCommsIsland,
   setRoomConnection,
   SET_COMMS_ISLAND,
-  SET_ROOM_CONNECTION
+  SET_ROOM_CONNECTION,
+  setLiveKitAdapter
 } from './actions'
 import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { OfflineAdapter } from './adapters/OfflineAdapter'
@@ -54,6 +52,9 @@ import { getCommsRoom, reconnectionState } from './selectors'
 import { RootState } from 'shared/store/rootTypes'
 import { now } from 'lib/javascript/now'
 import { getGlobalAudioStream } from './adapters/voice/loopback'
+import { store } from 'shared/store/isolatedStore'
+import { buildSnapshotContent } from 'shared/profiles/sagas/handleDeployProfile'
+import { isBase64 } from 'lib/encoding/base64ToBlob'
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
 // this interval should be fast because this will be the delay other people around
@@ -195,7 +196,6 @@ function* pingerProcess() {
 function* handleConnectToComms(action: ConnectToCommsAction) {
   try {
     const identity: ExplorerIdentity = yield select(getCurrentIdentity)
-
     yield put(setCommsIsland(action.payload.event.islandId))
 
     const adapter: RoomConnection = yield call(connectAdapter, action.payload.event.connStr, identity)
@@ -213,16 +213,6 @@ function* handleConnectToComms(action: ConnectToCommsAction) {
       stack: error.stack
     })
     notifyStatusThroughChat('Error connecting to comms. Will try another realm')
-
-    const realmAdapter: IRealmAdapter | undefined = yield select(getRealmAdapter)
-    const candidates = yield select(getCatalystCandidates)
-    for (const candidate of candidates) {
-      if (candidate.domain === realmAdapter?.baseUrl) {
-        candidate.lastConnectionAttempt = Date.now()
-        break
-      }
-    }
-    store.dispatch(setCatalystCandidates(candidates))
 
     yield put(setRealmAdapter(undefined))
     yield put(setRoomConnection(undefined))
@@ -298,14 +288,17 @@ async function connectAdapter(connStr: string, identity: ExplorerIdentity): Prom
       if (!token) {
         throw new Error('No access token')
       }
-      return new Rfc4RoomConnection(
-        new LivekitAdapter({
-          logger: commsLogger,
-          url: theUrl.origin + theUrl.pathname,
-          token,
-          globalAudioStream: await getGlobalAudioStream()
-        })
-      )
+
+      const livekitAdapter = await LivekitAdapter.init({
+        logger: commsLogger,
+        url: theUrl.origin + theUrl.pathname,
+        token,
+        globalAudioStream: await getGlobalAudioStream()
+      })
+
+      store.dispatch(setLiveKitAdapter(livekitAdapter))
+
+      return new Rfc4RoomConnection(livekitAdapter)
     }
   }
   throw new Error(`A communications adapter could not be created for protocol=${protocol}`)
@@ -361,8 +354,9 @@ function* respondCommsProfileRequests() {
       }
       lastMessage = currentTimestamp
 
+      const newProfile = yield stripSnapshots(profile)
       const response: rfc4.ProfileResponse = {
-        serializedProfile: JSON.stringify(stripSnapshots(profile)),
+        serializedProfile: JSON.stringify(newProfile),
         baseUrl: contentServer
       }
       yield apply(context, context.sendProfileResponse, [response])
@@ -378,18 +372,36 @@ function getInformationForCommsProfileRequest(state: RootState) {
   }
 }
 
-function stripSnapshots(profile: Avatar): Avatar {
+const snapshotsCache: Map<string, string> = new Map()
+
+async function getSnapshotFromCacheOrBuild(snapshot: string) {
+  let result = snapshotsCache.get(snapshot)
+  if (!result) {
+    result = (await buildSnapshotContent('any_selector_here', snapshot)).hash
+    snapshotsCache.set(snapshot, result)
+  }
+  return result
+}
+
+async function stripSnapshots(profile: Avatar): Promise<Avatar> {
   const newSnapshots: Record<string, string> = {}
   const currentSnapshots: Record<string, string> = profile.avatar.snapshots
 
   for (const snapshotKey of ['face256', 'body'] as const) {
     const snapshot = currentSnapshots[snapshotKey]
     const defaultValue = genericAvatarSnapshots[snapshotKey]
-    const newValue =
+    // check if snapshot is already an address or a valid IPFS v2 hash
+    let newValue =
       snapshot &&
       (snapshot.startsWith('/') || snapshot.startsWith('./') || isURL(snapshot) || IPFSv2.validate(snapshot))
         ? snapshot
         : null
+
+    // if newValue failed, check if the snapshot is a base64 value and retrieve it from cache or build it otherwise
+    if (!newValue && isBase64(snapshot)) {
+      newValue = await getSnapshotFromCacheOrBuild(snapshot)
+    }
+
     newSnapshots[snapshotKey] = newValue || defaultValue
   }
 

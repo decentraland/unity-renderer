@@ -21,6 +21,7 @@ namespace DCL.Backpack
         private readonly IWearablesCatalogService wearablesCatalogService;
         private bool collectionsAlreadyLoaded;
         private HashSet<string> selectedCollections = new();
+        private HashSet<string> loadedCollections = new ();
         private NftCollectionType collectionType = NftCollectionType.OnChain | NftCollectionType.Base;
         private CancellationTokenSource loadThirdPartyCollectionsCancellationToken = new ();
 
@@ -32,17 +33,17 @@ namespace DCL.Backpack
             this.wearablesCatalogService = wearablesCatalogService;
 
             view.OnOnlyCollectiblesChanged += SetOnlyCollectibles;
-            view.OnCollectionChanged += SetCollections;
-            view.OnSortByChanged += SetSorting;
-            view.OnSearchTextChanged += SetSearchText;
+            view.OnCollectionChanged += SetInternalStateOfCollectionsAndTriggerStateChange;
+            view.OnSortByChanged += TriggerSorting;
+            view.OnSearchTextChanged += TriggerTextSearch;
         }
 
         public void Dispose()
         {
             view.OnOnlyCollectiblesChanged -= SetOnlyCollectibles;
-            view.OnCollectionChanged -= SetCollections;
-            view.OnSortByChanged -= SetSorting;
-            view.OnSearchTextChanged -= SetSearchText;
+            view.OnCollectionChanged -= SetInternalStateOfCollectionsAndTriggerStateChange;
+            view.OnSortByChanged -= TriggerSorting;
+            view.OnSearchTextChanged -= TriggerTextSearch;
 
             view.Dispose();
         }
@@ -58,18 +59,55 @@ namespace DCL.Backpack
                 {
                     WearableCollectionsAPIData.Collection[] collections = await wearablesCatalogService.GetThirdPartyCollectionsAsync(cancellationToken);
                     WearableCollectionsAPIData.Collection defaultCollection = new () { urn = DECENTRALAND_COLLECTION_ID, name = "Decentraland" };
+
+                    loadedCollections.Clear();
+                    loadedCollections.Add(defaultCollection.urn);
+                    if (collections != null)
+                    {
+                        foreach (var collection in collections)
+                            loadedCollections.Add(collection.urn);
+                    }
+
                     view.LoadCollectionDropdown(collections, defaultCollection);
                     collectionsAlreadyLoaded = true;
                 }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                catch (OperationCanceledException) { }
+                catch (Exception e) { Debug.LogException(e); }
             }
 
             loadThirdPartyCollectionsCancellationToken = loadThirdPartyCollectionsCancellationToken.SafeRestart();
             FetchTPWAndLoadDropdown(loadThirdPartyCollectionsCancellationToken.Token).Forget();
         }
+
+        public void ClearTextSearch(bool notify = true) =>
+            view.SetSearchText(null, notify);
+
+        public void SetTextSearch(string text, bool notify = true) =>
+            view.SetSearchText(text, notify);
+
+        public void SelectCollections(NftCollectionType collectionTypeMask,
+            ICollection<string> thirdPartyCollectionIdsFilter = null,
+            bool notify = true)
+        {
+            HashSet<string> newSelectedCollections = new ();
+
+            if ((collectionTypeMask & NftCollectionType.OnChain) != 0)
+                newSelectedCollections.Add(DECENTRALAND_COLLECTION_ID);
+
+            if ((collectionTypeMask & NftCollectionType.ThirdParty) != 0 && thirdPartyCollectionIdsFilter != null)
+                foreach (string tpw in thirdPartyCollectionIdsFilter)
+                    newSelectedCollections.Add(tpw);
+
+            bool isOnlyCollectiblesOn = (collectionTypeMask & NftCollectionType.Base) == 0;
+            view.SetOnlyCollectiblesToggleIsOn(isOnlyCollectiblesOn, notify);
+            view.SelectDropdownCollections(newSelectedCollections, notify);
+
+            collectionType = collectionTypeMask;
+            selectedCollections = newSelectedCollections;
+        }
+
+        public void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify) =>
+            view.SetSorting(type, directionAscending, notify);
 
         private void SetOnlyCollectibles(bool isOn)
         {
@@ -81,7 +119,10 @@ namespace DCL.Backpack
             OnCollectionTypeChanged?.Invoke(collectionType);
         }
 
-        private void SetCollections(HashSet<string> newSelectedCollections)
+        private void SetInternalStateOfCollectionsAndTriggerStateChange(HashSet<string> newSelectedCollections) =>
+            SetInternalStateOfCollectionsAndTriggerStateChange(newSelectedCollections, true);
+
+        private void SetInternalStateOfCollectionsAndTriggerStateChange(HashSet<string> newSelectedCollections, bool notify)
         {
             if (newSelectedCollections.Contains(DECENTRALAND_COLLECTION_ID))
             {
@@ -98,14 +139,17 @@ namespace DCL.Backpack
             else
                 collectionType &= ~NftCollectionType.ThirdParty;
 
-            OnCollectionTypeChanged?.Invoke(collectionType);
-            OnThirdPartyCollectionChanged?.Invoke(selectedCollections);
+            if (notify)
+            {
+                OnCollectionTypeChanged?.Invoke(collectionType);
+                OnThirdPartyCollectionChanged?.Invoke(selectedCollections);
+            }
         }
 
-        private void SetSorting((NftOrderByOperation type, bool directionAscendent) newSorting) =>
+        private void TriggerSorting((NftOrderByOperation type, bool directionAscendent) newSorting) =>
             OnSortByChanged?.Invoke(newSorting);
 
-        private void SetSearchText(string newText) =>
+        private void TriggerTextSearch(string newText) =>
             OnSearchTextChanged?.Invoke(newText);
     }
 }

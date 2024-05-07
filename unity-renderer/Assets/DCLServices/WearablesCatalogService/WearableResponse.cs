@@ -82,6 +82,8 @@ namespace DCLServices.WearablesCatalogService
                         public string[] tags;
                         public string[] replaces;
                         public string[] hides;
+                        public string[] removesDefaultHiding;
+                        public bool blockVrmExport;
                     }
 
                     public DataDto data;
@@ -96,6 +98,7 @@ namespace DCLServices.WearablesCatalogService
 
                 public MetadataDto metadata;
                 public ContentDto[] content;
+                public string id;
 
                 public string GetContentHashByFileName(string fileName)
                 {
@@ -105,11 +108,68 @@ namespace DCLServices.WearablesCatalogService
 
                     return null;
                 }
+
+                public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl, int amount)
+                {
+                    WearableItem wearable = new WearableItem
+                    {
+                        data = new WearableItem.Data
+                        {
+                            representations = new WearableItem.Representation[metadata.data.representations.Length],
+                            category = metadata.data.category,
+                            hides = metadata.data.hides,
+                            replaces = metadata.data.replaces,
+                            tags = metadata.data.tags,
+                            removesDefaultHiding = metadata.data.removesDefaultHiding,
+                            blockVrmExport = metadata.data.blockVrmExport,
+                        },
+                        baseUrl = contentBaseUrl,
+                        baseUrlBundles = bundlesBaseUrl,
+                        emoteDataV0 = null,
+                        description = metadata.description,
+                        i18n = metadata.i18n,
+                        id = metadata.id,
+                        entityId = id,
+                        rarity = metadata.rarity,
+                        amount = amount,
+                        thumbnail = GetContentHashByFileName(metadata.thumbnail),
+                    };
+
+                    for (var i = 0; i < metadata.data.representations.Length; i++)
+                    {
+                        MetadataDto.Representation representation = metadata.data.representations[i];
+
+                        wearable.data.representations[i] = new WearableItem.Representation
+                        {
+                            bodyShapes = representation.bodyShapes,
+                            mainFile = representation.mainFile,
+                            overrideHides = representation.overrideHides,
+                            overrideReplaces = representation.overrideReplaces,
+                            contents = new WearableItem.MappingPair[representation.contents.Length],
+                        };
+
+                        for (var z = 0; z < representation.contents.Length; z++)
+                        {
+                            string fileName = representation.contents[z];
+                            string hash = GetContentHashByFileName(fileName);
+
+                            wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
+                            {
+                                url = $"{contentBaseUrl}/{hash}",
+                                hash = hash,
+                                key = fileName,
+                            };
+                        }
+                    }
+
+                    return wearable;
+                }
             }
 
             public string urn;
             public IndividualDataDto[] individualData;
             public EntityDto entity;
+            public int amount;
             public string rarity;
 
             public long GetMostRecentTransferTimestamp()
@@ -132,57 +192,14 @@ namespace DCLServices.WearablesCatalogService
 
             public WearableItem ToWearableItem(string contentBaseUrl, string bundlesBaseUrl)
             {
-                EntityDto.MetadataDto metadata = entity.metadata;
+                string individualId = individualData != null ? individualData[0].id : string.Empty;
+                var wearable = entity.ToWearableItem(contentBaseUrl, bundlesBaseUrl, amount);
 
-                WearableItem wearable = new WearableItem
-                {
-                    data = new WearableItem.Data
-                    {
-                        representations = new WearableItem.Representation[metadata.data.representations.Length],
-                        category = metadata.data.category,
-                        hides = metadata.data.hides,
-                        replaces = metadata.data.replaces,
-                        tags = metadata.data.tags,
-                    },
-                    baseUrl = contentBaseUrl,
-                    baseUrlBundles = bundlesBaseUrl,
-                    emoteDataV0 = null,
-                    description = metadata.description,
-                    i18n = metadata.i18n,
-                    id = metadata.id,
-                    rarity = metadata.rarity ?? rarity,
-                    thumbnail = entity.GetContentHashByFileName(metadata.thumbnail),
-                    MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp())
-                                                              .DateTime,
-                };
+                if (!string.IsNullOrEmpty(individualId))
+                    wearable.id = individualId;
 
-                for (var i = 0; i < metadata.data.representations.Length; i++)
-                {
-                    EntityDto.MetadataDto.Representation representation = metadata.data.representations[i];
-
-                    wearable.data.representations[i] = new WearableItem.Representation
-                    {
-                        bodyShapes = representation.bodyShapes,
-                        mainFile = representation.mainFile,
-                        overrideHides = representation.overrideHides,
-                        overrideReplaces = representation.overrideReplaces,
-                        contents = new WearableItem.MappingPair[representation.contents.Length],
-                    };
-
-                    for (var z = 0; z < representation.contents.Length; z++)
-                    {
-                        string fileName = representation.contents[z];
-                        string hash = entity.GetContentHashByFileName(fileName);
-
-                        wearable.data.representations[i].contents[z] = new WearableItem.MappingPair
-                        {
-                            url = $"{contentBaseUrl}/{hash}",
-                            hash = hash,
-                            key = fileName,
-                        };
-                    }
-                }
-
+                wearable.rarity ??= rarity;
+                wearable.MostRecentTransferredDate = DateTimeOffset.FromUnixTimeSeconds(GetMostRecentTransferTimestamp()).DateTime;
                 return wearable;
             }
         }

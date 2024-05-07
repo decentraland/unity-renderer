@@ -1,10 +1,21 @@
+import { CommsEstablished } from 'shared/loading/types'
+import { HandleRoomDisconnection, SetCommsIsland, SetLiveKitAdapterAction, SetRoomConnectionAction } from './actions'
+import { LivekitAdapter } from './adapters/LivekitAdapter'
 import { RoomConnection } from './interface'
 
 export type CommsState = {
   initialized: boolean
   island?: string
-  context: RoomConnection | undefined
+  context: RoomConnection | undefined,
+  livekitAdapter?: LivekitAdapter
 }
+
+export type CommsActions = 
+ | SetCommsIsland
+ | SetRoomConnectionAction
+ | HandleRoomDisconnection
+ | SetLiveKitAdapterAction
+ | CommsEstablished
 
 export type CommsConnectionState =
   | 'initial'

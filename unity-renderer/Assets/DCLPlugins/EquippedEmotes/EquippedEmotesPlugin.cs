@@ -1,8 +1,8 @@
 using DCL.Helpers;
+using DCLServices.WearablesCatalogService;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace DCL.EquippedEmotes
 {
@@ -85,18 +85,18 @@ namespace DCL.EquippedEmotes
 
             if (storedEquippedEmotes == null)
                 storedEquippedEmotes = GetDefaultEmotes();
-            
+
             SetEquippedEmotes(storedEquippedEmotes);
         }
 
         internal void OnEquippedEmotesSet(IEnumerable<EquippedEmoteData> equippedEmotes)
         {
-          
+
         }
 
         internal void OnEquippedEmoteAddedOrRemoved(EquippedEmoteData equippedEmote)
         {
-          
+
         }
 
         internal void SaveEquippedEmotesInLocalStorage()
@@ -117,8 +117,12 @@ namespace DCL.EquippedEmotes
             List<EquippedEmoteData> storedEquippedEmotesData = new List<EquippedEmoteData>();
             foreach (string emoteId in storedEquippedEmotes)
             {
-                storedEquippedEmotesData.Add(
-                    string.IsNullOrEmpty(emoteId) ? null : new EquippedEmoteData { id = emoteId, cachedThumbnail = null });
+                var emote = string.IsNullOrEmpty(emoteId) ? null : new EquippedEmoteData
+                {
+                    id = ExtendedUrnParser.GetShortenedUrn(emoteId),
+                    cachedThumbnail = null
+                };
+                storedEquippedEmotesData.Add(emote);
             }
             emotesCustomizationDataStore.equippedEmotes.Set(storedEquippedEmotesData);
         }

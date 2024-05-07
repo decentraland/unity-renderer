@@ -1,3 +1,5 @@
+using System;
+
 namespace DCL.Chat.Notifications
 {
     public class FriendRequestNotificationModel
@@ -7,10 +9,10 @@ namespace DCL.Chat.Notifications
         public string UserName { get; }
         public string Header { get; }
         public string Message { get; }
-        public ulong Timestamp { get; }
+        public DateTime Timestamp { get; }
         public bool IsAccepted { get; }
 
-        public FriendRequestNotificationModel(string friendRequestId, string userId, string userName, string header, string message, ulong timestamp, bool isAccepted)
+        public FriendRequestNotificationModel(string friendRequestId, string userId, string userName, string header, string message, DateTime timestamp, bool isAccepted)
         {
             FriendRequestId = friendRequestId;
             UserId = userId;

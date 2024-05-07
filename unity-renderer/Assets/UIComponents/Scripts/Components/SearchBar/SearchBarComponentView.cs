@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public interface ISearchBarComponentView
 {
     string Text { get; }
-    
+
     /// <summary>
     /// Event that will be triggered when a search is ordered in the search component.
     /// </summary>
@@ -23,7 +23,7 @@ public interface ISearchBarComponentView
     /// Order a specific search.
     /// </summary>
     /// <param name="value">Text to search.</param>
-    void SubmitSearch(string value);
+    void SubmitSearch(string value, bool notifyInputField = true, bool notify = true);
 
     /// <summary>
     /// Clear the search component.
@@ -55,6 +55,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     public event Action<string> OnSearchText;
     public event Action<string> OnSubmit;
+    public event Action<string> OnSearchValueChanged;
+    public event Action<bool> OnSelected;
 
     internal Coroutine searchWhileTypingRoutine;
     internal float lastValueChangeTime = 0;
@@ -64,10 +66,12 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
     public override void Awake()
     {
         base.Awake();
-        
+
         inputField.onValueChanged.AddListener(OnValueChanged);
-        inputField.onSubmit.AddListener(SubmitSearch);
+        inputField.onSubmit.AddListener(s => SubmitSearch(s));
         clearSearchButton.onClick.AddListener(() => ClearSearch());
+        inputField.onSelect.RemoveAllListeners();
+        inputField.onSelect.AddListener((text)=>OnSelected?.Invoke(true));
 
         SetClearMode();
     }
@@ -96,14 +100,22 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
         placeHolderText.text = value;
     }
 
-    public void SubmitSearch(string value)
+    public void SubmitSearch(string value, bool notifyInputField = true, bool notify = true)
     {
         StopSearchCoroutine();
 
-        inputField.text = value;
+        if (notifyInputField)
+            inputField.text = value;
+        else
+            inputField.SetTextWithoutNotify(value);
+
         SetSearchMode();
-        OnSearchText?.Invoke(value);
-        OnSubmit?.Invoke(value);
+
+        if (notify)
+        {
+            OnSearchText?.Invoke(value);
+            OnSubmit?.Invoke(value);
+        }
     }
 
     public void ClearSearch(bool notify = true)
@@ -112,7 +124,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
         inputField.SetTextWithoutNotify(string.Empty);
         SetClearMode();
-        
+
         if (notify)
             OnSearchText?.Invoke(string.Empty);
     }
@@ -139,6 +151,8 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void OnValueChanged(string value)
     {
+        OnSearchValueChanged?.Invoke(value);
+        AudioScriptableObjects.input.Play(true);
         if (model.idleTimeToTriggerSearch < 0)
             return;
 
@@ -188,7 +202,7 @@ public class SearchBarComponentView : BaseComponentView, ISearchBarComponentView
 
     internal void SetSearchMode()
     {
-        clearSearchButton.gameObject.SetActive(true);
+        clearSearchButton.gameObject.SetActive(!string.IsNullOrEmpty(inputField.text));
         searchSpinner.SetActive(false);
     }
 

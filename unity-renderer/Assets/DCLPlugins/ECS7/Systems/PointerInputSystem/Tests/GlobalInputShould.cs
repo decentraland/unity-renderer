@@ -7,7 +7,6 @@ using DCL.Models;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,8 +56,7 @@ namespace Tests
                 internalComponents.PointerEventsComponent,
                 Substitute.For<IECSInteractionHoverCanvas>(),
                 worldState,
-                dataStoreEcs7,
-                new RestrictedActionsContext());
+                dataStoreEcs7);
 
             systemUpdate = system.Update;
 
@@ -80,10 +78,10 @@ namespace Tests
             colliderEntity2 = colliderGO2.AddComponent<BoxCollider>();
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity1,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } } });
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity1, 0 } }));
 
             internalComponents.onPointerColliderComponent.PutFor(scene, entity2,
-                new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } } });
+                new InternalColliders(new KeyValueSet<Collider, uint>() { { colliderEntity2, 0 } }));
         }
 
         [TearDown]
@@ -103,15 +101,14 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.collider = colliderEntity1;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             systemUpdate();
 
@@ -121,7 +118,7 @@ namespace Tests
 
             // second scene receive the pointer down event without hit info
             var result = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
             Assert.IsTrue(evt.button == InputAction.IaPrimary);
@@ -141,9 +138,9 @@ namespace Tests
 
             // both scene receive input as global since entity without pointer events was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0];
+            var evt1 = result.Value.model.events[0];
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[0];
+            var evt2 = result2.Value.model.events[0];
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -165,23 +162,22 @@ namespace Tests
             dataStoreEcs7.lastPointerRayHit.hit.distance = DISTANCE;
             dataStoreEcs7.lastPointerRayHit.hasValue = true;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, DISTANCE - 1, false))
-                }
-            });
+                })
+            );
 
             systemUpdate();
 
             // both scene receive input as global since entity with pointer events but outside of `distance` range was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0];
+            var evt1 = result.Value.model.events[0];
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[0];
+            var evt2 = result2.Value.model.events[0];
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -194,9 +190,8 @@ namespace Tests
         [Test]
         public void DetectPointerUp_WithPointerEvents()
         {
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -204,8 +199,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
@@ -231,7 +226,7 @@ namespace Tests
 
             // second scene receive the pointer down event without hit info
             var result = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt = result.model.events[0];
+            var evt = result.Value.model.events[0];
 
             Assert.IsTrue(evt.type == PointerEventType.PetDown);
             Assert.IsTrue(evt.button == InputAction.IaPrimary);
@@ -261,9 +256,9 @@ namespace Tests
 
             // both scene receive input as global since entity without pointer events was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[1]; // result.model.events[0] == pointer down
+            var evt1 = result.Value.model.events[1]; // result.model.events[0] == pointer down
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetUp);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -278,9 +273,8 @@ namespace Tests
         {
             const float DISTANCE = 10;
 
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -288,8 +282,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, DISTANCE - 1, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
@@ -312,9 +306,9 @@ namespace Tests
 
             // both scene receive input as global since entity with pointer events but outside of `distance` range was hit
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0]; // result.model.events[0] since input down was a valid entity input
+            var evt1 = result.Value.model.events[0]; // result.model.events[0] since input down was a valid entity input
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetUp);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -327,15 +321,14 @@ namespace Tests
         [Test]
         public void DetectPointerUp_WithPointerEvents_OnOtherEntityThanPointerDown()
         {
-            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents()
-            {
-                PointerEvents =
+            pointerEventsComponent.PutFor(scene, entity1, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetUp,
                         new InternalPointerEvents.Info(InputAction.IaPrimary, string.Empty, float.MaxValue, false))
-                }
-            });
+                })
+            );
 
             // pointer down
             dataStoreEcs7.inputActionState[(int)InputAction.IaPrimary] = true;
@@ -356,9 +349,9 @@ namespace Tests
             systemUpdate();
 
             var result = inputEventResultsComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt1 = result.model.events[0]; // result.model.events[0] since input up was a valid entity input
+            var evt1 = result.Value.model.events[0]; // result.model.events[0] since input up was a valid entity input
             var result2 = inputEventResultsComponent.GetFor(scene2, SpecialEntityId.SCENE_ROOT_ENTITY);
-            var evt2 = result2.model.events[1]; // result.model.events[0] == pointer down
+            var evt2 = result2.Value.model.events[1]; // result.model.events[0] == pointer down
 
             Assert.IsTrue(evt1.type == PointerEventType.PetDown);
             Assert.IsTrue(evt1.button == InputAction.IaPrimary);
@@ -366,8 +359,8 @@ namespace Tests
             Assert.IsTrue(evt2.type == PointerEventType.PetUp);
             Assert.IsTrue(evt2.button == InputAction.IaPrimary);
             Assert.IsNull(evt2.hit);
-            Assert.AreEqual(1, result.model.events.Count);
-            Assert.AreEqual(2, result2.model.events.Count);
+            Assert.AreEqual(1, result.Value.model.events.Count);
+            Assert.AreEqual(2, result2.Value.model.events.Count);
         }
     }
 }

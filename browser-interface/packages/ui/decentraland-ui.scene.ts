@@ -1,5 +1,5 @@
 import { executeTask } from '@dcl/legacy-ecs'
-import { avatarMessageObservable } from './avatar/avatarSystem'
+import { avatarMap, avatarMessageObservable } from './avatar/avatarSystem'
 
 declare const dcl: DecentralandInterface
 
@@ -23,7 +23,9 @@ void executeTask(async () => {
       if (payload !== lastProcessed) {
         try {
           lastProcessed = payload
-          avatarMessageObservable.emit('message', JSON.parse(payload))
+          const msg = JSON.parse(payload)
+          const invisible = avatarMap.get(msg.userId)?.visible === false && msg.visible === false
+          if (!invisible) avatarMessageObservable.emit('message', msg)
         } catch (err) {
           console.error(err)
         }

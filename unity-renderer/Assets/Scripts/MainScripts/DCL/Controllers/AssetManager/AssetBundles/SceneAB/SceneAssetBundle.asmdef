@@ -1,0 +1,21 @@
+{
+    "name": "SceneAssetBundle",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:6c1761dc8f737004198eb333521bd665",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

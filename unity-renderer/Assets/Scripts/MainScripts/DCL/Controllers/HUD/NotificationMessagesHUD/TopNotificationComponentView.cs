@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DCL.Helpers;
 using DG.Tweening;
 using System;
 using System.Threading;
@@ -225,7 +224,8 @@ namespace DCL.Chat.Notifications
             friendRequestNotificationComponentView.SetUser(model.UserId, model.UserName);
             friendRequestNotificationComponentView.SetHeader(model.Header);
             friendRequestNotificationComponentView.SetMessage(model.Message);
-            friendRequestNotificationComponentView.SetTimestamp(Utils.UnixTimeStampToLocalTime(model.Timestamp));
+            DateTime localTime = model.Timestamp.ToLocalTime();
+            friendRequestNotificationComponentView.SetTimestamp($"{localTime.Hour}:{localTime.Minute:D2}");
             friendRequestNotificationComponentView.SetIsAccepted(model.IsAccepted);
         }
 

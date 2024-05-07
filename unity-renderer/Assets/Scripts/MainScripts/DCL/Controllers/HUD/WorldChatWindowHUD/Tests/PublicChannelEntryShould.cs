@@ -1,56 +1,58 @@
-using DCL;
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-public class PublicChannelEntryShould
+namespace DCL.Social.Chat
 {
-    private PublicChatEntry view;
-
-    [SetUp]
-    public void SetUp()
+    public class PublicChannelEntryShould
     {
-        view = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
+        private PublicChatEntry view;
 
-        view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            view = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<PublicChatEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/PublicChannelElement.prefab"));
 
-    [TearDown]
-    public void TearDown()
-    {
-        view.Dispose();
-    }
+            view.Initialize(Substitute.For<IChatController>(), new DataStore_Mentions());
+        }
 
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void Configure(bool showOnlyOnlineMembers)
-    {
-        view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 4, showOnlyOnlineMembers, false));
-        view.nameLabel.text = "#nearby";
-        Assert.IsFalse(view.muteNotificationsToggle.isOn);
-        Assert.AreEqual($"4 members {(showOnlyOnlineMembers ? "online" : "joined")}", view.memberCountLabel.text);
-    }
+        [TearDown]
+        public void TearDown()
+        {
+            view.Dispose();
+        }
 
-    [Test]
-    public void TriggerOpenChat()
-    {
-        var called = false;
-        view.OnOpenChat += entry => called = true;
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Configure(bool showOnlyOnlineMembers)
+        {
+            view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 4, showOnlyOnlineMembers, false));
+            view.nameLabel.text = "#nearby";
+            Assert.IsFalse(view.muteNotificationsToggle.isOn);
+            Assert.AreEqual($"4 members {(showOnlyOnlineMembers ? "online" : "joined")}", view.memberCountLabel.text);
+        }
 
-        view.openChatButton.onClick.Invoke();
+        [Test]
+        public void TriggerOpenChat()
+        {
+            var called = false;
+            view.OnOpenChat += entry => called = true;
 
-        Assert.IsTrue(called);
-    }
+            view.openChatButton.onClick.Invoke();
 
-    [Test]
-    public void ConfigureAsMuted()
-    {
-        view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 0, false, true));
-        Assert.IsTrue(view.muteNotificationsToggle.isOn);
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void ConfigureAsMuted()
+        {
+            view.Configure(new PublicChatEntryModel("nearby", "nearby", true, 0, false, true));
+            Assert.IsTrue(view.muteNotificationsToggle.isOn);
+        }
     }
 }

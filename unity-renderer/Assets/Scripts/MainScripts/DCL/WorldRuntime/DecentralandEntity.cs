@@ -28,7 +28,7 @@ namespace DCL.Models
         public Action<IDCLEntity> OnShapeUpdated { get; set; }
         public Action<IDCLEntity> OnShapeLoaded { get; set; }
         public Action<object> OnNameChange { get; set; }
-        public Action<object> OnTransformChange { get; set; }
+        public Action<Vector3, Quaternion> OnTransformChange { get; set; }
         public Action<IDCLEntity> OnRemoved { get; set; }
         public Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
         public Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
@@ -82,13 +82,11 @@ namespace DCL.Models
 
         public void EnsureMeshGameObject(string gameObjectName = null)
         {
-            if (meshesInfo.meshRootGameObject == null)
-            {
-                meshesInfo.meshRootGameObject = new GameObject();
-                meshesInfo.meshRootGameObject.name = gameObjectName == null ? MESH_GAMEOBJECT_NAME : gameObjectName;
-                meshesInfo.meshRootGameObject.transform.SetParent(gameObject.transform);
-                Utils.ResetLocalTRS(meshesInfo.meshRootGameObject.transform);
-            }
+            if (meshesInfo.meshRootGameObject != null) return;
+
+            meshesInfo.meshRootGameObject = new GameObject { name = gameObjectName ?? MESH_GAMEOBJECT_NAME };
+            meshesInfo.meshRootGameObject.transform.SetParent(gameObject.transform);
+            meshesInfo.meshRootGameObject.transform.ResetLocalTRS();
         }
 
         public void ResetRelease()
@@ -109,7 +107,7 @@ namespace DCL.Models
 
             scene.componentsManagerLegacy.CleanComponents(this);
 
-            if (meshesInfo.meshRootGameObject)
+            if (meshesInfo.meshRootGameObject && !meshesInfo.RootIsPoolableObject)
             {
                 Utils.SafeDestroy(meshesInfo.meshRootGameObject);
                 meshesInfo.CleanReferences();
@@ -120,7 +118,8 @@ namespace DCL.Models
                 int childCount = gameObject.transform.childCount;
 
                 // Destroy any other children
-                for (int i = 0; i < childCount; i++) { Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject); }
+                for (var i = 0; i < childCount; i++)
+                    Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
 
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
                 gameObject = null;

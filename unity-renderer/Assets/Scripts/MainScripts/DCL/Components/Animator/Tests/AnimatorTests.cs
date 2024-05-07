@@ -35,7 +35,7 @@ namespace Tests
         {
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -51,7 +51,7 @@ namespace Tests
                     new DCLAnimator.Model.DCLAnimationState
                     {
                         name = "clip01",
-                        clip = "animation:0",
+                        clip = "Clip_0",
                         playing = true,
                         weight = 1,
                         speed = 1
@@ -216,7 +216,7 @@ namespace Tests
         {
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -225,10 +225,10 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
-            string clipName = "animation:0";
+            string clipName = "Clip_0";
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
-                states = new DCLAnimator.Model.DCLAnimationState[]
+                states = new[]
                 {
                     new DCLAnimator.Model.DCLAnimationState
                     {
@@ -247,6 +247,7 @@ namespace Tests
             LoadWrapper gltfShape = Environment.i.world.state.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
+            Debug.Log("At this point should be enabled");
             Assert.IsTrue(animator.animComponent.isPlaying);
             Assert.AreEqual(animator.animComponent.clip.name, clipName);
             Assert.IsFalse(animator.animComponent.clip.wrapMode == WrapMode.Loop);
@@ -270,7 +271,7 @@ namespace Tests
             // GLTFShape without DCLAnimator
             var entity = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -290,7 +291,7 @@ namespace Tests
             // GLTFShape with DCLAnimator
             var entity2 = TestUtils.CreateSceneEntity(scene);
 
-            Assert.IsTrue(entity2.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity2.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
@@ -299,7 +300,7 @@ namespace Tests
                     src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
-            string clipName = "animation:0";
+            string clipName = "Clip_0";
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
                 states = new DCLAnimator.Model.DCLAnimationState[]
@@ -333,7 +334,7 @@ namespace Tests
 
             TestUtils.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<MeshRenderer>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             TestUtils.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,

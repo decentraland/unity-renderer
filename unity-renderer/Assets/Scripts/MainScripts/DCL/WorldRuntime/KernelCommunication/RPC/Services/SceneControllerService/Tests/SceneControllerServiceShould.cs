@@ -58,6 +58,9 @@ namespace Tests
             context.crdt.SceneController = Environment.i.world.sceneController;
             context.crdt.WorldState = Environment.i.world.state;
             context.crdt.MessagingControllersManager = Environment.i.messaging.manager;
+            context.crdt.GetSceneTick = (int x) => 1;
+            context.crdt.IncreaseSceneTick = (int x) => { };
+            context.crdt.IsSceneGltfLoadingFinished = (int x) => true;
         }
 
         [TearDown]
@@ -185,7 +188,6 @@ namespace Tests
                 ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
                 ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
                 Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
-
                 context.crdt.CrdtExecutors = crdtExecutors;
 
                 CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
@@ -203,9 +205,9 @@ namespace Tests
                     Debug.LogError(e);
                 }
 
-                // Check scene was created correctly and it has no entities
+                // Check scene was created correctly and it has only the 2 auto-generated entities
                 Assert.IsTrue(context.crdt.WorldState.TryGetScene(TEST_SCENE_NUMBER, out IParcelScene testScene));
-                Assert.IsTrue(testScene.entities.Count == 0);
+                Assert.IsTrue(testScene.entities.Count == 2); // scenes auto-generate entities for camera and player
 
                 // Prepare entity creation CRDT message
                 CrdtMessage crdtMessage = new CrdtMessage
@@ -255,17 +257,94 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator WaitForSceneInitialGltfLoadBeforeSceneReady()
+        {
+            yield return UniTask.ToCoroutine(async () =>
+            {
+                const int TEST_SCENE_NUMBER = 696;
+                const int ENTITY_ID = 666;
+
+                ECSComponentsFactory componentsFactory = new ECSComponentsFactory();
+                ECSComponentsManager componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
+                Dictionary<int, ICRDTExecutor> crdtExecutors = new Dictionary<int, ICRDTExecutor>();
+                context.crdt.CrdtExecutors = crdtExecutors;
+
+                CrdtExecutorsManager crdtExecutorsManager = new CrdtExecutorsManager(crdtExecutors, componentsManager,
+                    context.crdt.SceneController, context.crdt);
+
+                ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
+
+                // client requests `LoadScene()` to have the port open with a scene ready to receive crdt messages
+                try
+                {
+                    await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                // Check scene was created correctly
+                Assert.IsTrue(context.crdt.WorldState.TryGetScene(TEST_SCENE_NUMBER, out IParcelScene testScene));
+
+                // Setup context callbacks simulating a GLTF that takes 3 frames to load
+                int framesToWait = 3;
+                int framesCounter = 0;
+
+                context.crdt.IsSceneGltfLoadingFinished = (int x) =>
+                {
+                    framesCounter++;
+
+                    Assert.IsFalse(testScene.IsInitMessageDone());
+
+                    return framesCounter == framesToWait;
+                };
+
+                context.crdt.GetSceneTick = (int x) => 0; // first tick
+
+                // Prepare entity creation CRDT message
+                CrdtMessage crdtMessage = new CrdtMessage
+                (
+                    type: CrdtMessageType.PUT_COMPONENT,
+                    entityId: ENTITY_ID,
+                    componentId: 0,
+                    timestamp: 799,
+                    data: new byte[] { 0, 4, 7, 9, 1, 55, 89, 54 }
+                );
+
+                // Send entity creation CRDT message
+                try
+                {
+                    await rpcClient.SendCrdt(new CRDTSceneMessage()
+                    {
+                        Payload = ByteString.CopyFrom(CreateCRDTMessage(crdtMessage))
+                    });
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                await UniTask.Yield();
+
+                Assert.IsTrue(testScene.IsInitMessageDone());
+
+                crdtExecutorsManager.Dispose();
+            });
+        }
+
+        [UnityTest]
         public IEnumerator CallGetCurrentStateWithoutStoredState()
         {
             yield return UniTask.ToCoroutine(async () =>
             {
                 const int TEST_SCENE_NUMBER = 666;
-                const int ENTITY_ID = 1;
-                const int COMPONENT_ID = 1;
-                byte[] outgoingCrdtBytes = new byte[] { 0, 0, 0, 0 };
 
                 ClientRpcSceneControllerService rpcClient = await CreateRpcClient(testClientTransport);
                 await rpcClient.LoadScene(CreateLoadSceneMessage(TEST_SCENE_NUMBER));
+                var crdtExecutors = new Dictionary<int, ICRDTExecutor>();
+                crdtExecutors.Add(TEST_SCENE_NUMBER, new CRDTExecutor(Substitute.For<IParcelScene>(), new ECSComponentsManager(null)));
+                context.crdt.CrdtExecutors = crdtExecutors;
 
                 bool sceneHasStateStored = true;
                 bool getCurrentStateFinished = false;
@@ -279,26 +358,11 @@ namespace Tests
                               getCurrentStateFinished = true;
                           });
 
-                var protocol = new CRDTProtocol() { };
-                var msg = protocol.CreateLwwMessage(ENTITY_ID, COMPONENT_ID, outgoingCrdtBytes);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CrdtMessage>());
-                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(msg.ComponentId, msg.EntityId, msg);
                 await new WaitUntil(() => getCurrentStateFinished, 3);
 
                 Assert.IsTrue(getCurrentStateFinished);
                 Assert.IsFalse(sceneHasStateStored);
-                Assert.IsFalse(responsePayload.IsEmpty);
-
-                using (var iterator = CRDTDeserializer.DeserializeBatch(responsePayload.Memory))
-                {
-                    while (iterator.MoveNext())
-                    {
-                        var responseCrdt = (CrdtMessage)iterator.Current;
-                        Assert.AreEqual(responseCrdt.EntityId, ENTITY_ID);
-                        Assert.AreEqual(responseCrdt.ComponentId, COMPONENT_ID);
-                        Assert.IsTrue(AreEqual(outgoingCrdtBytes, (byte[])responseCrdt.Data));
-                    }
-                }
+                Assert.IsTrue(responsePayload.IsEmpty);
             });
         }
 
@@ -333,7 +397,9 @@ namespace Tests
                 };
 
                 var storedCrdtExecutor = new CRDTExecutor(Substitute.For<IParcelScene>(), new ECSComponentsManager(null));
+                storedCrdtExecutor.crdtProtocol.ProcessMessage(crdts[0]);
                 storedCrdtExecutor.crdtProtocol.ProcessMessage(crdts[1]);
+
                 var crdtExecutors = new Dictionary<int, ICRDTExecutor>();
                 crdtExecutors.Add(TEST_SCENE_NUMBER, storedCrdtExecutor);
                 context.crdt.CrdtExecutors = crdtExecutors;
@@ -351,10 +417,6 @@ namespace Tests
                               getCurrentStateFinished = true;
                           });
 
-                var outgoingCrdtProtocol = new CRDTProtocol() { };
-                outgoingCrdtProtocol.ProcessMessage(crdts[0]);
-                context.crdt.scenesOutgoingCrdts.Add(TEST_SCENE_NUMBER, new DualKeyValueSet<int, long, CrdtMessage>());
-                context.crdt.scenesOutgoingCrdts[TEST_SCENE_NUMBER].Add(crdts[0].ComponentId, crdts[0].EntityId, crdts[0]);
                 await new WaitUntil(() => getCurrentStateFinished, 3);
 
                 Assert.IsTrue(getCurrentStateFinished);

@@ -15,6 +15,7 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         public string version;
         public string[] files;
         public int exitCode;
+        public string date;
     }
 
     public class AssetPromise_SceneAB : AssetPromise_WithUrl<Asset_SceneAB>
@@ -33,6 +34,9 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 
         private string GetEntityIdFromSceneId(string sceneId)
         {
+            if (sceneId == null)
+                return null;
+
             // This case happens when loading worlds
             if (sceneId.StartsWith(URN_PREFIX))
             {
@@ -68,6 +72,12 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 return;
             }
 
+            if (string.IsNullOrEmpty(hash))
+            {
+                onSuccess();
+                return;
+            }
+
             var finalUrl = $"{contentUrl}manifest/{hash}.json";
 
             try
@@ -83,6 +93,13 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
                 string data = result.downloadHandler.text;
                 var sceneAb = Utils.SafeFromJson<SceneAbDto>(data);
                 asset.Setup(sceneAb, contentUrl);
+
+#if UNITY_EDITOR
+                var version = int.Parse(sceneAb.version.Replace("v", ""));
+                // increment this value if it gets old enough
+                if (version < 5)
+                    Debug.LogWarning($"Entity {hash} AB version v{version} is too old, last converted on {sceneAb.date}");
+#endif
             }
             catch (OperationCanceledException) { }
             catch (UnityWebRequestException)
@@ -93,7 +110,8 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
             finally { onSuccess(); }
         }
 
-        private bool IsEmptyScene() => hash.Contains(",");
+        private bool IsEmptyScene() =>
+            hash.Contains(",");
 
         protected override void OnBeforeLoadOrReuse() { }
 

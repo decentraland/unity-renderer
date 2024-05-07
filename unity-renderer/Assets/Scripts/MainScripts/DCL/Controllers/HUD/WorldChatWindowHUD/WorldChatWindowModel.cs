@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [Serializable]
     public class WorldChatWindowModel : BaseComponentModel

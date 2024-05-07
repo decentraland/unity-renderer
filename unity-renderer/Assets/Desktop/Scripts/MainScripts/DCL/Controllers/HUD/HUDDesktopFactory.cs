@@ -1,14 +1,20 @@
 using Cysharp.Threading.Tasks;
 using DCL;
+using DCL.Browser;
 using DCL.Controllers.HUD;
+using DCL.MyAccount;
+using DCL.SettingsCommon;
+using DCLServices.CopyPaste.Analytics;
+using DCLServices.PlacesAPIService;
 using MainScripts.DCL.Controllers.HUD.Profile;
 using MainScripts.DCL.Controllers.HUD.SettingsPanelHUDDesktop.Scripts;
 using SocialFeaturesAnalytics;
 using System.Threading;
+using UnityEngine;
 
 public class HUDDesktopFactory : HUDFactory
 {
-    private const string LOADING_HUD_ADDRESS = "LoadingHUDDesktop";
+    private const string VIEW_NAME = "_ProfileHUD";
 
     public override async UniTask<IHUD> CreateHUD(HUDElementID hudElementId, CancellationToken cancellationToken = default)
     {
@@ -22,14 +28,38 @@ public class HUDDesktopFactory : HUDFactory
                 hudElement = new SettingsPanelHUDControllerDesktop();
                 break;
             case HUDElementID.PROFILE_HUD:
-                hudElement = new ProfileHUDControllerDesktop(new UserProfileWebInterfaceBridge(),
+                ProfileHUDViewDesktop_V2 view = Object.Instantiate(Resources.Load<ProfileHUDViewDesktop_V2>("ProfileHUDDesktop_V2"));
+                view.name = VIEW_NAME;
+
+                var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+                var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
+
+                hudElement = new ProfileHUDControllerDesktop(
+                    view,
+                    userProfileWebInterfaceBridge,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
-                    DataStore.i);
+                        userProfileWebInterfaceBridge),
+                    DataStore.i,
+                    new MyAccountCardController(
+                        view.MyAccountCardView,
+                        DataStore.i,
+                        userProfileWebInterfaceBridge,
+                        Settings.i,
+                        webInterfaceBrowserBridge),
+                    webInterfaceBrowserBridge);
                 break;
             case HUDElementID.MINIMAP:
-                hudElement = new MinimapHUDControllerDesktop(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), DCL.Environment.i);
+                hudElement = new MinimapHUDControllerDesktop(
+                    MinimapMetadataController.i,
+                    new WebInterfaceHomeLocationController(),
+                    Environment.i,
+                    Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                    new PlacesAnalytics(),
+                    Clipboard.Create(),
+                    Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>(),
+                    DataStore.i.contentModeration,
+                    Environment.i.world.state);
                 break;
 
             default:

@@ -4,11 +4,6 @@ using System.Linq;
 
 public static class WearableLiterals
 {
-    public static class Misc
-    {
-        public const string HEAD = "head";
-    }
-
     public static class Tags
     {
         public const string BASE_WEARABLE = "base-wearable";
@@ -17,7 +12,11 @@ public static class WearableLiterals
 
     public static class Categories
     {
-        public static readonly ReadOnlyCollection<string> REQUIRED_CATEGORIES = new ReadOnlyCollection<string>(new List<string> { UPPER_BODY, LOWER_BODY, EYES, EYEBROWS, MOUTH });
+        public static readonly IReadOnlyCollection<string> REQUIRED_CATEGORIES = new HashSet<string>
+        {
+            EYES,
+            MOUTH
+        };
 
         public const string BODY_SHAPE = "body_shape";
         public const string UPPER_BODY = "upper_body";
@@ -30,19 +29,16 @@ public static class WearableLiterals
         public const string HAIR = "hair";
         public const string SKIN = "skin";
         public const string FACIAL_HAIR = "facial_hair";
-
-        //TODO: Implement an IReadOnlyCollection for HashSet to make them immutable
-        public static readonly HashSet<string> ALL  = new HashSet<string>
-        {
-            UPPER_BODY,
-            LOWER_BODY,
-            EYEBROWS,
-            FACIAL,
-            MOUTH,
-            FEET,
-            EYES,
-            SKIN
-        };
+        public const string EYEWEAR = "eyewear";
+        public const string TIARA = "tiara";
+        public const string EARRING = "earring";
+        public const string HAT = "hat";
+        public const string TOP_HEAD = "top_head";
+        public const string HELMET = "helmet";
+        public const string MASK = "mask";
+        public const string HANDS = "hands";
+        public const string HANDS_WEAR = "hands_wear";
+        public const string HEAD = "head";
     }
 
     public static class BodyShapes
@@ -58,6 +54,7 @@ public static class WearableLiterals
         public const string LEGENDARY = "legendary";
         public const string MYTHIC = "mythic";
         public const string UNIQUE = "unique";
+        public const string EXOTIC = "exotic";
     }
 
     public static class DefaultWearables
@@ -92,5 +89,13 @@ public static class WearableLiterals
 
             return defaultWearables[(bodyShapeId, category)];
         }
+    }
+
+    public static class DefaultEmotes
+    {
+        public const string OUTFIT_SHOES = "Outfit_Shoes_v0";
+        public const string OUTFIT_LOWER = "Outfit_Lower_v0";
+        public const string OUTFIT_UPPER = "Outfit_Upper_v0";
+        public const string OUTFIT_ACCESSORIES = "Outfit_Accessories_v0";
     }
 }

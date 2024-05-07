@@ -68,15 +68,17 @@ namespace DCL.Components
             if (meshRenderers == null)
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
-            Collider onPointerEventCollider;
-
             for (var i = 0; i < meshRenderers.Length; i++)
             {
-                meshRenderers[i].enabled = shouldBeVisible;
+                if (meshRenderers[i] == null)
+                    continue;
 
-                if (meshRenderers[i].transform.childCount > 0)
+                meshRenderers[i].enabled = shouldBeVisible;
+                Transform meshRendererT = meshRenderers[i].transform;
+
+                for (int j = 0; j < meshRendererT.transform.childCount; j++)
                 {
-                    onPointerEventCollider = meshRenderers[i].transform.GetChild(0).GetComponent<Collider>();
+                    Collider onPointerEventCollider = meshRendererT.GetChild(j).GetComponent<Collider>();
 
                     if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
                         onPointerEventCollider.enabled = shouldBeVisible;

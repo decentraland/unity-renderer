@@ -13,5 +13,9 @@ namespace DCL.Backpack
 
         void Dispose();
         void LoadCollectionDropdown(WearableCollectionsAPIData.Collection[] collections, WearableCollectionsAPIData.Collection defaultCollection = null);
+        void SetSearchText(string text, bool notify);
+        void SetOnlyCollectiblesToggleIsOn(bool isOn, bool notify);
+        void SetSorting(NftOrderByOperation type, bool directionAscending, bool notify);
+        void SelectDropdownCollections(HashSet<string> collections, bool notify);
     }
 }

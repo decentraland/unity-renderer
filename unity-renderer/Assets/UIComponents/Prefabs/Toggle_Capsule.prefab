@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -2, y: 0}
-  m_SizeDelta: {x: -2, y: -4}
+  m_SizeDelta: {x: -18, y: -4}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &607553074291760859
 CanvasRenderer:
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 63cedfaa776dc4d69a9f4848cd966364, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2f8d6212d390e424ba86746c7be53eba, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2.3
+  m_PixelsPerUnitMultiplier: 2.5
 --- !u!225 &110364968190423852
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 2, y: 0}
-  m_SizeDelta: {x: -2, y: -4}
+  m_SizeDelta: {x: -18, y: -4}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7426988612973123945
 CanvasRenderer:
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 63cedfaa776dc4d69a9f4848cd966364, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2f8d6212d390e424ba86746c7be53eba, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -700,7 +700,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -709,7 +709,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 2.3
+  m_PixelsPerUnitMultiplier: 2.5
 --- !u!225 &2323292459898918373
 CanvasGroup:
   m_ObjectHideFlags: 0

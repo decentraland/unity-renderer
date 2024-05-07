@@ -1,0 +1,23 @@
+{
+    "id": "",
+    "sceneNumber": 0,
+    "baseUrl": "",
+    "baseUrlBundles": "",
+    "contents": [],
+    "basePosition": {
+        "x": 0,
+        "y": 0
+    },
+    "parcels": [],
+    "sdk7": false,
+    "requiredPermissions": [],
+    "allowedMediaHostnames": [],
+    "loadingScreenHints": [
+        {
+            "textureUrl": "https://example.com/image.png",
+            "title": "title",
+            "body": "body",
+            "sourceTag": 2
+        }
+    ]
+}

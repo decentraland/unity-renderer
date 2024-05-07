@@ -3,13 +3,13 @@ using Cysharp.Threading.Tasks;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using UnityEngine;
 using LOD = AvatarSystem.LOD;
@@ -87,6 +87,15 @@ namespace DCL.ECSComponents
 
         private Service<IAvatarFactory> avatarFactory;
         private Service<IEmotesCatalogService> emotesCatalog;
+        private IAvatarEmotesController emotesController;
+        private AvatarSceneEmoteHandler sceneEmoteHandler;
+        private IBaseAvatarReferences baseAvatarReferences;
+        private readonly OnPointerEvent.Model viewProfilePointerModel = new ()
+        {
+            type = OnPointerDown.NAME,
+            button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+            hoverText = "View Profile",
+        };
         public IAvatar internalAvatar => avatar;
 
         private void Awake()
@@ -104,10 +113,17 @@ namespace DCL.ECSComponents
             LOD avatarLOD = new LOD(avatarContainer, visibility, avatarMovementController);
             AvatarAnimatorLegacy animator = GetComponentInChildren<AvatarAnimatorLegacy>();
 
+
             //Ensure base avatar references
-            var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+            baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
             avatar = avatarFactory.Ref.CreateAvatarWithHologram(avatarContainer, new BaseAvatar(baseAvatarReferences), animator, avatarLOD, visibility);
+
+            emotesController = avatar.GetEmotesController();
+
+            sceneEmoteHandler = new AvatarSceneEmoteHandler(
+                emotesController,
+                Environment.i.serviceLocator.Get<IEmotesService>());
 
             avatarReporterController ??= new AvatarReporterController(Environment.i.world.state);
 
@@ -180,9 +196,9 @@ namespace DCL.ECSComponents
 
             // temporarily hardcoding the embedded emotes until the user profile provides the equipped ones
             var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
-            wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+            wearableItems.AddRange(embeddedEmotesSo.GetAllIds());
             HashSet<string> emotes = new HashSet<string>();
-            emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
+            emotes.UnionWith(embeddedEmotesSo.GetAllIds());
 
             if (avatar.status != IAvatar.Status.Loaded || needsLoading)
             {
@@ -202,23 +218,21 @@ namespace DCL.ECSComponents
                 }
             }
 
-            // If the model contains a value for expressionTriggerId then we try it, if value doesn't exist, we skip
-            if(model.HasExpressionTriggerId)
-                avatar.PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
+            if (sceneEmoteHandler.IsSceneEmote(model.ExpressionTriggerId))
+                sceneEmoteHandler
+                   .LoadAndPlayEmote(model.BodyShape, model.ExpressionTriggerId)
+                   .Forget();
+            else
+                avatar.GetEmotesController().PlayEmote(model.ExpressionTriggerId, model.GetExpressionTriggerTimestamp());
 
             UpdatePlayerStatus(entity, model);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model()
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View Profile"
-                },
+                viewProfilePointerModel,
                 entity, player
             );
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), entity, player.avatar);
+            outlineOnHover.Initialize(entity, player.avatar);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -329,7 +343,7 @@ namespace DCL.ECSComponents
 
             float height = AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y;
 
-            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), height);
+            anchorPoints.Prepare(avatarContainer.transform, baseAvatarReferences.Anchors, height);
 
             player.playerName.SetIsTalking(model.Talking);
             player.playerName.SetYOffset(Mathf.Max(MINIMUM_PLAYERNAME_HEIGHT, height));
@@ -367,13 +381,12 @@ namespace DCL.ECSComponents
             onPointerDown.SetPassportEnabled(true);
         }
 
-        private void OnEntityTransformChanged(object newModel)
+        private void OnEntityTransformChanged(Vector3 newPosition, Quaternion newRotation)
         {
-            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
-            OnEntityTransformChanged(newTransformModel.position, newTransformModel.rotation, !initializedPosition);
+            OnEntityTransformChanged(newPosition, newRotation, !initializedPosition);
         }
 
-        private void OnEntityTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        private void OnEntityTransformChanged(Vector3 position, Quaternion rotation, bool inmediate)
         {
             if (entity == null)
                 return;
@@ -419,6 +432,7 @@ namespace DCL.ECSComponents
 
         public void Cleanup()
         {
+            initializedPosition = false;
             playerName?.Hide(true);
             if (player != null)
             {

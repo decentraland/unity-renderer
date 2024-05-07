@@ -2,7 +2,9 @@
 using DCL;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using DCLServices.MapRendererV2.MapCameraController;
 using MainScripts.DCL.Controllers.HotScenes;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -36,6 +38,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         private ColdUserMarkersStorage storage;
 
         private CancellationTokenSource cancellationTokenSource;
+        IColdUserMarker[] instances;
 
         public UsersMarkersColdAreaController(Transform parent, ColdUserMarkerObject prefab, ColdUserMarkerBuilder builder,
             IHotScenesFetcher hotScenesFetcher, BaseVariable<string> realmName, Vector2IntVariable userPosition,
@@ -56,9 +59,7 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         {
             cancellationTokenSource = LinkWithDisposeToken(cancellationToken);
             cancellationToken = cancellationTokenSource.Token;
-
-            var instances = new IColdUserMarker[maxMarkers];
-
+            instances = new IColdUserMarker[maxMarkers];
             async UniTask InstantiateMarkers(CancellationToken ct)
             {
                 for (var i = 0; i < maxMarkers;)
@@ -173,13 +174,21 @@ namespace DCLServices.MapRendererV2.MapLayers.UsersMarkers.ColdArea
         {
             hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.FOREGROUND);
             ColdAreasUpdateLoop(LinkWithDisposeToken(cancellationToken).Token).Forget();
+            foreach (IColdUserMarker coldUserMarker in instances)
+            {
+                coldUserMarker.SetActive(true);
+            }
             return UniTask.CompletedTask;
         }
 
         public UniTask Disable(CancellationToken cancellationToken)
         {
             hotScenesFetcher.SetUpdateMode(IHotScenesFetcher.UpdateMode.BACKGROUND);
-
+            foreach (IColdUserMarker coldUserMarker in instances)
+            {
+                if(coldUserMarker != null)
+                    coldUserMarker.SetActive(false);
+            }
             // cancellation of `ColdAreasUpdateLoop` is handled by the cancellation token
             return UniTask.CompletedTask;
         }

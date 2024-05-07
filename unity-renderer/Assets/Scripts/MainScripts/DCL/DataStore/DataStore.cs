@@ -55,7 +55,6 @@ namespace DCL
         public WorldTimer worldTimer => i.Get<WorldTimer>();
         public DataStore_Performance performance => i.Get<DataStore_Performance>();
         public DataStore_ExperiencesViewer experiencesViewer => i.Get<DataStore_ExperiencesViewer>();
-        public DataStore_Emotes emotes => i.Get<DataStore_Emotes>();
         public DataStore_EmotesCustomization emotesCustomization => i.Get<DataStore_EmotesCustomization>();
         public DataStore_SceneBoundariesChecker sceneBoundariesChecker => i.Get<DataStore_SceneBoundariesChecker>();
         public DataStore_ECS7 ecs7 => i.Get<DataStore_ECS7>();
@@ -70,6 +69,9 @@ namespace DCL
         public DataStore_Outliner outliner => i.Get<DataStore_Outliner>();
         public DataStore_Mentions mentions => i.Get<DataStore_Mentions>();
         public DataStore_BackpackV2 backpackV2 => i.Get<DataStore_BackpackV2>();
+        public DataStore_Wallet wallet => i.Get<DataStore_Wallet>();
+        public DataStore_MyAccount myAccount => i.Get<DataStore_MyAccount>();
+        public DataStore_ContentModeration contentModeration => i.Get<DataStore_ContentModeration>();
     }
 
     public struct DataStoreRef<T> where T: class, new()

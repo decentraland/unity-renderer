@@ -4,13 +4,14 @@ using DCL.Camera;
 using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Emotes;
-using DCL.Helpers.NFT.Markets;
+using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using DCLServices.MapRendererV2;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,7 +39,6 @@ public class IntegrationTestSuite_Legacy
     protected virtual IEnumerator SetUp()
     {
         EnvironmentSettings.RUNNING_TESTS = true;
-        AssetPromiseKeeper_GLTF.i.throttlingCounter.enabled = false;
         PoolManager.enablePrewarm = false;
 
         // TODO(Brian): Move these variants to a DataStore object to avoid having to reset them
@@ -78,7 +78,7 @@ public class IntegrationTestSuite_Legacy
                 mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
                 mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
                 mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
-                mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                mockedProviders.openSea.Returns(Substitute.For<IOpenSea>());
                 return mockedProviders;
             });
 
@@ -97,7 +97,7 @@ public class IntegrationTestSuite_Legacy
     private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        embeddedEmotes.Clear();
         return embeddedEmotes;
     }
 
@@ -113,9 +113,7 @@ public class IntegrationTestSuite_Legacy
         Settings.i.Dispose();
 
         foreach ( var go in legacySystems )
-        {
-            Object.Destroy(go);
-        }
+            Utils.SafeDestroy(go);
 
         yield return null;
     }
@@ -162,7 +160,7 @@ public class IntegrationTestSuite_Legacy
 
     protected void TearDown_Memory()
     {
-        AssetPromiseKeeper_GLTF.i?.Cleanup();
+        AssetPromiseKeeper_GLTFast_Instance.i?.Cleanup();
         AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
         AssetPromiseKeeper_AB.i?.Cleanup();
         AssetPromiseKeeper_Texture.i?.Cleanup();

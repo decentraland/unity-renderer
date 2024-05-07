@@ -90,20 +90,9 @@ namespace Tests
             Assert.IsNull(renderer10.sharedMaterial);
 
             // add texturizable component
-            texturizableComponent.PutFor(scene0, entity00, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer00 }
-            });
-
-            texturizableComponent.PutFor(scene0, entity01, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer01 }
-            });
-
-            texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer10 }
-            });
+            texturizableComponent.PutFor(scene0, entity00, new InternalTexturizable(new List<Renderer>() { renderer00 }));
+            texturizableComponent.PutFor(scene0, entity01, new InternalTexturizable(new List<Renderer>() { renderer01 }));
+            texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable(new List<Renderer>() { renderer10 }));
 
             // update system
             systemsUpdate();
@@ -116,17 +105,8 @@ namespace Tests
             // create material for scene0 entities
             Material scene0Material = new Material(materialResource);
 
-            materialComponent.PutFor(scene0, entity00, new InternalMaterial()
-            {
-                material = scene0Material,
-                castShadows = false
-            });
-
-            materialComponent.PutFor(scene0, entity01, new InternalMaterial()
-            {
-                material = scene0Material,
-                castShadows = false
-            });
+            materialComponent.PutFor(scene0, entity00, new InternalMaterial(scene0Material, false));
+            materialComponent.PutFor(scene0, entity01, new InternalMaterial(scene0Material, false));
 
             // update system
             systemsUpdate();
@@ -143,10 +123,10 @@ namespace Tests
             Assert.IsTrue(renderer01.shadowCastingMode == ShadowCastingMode.Off);
 
             // components should not be dirty anymore
-            Assert.IsFalse(materialComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(materialComponent.GetFor(scene0, entity01).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity00).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity01).model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene0, entity01).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity00).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene0, entity01).Value.model.dirty);
 
             // entity from scene1 should not have changed
             Assert.IsNull(renderer10.sharedMaterial);
@@ -154,11 +134,7 @@ namespace Tests
             // create material for scene1 entity
             Material scene1Material = scene0Material;
 
-            materialComponent.PutFor(scene1, entity10, new InternalMaterial()
-            {
-                material = scene1Material,
-                castShadows = true
-            });
+            materialComponent.PutFor(scene1, entity10, new InternalMaterial(scene1Material, true));
 
             // update system
             systemsUpdate();
@@ -173,17 +149,13 @@ namespace Tests
             Assert.IsTrue(renderer10.shadowCastingMode == ShadowCastingMode.On);
 
             // components should not be dirty anymore
-            Assert.IsFalse(materialComponent.GetFor(scene1, entity10).model.dirty);
-            Assert.IsFalse(texturizableComponent.GetFor(scene1, entity10).model.dirty);
+            Assert.IsFalse(materialComponent.GetFor(scene1, entity10).Value.model.dirty);
+            Assert.IsFalse(texturizableComponent.GetFor(scene1, entity10).Value.model.dirty);
 
             // change material for scene1 entity
             scene1Material = new Material(materialResource);
 
-            materialComponent.PutFor(scene1, entity10, new InternalMaterial()
-            {
-                material = scene1Material,
-                castShadows = false
-            });
+            materialComponent.PutFor(scene1, entity10, new InternalMaterial(scene1Material, false));
 
             // update system
             systemsUpdate();
@@ -212,39 +184,20 @@ namespace Tests
             Assert.IsNull(renderer10.sharedMaterial);
 
             // add texturizable component
-            texturizableComponent.PutFor(scene0, entity00, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer00 }
-            });
-
-            texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer10 }
-            });
+            texturizableComponent.PutFor(scene0, entity00, new InternalTexturizable(new List<Renderer>() { renderer00 }));
+            texturizableComponent.PutFor(scene1, entity10, new InternalTexturizable(new List<Renderer>() { renderer10 }));
 
             // add same material for both
             Material scene0Material = new Material(materialResource);
 
-            materialComponent.PutFor(scene0, entity00, new InternalMaterial()
-            {
-                material = scene0Material,
-                castShadows = false
-            });
-
-            materialComponent.PutFor(scene1, entity10, new InternalMaterial()
-            {
-                material = scene0Material,
-                castShadows = false
-            });
+            materialComponent.PutFor(scene0, entity00, new InternalMaterial(scene0Material, false));
+            materialComponent.PutFor(scene1, entity10, new InternalMaterial(scene0Material, false));
 
             // apply material
             systemsUpdate();
 
             // remove material for entity00
-            materialComponent.RemoveFor(scene0, entity00, new InternalMaterial()
-            {
-                material = null,
-            });
+            materialComponent.RemoveFor(scene0, entity00, new InternalMaterial(null, true));
 
             // apply changes
             systemsUpdate();
@@ -259,10 +212,7 @@ namespace Tests
             ECS7TestEntity entity = scene0.CreateEntity(100);
             Renderer renderer = entity.gameObject.AddComponent<MeshRenderer>();
 
-            internalEcsComponents.texturizableComponent.PutFor(scene0, entity, new InternalTexturizable()
-            {
-                renderers = new List<Renderer>() { renderer }
-            });
+            internalEcsComponents.texturizableComponent.PutFor(scene0, entity, new InternalTexturizable(new List<Renderer>() { renderer }));
 
             materialComponent.Create(scene0, entity);
 
@@ -279,7 +229,7 @@ namespace Tests
 
             // Set first material to component
             materialComponent.SetModel(scene0, entity, CreateModel(Color.black));
-            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity.entityId).Value.handler).promiseMaterial;
             systemsUpdate();
 
             Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
@@ -295,7 +245,7 @@ namespace Tests
             Assert.AreEqual(Color.black, renderer.sharedMaterial.color);
 
             // Wait until material is loaded
-            yield return ((MaterialHandler)materialComponent.Get(scene0, entity).handler).promiseMaterial;
+            yield return ((MaterialHandler)materialComponent.Get(scene0, entity.entityId).Value.handler).promiseMaterial;
 
             systemsUpdate();
 

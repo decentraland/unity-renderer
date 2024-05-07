@@ -2,23 +2,26 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Browser;
 using DCL.Chat;
-using DCL.Chat.HUD;
 using DCL.HelpAndSupportHUD;
-using DCL.Huds.QuestsPanel;
-using DCL.Huds.QuestsTracker;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.SettingsCommon;
 using DCL.SettingsPanelHUD;
 using DCL.Social.Chat.Mentions;
 using DCL.Social.Friends;
-using SignupHUD;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using static MainScripts.DCL.Controllers.HUD.HUDAssetPath;
 using Environment = DCL.Environment;
+using Analytics;
+using DCL.MyAccount;
+using DCL.Social.Chat;
+using DCLServices.CopyPaste.Analytics;
+using DCLServices.PlacesAPIService;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class HUDFactory : IHUDFactory
 {
@@ -29,6 +32,7 @@ public class HUDFactory : IHUDFactory
     private IAddressableResourceProvider assetsProviderRef;
 
     private IAddressableResourceProvider assetsProvider => assetsProviderRef ??= assetsProviderService.Ref;
+    private ICopyPasteAnalyticsService copyPasteAnalyticsService => Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>();
 
     protected HUDFactory()
     {
@@ -56,13 +60,33 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.NONE:
                 break;
             case HUDElementID.MINIMAP:
-                return new MinimapHUDController(MinimapMetadataController.i, new WebInterfaceHomeLocationController(), Environment.i);
+                return new MinimapHUDController(MinimapMetadataController.i,
+                    new WebInterfaceHomeLocationController(), Environment.i,
+                    Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                    new PlacesAnalytics(), Clipboard.Create(),
+                    copyPasteAnalyticsService,
+                    DataStore.i.contentModeration,
+                    Environment.i.world.state);
             case HUDElementID.PROFILE_HUD:
-                return new ProfileHUDController(new UserProfileWebInterfaceBridge(),
+                ProfileHUDViewV2 view = Object.Instantiate(Resources.Load<ProfileHUDViewV2>("ProfileHUD_V2"));
+
+                var userProfileBridge = new UserProfileWebInterfaceBridge();
+                var webInterfaceBrowserBridge = new WebInterfaceBrowserBridge();
+
+                return new ProfileHUDController(
+                    view,
+                    userProfileBridge,
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()),
-                    DataStore.i);
+                        userProfileBridge),
+                    DataStore.i,
+                    new MyAccountCardController(
+                        view.MyAccountCardView,
+                        DataStore.i,
+                        userProfileBridge,
+                        Settings.i,
+                        webInterfaceBrowserBridge),
+                    webInterfaceBrowserBridge);
             case HUDElementID.NOTIFICATION:
                 return new NotificationHUDController( await CreateHUDView<NotificationHUDView>(VIEW_PATH, cancellationToken));
             case HUDElementID.SETTINGS_PANEL:
@@ -91,7 +115,9 @@ public class HUDFactory : IHUDFactory
                     Environment.i.serviceLocator.Get<IChannelsFeatureFlagService>(),
                     new WebInterfaceBrowserBridge(),
                     CommonScriptableObjects.rendererState,
-                    DataStore.i.mentions);
+                    DataStore.i.mentions,
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.PRIVATE_CHAT_WINDOW:
                 return new PrivateChatWindowController(
                     DataStore.i,
@@ -102,7 +128,9 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     SceneReferences.i.mouseCatcher,
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.PUBLIC_CHAT:
                 return new PublicChatWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -113,7 +141,9 @@ public class HUDFactory : IHUDFactory
                     new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
                     new SocialAnalytics(
                         Environment.i.platform.serviceProviders.analytics,
-                        new UserProfileWebInterfaceBridge()));
+                        new UserProfileWebInterfaceBridge()),
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.CHANNELS_CHAT:
                 return new ChatChannelHUDController(
                     DataStore.i,
@@ -124,7 +154,9 @@ public class HUDFactory : IHUDFactory
                         Environment.i.platform.serviceProviders.analytics,
                         new UserProfileWebInterfaceBridge()),
                     Environment.i.serviceLocator.Get<IProfanityFilter>(),
-                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i));
+                    new MemoryChatMentionSuggestionProvider(UserProfileController.i, DataStore.i),
+                    Clipboard.Create(),
+                    copyPasteAnalyticsService);
             case HUDElementID.CHANNELS_SEARCH:
                 return new SearchChannelsWindowController(
                     Environment.i.serviceLocator.Get<IChatController>(),
@@ -139,7 +171,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CHANNELS_LEAVE_CONFIRMATION:
                 return new LeaveChannelConfirmationWindowController(Environment.i.serviceLocator.Get<IChatController>());
             case HUDElementID.TASKBAR:
-                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), Environment.i.serviceLocator.Get<IFriendsController>());
+                return new TaskbarHUDController(Environment.i.serviceLocator.Get<IChatController>(), Environment.i.serviceLocator.Get<IFriendsController>(), new SupportAnalytics(Environment.i.platform.serviceProviders.analytics));
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 return new ExternalUrlPromptHUDController(DataStore.i.rpc.context.restrictedActions);
             case HUDElementID.NFT_INFO_DIALOG:
@@ -147,7 +179,7 @@ public class HUDFactory : IHUDFactory
             case HUDElementID.CONTROLS_HUD:
                 return new ControlsHUDController();
             case HUDElementID.HELP_AND_SUPPORT_HUD:
-                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken));
+                return new HelpAndSupportHUDController(await CreateHUDView<IHelpAndSupportHUDView>(HELP_AND_SUPPORT_HUD, cancellationToken), new SupportAnalytics(Environment.i.platform.serviceProviders.analytics), new WebInterfaceBrowserBridge());
             case HUDElementID.USERS_AROUND_LIST_HUD:
                 return new VoiceChatWindowController(
                     new UserProfileWebInterfaceBridge(),
@@ -160,10 +192,6 @@ public class HUDFactory : IHUDFactory
                     SceneReferences.i.mouseCatcher);
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 return new GraphicCardWarningHUDController();
-            case HUDElementID.QUESTS_PANEL:
-                return new QuestsPanelHUDController();
-            case HUDElementID.QUESTS_TRACKER:
-                return new QuestsTrackerHUDController(await CreateHUDView<IQuestsTrackerHUDView>(QUESTS_TRACKER_HUD, cancellationToken));
         }
 
         return null;
@@ -171,7 +199,7 @@ public class HUDFactory : IHUDFactory
 
     public async UniTask<T> CreateHUDView<T>(string assetAddress, CancellationToken cancellationToken = default, string name = null) where T:IDisposable
     {
-        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}", cancellationToken);
+        var view = await assetsProvider.Instantiate<T>(assetAddress, $"_{assetAddress}",  cancellationToken: cancellationToken);
         disposableViews.Add(view);
 
         return view;

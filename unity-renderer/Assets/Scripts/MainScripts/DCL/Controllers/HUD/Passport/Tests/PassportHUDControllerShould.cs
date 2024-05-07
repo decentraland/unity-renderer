@@ -1,14 +1,13 @@
 using AvatarSystem;
 using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
-using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using NSubstitute;
 using NUnit.Framework;
 using SocialFeaturesAnalytics;
-using UnityEngine;
 
 namespace DCL.Social.Passports
 {
@@ -52,7 +51,6 @@ namespace DCL.Social.Passports
                                 passportApiBridge);
 
             var playerPreviewView = Substitute.For<IPassportPlayerPreviewComponentView>();
-            playerPreviewView.PreviewCameraRotation.Returns(new GameObject().AddComponent<PreviewCameraRotation>());
 
             playerPreviewController = new PassportPlayerPreviewComponentController(
                 playerPreviewView,
@@ -73,7 +71,10 @@ namespace DCL.Social.Passports
                                     Substitute.For<IWearablesCatalogService>(),
                                     Substitute.For<ILandsService>(),
                                     Substitute.For<INamesService>(),
-                                    NotificationsController.i));
+                                    NotificationsController.i),
+                                Substitute.For<IAdditionalInfoFieldIconProvider>(),
+                                Substitute.For<IClipboard>(),
+                                Substitute.For<ICopyPasteAnalyticsService>());
 
             controller = new PlayerPassportHUDController(
                 view,

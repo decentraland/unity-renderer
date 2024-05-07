@@ -28,23 +28,26 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
+            Environment.Setup(ServiceLocatorTestFactory.CreateMocked());
+
             sceneTestHelper = new ECS7TestUtilsScenesAndEntities();
             scene = sceneTestHelper.CreateScene(666);
             entity = scene.CreateEntity(1111);
 
-            ECSComponentData<InternalUiContainer> internalCompData = null;
+            ECSComponentData<InternalUiContainer>? internalCompData = null;
             internalUiContainer = Substitute.For<IInternalECSComponent<InternalUiContainer>>();
             internalUiContainer.GetFor(scene, entity).Returns((info) => internalCompData);
             internalUiContainer.WhenForAnyArgs(
                                    x => x.PutFor(scene, entity, Arg.Any<InternalUiContainer>()))
                                .Do(info =>
-                               {
-                                   internalCompData ??= new ECSComponentData<InternalUiContainer>
-                                   {
-                                       scene = info.ArgAt<IParcelScene>(0),
-                                       entity = info.ArgAt<IDCLEntity>(1)
-                                   };
-                                   internalCompData.model = info.ArgAt<InternalUiContainer>(2);
+                                {
+                                    internalCompData = new ECSComponentData<InternalUiContainer>
+                                    (
+                                        scene: info.ArgAt<IParcelScene>(0),
+                                        entity: info.ArgAt<IDCLEntity>(1),
+                                        model: info.ArgAt<InternalUiContainer>(2),
+                                        handler: null
+                                   );
                                });
 
             handler = new UiTextHandler(internalUiContainer, AssetPromiseKeeper_Font.i, COMPONENT_ID);
@@ -55,6 +58,7 @@ namespace Tests
         {
             sceneTestHelper.Dispose();
             AssetPromiseKeeper_Font.i.Cleanup();
+            Environment.Dispose();
         }
 
         [Test]

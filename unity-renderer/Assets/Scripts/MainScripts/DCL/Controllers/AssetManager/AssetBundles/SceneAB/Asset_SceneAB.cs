@@ -1,6 +1,4 @@
 ﻿using DCL;
-using JetBrains.Annotations;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +6,7 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
 {
     public class Asset_SceneAB : Asset
     {
-        [CanBeNull] private SceneAbDto sceneAb;
+        private SceneAbDto sceneAb;
         private string contentUrl;
 
         public void Setup(SceneAbDto dto, string contentUrl)
@@ -28,5 +26,7 @@ namespace MainScripts.DCL.Controllers.AssetManager.AssetBundles.SceneAB
         {
 
         }
+
+        public string GetVersion() => sceneAb.version;
     }
 }

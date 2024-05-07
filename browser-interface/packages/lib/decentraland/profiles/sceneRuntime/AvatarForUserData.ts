@@ -1,4 +1,4 @@
-import type { Snapshots, WearableId } from '@dcl/schemas'
+import type { Snapshots, WearableCategory, WearableId } from '@dcl/schemas'
 
 export type AvatarForUserData = {
   bodyShape: WearableId
@@ -6,6 +6,7 @@ export type AvatarForUserData = {
   hairColor: string
   eyeColor: string
   wearables: WearableId[]
+  forceRender?: WearableCategory[]
   emotes?: {
     slot: number
     urn: string

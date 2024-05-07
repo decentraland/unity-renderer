@@ -7,31 +7,24 @@ namespace DCLPlugins.RealmPlugin
 {
     public class RealmMinimapModifierTests
     {
-        private RealmPlugin realmPlugin;
         private IRealmModifier genericModifier;
-        private RealmMinimapModifier realmMinimapModiferSubstitute;
+        private RealmMinimapModifier realmMinimapModifier;
 
         [SetUp]
         public void SetUp()
         {
-            realmPlugin = new RealmPlugin(DataStore.i);
-            realmMinimapModiferSubstitute = Substitute.For<RealmMinimapModifier>(DataStore.i.HUDs);
-
-            var substituteModifiers = new List<IRealmModifier>
-                { realmMinimapModiferSubstitute };
-
-            realmPlugin.realmsModifiers = substituteModifiers;
+            realmMinimapModifier = new RealmMinimapModifier(DataStore.i.HUDs);
         }
 
         [TearDown]
         public void TearDown() =>
-            realmPlugin.Dispose();
+            realmMinimapModifier.Dispose();
 
         [TestCaseSource(nameof(isWorldCases))]
         public void MinimapModifiedOnRealmChange(bool isWorld)
         {
             // Act
-            RealmPluginTestsUtils.SetRealm(isWorld);
+            realmMinimapModifier.OnEnteredRealm(isWorld, RealmPluginTestsUtils.GetAboutConfiguration(isWorld));
 
             // Assert
             Assert.AreEqual(DataStore.i.HUDs.minimapVisible.Get(), !isWorld);

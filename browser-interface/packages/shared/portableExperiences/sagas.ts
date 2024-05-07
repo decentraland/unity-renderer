@@ -28,6 +28,7 @@ import {
   UPDATE_ENGINE_PX
 } from './actions'
 import { getDesiredPortableExperiences } from './selectors'
+import { browserInterface } from '../../unity-interface/BrowserInterface'
 
 export function* portableExperienceSaga(): any {
   // List the actions that might trigger a portable experience change
@@ -56,12 +57,12 @@ export function* portableExperienceSaga(): any {
 }
 
 export function* fetchInitialPortableExperiences() {
-  yield waitForMetaConfigurationInitialization()
+  yield call(waitForMetaConfigurationInitialization)
 
-  yield waitForAvatarSceneInitialized()
+  yield call(waitForAvatarSceneInitialized)
+  yield call(waitForRendererRpcConnection)
 
   const qs = new URLSearchParams(globalThis.location.search)
-
   const globalPortableExperiences: string[] = qs.has('GLOBAL_PX')
     ? qs.getAll('GLOBAL_PX')
     : yield select(getFeatureFlagVariantValue, 'initial_portable_experiences')
@@ -70,6 +71,9 @@ export function* fetchInitialPortableExperiences() {
     for (const id of globalPortableExperiences) {
       try {
         const px: LoadableScene = yield call(getPortableExperienceFromUrn, id)
+
+        yield browserInterface.onUserInteraction
+
         yield put(addKernelPortableExperience(px))
       } catch (err: any) {
         console.error(err)
@@ -92,7 +96,6 @@ function* handlePortableExperienceChanges() {
 // reload portable experience
 function* reloadPortableExperienceChanges(action: ReloadScenePortableExperienceAction) {
   const allDesiredPortableExperiences: LoadableScene[] = yield select(getDesiredPortableExperiences)
-
   const filteredDesiredPortableExperiences = allDesiredPortableExperiences.filter(
     ($) => $.id !== action.payload.data.id
   )

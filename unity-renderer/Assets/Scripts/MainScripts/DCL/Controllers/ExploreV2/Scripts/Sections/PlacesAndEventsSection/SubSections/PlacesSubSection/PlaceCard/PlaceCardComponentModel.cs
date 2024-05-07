@@ -1,3 +1,4 @@
+using DCL.Controllers;
 using System;
 using UnityEngine;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -5,6 +6,7 @@ using MainScripts.DCL.Controllers.HotScenes;
 [Serializable]
 public class PlaceCardComponentModel : BaseComponentModel
 {
+    public bool isWorld;
     public Sprite placePictureSprite;
     public Texture2D placePictureTexture;
     public string placePictureUri;
@@ -15,6 +17,16 @@ public class PlaceCardComponentModel : BaseComponentModel
     public Vector2Int coords;
     public Vector2Int[] parcels;
     public bool isFavorite;
+    public int userVisits;
+    public bool isUpvote;
+    public bool isDownvote;
+    public int totalVotes;
+    public float? userRating;
+    public int numberOfFavorites;
+    public string deployedAt;
+    public bool isPOI;
+    public SceneContentCategory ageRating;
+    public string[] categories;
 
     [HideInInspector]
     public IHotScenesController.PlaceInfo placeInfo;

@@ -40,12 +40,18 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
           //  when there is only one method, the `if` should be
           //  implemented in the renderer-side (to check if there is data)
           //  and here should always call the rpc
-
           const ret = await ctx.rpcSceneControllerService.sendCrdt({
             payload: req.data
           })
 
-          return { data: [ret.payload] }
+          /**
+           * We add this message here so the player components associated to engine.PlayerEntity
+           * are present on the first tick.
+           * PlayerIdentity.get(engine.PlayerEntity) // Returns the address associated to the current user
+           */
+          const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
+
+          return { data: [ret.payload, ...internalAvatarMessages] }
         },
 
         // @deprecated
@@ -57,15 +63,20 @@ export function registerEngineApiServiceServerImplementation(port: RpcServerPort
         },
 
         async crdtGetState(_, ctx) {
+          const { initialEntitiesTick0, hasMainCrdt } = ctx
           const response = await ctx.rpcSceneControllerService.getCurrentState({})
 
-          const { initialEntitiesTick0, hasMainCrdt } = ctx
+          // PlayerComponents messages
+          const internalAvatarMessages = (await ctx.internalEngine?.update()) ?? []
 
           return {
             hasEntities: response.hasOwnEntities || hasMainCrdt,
             // send the initialEntitiesTick0 (main.crdt) and the response.payload
-            data: [initialEntitiesTick0, response.payload]
+            data: [initialEntitiesTick0, response.payload, ...internalAvatarMessages]
           }
+        },
+        async isServer(_req, _ctx) {
+          return { isServer: false }
         }
       }
     }

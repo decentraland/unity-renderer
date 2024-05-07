@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Helpers;
 using Decentraland.Bff;
+using System.Threading;
 using UnityEngine;
 using Variables.RealmsInfo;
 
@@ -16,8 +17,9 @@ public class Catalyst : ICatalyst
     public string contentUrl => realmContentServerUrl;
     public string lambdasUrl { get; private set; }
 
+    private UniTaskCompletionSource<string> lambdasUrlCs = new UniTaskCompletionSource<string>();
     private string realmDomain = "https://peer.decentraland.org";
-    private string realmContentServerUrl = "https://peer.decentraland.org/content";
+    private string realmContentServerUrl = "https://peer.decentraland.org/content/";
 
     private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
 
@@ -33,6 +35,7 @@ public class Catalyst : ICatalyst
         {
             realmDomain = playerRealm.Get().domain;
             lambdasUrl = $"{realmDomain}/lambdas";
+            TrySetCompletionSource(lambdasUrl);
             realmContentServerUrl = playerRealm.Get().contentServerUrl;
         }
         else if (aboutConfiguration.Get() != null)
@@ -40,15 +43,51 @@ public class Catalyst : ICatalyst
             //TODO: This checks are going to dissapear when we inject the urls in kernel. Currently they are null,
             //and we dont want to override the ones that have been set up in playerRealm
             if (!string.IsNullOrEmpty(aboutLambdas.Get().PublicUrl))
+            {
                 lambdasUrl = aboutLambdas.Get().PublicUrl;
+                TrySetCompletionSource(lambdasUrl);
+            }
 
             if (!string.IsNullOrEmpty(aboutContent.Get().PublicUrl))
                 realmContentServerUrl = aboutContent.Get().PublicUrl;
         }
 
+        NormalizeUrls();
+
         playerRealm.OnChange += PlayerRealmOnChange;
         aboutContent.OnChange += PlayerRealmAboutContentOnChange;
         aboutLambdas.OnChange += PlayerRealmAboutLambdasOnChange;
+    }
+
+    public UniTask<string> GetLambdaUrl(CancellationToken ct)
+    {
+        if (!string.IsNullOrEmpty(lambdasUrl))
+            return new UniTask<string>(lambdasUrl);
+
+        return lambdasUrlCs.Task.AttachExternalCancellation(ct);
+    }
+
+    private void NormalizeUrls()
+    {
+        lambdasUrl = GetNormalizedUrl(lambdasUrl);
+        TrySetCompletionSource(lambdasUrl);
+        realmContentServerUrl = GetNormalizedUrl(realmContentServerUrl);
+    }
+
+    private void TrySetCompletionSource(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return;
+
+        lambdasUrlCs.TrySetResult(url);
+    }
+
+    private string GetNormalizedUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return url;
+        if (!url.EndsWith('/'))
+            url += "/";
+
+        return url;
     }
 
     public void Dispose()
@@ -223,13 +262,18 @@ public class Catalyst : ICatalyst
         realmDomain = current.domain;
         lambdasUrl = $"{realmDomain}/lambdas";
         realmContentServerUrl = current.contentServerUrl;
+        NormalizeUrls();
     }
 
     private void PlayerRealmAboutLambdasOnChange(AboutResponse.Types.LambdasInfo current, AboutResponse.Types.LambdasInfo previous)
     {
         lambdasUrl = current.PublicUrl;
+        NormalizeUrls();
     }
 
-    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous) =>
+    private void PlayerRealmAboutContentOnChange(AboutResponse.Types.ContentInfo current, AboutResponse.Types.ContentInfo previous)
+    {
         realmContentServerUrl = current.PublicUrl;
+        NormalizeUrls();
+    }
 }

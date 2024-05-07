@@ -1,9 +1,9 @@
+using DCL.Wallet;
 using System;
 using UnityEngine;
 
 public interface IExploreV2MenuComponentView : IDisposable
 {
-
     /// <summary>
     /// Real viewer component.
     /// </summary>
@@ -13,6 +13,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Realm Selector component.
     /// </summary>
     IRealmSelectorComponentView currentRealmSelectorModal { get; }
+
+    /// <summary>
+    /// Wallet card component.
+    /// </summary>
+    IWalletCardHUDComponentView currentWalletCard { get; }
 
     /// <summary>
     /// Profile card component.
@@ -58,6 +63,8 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// </summary>
     RectTransform currentSettingsTooltipReference { get; }
 
+    RectTransform cameraReelTooltipReference { get; }
+
     /// <summary>
     /// Transform used to position the profile section tooltips.
     /// </summary>
@@ -97,6 +104,13 @@ public interface IExploreV2MenuComponentView : IDisposable
     void SetSectionActive(ExploreSection section, bool isActive);
 
     /// <summary>
+    /// Shows/Hides the new tag for a section.
+    /// </summary>
+    /// <param name="section">Section to apply the new tag.</param>
+    /// <param name="isNew">True for show the new tag.</param>
+    void SetSectionAsNew(ExploreSection section, bool isNew);
+
+    /// <summary>
     /// Check if a section is activated or not.
     /// </summary>
     /// <param name="section">Section to check.</param>
@@ -119,4 +133,11 @@ public interface IExploreV2MenuComponentView : IDisposable
     /// Hide Map section in UI when user enter isolated World
     /// </summary>
     void HideMapOnEnteringWorld();
+
+    /// <summary>
+    /// Activates/Deactivates the wallet button in the top menu.
+    /// </summary>
+    /// <param name="isActive">True for activating it.</param>
+    /// <param name="isGuest">True for setting it as guest mode.</param>
+    void SetWalletActive(bool isActive, bool isGuest);
 }

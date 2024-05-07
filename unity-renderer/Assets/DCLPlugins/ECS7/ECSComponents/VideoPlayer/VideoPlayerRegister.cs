@@ -1,6 +1,6 @@
-using DCL.ECS7.InternalComponents;
 using System;
 using DCL.ECSRuntime;
+using DCL.SettingsCommon;
 
 namespace DCL.ECSComponents
 {
@@ -16,7 +16,11 @@ namespace DCL.ECSComponents
                 ProtoSerialization.Deserialize<PBVideoPlayer>,
                 () => new VideoPlayerHandler(
                     internalComponents.videoPlayerComponent,
-                    DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD));
+                    DataStore.i.Get<DataStore_LoadingScreen>().decoupledLoadingHUD,
+                    Settings.i.audioSettings,
+                    DataStore.i.virtualAudioMixer,
+                    CommonScriptableObjects.sceneNumber));
+
             componentWriter.AddOrReplaceComponentSerializer<PBVideoPlayer>(componentId, ProtoSerialization.Serialize);
 
             this.factory = factory;

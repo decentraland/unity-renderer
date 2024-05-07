@@ -15,8 +15,11 @@ namespace DCL
         public readonly BaseVariable<Transform> configureBackpackInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureMapInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureBuilderInFullscreenMenu = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> configureCameraReelInFullScreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureQuestInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> configureSettingsInFullscreenMenu = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> configureWalletSectionInFullscreenMenu = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> configureMyAccountSectionInFullscreenMenu = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> topMenuTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> placesAndEventsTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> backpackTooltipReference = new BaseVariable<Transform>(null);
@@ -24,6 +27,7 @@ namespace DCL
         public readonly BaseVariable<Transform> builderTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> questTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> settingsTooltipReference = new BaseVariable<Transform>(null);
+        public readonly BaseVariable<Transform> cameraReelTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<Transform> profileCardTooltipReference = new BaseVariable<Transform>(null);
         public readonly BaseVariable<ExploreV2CurrentModal> currentVisibleModal = new BaseVariable<ExploreV2CurrentModal>(ExploreV2CurrentModal.None);
     }

@@ -12,6 +12,9 @@ public class SectionSelectorComponentModel : BaseComponentModel
 [Serializable]
 public class SectionToggleModel
 {
+    [Header("Common Configuration")]
+    public bool showNewTag = false;
+
     [Header("Visual Configuration When Selected")]
     public Sprite selectedIcon;
     public string selectedTitle;

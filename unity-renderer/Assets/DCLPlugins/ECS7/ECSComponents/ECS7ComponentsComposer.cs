@@ -30,8 +30,7 @@ namespace DCL.ECSComponents
         private readonly VisibilityComponentRegister visibilityComponentRegister;
         private readonly PointerEventsRegister pointerEvents;
         private readonly VideoPlayerRegister videoPlayerRegister;
-        private readonly VideoEventRegister videoEventRegister;
-        private readonly GltfContainerLoadingStateRegister gltfContainerLoadingStateRegister;
+        private readonly TweenRegister tweenRegister;
 
         // UI components
         private readonly UITransformRegister uiTransformRegister;
@@ -44,6 +43,11 @@ namespace DCL.ECSComponents
         private readonly PointerEventResultRegister pointerEventResultRegister;
         private readonly CameraModeRegister cameraModeRegister;
         private readonly PointerLockRegister pointerLockRegister;
+        private readonly VideoEventRegister videoEventRegister;
+        private readonly GltfContainerLoadingStateRegister gltfContainerLoadingStateRegister;
+        private readonly EngineInfoRegister engineInfoRegister;
+        private readonly UiCanvasInformationRegister uiCanvasInformationRegister;
+        private readonly TweenStateRegister tweenStateRegister;
 
         public ECS7ComponentsComposer(ECSComponentsFactory componentsFactory, IECSComponentWriter componentsWriter, IInternalECSComponents internalComponents)
         {
@@ -53,10 +57,10 @@ namespace DCL.ECSComponents
             nftRegister = new NFTShapeRegister(ComponentID.NFT_SHAPE, componentsFactory, componentsWriter, internalComponents);
             textShapeRegister = new ECSTextShapeRegister(ComponentID.TEXT_SHAPE, componentsFactory, componentsWriter, internalComponents);
             gltfRegister = new GltfContainerRegister(ComponentID.GLTF_CONTAINER, componentsFactory, componentsWriter, internalComponents);
-            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter);
+            animatorRegister = new AnimatorRegister(ComponentID.ANIMATOR, componentsFactory, componentsWriter, internalComponents.AnimationPlayer);
             billboardRegister = new BillboardRegister(ComponentID.BILLBOARD, componentsFactory, componentsWriter);
             avatarAttachRegister = new AvatarAttachRegister(ComponentID.AVATAR_ATTACH, componentsFactory, componentsWriter, internalComponents);
-            avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter);
+            avatarModifierAreaRegister = new AvatarModifierAreaRegister(ComponentID.AVATAR_MODIFIER_AREA, componentsFactory, componentsWriter, internalComponents);
             avatarShapeRegister = new AvatarShapeRegister(ComponentID.AVATAR_SHAPE, componentsFactory, componentsWriter, internalComponents);
             cameraModeAreaRegister = new CameraModeAreaRegister(ComponentID.CAMERA_MODE_AREA, componentsFactory, componentsWriter);
             materialRegister = new MaterialRegister(ComponentID.MATERIAL, componentsFactory, componentsWriter, internalComponents);
@@ -67,6 +71,7 @@ namespace DCL.ECSComponents
             visibilityComponentRegister = new VisibilityComponentRegister(ComponentID.VISIBILITY_COMPONENT, componentsFactory, componentsWriter, internalComponents);
             videoPlayerRegister = new VideoPlayerRegister(ComponentID.VIDEO_PLAYER, componentsFactory, componentsWriter, internalComponents);
             videoEventRegister = new VideoEventRegister(ComponentID.VIDEO_EVENT, componentsFactory, componentsWriter);
+            tweenRegister = new TweenRegister(ComponentID.TWEEN, componentsFactory, componentsWriter, internalComponents);
 
             // Multi-purposed components
             pointerEvents = new PointerEventsRegister(ComponentID.POINTER_EVENTS, componentsFactory, componentsWriter, internalComponents.PointerEventsComponent);
@@ -83,6 +88,9 @@ namespace DCL.ECSComponents
             cameraModeRegister = new CameraModeRegister(ComponentID.CAMERA_MODE, componentsFactory, componentsWriter);
             pointerLockRegister = new PointerLockRegister(ComponentID.POINTER_LOCK, componentsFactory, componentsWriter);
             gltfContainerLoadingStateRegister = new GltfContainerLoadingStateRegister(ComponentID.GLTF_CONTAINER_LOADING_STATE, componentsFactory, componentsWriter);
+            engineInfoRegister = new EngineInfoRegister(ComponentID.ENGINE_INFO, componentsFactory, componentsWriter);
+            uiCanvasInformationRegister = new UiCanvasInformationRegister(ComponentID.UI_CANVAS_INFORMATION, componentsFactory, componentsWriter);
+            tweenStateRegister = new TweenStateRegister(ComponentID.TWEEN_STATE, componentsFactory, componentsWriter);
         }
 
         public void Dispose()
@@ -106,6 +114,7 @@ namespace DCL.ECSComponents
             meshColliderRegister.Dispose();
             visibilityComponentRegister.Dispose();
             videoPlayerRegister.Dispose();
+            tweenRegister.Dispose();
 
             // UI components
             uiTransformRegister.Dispose();
@@ -121,6 +130,9 @@ namespace DCL.ECSComponents
             pointerEvents.Dispose();
             gltfContainerLoadingStateRegister.Dispose();
             videoEventRegister.Dispose();
+            engineInfoRegister.Dispose();
+            uiCanvasInformationRegister.Dispose();
+            tweenStateRegister.Dispose();
         }
     }
 }

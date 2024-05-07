@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace DCL.Controllers
 {
+    public enum SceneContentCategory
+    {
+        TEEN,
+        ADULT,
+        RESTRICTED,
+    }
+
     public interface IParcelScene
     {
         event Action<float> OnLoadingStateUpdated;
@@ -22,6 +29,8 @@ namespace DCL.Controllers
         bool isPortableExperience { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
+        SceneContentCategory contentCategory { get; }
+        string associatedPlaceId { get; }
         string GetSceneName();
         ISceneMetricsCounter metricsCounter { get; }
         HashSet<Vector2Int> GetParcels();
@@ -35,5 +44,7 @@ namespace DCL.Controllers
         void SetEntityParent(long entityId, long parentId);
         void RemoveEntity(long id, bool removeImmediatelyFromEntitiesList = true);
         bool IsInitMessageDone();
+        void SetContentCategory(SceneContentCategory category);
+        void SetAssociatedPlace(string placeId);
     }
 }

@@ -23,8 +23,8 @@ public class MapTexturePlugin : IPlugin
 
         this.resourceProvider = resourceProvider;
 
-        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.mapMainTexture, cts.Token, "MapDefault").Forget();
-        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.mapEstatesTexture, cts.Token, "MapDefaultEstates").Forget();
+        DownloadTexture(MAIN_TEXTURE_URL, DataStore.i.HUDs.latestDownloadedMainTexture, cts.Token, "MapDefault").Forget();
+        DownloadTexture(ESTATES_TEXTURE_URL, DataStore.i.HUDs.latestDownloadedMapEstatesTexture, cts.Token, "MapDefaultEstates").Forget();
     }
 
     private async UniTaskVoid DownloadTexture(string url, IBaseVariable<Texture> textureVariable, CancellationToken ct, string textureName)

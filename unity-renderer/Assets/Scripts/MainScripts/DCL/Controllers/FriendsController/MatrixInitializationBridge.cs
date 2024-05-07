@@ -10,6 +10,8 @@ namespace MainScripts.DCL.Controllers.FriendsController
 
     public class MatrixInitializationBridge : MonoBehaviour, IMatrixInitializationBridge
     {
+        public string AccessToken { get; private set; }
+
         public event Action<string> OnReceiveMatrixAccessToken;
 
         public static MatrixInitializationBridge GetOrCreate()
@@ -25,6 +27,7 @@ namespace MainScripts.DCL.Controllers.FriendsController
         public void InitializeMatrix(string json)
         {
             string token = JsonUtility.FromJson<MatrixInitializationMessage>(json).token;
+            AccessToken = token;
             OnReceiveMatrixAccessToken?.Invoke(token);
         }
     }

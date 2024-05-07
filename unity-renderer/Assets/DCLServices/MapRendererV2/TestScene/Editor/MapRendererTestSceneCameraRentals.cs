@@ -1,4 +1,5 @@
-﻿using DCLServices.MapRendererV2.MapCameraController;
+﻿using DCLServices.MapRendererV2.CommonBehavior;
+using DCLServices.MapRendererV2.MapCameraController;
 using DCLServices.MapRendererV2.MapLayers;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,13 @@ using UnityEngine.UIElements;
 
 namespace DCLServices.MapRendererV2.TestScene
 {
-    public class MapRendererTestSceneCameraRentals : IMapRendererTestSceneElementProvider
+    public class MapRendererTestSceneCameraRentals : IMapRendererTestSceneElementProvider, IMapActivityOwner
     {
         private readonly MapRenderer mapRenderer;
+        private readonly List<IMapCameraController> mapCameraControllers = new ();
 
         private VisualElement rents;
-        private readonly List<IMapCameraController> mapCameraControllers = new ();
+        public IReadOnlyDictionary<MapLayer, IMapLayerParameter> LayersParameters { get; } = new Dictionary<MapLayer, IMapLayerParameter>();
 
         public MapRendererTestSceneCameraRentals(MapRenderer mapRenderer)
         {
@@ -34,7 +36,7 @@ namespace DCLServices.MapRendererV2.TestScene
         {
             var root = new VisualElement();
 
-            var enabledLayers = new EnumFlagsField("Enabled Layers", MapLayer.Atlas);
+            var enabledLayers = new EnumFlagsField("Enabled Layers", MapLayer.ParcelsAtlas);
             var position = new Vector2IntField("Position");
             var zoom = new FloatField("Zoom") { value = 1 };
             var texRes = new Vector2IntField("Texture Resolution") { value = new Vector2Int(512, 512) };
@@ -44,11 +46,13 @@ namespace DCLServices.MapRendererV2.TestScene
             {
                 var rent = mapRenderer.RentCamera(
                     new MapCameraInput(
+                        this,
                         (MapLayer)enabledLayers.value,
                         position.value,
                         zoom.value,
                         texRes.value,
-                        zoomThreshold.value));
+                        zoomThreshold.value
+                        ));
 
                 mapCameraControllers.Add(rent);
 
@@ -106,7 +110,7 @@ namespace DCLServices.MapRendererV2.TestScene
 
             controls.Add(new Button(() =>
             {
-                cameraController.Release();
+                cameraController.Release(this);
                 rents.Remove(controls);
                 mapCameraControllers.Remove(cameraController);
             }) { text = "Release" });

@@ -20,7 +20,9 @@ export const expressionExplainer = {
   hohoho: '',
   crafting: '',
   snowballhit: '',
-  snowballthrow: ''
+  snowballthrow: '',
+  cry: '',
+  hands_in_the_air: ''
 }
 export const validExpressions = Object.keys(expressionExplainer)
 

@@ -1,5 +1,5 @@
 Shader "DCL/Universal Render Pipeline/UberPost"
-{
+{   
     HLSLINCLUDE
         #pragma exclude_renderers gles
         #pragma multi_compile_local_fragment _ _DISTORTION
@@ -10,14 +10,29 @@ Shader "DCL/Universal Render Pipeline/UberPost"
         #pragma multi_compile_local_fragment _ _DITHERING
         #pragma multi_compile_local_fragment _ _GAMMA_20 _LINEAR_TO_SRGB_CONVERSION
         #pragma multi_compile_local_fragment _ _USE_FAST_SRGB_LINEAR_CONVERSION
-        #pragma multi_compile _ _USE_DRAW_PROCEDURAL
+        #pragma multi_compile_fragment _ _FOVEATED_RENDERING_NON_UNIFORM_RASTER
+        // Foveated rendering currently not supported in dxc on metal
+        #pragma never_use_dxc metal
         #pragma multi_compile_fragment _ DEBUG_DISPLAY
+        #pragma multi_compile_fragment _ SCREEN_COORD_OVERRIDE
+        #pragma multi_compile_local_fragment _ HDR_INPUT HDR_ENCODING
+
+        #ifdef HDR_ENCODING
+        #define HDR_INPUT 1 // this should be defined when HDR_ENCODING is defined
+        #endif
 
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ScreenCoordOverride.hlsl"
+#if defined(HDR_ENCODING)
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/HDROutput.hlsl"
+#endif
+
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Debug/DebuggingFullscreen.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
 
         // Hardcoded dependencies to reduce the number of variants
         #if _BLOOM_LQ || _BLOOM_HQ || _BLOOM_LQ_DIRT || _BLOOM_HQ_DIRT
@@ -27,13 +42,13 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             #endif
         #endif
 
-        TEXTURE2D_X(_SourceTex);
         TEXTURE2D_X(_Bloom_Texture);
         TEXTURE2D(_LensDirt_Texture);
         TEXTURE2D(_Grain_Texture);
         TEXTURE2D(_InternalLut);
         TEXTURE2D(_UserLut);
         TEXTURE2D(_BlueNoise_Texture);
+        TEXTURE2D_X(_OverlayUITexture);
 
         float4 _Lut_Params;
         float4 _UserLut_Params;
@@ -46,10 +61,14 @@ Shader "DCL/Universal Render Pipeline/UberPost"
         float _Chroma_Params;
         half4 _Vignette_Params1;
         float4 _Vignette_Params2;
+    #ifdef USING_STEREO_MATRICES
+        float4 _Vignette_ParamsXR;
+    #endif
         float2 _Grain_Params;
         float4 _Grain_TilingParams;
         float4 _Bloom_Texture_TexelSize;
         float4 _Dithering_Params;
+        float4 _HDROutputLuminanceParams;
 
         #define DistCenter              _Distortion_Params1.xy
         #define DistAxis                _Distortion_Params1.zw
@@ -68,7 +87,12 @@ Shader "DCL/Universal Render Pipeline/UberPost"
         #define LensDirtIntensity       _LensDirt_Intensity.x
 
         #define VignetteColor           _Vignette_Params1.xyz
+    #ifdef USING_STEREO_MATRICES
+        #define VignetteCenterEye0      _Vignette_ParamsXR.xy
+        #define VignetteCenterEye1      _Vignette_ParamsXR.zw
+    #else
         #define VignetteCenter          _Vignette_Params2.xy
+    #endif
         #define VignetteIntensity       _Vignette_Params2.z
         #define VignetteSmoothness      _Vignette_Params2.w
         #define VignetteRoundness       _Vignette_Params1.w
@@ -85,6 +109,11 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
         #define DitheringScale          _Dithering_Params.xy
         #define DitheringOffset         _Dithering_Params.zw
+
+        #define MinNits                 _HDROutputLuminanceParams.x
+        #define MaxNits                 _HDROutputLuminanceParams.y
+        #define PaperWhite              _HDROutputLuminanceParams.z
+        #define OneOverPaperWhite       _HDROutputLuminanceParams.w
 
         float2 DistortUV(float2 uv)
         {
@@ -113,11 +142,11 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             return uv;
         }
 
-        half4 Frag(Varyings input) : SV_Target
+        half4 FragUberPost(Varyings input) : SV_Target
         {
             UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-            float2 uv = UnityStereoTransformScreenSpaceTex(input.uv);
+            float2 uv = SCREEN_COORD_APPLY_SCALEBIAS(UnityStereoTransformScreenSpaceTex(input.texcoord));
             float2 uvDistorted = DistortUV(uv);
 
             half3 color = (0.0).xxx;
@@ -130,15 +159,15 @@ Shader "DCL/Universal Render Pipeline/UberPost"
                 float2 end = uv - coords * dot(coords, coords) * ChromaAmount;
                 float2 delta = (end - uv) / 3.0;
 
-                half r = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uvDistorted                ).x;
-                half g = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, DistortUV(delta + uv)      ).y;
-                half b = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, DistortUV(delta * 2.0 + uv)).z;
+                half r = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(uvDistorted)                ).x;
+                half g = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(DistortUV(delta + uv)      )).y;
+                half b = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(DistortUV(delta * 2.0 + uv))).z;
 
                 color = half3(r, g, b);
             }
             #else
             {
-                color = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uvDistorted).xyz;
+                color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(uvDistorted)).xyz;
             }
             #endif
 
@@ -151,10 +180,15 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if defined(BLOOM)
             {
+                float2 uvBloom = uvDistorted;
+                #if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
+                    uvBloom = RemapFoveatedRenderingDistort(uvBloom);
+                #endif
+
                 #if _BLOOM_HQ && !defined(SHADER_API_GLES)
-                half4 bloom = SampleTexture2DBicubic(TEXTURE2D_X_ARGS(_Bloom_Texture, sampler_LinearClamp), uvDistorted, _Bloom_Texture_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex);
+                half4 bloom = SampleTexture2DBicubic(TEXTURE2D_X_ARGS(_Bloom_Texture, sampler_LinearClamp), SCREEN_COORD_REMOVE_SCALEBIAS(uvBloom), _Bloom_Texture_TexelSize.zwxy, (1.0).xx, unity_StereoEyeIndex);
                 #else
-                half4 bloom = SAMPLE_TEXTURE2D_X(_Bloom_Texture, sampler_LinearClamp, uvDistorted);
+                half4 bloom = SAMPLE_TEXTURE2D_X(_Bloom_Texture, sampler_LinearClamp, SCREEN_COORD_REMOVE_SCALEBIAS(uvBloom));
                 #endif
 
                 #if UNITY_COLORSPACE_GAMMA
@@ -191,6 +225,12 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             UNITY_BRANCH
             if (VignetteIntensity > 0)
             {
+            #ifdef USING_STEREO_MATRICES
+                // With XR, the views can use asymmetric FOV which will have the center of each
+                // view be at a different location.
+                const float2 VignetteCenter = unity_StereoEyeIndex == 0 ? VignetteCenterEye0 : VignetteCenterEye1;
+            #endif
+
                 color = ApplyVignette(color, uvDistorted, VignetteCenter, VignetteIntensity, VignetteRoundness, VignetteSmoothness, VignetteColor);
             }
 
@@ -201,7 +241,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if _FILM_GRAIN
             {
-                color = ApplyGrain(color, uv, TEXTURE2D_ARGS(_Grain_Texture, sampler_LinearRepeat), GrainIntensity, GrainResponse, GrainScale, GrainOffset);
+                color = ApplyGrain(color, uv, TEXTURE2D_ARGS(_Grain_Texture, sampler_LinearRepeat), GrainIntensity, GrainResponse, GrainScale, GrainOffset, OneOverPaperWhite);
             }
             #endif
 
@@ -219,10 +259,18 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
             #if _DITHERING
             {
-                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset);
+                color = ApplyDithering(color, uv, TEXTURE2D_ARGS(_BlueNoise_Texture, sampler_PointRepeat), DitheringScale, DitheringOffset, PaperWhite, OneOverPaperWhite);
                 // Assume color > 0 and prevent 0 - ditherNoise.
                 // Negative colors can cause problems if fed back to the postprocess via render to FP16 texture.
                 color = max(color, 0);
+            }
+            #endif
+
+            #ifdef HDR_ENCODING
+            {
+                float4 uiSample = SAMPLE_TEXTURE2D_X(_OverlayUITexture, sampler_PointClamp, input.texcoord);
+                color.rgb = SceneUIComposition(uiSample, color.rgb, PaperWhite, MaxNits);
+                color.rgb = OETF(color.rgb);
             }
             #endif
 
@@ -235,7 +283,7 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             }
             #endif
 
-            half alpha = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_LinearClamp, uvDistorted).w;
+            half alpha = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uvDistorted).w;
             return half4(color, alpha);
         }
 
@@ -243,7 +291,10 @@ Shader "DCL/Universal Render Pipeline/UberPost"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline"
+        }
         LOD 100
         ZTest Always ZWrite Off Cull Off
 
@@ -252,9 +303,11 @@ Shader "DCL/Universal Render Pipeline/UberPost"
             Name "UberPost"
 
             HLSLPROGRAM
-                #pragma vertex FullscreenVert
-                #pragma fragment Frag
+                #pragma vertex Vert
+                #pragma fragment FragUberPost
             ENDHLSL
         }
     }
+    
+    
 }

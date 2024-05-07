@@ -55,9 +55,8 @@ namespace Tests
                 components = { 1 }
             });
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -65,8 +64,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             // should register ui callbacks
             ECSUiPointerEventsSystem.HandleUiWithoutRegisteredPointerEvents(
@@ -74,11 +73,11 @@ namespace Tests
                 internalComponents.RegisteredUiPointerEventsComponent,
                 internalComponents.inputEventResultsComponent);
 
-            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity).model;
-            Assert.NotNull(callbackModel.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.OnPointerEnterCallback);
-            Assert.IsNull(callbackModel.OnPointerUpCallback);
+            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
+            Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
+            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
         }
 
         [Test]
@@ -133,9 +132,8 @@ namespace Tests
                 components = { 1 }
             });
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -143,8 +141,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
 
@@ -157,18 +155,57 @@ namespace Tests
                 internalComponents.RegisteredUiPointerEventsComponent,
                 internalComponents.inputEventResultsComponent);
 
-            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity).model;
-            Assert.NotNull(callbackModel.OnPointerDownCallback);
-            Assert.NotNull(callbackModel.OnPointerLeaveCallback);
-            Assert.IsNull(callbackModel.OnPointerEnterCallback);
-            Assert.IsNull(callbackModel.OnPointerUpCallback);
+            var callbackModel = internalComponents.RegisteredUiPointerEventsComponent.GetFor(scene, entity)?.model;
+            Assert.NotNull(callbackModel.Value.OnPointerDownCallback);
+            Assert.NotNull(callbackModel.Value.OnPointerLeaveCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerEnterCallback);
+            Assert.IsNull(callbackModel.Value.OnPointerUpCallback);
+        }
+
+        [Test]
+        public void UpdatePointerBlockingOnElementsWithPointerEvents()
+        {
+            // add required components entity
+            internalComponents.uiContainerComponent.PutFor(scene, entity, new InternalUiContainer(1)
+            {
+                components = { 1 }
+            });
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
+                {
+                    new InternalPointerEvents.Entry(
+                        PointerEventType.PetDown,
+                        new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false)),
+                    new InternalPointerEvents.Entry(
+                        PointerEventType.PetHoverLeave,
+                        new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
+                })
+            );
+            internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
+
+            // Check default picking model
+            var internalComponentModel = internalComponents.uiContainerComponent.GetFor(scene, entity);
+            Assert.AreEqual(PickingMode.Ignore, internalComponentModel.Value.model.rootElement.pickingMode);
+
+            // mark PointerEventsComponent as dirty
+            MarkDirtyComponents();
+
+            // should update callbacks
+            ECSUiPointerEventsSystem.HandlePointerEventComponentUpdate(
+                componentGroups.RegisteredUiPointerEvents,
+                internalComponents.RegisteredUiPointerEventsComponent,
+                internalComponents.inputEventResultsComponent);
+
+            // Check picking model was updated correctly
+            internalComponentModel = internalComponents.uiContainerComponent.GetFor(scene, entity);
+            Assert.AreEqual(PickingMode.Position, internalComponentModel.Value.model.rootElement.pickingMode);
         }
 
         [Test]
         public void HandleUiContainerRemoval()
         {
             // add required components entity
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents());
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(new List<InternalPointerEvents.Entry>()));
 
             internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
 
@@ -202,9 +239,8 @@ namespace Tests
         [Test]
         public void CreateUiPointerEventsCorrectly()
         {
-            var events = new InternalPointerEvents()
-            {
-                PointerEvents =
+            var events = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -213,7 +249,7 @@ namespace Tests
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
                 }
-            };
+            );
 
             var result = ECSUiPointerEventsSystem.CreateUiPointerEvents(
                 scene,
@@ -227,9 +263,8 @@ namespace Tests
             Assert.IsNull(result.OnPointerUpCallback);
 
             // unsupported input action
-            events = new InternalPointerEvents()
-            {
-                PointerEvents =
+            events = new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -238,7 +273,7 @@ namespace Tests
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaJump, "temptation", 0, false))
                 }
-            };
+            );
 
             result = ECSUiPointerEventsSystem.CreateUiPointerEvents(
                 scene,
@@ -276,12 +311,12 @@ namespace Tests
             {
                 components = { 1 }
             };
+            uiDocumentInstance.rootVisualElement.Add(internalUiComponent.rootElement);
 
             internalComponents.uiContainerComponent.PutFor(scene, entity, internalUiComponent);
 
-            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents()
-            {
-                PointerEvents =
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
                 {
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetDown,
@@ -295,8 +330,8 @@ namespace Tests
                     new InternalPointerEvents.Entry(
                         PointerEventType.PetHoverLeave,
                         new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
-                }
-            });
+                })
+            );
 
             UpdateSystem();
 
@@ -312,13 +347,13 @@ namespace Tests
             expectedEventTypes.Enqueue(PointerEventType.PetHoverEnter);
             expectedEventTypes.Enqueue(PointerEventType.PetHoverLeave);
 
-            var inputResult = internalComponents.inputEventResultsComponent.GetFor(scene, entity).model;
+            var inputResult = internalComponents.inputEventResultsComponent.GetFor(scene, entity)?.model;
 
-            Assert.AreEqual(4, inputResult.events.Count);
+            Assert.AreEqual(4, inputResult.Value.events.Count);
 
-            for (int i=0; i< inputResult.events.Count; i++)
+            for (int i=0; i< inputResult.Value.events.Count; i++)
             {
-                InternalInputEventResults.EventData result = inputResult.events[i];
+                InternalInputEventResults.EventData result = inputResult.Value.events[i];
                 Assert.AreEqual(entity.entityId, result.hit.EntityId);
                 Assert.AreEqual(InputAction.IaPointer, result.button);
                 Assert.AreEqual(expectedEventTypes.Dequeue(), result.type);

@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using GLTFast;
+using System;
 using UnityEngine;
 
 namespace DCL
@@ -25,6 +26,7 @@ namespace DCL
                 for (int i = 0; i < GltfImport.SceneCount; i++)
                 {
                     var targetTransform = containerTransform;
+
                     if (i != 0)
                     {
                         var go = new GameObject($"{containerTransform.name}_{i}");

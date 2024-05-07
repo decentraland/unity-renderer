@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityGLTF.Cache;
 using Object = UnityEngine.Object;
 
 namespace DCL
@@ -30,7 +29,6 @@ namespace DCL
             OnCleanup?.Invoke();
             OnCleanup = null;
 
-            PersistentAssetCache.RemoveImage(texture);
             Object.Destroy(texture);
             if (this.texture != null)
                 Object.Destroy(this.texture);

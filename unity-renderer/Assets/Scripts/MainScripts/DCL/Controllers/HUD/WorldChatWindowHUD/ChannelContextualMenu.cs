@@ -1,11 +1,12 @@
 using System;
 using TMPro;
+using UIComponents.ContextMenu;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
-    public class ChannelContextualMenu : BaseComponentView
+    public class ChannelContextualMenu : ContextMenuComponentView
     {
         [Flags]
         internal enum Options
@@ -17,21 +18,31 @@ namespace DCL.Chat.HUD
         [SerializeField] internal TMP_Text headerTiler;
         [SerializeField] internal Button leaveButton;
         [SerializeField] internal Button closeButton;
+        [SerializeField] internal Button copyNameButton;
+        [SerializeField] internal ShowHideAnimator nameCopiedToast;
 
         public event Action OnLeave;
+        public event Action<string> OnNameCopied;
 
         public override void Awake()
         {
             base.Awake();
-            
+
             leaveButton.onClick.AddListener(() =>
             {
                 OnLeave?.Invoke();
                 Hide();
             });
-            
+
             closeButton.onClick.AddListener(() => Hide());
-            
+            copyNameButton.onClick.AddListener(() =>
+            {
+                OnNameCopied?.Invoke(headerTiler.text);
+
+                nameCopiedToast.gameObject.SetActive(true);
+                nameCopiedToast.ShowDelayHide(3);
+            });
+
             RefreshControl();
         }
 
@@ -39,6 +50,7 @@ namespace DCL.Chat.HUD
         {
             base.Show(instant);
             gameObject.SetActive(true);
+            ClampPositionToScreenBorders(transform.position);
         }
 
         public override void Hide(bool instant = false)

@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 public class FeatureFlag
 {
-    public readonly Dictionary<string, bool> flags  = new Dictionary<string, bool>();
-    public readonly Dictionary<string, FeatureFlagVariant> variants  = new Dictionary<string, FeatureFlagVariant>();
+    public readonly Dictionary<string, bool> flags  = new ();
+    public readonly Dictionary<string, FeatureFlagVariant> variants  = new ();
 
     public bool IsInitialized { get; private set; }
 
@@ -23,14 +23,11 @@ public class FeatureFlag
 
         if (splitFeatureName.Length > 1 && variants.TryGetValue(featureName, out var variant))
         {
-            string variantName = splitFeatureName[splitFeatureName.Length - 1];
+            string variantName = splitFeatureName[^1];
             return variant.enabled && variant.name == variantName;
         }
 
-        if (flags.ContainsKey(featureName))
-            return flags[featureName];
-
-        return false;
+        return flags.TryGetValue(featureName, out bool isEnabled) && isEnabled;
     }
 
     public FeatureFlagVariantPayload GetFeatureFlagVariantPayload(string featureNameLong)

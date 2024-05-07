@@ -10,10 +10,10 @@ namespace AssetPromiseKeeper_Tests
         {
             const string assetId = "TheRealPravus";
 
-            AssetLibrary_GLTF libraryGltf = new AssetLibrary_GLTF();
+            AssetLibrary_GLTFast_Instance libraryGltf = new AssetLibrary_GLTFast_Instance();
             AssetLibrary_AB_GameObject libraryAbGameObject = new AssetLibrary_AB_GameObject();
 
-            Asset_GLTF assetGltf = new Asset_GLTF();
+            Asset_GLTFast_Instance assetGltf = new Asset_GLTFast_Instance();
             Asset_AB_GameObject assetAbGameObject = new Asset_AB_GameObject();
 
             assetGltf.id = assetId;

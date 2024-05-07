@@ -1,6 +1,6 @@
 using System;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     [Serializable]
     public class ChannelMemberEntryModel : BaseComponentModel
@@ -10,5 +10,6 @@ namespace DCL.Chat.HUD
         public string thumnailUrl;
         public bool isOnline;
         public bool isOptionsButtonHidden;
+        public bool blocked;
     }
 }

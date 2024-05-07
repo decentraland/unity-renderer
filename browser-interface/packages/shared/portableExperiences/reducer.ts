@@ -9,6 +9,7 @@ import {
   REMOVE_SCENE_PX,
   SHUTDOWN_ALL_PORTABLE_EXPERIENCES
 } from './actions'
+import { REMOVE_DESIRED_PORTABLE_EXPERIENCE, RemoveDesiredPortableExperienceAction } from '../wearablesPortableExperience/actions'
 
 const INITIAL_STATE: PortableExperiencesState = {
   deniedPortableExperiencesFromRenderer: [],
@@ -19,7 +20,7 @@ const INITIAL_STATE: PortableExperiencesState = {
 
 export function portableExperienceReducer(
   state?: PortableExperiencesState,
-  action?: PortableExperienceActions
+  action?: PortableExperienceActions | RemoveDesiredPortableExperienceAction
 ): PortableExperiencesState {
   if (!state) {
     return INITIAL_STATE
@@ -30,6 +31,14 @@ export function portableExperienceReducer(
   }
 
   switch (action.type) {
+    case REMOVE_DESIRED_PORTABLE_EXPERIENCE: {
+      return {
+        ...state,
+        deniedPortableExperiencesFromRenderer: state.deniedPortableExperiencesFromRenderer.filter(
+          ($) => $ !== action.payload.id
+        )
+      }
+    }
     case SHUTDOWN_ALL_PORTABLE_EXPERIENCES: {
       return { ...state, globalPortalExperienceShutDown: true }
     }

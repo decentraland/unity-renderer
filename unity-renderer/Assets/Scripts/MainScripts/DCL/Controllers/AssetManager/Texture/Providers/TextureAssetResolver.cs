@@ -75,10 +75,8 @@ namespace DCL
 
             if (texture)
             {
-                var clampedTexture = TextureHelpers.ClampSize(texture, maxTextureSize, linear: linear, useGPUCopy: useGPUCopy);
-
-                var resizingFactor = Mathf.Min(1,
-                    TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize));
+                Texture2D clampedTexture = TextureHelpers.ClampSize(texture, maxTextureSize, linear: linear, useGPUCopy: useGPUCopy);
+                float resizingFactor = Mathf.Min(1, TextureHelpers.GetScalingFactor(texture.width, texture.height, maxTextureSize));
 
                 return new TextureResponse(new TextureSuccessResponse(clampedTexture, resizingFactor));
             }

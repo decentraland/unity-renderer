@@ -2,12 +2,13 @@
 using DCL.Helpers;
 using DCLServices.MapRendererV2.CoordsUtils;
 using DCLServices.MapRendererV2.Culling;
+using System;
 using System.Threading;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
 {
-    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController
+    internal class PlayerMarkerController : MapLayerControllerBase, IMapLayerController<PlayerMarkerParameter>, IZoomScalingLayer
     {
         internal delegate IPlayerMarker PlayerMarkerBuilder(Transform parent);
 
@@ -54,6 +55,11 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             return UniTask.CompletedTask;
         }
 
+        public void SetParameter(PlayerMarkerParameter param)
+        {
+            playerMarker?.SetBackgroundVisibility(param.BackgroundIsActive);
+        }
+
         private void SetPosition()
         {
             var gridPosition = Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
@@ -70,6 +76,16 @@ namespace DCLServices.MapRendererV2.MapLayers.PlayerMarker
             var playerRot = playerRotation.Get();
             var markerRot = Quaternion.Euler(0, 0, Mathf.Atan2(-playerRot.x, playerRot.z) * Mathf.Rad2Deg);
             playerMarker.SetRotation(markerRot);
+        }
+
+        public void ApplyCameraZoom(float baseZoom, float zoom)
+        {
+            playerMarker.SetZoom(baseZoom, zoom);
+        }
+
+        public void ResetToBaseScale()
+        {
+            playerMarker.ResetToBaseScale();
         }
 
         private void OnPlayerWorldPositionChange(Vector3 current, Vector3 previous)

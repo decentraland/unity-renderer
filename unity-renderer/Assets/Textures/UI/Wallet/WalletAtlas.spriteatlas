@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WalletAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 2
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 4239332eadd1d754789092fabd865182, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: ae6d8d147041dc64bb36d54d1494f514, type: 3}
+  - {fileID: 21300000, guid: 54dc521749ad9c647b32ade85b333b9f, type: 3}
+  - {fileID: 21300000, guid: 551fc2e71f84a4374a7b6cd696f4ef00, type: 3}
+  - {fileID: 21300000, guid: fd905f8b7e4fe334fa2d67b2abce0f9d, type: 3}
+  - {fileID: 21300000, guid: 4863657c11b44ea479561b2bc40ae909, type: 3}
+  - {fileID: 21300000, guid: cd3bfb5dccdc42a47a7cca42b9274f41, type: 3}
+  - {fileID: 21300000, guid: 1ec9207ef28f4fc48b2475f11fa157f5, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - ManaIsometric3DIcn
+  - PolygonManaFront3DFrontIcn
+  - WalletConnectImg
+  - ManaFront3DIcn
+  - WalletImg
+  - WalletIcn
+  - PolygonManaIsometric3DIcn
+  m_RenderDataMap: {}
+  m_Tag: WalletAtlas
+  m_IsVariant: 0

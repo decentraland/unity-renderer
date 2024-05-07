@@ -29,3 +29,5 @@ MonoBehaviour:
     skin: {fileID: 11400000, guid: 2ed4fac2cecbeb8468529aeb6448dcf3, type: 2}
   - rarity: base
     skin: {fileID: 11400000, guid: 3986c9106c9d88b4898dc92ef16dc48c, type: 2}
+  - rarity: exotic
+    skin: {fileID: 11400000, guid: 328446dcef0234af8a585064b39239a8, type: 2}

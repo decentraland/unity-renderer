@@ -5,7 +5,10 @@ using DCL.GLTFast.Wrappers;
 using GLTFast;
 using GLTFast.Logging;
 using GLTFast.Materials;
+using System.Diagnostics;
+using System.IO;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 // Disable async call not being awaited warning
 #pragma warning disable CS4014
@@ -25,15 +28,16 @@ namespace DCL
         private readonly CancellationTokenSource cancellationSource;
 
         private readonly IMaterialGenerator gltFastMaterialGenerator;
-        private readonly ConsoleLogger consoleLogger;
+        private readonly GltfastEditorLogger consoleLogger;
 
         private static IDeferAgent staticDeferAgent;
+        private bool isLoading = false;
 
         public AssetPromise_GLTFast_Loader(string contentUrl, string hash, IWebRequestController requestController, ContentProvider contentProvider = null)
             : base(contentUrl, hash)
         {
             this.contentProvider = contentProvider;
-            assetDirectoryPath = URIHelper.GetDirectoryName(contentUrl);
+            assetDirectoryPath = GetDirectoryName(contentUrl);
 
             if (staticDeferAgent == null)
             {
@@ -45,7 +49,13 @@ namespace DCL
             gltFastDownloadProvider = new GltFastDownloadProvider(baseUrl, requestController, FileToUrl, AssetPromiseKeeper_Texture.i);
             cancellationSource = new CancellationTokenSource();
             gltFastMaterialGenerator = new DecentralandMaterialGenerator(SHADER_DCL_LIT);
-            consoleLogger = new ConsoleLogger();
+            consoleLogger = new GltfastEditorLogger();
+        }
+
+        private static string GetDirectoryName(string fullPath)
+        {
+            var fileName = Path.GetFileName(fullPath);
+            return fullPath.Substring(0, fullPath.Length - fileName.Length);
         }
 
         protected override void OnBeforeLoadOrReuse() { }
@@ -77,14 +87,17 @@ namespace DCL
 
         protected override void OnLoad(Action onSuccess, Action<Exception> onFail)
         {
+            isLoading = true;
             ImportGltfAsync(onSuccess, onFail, cancellationSource.Token);
         }
 
         internal override void Unload()
         {
-            base.Unload();
             gltFastDownloadProvider.Dispose();
+            base.Unload();
         }
+
+        public override bool keepWaiting => isLoading;
 
         private async UniTaskVoid ImportGltfAsync(Action onSuccess, Action<Exception> onFail, CancellationToken cancellationSourceToken)
         {
@@ -122,13 +135,62 @@ namespace DCL
                 if (e is OperationCanceledException)
                     return;
 
-                Debug.LogError("[GltFast] Failed to load: " + e);
+                Debug.LogException(e);
                 onFail?.Invoke(e);
             }
+            finally { isLoading = false; }
         }
 
         private bool FileToUrl(string fileName, out string fileHash) =>
             contentProvider.TryGetContentsUrl(assetDirectoryPath + fileName, out fileHash);
+    }
+
+    public class GltfastEditorLogger : ICodeLogger
+    {
+        public LogCode LastErrorCode { get; private set; }
+
+        public void Error(LogCode code, params string[] messages)
+        {
+            LastErrorCode = code;
+            Debug.LogError(LogMessages.GetFullMessage(code, messages));
+        }
+
+        public void Warning(LogCode code, params string[] messages)
+        {
+            LogWarning(LogMessages.GetFullMessage(code, messages));
+        }
+
+        public void Info(LogCode code, params string[] messages)
+        {
+            LogVerbose(LogMessages.GetFullMessage(code, messages));
+        }
+
+        public void Error(string message)
+        {
+            Debug.LogError(message);
+        }
+
+        public void Warning(string message)
+        {
+            LogWarning(message);
+        }
+
+        public void Info(string message)
+        {
+            LogVerbose(message);
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void LogWarning(string message)
+        {
+            Debug.LogWarning(message);
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void LogVerbose(string message)
+        {
+            Debug.Log(message);
+        }
     }
 
     public class GltFastLoadException : Exception

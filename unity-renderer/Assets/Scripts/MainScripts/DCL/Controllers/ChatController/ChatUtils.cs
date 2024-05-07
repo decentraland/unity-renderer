@@ -15,5 +15,11 @@ namespace DCL.Chat
             filteredMessage = filteredMessage.Insert(filteredMessage.Length, "</noparse>");
             return filteredMessage;
         }
+
+        public static string RemoveNoParse(string message)
+        {
+            return message.Replace("<noparse>", "")
+                          .Replace("</noparse>", "");
+        }
     }
 }

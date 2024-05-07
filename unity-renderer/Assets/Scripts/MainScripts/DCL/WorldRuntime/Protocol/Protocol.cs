@@ -17,8 +17,7 @@ namespace DCL.Models
         public const long SCENE_ROOT_ENTITY = 0;
         public const long PLAYER_ENTITY = 1;
         public const long CAMERA_ENTITY = 2;
-        public const long INTERNAL_PLAYER_ENTITY_REPRESENTATION = 510;
-        
+
         // To be deprecated soon
         public const long AVATAR_ENTITY_REFERENCE = 3;
         public const long AVATAR_POSITION_REFERENCE = 4;
@@ -33,6 +32,8 @@ namespace DCL.Models
         public const string OnPointerUp = "pointerUp";
         public const string OnPointerHoverEnter = "pointerHoverEnter";
         public const string OnPointerHoverExit = "pointerHoverExit";
+        public const string Transform = "transform";
+        public const string Shape = "shape";
     }
 
     public enum CLASS_ID_COMPONENT
@@ -55,8 +56,7 @@ namespace DCL.Models
         AUDIO_STREAM = 202,
         AVATAR_MODIFIER_AREA = 205,
         AVATAR_ATTACH = 206,
-        CAMERA_MODE_AREA = 207,
-        QUEST_TRACKING_INFORMATION = 1417815519 // This corresponds with dcl-ecs-quests
+        CAMERA_MODE_AREA = 207
     }
 
     public enum CLASS_ID

@@ -82,7 +82,7 @@ export type BodyShapeRepresentationV2 = {
   contents: KeyAndHash[]
 }
 
-type KeyAndHash = {
+export type KeyAndHash = {
   key: string
   hash: string
 }

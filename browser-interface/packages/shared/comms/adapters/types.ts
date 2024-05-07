@@ -1,5 +1,6 @@
 import { Emitter } from 'mitt'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { Track } from 'livekit-client'
 
 export interface MinimumCommunicationsAdapter {
   /**
@@ -59,4 +60,9 @@ export type AdapterMessageEvent = {
   // The ethereum address of the sender
   address: string
   data: Uint8Array
+}
+
+export type ActiveVideoStreams = {
+  identity: string
+  videoTracks: Map<string, Track>
 }

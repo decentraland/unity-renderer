@@ -27,11 +27,6 @@ namespace DCL
         public long animationClipSize = 0;
         public long meshDataSize = 0;
 
-        //Kinerius: since our old importer and the new one has a lot of architectural design differences, we have to keep track of them on multiple places
-        // This can be safely removed once we get rid of the old importer
-        public bool isGLTFast = false;
-
-
         public bool Equals(Rendereable other)
         {
             return container == other.container;

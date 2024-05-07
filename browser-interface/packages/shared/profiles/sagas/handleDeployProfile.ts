@@ -1,7 +1,11 @@
 import { Authenticator } from '@dcl/crypto'
 import { hashV1 } from '@dcl/hashing'
 import { Avatar, EntityType, Profile, Snapshots } from '@dcl/schemas'
-import { ContentClient } from 'dcl-catalyst-client/dist/ContentClient'
+import {
+  BuildEntityOptions,
+  BuildEntityWithoutFilesOptions,
+  ContentClient
+} from 'dcl-catalyst-client/dist/ContentClient'
 import type { DeploymentData } from 'dcl-catalyst-client/dist/utils/DeploymentBuilder'
 import { base64ToBuffer } from 'lib/encoding/base64ToBlob'
 import { call, put, select } from 'redux-saga/effects'
@@ -16,6 +20,7 @@ import type { DeployProfile } from '../actions'
 import { deployProfileFailure, deployProfileSuccess } from '../actions'
 import { buildServerMetadata } from 'lib/decentraland/profiles/transformations/profileToServerFormat'
 import type { ContentFile } from '../types'
+import { localProfileChanged } from '../../world/runtime-7/engine'
 
 export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const realmAdapter: IRealmAdapter = yield call(waitForRealm)
@@ -24,6 +29,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const userId: string = yield select(getCurrentUserId)
   const profile: Avatar = deployProfileAction.payload.profile
+
   try {
     yield call(deployAvatar, {
       url: profileServiceUrl,
@@ -32,6 +38,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
       profile
     })
     yield put(deployProfileSuccess(userId, profile.version, profile))
+    yield call(() => localProfileChanged.emit('changeAvatar', profile))
   } catch (e: any) {
     trackEvent('error', {
       context: 'kernel#saga',
@@ -43,7 +50,7 @@ export function* handleDeployProfile(deployProfileAction: DeployProfile) {
   }
 }
 
-async function buildSnapshotContent(selector: string, value: string) {
+export async function buildSnapshotContent(selector: string, value: string) {
   let hash: string
   let contentFile: ContentFile | undefined
 
@@ -110,11 +117,18 @@ async function deploy(
     pointers: [identity.address],
     hashesByKey: contentHashes,
     metadata
-  }
+  } as BuildEntityWithoutFilesOptions
+
+  const entity = {
+    type: EntityType.PROFILE,
+    pointers: [identity.address],
+    files: contentFiles,
+    metadata
+  } as BuildEntityOptions
 
   // Build entity and group all files
   const preparationData = await (contentFiles.size
-    ? catalyst.buildEntity({ type: EntityType.PROFILE, pointers: [identity.address], files: contentFiles, metadata })
+    ? catalyst.buildEntity(entity)
     : catalyst.buildEntityWithoutNewFiles(entityWithoutNewFilesPayload))
   // sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)

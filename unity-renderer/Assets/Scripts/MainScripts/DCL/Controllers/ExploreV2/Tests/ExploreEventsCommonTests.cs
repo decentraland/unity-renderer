@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class ExploreEventsCommonTests
 {
@@ -26,12 +27,8 @@ public class ExploreEventsCommonTests
     {
         eventsSubSectionComponent.featuredEvents.ExtractItems();
         eventsSubSectionComponent.featuredEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.trendingEvents.ExtractItems();
-        eventsSubSectionComponent.trendingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.upcomingEvents.ExtractItems();
-        eventsSubSectionComponent.upcomingEventCardsPool.ReleaseAll();
-        eventsSubSectionComponent.goingEvents.ExtractItems();
-        eventsSubSectionComponent.goingEventCardsPool.ReleaseAll();
+        eventsSubSectionComponent.eventsGrid.ExtractItems();
+        eventsSubSectionComponent.eventCardsPool.ReleaseAll();
         eventsSubSectionComponent.Dispose();
         testEventCard.Dispose();
         GameObject.Destroy(eventsSubSectionComponent.eventModal.gameObject);
@@ -75,6 +72,7 @@ public class ExploreEventsCommonTests
     public void ConfigureEventCardCorrectly()
     {
         // Arrange
+        LogAssert.Expect(LogType.Assert, "Invalid AABB inAABB"); // we ignore the error "Invalid AABB inAABB" that happens when 'scroll.verticalNormalizedPosition = 1f' (happens only in the tests)
         EventCardComponentModel testEventInfo = CreateTestEventModel("1");
 
         // Act
@@ -85,10 +83,12 @@ public class ExploreEventsCommonTests
     }
 
     [Test]
-    public void CreateEventCardModelFromAPIEventCorrectly()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void CreateEventCardModelFromAPIEventCorrectly(bool isWorld)
     {
         // Arrange
-        EventFromAPIModel testEventFromAPI = CreateTestEventFromAPI("1");
+        EventFromAPIModel testEventFromAPI = CreateTestEventFromAPI("1", isWorld);
 
         // Act
         EventCardComponentModel eventCardModel = new EventCardComponentModel();
@@ -110,6 +110,7 @@ public class ExploreEventsCommonTests
         Assert.AreEqual(false, eventCardModel.isSubscribed);
         Assert.AreEqual(new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]), eventCardModel.coords);
         Assert.AreEqual(testEventFromAPI, eventCardModel.eventFromAPIInfo);
+        Assert.AreEqual(testEventFromAPI.server, isWorld ? eventCardModel.worldAddress : null);
     }
 
     private EventCardComponentModel CreateTestEventModel(string id)
@@ -143,16 +144,22 @@ public class ExploreEventsCommonTests
                 live = true,
                 name = "Test Name",
                 next_start_at = "Test Start",
-                realm = "Test Realm",
+                server = "Test Realm",
                 scene_name = "Test Scene Name",
                 total_attendees = 100,
                 trending = false,
-                user_name = "Test User Name"
+                user_name = "Test User Name",
+                categories = new []{ "art" },
+                recurrent = false,
+                duration = 7200000,
+                start_at = "2023-07-18T23:00:00.000Z",
+                recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
+                world = false,
             }
         };
     }
 
-    private EventFromAPIModel CreateTestEventFromAPI(string id)
+    private EventFromAPIModel CreateTestEventFromAPI(string id, bool isWorld)
     {
         return new EventFromAPIModel
         {
@@ -166,11 +173,17 @@ public class ExploreEventsCommonTests
             live = true,
             name = "Test Name",
             next_start_at = "2021-09-30T11:11:00.000Z",
-            realm = null,
+            server = isWorld ? "test-world" : null,
             scene_name = "Test Scene Name",
             total_attendees = 100,
             trending = false,
-            user_name = "Test User Name"
+            user_name = "Test User Name",
+            categories = new []{ "art" },
+            recurrent = false,
+            duration = 7200000,
+            start_at = "2023-07-18T23:00:00.000Z",
+            recurrent_dates = new []{ "2023-07-18T23:00:00.000Z" },
+            world = isWorld,
         };
     }
 }

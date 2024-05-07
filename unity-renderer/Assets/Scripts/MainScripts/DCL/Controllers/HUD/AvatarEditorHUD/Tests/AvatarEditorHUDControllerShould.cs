@@ -1,5 +1,7 @@
 using DCL;
+using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Models.AvatarAssets.Tests.Helpers;
 using NSubstitute;
 using NUnit.Framework;
@@ -14,7 +16,7 @@ namespace AvatarEditorHUD_Tests
     public class AvatarEditorHUDControllerShould : IntegrationTestSuite_Legacy
     {
         private const string EYEBROWS_ID = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01";
-        private const string FEMALE_CATGLASSES_ID = "urn:decentraland:off-chain:base-avatars:f_glasses_cat_style";
+        private const string FEMALE_CAT_GLASSES_ID = "urn:decentraland:off-chain:base-avatars:f_glasses_cat_style";
 
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
@@ -23,6 +25,7 @@ namespace AvatarEditorHUD_Tests
         private ColorList hairColorList;
         private ColorList eyeColorList;
         private IAnalytics analytics;
+        private IEmotesService emotesService;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -43,6 +46,8 @@ namespace AvatarEditorHUD_Tests
             IUserProfileBridge userProfileBridge = Substitute.For<IUserProfileBridge>();
             userProfileBridge.GetOwn().Returns(userProfile);
 
+            emotesService = Substitute.For<IEmotesService>();
+
             controller = new AvatarEditorHUDController_Mock(DataStore.i.featureFlags, analytics, wearablesCatalogService,
                 userProfileBridge);
 
@@ -50,19 +55,19 @@ namespace AvatarEditorHUD_Tests
             //       into AvatarEditorHUDController and we would be able to replace the GetThirdPartyCollections() call by a mocked one in this test, allowing us to avoid
             //       the use of 'collectionsAlreadyLoaded = true'.
             controller.collectionsAlreadyLoaded = true;
-            controller.Initialize();
+            controller.Initialize(false, Substitute.For<IPreviewCameraRotationController>());
             controller.SetVisibility(true);
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>() { },
-                }
+                    wearables = new List<string>(),
+                },
             });
 
             controller.avatarIsDirty = false;
@@ -79,15 +84,15 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void AutofillMandatoryCategoriesIfNotProvided()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>() { },
-                }
+                    wearables = new List<string>(),
+                },
             });
 
             var categoriesEquiped = controller.myModel.wearables.Select(x => x.data.category).ToArray();
@@ -101,36 +106,36 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void ReplaceNotSupportedWearablesWhenChangingBodyShape()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>()
+                    wearables = new List<string>
                     {
-                        FEMALE_CATGLASSES_ID
+                        FEMALE_CAT_GLASSES_ID,
                     },
-                }
+                },
             });
 
             controller.WearableClicked(WearableLiterals.BodyShapes.MALE);
 
-            Assert.False(controller.myModel.wearables.Any(x => x.id == FEMALE_CATGLASSES_ID));
+            Assert.False(controller.myModel.wearables.Any(x => x.id == FEMALE_CAT_GLASSES_ID));
         }
 
         [Test]
         public void LoadUserProfileByConstructor()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>()
+                    wearables = new List<string>
                     {
                         EYEBROWS_ID,
                         "urn:decentraland:off-chain:base-avatars:f_eyes_00",
@@ -138,12 +143,12 @@ namespace AvatarEditorHUD_Tests
                         "urn:decentraland:off-chain:base-avatars:f_african_leggins",
                         "urn:decentraland:off-chain:base-avatars:f_mouth_00",
                         "urn:decentraland:off-chain:base-avatars:blue_bandana",
-                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt",
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
-                }
+                },
             });
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
@@ -152,14 +157,14 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void ReactToUserProfileUpdate()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>()
+                    wearables = new List<string>
                     {
                         EYEBROWS_ID,
                         "urn:decentraland:off-chain:base-avatars:f_eyes_00",
@@ -167,12 +172,12 @@ namespace AvatarEditorHUD_Tests
                         "urn:decentraland:off-chain:base-avatars:f_african_leggins",
                         "urn:decentraland:off-chain:base-avatars:f_mouth_00",
                         "urn:decentraland:off-chain:base-avatars:blue_bandana",
-                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt",
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
-                }
+                },
             });
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
@@ -259,14 +264,14 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void SaveAvatarProperly()
         {
-            userProfile.UpdateData(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel
             {
                 name = "name",
                 email = "mail",
-                avatar = new AvatarModel()
+                avatar = new AvatarModel
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                    wearables = new List<string>()
+                    wearables = new List<string>
                     {
                         EYEBROWS_ID,
                         "urn:decentraland:off-chain:base-avatars:f_eyes_00",
@@ -274,12 +279,12 @@ namespace AvatarEditorHUD_Tests
                         "urn:decentraland:off-chain:base-avatars:f_african_leggins",
                         "urn:decentraland:off-chain:base-avatars:f_mouth_00",
                         "urn:decentraland:off-chain:base-avatars:blue_bandana",
-                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt",
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
                     eyeColor = eyeColorList.colors[0],
-                }
+                },
             });
 
             controller.WearableClicked(WearableLiterals.BodyShapes.MALE);
@@ -308,9 +313,9 @@ namespace AvatarEditorHUD_Tests
                 {
                     category = WearableLiterals.Categories.EYES,
                     tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
-                    representations = new WearableItem.Representation[] { }
+                    representations = new WearableItem.Representation[] { },
                 },
-                i18n = new i18n[] { new i18n { code = "en", text = "testWearableId1" } }
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableId1" } },
             };
 
             WearableItem newTestWearableequipped1 = new WearableItem
@@ -321,9 +326,9 @@ namespace AvatarEditorHUD_Tests
                 {
                     category = WearableLiterals.Categories.FEET,
                     tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
-                    representations = new WearableItem.Representation[] { }
+                    representations = new WearableItem.Representation[] { },
                 },
-                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped1" } }
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped1" } },
             };
 
             WearableItem newTestWearableequipped2 = new WearableItem
@@ -334,9 +339,9 @@ namespace AvatarEditorHUD_Tests
                 {
                     category = WearableLiterals.Categories.FEET,
                     tags = new[] { WearableLiterals.Tags.BASE_WEARABLE },
-                    representations = new WearableItem.Representation[] { }
+                    representations = new WearableItem.Representation[] { },
                 },
-                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped2" } }
+                i18n = new i18n[] { new i18n { code = "en", text = "testWearableIdEquipped2" } },
             };
 
             wearablesCatalogService.WearablesCatalog.Add(alreadyExistingTestWearable.id, alreadyExistingTestWearable);
@@ -345,14 +350,14 @@ namespace AvatarEditorHUD_Tests
 
             List<string> oldWearables = new List<string>
             {
-                alreadyExistingTestWearable.id
+                alreadyExistingTestWearable.id,
             };
 
             List<string> newWearables = new List<string>
             {
                 alreadyExistingTestWearable.id,
                 newTestWearableequipped1.id,
-                newTestWearableequipped2.id
+                newTestWearableequipped2.id,
             };
 
             // Act

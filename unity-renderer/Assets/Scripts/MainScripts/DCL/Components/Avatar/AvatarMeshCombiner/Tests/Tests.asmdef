@@ -1,33 +1,34 @@
 {
-  "name": "AvatarMeshCombinerTests",
-  "rootNamespace": "",
-  "references": [
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:59a84c943ce672c4695df742fcdd6d20",
-    "GUID:f070f44586498a44c9e6d2ea3e166379",
-    "GUID:a3ceb534947fac14da25035bc5c24788",
-    "GUID:b24824f3bc2a60641a01e2083614f802",
-    "GUID:b308ae946900fa04080222d7daf47d9a",
-    "GUID:e9cee4050cfa5534d9b26e2782df20be",
-    "GUID:ee6523961ef177343ad763fcd55c7c46",
-    "GUID:82873c2d9c9cbe94391e6b33e5153865",
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
-    "GUID:54b09a4a10c111e46a817873fcea53fe",
-    "GUID:08b2edf8f14cdd3408988fd7746b749c"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "AvatarMeshCombinerTests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:59a84c943ce672c4695df742fcdd6d20",
+        "GUID:f070f44586498a44c9e6d2ea3e166379",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:b308ae946900fa04080222d7daf47d9a",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be",
+        "GUID:ee6523961ef177343ad763fcd55c7c46",
+        "GUID:82873c2d9c9cbe94391e6b33e5153865",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:3b80b0b562b1cbc489513f09fc1b8f69",
+        "GUID:08b2edf8f14cdd3408988fd7746b749c",
+        "GUID:fbcc413e192ef9048811d47ab0aca0c0",
+        "GUID:c27391cd3f3b5aeb4b4c45372ede8043"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

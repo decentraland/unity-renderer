@@ -35,7 +35,13 @@ namespace DCL.ECSComponents.Test
             gameObject = new GameObject();
             entity = Substitute.For<IDCLEntity>();
             scene = Substitute.For<IParcelScene>();
-            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(DataStore.i,Settings.i, AssetPromiseKeeper_AudioClip.i, CommonScriptableObjects.sceneNumber, Substitute.For<IInternalECSComponent<InternalAudioSource>>());
+            audioSourceComponentHandler = new ECSAudioSourceComponentHandler(
+                DataStore.i,
+                Settings.i,
+                AssetPromiseKeeper_AudioClip.i,
+                CommonScriptableObjects.sceneNumber,
+                Substitute.For<IInternalECSComponent<InternalAudioSource>>(),
+                Substitute.For<IInternalECSComponent<InternalSceneBoundsCheck>>());
 
             entity.entityId.Returns(1);
             entity.gameObject.Returns(gameObject);
@@ -59,7 +65,7 @@ namespace DCL.ECSComponents.Test
         }
 
         [Test]
-        public void VolumeWhenAudioCreatedWithNoUserInScene()
+        public void AudioMutedWhenCreatedWithNoUserInScene()
         {
             // Arrange
             CommonScriptableObjects.sceneNumber.Set(6);
@@ -75,13 +81,14 @@ namespace DCL.ECSComponents.Test
         }
 
         [Test]
-        public void VolumeWhenAudioCreatedWithUserInScene()
+        public void AudioNotMutedWhenCreatedWithUserInScene()
         {
             // Arrange
             CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             PBAudioSource model = CreateAudioSourceModel();
             model.Volume = 1f;
+            model.Playing = true;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
@@ -91,14 +98,15 @@ namespace DCL.ECSComponents.Test
         }
 
         [Test]
-        public void VolumeIsMutedWhenUserLeavesScene()
+        public void AudioMutedWhenUserLeavesScene()
         {
             // Arrange
             CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
-
             PBAudioSource model = CreateAudioSourceModel();
             model.Volume = 1f;
+            model.Playing = true;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
 
             // Act
             CommonScriptableObjects.sceneNumber.Set(6);
@@ -107,25 +115,52 @@ namespace DCL.ECSComponents.Test
             Assert.AreEqual(0f, audioSourceComponentHandler.audioSource.volume);
         }
 
-        [Test]
-        public void VolumeIsUnmutedWhenUserEntersScene()
+        [UnityTest]
+        public IEnumerator AudioUnmutedWhenUserEntersScene()
         {
             // Arrange
             CommonScriptableObjects.sceneNumber.Set(6);
 
             PBAudioSource model = CreateAudioSourceModel();
             model.Volume = 1f;
+            model.Playing = true;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            Assert.AreEqual(0f, audioSourceComponentHandler.audioSource.volume);
 
             // Act
             CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
 
             // Assert
+            yield return new WaitUntil( () => audioSourceComponentHandler.promiseAudioClip.state == AssetPromiseState.FINISHED);
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioUnmutedWhenUserReEntersScene()
+        {
+            // Play audio with user inside scene
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
+
+            PBAudioSource model = CreateAudioSourceModel();
+            model.Volume = 1f;
+            model.Playing = true;
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+            yield return new WaitUntil( () => audioSourceComponentHandler.promiseAudioClip.state == AssetPromiseState.FINISHED);
+
+            Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
+
+            // Change user scene
+            CommonScriptableObjects.sceneNumber.Set(6);
+            Assert.AreEqual(0f, audioSourceComponentHandler.audioSource.volume);
+
+            // Return user to entity scene
+            CommonScriptableObjects.sceneNumber.Set(scene.sceneData.sceneNumber);
             Assert.AreEqual(1f, audioSourceComponentHandler.audioSource.volume);
         }
 
         [Test]
-        public void VolumeIsNotMutedForPersistentScenes()
+        public void AudioIsNotMutedForPersistentScenes()
         {
             // Arrange
             scene.Configure().isPersistent.Returns(true);
@@ -133,6 +168,7 @@ namespace DCL.ECSComponents.Test
 
             PBAudioSource model = CreateAudioSourceModel();
             model.Volume = 1f;
+            model.Playing = true;
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Act

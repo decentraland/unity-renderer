@@ -1,12 +1,10 @@
-using DCL.Social.Chat;
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatChannelComponentView : BaseComponentView, IChatChannelWindowView, IComponentModelConfig<PublicChatModel>,
         IPointerDownHandler
@@ -43,6 +41,7 @@ namespace DCL.Chat.HUD
         public event Action OnShowMembersList;
         public event Action OnHideMembersList;
         public event Action<bool> OnMuteChanged;
+        public event Action<string> OnCopyNameRequested;
 
         public bool IsActive => gameObject.activeInHierarchy;
         public IChatHUDComponentView ChatHUD => chatView;
@@ -57,6 +56,7 @@ namespace DCL.Chat.HUD
             backButton.onClick.AddListener(() => OnBack?.Invoke());
             closeButton.onClick.AddListener(() => OnClose?.Invoke());
             contextualMenu.OnLeave += () => OnLeaveChannel?.Invoke();
+            contextualMenu.OnNameCopied += s => OnCopyNameRequested?.Invoke(s);
             optionsButton.onClick.AddListener(ShowOptionsMenu);
             // TODO: It was decided to temporally remove the loading of the channel's history. We'll re-enable it later.
             //scroll.onValueChanged.AddListener(scrollPos =>

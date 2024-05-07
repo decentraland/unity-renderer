@@ -24,7 +24,7 @@ namespace DCL.ECSComponents
             var containerData = internalUiContainer.GetFor(scene, entity);
             if (containerData != null)
             {
-                var containerModel = containerData.model;
+                var containerModel = containerData.Value.model;
                 containerModel.components.Remove(componentId);
 
                 // do parent detach only if not child of root entity
@@ -52,8 +52,8 @@ namespace DCL.ECSComponents
                 containerModel.parentElement?.Remove(containerModel.rootElement);
                 containerModel.parentElement = null;
             }
-            containerModel.shouldSort = containerModel.rigthOf != model.RightOf;
-            containerModel.rigthOf = model.RightOf;
+            containerModel.shouldSort = containerModel.rightOf != model.RightOf;
+            containerModel.rightOf = model.RightOf;
 
             VisualElement element = containerModel.rootElement;
 
@@ -65,6 +65,9 @@ namespace DCL.ECSComponents
         {
             element.style.display = GetDisplay(model.Display);
             element.style.overflow = GetOverflow(model.Overflow);
+
+            // Pointer blocking
+            element.pickingMode = model.PointerFilter == PointerFilterMode.PfmBlock ? PickingMode.Position : PickingMode.Ignore;
 
             // Flex
             element.style.flexDirection = GetFlexDirection(model.FlexDirection);
@@ -86,11 +89,11 @@ namespace DCL.ECSComponents
             // Layout size
             if (model.HeightUnit != YGUnit.YguUndefined)
             {
-                element.style.height = new Length(model.Height, GetUnit(model.HeightUnit));
+                element.style.height = model.HeightUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.Height, GetUnit(model.HeightUnit));
             }
             if (model.WidthUnit != YGUnit.YguUndefined)
             {
-                element.style.width = new Length(model.Width, GetUnit(model.WidthUnit));
+                element.style.width = model.WidthUnit == YGUnit.YguAuto ? new StyleLength(StyleKeyword.Auto) : new Length(model.Width, GetUnit(model.WidthUnit));
             }
             if (model.MaxWidthUnit != YGUnit.YguUndefined)
             {

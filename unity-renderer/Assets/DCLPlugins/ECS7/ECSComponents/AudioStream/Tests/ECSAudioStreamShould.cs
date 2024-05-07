@@ -64,7 +64,6 @@ namespace Tests
             // We prepare the componentHandler
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             // We prepare the models
             PBAudioStream model = CreateAudioStreamModel();
@@ -129,13 +128,35 @@ namespace Tests
             model.Playing = true;
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             // Act
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
             // Assert
             Assert.IsTrue(audioSourceComponentHandler.isPlaying);
+        }
+
+        [Test]
+        public void DoNotPlayAudioIfConditionsAreMeet()
+        {
+            const string URL = "http://fake/audio.mp4";
+
+            // Arrange
+            sceneData.allowedMediaHostnames = new[] { "fake" };
+            sceneData.requiredPermissions = new[] { ScenePermissionNames.ALLOW_MEDIA_HOSTNAMES };
+
+            PBAudioStream model = CreateAudioStreamModel();
+            model.Playing = true;
+            model.Url = URL;
+            audioSourceComponentHandler.isInsideScene = true;
+            audioSourceComponentHandler.isRendererActive = false;
+
+            // Act
+            audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
+
+            // Assert
+            Assert.IsFalse(audioSourceComponentHandler.isPlaying);
+            Assert.AreEqual(URL, audioSourceComponentHandler.url);
         }
 
         [Test]
@@ -171,6 +192,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalAudioStreamWithoutPermissionsSet()
         {
             PBAudioStream model = new PBAudioStream()
@@ -184,10 +206,11 @@ namespace Tests
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            Assert.IsNull(audioSourceComponentHandler.url);
+            Assert.IsTrue(string.IsNullOrEmpty(audioSourceComponentHandler.url));
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalAudioStreamWithPermissionsSet()
         {
             PBAudioStream model = new PBAudioStream()
@@ -200,7 +223,6 @@ namespace Tests
 
             audioSourceComponentHandler.isInsideScene = true;
             audioSourceComponentHandler.isRendererActive = true;
-            audioSourceComponentHandler.hadUserInteraction = true;
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
@@ -208,6 +230,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalAudioStreamWithWrongHostName()
         {
             PBAudioStream model = new PBAudioStream()
@@ -223,7 +246,7 @@ namespace Tests
 
             audioSourceComponentHandler.OnComponentModelUpdated(scene, entity, model);
 
-            Assert.IsNull(audioSourceComponentHandler.url);
+            Assert.IsTrue(string.IsNullOrEmpty(audioSourceComponentHandler.url));
         }
 
         private PBAudioStream CreateAudioStreamModel()

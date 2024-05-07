@@ -3,6 +3,9 @@ import { CommsEvents, RoomConnection } from '../interface'
 import mitt from 'mitt'
 import { AdapterMessageEvent, MinimumCommunicationsAdapter } from '../adapters/types'
 import { VoiceHandler } from 'shared/voiceChat/VoiceHandler'
+import { incrementCommsMessageSent } from 'shared/session/getPerformanceInfo'
+import { getPositionSpawnPointAndScene } from 'shared/scene-loader/selectors'
+import { store } from 'shared/store/isolatedStore'
 
 /**
  * This class implements Rfc4 on top of a ICommsTransport. The idea behind it is
@@ -111,10 +114,16 @@ export class Rfc4RoomConnection implements RoomConnection {
   }
 
   private async sendMessage(reliable: boolean, topicMessage: proto.Packet) {
-    if (Object.keys(topicMessage).length === 0) {
+    if (Object.keys(topicMessage).length === 0 || !topicMessage.message?.$case) {
       throw new Error('Invalid message')
     }
+
+    const state = store.getState()
+    const sceneData = getPositionSpawnPointAndScene(state)
+
     const bytes = proto.Packet.encode(topicMessage as any).finish()
+    incrementCommsMessageSent(topicMessage.message?.$case, bytes.length, sceneData.sceneId)
+
     if (!this.transport) debugger
     this.transport.send(bytes, { reliable })
   }

@@ -134,13 +134,18 @@ namespace DCL.Helpers
         }
 
         private const int MAX_TRANSFORM_VALUE = 10000;
+        private const float MIN_TRANSFORM_SCALE_Z_VALUE = 0.00001f;
 
         public static void CapGlobalValuesToMax(this Transform transform)
         {
             bool positionOutsideBoundaries = transform.position.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
             bool scaleOutsideBoundaries = transform.lossyScale.sqrMagnitude > MAX_TRANSFORM_VALUE * MAX_TRANSFORM_VALUE;
 
-            if (positionOutsideBoundaries || scaleOutsideBoundaries)
+            //Extra check to prevent rendering artifacts when bloom is on
+            //More description: https://github.com/decentraland/unity-renderer/issues/5698
+            bool scaleZAxisBelowMinimum = Mathf.Abs(transform.localScale.z) < MIN_TRANSFORM_SCALE_Z_VALUE;
+
+            if (positionOutsideBoundaries || scaleOutsideBoundaries || scaleZAxisBelowMinimum)
             {
                 Vector3 newPosition = transform.position;
 
@@ -158,7 +163,7 @@ namespace DCL.Helpers
 
                 Vector3 newScale = transform.lossyScale;
 
-                if (scaleOutsideBoundaries)
+                if (scaleOutsideBoundaries || scaleZAxisBelowMinimum)
                 {
                     if (Mathf.Abs(newScale.x) > MAX_TRANSFORM_VALUE)
                         newScale.x = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.x);
@@ -168,9 +173,11 @@ namespace DCL.Helpers
 
                     if (Mathf.Abs(newScale.z) > MAX_TRANSFORM_VALUE)
                         newScale.z = MAX_TRANSFORM_VALUE * Mathf.Sign(newScale.z);
+                    else if (scaleZAxisBelowMinimum)
+                        newScale.z = MIN_TRANSFORM_SCALE_Z_VALUE * Mathf.Sign(newScale.z == 0 ? 1 : newScale.z);
                 }
 
-                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries);
+                SetTransformGlobalValues(transform, newPosition, transform.rotation, newScale, scaleOutsideBoundaries || scaleZAxisBelowMinimum);
             }
         }
 
@@ -454,7 +461,7 @@ namespace DCL.Helpers
 
             public static T GetFromJsonArray(string jsonArray)
             {
-                string newJson = $"{{ \"value\": {jsonArray}}}";
+                var newJson = $"{{ \"value\": {jsonArray}}}";
                 return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
@@ -684,7 +691,7 @@ namespace DCL.Helpers
         {
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStampMilliseconds).ToLocalTime();
-            return $"{dtDateTime.Hour}:{dtDateTime.Minute.ToString("D2")}";
+            return $"{dtDateTime.Hour}:{dtDateTime.Minute:D2}";
         }
 
         public static DateTime UnixToDateTimeWithTime(ulong unixTimeStampMilliseconds)
@@ -698,9 +705,13 @@ namespace DCL.Helpers
 
         public static Vector2Int ConvertStringToVector(string input)
         {
-            Match match = COORDINATES_REGEX.Match(input);
+            Match match = COORDINATES_REGEX.Match(input.Replace(" ",""));
 
-            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y)) { throw new Exception("Coordinates parsing error"); }
+            if (!int.TryParse(match.Groups[1].Value, out int x) || !int.TryParse(match.Groups[2].Value, out int y))
+            {
+                Debug.LogError("Coordinates parsing error for coords " + input);
+                return new Vector2Int(0, 0);
+            }
 
             return new Vector2Int(x, y);
         }
@@ -724,6 +735,36 @@ namespace DCL.Helpers
             });
 
             return tween.ToUniTask(tweenCancelBehaviour: completeWhenCancel ? TweenCancelBehaviour.Complete : TweenCancelBehaviour.Kill, cancellationToken: cancellationToken);
+        }
+
+        public static List<T> RemoveDuplicatesFromList<T>(List<T> items)
+        {
+            List<T> result = new List<T>();
+            for (int i = 0; i < items.Count; i++)
+            {
+                bool duplicate = false;
+                for (int z = 0; z < i; z++)
+                {
+                    if (Equals(items[z], items[i]))
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate)
+                {
+                    result.Add(items[i]);
+                }
+            }
+            return result;
+        }
+
+        public static T[] RemoveDuplicatesFromArray<T>(T[] s)
+        {
+            HashSet<T> set = new HashSet<T>(s);
+            T[] result = new T[set.Count];
+            set.CopyTo(result);
+            return result;
         }
     }
 }

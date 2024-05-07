@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Networking;
+using Environment = DCL.Environment;
 
 namespace MainScripts.DCL.Controllers.HotScenes
 {
@@ -53,6 +55,24 @@ namespace MainScripts.DCL.Controllers.HotScenes
         {
             WebInterface.FetchHotScenes();
             return source.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        public async UniTask<IReadOnlyList<IHotScenesController.HotWorldInfo.WorldInfo>> GetHotWorldsListAsync(CancellationToken cancellationToken)
+        {
+            UnityWebRequest result = await Environment.i.platform.webRequest.GetAsync("https://worlds-content-server.decentraland.org/live-data", cancellationToken: cancellationToken);
+
+            if (result.result != UnityWebRequest.Result.Success)
+                throw new Exception($"Error fetching hot world info:\n{result.error}");
+
+            var response = Utils.SafeFromJson<IHotScenesController.HotWorldInfo>(result.downloadHandler.text);
+
+            if (response == null)
+                throw new Exception($"Error parsing hot world info:\n{result.downloadHandler.text}");
+
+            if (response.data == null)
+                throw new Exception($"No worlds info retrieved:\n{result.downloadHandler.text}");
+
+            return response.data.perWorld != null ? response.data.perWorld : new List<IHotScenesController.HotWorldInfo.WorldInfo>();
         }
 
         [UsedImplicitly]

@@ -38,6 +38,8 @@ namespace DCL.Controllers
         public bool isPortableExperience { get; set; } = false;
 
         public float loadingProgress { get; private set; }
+        public SceneContentCategory contentCategory { get; private set; }
+        public string associatedPlaceId { get; private set; }
 
         [System.NonSerialized]
         public string sceneName;
@@ -94,19 +96,10 @@ namespace DCL.Controllers
                 baseUrl = data.baseUrl,
                 contents = data.contents,
                 sceneCid = data.id,
+                baseUrlBundles = data.baseUrlBundles,
             };
 
             contentProvider.BakeHashes();
-
-            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
-            {
-                var sceneAb = await FetchSceneAssetBundles(data.id, data.baseUrlBundles);
-                if (sceneAb.IsSceneConverted())
-                {
-                    contentProvider.assetBundles = sceneAb.GetConvertedFiles();
-                    contentProvider.assetBundlesBaseUrl = sceneAb.GetBaseUrl();
-                }
-            }
 
             SetupPositionAndParcels();
 
@@ -116,14 +109,6 @@ namespace DCL.Controllers
             metricsCounter.Enable();
 
             OnSetData?.Invoke(data);
-        }
-
-        private async UniTask<Asset_SceneAB> FetchSceneAssetBundles(string sceneId, string dataBaseUrlBundles)
-        {
-            AssetPromise_SceneAB promiseSceneAb = new AssetPromise_SceneAB(dataBaseUrlBundles, sceneId);
-            AssetPromiseKeeper_SceneAB.i.Keep(promiseSceneAb);
-            await promiseSceneAb.ToUniTask();
-            return promiseSceneAb.asset;
         }
 
         void SetupPositionAndParcels()
@@ -627,7 +612,7 @@ namespace DCL.Controllers
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
                     return $"{baseState}:{prettyName} - {sceneLifecycleHandler.sceneResourcesLoadTracker.GetStateString()}";
                 case SceneLifecycleHandler.State.READY:
-                    return $"{baseState}:{prettyName} - ready!";
+                    return $"{baseState}:{prettyName} - ready! ({(contentCategory != SceneContentCategory.TEEN ? contentCategory.ToString() : string.Empty)})";
             }
 
             return $"scene:{prettyName} - no state?";
@@ -692,5 +677,11 @@ namespace DCL.Controllers
             return sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY
                    || sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS;
         }
+
+        public void SetContentCategory(SceneContentCategory category) =>
+            contentCategory = category;
+
+        public void SetAssociatedPlace(string placeId) =>
+            associatedPlaceId = placeId;
     }
 }

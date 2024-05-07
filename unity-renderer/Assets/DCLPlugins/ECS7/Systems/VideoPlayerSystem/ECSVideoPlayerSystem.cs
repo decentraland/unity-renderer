@@ -1,4 +1,5 @@
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -19,7 +20,9 @@ namespace ECSSystems.VideoPlayerSystem
 
         private readonly IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent;
-        private readonly IECSComponentWriter componentWriter;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+        private readonly WrappedComponentPool<IWrappedComponent<PBVideoEvent>> videoPool;
         private Dictionary<IDCLEntity, VideoEventData> videoEvents = new Dictionary<IDCLEntity, VideoEventData>();
 
         private static readonly Vector2 VIDEO_TEXTURE_SCALE = new Vector2(1, -1);
@@ -27,11 +30,15 @@ namespace ECSSystems.VideoPlayerSystem
         public ECSVideoPlayerSystem(
             IInternalECSComponent<InternalVideoPlayer> videoPlayerComponent,
             IInternalECSComponent<InternalVideoMaterial> videoMaterialComponent,
-            IECSComponentWriter componentWriter)
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBVideoEvent>> videoPool)
         {
             this.videoPlayerComponent = videoPlayerComponent;
             this.videoMaterialComponent = videoMaterialComponent;
-            this.componentWriter = componentWriter;
+            this.engineInfoComponent = engineInfoComponent;
+            this.componentsWriter = componentsWriter;
+            this.videoPool = videoPool;
         }
 
         public void Update()
@@ -49,6 +56,7 @@ namespace ECSSystems.VideoPlayerSystem
             }
 
             var allMaterialComponent = videoMaterialComponent.GetForAll();
+
             for (int i = allMaterialComponent.Count - 1; i >= 0; --i)
             {
                 var materialComponentData = allMaterialComponent[i].value;
@@ -58,14 +66,18 @@ namespace ECSSystems.VideoPlayerSystem
 
         private void UpdateVideoEvent(InternalVideoPlayer videoPlayerModel, ECSComponentData<InternalVideoPlayer> videoPlayerComponentData)
         {
+            int sceneNumber = videoPlayerComponentData.scene.sceneData.sceneNumber;
+            componentsWriter.TryGetValue(sceneNumber, out var writer);
+
             if (videoPlayerModel.removed)
             {
-                componentWriter.RemoveComponent(videoPlayerComponentData.scene.sceneData.sceneNumber, videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT);
+                writer?.Remove(videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT);
                 videoEvents.Remove(videoPlayerComponentData.entity);
                 return;
             }
 
             bool videoEventExists = videoEvents.TryGetValue(videoPlayerComponentData.entity, out VideoEventData videoEvent);
+
             if (!videoEventExists)
             {
                 videoEvent = new VideoEventData()
@@ -77,6 +89,7 @@ namespace ECSSystems.VideoPlayerSystem
 
             int previousVideoState = videoEventExists ? (int)videoEvent.videoState : -1;
             int currentVideoState = (int)videoPlayerModel.videoPlayer.GetState();
+
             if (previousVideoState != currentVideoState)
             {
                 videoEvent.timeStamp++;
@@ -86,23 +99,24 @@ namespace ECSSystems.VideoPlayerSystem
                 videoEvents[videoPlayerComponentData.entity] = videoEvent;
 
                 // Update GrowOnlyValueSet VideoEvent component for the video player entity
-                componentWriter.AppendComponent(
-                    videoPlayerComponentData.scene.sceneData.sceneNumber,
-                    videoPlayerComponentData.entity.entityId,
-                    ComponentID.VIDEO_EVENT,
-                    new PBVideoEvent()
-                    {
-                        State = videoEvent.videoState,
-                        CurrentOffset = videoPlayerModel.videoPlayer.GetTime(),
-                        VideoLength = videoPlayerModel.videoPlayer.GetDuration(),
-                        Timestamp = videoEvent.timeStamp
-                    },
-                    ECSComponentWriteType.SEND_TO_SCENE | ECSComponentWriteType.WRITE_STATE_LOCALLY
-                );
+                if (writer == null)
+                    return;
+
+                var scene = videoPlayerComponentData.scene;
+
+                var pooledModel = videoPool.Get();
+                var model = pooledModel.WrappedComponent.Model;
+                model.State = videoEvent.videoState;
+                model.CurrentOffset = videoPlayerModel.videoPlayer.GetTime();
+                model.VideoLength = videoPlayerModel.videoPlayer.GetDuration();
+                model.Timestamp = videoEvent.timeStamp;
+                model.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
+
+                writer.Append(videoPlayerComponentData.entity.entityId, ComponentID.VIDEO_EVENT, pooledModel);
             }
         }
 
-        private void UpdateVideoMaterial( ECSComponentData<InternalVideoMaterial> materialComponentData, InternalVideoMaterial model,  IList<InternalVideoMaterial.VideoTextureData> texturesData)
+        private void UpdateVideoMaterial(ECSComponentData<InternalVideoMaterial> materialComponentData, InternalVideoMaterial model, IList<InternalVideoMaterial.VideoTextureData> texturesData)
         {
             for (int j = texturesData.Count - 1; j >= 0; --j)
             {
@@ -111,7 +125,7 @@ namespace ECSSystems.VideoPlayerSystem
 
                 if (playerComponent != null)
                 {
-                    var playerModel = playerComponent.model;
+                    var playerModel = playerComponent.Value.model;
                     var videoTexture = playerModel.videoPlayer.texture;
 
                     if (!IsMaterialAssigned(playerModel, model, textureData.textureType) && videoTexture != null)

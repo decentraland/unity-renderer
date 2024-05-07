@@ -15,13 +15,13 @@ This repository contains the reference implementation of the [decentraland explo
     git lfs pull
 
 * The [Unity](https://unity.com) engine and IDE, currently using version 2021.3.14f1
-* [node.js](https://nodejs.com), version 16 or later
+* [node.js](https://nodejs.org), version 16 or later
 
 ### Steps
 
 Check: [Multiplatform in Editor](docs/multiplatform-in-editor.md)
 
-1. Download and install Unity 2021.3.14f1
+1. Download and install Unity 2022.3.6f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `DebugConfig` GameObject.
 4. On `DebugConfig` inspector, make sure that `Base url mode` is set to `Custom`
@@ -88,10 +88,10 @@ This is the most useful debugging scenario for advanced feature implementation.
 ### Steps
 
 1. Make sure you have the proper Unity version up and running
-3. Make sure you are running browser-interface through `make watch` command on `browser-interface` path.
-4. Back in unity editor, open the `DebugConfig` component inspector of `InitialScene`
-5. Make sure that the component is setup correctly
-6. Hit 'Play' button
+2. Make sure you are running browser-interface through `make watch` command on `browser-interface` path.
+3. Back in unity editor, open the `DebugConfig` component inspector of `InitialScene`
+4. Make sure that the component is setup correctly
+5. Hit 'Play' button
 
 ## Debug with browsers + local Unity build
 
@@ -102,16 +102,16 @@ When the steps are followed, you will be able to run the local Unity build by go
 ### Steps
 
 1. Make sure you have the proper Unity version up and running
-3. Make sure you are running browser-interface through `make watch` command.
-4. Produce a Unity wasm targeted build using the Build menu.
-5. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `browser-interface/node_modules/@dcl/unity-renderer`.
-6. Run the browser explorer through `localhost:8080&ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Browser Interface with the build.
-7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
+2. Make sure you are running browser-interface correctly by running `npm install`, `make build-unity-local` and `make watch` commands in that directory and leave that server running.
+3. Produce a Unity wasm targeted build using the Build menu (the build should be named just "unity" to avoid renamings later).
+4. When the build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` may not be necessary) and paste them inside `browser-interface/node_modules/@dcl/explorer`.
+5. Run the browser explorer through `http://localhost:8080/?ENABLE_WEB3`. Now, it should use your local Unity build. Don't mind the white screen at the beginning, that's because the website repo is not being used and it's only loading Browser Interface with the build.
+6. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
 
-Alternatively you can go through these 2 steps after step 3 and load the build locally using `localhost:3000` 
+Alternatively you can go through these steps after step 3 and load the build locally using `localhost:3000` 
 1. Make sure you have the [explorer website repository](https://github.com/decentraland/explorer-website) cloned.
 2. Make sure you have the local website up and running by executing `npm run start:linked` in the cloned repo directory (`npm i` first just in case).
-3. When the WebGL build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/unity-renderer`.
+3. When the WebGL build finishes, copy all the files inside the resulting `/build` folder (`unity.loader.js` is not necessary as we use a modified loader) and paste them inside `explorer-website/node_modules/@dcl/explorer`.
 4. Access using `localhost:3000`
 
 ### Troubleshooting

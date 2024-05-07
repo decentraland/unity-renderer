@@ -44,11 +44,11 @@ namespace MainScripts.DCL.Controllers.AssetManager.Addressables.Editor
             return UniTask.FromResult(request.Result);
         }
 
-        public UniTask<T> Instantiate<T>(string address, string name = "", CancellationToken cancellationToken = default)
+        public UniTask<T> Instantiate<T>(string address, string name = "", Transform parent = null, CancellationToken cancellationToken = default)
         {
             EnsureInitializedSync();
 
-            var request = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(address);
+            var request = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(address, parent);
             request.WaitForCompletion();
 
             if (Application.isEditor && name != default(string))

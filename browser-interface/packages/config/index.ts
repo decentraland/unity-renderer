@@ -1,7 +1,9 @@
 import * as contractInfo from '@dcl/urn-resolver/dist/contracts'
 import { getFeatureFlagEnabled } from 'shared/meta/selectors'
 import { now } from 'lib/javascript/now'
+import { isURL } from 'lib/javascript/isURL'
 import { store } from 'shared/store/isolatedStore'
+import logWrapper from '../lib/logger/wrap'
 
 /**
  * Estimated avatar height
@@ -10,6 +12,9 @@ export const playerHeight = 1.6
 
 // Entry points
 export const PREVIEW: boolean = !!(globalThis as any).preview
+// update logger
+logWrapper()
+
 export const WORLD_EXPLORER = !PREVIEW
 
 export const RENDERER_WS = location.search.includes('ws')
@@ -20,15 +25,20 @@ export const GIF_WORKERS = location.search.includes('GIF_WORKERS')
 
 const qs = new URLSearchParams(location.search)
 
-function ensureQueryStringUrl(value: string | null): string | null {
-  if (!value) return null
-  if (typeof value === 'string') return addHttpsIfNoProtocolIsSet(value)
-  return addHttpsIfNoProtocolIsSet(value[0])
+function ensureQueryStringUrl(value: string | readonly string[] | null): string | null {
+  let url = ensureSingleString(value)
+  if (!url) {
+    return null
+  }
+
+  url = addHttpsIfNoProtocolIsSet(url)
+  return isURL(url) ? url : null
 }
-function ensureSingleString(value: string | string[] | null): string | null {
+
+function ensureSingleString(value: string | readonly string[] | null): string | null {
   if (!value) return null
   if (typeof value === 'string') return value
-  return value[0]
+  return value[0] ?? null
 }
 
 // Comms
@@ -48,9 +58,10 @@ export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
 export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
 export const DEBUG_REDUX_SAGAS = location.search.includes('DEBUG_REDUX_SAGAS')
 export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
-export const DEBUG_KERNEL_LOG = !PREVIEW || location.search.includes('DEBUG_KERNEL_LOG')
+export const DEBUG_KERNEL_LOG = location.search.includes('DEBUG_KERNEL_LOG')
 export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
 export const DEBUG_VOICE_CHAT = location.search.includes('DEBUG_VOICE_CHAT')
+export const DEBUG_LOGS = location.search.includes('DEBUG_LOGS')
 
 export const PIPE_SCENE_CONSOLE = location.search.includes('PIPE_SCENE_CONSOLE')
 
@@ -61,6 +72,7 @@ export const ENGINE_DEBUG_PANEL = location.search.includes('ENGINE_DEBUG_PANEL')
 export const SCENE_DEBUG_PANEL = location.search.includes('SCENE_DEBUG_PANEL') && !ENGINE_DEBUG_PANEL
 export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || location.search.includes('DEBUG_MODE')
 export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
+export const HAS_INITIAL_REALM_MARK = location.search.includes('realm')
 export const WSS_ENABLED = !!ensureSingleString(qs.get('ws'))
 export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
 export const ALLOW_SWIFT_SHADER = location.search.includes('ALLOW_SWIFT_SHADER')
@@ -109,7 +121,7 @@ export const commConfigurations = {
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 'mainnet',
-  GOERLI = 'goerli'
+  SEPOLIA = 'sepolia'
 }
 
 const knownTLDs = ['zone', 'org', 'today']
@@ -193,17 +205,17 @@ export namespace ethereumConfigurations {
     CatalystProxy: assertValue(contractInfo.mainnet.CatalystProxy),
     MANAToken: assertValue(contractInfo.mainnet.MANAToken)
   }
-  export const goerli = {
-    wss: 'wss://rpc.decentraland.org/goerli',
-    http: 'https://rpc.decentraland.org/goerli',
-    etherscan: 'https://goerli.etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-goerli',
+  export const sepolia = {
+    wss: 'wss://rpc.decentraland.org/sepolia',
+    http: 'https://rpc.decentraland.org/sepolia',
+    etherscan: 'https://sepolia.etherscan.io',
+    names: 'https://api.studio.thegraph.com/query/49472/marketplace-sepolia/version/latest',
 
     // contracts
-    LANDProxy: assertValue(contractInfo.goerli.LANDProxy),
-    EstateProxy: assertValue(contractInfo.goerli.EstateProxy),
-    CatalystProxy: assertValue(contractInfo.goerli.CatalystProxy || contractInfo.goerli.Catalyst),
-    MANAToken: assertValue(contractInfo.goerli.MANAToken)
+    LANDProxy: assertValue(contractInfo.sepolia.LANDProxy),
+    EstateProxy: assertValue(contractInfo.sepolia.EstateProxy),
+    CatalystProxy: assertValue(contractInfo.sepolia.Catalyst),
+    MANAToken: assertValue(contractInfo.sepolia.MANAToken)
   }
 }
 

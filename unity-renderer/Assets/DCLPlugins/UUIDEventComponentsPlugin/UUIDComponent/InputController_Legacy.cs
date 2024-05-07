@@ -34,10 +34,8 @@ namespace DCL
             public bool enablePointerEvent;
         }
 
-        private Dictionary<WebInterface.ACTION_BUTTON, List<ButtonListenerCallback>> listeners =
-            new Dictionary<WebInterface.ACTION_BUTTON, List<ButtonListenerCallback>>();
-
-        private List<BUTTON_MAP> buttonsMap = new List<BUTTON_MAP>();
+        private readonly Dictionary<WebInterface.ACTION_BUTTON, List<ButtonListenerCallback>> listeners = new ();
+        private readonly List<BUTTON_MAP> buttonsMap = new ();
 
         public InputController_Legacy()
         {
@@ -185,25 +183,18 @@ namespace DCL
             {
                 BUTTON_MAP btnMap = buttonsMap[i];
 
+                if (CommonScriptableObjects.allUIHidden.Get())
+                    continue;
+
                 switch (btnMap.type)
                 {
-                    case BUTTON_TYPE.MOUSE:
-                        if (CommonScriptableObjects.allUIHidden.Get())
-                            break;
-                        if (Input.GetMouseButtonDown(btnMap.buttonNum))
-                            RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast,
-                                btnMap.enablePointerEvent);
-                        else if (Input.GetMouseButtonUp(btnMap.buttonNum))
-                            RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast, btnMap.enablePointerEvent);
+                    case BUTTON_TYPE.MOUSE when Input.GetMouseButtonDown(btnMap.buttonNum):
+                    case BUTTON_TYPE.KEYBOARD when Input.GetKeyDown((KeyCode)btnMap.buttonNum):
+                        RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast, btnMap.enablePointerEvent);
                         break;
-                    case BUTTON_TYPE.KEYBOARD:
-                        if (CommonScriptableObjects.allUIHidden.Get())
-                            break;
-                        if (Input.GetKeyDown((KeyCode) btnMap.buttonNum))
-                            RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast,
-                                btnMap.enablePointerEvent);
-                        else if (Input.GetKeyUp((KeyCode) btnMap.buttonNum))
-                            RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast, btnMap.enablePointerEvent);
+                    case BUTTON_TYPE.MOUSE when Input.GetMouseButtonUp(btnMap.buttonNum):
+                    case BUTTON_TYPE.KEYBOARD when Input.GetKeyUp((KeyCode)btnMap.buttonNum):
+                        RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast, btnMap.enablePointerEvent);
                         break;
                 }
             }
@@ -211,19 +202,13 @@ namespace DCL
 
         public bool IsPressed(WebInterface.ACTION_BUTTON button)
         {
-            switch (button)
-            {
-                case WebInterface.ACTION_BUTTON.POINTER:
-                    return Input.GetMouseButton(0);
-                case WebInterface.ACTION_BUTTON.PRIMARY:
-                    return Input.GetKey(InputSettings.PrimaryButtonKeyCode);
-                case WebInterface.ACTION_BUTTON.SECONDARY:
-                    return Input.GetKey(InputSettings.SecondaryButtonKeyCode);
-                default: // ANY
-                    return Input.GetMouseButton(0) ||
-                           Input.GetKey(InputSettings.PrimaryButtonKeyCode) ||
-                           Input.GetKey(InputSettings.SecondaryButtonKeyCode);
-            }
+            return button switch
+                   {
+                       WebInterface.ACTION_BUTTON.POINTER => Input.GetMouseButton(0),
+                       WebInterface.ACTION_BUTTON.PRIMARY => Input.GetKey(InputSettings.PrimaryButtonKeyCode),
+                       WebInterface.ACTION_BUTTON.SECONDARY => Input.GetKey(InputSettings.SecondaryButtonKeyCode),
+                       _ => Input.GetMouseButton(0) || Input.GetKey(InputSettings.PrimaryButtonKeyCode) || Input.GetKey(InputSettings.SecondaryButtonKeyCode)
+                   };
         }
 
         public void Dispose()

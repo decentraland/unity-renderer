@@ -50,6 +50,9 @@ export type FeatureFlagsName =
   | 'enable_legacy_comms_v2'
   | 'ab-new-cdn' // enables the new CDN for asset bundles along with the new loader
   | 'decoupled_loading_screen'
+  | 'seamless_login_variant'
+  | 'my_account'
+  | 'main_realm'
 
 export type BannedUsers = Record<string, Ban[]>
 

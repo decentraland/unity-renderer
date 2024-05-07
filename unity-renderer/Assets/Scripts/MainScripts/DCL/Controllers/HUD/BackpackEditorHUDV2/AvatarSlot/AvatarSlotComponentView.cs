@@ -15,6 +15,7 @@ namespace DCL.Backpack
         private const float SHAKE_ANIMATION_TIME = 0.75f;
 
         [SerializeField] internal NftTypeColorSupportingSO typeColorSupporting;
+        [SerializeField] internal NftTypePreviewCameraFocusConfig previewCameraFocus;
         [SerializeField] internal NftTypeIconSO typeIcons;
         [SerializeField] internal RectTransform nftContainer;
         [SerializeField] internal NftRarityBackgroundSO rarityBackgrounds;
@@ -30,20 +31,37 @@ namespace DCL.Backpack
         [SerializeField] internal TMP_Text tooltipHiddenText;
         [SerializeField] internal Button button;
         [SerializeField] internal Button unequipButton;
+        [SerializeField] internal Button overriddenHide;
+        [SerializeField] internal Button normalHide;
 
         public event Action<AvatarSlotComponentModel, bool> OnSelectAvatarSlot;
         public event Action<string> OnUnEquip;
         public event Action<string> OnFocusHiddenBy;
+        public event Action<string, bool> OnHideUnhidePressed;
+
         private bool isSelected = false;
+
         private readonly HashSet<string> hiddenByList = new HashSet<string>();
-        private Vector2 tooltipDefaultPosition;
-        private Vector2 tooltipFullPosition;
         private Vector2 nftContainerDefaultPosition;
 
         public override void Awake()
         {
             base.Awake();
 
+            overriddenHide.onClick.RemoveAllListeners();
+            overriddenHide.onClick.AddListener(()=>
+            {
+                AudioScriptableObjects.hide.Play(true);
+                OnHideUnhidePressed?.Invoke(model.category, false);
+                SetForceRender(false);
+            });
+            normalHide.onClick.RemoveAllListeners();
+            normalHide.onClick.AddListener(()=>
+            {
+                AudioScriptableObjects.show.Play(true);
+                OnHideUnhidePressed?.Invoke(model.category, true);
+                SetForceRender(true);
+            });
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSlotClick);
             unequipButton.onClick.RemoveAllListeners();
@@ -59,9 +77,6 @@ namespace DCL.Backpack
         private void InitializeTooltipPositions()
         {
             tooltipContainer.gameObject.SetActive(true);
-            tooltipDefaultPosition = new Vector2(30, 120);
-            tooltipFullPosition = new Vector2(30, 150);
-            tooltipContainer.anchoredPosition = tooltipDefaultPosition;
             tooltipContainer.gameObject.SetActive(false);
             nftContainerDefaultPosition = nftContainer.anchoredPosition;
         }
@@ -73,6 +88,7 @@ namespace DCL.Backpack
             RefreshControl();
             SetWearableId("");
             SetHideList(Array.Empty<string>());
+            SetForceRender(false);
         }
 
         public string[] GetHideList() =>
@@ -94,34 +110,35 @@ namespace DCL.Backpack
         public void SetHideList(string[] hideList) =>
             model.hidesList = hideList;
 
+        public void SetForceRender(bool isOverridden)
+        {
+            overriddenHide.gameObject.SetActive(isOverridden);
+            normalHide.gameObject.SetActive(!isOverridden);
+        }
+
         public void SetIsHidden(bool isHidden, string hiddenBy)
         {
             model.isHidden = isHidden;
-            model.hiddenBy = hiddenBy;
-            hiddenSlot.SetActive(isHidden);
 
             if (isHidden)
-            {
-                emptySlot.SetActive(false);
-                tooltipContainer.anchoredPosition = tooltipFullPosition;
-                tooltipHiddenText.gameObject.SetActive(true);
-                tooltipHiddenText.text = $"Hidden by: {hiddenBy}";
                 hiddenByList.Add(hiddenBy);
+            else
+                hiddenByList.Remove(hiddenBy);
+
+            List<string> sortedList = hiddenByList.OrderBy(x => WearableItem.CATEGORIES_PRIORITY.IndexOf(x)).ToList();
+
+            if (sortedList.Count > 0)
+            {
+                SetHideIconVisible(true);
+                tooltipHiddenText.gameObject.SetActive(!string.IsNullOrEmpty(model.wearableId));
+                tooltipHiddenText.text = $"Hidden by {WearableItem.CATEGORIES_READABLE_MAPPING[sortedList[0]]}";
+                model.hiddenBy = sortedList[0];
             }
             else
             {
-                hiddenByList.Remove(hiddenBy);
+                SetHideIconVisible(false);
                 tooltipHiddenText.gameObject.SetActive(false);
-                tooltipContainer.anchoredPosition = tooltipDefaultPosition;
-                emptySlot.SetActive(string.IsNullOrEmpty(model.imageUri));
-
-                if (hiddenByList.Count > 0)
-                {
-                    emptySlot.SetActive(false);
-                    tooltipContainer.anchoredPosition = tooltipFullPosition;
-                    tooltipHiddenText.gameObject.SetActive(true);
-                    tooltipHiddenText.text = $"Hidden by: {hiddenByList.Last()}";
-                }
+                model.hiddenBy = "";
             }
         }
 
@@ -129,9 +146,14 @@ namespace DCL.Backpack
         {
             model.category = category;
             model.allowsColorChange = typeColorSupporting.IsColorSupportedByType(category);
+            model.previewCameraFocus = previewCameraFocus.GetPreviewCameraFocus(category);
             typeImage.sprite = typeIcons.GetTypeImage(category);
-            tooltipCategoryText.text = category;
+            WearableItem.CATEGORIES_READABLE_MAPPING.TryGetValue(category, out string readableCategory);
+            tooltipCategoryText.text = readableCategory;
         }
+
+        public void SetUnEquipAllowed(bool allowUnEquip) =>
+            model.unEquipAllowed = allowUnEquip;
 
         public void SetNftImage(string imageUri)
         {
@@ -151,20 +173,18 @@ namespace DCL.Backpack
         public void SetRarity(string rarity)
         {
             model.rarity = rarity;
-            backgroundRarityImage.sprite = string.IsNullOrEmpty(rarity) ? null : rarityBackgrounds.GetRarityImage(rarity);
+            backgroundRarityImage.sprite = rarityBackgrounds.GetRarityImage(rarity);
         }
 
-        public void SetWearableId(string wearableId)
-        {
+        public void SetWearableId(string wearableId) =>
             model.wearableId = wearableId;
-        }
 
         public override void OnFocus()
         {
             focusedImage.enabled = true;
             tooltipContainer.gameObject.SetActive(true);
 
-            if (!string.IsNullOrEmpty(model.imageUri))
+            if (model.unEquipAllowed && !string.IsNullOrEmpty(model.imageUri))
                 unequipButton.gameObject.SetActive(true);
 
             if(model.isHidden)
@@ -182,21 +202,22 @@ namespace DCL.Backpack
 
         public void OnSlotClick()
         {
-            isSelected = !isSelected;
-
-            if (isSelected)
-            {
-                selectedImage.enabled = true;
-                ScaleUpAnimation(selectedImage.transform);
-            }
+            if (!isSelected)
+                Select(true);
             else
-            {
-                ScaleDownAndResetAnimation(selectedImage);
-            }
-
-            OnSelectAvatarSlot?.Invoke(model, isSelected);
+                UnSelect(true);
         }
 
+        public void UnSelect(bool notify)
+        {
+            if (!isSelected) return;
+            isSelected = false;
+
+            ScaleDownAndResetAnimation(selectedImage);
+
+            if (notify)
+                OnSelectAvatarSlot?.Invoke(model, isSelected);
+        }
 
         public void OnPointerClickOnDifferentSlot()
         {
@@ -217,6 +238,21 @@ namespace DCL.Backpack
                 targetImage.enabled = false;
                 targetImage.transform.localScale = new Vector3(1, 1, 1);
             });
+        }
+
+        public void SetHideIconVisible(bool isVisible) =>
+            hiddenSlot.SetActive(isVisible && !string.IsNullOrEmpty(model.wearableId));
+
+        public void Select(bool notify)
+        {
+            if (isSelected) return;
+
+            isSelected = true;
+            selectedImage.enabled = true;
+            ScaleUpAnimation(selectedImage.transform);
+
+            if (notify)
+                OnSelectAvatarSlot?.Invoke(model, isSelected);
         }
 
         public void ShakeAnimation() =>

@@ -1,34 +1,57 @@
-<!-- 
 
-Hey there and thank you for using Issue Tracker!
+### **Issue Description:**
+<!-- Short description of the observed issue -->
 
-Our project, as you've probably heard, is getting really popular and truth is we're getting a bit overwhelmed by the activity surrounding it. There are just too many issues for us to manage properly.
+### **Steps to reproduce:**
 
-Do the checklist before filing an issue:
+  1.
+  2.
+  3.
 
--->
+### **Expected behaviour:**
 
-## Is this something you can **debug and fix**? 
 
-Send a pull request! Bug fixes and documentation fixes are welcome. You can avoid the issue.
+### **Current behaviour:**
 
----
 
-## Have an idea for a feature? 
+### **Reproduction rate:**
 
-* [ ] Post the feature request and tag it as "discussion". 
-* [ ] Explain the motivation, the problem it fixes or the added value for the feature. The discussion about the feature should happen in the issue, and the code review in the PR.
-* [ ] Write a check-list explaining the discrete elements to be developed.
-* [ ] Explain how to validate/test the feature
 
----
+### **Severity:**
+<!-- Cosmetic, Minor, Medium, High, Critical, Blocker -->
+- [ ] Cosmetic
+- [ ] Minor
+- [ ] Medium
+- [ ] High
+- [ ] Critical
+- [ ] Blocker
 
-## None of the above, create a bug report
+### **Priority:**
+- [ ] High
+- [ ] Medium
+- [ ] Low
 
-Make sure to add **all the information needed to understand the bug** so that someone can help. If the info is missing we'll add the `Needs more information` label and close the issue until there is enough information.
+### **Platforms:**
+- [ ] Windows
+- [ ] Mac
+- [ ] Not platform specific
 
-* [ ] Provide a **minimal code snippet** / video example that reproduces the bug.
-* [ ] Provide **screenshots** where appropriate
-* [ ] Does this occur on chrome or firefox?
-* [ ] Are you using Mac, Linux or Windows?
-* [ ] Are you using a VR headset? Which one?
+### **Browser:**
+- [ ] Google Chrome
+- [ ] Microsoft Edge
+- [ ] Firefox
+- [ ] Desktop
+- [ ] Not Browser Specific
+
+### **Environment:**
+- [ ] Production
+- [ ] Branch specific
+- [ ] Release Branch
+
+
+#### **Evidence:**
+
+#### **Additional Notes:**
+
+
+

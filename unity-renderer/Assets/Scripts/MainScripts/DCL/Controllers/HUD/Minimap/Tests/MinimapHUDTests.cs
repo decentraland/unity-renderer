@@ -1,23 +1,38 @@
 using DCL;
-using DCLServices.MapRendererV2;
+using DCLServices.CopyPaste.Analytics;
+using DCLServices.PlacesAPIService;
+using NSubstitute;
 using NUnit.Framework;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
-using NSubstitute;
+using Environment = DCL.Environment;
+using Random = UnityEngine.Random;
 
 namespace Tests
 {
     public class MinimapHUDTests : IntegrationTestSuite_Legacy
     {
         private MinimapHUDController controller;
+        private IClipboard clipboard;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            controller = new MinimapHUDController(Substitute.For<MinimapMetadataController>(), Substitute.For<IHomeLocationController>(), DCL.Environment.i);
+            clipboard = Substitute.For<IClipboard>();
+
+            controller = new MinimapHUDController(
+                Substitute.For<MinimapMetadataController>(),
+                Substitute.For<IHomeLocationController>(),
+                Environment.i,
+                Environment.i.serviceLocator.Get<IPlacesAPIService>(),
+                Substitute.For<IPlacesAnalytics>(),
+                clipboard,
+                Substitute.For<ICopyPasteAnalyticsService>(),
+                DataStore.i.contentModeration,
+                Substitute.For<IWorldState>());
             controller.Initialize();
         }
 
@@ -85,5 +100,17 @@ namespace Tests
 
         [Test]
         public void MinimapHUD_OptionsPanel() { Assert.IsNotNull(controller); }
+
+        [Test]
+        public void CopyLocationToClipboard()
+        {
+            controller.UpdateSceneName("Any Scene");
+            controller.UpdatePlayerPosition(new Vector2(12, 65));
+
+            MinimapHUDView view = controller.view;
+            view.copyLocationButton.onClick.Invoke();
+
+            clipboard.Received(1).WriteText("Any Scene: 12,65");
+        }
     }
 }

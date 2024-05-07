@@ -101,7 +101,9 @@ namespace AvatarSystem
             revealCts = null;
 
             cachedMaterials.Clear();
-            targetRenderer?.GetMaterials(cachedMaterials);
+            if(targetRenderer != null)
+                targetRenderer.GetMaterials(cachedMaterials);
+
             ghostMaterial.SetVector(REVEAL_NORMAL_ID, Vector3.up * -1);
             SetRevealPosition(ghostMaterial, avatarHeight);
 

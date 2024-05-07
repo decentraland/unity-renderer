@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public abstract class ChatEntry : MonoBehaviour
     {
@@ -14,6 +14,7 @@ namespace DCL.Chat.HUD
         public abstract event Action<ChatEntry, ParcelCoordinates> OnTriggerHoverGoto;
         public abstract event Action OnCancelHover;
         public abstract event Action OnCancelGotoHover;
+        public abstract event Action<ChatEntry> OnCopyClicked;
 
         public abstract ChatEntryModel Model { get; }
         public abstract void Populate(ChatEntryModel model);

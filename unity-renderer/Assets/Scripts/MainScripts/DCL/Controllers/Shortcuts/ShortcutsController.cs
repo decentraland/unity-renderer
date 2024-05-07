@@ -54,13 +54,13 @@ public class ShortcutsController : IDisposable
     }
 
     private void ToggleControlsTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.controlsVisible.Set(!DataStore.i.HUDs.controlsVisible.Get()); }
-    
-    private void ToggleAvatarEditorTriggered(DCLAction_Trigger action) 
+
+    private void ToggleAvatarEditorTriggered(DCLAction_Trigger action)
     {
-        if (!DataStore.i.HUDs.isAvatarEditorInitialized.Get())
+        if (!DataStore.i.HUDs.isAvatarEditorInitialized.Get() || DataStore.i.common.isSignUpFlow.Get())
             return;
 
-        DataStore.i.HUDs.avatarEditorVisible.Set(!DataStore.i.HUDs.avatarEditorVisible.Get()); 
+        DataStore.i.HUDs.avatarEditorVisible.Set(!DataStore.i.HUDs.avatarEditorVisible.Get());
     }
 
     private void ToggleAvatarNamesTriggered(DCLAction_Trigger action) { DataStore.i.HUDs.avatarNamesVisible.Set(!DataStore.i.HUDs.avatarNamesVisible.Get()); }
@@ -91,12 +91,12 @@ public class ShortcutsController : IDisposable
         }
     }
 
-    private void ToggleNavMapTriggered(DCLAction_Trigger action) 
+    private void ToggleNavMapTriggered(DCLAction_Trigger action)
     {
         if (!DataStore.i.HUDs.isNavMapInitialized.Get())
             return;
 
-        DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get()); 
+        DataStore.i.HUDs.navmapVisible.Set(!DataStore.i.HUDs.navmapVisible.Get());
     }
 
     private void TogglePlacesAndEventsTriggered(DCLAction_Trigger action)
@@ -112,7 +112,7 @@ public class ShortcutsController : IDisposable
     public void Dispose() { Unsubscribe(); }
 
     // In the future the analytics will be received through DI in the shape of a service locator,
-    // so we can remove these methods and mock the locator itself    
+    // so we can remove these methods and mock the locator itself
     internal virtual void SendQuestToggledAnalytic(bool value) { QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action"); }
     internal virtual void SendExploreToggledAnalytics(bool value) { new ExploreV2Analytics.ExploreV2Analytics().SendStartMenuVisibility(value, ExploreUIVisibilityMethod.FromShortcut); }
 

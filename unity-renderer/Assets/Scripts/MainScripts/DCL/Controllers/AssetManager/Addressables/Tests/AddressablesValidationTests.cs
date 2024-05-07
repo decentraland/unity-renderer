@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,17 +30,28 @@ public class AddressablesValidationTests
     [Test]
     public void ValidateDuplicateBundleDependencies()
     {
-        var rule = new CheckBundleDupeDependencies();
-        List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
+        try
+        {
+            var rule = new CheckBundleDupeDependencies();
+            List<AnalyzeRule.AnalyzeResult> duplicates = rule.RefreshAnalysis(AddressableAssetSettingsDefaultObject.Settings);
 
-        if (duplicates[0].resultName == NO_ISSUES_FOUND)
-            return;
+            if (duplicates[0].resultName == NO_ISSUES_FOUND)
+                return;
 
-        Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
-        string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
+            Dictionary<string, (List<string>, List<string> assets)> bundlesByAsset = GroupBundlesByDuplicatedAssets(duplicates, isCustomGroupsRule: true);
+            string msg = CreateDuplicatesMessage(bundlesByAsset, EXCLUDED_FILE_TYPES);
 
-        Assert.That(msg, Is.Empty,
-            message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool"));
+            Assert.That(msg, Is.Empty,
+                message: ComposeAssertMessage(msg, analyzeRule: "Check Duplicate Bundle Dependencies in Addressables->Analyze tool"));
+        }
+        catch (FileNotFoundException ex)
+        {
+            Assert.Fail($"File not found: {ex.FileName}. Check Duplicate Bundle Dependencies in Addressables->Analyze tool");
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"Unexpected error: {ex.Message}. Check Duplicate Bundle Dependencies in Addressables->Analyze tool");
+        }
     }
 
     [Test]
@@ -142,6 +154,7 @@ public class AddressablesValidationTests
                     .Where(keyValuePair => !excludedFileTypesFilter.Contains(keyValuePair.Key.Split('.')[^1])))
         {
             long size = keyValuePair.Value.assets.Sum(GetAssetSize);
+
             if (size <= minDuplicatesSize)
                 continue;
 
@@ -150,6 +163,7 @@ public class AddressablesValidationTests
             message.Append(" - COUNT: " + keyValuePair.Value.assets.Count);
 
             message.Append(" - BUNDLES: ");
+
             foreach (string bundle in keyValuePair.Value.Item1)
                 message.Append(bundle.Split('.')[0] + ", ");
 

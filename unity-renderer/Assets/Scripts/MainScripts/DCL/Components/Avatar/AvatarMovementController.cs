@@ -8,13 +8,15 @@ namespace DCL
 {
     public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler, IAvatarMovementController
     {
-        private const float SPEED_SLOW = 2.0f;
-        private const float SPEED_FAST = 4.0f;
-        private const float SPEED_ULTRA_FAST = 8.0f;
-        private const float SPEED_GRAVITY = 8.0f;
+        // Speed values are slightly slower than the player
+        private const float WALK_SPEED = 4f;
+        private const float RUN_SPEED = 10.0f;
+
+        private const float SPEED_GRAVITY = 11.0f;
         private const float ROTATION_SPEED = 6.25f;
         private const float SPEED_EPSILON = 0.0001f;
-        private float movementSpeed = SPEED_SLOW;
+        private const float WALK_DISTANCE = 1.5f;
+        private float movementSpeed = WALK_SPEED;
 
         private Transform avatarTransformValue;
 
@@ -92,20 +94,19 @@ namespace DCL
             AvatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
         }
 
-        public void OnTransformChanged(object model)
+        public void OnTransformChanged(Vector3 newPosition, Quaternion newRotation)
         {
-            DCLTransform.Model transformModel = (DCLTransform.Model)model;
-            OnTransformChanged(transformModel.position, transformModel.rotation, false);
+            OnTransformChanged(newPosition, newRotation, false);
         }
 
-        public void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate)
+        public void OnTransformChanged(Vector3 position, Quaternion rotation, bool immediate)
         {
             float characterMinHeight = DCLCharacterController.i.characterController.height * 0.5f;
 
             MoveTo(
                 new Vector3(position.x, Math.Max(position.y - characterMinHeight, -characterMinHeight), position.z), // To fix the "always flying" avatars issue, We report the chara's centered position but the body hast its pivot at its feet
                 rotation,
-                inmediate);
+                immediate);
         }
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
@@ -123,14 +124,18 @@ namespace DCL
             targetPosition = position;
             targetRotation = rotation;
 
-            float distance = Vector3.Distance(targetPosition, currentWorldPosition);
+            float distance = Vector3.Distance(targetPosition, CurrentPosition);
 
             if (distance >= 50)
-                movementSpeed = float.MaxValue;
-            else if (distance >= 3)
-                movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
+            {
+                CurrentPosition = position;
+                AvatarTransform.rotation = rotation;
+            }
+
+            if (distance >= WALK_DISTANCE)
+                movementSpeed = Mathf.MoveTowards(movementSpeed, RUN_SPEED, Time.deltaTime * RUN_SPEED * 10);
             else
-                movementSpeed = SPEED_SLOW;
+                movementSpeed = Mathf.MoveTowards(movementSpeed, WALK_SPEED, Time.deltaTime * RUN_SPEED * 30);
         }
 
         void UpdateLerp(float deltaTime)

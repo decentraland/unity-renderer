@@ -1,19 +1,29 @@
 {
     "name": "AvatarAssetsTest",
+    "rootNamespace": "",
     "references": [
         "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
         "GUID:e555144732b726c4cba5b0f6337fea75",
-        "GUID:ef84d7ce90ba34f07be26ace428e9bc8"
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:6e6a87f97192ec947993f360104e75b7",
+        "GUID:1e6b57fe78f7b724e9567f29f6a40c2c",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+    "includePlatforms": [
+        "Editor"
     ],
-    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

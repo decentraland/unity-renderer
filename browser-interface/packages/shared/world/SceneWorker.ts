@@ -5,7 +5,16 @@ import { RpcSceneControllerServiceDefinition } from 'shared/protocol/decentralan
 import { createRpcServer, RpcClient, RpcClientPort, RpcServer, Transport } from '@dcl/rpc'
 import * as codegen from '@dcl/rpc/dist/codegen'
 import { Scene } from '@dcl/schemas'
-import { DEBUG_SCENE_LOG, ETHEREUM_NETWORK, FORCE_SEND_MESSAGE, getAssetBundlesBaseUrl, PIPE_SCENE_CONSOLE, playerHeight, WSS_ENABLED } from 'config'
+import {
+  DEBUG_SCENE_LOG,
+  ETHEREUM_NETWORK,
+  FORCE_SEND_MESSAGE,
+  getAssetBundlesBaseUrl,
+  PIPE_SCENE_CONSOLE,
+  playerHeight,
+  PREVIEW,
+  WSS_ENABLED
+} from 'config'
 import { gridToWorld } from 'lib/decentraland/parcels/gridToWorld'
 import { parseParcelPosition } from 'lib/decentraland/parcels/parseParcelPosition'
 import { getSceneNameFromJsonData } from 'lib/decentraland/sceneJson/getSceneNameFromJsonData'
@@ -32,6 +41,10 @@ import { PositionReport } from './positionThings'
 import { EntityAction } from 'shared/protocol/decentraland/sdk/ecs6/engine_interface_ecs6.gen'
 import { joinBuffers } from 'lib/javascript/uint8arrays'
 import { nativeMsgBridge } from 'unity-interface/nativeMessagesBridge'
+import { _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE } from 'renderer-protocol/transports/webTransport'
+import { createInternalEngine } from './runtime-7/engine'
+import { initSourcemap } from './runtime-7/sourcemap'
+import { forceStopScene } from './parcelSceneManager'
 
 export enum SceneWorkerReadyState {
   LOADING = 1 << 0,
@@ -104,7 +117,6 @@ export class SceneWorker {
   private rpcServer!: RpcServer<PortContext>
 
   private sceneStarted: boolean = false
-
   private position: Vector3 = new Vector3()
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
@@ -120,7 +132,7 @@ export class SceneWorker {
     const sceneNumber = globalSceneNumberCounter
     const scenePort = await rpcClient.createPort(`scene-${sceneNumber}`)
     const worker = new SceneWorker(loadableScene, sceneNumber, scenePort)
-    await worker.attachTransport()
+    worker.attachTransport().catch(() => forceStopScene(loadableScene.id))
     return worker
   }
 
@@ -183,7 +195,9 @@ export class SceneWorker {
       sendBatch: this.sendBatch.bind(this),
       readFile: this.readFile.bind(this),
       initialEntitiesTick0: Uint8Array.of(),
-      hasMainCrdt: false
+      hasMainCrdt: false,
+      internalEngine: undefined,
+      sourcemap: undefined
     }
 
     // if the scene metadata has a base parcel, then we set it as the position
@@ -219,7 +233,27 @@ export class SceneWorker {
     }
   }
 
-  async readFile(fileName: string) {
+  async loadSourcemap() {
+    try {
+      // Only sdk7 scenes
+      if (!this.rpcContext.sdk7) return
+
+      // Only preview or production scenes with the DEBUG_MOD or DEBUG_SCENE_LOG param
+      if (!PREVIEW && !DEBUG_SCENE_LOG) return
+
+      const mainFile = PREVIEW
+        ? this.loadableScene.entity.metadata.main
+        : `${this.loadableScene.entity.metadata.main}.map`
+      const file = await this.readFile(mainFile, 'text')
+      if (!file?.content) return
+      return (await initSourcemap(file.content, PREVIEW)) ?? undefined
+    } catch (_) {}
+  }
+
+  async readFile<T extends 'text' | 'arraybuffer' = 'arraybuffer'>(
+    fileName: string,
+    type?: T
+  ): Promise<T extends 'text' ? { hash: string; content: string } : { hash: string; content: Uint8Array }> {
     // filenames are lower cased as per https://adr.decentraland.org/adr/ADR-80
     const normalized = fileName.toLowerCase()
 
@@ -234,8 +268,11 @@ export class SceneWorker {
         const response = await fetch(url)
 
         if (!response.ok) throw new Error(`Error fetching file ${file} from ${url}`)
+        if (!type || type === 'arraybuffer') {
+          return { hash, content: new Uint8Array(await response.arrayBuffer()) } as any
+        }
 
-        return { hash, content: new Uint8Array(await response.arrayBuffer()) }
+        return { hash, content: await response.text() } as any
       }
     }
 
@@ -245,6 +282,8 @@ export class SceneWorker {
   dispose() {
     const disposingFlags =
       SceneWorkerReadyState.DISPOSING | SceneWorkerReadyState.SYSTEM_DISPOSED | SceneWorkerReadyState.DISPOSED
+
+    this.rpcContext.internalEngine?.destroy()
 
     queueMicrotask(() => {
       // this NEEDS to run in a microtask because sagas control this .dispose
@@ -357,10 +396,18 @@ export class SceneWorker {
     this.rpcServer.attachTransport(this.transport, this.rpcContext)
     this.ready |= SceneWorkerReadyState.LOADED
 
+    const MAX_MSG_SIZE_ALLOWED = _INTERNAL_WEB_TRANSPORT_ALLOC_SIZE * 0.9
+    const SIZE_LOGABLE = 50e3 // magic number
     worker.addEventListener('message', (event) => {
       if (event.data?.type === 'actions') {
-        if (event.data.bytes?.length > 50e3) {
-          this.logger.log(`Received actions > 50k: ${event.data.bytes?.length} bytes`)
+        if (event.data.bytes?.length > SIZE_LOGABLE) {
+          this.logger.log(`Received actions > ${SIZE_LOGABLE} bytes: ${event.data.bytes?.length} bytes`)
+          if (event.data.bytes?.length > MAX_MSG_SIZE_ALLOWED) {
+            this.logger.error(
+              `Error sending binary actions from Worker to Renderer: the message size exceed the allocated size in the transport`
+            )
+            return
+          }
         }
         if (WSS_ENABLED || FORCE_SEND_MESSAGE) {
           this.rpcContext.rpcSceneControllerService.sendBatch({ payload: event.data.bytes }).catch((err) => {
@@ -380,7 +427,14 @@ export class SceneWorker {
         }
       }
     })
-
+    if (this.rpcContext.sdk7) {
+      this.rpcContext.internalEngine = createInternalEngine(
+        this.rpcContext.sceneData.sceneNumber,
+        this.metadata.scene.parcels,
+        showAsPortableExperience
+      )
+      this.rpcContext.sourcemap = await this.loadSourcemap()
+    }
     sceneEvents.emit(SCENE_LOAD, signalSceneLoad(this.loadableScene))
   }
 

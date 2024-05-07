@@ -132,10 +132,10 @@ public class ECS7TestEntity : IDCLEntity
         set => throw new NotImplementedException();
     }
 
-    Action<object> IDCLEntity.OnTransformChange
+    Action<Vector3, Quaternion> IDCLEntity.OnTransformChange
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get;
+        set;
     }
 
     public Action<IDCLEntity, bool> OnOuterBoundariesChanged

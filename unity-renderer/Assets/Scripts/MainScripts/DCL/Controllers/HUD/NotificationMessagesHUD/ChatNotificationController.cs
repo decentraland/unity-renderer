@@ -17,7 +17,6 @@ namespace DCL.Chat.Notifications
     public class ChatNotificationController : IHUD
     {
         private const int FADEOUT_DELAY = 8000;
-        private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
 
         private readonly DataStore dataStore;
         private readonly IChatController chatController;
@@ -47,8 +46,6 @@ namespace DCL.Chat.Notifications
                 return internalOwnUserProfile;
             }
         }
-
-        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
 
         public ChatNotificationController(DataStore dataStore,
             IMainChatNotificationsComponentView mainChatNotificationView,
@@ -160,6 +157,17 @@ namespace DCL.Chat.Notifications
             if (message.messageType == ChatMessage.Type.PRIVATE)
             {
                 string peerId = ExtractPeerId(message);
+
+                try
+                {
+                    // incoming friend request's message is added as a DM. This check filters it
+                    if (await friendsController.GetFriendshipStatus(peerId, cancellationToken) != FriendshipStatus.FRIEND) return;
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    Debug.LogException(e);
+                }
+
                 UserProfile peerProfile = userProfileBridge.Get(peerId);
                 bool isMyMessage = message.sender == ownUserProfile.userId;
                 UserProfile senderProfile = isMyMessage ? ownUserProfile : userProfileBridge.Get(message.sender);
@@ -227,8 +235,6 @@ namespace DCL.Chat.Notifications
 
         private void HandleFriendRequestReceived(FriendRequest friendRequest)
         {
-            if (!isNewFriendRequestsEnabled) return;
-
             if (friendRequest.From == ownUserProfile.userId ||
                 friendRequest.To != ownUserProfile.userId)
                 return;
@@ -242,7 +248,7 @@ namespace DCL.Chat.Notifications
                 friendRequestName,
                 "Friend Request received",
                 "wants to be your friend.",
-                (ulong)friendRequest.Timestamp,
+                friendRequest.Timestamp,
                 false);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);
@@ -253,8 +259,6 @@ namespace DCL.Chat.Notifications
 
         private void HandleSentFriendRequestApproved(FriendRequest friendRequest)
         {
-            if (!isNewFriendRequestsEnabled) return;
-
             string recipientUserId = friendRequest.To;
             var friendRequestProfile = userProfileBridge.Get(recipientUserId);
 
@@ -264,7 +268,7 @@ namespace DCL.Chat.Notifications
                 friendRequestProfile.userName,
                 "Friend Request accepted",
                 "and you are friends now!",
-                (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                DateTime.UtcNow,
                 true);
 
             mainChatNotificationView.AddNewFriendRequestNotification(friendRequestNotificationModel);

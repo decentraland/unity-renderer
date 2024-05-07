@@ -14,8 +14,6 @@ public interface IClientAnalyticsKernelService
   UniTask<SystemInfoReportResponse> SystemInfoReport(SystemInfoReportRequest request);
 
   UniTask<AnalyticsEventResponse> AnalyticsEvent(AnalyticsEventRequest request);
-
-  UniTask<DelightedSurveyResponse> SetDelightedSurveyEnabled(DelightedSurveyRequest request);
 }
 
 public class ClientAnalyticsKernelService : IClientAnalyticsKernelService
@@ -41,11 +39,6 @@ public class ClientAnalyticsKernelService : IClientAnalyticsKernelService
   public UniTask<AnalyticsEventResponse> AnalyticsEvent(AnalyticsEventRequest request)
   {
       return module.CallUnaryProcedure<AnalyticsEventResponse>("AnalyticsEvent", request);
-  }
-
-  public UniTask<DelightedSurveyResponse> SetDelightedSurveyEnabled(DelightedSurveyRequest request)
-  {
-      return module.CallUnaryProcedure<DelightedSurveyResponse>("SetDelightedSurveyEnabled", request);
   }
 
 }

@@ -1,4 +1,5 @@
-﻿using DCLServices.MapRendererV2.MapLayers;
+﻿using DCLServices.MapRendererV2.CommonBehavior;
+using DCLServices.MapRendererV2.MapLayers;
 using System;
 using UnityEngine;
 
@@ -10,7 +11,9 @@ namespace DCLServices.MapRendererV2.MapCameraController
     /// </summary>
     internal interface IMapCameraControllerInternal : IMapCameraController, IDisposable
     {
-        event Action<IMapCameraControllerInternal> OnReleasing;
+        event Action<float, float> ZoomChanged;
+
+        event Action<IMapActivityOwner, IMapCameraControllerInternal> OnReleasing;
 
         Camera Camera { get; }
 

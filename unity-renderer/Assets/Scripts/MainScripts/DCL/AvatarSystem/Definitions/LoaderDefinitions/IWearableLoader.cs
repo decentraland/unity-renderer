@@ -16,7 +16,7 @@ namespace AvatarSystem
             Failed
         }
 
-        WearableItem wearable { get; }
+        WearableItem bodyShape { get; }
         Rendereable rendereable { get; }
         Status status { get; }
         UniTask Load(GameObject container, AvatarSettings avatarSettings, CancellationToken ct = default);

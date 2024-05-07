@@ -3,8 +3,8 @@ using DCL.Tasks;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DCL.Social.Friends
@@ -13,7 +13,6 @@ namespace DCL.Social.Friends
     {
         private const int LOAD_FRIENDS_ON_DEMAND_COUNT = 30;
         private const int MAX_SEARCHED_FRIENDS = 100;
-        private const string NEW_FRIEND_REQUESTS_FLAG = "new_friend_requests";
         private const string ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG = "enable_quick_actions_on_friend_requests";
         private const int GET_FRIENDS_TIMEOUT = 10;
 
@@ -25,10 +24,10 @@ namespace DCL.Social.Friends
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IChatController chatController;
         private readonly IMouseCatcher mouseCatcher;
+        private readonly Regex ethAddressRegex = new (@"^0x[a-fA-F0-9]{40}$");
 
         private BaseVariable<HashSet<string>> visibleTaskbarPanels => dataStore.HUDs.visibleTaskbarPanels;
-        private bool isNewFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_FRIEND_REQUESTS_FLAG); // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-        private bool isQuickActionsForFriendRequestsEnabled => !isNewFriendRequestsEnabled || dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
+        private bool isQuickActionsForFriendRequestsEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(ENABLE_QUICK_ACTIONS_FOR_FRIEND_REQUESTS_FLAG);
         private CancellationTokenSource friendOperationsCancellationToken = new ();
         private CancellationTokenSource ensureProfilesCancellationToken = new ();
         private UserProfile ownUserProfile;
@@ -77,7 +76,6 @@ namespace DCL.Social.Friends
             view.OnSearchFriendsRequested += SearchFriends;
             view.OnFriendListDisplayed += DisplayFriendsIfAnyIsLoaded;
             view.OnRequestListDisplayed += DisplayFriendRequestsIfAnyIsLoaded;
-            view.OnDeleteConfirmation += HandleUnfriend;
 
             if (mouseCatcher != null)
                 mouseCatcher.OnMouseLock += HandleViewClosed;
@@ -138,7 +136,6 @@ namespace DCL.Social.Friends
                 View.OnFriendRequestSent -= HandleRequestFriendship;
                 View.OnFriendRequestOpened -= OpenFriendRequestDetails;
                 View.OnWhisper -= HandleOpenWhisperChat;
-                View.OnDeleteConfirmation -= HandleUnfriend;
                 View.OnClose -= HandleViewClosed;
                 View.OnRequireMoreFriends -= DisplayMoreFriends;
                 View.OnRequireMoreFriendRequests -= DisplayMoreFriendRequests;
@@ -252,33 +249,28 @@ namespace DCL.Social.Friends
                     View.ShowRequestSendError(FriendRequestError.AlreadyFriends);
                 else
                 {
-                    if (isNewFriendRequestsEnabled)
+                    try
                     {
-                        FriendRequest request;
+                        string userId = SolveUserIdFromUserInput(userNameOrId);
 
-                        try
+                        if (!string.IsNullOrEmpty(userId))
                         {
-                            request = await friendsController.RequestFriendshipAsync(userNameOrId, "", cancellationToken);
+                            FriendRequest request = await friendsController.RequestFriendshipAsync(userId, "", cancellationToken);
+
+                            ShowFriendRequest(request);
 
                             socialAnalytics.SendFriendRequestSent(request.From, request.To, request.MessageBody?.Length ?? 0,
-                                PlayerActionSource.FriendsHUD);
+                                PlayerActionSource.FriendsHUD, request.FriendRequestId);
                         }
-                        catch (Exception e) when (e is not OperationCanceledException)
-                        {
-                            e.ReportFriendRequestErrorToAnalyticsAsSender(userNameOrId, PlayerActionSource.FriendsHUD.ToString(),
-                                userProfileBridge, socialAnalytics);
-
-                            throw;
-                        }
-
-                        ShowFriendRequest(request);
+                        else
+                            View.ShowRequestSendError(FriendRequestError.UserNotFound);
                     }
-                    else
+                    catch (Exception e) when (e is not OperationCanceledException)
                     {
-                        friendsController.RequestFriendship(userNameOrId);
+                        e.ReportFriendRequestErrorToAnalyticsAsSender(userNameOrId, PlayerActionSource.FriendsHUD.ToString(),
+                            userProfileBridge, socialAnalytics);
 
-                        socialAnalytics.SendFriendRequestSent(ownUserProfile?.userId, userNameOrId, 0,
-                            PlayerActionSource.FriendsHUD);
+                        Debug.LogException(e);
                     }
 
                     View.ShowRequestSendSuccess();
@@ -286,6 +278,19 @@ namespace DCL.Social.Friends
             }
 
             HandleRequestFriendshipAsync(userNameOrId, RestartFriendsOperationsCancellationToken()).Forget();
+        }
+
+        private string SolveUserIdFromUserInput(string userNameOrId)
+        {
+            Match ethAddressMatch = ethAddressRegex.Match(userNameOrId);
+
+            if (ethAddressMatch.Success)
+                return userNameOrId;
+
+            // TODO: a request to the catalyst is needed to retrieve a user profile by user name
+            // the user may exist with the name but not loaded in the current catalog
+            UserProfile profile = userProfileBridge.GetByName(userNameOrId, false);
+            return profile?.userId ?? "";
         }
 
         private bool AreAlreadyFriends(string userNameOrId)
@@ -328,34 +333,6 @@ namespace DCL.Social.Friends
                     friends.Remove(userId);
                     onlineFriends.Remove(userId);
                     break;
-                case FriendshipStatus.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                    if (isNewFriendRequestsEnabled)
-                        return;
-
-                    var sentRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
-
-                    sentRequest.CopyFrom(status);
-                    sentRequest.blocked = IsUserBlocked(userId);
-                    friends[userId] = sentRequest;
-                    onlineFriends.Remove(userId);
-                    View.Set(userId, sentRequest);
-                    break;
-                case FriendshipStatus.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                    if (isNewFriendRequestsEnabled)
-                        return;
-
-                    var receivedRequest = friends.ContainsKey(userId)
-                        ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                        : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
-
-                    receivedRequest.CopyFrom(status);
-                    receivedRequest.blocked = IsUserBlocked(userId);
-                    friends[userId] = receivedRequest;
-                    onlineFriends.Remove(userId);
-                    View.Set(userId, receivedRequest);
-                    break;
             }
 
             UpdateNotificationsCounter();
@@ -391,15 +368,12 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_FROM: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_FROM:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestReceived = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, true, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = true, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestReceived.CopyFrom(userProfile);
                         requestReceived.blocked = IsUserBlocked(userId);
@@ -408,15 +382,12 @@ namespace DCL.Social.Friends
                         userProfile.OnUpdate -= HandleFriendProfileUpdated;
                         userProfile.OnUpdate += HandleFriendProfileUpdated;
                         break;
-                    case FriendshipAction.REQUESTED_TO: // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                        if (isNewFriendRequestsEnabled)
-                            return;
-
+                    case FriendshipAction.REQUESTED_TO:
                         userProfile = await EnsureProfileOrShowFallbackFriend(userId, userProfile, cancellationToken);
 
                         var requestSent = friends.ContainsKey(userId)
-                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, 0, isQuickActionsForFriendRequestsEnabled)
-                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = 0, isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
+                            ? new FriendRequestEntryModel(friends[userId], string.Empty, false, new DateTime(0), isQuickActionsForFriendRequestsEnabled)
+                            : new FriendRequestEntryModel { bodyMessage = string.Empty, isReceived = false, timestamp = new DateTime(0), isShortcutButtonsActive = isQuickActionsForFriendRequestsEnabled };
 
                         requestSent.CopyFrom(userProfile);
                         requestSent.blocked = IsUserBlocked(userId);
@@ -499,13 +470,6 @@ namespace DCL.Social.Friends
         private void HandleOpenWhisperChat(FriendEntryModel entry) =>
             OnPressWhisper?.Invoke(entry.userId);
 
-        private void HandleUnfriend(string userId)
-        {
-            dataStore.notifications.GenericConfirmation.Set(GenericConfirmationNotificationData.CreateUnFriendData(
-                UserProfileController.userProfilesCatalog.Get(userId)?.userName,
-                () => friendsController.RemoveFriend(userId)), true);
-        }
-
         private void HandleRequestRejected(FriendRequestEntryModel entry)
         {
             HandleRequestRejectedAsync(entry.userId, RestartFriendsOperationsCancellationToken()).Forget();
@@ -513,31 +477,21 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid HandleRequestRejectedAsync(string userId, CancellationToken cancellationToken)
         {
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    FriendRequest request = await friendsController.RejectFriendshipAsync(userId, cancellationToken);
+                FriendRequest request = await friendsController.RejectFriendshipAsync(userId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestRejected(request.From, request.To,
-                        PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage);
+                socialAnalytics.SendFriendRequestRejected(request.From, request.To,
+                    PlayerActionSource.FriendsHUD.ToString(), request.HasBodyMessage, request.FriendRequestId);
 
-                    RemoveFriendship(userId);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
+                RemoveFriendship(userId);
             }
-            else
+            catch (Exception e) when (e is not OperationCanceledException)
             {
-                friendsController.RejectFriendship(userId);
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                    friendsController, socialAnalytics);
 
-                socialAnalytics.SendFriendRequestRejected(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString(), false);
+                throw;
             }
 
             UpdateNotificationsCounter();
@@ -545,31 +499,21 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid HandleRequestCancelledAsync(string userId, CancellationToken cancellationToken)
         {
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
+                FriendRequest request = await friendsController.CancelRequestByUserIdAsync(userId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestCancelled(request.From, request.To,
-                        PlayerActionSource.FriendsHUD.ToString());
+                socialAnalytics.SendFriendRequestCancelled(request.From, request.To,
+                    PlayerActionSource.FriendsHUD.ToString(), request.FriendRequestId);
 
-                    RemoveFriendship(userId);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
+                RemoveFriendship(userId);
             }
-            else
+            catch (Exception e) when (e is not OperationCanceledException)
             {
-                friendsController.CancelRequestByUserId(userId);
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                    friendsController, socialAnalytics);
 
-                socialAnalytics.SendFriendRequestCancelled(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString());
+                throw;
             }
         }
 
@@ -585,31 +529,22 @@ namespace DCL.Social.Friends
 
         private async UniTaskVoid HandleRequestAcceptedAsync(string userId, CancellationToken cancellationToken)
         {
-            if (isNewFriendRequestsEnabled)
+            try
             {
-                try
-                {
-                    FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
-                    request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
+                FriendRequest request = friendsController.GetAllocatedFriendRequestByUser(userId);
+                request = await friendsController.AcceptFriendshipAsync(request.FriendRequestId, cancellationToken);
 
-                    socialAnalytics.SendFriendRequestApproved(request.From, request.To,
-                        PlayerActionSource.FriendsHUD.ToString(),
-                        request.HasBodyMessage);
-                }
-                catch (Exception e) when (e is not OperationCanceledException)
-                {
-                    e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
-                        friendsController, socialAnalytics);
-
-                    throw;
-                }
+                socialAnalytics.SendFriendRequestApproved(request.From, request.To,
+                    PlayerActionSource.FriendsHUD.ToString(),
+                    request.HasBodyMessage,
+                    request.FriendRequestId);
             }
-            else
+            catch (Exception e) when (e is not OperationCanceledException)
             {
-                friendsController.AcceptFriendship(userId);
+                e.ReportFriendRequestErrorToAnalyticsByUserId(userId, PlayerActionSource.FriendsHUD.ToString(),
+                    friendsController, socialAnalytics);
 
-                socialAnalytics.SendFriendRequestApproved(ownUserProfile?.userId, userId,
-                    PlayerActionSource.FriendsHUD.ToString(), false);
+                throw;
             }
         }
 
@@ -652,22 +587,12 @@ namespace DCL.Social.Friends
 
         private async UniTask DisplayMoreFriendRequestsAsync(CancellationToken cancellationToken)
         {
-            if (isNewFriendRequestsEnabled)
-            {
-                var allFriendRequests = await friendsController.GetFriendRequestsAsync(
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-                    cancellationToken);
+            var allFriendRequests = await friendsController.GetFriendRequestsAsync(
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
+                cancellationToken);
 
-                AddFriendRequests(allFriendRequests);
-            }
-            else
-            {
-                // TODO (NEW FRIEND REQUESTS): remove when we don't need to keep the retro-compatibility with the old version
-                friendsController.GetFriendRequests(
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests,
-                    LOAD_FRIENDS_ON_DEMAND_COUNT, lastSkipForFriendRequests);
-            }
+            AddFriendRequests(allFriendRequests);
 
             // We are not handling properly the case when the friend requests are not fetched correctly from server.
             // 'lastSkipForFriendRequests' will have an invalid value.
@@ -794,8 +719,6 @@ namespace DCL.Social.Friends
 
         private void OpenFriendRequestDetails(string userId)
         {
-            if (!isNewFriendRequestsEnabled) return;
-
             FriendRequest friendRequest = friendsController.GetAllocatedFriendRequestByUser(userId);
 
             if (friendRequest == null)

@@ -2,6 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace DCLServices.Lambdas.Tests
 
         private void MockSuccess()
         {
-            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<CancellationToken>())
+            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), Arg.Any<CancellationToken>())
                            .Returns(info =>
                             {
                                 var ct = info.Arg<CancellationToken>();
@@ -54,7 +55,7 @@ namespace DCLServices.Lambdas.Tests
 
         private void MockFailure()
         {
-            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), source.Token)
+            serviceConsumer.CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), source.Token)
                            .Returns(UniTask.FromResult<(Foo response, bool success)>((null, false)));
         }
 
@@ -63,7 +64,7 @@ namespace DCLServices.Lambdas.Tests
         {
             MockSuccess();
             await pointer.GetPageAsync(2, CancellationToken.None);
-            serviceConsumer.Received().CreateRequest(END_POINT, PAGE_SIZE, 2, source.Token);
+            serviceConsumer.Received().CreateRequest(END_POINT, PAGE_SIZE, 2, Arg.Any<Dictionary<string,string>>(), source.Token);
         }
 
         [Test]
@@ -71,13 +72,13 @@ namespace DCLServices.Lambdas.Tests
         {
             MockSuccess();
             var r = await pointer.GetPageAsync(2, CancellationToken.None);
-            Assert.IsTrue(pointer.CachedPages.TryGetValue(2, out var page));
-            Assert.AreEqual(r.response, page);
+            Assert.IsTrue(pointer.CachedPages.TryGetValue(2, out var pageResult));
+            Assert.AreEqual(r.response, pageResult);
             Assert.IsTrue(r.success);
-            Assert.AreEqual(1, page.field1);
-            Assert.AreEqual("str", page.field2);
-            Assert.AreEqual(2, page.pageNum);
-            Assert.AreEqual(PAGE_SIZE, page.pageSize);
+            Assert.AreEqual(1, pageResult.page.field1);
+            Assert.AreEqual("str", pageResult.page.field2);
+            Assert.AreEqual(2, pageResult.page.pageNum);
+            Assert.AreEqual(PAGE_SIZE, pageResult.page.pageSize);
         }
 
         [Test]
@@ -95,7 +96,7 @@ namespace DCLServices.Lambdas.Tests
             await pointer.GetPageAsync(4, CancellationToken.None);
             serviceConsumer.ClearReceivedCalls();
             await pointer.GetPageAsync(4, CancellationToken.None);
-            serviceConsumer.DidNotReceive().CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<CancellationToken>());
+            serviceConsumer.DidNotReceive().CreateRequest(END_POINT, PAGE_SIZE, Arg.Any<int>(), Arg.Any<Dictionary<string,string>>(), Arg.Any<CancellationToken>());
         }
 
         [Test]

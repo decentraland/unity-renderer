@@ -32,7 +32,6 @@ RectTransform:
   - {fileID: 3781809617804807125}
   - {fileID: 1493839374699080646}
   m_Father: {fileID: 3731816843781449031}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -95,7 +94,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8789181058068879866}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -146,7 +144,6 @@ RectTransform:
   m_Children:
   - {fileID: 8789181058068879866}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -178,8 +175,14 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8789181058068879866}
     m_Modifications:
+    - target: {fileID: 713801815530977898, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2953933679232708021, guid: ad93ccded6c34764d83ef80fa9601032,
         type: 3}
       propertyPath: m_Pivot.x
@@ -285,12 +288,75 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067649184257875238, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3068497017741560332, guid: ad93ccded6c34764d83ef80fa9601032,
         type: 3}
       propertyPath: m_Name
       value: Title
       objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_text
+      value: Your message here
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 0.011787415
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 0.023712158
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_fontSizeMin
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5250413406064515501, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7523263880897057197, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7523263880897057197, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7523263880897057197, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7523263880897057197, guid: ad93ccded6c34764d83ef80fa9601032,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad93ccded6c34764d83ef80fa9601032, type: 3}
 --- !u!224 &3781809617804807125 stripped
 RectTransform:

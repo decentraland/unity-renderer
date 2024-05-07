@@ -1,9 +1,15 @@
+using Cysharp.Threading.Tasks;
 using DCL;
 using DCL.Social.Friends;
+using DCL.Tasks;
+using DCL.Wallet;
+using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -14,6 +20,13 @@ using Environment = DCL.Environment;
 /// </summary>
 public class ExploreV2MenuComponentController : IExploreV2MenuComponentController
 {
+    private readonly IPlacesAPIService placesAPIService;
+    private readonly IWorldsAPIService worldsAPIService;
+    private readonly IPlacesAnalytics placesAnalytics;
+    private readonly IRealmsInfoBridge realmsInfoBridge;
+
+    // TODO: Refactor the ExploreV2MenuComponentController class in order to inject UserProfileWebInterfaceBridge, theGraph and DataStore
+
     internal const ExploreSection DEFAULT_SECTION = ExploreSection.Explore;
 
     internal IExploreV2MenuComponentView view;
@@ -24,24 +37,31 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     internal ExploreSection currentOpenSection;
     internal Dictionary<BaseVariable<bool>, ExploreSection> sectionsByVisibilityVar;
     private ExploreV2ComponentRealmsController realmController;
+    private WalletCardHUDController walletCardHUDController;
 
     private MouseCatcher mouseCatcher;
     private Dictionary<BaseVariable<bool>, ExploreSection> sectionsByInitVar;
     private Dictionary<ExploreSection, (BaseVariable<bool> initVar, BaseVariable<bool> visibilityVar)> sectionsVariables;
+    private CancellationTokenSource openRealmSelectorCancellationToken;
 
     internal BaseVariable<bool> isOpen => DataStore.i.exploreV2.isOpen;
     internal BaseVariable<bool> isInitialized => DataStore.i.exploreV2.isInitialized;
     internal BaseVariable<bool> profileCardIsOpen => DataStore.i.exploreV2.profileCardIsOpen;
-
     internal BaseVariable<bool> placesAndEventsVisible => DataStore.i.exploreV2.placesAndEventsVisible;
     internal BaseVariable<bool> isAvatarEditorInitialized => DataStore.i.HUDs.isAvatarEditorInitialized;
     internal BaseVariable<bool> avatarEditorVisible => DataStore.i.HUDs.avatarEditorVisible;
+    internal BaseVariable<bool> isCameraReelInitialized => DataStore.i.HUDs.isCameraReelInitialized;
+    internal BaseVariable<bool> cameraReelSectionVisible => DataStore.i.HUDs.cameraReelSectionVisible;
     internal BaseVariable<bool> isNavmapInitialized => DataStore.i.HUDs.isNavMapInitialized;
     internal BaseVariable<bool> navmapVisible => DataStore.i.HUDs.navmapVisible;
     internal BaseVariable<bool> isQuestInitialized => DataStore.i.Quests.isInitialized;
     internal BaseVariable<bool> questVisible => DataStore.i.HUDs.questsPanelVisible;
     internal BaseVariable<bool> isSettingsPanelInitialized => DataStore.i.settings.isInitialized;
     internal BaseVariable<bool> settingsVisible => DataStore.i.settings.settingsPanelVisible;
+    internal BaseVariable<bool> isWalletInitialized => DataStore.i.wallet.isInitialized;
+    internal BaseVariable<bool> walletVisible => DataStore.i.wallet.isWalletSectionVisible;
+    internal BaseVariable<bool> isMyAccountInitialized => DataStore.i.myAccount.isInitialized;
+    internal BaseVariable<bool> myAccountVisible => DataStore.i.myAccount.isMyAccountSectionVisible;
 
     internal BaseVariable<int> currentSectionIndex => DataStore.i.exploreV2.currentSectionIndex;
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -54,17 +74,30 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
     private RectTransform mapTooltipReference => view.currentMapTooltipReference;
     private RectTransform questTooltipReference => view.currentQuestTooltipReference;
     private RectTransform settingsTooltipReference => view.currentSettingsTooltipReference;
+    private RectTransform cameraReelTooltipReference => view.cameraReelTooltipReference;
     private RectTransform profileCardTooltipReference => view.currentProfileCardTooltipReference;
+
+    public ExploreV2MenuComponentController(IPlacesAPIService placesAPIService, IWorldsAPIService worldsAPIService, IPlacesAnalytics placesAnalytics,
+        IRealmsInfoBridge realmsInfoBridge)
+    {
+        this.placesAPIService = placesAPIService;
+        this.worldsAPIService = worldsAPIService;
+        this.placesAnalytics = placesAnalytics;
+        this.realmsInfoBridge = realmsInfoBridge;
+    }
 
     public void Initialize()
     {
         sectionsVariables = new Dictionary<ExploreSection, (BaseVariable<bool>, BaseVariable<bool>)>
         {
             { ExploreSection.Explore, (isPlacesAndEventsSectionInitialized, placesAndEventsVisible) },
+            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
             { ExploreSection.Backpack, (isAvatarEditorInitialized, avatarEditorVisible) },
             { ExploreSection.Map, (isNavmapInitialized, navmapVisible) },
-            { ExploreSection.Quest, (isQuestInitialized, questVisible) },
+            { ExploreSection.CameraReel, (isCameraReelInitialized, cameraReelSectionVisible) },
             { ExploreSection.Settings, (isSettingsPanelInitialized, settingsVisible) },
+            { ExploreSection.Wallet, (isWalletInitialized, walletVisible) },
+            { ExploreSection.MyAccount, (isMyAccountInitialized, myAccountVisible) },
         };
 
         sectionsByInitVar = sectionsVariables.ToDictionary(pair => pair.Value.initVar, pair => pair.Key);
@@ -78,7 +111,17 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         realmController = new ExploreV2ComponentRealmsController(DataStore.i.realm, view);
         realmController.Initialize();
-        view.currentRealmViewer.onLogoClick?.AddListener(view.ShowRealmSelectorModal);
+        view.currentRealmViewer.onLogoClick?.AddListener(ShowRealmSelectorModal);
+
+        if (isWalletInitialized.Get())
+            OnWalletInitialized(true, false);
+        else
+            isWalletInitialized.OnChange += OnWalletInitialized;
+
+        if (isMyAccountInitialized.Get())
+            OnMyAccountInitialized(true, false);
+        else
+            isMyAccountInitialized.OnChange += OnMyAccountInitialized;
 
         ownUserProfile.OnUpdate += UpdateProfileInfo;
         UpdateProfileInfo(ownUserProfile);
@@ -89,11 +132,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         DataStore.i.exploreV2.topMenuTooltipReference.Set(topMenuTooltipReference);
         DataStore.i.exploreV2.placesAndEventsTooltipReference.Set(placesAndEventsTooltipReference);
+        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.backpackTooltipReference.Set(backpackTooltipReference);
         DataStore.i.exploreV2.mapTooltipReference.Set(mapTooltipReference);
-        DataStore.i.exploreV2.questTooltipReference.Set(questTooltipReference);
         DataStore.i.exploreV2.settingsTooltipReference.Set(settingsTooltipReference);
         DataStore.i.exploreV2.profileCardTooltipReference.Set(profileCardTooltipReference);
+        DataStore.i.exploreV2.cameraReelTooltipReference.Set(cameraReelTooltipReference);
 
         view.OnSectionOpen += OnSectionOpen;
 
@@ -117,8 +161,10 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         currentSectionIndex.Set((int)DEFAULT_SECTION, false);
 
         view.ConfigureEncapsulatedSection(ExploreSection.Map, DataStore.i.exploreV2.configureMapInFullscreenMenu);
-        view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
         view.ConfigureEncapsulatedSection(ExploreSection.Settings, DataStore.i.exploreV2.configureSettingsInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.CameraReel, DataStore.i.exploreV2.configureCameraReelInFullScreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.Wallet, DataStore.i.exploreV2.configureWalletSectionInFullscreenMenu);
+        view.ConfigureEncapsulatedSection(ExploreSection.MyAccount, DataStore.i.exploreV2.configureMyAccountSectionInFullscreenMenu);
 
         DataStore.i.common.isWorld.OnChange += OnWorldChange;
     }
@@ -156,10 +202,37 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
         }
 
         DataStore.i.common.isWorld.OnChange -= OnWorldChange;
+
+        isWalletInitialized.OnChange -= OnWalletInitialized;
+        walletCardHUDController?.Dispose();
+
+        isMyAccountInitialized.OnChange -= OnMyAccountInitialized;
     }
 
     protected internal virtual IExploreV2MenuComponentView CreateView() =>
         ExploreV2MenuComponentView.Create();
+
+    private void OnWalletInitialized(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        isWalletInitialized.OnChange -= OnWalletInitialized;
+
+        walletCardHUDController = new WalletCardHUDController(
+            view.currentWalletCard,
+            new UserProfileWebInterfaceBridge(),
+            Environment.i.platform.serviceProviders.theGraph,
+            DataStore.i);
+    }
+
+    private void OnMyAccountInitialized(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        isMyAccountInitialized.OnChange -= OnMyAccountInitialized;
+    }
 
     internal virtual IExploreV2Analytics CreateAnalyticsController() =>
         new ExploreV2Analytics.ExploreV2Analytics();
@@ -171,7 +244,7 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         placesAndEventsSectionController = new PlacesAndEventsSectionComponentController(
             view.currentPlacesAndEventsSection, exploreV2Analytics, DataStore.i, new UserProfileWebInterfaceBridge(),
-            Environment.i.serviceLocator.Get<IFriendsController>());
+            Environment.i.serviceLocator.Get<IFriendsController>(), placesAPIService, worldsAPIService, placesAnalytics);
 
         placesAndEventsSectionController.OnCloseExploreV2 += OnCloseButtonPressed;
     }
@@ -226,6 +299,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (visible)
         {
+            // TODO: This is temporal while we want to keep the NEW tag for the new Backpack feature
+            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("backpack_editor_v2"))
+                view.SetSectionAsNew(ExploreSection.Backpack, false);
+
+            view.SetWalletActive(isWalletInitialized.Get(), ownUserProfile.isGuest);
+
             if (mouseCatcher != null)
                 mouseCatcher.UnlockCursor();
 
@@ -244,12 +323,17 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             profileCardIsOpen.Set(false);
         }
 
+        DataStore.i.wallet.isWalletCardVisible.Set(visible);
         view.SetVisible(visible);
     }
 
     private void OnSectionVisibilityChanged(BaseVariable<bool> visibilityVar, bool visible, bool previous = false)
     {
         ExploreSection section = sectionsByVisibilityVar[visibilityVar];
+
+        if (section is ExploreSection.Wallet or ExploreSection.MyAccount)
+            return;
+
         BaseVariable<bool> initVar = section == ExploreSection.Explore ? isInitialized : sectionsVariables[section].initVar;
 
         if (!initVar.Get() || DataStore.i.common.isSignUpFlow.Get())
@@ -274,6 +358,12 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
 
         if (currentOpenSection == ExploreSection.Backpack)
             view.ConfigureEncapsulatedSection(ExploreSection.Backpack, DataStore.i.exploreV2.configureBackpackInFullscreenMenu);
+
+        if (currentOpenSection == ExploreSection.Quest)
+            view.ConfigureEncapsulatedSection(ExploreSection.Quest, DataStore.i.exploreV2.configureQuestInFullscreenMenu);
+
+        if (currentOpenSection == ExploreSection.CameraReel)
+            DataStore.i.HUDs.cameraReelOpenSource.Set("Menu");
 
         ChangeVisibilityVarForSwitchedSections();
 
@@ -321,5 +411,20 @@ public class ExploreV2MenuComponentController : IExploreV2MenuComponentControlle
             view.HideMapOnEnteringWorld();
 
         view.SetSectionActive(ExploreSection.Map, !isWorld);
+    }
+
+    private void ShowRealmSelectorModal()
+    {
+        async UniTask FetchRealmsThenShowModalAsync(CancellationToken cancellationToken)
+        {
+            try { await realmsInfoBridge.FetchRealmsInfo(cancellationToken); }
+            catch (OperationCanceledException) { return; }
+            catch (Exception e) { Debug.LogException(e); }
+
+            view.ShowRealmSelectorModal();
+        }
+
+        openRealmSelectorCancellationToken = openRealmSelectorCancellationToken.SafeRestart();
+        FetchRealmsThenShowModalAsync(openRealmSelectorCancellationToken.Token).Forget();
     }
 }

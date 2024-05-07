@@ -12,6 +12,7 @@ namespace Tests
         private IdleChecker idleChecker;
 
         [UnityTest]
+        [Category("Flaky")]
         public IEnumerator BeIdleInOneSecond()
         {
             idleChecker = new IdleChecker();

@@ -1,51 +1,54 @@
-using DCL.Chat.HUD;
+using DCL.Social.Chat;
 using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-public class ChannelMemberEntryShould
+namespace DCL.Social.Chat
 {
-    private ChannelMemberEntry channelMemberEntryComponent;
-
-    [SetUp]
-    public void SetUp()
+    public class ChannelMemberEntryShould
     {
-        channelMemberEntryComponent = Object.Instantiate(
-            AssetDatabase.LoadAssetAtPath<ChannelMemberEntry>(
-                "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelMemberEntry.prefab"));
+        private ChannelMemberEntry channelMemberEntryComponent;
 
-        channelMemberEntryComponent.userThumbnail.imageObserver = Substitute.For<ILazyTextureObserver>();
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        channelMemberEntryComponent.Dispose();
-    }
-
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void ConfigureEntryCorrectly(bool isOnline)
-    {
-        // Arrange
-        ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+        [SetUp]
+        public void SetUp()
         {
-            userId = "testId",
-            userName = "testName",
-            thumnailUrl = "testUri",
-            isOnline = isOnline
-        };
+            channelMemberEntryComponent = Object.Instantiate(
+                AssetDatabase.LoadAssetAtPath<ChannelMemberEntry>(
+                    "Assets/Scripts/MainScripts/DCL/Controllers/HUD/SocialBarPrefabs/SocialBarV1/Prefabs/ChannelMemberEntry.prefab"));
 
-        // Act
-        channelMemberEntryComponent.Configure(testModel);
+            channelMemberEntryComponent.userThumbnail.imageObserver = Substitute.For<ILazyTextureObserver>();
+        }
 
-        // Assert
-        Assert.AreEqual(testModel, channelMemberEntryComponent.model);
-        Assert.AreEqual(testModel.userName, channelMemberEntryComponent.nameLabel.text);
-        Assert.AreEqual(isOnline, channelMemberEntryComponent.onlineMark.activeSelf);
-        Assert.AreEqual(!isOnline, channelMemberEntryComponent.offlineMark.activeSelf);
+        [TearDown]
+        public void TearDown()
+        {
+            channelMemberEntryComponent.Dispose();
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ConfigureEntryCorrectly(bool isOnline)
+        {
+            // Arrange
+            ChannelMemberEntryModel testModel = new ChannelMemberEntryModel
+            {
+                userId = "testId",
+                userName = "testName",
+                thumnailUrl = "testUri",
+                isOnline = isOnline
+            };
+
+            // Act
+            channelMemberEntryComponent.Configure(testModel);
+
+            // Assert
+            Assert.AreEqual(testModel, channelMemberEntryComponent.model);
+            Assert.AreEqual(testModel.userName, channelMemberEntryComponent.nameLabel.text);
+            Assert.AreEqual(isOnline, channelMemberEntryComponent.onlineMark.activeSelf);
+            Assert.AreEqual(!isOnline, channelMemberEntryComponent.offlineMark.activeSelf);
+        }
     }
 }

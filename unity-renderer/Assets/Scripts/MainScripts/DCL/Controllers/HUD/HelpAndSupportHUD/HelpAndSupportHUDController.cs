@@ -1,4 +1,6 @@
 using DCL.Interface;
+using Analytics;
+using DCL.Browser;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,9 +14,14 @@ namespace DCL.HelpAndSupportHUD
         internal const string FAQ_URL = "https://docs.decentraland.org/decentraland/faq/";
         public IHelpAndSupportHUDView view {  get; }
 
-        public HelpAndSupportHUDController(IHelpAndSupportHUDView view)
+        private ISupportAnalytics analytics;
+        internal readonly IBrowserBridge browserBridge;
+
+        public HelpAndSupportHUDController(IHelpAndSupportHUDView view, ISupportAnalytics analytics, IBrowserBridge browserBridge)
         {
             this.view = view;
+            this.analytics = analytics;
+            this.browserBridge = browserBridge;
             view.Initialize();
 
             view.OnDiscordButtonPressed += OpenDiscord;
@@ -39,12 +46,13 @@ namespace DCL.HelpAndSupportHUD
 
         private void OpenSupport()
         {
+            analytics.SendOpenSupport(OpenSupportSource.ExploreHUD);
             OpenIntercom();
         }
 
         internal void OpenURL(string url)
         {
-            WebInterface.OpenURL(url);
+            browserBridge.OpenUrl(url);
         }
 
         public void Dispose()

@@ -3,10 +3,13 @@ using System;
 public enum ExploreSection
 {
     Explore = 0,
-    Backpack = 1,
-    Map = 2,
-    Quest = 3,
-    Settings = 4
+    Quest = 1,
+    Backpack = 2,
+    CameraReel = 3,
+    Map = 4,
+    Settings = 5,
+    Wallet = 6,
+    MyAccount = 7,
 }
 
 public interface IExploreV2MenuComponentController : IDisposable

@@ -1,39 +1,42 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DCL;
 
 public class AvatarAnimationEventHandler : MonoBehaviour
 {
-    const string FOOTSTEP_NAME = "footstep", HEART_NAME = "heart";
-    const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
-    const float MIN_EVENT_WAIT_TIME = 0.1f;
-    const float HOHOHO_OFFSET = 1.5f;
+    private const string FOOTSTEP_NAME = "footstep", HEART_NAME = "heart";
+    private const string ANIM_NAME_KISS = "kiss", ANIM_NAME_MONEY = "money", ANIM_NAME_CLAP = "clap", ANIM_NAME_SNOWFLAKE = "snowfall", ANIM_NAME_HOHOHO = "hohoho";
+    private const float MIN_EVENT_WAIT_TIME = 0.1f;
+    private const float HOHOHO_OFFSET = 1.5f;
 
-    AudioEvent footstepLight;
-    AudioEvent footstepSlide;
-    AudioEvent footstepWalk;
-    AudioEvent footstepRun;
-    AudioEvent clothesRustleShort;
-    AudioEvent clap;
-    AudioEvent throwMoney;
-    AudioEvent blowKiss;
+    private AudioEvent footstepLight;
+    private AudioEvent footstepSlide;
+    private AudioEvent footstepWalk;
+    private AudioEvent footstepRun;
+    private AudioEvent clothesRustleShort;
+    private AudioEvent clap;
+    private AudioEvent throwMoney;
+    private AudioEvent blowKiss;
 
-    Animation anim;
+    private Animation anim;
 
-    float lastEventTime;
+    private float lastEventTime;
 
-    StickersController stickersController;
+    private StickersController stickersController;
 
-    Transform footL;
-    Transform footR;
-    Transform handL;
-    Transform handR;
+    private int renderingLayer;
 
-    public void Init(AudioContainer audioContainer)
+    private Transform footL;
+    private Transform footR;
+    private Transform handL;
+    private Transform handR;
+
+    public void Init(AudioContainer audioContainer, int renderingLayer)
     {
         if (audioContainer == null)
             return;
+
+        this.renderingLayer = renderingLayer;
 
         footstepLight = audioContainer.GetEvent("FootstepLight");
         footstepSlide = audioContainer.GetEvent("FootstepSlide");
@@ -65,13 +68,13 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     public void AnimEvent_FootstepRunLeft()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker(FOOTSTEP_NAME, footL.position, Vector3.up);
+        PlaySticker(FOOTSTEP_NAME, footL.position, Vector3.up, renderingLayer: renderingLayer);
     }
 
     public void AnimEvent_FootstepRunRight()
     {
         PlayAudioEvent(footstepRun);
-        PlaySticker(FOOTSTEP_NAME, footR.position, Vector3.up);
+        PlaySticker(FOOTSTEP_NAME, footR.position, Vector3.up, renderingLayer: renderingLayer);
     }
 
     public void AnimEvent_ClothesRustleShort() { PlayAudioEvent(clothesRustleShort); }
@@ -85,7 +88,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(clap);
-        PlaySticker(ANIM_NAME_CLAP, handR.position, Vector3.up, true);
+        PlaySticker(ANIM_NAME_CLAP, handR.position, Vector3.up, true, renderingLayer: renderingLayer);
         UpdateEventTime();
     }
 
@@ -98,7 +101,7 @@ public class AvatarAnimationEventHandler : MonoBehaviour
             return;
 
         PlayAudioEvent(throwMoney);
-        PlaySticker(ANIM_NAME_MONEY, handL.position, handL.rotation.eulerAngles, true);
+        PlaySticker(ANIM_NAME_MONEY, handL.position, handL.rotation.eulerAngles, true, renderingLayer: renderingLayer);
         UpdateEventTime();
     }
 
@@ -115,10 +118,10 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         UpdateEventTime();
     }
 
-    IEnumerator EmitHeartParticle()
+    private IEnumerator EmitHeartParticle()
     {
         yield return new WaitForSeconds(0.8f);
-        PlaySticker(HEART_NAME, handR.position, transform.rotation.eulerAngles, true);
+        PlaySticker(HEART_NAME, handR.position, transform.rotation.eulerAngles, true, renderingLayer: renderingLayer);
     }
 
     public void AnimEvent_Snowflakes()
@@ -129,27 +132,27 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_SNOWFLAKE))
             return;
 
-        PlaySticker("snowflakes", transform.position, Vector3.zero, true);
+        PlaySticker("snowflakes", transform.position, Vector3.zero, true, renderingLayer: renderingLayer);
     }
 
     public void AnimEvent_Hohoho()
     {
         if (LastEventWasTooRecent())
             return;
-        
+
         if (!AnimationWeightIsOverThreshold(0.2f, ANIM_NAME_HOHOHO))
             return;
 
-        PlaySticker(ANIM_NAME_HOHOHO, transform.position + Vector3.up * HOHOHO_OFFSET, Vector3.zero, true);
+        PlaySticker(ANIM_NAME_HOHOHO, transform.position + Vector3.up * HOHOHO_OFFSET, Vector3.zero, true, renderingLayer: renderingLayer);
     }
 
-    void PlayAudioEvent(AudioEvent audioEvent)
+    private void PlayAudioEvent(AudioEvent audioEvent)
     {
         if (audioEvent != null)
             audioEvent.Play(true);
     }
 
-    bool AnimationWeightIsOverThreshold(float threshold, string animationName)
+    private bool AnimationWeightIsOverThreshold(float threshold, string animationName)
     {
         if (anim != null)
         {
@@ -170,15 +173,13 @@ public class AvatarAnimationEventHandler : MonoBehaviour
         return false;
     }
 
-    void UpdateEventTime()
+    private void UpdateEventTime()
     {
         lastEventTime = Time.realtimeSinceStartup;
     }
 
-    bool LastEventWasTooRecent()
-    {
-        return lastEventTime + MIN_EVENT_WAIT_TIME >= Time.realtimeSinceStartup;
-    }
+    private bool LastEventWasTooRecent() =>
+        lastEventTime + MIN_EVENT_WAIT_TIME >= Time.realtimeSinceStartup;
 
     /// <summary>
     /// Plays a sticker.
@@ -186,9 +187,9 @@ public class AvatarAnimationEventHandler : MonoBehaviour
     /// <param name="id">ID string of sticker</param>
     /// <param name="position">Position in world space</param>
     /// <param name="rotation">Euler angles</param>
-    void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform = false)
+    private void PlaySticker(string id, Vector3 position, Vector3 direction, bool followTransform = false, int renderingLayer = 0)
     {
         if (stickersController != null)
-            stickersController.PlaySticker(id, position, direction, followTransform);
+            stickersController.PlaySticker(id, position, direction, followTransform, renderingLayer);
     }
 }

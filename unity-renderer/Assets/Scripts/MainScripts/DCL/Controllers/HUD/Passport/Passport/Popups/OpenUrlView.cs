@@ -1,17 +1,16 @@
 using DCL.Helpers;
 using DCL.Interface;
-using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class OpenUrlView : BaseComponentView
 {
-    [SerializeField] private ShowHideAnimator openUrlAnimator;
     [SerializeField] internal Button closeButton;
     [SerializeField] internal Button continueButton;
     [SerializeField] internal Button cancelButton;
-    [SerializeField] internal TMPro.TextMeshProUGUI domainText;
-    [SerializeField] internal TMPro.TextMeshProUGUI urlText;
+    [SerializeField] internal TextMeshProUGUI domainText;
+    [SerializeField] internal TextMeshProUGUI urlText;
     private string currentUrl;
 
     public void Start()
@@ -44,12 +43,10 @@ public class OpenUrlView : BaseComponentView
     {
         if (visible)
         {
-            openUrlAnimator.gameObject.SetActive(true);
-            openUrlAnimator.Show();
+            gameObject.SetActive(true);
+            Show();
         }
         else
-        {
-            openUrlAnimator.Hide();
-        }
+            Hide();
     }
 }

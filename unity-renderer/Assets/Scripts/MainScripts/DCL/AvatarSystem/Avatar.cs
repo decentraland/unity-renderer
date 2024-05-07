@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL;
+using DCL.Emotes;
+using DCL.Tasks;
 using GPUSkinning;
 using UnityEngine;
 
@@ -11,37 +14,38 @@ namespace AvatarSystem
     // [ADR 65 - https://github.com/decentraland/adr]
     public class Avatar : IAvatar
     {
+        private const string NEW_CDN_FF = "ab-new-cdn";
+
         private const float RESCALING_BOUNDS_FACTOR = 100f;
         internal const string LOADING_VISIBILITY_CONSTRAIN = "Loading";
 
         protected readonly ILoader loader;
         protected readonly IVisibility visibility;
-        protected readonly IAnimator animator;
+
         private readonly IAvatarCurator avatarCurator;
         private readonly ILOD lod;
         private readonly IGPUSkinning gpuSkinning;
         private readonly IGPUSkinningThrottlerService gpuSkinningThrottlerService;
-        private readonly IEmoteAnimationEquipper emoteAnimationEquipper;
+        protected readonly IAvatarEmotesController emotesController;
 
-        private CancellationTokenSource disposeCts = new ();
-
+        private CancellationTokenSource loadCancellationToken;
         public IAvatar.Status status { get; private set; } = IAvatar.Status.Idle;
         public Vector3 extents { get; private set; }
         public int lodLevel => lod?.lodIndex ?? 0;
         public event Action<Renderer> OnCombinedRendererUpdate;
+        private FeatureFlag featureFlags => DataStore.i.featureFlags.flags.Get();
 
-        internal Avatar(IAvatarCurator avatarCurator, ILoader loader, IAnimator animator,
+        internal Avatar(IAvatarCurator avatarCurator, ILoader loader,
             IVisibility visibility, ILOD lod, IGPUSkinning gpuSkinning, IGPUSkinningThrottlerService gpuSkinningThrottlerService,
-            IEmoteAnimationEquipper emoteAnimationEquipper)
+            IAvatarEmotesController emotesController)
         {
             this.avatarCurator = avatarCurator;
             this.loader = loader;
-            this.animator = animator;
             this.visibility = visibility;
             this.lod = lod;
             this.gpuSkinning = gpuSkinning;
             this.gpuSkinningThrottlerService = gpuSkinningThrottlerService;
-            this.emoteAnimationEquipper = emoteAnimationEquipper;
+            this.emotesController = emotesController;
         }
 
         /// <summary>
@@ -52,73 +56,96 @@ namespace AvatarSystem
         /// <param name="ct"></param>
         public async UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default)
         {
-            disposeCts ??= new CancellationTokenSource();
-
             status = IAvatar.Status.Idle;
-            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, disposeCts.Token).Token;
 
-            linkedCt.ThrowIfCancellationRequested();
+            loadCancellationToken = loadCancellationToken.SafeRestart();
+            CancellationToken linkedCt = CancellationTokenSource.CreateLinkedTokenSource(ct, loadCancellationToken.Token).Token;
 
-            try
-            {
-                await LoadTry(wearablesIds, emotesIds, settings, linkedCt);
-            }
+            try { await LoadTry(wearablesIds, emotesIds, settings, linkedCt); }
             catch (OperationCanceledException)
             {
-                Dispose();
+                // Cancel any ongoing process except the current loadCancellationToken
+                // since it was provoking a double cancellation thus inconsistencies in the flow
+                // TODO: disposing collaborators is an anti-pattern in the current context. Disposed objects should not be reused. Instead all collaborators should handle OperationCancelledException by their own so the internal state is restored
+                CancelAndRestoreOngoingProcessesExceptTheLoading();
+
                 throw;
             }
             catch (Exception e)
             {
-                Dispose();
+                // Cancel any ongoing process except the current loadCancellationToken
+                // since it was provoking a double cancellation thus inconsistencies in the flow
+                // TODO: disposing collaborators is an anti-pattern in the current context. Disposed objects should not be reused. Instead all collaborators should handle OperationCancelledException by their own so the internal state is restored
+                CancelAndRestoreOngoingProcessesExceptTheLoading();
+
                 Debug.Log($"Avatar.Load failed with wearables:[{string.Join(",", wearablesIds)}] " +
                           $"for bodyshape:{settings.bodyshapeId} and player {settings.playerName}");
+
                 if (e.InnerException != null)
                     ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 else
                     throw;
-            }
-            finally
-            {
-                disposeCts?.Dispose();
-                disposeCts = null;
             }
         }
 
         protected virtual async UniTask LoadTry(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken linkedCt)
         {
             List<WearableItem> emotes = await LoadWearables(wearablesIds, emotesIds, settings, linkedCt: linkedCt);
-            animator.Prepare(settings.bodyshapeId, loader.bodyshapeContainer);
-            Prepare(settings, emotes, loader.bodyshapeContainer);
+
+            GameObject container = loader.bodyshapeContainer;
+
+            if (featureFlags.IsFeatureEnabled(NEW_CDN_FF))
+            {
+                if (loader.bodyshapeContainer.transform.childCount > 0)
+                {
+                    loader.bodyshapeContainer.transform.Find("Armature");
+                    Transform child = loader.bodyshapeContainer.transform.GetChild(0);
+
+                    // Asset bundles assets dont have the gltf-scene name as the root, they have the file hash, for this particular object we need it to be Armature
+                    child.name = "Armature";
+                }
+            }
+            else
+            {
+                GameObject parent = GetDeepParentOf(loader.bodyshapeContainer, "Armature");
+                container = parent != null ? parent : container;
+            }
+
+            emotesController.Prepare(settings.bodyshapeId, container);
+            Prepare(settings, emotes);
             Bind();
             Inform(loader.combinedRenderer);
         }
 
+        private GameObject GetDeepParentOf(GameObject container, string childName)
+        {
+            foreach (Transform child in container.transform)
+                return child.name == childName ? child.parent.gameObject : GetDeepParentOf(child.gameObject, childName);
+
+            return null;
+        }
+
         protected async UniTask<List<WearableItem>> LoadWearables(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, SkinnedMeshRenderer bonesRenderers = null, CancellationToken linkedCt = default)
         {
-            WearableItem bodyshape;
-            WearableItem eyes;
-            WearableItem eyebrows;
-            WearableItem mouth;
+            BodyWearables bodyWearables;
             List<WearableItem> wearables;
             List<WearableItem> emotes;
 
-            (bodyshape, eyes, eyebrows, mouth, wearables, emotes) =
-                await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
+            (bodyWearables, wearables, emotes) = await avatarCurator.Curate(settings, wearablesIds, emotesIds, linkedCt);
 
-            if (!loader.IsValidForBodyShape(bodyshape, eyes, eyebrows, mouth))
+            if (!loader.IsValidForBodyShape(bodyWearables))
                 visibility.AddGlobalConstrain(LOADING_VISIBILITY_CONSTRAIN);
 
-            await loader.Load(bodyshape, eyes, eyebrows, mouth, wearables, settings, bonesRenderers, linkedCt);
+            await loader.Load(bodyWearables, wearables, settings, bonesRenderers, linkedCt);
             return emotes;
         }
 
-        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes, GameObject loaderBodyshapeContainer)
+        protected void Prepare(AvatarSettings settings, List<WearableItem> emotes)
         {
             //Scale the bounds due to the giant avatar not being skinned yet
             extents = loader.combinedRenderer.localBounds.extents * 2f / RESCALING_BOUNDS_FACTOR;
 
-            emoteAnimationEquipper.SetEquippedEmotes(settings.bodyshapeId, emotes);
+            emotesController.LoadEmotes(settings.bodyshapeId, emotes);
             gpuSkinning.Prepare(loader.combinedRenderer);
             gpuSkinningThrottlerService.Register(gpuSkinning);
         }
@@ -139,13 +166,16 @@ namespace AvatarSystem
         public virtual void AddVisibilityConstraint(string key)
         {
             visibility.AddGlobalConstrain(key);
+            emotesController.AddVisibilityConstraint(key);
         }
 
-        public void RemoveVisibilityConstrain(string key) =>
+        public void RemoveVisibilityConstrain(string key)
+        {
             visibility.RemoveGlobalConstrain(key);
+            emotesController.RemoveVisibilityConstraint(key);
+        }
 
-        public void PlayEmote(string emoteId, long timestamps) =>
-            animator?.PlayEmote(emoteId, timestamps);
+        public IAvatarEmotesController GetEmotesController() => emotesController;
 
         public void SetLODLevel(int lodIndex) =>
             lod.SetLodIndex(lodIndex);
@@ -165,12 +195,19 @@ namespace AvatarSystem
         public Renderer GetMainRenderer() =>
             gpuSkinning.renderer;
 
+        public IReadOnlyList<SkinnedMeshRenderer> originalVisibleRenderers => loader.originalVisibleRenderers;
+
         public void Dispose()
         {
+            loadCancellationToken?.Cancel();
+            loadCancellationToken?.Dispose();
+            loadCancellationToken = null;
+            CancelAndRestoreOngoingProcessesExceptTheLoading();
+        }
+
+        private void CancelAndRestoreOngoingProcessesExceptTheLoading()
+        {
             status = IAvatar.Status.Idle;
-            disposeCts?.Cancel();
-            disposeCts?.Dispose();
-            disposeCts = null;
             avatarCurator?.Dispose();
             loader?.Dispose();
             visibility?.Dispose();

@@ -1,14 +1,15 @@
 using Cysharp.Threading.Tasks;
+using DCL.Chat;
 using DCL.Chat.Channels;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
+    // TODO: refactor into MVC
     public class ChannelLinkDetector : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] internal TMP_Text textComponent;
@@ -54,8 +55,14 @@ namespace DCL.Chat.HUD
             string clickedLink = GetChannelLinkByPointerPosition(eventData.position);
 
             if (!ChannelUtils.IsAChannel(clickedLink)) return;
-            DataStore.i.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
-            DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
+
+            if (UserProfile.GetOwnUserProfile().isGuest)
+                DataStore.i.HUDs.connectWalletModalVisible.Set(true);
+            else
+            {
+                DataStore.i.channels.channelJoinedSource.Set(ChannelJoinedSource.Link);
+                DataStore.i.channels.currentJoinChannelModal.Set(clickedLink.ToLower(), true);
+            }
         }
 
         private void OnTextComponentPreRenderText(TMP_TextInfo textInfo)

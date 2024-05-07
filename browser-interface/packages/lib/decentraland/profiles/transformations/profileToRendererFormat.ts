@@ -78,9 +78,10 @@ function defaultAvatar(): Omit<AvatarInfo, 'snapshots'> {
   }
 }
 
-function prepareAvatar(avatar?: Partial<AvatarInfo>) {
+export function prepareAvatar(avatar?: Partial<AvatarInfo>) {
   return {
     wearables: avatar?.wearables || [],
+    forceRender: avatar?.forceRender || [],
     emotes: avatar?.emotes || [],
     bodyShape: avatar?.bodyShape || '',
     eyeColor: convertToRGBObject(avatar?.eyes?.color),

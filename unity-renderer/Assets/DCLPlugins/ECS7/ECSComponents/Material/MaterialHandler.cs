@@ -12,29 +12,48 @@ namespace DCL.ECSComponents
 {
     public class MaterialHandler : IECSComponentHandler<PBMaterial>
     {
+        private IDCLEntity entity;
+        private IParcelScene scene;
         private PBMaterial lastModel = null;
         internal AssetPromise_Material promiseMaterial;
 
         private readonly Queue<AssetPromise_Material> activePromises = new Queue<AssetPromise_Material>();
         private readonly IInternalECSComponent<InternalMaterial> materialInternalComponent;
         private readonly IInternalECSComponent<InternalVideoMaterial> videoMaterialInternalComponent;
+        private readonly DataStore_WorldObjects dataStoreWorldObjects;
+        private readonly bool isDebugMode = false;
 
-        public MaterialHandler(IInternalECSComponent<InternalMaterial> materialInternalComponent, IInternalECSComponent<InternalVideoMaterial> videoMaterialInternalComponent)
+        public MaterialHandler(
+            IInternalECSComponent<InternalMaterial> materialInternalComponent,
+            IInternalECSComponent<InternalVideoMaterial> videoMaterialInternalComponent,
+            DataStore_WorldObjects dataStoreWorldObjects,
+            DebugConfig debugConfig)
         {
             this.materialInternalComponent = materialInternalComponent;
             this.videoMaterialInternalComponent = videoMaterialInternalComponent;
+            this.dataStoreWorldObjects = dataStoreWorldObjects;
+            this.isDebugMode = debugConfig.isDebugMode.Get();
         }
 
-        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity) { }
+        public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
+        {
+            this.entity = entity;
+            this.scene = scene;
+        }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             videoMaterialInternalComponent.RemoveFor(scene, entity);
-            materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial() { material = null });
+            materialInternalComponent.RemoveFor(scene, entity, new InternalMaterial(null, true));
 
             while (activePromises.Count > 0)
             {
-                AssetPromiseKeeper_Material.i.Forget(activePromises.Dequeue());
+                var promise = activePromises.Dequeue();
+
+                if (isDebugMode)
+                    dataStoreWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+
+                AssetPromiseKeeper_Material.i.Forget(promise);
             }
         }
 
@@ -113,19 +132,8 @@ namespace DCL.ECSComponents
             promiseMaterial.OnSuccessEvent += materialAsset =>
             {
                 if (videoTextureDatas.Count > 0)
-                {
-                    videoMaterialInternalComponent.PutFor(scene, entity, new InternalVideoMaterial()
-                    {
-                        material = materialAsset.material,
-                        videoTextureDatas = videoTextureDatas,
-                    });
-                }
-
-                materialInternalComponent.PutFor(scene, entity, new InternalMaterial()
-                {
-                    material = materialAsset.material,
-                    castShadows = promiseModel.castShadows
-                });
+                    videoMaterialInternalComponent.PutFor(scene, entity, new InternalVideoMaterial(materialAsset.material, videoTextureDatas));
+                materialInternalComponent.PutFor(scene, entity, new InternalMaterial(materialAsset.material, promiseModel.castShadows));
 
                 // Run task to forget previous material after update to avoid forgetting a
                 // material that has not be changed from the renderers yet, since material change
@@ -135,6 +143,9 @@ namespace DCL.ECSComponents
                     await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
                     ForgetPreviousPromises(activePromises, materialAsset);
                 });
+
+                if (isDebugMode)
+                    dataStoreWorldObjects.AddMaterial(scene.sceneData.sceneNumber, entity.entityId, materialAsset.material);
             };
             promiseMaterial.OnFailEvent += (material, exception) =>
             {
@@ -144,14 +155,19 @@ namespace DCL.ECSComponents
             AssetPromiseKeeper_Material.i.Keep(promiseMaterial);
         }
 
-        private static void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
+        private void ForgetPreviousPromises(Queue<AssetPromise_Material> promises, Asset_Material currentAppliedMaterial)
         {
             if (promises.Count <= 1)
                 return;
 
             while (promises.Count > 1 && promises.Peek().asset != currentAppliedMaterial)
             {
-                AssetPromiseKeeper_Material.i.Forget(promises.Dequeue());
+                var promise = promises.Dequeue();
+
+                if (isDebugMode)
+                    dataStoreWorldObjects.RemoveMaterial(scene.sceneData.sceneNumber, entity.entityId, promise.asset.material);
+
+                AssetPromiseKeeper_Material.i.Forget(promise);
             }
         }
 
@@ -162,7 +178,7 @@ namespace DCL.ECSComponents
             return AssetPromise_Material_Model.CreatePBRMaterial(albedoTexture, alphaTexture, emissiveTexture, bumpTexture,
                 model.GetAlphaTest(), model.GetCastShadows(), model.GetAlbedoColor().ToUnityColor(), model.GetEmissiveColor().ToUnityColor(),
                 model.GetReflectiveColor().ToUnityColor(), (AssetPromise_Material_Model.TransparencyMode)model.GetTransparencyMode(), model.GetMetallic(),
-                model.GetRoughness(), model.GetGlossiness(), model.GetSpecularIntensity(),
+                model.GetRoughness(), model.GetSpecularIntensity(),
                 model.GetEmissiveIntensity(), model.GetDirectIntensity());
         }
 

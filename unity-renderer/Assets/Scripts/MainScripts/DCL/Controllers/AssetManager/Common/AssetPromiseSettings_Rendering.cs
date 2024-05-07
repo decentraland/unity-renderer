@@ -14,7 +14,6 @@ namespace DCL
         }
 
         public VisibleFlags visibleFlags = VisibleFlags.VISIBLE_WITH_TRANSITION;
-        public MaterialCachingHelper.Mode cachingFlags = MaterialCachingHelper.Mode.CACHE_EVERYTHING;
         public Shader shaderOverride;
 
         public Transform parent;

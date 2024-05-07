@@ -1,3 +1,4 @@
+using DCL.Controllers.LoadingScreenV2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace DCL.Models
     public static class ScenePermissionNames
     {
         public const string ALLOW_MEDIA_HOSTNAMES = "ALLOW_MEDIA_HOSTNAMES";
+        public const string OPEN_EXTERNAL_LINK = "OPEN_EXTERNAL_LINK";
     }
 
     [Serializable]
@@ -15,6 +17,7 @@ namespace DCL.Models
         public string id;
         public int sceneNumber;
         public string name;
+        public string description;
         public string baseUrl;
         public List<ContentServerUtils.MappingPair> contents;
         public string icon;
@@ -22,6 +25,7 @@ namespace DCL.Models
         public bool sdk7;
         public string[] requiredPermissions;
         public string[] allowedMediaHostnames;
+        public List<Hint> loadingScreenHints;
     }
 
     [Serializable]
@@ -43,6 +47,8 @@ namespace DCL.Models
             public int sceneNumber;
             public string baseUrl;
             public string baseUrlBundles;
+            public string description;
+            public string iconUrl;
 
             public List<ContentServerUtils.MappingPair> contents;
 
@@ -53,6 +59,16 @@ namespace DCL.Models
             public bool sdk7 = false;
             public string[] requiredPermissions;
             public string[] allowedMediaHostnames;
+
+            public List<Hint> loadingScreenHints;
+            public ScenePortableExperienceFeatureToggles scenePortableExperienceFeatureToggles;
         }
+    }
+
+    public enum ScenePortableExperienceFeatureToggles
+    {
+        Enable,
+        Disable,
+        HideUi
     }
 }

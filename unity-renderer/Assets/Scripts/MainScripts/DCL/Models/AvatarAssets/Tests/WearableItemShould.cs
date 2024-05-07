@@ -8,18 +8,30 @@ namespace AvatarAssets_Test
     {
         private const string BODY_SHAPE = "male";
 
-        private readonly string[] skinImplicitHideList =
+        [Test]
+        public void WearableCantHideItself()
         {
-            WearableLiterals.Categories.EYES,
-            WearableLiterals.Categories.MOUTH,
-            WearableLiterals.Categories.EYEBROWS,
-            WearableLiterals.Categories.HAIR,
-            WearableLiterals.Categories.UPPER_BODY,
-            WearableLiterals.Categories.LOWER_BODY,
-            WearableLiterals.Categories.FEET,
-            WearableLiterals.Misc.HEAD,
-            WearableLiterals.Categories.FACIAL_HAIR
-        };
+            var wearable = new WearableItem
+            {
+                data = new WearableItem.Data
+                {
+                    category = WearableLiterals.Categories.UPPER_BODY,
+                    representations = new[]
+                    {
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new[] { BODY_SHAPE },
+                            overrideHides = new [] {WearableLiterals.Categories.UPPER_BODY }
+                        }
+                    },
+                    hides = new [] {WearableLiterals.Categories.UPPER_BODY }
+                }
+            };
+
+            string[] hides = wearable.GetHidesList(BODY_SHAPE);
+
+            Assert.IsTrue(!hides.Contains(WearableLiterals.Categories.UPPER_BODY), "Wearable does not contain its own category");
+        }
 
         [Test]
         public void GetHideCategoriesWhenIsSkin()
@@ -28,7 +40,7 @@ namespace AvatarAssets_Test
 
             var hides = wearable.GetHidesList(BODY_SHAPE);
 
-            ThenHideListIs(skinImplicitHideList, hides);
+            ThenHideListIs(WearableItem.SKIN_IMPLICIT_CATEGORIES, hides);
         }
 
         [Test]
@@ -47,7 +59,7 @@ namespace AvatarAssets_Test
         {
             var wearable = GivenSkinWearable(null);
 
-            foreach (var category in skinImplicitHideList)
+            foreach (string category in WearableItem.SKIN_IMPLICIT_CATEGORIES)
                 Assert.IsTrue(wearable.DoesHide(category, BODY_SHAPE));
         }
 
@@ -86,6 +98,7 @@ namespace AvatarAssets_Test
             return wearable;
         }
 
-        private void ThenHideListIs(IEnumerable<string> expected, IEnumerable<string> current) => Assert.IsTrue(current.All(expected.Contains));
+        private void ThenHideListIs(IEnumerable<string> expected, IEnumerable<string> current) =>
+            CollectionAssert.AreEqual(expected, current);
     }
 }

@@ -29,6 +29,7 @@ MonoBehaviour:
   - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
   - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
   - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 0f45c581136904d549cabf919214df79, type: 3}
   - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
   - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
   - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
@@ -47,6 +48,7 @@ MonoBehaviour:
   - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
   - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
   - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 0f45c581136904d549cabf919214df79, type: 3}
   - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
   - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
   - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
@@ -65,12 +67,12 @@ MonoBehaviour:
   - {fileID: 6080892075692692803, guid: 5a6d38f6c995b16429ca50e59cf964d7, type: 3}
   - {fileID: 507904477223215582, guid: e00e2889ecda6bb4abd7e2992aaf79c4, type: 3}
   - {fileID: 507904477223215582, guid: ddaf09cfb1058cd4ca0549a7869f17c5, type: 3}
+  - {fileID: 507904477223215582, guid: 0f45c581136904d549cabf919214df79, type: 3}
   - {fileID: 507904477223215582, guid: 67e281990376f4e44b805346fc26203d, type: 3}
   - {fileID: 507904477223215582, guid: eb11b20116699f943bec982dc6a90cce, type: 3}
   - {fileID: 507904477223215582, guid: fdf30e1ad2edd21408f131f1e64e74c8, type: 3}
   - {fileID: 507904477223215582, guid: 68f115f8a3d5a7347ae1bc9b1238eb05, type: 3}
   - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
-  stepsFromBuilderInWorld: []
   stepsFromUserThatAlreadyDidTheTutorial: []
   teacherMovementSpeed: 0.8
   teacherMovementCurve:

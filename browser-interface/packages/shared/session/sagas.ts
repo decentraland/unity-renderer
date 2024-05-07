@@ -1,6 +1,14 @@
-import { Authenticator } from '@dcl/crypto'
+import { AuthIdentity, Authenticator } from '@dcl/crypto'
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
-import { DEBUG_KERNEL_LOG, ETHEREUM_NETWORK, HAS_INITIAL_POSITION_MARK, PREVIEW, RESET_TUTORIAL } from 'config'
+import * as SingleSignOn from '@dcl/single-sign-on-client'
+import {
+  DEBUG_KERNEL_LOG,
+  ETHEREUM_NETWORK,
+  HAS_INITIAL_POSITION_MARK,
+  HAS_INITIAL_REALM_MARK,
+  PREVIEW,
+  RESET_TUTORIAL
+} from 'config'
 import { RequestManager } from 'eth-connect'
 import { DecentralandIdentity, LoginState } from '@dcl/kernel-interface'
 import { getFromPersistentStorage, saveToPersistentStorage } from 'lib/browser/persistentStorage'
@@ -39,7 +47,8 @@ import {
   UPDATE_TOS,
   userAuthenticated,
   UserAuthenticated,
-  USER_AUTHENTICATED
+  USER_AUTHENTICATED,
+  TOS_POPUP_ACCEPTED
 } from './actions'
 import { deleteSession, retrieveLastGuestSession, retrieveLastSessionByAddress, storeSession } from './index'
 import { getCurrentIdentity, isGuestLogin } from './selectors'
@@ -68,6 +77,10 @@ export function* sessionSaga(): any {
   yield takeEvery(USER_AUTHENTICATED, function* (action: UserAuthenticated) {
     yield call(saveSession, action.payload.identity, action.payload.isGuest)
     logger.log(`User ${action.payload.identity.address} logged in isGuest=` + action.payload.isGuest)
+  })
+
+  yield takeLatest(TOS_POPUP_ACCEPTED, function* () {
+    yield call(saveToPersistentStorage, 'tos_popup_accepted', true)
   })
 
   yield call(initialize)
@@ -128,7 +141,15 @@ function* authenticate(action: AuthenticateAction) {
   const avatar = yield call(initialRemoteProfileLoad)
 
   // 3. continue with signin/signup (only not in preview)
-  const isSignUp = avatar.version <= 0 && !PREVIEW
+  let isSignUp = avatar.version <= 0 && !PREVIEW
+  if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
+
+    const isNewUser : boolean = avatar.version <= 0
+    const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
+    const tosShown: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_shown')) as boolean)
+    isSignUp = !PREVIEW && (isNewUser || tosShown) && !tosAccepted
+  }
+
   if (isSignUp) {
     yield put(signUpSetIsSignUp(isSignUp))
     yield take(SIGNUP)
@@ -149,7 +170,7 @@ function* SetupTutorial() {
   // from the renderer
   const onboardingRealmName: string | undefined = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
   const isNewTutorialDisabled =
-    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK
+    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK || HAS_INITIAL_REALM_MARK
   if (!isNewTutorialDisabled) {
     try {
       const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
@@ -296,7 +317,17 @@ async function createAuthIdentity(requestManager: RequestManager, isGuest: boole
 
   const { address, signer, hasConnectedWeb3, ephemeralLifespanMinutes } = await getSigner(requestManager, isGuest)
 
-  const auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
+  let auth: AuthIdentity
+
+  const ssoIdentity = SingleSignOn.localStorageGetIdentity(address)
+
+  if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
+    auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
+
+    SingleSignOn.localStorageStoreIdentity(address, auth)
+  } else {
+    auth = ssoIdentity
+  }
 
   return { ...auth, rawAddress: address, address: address.toLowerCase(), hasConnectedWeb3 }
 }
@@ -306,19 +337,16 @@ function* logout() {
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   if (identity && identity.address && network) {
     yield call(() => localProfilesRepo.remove(identity.address, network))
+    yield call(deleteSession, identity.address)
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
   yield put(setRoomConnection(undefined))
 
-  if (identity?.address) {
-    yield call(deleteSession, identity.address)
-  }
   window.location.reload()
 }
 
 function* redirectToSignUp() {
-
   const q = new URLSearchParams(globalThis.location.search)
   q.set('show_wallet', '1')
   globalThis.history.replaceState({ show_wallet: '1' }, 'show_wallet', `?${q.toString()}`)

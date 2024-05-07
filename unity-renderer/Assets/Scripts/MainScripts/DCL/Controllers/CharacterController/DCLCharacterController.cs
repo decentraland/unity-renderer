@@ -1,8 +1,11 @@
+using Cinemachine;
 using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
+using DCL.Interface;
+using System;
 using UnityEngine;
-using Cinemachine;
+using Environment = DCL.Environment;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -27,13 +30,13 @@ public class DCLCharacterController : MonoBehaviour
     [Header("Additional Camera Layers")]
     public LayerMask cameraLayers;
 
-    [System.NonSerialized]
+    [NonSerialized]
     public bool initialPositionAlreadySet = false;
 
-    [System.NonSerialized]
+    [NonSerialized]
     public bool characterAlwaysEnabled = true;
 
-    [System.NonSerialized]
+    [NonSerialized]
     public CharacterController characterController;
 
     FreeMovementController freeMovementController;
@@ -78,9 +81,9 @@ public class DCLCharacterController : MonoBehaviour
 
     private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
 
-    public static System.Action<DCLCharacterPosition> OnCharacterMoved;
-    public static System.Action<DCLCharacterPosition> OnPositionSet;
-    public event System.Action<float> OnUpdateFinish;
+    public static Action<DCLCharacterPosition> OnCharacterMoved;
+    public static Action<DCLCharacterPosition> OnPositionSet;
+    public event Action<float> OnUpdateFinish;
 
     public GameObject avatarGameObject;
     public GameObject firstPersonCameraGameObject;
@@ -96,13 +99,19 @@ public class DCLCharacterController : MonoBehaviour
 
     private readonly DataStore_Player dataStorePlayer = DataStore.i.player;
 
-    [System.NonSerialized]
+    [NonSerialized]
     public float movingPlatformSpeed;
     private CollisionFlags lastCharacterControllerCollision;
 
-    public event System.Action OnJump;
-    public event System.Action OnHitGround;
-    public event System.Action<float> OnMoved;
+    public event Action OnJump;
+    public event Action OnHitGround;
+    public event Action<float> OnMoved;
+
+    public void SetMovementInputToZero()
+    {
+        characterXAxis.SetValue(0);
+        characterYAxis.SetValue(0);
+    }
 
     void Awake()
     {
@@ -137,7 +146,7 @@ public class DCLCharacterController : MonoBehaviour
 
         if (avatarGameObject == null || firstPersonCameraGameObject == null)
         {
-            throw new System.Exception("Both the avatar and first person camera game objects must be set.");
+            throw new Exception("Both the avatar and first person camera game objects must be set.");
         }
 
         var worldData = DataStore.i.Get<DataStore_World>();
@@ -246,7 +255,7 @@ public class DCLCharacterController : MonoBehaviour
         }
     }
 
-    [System.Obsolete("SetPosition is deprecated, please use Teleport instead.", true)]
+    [Obsolete("SetPosition is deprecated, please use Teleport instead.", true)]
     public void SetPosition(string positionVector) { Teleport(positionVector); }
 
     public void SetEnabled(bool enabled) { this.enabled = enabled; }
@@ -545,7 +554,7 @@ public class DCLCharacterController : MonoBehaviour
         return result;
     }
 
-    void ReportMovement()
+    public void ReportMovement()
     {
         var reportPosition = characterPosition.worldPosition;
         var compositeRotation = Quaternion.LookRotation(characterForward.HasValue() ? characterForward.Get().Value : cameraForward.Get());
@@ -558,7 +567,7 @@ public class DCLCharacterController : MonoBehaviour
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
         //                  - Random teleports to 0,0 or other positions that shouldn't happen.
         if (initialPositionAlreadySet)
-            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, characterController.height, cameraRotation);
+            WebInterface.ReportPosition(reportPosition, compositeRotation, characterController.height, cameraRotation);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }

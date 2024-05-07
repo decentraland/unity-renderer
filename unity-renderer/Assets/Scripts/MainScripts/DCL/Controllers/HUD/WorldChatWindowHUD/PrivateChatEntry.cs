@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class PrivateChatEntry : BaseComponentView, IComponentModelConfig<PrivateChatEntryModel>
     {
@@ -32,8 +32,8 @@ namespace DCL.Chat.HUD
             base.Awake();
             optionsButton.onClick.AddListener(() =>
             {
-                userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
+                userContextMenu.Show(model.userId);
             });
             openChatButton.onClick.AddListener(() => OnOpenChat?.Invoke(this));
             onFocused += isFocused =>

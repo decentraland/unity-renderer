@@ -81,6 +81,9 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>, IEnum
 
     public List<TValue> GetValues() => dictionary.Values.ToList();
 
+    public IEnumerable<TKey> GetKeys() =>
+        dictionary.Keys;
+
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
         return dictionary.GetEnumerator();

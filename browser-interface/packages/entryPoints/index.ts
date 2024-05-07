@@ -9,7 +9,7 @@ import { storeCondition } from 'lib/redux/storeCondition'
 import { initShared } from 'shared'
 import { sendHomeScene } from 'shared/atlas/actions'
 import { homePointKey } from 'shared/atlas/utils'
-import { BringDownClientAndReportFatalError, BringDownClientAndShowError, ErrorContext, UserError } from 'shared/loading/ReportFatalError'
+import { BringDownClientAndReportFatalError, ErrorContext, UserError } from 'shared/loading/ReportFatalError'
 import { setResourcesURL } from 'shared/location'
 import { globalObservable } from 'shared/observables'
 import { localProfilesRepo } from 'shared/profiles/sagas/local/localProfilesRepo'
@@ -55,10 +55,7 @@ globalThis.DecentralandKernel = {
 
         await Promise.all([initializeUnity(options.rendererOptions), loadWebsiteSystems(options.kernelOptions)])
       } catch (err: any) {
-        if (err instanceof UserError)
-          BringDownClientAndShowError(err.message)
-        else
-          BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
+        BringDownClientAndReportFatalError(err, ErrorContext.WEBSITE_INIT)
       }
     }, 0)
 
@@ -139,7 +136,7 @@ async function hasStoredSession(address: string, networkId: number) {
 
   const profile = await localProfilesRepo.get(
     address,
-    networkId === 1 ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.GOERLI
+    networkId === 1 ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.SEPOLIA
   )
 
   return { result: !!profile, profile: profile || null } as any

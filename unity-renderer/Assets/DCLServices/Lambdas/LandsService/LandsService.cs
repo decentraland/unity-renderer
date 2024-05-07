@@ -43,7 +43,7 @@ namespace DCLServices.Lambdas.LandsService
             return (pageResponse.response.Elements, pageResponse.response.TotalAmount);
         }
 
-        UniTask<(LandsResponse response, bool success)> ILambdaServiceConsumer<LandsResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, CancellationToken cancellationToken) =>
+        UniTask<(LandsResponse response, bool success)> ILambdaServiceConsumer<LandsResponse>.CreateRequest(string endPoint, int pageSize, int pageNumber, Dictionary<string, string> additionalData, CancellationToken cancellationToken) =>
             lambdasService.Ref.Get<LandsResponse>(
                 END_POINT,
                 endPoint,

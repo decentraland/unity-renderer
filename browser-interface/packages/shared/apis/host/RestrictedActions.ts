@@ -17,9 +17,11 @@ import type {
   MovePlayerToResponse,
   OpenExternalUrlRequest,
   OpenNftDialogRequest,
+  SuccessResponse,
   TeleportToRequest,
   TriggerEmoteRequest,
-  TriggerEmoteResponse
+  TriggerEmoteResponse,
+  TriggerSceneEmoteRequest
 } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { RestrictedActionsServiceDefinition } from 'shared/protocol/decentraland/kernel/apis/restricted_actions.gen'
 import { changeRealm } from 'shared/dao'
@@ -79,12 +81,36 @@ export function triggerEmote(req: TriggerEmoteRequest, ctx: PortContext): Trigge
     return {}
   }
 
-  getUnityInstance().TriggerSelfUserExpression(req.predefinedEmote)
   getRendererModules(store.getState())
     ?.emotes?.triggerSelfUserExpression({ id: req.predefinedEmote })
     .catch(defaultLogger.error)
 
   return {}
+}
+
+export async function triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: PortContext): Promise<SuccessResponse> {
+  // checks permissions
+  assertHasPermission(PermissionItem.PI_ALLOW_TO_TRIGGER_AVATAR_EMOTE, ctx)
+
+  if (!isPositionValid(lastPlayerPosition, ctx)) {
+    ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
+    return { success: false }
+  }
+
+  const emoteService = getRendererModules(store.getState())?.emotes
+
+  if (!emoteService) {
+    return { success: false }
+  }
+
+  const request = {
+    path: req.src,
+    sceneNumber: ctx.sceneData.sceneNumber,
+    loop: req.loop ?? false
+  }
+
+  const response = await emoteService.triggerSceneExpression({ ...request })
+  return response
 }
 
 function isPositionValid(position: Vector3, ctx: PortContext) {
@@ -125,6 +151,9 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
     },
     async openExternalUrl(req: OpenExternalUrlRequest, ctx: PortContext) {
       if (!ctx.sdk7) throw new Error('API only available for SDK7')
+      if (ctx.sceneData.isPortableExperience){
+        assertHasPermission(PermissionItem.PI_OPEN_EXTERNAL_LINK, ctx)
+      }
       if (!isPositionValid(lastPlayerPosition, ctx)) {
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
         return { success: false }
@@ -142,7 +171,7 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
         return { success: false }
       }
 
-      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn })
+      const response = await getRendererModules(store.getState())?.restrictedActions?.openNftDialog({ urn: req.urn, sceneNumber: ctx.sceneData.sceneNumber })
       return { success: response?.success ?? false }
     },
     async setCommunicationsAdapter(req: CommsAdapterRequest, ctx: PortContext) {
@@ -169,9 +198,13 @@ export function registerRestrictedActionsServiceServerImplementation(port: RpcSe
       if (!isPositionValid(lastPlayerPosition, ctx) || !req.worldCoordinates)
         ctx.logger.error('Error: Player is not inside of scene', lastPlayerPosition)
       else
-        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates })
+        getRendererModules(store.getState())?.restrictedActions?.teleportTo({ worldCoordinates: req.worldCoordinates, sceneNumber: ctx.sceneData.sceneNumber })
 
       return {}
+    },
+    async triggerSceneEmote(req: TriggerSceneEmoteRequest, ctx: PortContext) {
+      const response = await triggerSceneEmote(req, ctx)
+      return response
     }
   }))
 }

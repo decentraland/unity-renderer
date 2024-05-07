@@ -16,6 +16,12 @@ public class BaseCollection<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
 
     public T this[int index] { get => list[index]; set => list[index] = value; }
 
+    public void Clear()
+    {
+        list.Clear();
+        OnSet?.Invoke(list);
+    }
+
     public void Set(IEnumerable<T> elements)
     {
         list.Clear();

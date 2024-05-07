@@ -307,16 +307,6 @@ namespace DCL
                         break;
                 }
 
-                if (pendingInitMessagesCount == 0)
-                {
-                    AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds =
-                        Mathf.Clamp(timeBudgetCounter, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
-                }
-                else
-                {
-                    AssetPromiseKeeper_GLTF.i.throttlingCounter.budgetPerFrameInMilliseconds = 0;
-                }
-
                 yield return null;
             }
         }

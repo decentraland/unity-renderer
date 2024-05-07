@@ -1,9 +1,15 @@
+using Cysharp.Threading.Tasks;
 using DCL;
+using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
+using MainScripts.DCL.Controllers.HotScenes;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class EventsSubSectionComponentControllerTests
@@ -13,6 +19,8 @@ public class EventsSubSectionComponentControllerTests
     private IEventsAPIController eventsAPIController;
     private IExploreV2Analytics exploreV2Analytics;
     private IUserProfileBridge userProfileBridge;
+    private IPlacesAPIService placesAPIService;
+    private IWorldsAPIService worldsAPIService;
 
     [SetUp]
     public void SetUp()
@@ -22,9 +30,24 @@ public class EventsSubSectionComponentControllerTests
         DCL.Environment.Setup(serviceLocator);
 
         eventsSubSectionComponentView = Substitute.For<IEventsSubSectionComponentView>();
+        eventsSubSectionComponentView.SelectedEventType.Returns(EventsType.Upcoming);
+        eventsSubSectionComponentView.SelectedFrequency.Returns("all");
+        eventsSubSectionComponentView.SelectedCategory.Returns("all");
+        eventsSubSectionComponentView.SelectedLowTime.Returns(0);
+        eventsSubSectionComponentView.SelectedHighTime.Returns(48);
         eventsAPIController = Substitute.For<IEventsAPIController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
         userProfileBridge = Substitute.For<IUserProfileBridge>();
+        placesAPIService = Substitute.For<IPlacesAPIService>();
+        placesAPIService
+           .Configure()
+           .GetPlacesByCoordsList(Arg.Any<IEnumerable<Vector2Int>>(), Arg.Any<CancellationToken>())
+           .Returns(new UniTask<List<IHotScenesController.PlaceInfo>>(new List<IHotScenesController.PlaceInfo>()));
+        worldsAPIService = Substitute.For<IWorldsAPIService>();
+        worldsAPIService
+           .Configure()
+           .GetWorldsByNamesList(Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
+           .Returns(new UniTask<List<WorldsResponse.WorldInfo>>(new List<WorldsResponse.WorldInfo>()));
         var ownUserProfile = ScriptableObject.CreateInstance<UserProfile>();
         ownUserProfile.UpdateData(new UserProfileModel
         {
@@ -32,7 +55,14 @@ public class EventsSubSectionComponentControllerTests
             hasConnectedWeb3 = true
         });
         userProfileBridge.GetOwn().Returns(ownUserProfile);
-        eventsSubSectionComponentController = new EventsSubSectionComponentController(eventsSubSectionComponentView, eventsAPIController, exploreV2Analytics, DataStore.i, userProfileBridge);
+        eventsSubSectionComponentController = new EventsSubSectionComponentController(
+            eventsSubSectionComponentView,
+            eventsAPIController,
+            exploreV2Analytics,
+            DataStore.i,
+            userProfileBridge,
+            placesAPIService,
+            worldsAPIService);
     }
 
     [TearDown]
@@ -59,7 +89,7 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
         eventsSubSectionComponentView.Received().SetAllAsLoading();
         Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);
-        eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
+        eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(false);
     }
 
     [TestCase(true)]
@@ -89,10 +119,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.RequestAllEvents();
 
         // Assert
-        Assert.AreEqual(eventsSubSectionComponentView.currentUpcomingEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_UPCOMING_ROWS, eventsSubSectionComponentController.availableUISlots);
+        Assert.AreEqual(eventsSubSectionComponentView.currentEventsPerRow * EventsSubSectionComponentController.INITIAL_NUMBER_OF_ROWS, eventsSubSectionComponentController.availableUISlots);
         eventsSubSectionComponentView.Received().RestartScrollViewPosition();
         eventsSubSectionComponentView.Received().SetAllAsLoading();
-        eventsSubSectionComponentView.Received().SetShowMoreButtonActive(false);
+        eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(false);
         eventsAPIController.Received().GetAllEvents(Arg.Any<Action<List<EventFromAPIModel>>>(), Arg.Any<Action<string>>());
         Assert.IsFalse(eventsSubSectionComponentController.cardsReloader.reloadSubSection);
     }
@@ -114,15 +144,42 @@ public class EventsSubSectionComponentControllerTests
         int numberOfEvents = 2;
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
+        List<IHotScenesController.PlaceInfo> testPlaces = new ()
+        {
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId1",
+                title = "place_1",
+                Positions = new []{ new Vector2Int(1,1) },
+            },
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId2",
+                title = "place_2",
+                Positions = new []{ new Vector2Int(eventsSubSectionComponentController.eventsFromAPI[0].coordinates[0],eventsSubSectionComponentController.eventsFromAPI[0].coordinates[1]) },
+            },
+            new IHotScenesController.PlaceInfo
+            {
+                id = "testId3",
+                title = "place_3",
+                Positions = new []{ new Vector2Int(3,3) },
+            },
+        };
+
+        placesAPIService.Configure()
+                        .GetPlacesByCoordsList(Arg.Any<IEnumerable<Vector2Int>>(), Arg.Any<CancellationToken>())
+                        .Returns(new UniTask<List<IHotScenesController.PlaceInfo>>(testPlaces));
+
         // Act
         eventsSubSectionComponentController.OnRequestedEventsUpdated(eventsSubSectionComponentController.eventsFromAPI);
 
         // Assert
+        foreach (var testEvent in eventsSubSectionComponentController.eventsFromAPI)
+            Assert.AreEqual("place_2", testEvent.scene_name);
+
         eventsSubSectionComponentView.Received().SetFeaturedEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(eventsSubSectionComponentController.availableUISlots < numberOfEvents);
+        eventsSubSectionComponentView.Received().SetEvents(Arg.Any<List<EventCardComponentModel>>());
+        eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(eventsSubSectionComponentController.availableUISlots < numberOfEvents);
     }
 
     [Test]
@@ -140,20 +197,6 @@ public class EventsSubSectionComponentControllerTests
     }
 
     [Test]
-    public void LoadTrendingEventsCorrectly()
-    {
-        // Arrange
-        int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
-
-        // Act
-        eventsSubSectionComponentView.SetTrendingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterTrendingEvents()));
-
-        // Assert
-        eventsSubSectionComponentView.Received().SetTrendingEvents(Arg.Any<List<EventCardComponentModel>>());
-    }
-
-    [Test]
     public void LoadUpcomingEventsCorrectly()
     {
         // Arrange
@@ -161,10 +204,10 @@ public class EventsSubSectionComponentControllerTests
         eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
 
         // Act
-        eventsSubSectionComponentView.SetUpcomingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterUpcomingEvents()));
+        eventsSubSectionComponentView.SetEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterUpcomingEvents()));
 
         // Assert
-        eventsSubSectionComponentView.Received().SetUpcomingEvents(Arg.Any<List<EventCardComponentModel>>());
+        eventsSubSectionComponentView.Received().SetEvents(Arg.Any<List<EventCardComponentModel>>());
     }
 
     [Test]
@@ -173,24 +216,10 @@ public class EventsSubSectionComponentControllerTests
     public void LoaShowMoreUpcomingEventsCorrectly(int numberOfPlaces)
     {
         // Act
-        eventsSubSectionComponentController.ShowMoreUpcomingEvents();
+        eventsSubSectionComponentController.ShowMoreEvents();
 
         // Assert
-        eventsSubSectionComponentView.Received().SetShowMoreUpcomingEventsButtonActive(Arg.Any<bool>());
-    }
-
-    [Test]
-    public void LoadGoingEventsCorrectly()
-    {
-        // Arrange
-        int numberOfEvents = 2;
-        eventsSubSectionComponentController.eventsFromAPI = ExploreEventsTestHelpers.CreateTestEventsFromApi(numberOfEvents);
-
-        // Act
-        eventsSubSectionComponentView.SetGoingEvents(PlacesAndEventsCardsFactory.CreateEventsCards(eventsSubSectionComponentController.FilterGoingEvents()));
-
-        // Assert
-        eventsSubSectionComponentView.Received().SetGoingEvents(Arg.Any<List<EventCardComponentModel>>());
+        eventsSubSectionComponentView.Received().SetShowMoreEventsButtonActive(Arg.Any<bool>());
     }
 
     [Test]
@@ -204,7 +233,7 @@ public class EventsSubSectionComponentControllerTests
 
         // Assert
         eventsSubSectionComponentView.Received().ShowEventModal(testEventCardModel);
-        exploreV2Analytics.Received().SendClickOnEventInfo(testEventCardModel.eventId, testEventCardModel.eventName);
+        exploreV2Analytics.Received().SendClickOnEventInfo(testEventCardModel.eventId, testEventCardModel.eventName, !string.IsNullOrEmpty(testEventCardModel.worldAddress));
     }
 
     [Test]
@@ -221,6 +250,6 @@ public class EventsSubSectionComponentControllerTests
         // Assert
         eventsSubSectionComponentView.Received().HideEventModal();
         Assert.IsTrue(exploreClosed);
-        exploreV2Analytics.Received().SendEventTeleport(testEventFromAPI.id, testEventFromAPI.name, new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]));
+        exploreV2Analytics.Received().SendEventTeleport(testEventFromAPI.id, testEventFromAPI.name, testEventFromAPI.world, new Vector2Int(testEventFromAPI.coordinates[0], testEventFromAPI.coordinates[1]));
     }
 }

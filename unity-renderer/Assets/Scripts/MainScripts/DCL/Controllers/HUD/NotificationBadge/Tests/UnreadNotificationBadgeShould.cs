@@ -3,13 +3,14 @@ using System;
 using System.Collections;
 using NSubstitute;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
 {
-    private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME = "UnreadNotificationBadge";
+    private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_PATH = "Assets/Scripts/MainScripts/DCL/Controllers/HUD/NotificationBadge/Prefabs/UnreadNotificationBadge.prefab";
     private const string TEST_USER_ID = "testFriend";
     private const string INVALID_TEST_USER_ID = "invalidTestFriend";
     private const string TEST_CHANNEL_ID = "testChannel";
@@ -22,7 +23,7 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
     [UnitySetUp]
     protected override IEnumerator SetUp()
     {
-        var go = Object.Instantiate((GameObject) Resources.Load(UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME));
+        var go = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(UNREAD_NOTIFICATION_BADGE_RESOURCE_PATH));
         unreadNotificationBadge = go.GetComponent<UnreadNotificationBadge>();
         chatController = Substitute.For<IChatController>();
         chatController.GetAllocatedUnseenMessages(TEST_USER_ID).Returns(0);

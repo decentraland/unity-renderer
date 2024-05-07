@@ -1,0 +1,18 @@
+{
+    "name": "SupportAnalytics",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0663fad624d836944b40ae27c3414652",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:28f74c468a54948bfa9f625c5d428f56"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -20,7 +20,7 @@ namespace DCL
             if (!asyncOp.isSucceeded)
             {
                 var webRequestError = asyncOp.webRequest.error;
-                throw new Exception($"Texture promise failed: {webRequestError}");
+                throw new Exception($"Texture promise failed: {webRequestError} {url}");
             }
 
             return DownloadHandlerTexture.GetContent(asyncOp.webRequest);

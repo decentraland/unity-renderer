@@ -11,16 +11,31 @@ namespace DCL.Backpack
         public Color hairColor;
         public Color skinColor;
         public Color eyesColor;
+        public HashSet<string> forceRender = new ();
 
-        public AvatarModel ToAvatarModel()
+        public AvatarModel ToAvatarModel(Dictionary<string, string> extendedWearableUrns = null)
         {
+            List<string> wearables;
+
+            if (extendedWearableUrns != null)
+            {
+                wearables = new List<string>();
+
+                foreach (string w in this.wearables.Keys)
+                    wearables.Add(extendedWearableUrns.TryGetValue(w, out string extendedUrn)
+                        ? extendedUrn : w);
+            }
+            else
+                wearables = this.wearables.Keys.ToList();
+
             return new AvatarModel
             {
                 bodyShape = bodyShape.id,
-                wearables = wearables.Keys.ToList(),
+                wearables = wearables,
                 hairColor = hairColor,
                 skinColor = skinColor,
-                eyeColor = eyesColor
+                eyeColor = eyesColor,
+                forceRender = new HashSet<string>(forceRender)
             };
         }
 
@@ -34,6 +49,7 @@ namespace DCL.Backpack
             hairColor = newModel.hairColor;
             skinColor = newModel.skinColor;
             eyesColor = newModel.eyesColor;
+            forceRender = new HashSet<string>(newModel.forceRender);
         }
     }
 }

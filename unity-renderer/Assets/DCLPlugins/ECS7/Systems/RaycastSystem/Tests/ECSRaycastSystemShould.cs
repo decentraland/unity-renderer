@@ -1,6 +1,8 @@
 ﻿using DCL.Configuration;
 using DCL.CRDT;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSRuntime;
@@ -13,15 +15,20 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using TestUtils;
 using UnityEngine;
 using RaycastHit = DCL.ECSComponents.RaycastHit;
 
-namespace Tests
+namespace Tests.Systems.Raycast
 {
     public class ECSRaycastSystemShould
     {
+        private struct KeepEntityAliveModel : IInternalComponent
+        {
+            public bool dirty { get; set; }
+        }
+
         private ECSRaycastSystem system;
-        private IECSComponentWriter componentWriter;
         private ECS7TestUtilsScenesAndEntities testUtils;
         private ECS7TestScene scene;
         private ECS7TestEntity entityRaycaster;
@@ -30,8 +37,8 @@ namespace Tests
         private ECS7TestEntity testEntity_CustomCollider1;
         private ECS7TestEntity testEntity_OnPointerCollider;
         private ECS7TestEntity testEntity_CustomCollider2;
-
         private InternalECSComponents internalComponents;
+        private DualKeyValueSet<long, int, WriteData> outgoingMessages;
 
         [SetUp]
         protected void SetUp()
@@ -40,23 +47,36 @@ namespace Tests
             var componentsManager = new ECSComponentsManager(componentsFactory.componentBuilders);
             var executors = new Dictionary<int, ICRDTExecutor>();
             internalComponents = new InternalECSComponents(componentsManager, componentsFactory, executors);
-            var keepEntityAliveComponent = new InternalECSComponent<InternalComponent>(
-                0, componentsManager, componentsFactory, null,
-                new KeyValueSet<ComponentIdentifier,ComponentWriteData>(),
-                executors);
-            componentWriter = Substitute.For<IECSComponentWriter>();
+
+            outgoingMessages = new DualKeyValueSet<long, int, WriteData>();
+
+            var componentsWriter = new Dictionary<int, ComponentWriter>()
+            {
+                { 666, new ComponentWriter(outgoingMessages) }
+            };
+
             system = new ECSRaycastSystem(
                 internalComponents.raycastComponent,
                 internalComponents.physicColliderComponent,
                 internalComponents.onPointerColliderComponent,
                 internalComponents.customLayerColliderComponent,
-                componentWriter);
+                internalComponents.EngineInfo,
+                componentsWriter,
+                new WrappedComponentPool<IWrappedComponent<PBRaycastResult>>(0,
+                    () => new ProtobufWrappedComponent<PBRaycastResult>(new PBRaycastResult())));
 
             testUtils = new ECS7TestUtilsScenesAndEntities(componentsManager, executors);
 
             scene = testUtils.CreateScene(666);
             entityRaycaster = scene.CreateEntity(512);
-            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new InternalComponent());
+
+            var keepEntityAliveComponent = new InternalECSComponent<KeepEntityAliveModel>(
+                0, componentsManager, componentsFactory, null,
+                executors, Substitute.For<IComponentDirtySystem>());
+
+            keepEntityAliveComponent.PutFor(scene, entityRaycaster, new KeepEntityAliveModel());
+
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
 
             // Test collider entities in line
             testEntity_PhysicsCollider = CreateColliderEntity(513, new Vector3(8, 1, 2), new[] { ColliderLayer.ClPhysics });
@@ -81,6 +101,7 @@ namespace Tests
         public void HitNothing()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(12f, 0.5f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -93,11 +114,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 0)
+                e => e.Hits.Count == 0
             );
         }
 
@@ -105,6 +126,7 @@ namespace Tests
         public void HitOnlyClosestEntity()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -121,11 +143,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId))
+                e => e.Hits.Count == 1 && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId)
             );
         }
 
@@ -148,13 +170,13 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 2
-                                             && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId)
-                                             && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId))
+                e => e.Hits.Count == 2
+                     && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId)
+                     && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId)
             );
         }
 
@@ -162,6 +184,7 @@ namespace Tests
         public void FilterByPhysicsLayer()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -175,13 +198,13 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 2
-                                             && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId)
-                                             && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId))
+                e => e.Hits.Count == 2
+                     && HitsContainEntity(e.Hits, testEntity_PhysicsCollider.entityId)
+                     && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId)
             );
         }
 
@@ -189,6 +212,7 @@ namespace Tests
         public void FilterByOnPointerLayer()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -202,11 +226,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && HitsContainEntity(e.Hits, testEntity_OnPointerCollider.entityId))
+                e => e.Hits.Count == 1 && HitsContainEntity(e.Hits, testEntity_OnPointerCollider.entityId)
             );
         }
 
@@ -214,6 +238,7 @@ namespace Tests
         public void FilterByCustomLayer()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -227,12 +252,12 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1
-                                             && HitsContainEntity(e.Hits, testEntity_CustomCollider1.entityId))
+                e => e.Hits.Count == 1
+                     && HitsContainEntity(e.Hits, testEntity_CustomCollider1.entityId)
             );
         }
 
@@ -240,6 +265,7 @@ namespace Tests
         public void ReturnNoHitsBasedOnLayers()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -253,11 +279,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 0)
+                e => e.Hits.Count == 0
             );
         }
 
@@ -265,6 +291,7 @@ namespace Tests
         public void DistinguishBetweenCustomLayerEntitiesHit()
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
@@ -278,13 +305,13 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 2
-                                             && HitsContainEntity(e.Hits, testEntity_CustomCollider2.entityId)
-                                             && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId))
+                e => e.Hits.Count == 2
+                     && HitsContainEntity(e.Hits, testEntity_CustomCollider2.entityId)
+                     && HitsContainEntity(e.Hits, testEntity_PhysicsAndCustomCollider.entityId)
             );
         }
 
@@ -306,12 +333,12 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1
-                                             && HitsContainEntity(e.Hits, testEntity_OnPointerCollider.entityId))
+                e => e.Hits.Count == 1
+                     && HitsContainEntity(e.Hits, testEntity_OnPointerCollider.entityId)
             );
         }
 
@@ -320,6 +347,7 @@ namespace Tests
         {
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
             uint raycastTimestamp = 999;
+
             PBRaycast raycast = new PBRaycast()
             {
                 Timestamp = raycastTimestamp,
@@ -333,11 +361,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
+                e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp
             );
         }
 
@@ -347,6 +375,7 @@ namespace Tests
             Vector3 globalTargetPosition = new Vector3(0f, 10f, 0f);
             Vector3 raycastEntityPosition = Vector3.one;
             entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
             PBRaycast raycast = new PBRaycast()
             {
                 GlobalTarget = ProtoConvertUtils.UnityVectorToPBVector(globalTargetPosition),
@@ -359,11 +388,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (globalTargetPosition - raycastEntityPosition).normalized)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (globalTargetPosition - raycastEntityPosition).normalized
             );
         }
 
@@ -392,13 +421,13 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e =>
+                e =>
                     ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(20f, 0f, 20f)
-                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (globalTargetPosition - entityRaycasterTransform.position).normalized)
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (globalTargetPosition - entityRaycasterTransform.position).normalized
             );
         }
 
@@ -425,14 +454,14 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e =>
+                e =>
                     ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(localDirectionNormalized.x)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(localDirectionNormalized.y)
-                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z.Equals(localDirectionNormalized.z))
+                    && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z.Equals(localDirectionNormalized.z)
             );
 
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
@@ -450,7 +479,7 @@ namespace Tests
             entityRaycasterTransform.parent = parentEntityTransform;
             entityRaycasterTransform.localPosition = new Vector3(10, 0, 10);
             entityRaycasterTransform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-;
+            ;
             Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             PBRaycast raycast = new PBRaycast()
@@ -465,16 +494,17 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e =>
+                e =>
                     ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(15f, 0f, 15f)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
-                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z)
             );
+
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
@@ -496,7 +526,7 @@ namespace Tests
             entityRaycasterTransform.parent = parentEntityTransform;
             entityRaycasterTransform.localPosition = Vector3.zero;
             entityRaycasterTransform.localRotation = Quaternion.identity;
-;
+            ;
             Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             PBRaycast raycast = new PBRaycast()
@@ -511,16 +541,17 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e =>
+                e =>
                     ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == new Vector3(15f, 0f, 15f)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
-                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z)
             );
+
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
@@ -542,10 +573,11 @@ namespace Tests
             entityRaycasterTransform.parent = parentEntityTransform;
             entityRaycasterTransform.localPosition = Vector3.zero;
             entityRaycasterTransform.localRotation = Quaternion.identity;
-;
+            ;
             Assert.AreNotEqual(entityRaycasterTransform.forward, localDirection);
 
             Vector3 offset = Vector3.forward;
+
             PBRaycast raycast = new PBRaycast()
             {
                 OriginOffset = ProtoConvertUtils.UnityVectorToPBVector(offset),
@@ -559,16 +591,17 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e =>
+                e =>
                     ProtoConvertUtils.PBVectorToUnityVector(e.GlobalOrigin) == entityRaycasterTransform.position + offset
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).x.Equals(Vector3.right.x)
                     && ProtoConvertUtils.PBVectorToUnityVector(e.Direction).y.Equals(Vector3.right.y)
-                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z))
+                    && Mathf.Round(ProtoConvertUtils.PBVectorToUnityVector(e.Direction).z).Equals(Vector3.right.z)
             );
+
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
         }
 
@@ -581,6 +614,7 @@ namespace Tests
 
             Vector3 raycastEntityPosition = new Vector3(0f, 10f, 0f);
             entityRaycaster.gameObject.transform.position = raycastEntityPosition;
+
             PBRaycast raycast = new PBRaycast()
             {
                 TargetEntity = (uint)targetEntity.entityId,
@@ -593,11 +627,12 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (targetEntityPosition - raycastEntityPosition).normalized)
+                e =>
+                    ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (targetEntityPosition - raycastEntityPosition).normalized
             );
         }
 
@@ -623,11 +658,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.down)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.down
             );
 
             entityRaycaster.gameObject.transform.rotation = Quaternion.identity;
@@ -652,11 +687,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (scene.GetSceneTransform().position - raycastEntityPosition).normalized)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == (scene.GetSceneTransform().position - raycastEntityPosition).normalized
             );
         }
 
@@ -680,11 +715,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward
             );
         }
 
@@ -708,11 +743,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward
             );
         }
 
@@ -736,11 +771,11 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward)
+                e => ProtoConvertUtils.PBVectorToUnityVector(e.Direction) == Vector3.forward
             );
         }
 
@@ -750,6 +785,7 @@ namespace Tests
             // 'continuous' disabled
             entityRaycaster.gameObject.transform.position = new Vector3(8f, 1f, 0.1f);
             uint raycastTimestamp = 999;
+
             PBRaycast raycast = new PBRaycast()
             {
                 Timestamp = raycastTimestamp,
@@ -765,21 +801,22 @@ namespace Tests
             raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
+                e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp
             );
-            componentWriter.ClearReceivedCalls();
+
+            outgoingMessages.Clear_Calls();
 
             system.Update();
-            componentWriter.DidNotReceive().PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_NotCalled(
                 entityRaycaster.entityId,
-                ComponentID.RAYCAST_RESULT,
-                Arg.Any<PBRaycastResult>()
+                ComponentID.RAYCAST_RESULT
             );
+
             Assert.IsNull(internalComponents.raycastComponent.GetFor(scene, entityRaycaster));
 
             // enable 'continuous'
@@ -790,41 +827,73 @@ namespace Tests
             Assert.IsNotNull(internalComponents.raycastComponent.GetFor(scene, entityRaycaster));
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
+                e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp
             );
-            componentWriter.ClearReceivedCalls();
+
+            outgoingMessages.Clear_Calls();
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
+                e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp
             );
-            componentWriter.ClearReceivedCalls();
+
+            outgoingMessages.Clear_Calls();
 
             system.Update();
-            componentWriter.Received(1).PutComponent(
-                scene.sceneData.sceneNumber,
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
                 entityRaycaster.entityId,
                 ComponentID.RAYCAST_RESULT,
-                Arg.Is<PBRaycastResult>(e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp)
+                e => e.Hits.Count == 1 && e.Timestamp == raycastTimestamp
             );
         }
 
+        [Test]
+        public void StoreSceneTickInResult()
+        {
+            entityRaycaster.gameObject.transform.position = new Vector3(12f, 0.5f, 0.1f);
+
+            PBRaycast raycast = new PBRaycast()
+            {
+                GlobalDirection = new Decentraland.Common.Vector3() { X = 0f, Y = 0f, Z = 1.0f },
+                MaxDistance = 16f,
+                QueryType = RaycastQueryType.RqtHitFirst
+            };
+
+            RaycastComponentHandler raycastHandler = new RaycastComponentHandler(internalComponents.raycastComponent);
+            raycastHandler.OnComponentCreated(scene, entityRaycaster);
+            raycastHandler.OnComponentModelUpdated(scene, entityRaycaster, raycast);
+
+            internalComponents.EngineInfo.PutFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo()
+            {
+                SceneTick = 3
+            });
+
+            system.Update();
+
+            outgoingMessages.Put_Called<PBRaycastResult>(
+                entityRaycaster.entityId,
+                ComponentID.RAYCAST_RESULT,
+                e => e.TickNumber == 3
+            );
+        }
 
         private ECS7TestEntity CreateColliderEntity(int entityId, Vector3 position, ColliderLayer[] layers)
         {
             var entityCollider = scene.CreateEntity(entityId);
             entityCollider.gameObject.transform.position = PositionUtils.WorldToUnityPosition(position);
-            var collider =  entityCollider.gameObject.AddComponent<BoxCollider>();
+            var collider = entityCollider.gameObject.AddComponent<BoxCollider>();
             IInternalECSComponent<InternalColliders> internalCollidersComponent = internalComponents.physicColliderComponent;
 
             uint mergedLayers = 0;
+
             for (var i = 0; i < layers.Length; i++)
             {
                 mergedLayers |= (uint)layers[i];
@@ -853,7 +922,7 @@ namespace Tests
                 }
 
                 internalCollidersComponent.PutFor(scene, entityCollider,
-                    new InternalColliders() { colliders = new KeyValueSet<Collider, uint>() {{ collider, mergedLayers }}});
+                    new InternalColliders(new KeyValueSet<Collider, uint>() { { collider, mergedLayers } }));
             }
 
             return entityCollider;

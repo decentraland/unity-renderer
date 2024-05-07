@@ -1,6 +1,7 @@
 ﻿using System;
 using DCL.ECSRuntime;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.ECSComponents
 {
@@ -39,15 +40,11 @@ namespace DCL.ECSComponents
         internal void ConfigurePool(GameObject prefab)
         {
             pool = PoolManager.i.GetPool(AVATAR_POOL_NAME);
-            if (pool != null)
-                return;
+            if (pool != null) return;
 
-            pool = PoolManager.i.AddPool(
-                AVATAR_POOL_NAME,
-                GameObject.Instantiate(prefab).gameObject,
-                isPersistent: true);
+            pool = PoolManager.i.AddPool(AVATAR_POOL_NAME, Object.Instantiate(prefab).gameObject, isPersistent: true);
 
-            pool.ForcePrewarm();
+            pool.ForcePrewarm(forceActive: false);
         }
     }
 }

@@ -14,6 +14,8 @@ public interface IEmotesRendererService<Context>
 
   UniTask<TriggerSelfUserExpressionResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request, Context context, CancellationToken ct);
 
+  UniTask<SuccessResponse> TriggerSceneExpression(TriggerSceneExpressionRequest request, Context context, CancellationToken ct);
+
 }
 
 public static class EmotesRendererServiceCodeGen
@@ -25,6 +27,7 @@ public static class EmotesRendererServiceCodeGen
     var result = new ServerModuleDefinition<Context>();
       
     result.definition.Add("TriggerSelfUserExpression", async (payload, context, ct) => { var res = await service.TriggerSelfUserExpression(TriggerSelfUserExpressionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
+    result.definition.Add("TriggerSceneExpression", async (payload, context, ct) => { var res = await service.TriggerSceneExpression(TriggerSceneExpressionRequest.Parser.ParseFrom(payload), context, ct); return res?.ToByteString(); });
 
     port.RegisterModule(ServiceName, (port) => UniTask.FromResult(result));
   }

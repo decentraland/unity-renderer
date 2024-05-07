@@ -1,6 +1,8 @@
+using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.ECS7;
+using DCL.ECS7.ComponentWrapper.Generic;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSComponents;
 using DCL.ECSComponents.Utils;
@@ -10,7 +12,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
-using RaycastHit = UnityEngine.RaycastHit;
+using RaycastHit = DCL.ECSComponents.RaycastHit;
 using Vector3 = Decentraland.Common.Vector3;
 
 namespace ECSSystems.ECSRaycastSystem
@@ -26,20 +28,26 @@ namespace ECSSystems.ECSRaycastSystem
         private readonly IInternalECSComponent<InternalColliders> physicsColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> onPointerColliderComponent;
         private readonly IInternalECSComponent<InternalColliders> customLayerColliderComponent;
-        private readonly IECSComponentWriter componentWriter;
+        private readonly IInternalECSComponent<InternalEngineInfo> engineInfoComponent;
+        private readonly IReadOnlyDictionary<int, ComponentWriter> componentsWriter;
+        private readonly WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool;
 
         public ECSRaycastSystem(
             IInternalECSComponent<InternalRaycast> internalRaycastComponent,
             IInternalECSComponent<InternalColliders> physicsColliderComponent,
             IInternalECSComponent<InternalColliders> onPointerColliderComponent,
             IInternalECSComponent<InternalColliders> customLayerColliderComponent,
-            IECSComponentWriter componentWriter)
+            IInternalECSComponent<InternalEngineInfo> engineInfoComponent,
+            IReadOnlyDictionary<int, ComponentWriter> componentsWriter,
+            WrappedComponentPool<IWrappedComponent<PBRaycastResult>> raycastResultPool)
         {
             this.internalRaycastComponent = internalRaycastComponent;
             this.physicsColliderComponent = physicsColliderComponent;
             this.onPointerColliderComponent = onPointerColliderComponent;
             this.customLayerColliderComponent = customLayerColliderComponent;
-            this.componentWriter = componentWriter;
+            this.engineInfoComponent = engineInfoComponent;
+            this.componentsWriter = componentsWriter;
+            this.raycastResultPool = raycastResultPool;
         }
 
         public void Update()
@@ -54,6 +62,9 @@ namespace ECSSystems.ECSRaycastSystem
                 IDCLEntity entity = raycastComponentGroup[i].value.entity;
                 IParcelScene scene = raycastComponentGroup[i].value.scene;
 
+                // Wait until scene initial GLTFs are finished loading (handled at SceneStateHandler)
+                if (!scene.IsInitMessageDone()) continue;
+
                 if (model.QueryType == RaycastQueryType.RqtNone)
                 {
                     internalRaycastComponent.RemoveFor(scene, entity);
@@ -67,27 +78,27 @@ namespace ECSSystems.ECSRaycastSystem
                     return;
                 }
 
-                PBRaycastResult result = new PBRaycastResult
-                {
-                    Direction = ProtoConvertUtils.UnityVectorToPBVector(ray.direction),
-                    GlobalOrigin = ProtoConvertUtils.UnityVectorToPBVector(ray.origin),
-                    Timestamp = model.Timestamp
-                };
+                var pooledRaycastResult = raycastResultPool.Get();
+                PBRaycastResult result = pooledRaycastResult.WrappedComponent.Model;
+                result.Direction = ProtoConvertUtils.UnityVectorToPBVector(ray.direction);
+                result.GlobalOrigin = ProtoConvertUtils.UnityVectorToPBVector(ray.origin);
+                result.Timestamp = model.Timestamp;
+                result.TickNumber = engineInfoComponent.GetFor(scene, SpecialEntityId.SCENE_ROOT_ENTITY).Value.model.SceneTick;
 
                 // Hit everything by default except 'OnPointer' layer
                 int raycastUnityLayerMask = CreateRaycastLayerMask(model);
 
-                RaycastHit[] hits = null;
+                UnityEngine.RaycastHit[] hits = null;
 
                 // RaycastAll is used because 'Default' layer represents a combination of ClPointer and ClPhysics
                 // and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
                 hits = Physics.RaycastAll(ray, model.MaxDistance, raycastUnityLayerMask);
                 if (hits != null)
                 {
-                    DCL.ECSComponents.RaycastHit closestHit = null;
+                    RaycastHit closestHit = null;
                     for (int j = 0; j < hits.Length; j++)
                     {
-                        RaycastHit currentHit = hits[j];
+                        UnityEngine.RaycastHit currentHit = hits[j];
                         uint raycastSDKCollisionMask = model.GetCollisionMask();
                         KeyValuePair<IDCLEntity, uint>? hitEntity = null;
 
@@ -118,11 +129,10 @@ namespace ECSSystems.ECSRaycastSystem
                         result.Hits.Add(closestHit);
                 }
 
-                componentWriter.PutComponent(
-                    scene.sceneData.sceneNumber, entity.entityId,
-                    ComponentID.RAYCAST_RESULT,
-                    result
-                );
+                if (componentsWriter.TryGetValue(scene.sceneData.sceneNumber, out var writer))
+                {
+                    writer.Put(entity.entityId, ComponentID.RAYCAST_RESULT, pooledRaycastResult);
+                }
 
                 // If the raycast on that entity isn't 'continuous' the internal component is removed and won't
                 // be used for raycasting on the next system iteration. If its timestamp changes, the handler
@@ -198,25 +208,39 @@ namespace ECSSystems.ECSRaycastSystem
             return ray;
         }
 
-        private DCL.ECSComponents.RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
+        private RaycastHit CreateSDKRaycastHit(IParcelScene scene, PBRaycast model, UnityEngine.RaycastHit unityRaycastHit, KeyValuePair<IDCLEntity, uint>? hitEntity, Vector3 globalOrigin)
         {
-            if (hitEntity == null) return null;
+            RaycastHit hit = null;
+            uint modelCollisionLayerMask = model.GetCollisionMask();
 
-            DCL.ECSComponents.RaycastHit hit = new DCL.ECSComponents.RaycastHit();
-            IDCLEntity entity = hitEntity.Value.Key;
-            uint collisionMask = hitEntity.Value.Value;
+            if (hitEntity != null) // SDK7 entity, otherwise the ray hit an SDK6 entity
+            {
+                // TODO: figure out how we can cache or pool this hit instance to reduce allocations.
+                // since is part of a protobuf message it life span is uncertain, it could be disposed
+                // after message is sent to the scene or dropped for a new message
+                IDCLEntity entity = hitEntity.Value.Key;
+                uint collisionMask = hitEntity.Value.Value;
 
-            // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
-            // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
-            if ((model.GetCollisionMask() & collisionMask) == 0)
+                // hitEntity has to be evaluated since 'Default' layer represents a combination of ClPointer
+                // and ClPhysics, and 'SDKCustomLayer' layer represents 8 different SDK layers: ClCustom1~8
+                if ((modelCollisionLayerMask & collisionMask) == 0)
+                    return null;
+
+                hit = new RaycastHit();
+                hit.EntityId = (uint)entity.entityId;
+            }
+            else if ((!scene.isPersistent && !scene.isPortableExperience)
+                     || (modelCollisionLayerMask & (int)ColliderLayer.ClPhysics) == 0) // 'Physics' layer for non-sdk7 colliders
+            {
                 return null;
+            }
 
-            hit.EntityId = (uint)entity.entityId;
+            hit ??= new RaycastHit();
             hit.MeshName = unityRaycastHit.collider.name;
             hit.Length = unityRaycastHit.distance;
             hit.GlobalOrigin = globalOrigin;
 
-            var worldPosition = DCL.WorldStateUtils.ConvertUnityToScenePosition(unityRaycastHit.point, scene);
+            var worldPosition = WorldStateUtils.ConvertUnityToScenePosition(unityRaycastHit.point, scene);
             hit.Position = new Vector3();
             hit.Position.X = worldPosition.x;
             hit.Position.Y = worldPosition.y;

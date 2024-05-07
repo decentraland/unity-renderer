@@ -94,6 +94,7 @@ export function* handleSaveLocalAvatar(saveAvatar: SaveProfileDelta) {
     if (profile.hasConnectedWeb3) {
       yield put(deployProfile(profile))
     }
+
   } catch (error: any) {
     trackEvent('error', {
       message: `cant_persist_avatar ${error}`,

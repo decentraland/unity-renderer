@@ -65,6 +65,15 @@ public static class TheGraphQueries
   }
 ";
 
+    public static readonly string getEthereumManaQuery = @"
+    query MANA($address: ID){
+        accounts(where: {id:$address}){
+            id,
+            mana
+        }
+    }
+";
+
     public static readonly string getPolygonManaQuery = @"
     query MANA($address: ID){
         accounts(where: {id:$address}){
@@ -81,6 +90,9 @@ public static class TheGraphQueries
             collection {
                 id
             }
+            item {
+                blockchainId
+            }
             tokenId
         }
     }
@@ -92,6 +104,9 @@ public static class TheGraphQueries
             urn,
             collection {
                 id
+            }
+            item {
+                blockchainId
             }
             tokenId
         }

@@ -1,14 +1,15 @@
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL.Helpers;
 using TMPro;
 using UIComponents.CollapsableSortedList;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class WorldChatWindowComponentView : BaseComponentView, IWorldChatWindowView, IComponentModelConfig<WorldChatWindowModel>
     {
@@ -81,6 +82,7 @@ namespace DCL.Chat.HUD
         public event Action OnCreateChannel;
         public event Action OnSignUp;
         public event Action OnRequireWalletReadme;
+        public event Action<string> OnCopyChannelNameRequested;
 
         public RectTransform Transform => (RectTransform) transform;
         public bool IsActive => gameObject.activeInHierarchy;
@@ -110,6 +112,7 @@ namespace DCL.Chat.HUD
             searchBar.OnSearchText += text => OnSearchChatRequested?.Invoke(text);
             scroll.onValueChanged.AddListener(RequestMorePrivateChats);
             channelContextualMenu.OnLeave += () => OnLeaveChannel?.Invoke(optionsChannelId);
+            channelContextualMenu.OnNameCopied += channelName => OnCopyChannelNameRequested?.Invoke(channelName);
             createChannelButton.onClick.AddListener(() => OnCreateChannel?.Invoke());
             connectWalletButton.onClick.AddListener(() => OnSignUp?.Invoke());
             whatIsWalletButton.onClick.AddListener(() => OnRequireWalletReadme?.Invoke());
@@ -193,6 +196,23 @@ namespace DCL.Chat.HUD
         public void RefreshBlockedDirectMessages(List<string> blockedUsers)
         {
             if (blockedUsers == null) return;
+
+            var keysToUpdate = ListPool<string>.Get();
+
+            foreach (KeyValuePair<string, PrivateChatModel> privateChatModel in privateChatsCreationQueue)
+            {
+                if (blockedUsers.Contains(privateChatModel.Key) != privateChatModel.Value.isBlocked) { keysToUpdate.Add(privateChatModel.Key); }
+            }
+
+            foreach (string key in keysToUpdate)
+            {
+                PrivateChatModel refreshedPrivateChatModel = privateChatsCreationQueue[key];
+                refreshedPrivateChatModel.isBlocked = blockedUsers.Contains(key);
+                privateChatsCreationQueue[key] = refreshedPrivateChatModel;
+            }
+
+            ListPool<string>.Release(keysToUpdate);
+            
             directChatList.RefreshBlockedEntries(blockedUsers);
         }
 
@@ -449,6 +469,8 @@ namespace DCL.Chat.HUD
                     entry.EnableAvatarSnapshotFetching();
                 else
                     entry.DisableAvatarSnapshotFetching();
+
+                entry.RefreshControl();
             }
 
             currentAvatarSnapshotIndex += AVATAR_SNAPSHOTS_PER_FRAME;

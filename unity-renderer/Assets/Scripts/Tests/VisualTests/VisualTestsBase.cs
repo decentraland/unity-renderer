@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DCL;
+﻿using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCLPlugins.UIRefresherPlugin;
 using DCLServices.MapRendererV2;
 using NSubstitute;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
@@ -22,9 +21,9 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
     protected override ServiceLocator InitializeServiceLocator()
     {
-        ServiceLocator result = DCL.ServiceLocatorTestFactory.CreateMocked();
+        ServiceLocator result = ServiceLocatorTestFactory.CreateMocked();
         result.Register<IWebRequestController>(WebRequestController.Create);
-        result.Register<IServiceProviders>( () => new ServiceProviders());
+        result.Register<IServiceProviders>(() => new ServiceProviders(KernelConfig.i));
         result.Register<IRuntimeComponentFactory>( () => new RuntimeComponentFactory());
         result.Register<IWorldState>( () => new WorldState());
         result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
@@ -63,12 +62,12 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         camera.GetUniversalAdditionalCameraData().volumeLayerMask = LayerMask.GetMask("PostProcessing");
         camera.GetUniversalAdditionalCameraData().renderShadows = true;
 
-        UnityEngine.RenderSettings.fog = true;
-        UnityEngine.RenderSettings.fogMode = FogMode.Linear;
-        UnityEngine.RenderSettings.fogStartDistance = 100;
-        UnityEngine.RenderSettings.fogEndDistance = 110;
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogStartDistance = 100;
+        RenderSettings.fogEndDistance = 110;
 
-        DCL.Environment.i.world.state.ForceCurrentScene( scene.sceneData.sceneNumber, scene.sceneData.id);
+        Environment.i.world.state.ForceCurrentScene( scene.sceneData.sceneNumber, scene.sceneData.id);
 
         VisualTestUtils.RepositionVisualTestsCamera(camera, new Vector3(0, 2, 0));
     }
