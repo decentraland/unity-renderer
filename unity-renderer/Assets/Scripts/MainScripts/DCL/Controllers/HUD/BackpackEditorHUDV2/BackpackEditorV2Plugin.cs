@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
-using DCL.Emotes;
 using DCL.Providers;
 using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
@@ -77,9 +76,12 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
+            var wearablesNFTFetchHelper = new WearablesNFTFetchHelper();
+
             var vrmExportController = new VRMDetailsController(
                 view.VrmDetailsComponentView,
-                userProfileBridge
+                userProfileBridge,
+                wearablesNFTFetchHelper
                 );
 
             hudController = new BackpackEditorHUDController(

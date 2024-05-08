@@ -15,8 +15,8 @@ namespace DCL.Backpack
         [SerializeField] private Transform wearablesContainer;
 
         private Pool wearableDetailPool;
-        private readonly List<PoolableObject> pooledItems = new ();
-        private readonly List<string> equippedItemsURNs = new();
+        private readonly List<(PoolableObject, VRMDetailItemComponentView)> pooledItems = new ();
+        private readonly List<string> equippedItemsURNs = new ();
 
         public event Action OnBackButtonPressed;
         public event Action OnVRMExportButtonPressed;
@@ -38,10 +38,18 @@ namespace DCL.Backpack
         public override void Dispose()
         {
             base.Dispose();
-            var pool = GetItemDetailPool();
+            TearDown();
+        }
 
-            foreach (PoolableObject pooledItem in pooledItems)
-                pool.Release(pooledItem);
+        private void TearDown()
+        {
+            foreach ((PoolableObject pooledItem, VRMDetailItemComponentView component) in pooledItems)
+            {
+                component.ClearOnWearableUnequippedEvents();
+                pooledItem.Release();
+            }
+
+            pooledItems.Clear();
         }
 
         private Pool GetItemDetailPool()
@@ -77,8 +85,7 @@ namespace DCL.Backpack
         {
             base.OnDisable();
 
-            foreach (PoolableObject pooledItem in pooledItems)
-                pooledItem.Release();
+            TearDown();
         }
 
         public void FillVRMBlockingWearablesList(List<NFTDataDTO> itemsToDisplay)
@@ -90,46 +97,43 @@ namespace DCL.Backpack
             {
                 equippedItemsURNs.Add(itemData.urn);
                 var detailItem = wearableDetailPool.Get();
-                detailItem.gameObject.transform.SetParent(wearablesContainer, false);
-                pooledItems.Add(detailItem);
-
                 var detailComponentView = detailItem.gameObject.GetComponent<VRMDetailItemComponentView>();
 
-                if (detailComponentView)
+                detailComponentView.transform.SetParent(wearablesContainer, false);
+                pooledItems.Add((detailItem, detailComponentView));
+
+                var vrmItemModel = new VRMItemModel
                 {
-                    var vrmItemModel = new VRMItemModel
-                    {
-                        wearableUrn = itemData.urn,
-                        wearableImageUrl = itemData.thumbnail,
-                        wearableName = itemData.name,
-                        wearableCategoryName = itemData.data.wearable.category,
-                        wearableCreatorImageUrl = itemData.creatorImageUrl,
-                        wearableCreatorName = itemData.creatorName,
-                    };
+                    wearableUrn = itemData.urn,
+                    wearableImageUrl = itemData.thumbnail,
+                    wearableName = itemData.name,
+                    wearableCategoryName = itemData.data.wearable.category,
+                    wearableCreatorImageUrl = itemData.creatorImageUrl,
+                    wearableCreatorName = itemData.creatorName,
+                };
 
-                    detailComponentView.SetModel(vrmItemModel);
-                    detailComponentView.ClearOnWearableUnequippedEvents();
+                detailComponentView.SetModel(vrmItemModel);
+                detailComponentView.ClearOnWearableUnequippedEvents();
 
-                    detailComponentView.OnUnEquipWearable += () =>
-                    {
-                        equippedItemsURNs.Remove(itemData.urn);
+                detailComponentView.OnUnEquipWearable += () =>
+                {
+                    equippedItemsURNs.Remove(itemData.urn);
 
-                        if (equippedItemsURNs.Count == 0)
-                            EnableVRMExport(true);
+                    if (equippedItemsURNs.Count == 0)
+                        EnableVRMExport(true);
 
-                        OnWearableUnequipped?.Invoke(vrmItemModel, UnequipWearableSource.None);
-                    };
+                    OnWearableUnequipped?.Invoke(vrmItemModel, UnequipWearableSource.None);
+                };
 
-                    detailComponentView.OnEquipWearable += () =>
-                    {
-                        equippedItemsURNs.Add(itemData.urn);
+                detailComponentView.OnEquipWearable += () =>
+                {
+                    equippedItemsURNs.Add(itemData.urn);
 
-                        if (equippedItemsURNs.Count > 0)
-                            EnableVRMExport(false);
+                    if (equippedItemsURNs.Count > 0)
+                        EnableVRMExport(false);
 
-                        OnWearableEquipped?.Invoke(vrmItemModel, EquipWearableSource.None);
-                    };
-                }
+                    OnWearableEquipped?.Invoke(vrmItemModel, EquipWearableSource.None);
+                };
             }
         }
     }

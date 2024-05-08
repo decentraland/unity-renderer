@@ -109,7 +109,7 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
                 vrmExporter,
-                new VRMDetailsController(Substitute.For<IVRMDetailsComponentView>(), userProfileBridge),
+                new VRMDetailsController(Substitute.For<IVRMDetailsComponentView>(), userProfileBridge, Substitute.For<INFTFetchHelper>()),
                 fileBrowserService,
                 Substitute.For<IEmotesCatalogService>());
         }

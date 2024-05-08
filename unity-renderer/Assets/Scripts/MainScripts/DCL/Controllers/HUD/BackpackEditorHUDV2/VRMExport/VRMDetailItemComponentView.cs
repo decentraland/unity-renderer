@@ -16,7 +16,7 @@ namespace DCL.Backpack
         [SerializeField] private TMP_Text wearableCreatorName;
         [SerializeField] private ButtonComponentView actionButton;
 
-        private bool isUnEquipAction;
+        private bool isUnEquipAction = true;
         private const string UNEQUIP_TEXT = "unequip";
         private const string EQUIP_TEXT = "equip";
 
@@ -25,7 +25,6 @@ namespace DCL.Backpack
 
         public void Start()
         {
-            isUnEquipAction = true;
             actionButton.SetText(UNEQUIP_TEXT);
             actionButton.onClick.RemoveAllListeners();
             actionButton.onClick.AddListener(() =>
