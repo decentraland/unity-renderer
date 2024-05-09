@@ -3,6 +3,7 @@ using DCL.Browser;
 using DCL.Providers;
 using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
+using DCLServices.EnvironmentProvider;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Components.Avatar.VRMExporter;
@@ -77,11 +78,12 @@ namespace DCL.Backpack
                 Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
             var wearablesNFTFetchHelper = new WearablesNFTFetchHelper();
-
+            var environmentProvider = Environment.i.serviceLocator.Get<IEnvironmentProviderService>();
             var vrmExportController = new VRMDetailsController(
                 view.VrmDetailsComponentView,
                 userProfileBridge,
-                wearablesNFTFetchHelper
+                wearablesNFTFetchHelper,
+                environmentProvider
                 );
 
             hudController = new BackpackEditorHUDController(

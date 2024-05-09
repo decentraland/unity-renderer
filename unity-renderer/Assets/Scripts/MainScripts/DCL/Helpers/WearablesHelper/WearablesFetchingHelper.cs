@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCLServices.EnvironmentProvider;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -45,9 +46,9 @@ namespace DCL.Helpers
                 });
         }
 
-        public static async UniTask<string> GetNFTItems(List<string> wearableUrns)
+        public static async UniTask<string> GetNFTItems(List<string> wearableUrns, IEnvironmentProviderService environmentProviderService)
         {
-            StringBuilder sb = new (GetItemsFetchURL());
+            StringBuilder sb = new (GetItemsFetchURL(environmentProviderService));
 
             int urnCount = wearableUrns.Count;
 
@@ -67,10 +68,10 @@ namespace DCL.Helpers
             return resultAsync.downloadHandler.text;;
         }
 
-        public static string GetItemsFetchURL()
+        public static string GetItemsFetchURL(IEnvironmentProviderService environmentProviderService)
         {
-            var baseUrl = NFT_API_FETCH_URL;
-            var useZone = DebugConfigComponent.i.network == DebugConfigComponent.Network.SEPOLIA;
+            string baseUrl = NFT_API_FETCH_URL;
+            bool useZone = environmentProviderService.IsProd() == false;
 
             if (useZone)
                 baseUrl = baseUrl.Replace("org", "zone");

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCLServices.EnvironmentProvider;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace DCL.Backpack
         private readonly IVRMDetailsComponentView view;
         private readonly Dictionary<string, NFTDataDTO> nftDataCache = new ();
         private readonly INFTFetchHelper nftFetchHelper;
+        private IEnvironmentProviderService environmentProviderService;
 
         public event Action<string, UnequipWearableSource> OnWearableUnequipped;
         public event Action<string, EquipWearableSource> OnWearableEquipped;
@@ -18,11 +20,13 @@ namespace DCL.Backpack
         public VRMDetailsController(
             IVRMDetailsComponentView view,
             IUserProfileBridge userProfileBridge,
-            INFTFetchHelper nftFetchHelper)
+            INFTFetchHelper nftFetchHelper,
+            IEnvironmentProviderService environmentProviderService)
         {
             this.view = view;
             this.userProfileBridge = userProfileBridge;
             this.nftFetchHelper = nftFetchHelper;
+            this.environmentProviderService = environmentProviderService;
 
             view.OnWearableUnequipped += HandleWearableUnequipped;
             view.OnWearableEquipped += HandleWearableEquipped;
@@ -66,7 +70,7 @@ namespace DCL.Backpack
             // If we're still missing items, fetch them.
             if (itemsToProcess.Count > 0)
             {
-                string nftItemRawData = await nftFetchHelper.GetNFTItems(itemsToProcess);
+                string nftItemRawData = await nftFetchHelper.GetNFTItems(itemsToProcess, environmentProviderService);
                 var nftItemsData = JsonUtility.FromJson<NFTItemsDTO>(nftItemRawData);
 
                 for (var i = 0; i < nftItemsData.data.Length; i++)
