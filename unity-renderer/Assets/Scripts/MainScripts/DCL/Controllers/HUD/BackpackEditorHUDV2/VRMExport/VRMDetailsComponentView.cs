@@ -41,6 +41,13 @@ namespace DCL.Backpack
             TearDown();
         }
 
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            TearDown();
+        }
+
         private void TearDown()
         {
             foreach ((PoolableObject pooledItem, VRMDetailItemComponentView component) in pooledItems)
@@ -80,13 +87,6 @@ namespace DCL.Backpack
         }
 
         public override void RefreshControl() { }
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-
-            TearDown();
-        }
 
         public void FillVRMBlockingWearablesList(List<NFTDataDTO> itemsToDisplay)
         {

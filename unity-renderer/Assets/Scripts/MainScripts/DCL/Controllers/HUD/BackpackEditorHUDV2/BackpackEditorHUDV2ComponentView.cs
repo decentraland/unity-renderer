@@ -110,6 +110,7 @@ namespace DCL.Backpack
             saveAvatarButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
             nextButton.onClick.AddListener(() => OnContinueSignup?.Invoke());
             backButton.onClick.AddListener(() => OnSignUpBackClicked?.Invoke(currentStage));
+            ToggleNormalSection();
         }
 
         public void Initialize(
