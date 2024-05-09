@@ -70,12 +70,11 @@ namespace DCL.Helpers
         public static string GetItemsFetchURL()
         {
             var baseUrl = NFT_API_FETCH_URL;
-#if UNITY_EDITOR
             var useZone = DebugConfigComponent.i.network == DebugConfigComponent.Network.SEPOLIA;
 
             if (useZone)
                 baseUrl = baseUrl.Replace("org", "zone");
-#endif
+
             return $"{baseUrl}{NFT_API_FETCH_PARAMS_ITEMS}";
         }
 
