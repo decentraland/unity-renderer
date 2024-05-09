@@ -119,14 +119,17 @@ namespace Tests
         {
             const string CONTRACT_ADDRESS = "0x0123512313223123123123123";
             const string TOKEN_ID = "645433";
+            const string CHAIN = "matic";
 
             Assert.IsTrue(NFTUtils.TryParseUrn(
-                $"urn:decentraland:ethereum:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
+                $"urn:decentraland:{CHAIN}:erc1150:{CONTRACT_ADDRESS}:{TOKEN_ID}",
+                out string chain,
                 out string contractAddress,
                 out string tokenId));
 
             Assert.AreEqual(CONTRACT_ADDRESS, contractAddress);
             Assert.AreEqual(TOKEN_ID, tokenId);
+            Assert.AreEqual(CHAIN, chain);
         }
 
         [Test]
@@ -134,40 +137,47 @@ namespace Tests
         {
             string contractAddress;
             string tokenId;
+            string chain;
 
             // "urn:decentraland" missing
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"ethereum:erc1150:0x0000temptation:666",
+                out chain,
                 out contractAddress,
                 out tokenId));
 
             // "chain" missing
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"urn:decentraland:erc1150:0x0000temptation:666",
+                out chain,
                 out contractAddress,
                 out tokenId));
 
             // "chain" invalid
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"urn:decentraland:some-chain:erc1150:0x0000temptation:666",
+                out chain,
                 out contractAddress,
                 out tokenId));
 
             // contract address missing
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"urn:decentraland:ethereum:erc1150:666",
+                out chain,
                 out contractAddress,
                 out tokenId));
 
             // token id missing
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 $"urn:decentraland:ethereum:erc1150:0x0000temptation",
+                out chain,
                 out contractAddress,
                 out tokenId));
 
             // empty string
             Assert.IsFalse(NFTUtils.TryParseUrn(
                 "",
+                out chain,
                 out contractAddress,
                 out tokenId));
         }
@@ -179,15 +189,18 @@ namespace Tests
             {
                 const string EXPECTED_CONTRACT_ADDRESS = "0x0temptation";
                 const string EXPECTED_TOKEN_ID = "1234";
+                const string EXPECTED_CHAIN = "ethereum";
 
                 bool requested = false;
 
                 string contractAddress = string.Empty;
                 string tokenId = string.Empty;
+                string chainId = string.Empty;
 
-                restrictedActions.OpenNftPrompt = (contract, token) =>
+                restrictedActions.OpenNftPrompt = (chain, contract, token) =>
                 {
                     requested = true;
+                    chainId = chain;
                     contractAddress = contract;
                     tokenId = token;
                 };
@@ -197,13 +210,13 @@ namespace Tests
                 var result = await rpcClient.OpenNftDialog(
                     new OpenNftDialogRequest()
                     {
-                        Urn = $"urn:decentraland:ethereum:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
+                        Urn = $"urn:decentraland:{EXPECTED_CHAIN}:erc1150:{EXPECTED_CONTRACT_ADDRESS}:{EXPECTED_TOKEN_ID}"
                     });
 
                 Assert.IsTrue(result.Success);
                 Assert.IsTrue(requested);
                 Assert.AreEqual(contractAddress, EXPECTED_CONTRACT_ADDRESS);
-                Assert.AreEqual(tokenId, EXPECTED_TOKEN_ID);
+                Assert.AreEqual(tokenId, EXPECTED_CHAIN);
             });
         }
 
@@ -217,7 +230,7 @@ namespace Tests
 
                 bool requested = false;
 
-                restrictedActions.OpenNftPrompt = (contract, token) =>
+                restrictedActions.OpenNftPrompt = (chain, contract, token) =>
                 {
                     requested = true;
                 };
@@ -242,7 +255,7 @@ namespace Tests
             {
                 bool requested = false;
 
-                restrictedActions.OpenNftPrompt = (contract, token) =>
+                restrictedActions.OpenNftPrompt = (chain, contract, token) =>
                 {
                     requested = true;
                 };

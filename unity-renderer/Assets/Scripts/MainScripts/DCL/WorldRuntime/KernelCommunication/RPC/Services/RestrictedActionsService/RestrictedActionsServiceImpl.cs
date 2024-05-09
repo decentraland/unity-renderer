@@ -85,9 +85,9 @@ namespace RPC.Services
 
                 if (restrictedActions.IsSceneRestrictedActionEnabled(sceneNumber))
                 {
-                    if (NFTUtils.TryParseUrn(request.Urn, out string contractAddress, out string tokenId))
+                    if (NFTUtils.TryParseUrn(request.Urn, out string chain, out string contractAddress, out string tokenId))
                     {
-                        restrictedActions.OpenNftPrompt?.Invoke(contractAddress, tokenId);
+                        restrictedActions.OpenNftPrompt?.Invoke(chain, contractAddress, tokenId);
                         success = true;
                     }
                 }

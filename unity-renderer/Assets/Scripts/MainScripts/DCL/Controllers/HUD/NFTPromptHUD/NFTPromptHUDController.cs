@@ -62,7 +62,7 @@ public class NFTPromptHUDController : IHUD
 
             view.SetLoading();
 
-            fetchNFTRoutine = CoroutineStarter.Start(NFTUtils.FetchNFTInfoSingleAsset(model.contactAddress, model.tokenId,
+            fetchNFTRoutine = CoroutineStarter.Start(NFTUtils.FetchNFTInfoSingleAsset(model.chain, model.contactAddress, model.tokenId,
                 (nftInfo) => SetNFT(nftInfo, model.comment, true),
                 (error) => view.OnError(string.Format(COULD_NOT_FETCH_NFT_FROM_API + " " + error + ". " + DOES_NOT_SUPPORT_POLYGON, model.contactAddress, model.tokenId))
             ));
@@ -99,9 +99,9 @@ public class NFTPromptHUDController : IHUD
         restrictedActionsContext.OpenNftPrompt -= OpenPromptRequest;
     }
 
-    private void OpenPromptRequest(string contractAddress, string tokenId)
+    private void OpenPromptRequest(string chain, string contractAddress, string tokenId)
     {
-        openNftPromptVariable.Set(new NFTPromptModel(contractAddress, tokenId, string.Empty));
+        openNftPromptVariable.Set(new NFTPromptModel(chain, contractAddress, tokenId, string.Empty));
     }
 
     private void SetNFT(NFTInfo info, string comment, bool shouldRefreshOwners)

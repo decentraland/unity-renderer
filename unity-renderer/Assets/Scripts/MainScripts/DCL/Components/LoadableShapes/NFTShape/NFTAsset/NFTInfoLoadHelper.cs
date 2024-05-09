@@ -10,9 +10,9 @@ public interface INFTInfoRetriever : IDisposable
 {
     public event Action<NFTInfo> OnFetchInfoSuccess;
     public event Action OnFetchInfoFail;
-    void FetchNFTInfo(string contractAddress, string tokenId);
+    void FetchNFTInfo(string chain, string contractAddress, string tokenId);
 
-    UniTask<NFTInfo?> FetchNFTInfoAsync(string contractAddress, string tokenId);
+    UniTask<NFTInfo?> FetchNFTInfoAsync(string chain, string contractAddress, string tokenId);
 }
 
 public class NFTInfoRetriever : INFTInfoRetriever
@@ -37,22 +37,22 @@ public class NFTInfoRetriever : INFTInfoRetriever
         tokenSource?.Dispose();
     }
 
-    public void FetchNFTInfo(string contractAddress, string tokenId)
+    public void FetchNFTInfo(string chain, string contractAddress, string tokenId)
     {
         if (fetchCoroutine != null)
             CoroutineStarter.Stop(fetchCoroutine);
 
-        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(contractAddress, tokenId));
+        fetchCoroutine = CoroutineStarter.Start(FetchNFTInfoCoroutine(chain, contractAddress, tokenId));
     }
 
-    public async UniTask<NFTInfo?> FetchNFTInfoAsync(string contractAddress, string tokenId)
+    public async UniTask<NFTInfo?> FetchNFTInfoAsync(string chain, string contractAddress, string tokenId)
     {
         tokenSource = new CancellationTokenSource();
         tokenSource.Token.ThrowIfCancellationRequested();
 
         NFTInfo? nftInformation = null;
 
-        var rutine = NFTUtils.FetchNFTInfo(contractAddress, tokenId,
+        var rutine = NFTUtils.FetchNFTInfo(chain, contractAddress, tokenId,
             (info) =>
             {
                 nftInformation = info;
@@ -63,13 +63,12 @@ public class NFTInfoRetriever : INFTInfoRetriever
             });
 
         await rutine.WithCancellation(tokenSource.Token);
-
-        return null;
+        return nftInformation;
     }
 
-    private IEnumerator FetchNFTInfoCoroutine(string contractAddress, string tokenId)
+    private IEnumerator FetchNFTInfoCoroutine(string chain, string contractAddress, string tokenId)
     {
-        yield return NFTUtils.FetchNFTInfo(contractAddress, tokenId,
+        yield return NFTUtils.FetchNFTInfo(chain, contractAddress, tokenId,
             (info) => { OnFetchInfoSuccess?.Invoke(info); },
             (error) =>
             {
