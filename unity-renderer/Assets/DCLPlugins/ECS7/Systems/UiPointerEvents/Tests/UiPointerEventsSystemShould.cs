@@ -163,6 +163,45 @@ namespace Tests
         }
 
         [Test]
+        public void UpdatePointerBlockingOnElementsWithPointerEvents()
+        {
+            // add required components entity
+            internalComponents.uiContainerComponent.PutFor(scene, entity, new InternalUiContainer(1)
+            {
+                components = { 1 }
+            });
+            internalComponents.PointerEventsComponent.PutFor(scene, entity, new InternalPointerEvents(
+                new List<InternalPointerEvents.Entry>()
+                {
+                    new InternalPointerEvents.Entry(
+                        PointerEventType.PetDown,
+                        new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false)),
+                    new InternalPointerEvents.Entry(
+                        PointerEventType.PetHoverLeave,
+                        new InternalPointerEvents.Info(InputAction.IaPointer, "temptation", 0, false))
+                })
+            );
+            internalComponents.RegisteredUiPointerEventsComponent.PutFor(scene, entity, new InternalRegisteredUiPointerEvents());
+
+            // Check default picking model
+            var internalComponentModel = internalComponents.uiContainerComponent.GetFor(scene, entity);
+            Assert.AreEqual(PickingMode.Ignore, internalComponentModel.Value.model.rootElement.pickingMode);
+
+            // mark PointerEventsComponent as dirty
+            MarkDirtyComponents();
+
+            // should update callbacks
+            ECSUiPointerEventsSystem.HandlePointerEventComponentUpdate(
+                componentGroups.RegisteredUiPointerEvents,
+                internalComponents.RegisteredUiPointerEventsComponent,
+                internalComponents.inputEventResultsComponent);
+
+            // Check picking model was updated correctly
+            internalComponentModel = internalComponents.uiContainerComponent.GetFor(scene, entity);
+            Assert.AreEqual(PickingMode.Position, internalComponentModel.Value.model.rootElement.pickingMode);
+        }
+
+        [Test]
         public void HandleUiContainerRemoval()
         {
             // add required components entity
@@ -272,6 +311,7 @@ namespace Tests
             {
                 components = { 1 }
             };
+            uiDocumentInstance.rootVisualElement.Add(internalUiComponent.rootElement);
 
             internalComponents.uiContainerComponent.PutFor(scene, entity, internalUiComponent);
 

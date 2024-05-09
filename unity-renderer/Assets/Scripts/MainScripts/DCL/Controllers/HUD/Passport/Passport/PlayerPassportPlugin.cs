@@ -4,6 +4,7 @@ using DCL.ProfanityFiltering;
 using DCL.Social.Friends;
 using DCl.Social.Passports;
 using DCL.Social.Passports;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
@@ -17,7 +18,8 @@ public class PlayerPassportPlugin : IPlugin
 
     public PlayerPassportPlugin()
     {
-        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport")).GetComponent<PlayerPassportReferenceContainer>();
+        PlayerPassportReferenceContainer referenceContainer = Object.Instantiate(Resources.Load<GameObject>("PlayerPassport"))
+                                                                    .GetComponent<PlayerPassportReferenceContainer>();
         referenceContainer.PlayerPreviewView.Initialize(new PreviewCameraRotationController());
 
         var wearablesCatalogService = Environment.i.serviceLocator.Get<IWearablesCatalogService>();
@@ -57,7 +59,9 @@ public class PlayerPassportPlugin : IPlugin
                                 Environment.i.serviceLocator.Get<ILandsService>(),
                                 Environment.i.serviceLocator.Get<INamesService>(),
                                 NotificationsController.i),
-                            referenceContainer.PassportNavigationView),
+                            referenceContainer.PassportNavigationView,
+                            Clipboard.Create(),
+                            Environment.i.serviceLocator.Get<ICopyPasteAnalyticsService>()),
                         new UserProfileWebInterfaceBridge(),
                         new WebInterfacePassportApiBridge(),
                         new SocialAnalytics(

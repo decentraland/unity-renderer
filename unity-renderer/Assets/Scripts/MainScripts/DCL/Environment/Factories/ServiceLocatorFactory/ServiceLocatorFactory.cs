@@ -2,6 +2,7 @@ using AvatarSystem;
 using DCL.Chat;
 using DCL.Chat.Channels;
 using DCL.Controllers;
+using DCL.Emotes;
 using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
@@ -11,17 +12,25 @@ using DCL.Social.Chat;
 using DCl.Social.Friends;
 using DCL.Social.Friends;
 using DCL.World.PortableExperiences;
+using DCLServices.CameraReelService;
+using DCLServices.CopyPaste.Analytics;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.DCLFileBrowser.DCLFileBrowserFactory;
 using DCLServices.EmotesCatalog;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
+using DCLServices.EnvironmentProvider;
 using DCLServices.Lambdas;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.MapRendererV2;
 using DCLServices.MapRendererV2.ComponentsFactory;
 using DCLServices.PlacesAPIService;
+using DCLServices.PortableExperiences.Analytics;
+using DCLServices.ScreencaptureCamera.Service;
+using DCLServices.SubscriptionsAPIService;
 using DCLServices.WearablesCatalogService;
+using DCLServices.WorldsAPIService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
@@ -35,10 +44,14 @@ namespace DCL
 {
     public static class ServiceLocatorFactory
     {
+        private static BaseVariable<FeatureFlag> featureFlagsDataStore;
+
         public static ServiceLocator CreateDefault()
         {
             var result = new ServiceLocator();
             IRPC irpc = new RPC();
+
+            featureFlagsDataStore = DataStore.i.featureFlags.flags;
 
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
 
@@ -54,6 +67,8 @@ namespace DCL
             result.Register<IClipboard>(Clipboard.Create);
             result.Register<IPhysicsSyncController>(() => new PhysicsSyncController());
             result.Register<IRPC>(() => irpc);
+            UnityEnvironmentProviderService environmentProviderService = new UnityEnvironmentProviderService(KernelConfig.i);
+            result.Register<IEnvironmentProviderService>(() => environmentProviderService);
 
             var webRequestController = new WebRequestController(
                 new GetWebRequestFactory(),
@@ -66,9 +81,10 @@ namespace DCL
                 new DeleteWebRequestFactory(),
                 new RPCSignRequest(irpc)
             );
+
             result.Register<IWebRequestController>(() => webRequestController);
 
-            result.Register<IServiceProviders>(() => new ServiceProviders());
+            result.Register<IServiceProviders>(() => new ServiceProviders(KernelConfig.i));
             result.Register<ILambdasService>(() => new LambdasService());
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
@@ -100,13 +116,12 @@ namespace DCL
 
             result.Register<IFriendsController>(() =>
             {
-                // TODO (NEW FRIEND REQUESTS): remove when the kernel bridge is production ready
+                // TODO: remove when the all the friendship responsibilities are migrated to unity
                 WebInterfaceFriendsApiBridge webInterfaceFriendsApiBridge = WebInterfaceFriendsApiBridge.GetOrCreate();
 
-                return new FriendsController(new WebInterfaceFriendsApiBridgeProxy(
-                        webInterfaceFriendsApiBridge,
-                        RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
-                        DataStore.i), result.Get<ISocialApiBridge>(),
+                return new FriendsController(
+                    RPCFriendsApiBridge.CreateSharedInstance(irpc, webInterfaceFriendsApiBridge),
+                    result.Get<ISocialApiBridge>(),
                     DataStore.i, userProfileWebInterfaceBridge);
             });
 
@@ -114,13 +129,15 @@ namespace DCL
 
             result.Register<IEmotesCatalogService>(() =>
             {
-                var emotesRequest = new EmotesRequestWeb(
+                var emotesRequest = new EmotesBatchRequest(
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
-                    DataStore.i.featureFlags.flags);
-                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider);
+                    featureFlagsDataStore);
+
+                var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider,
+                    result.Get<IServiceProviders>().catalyst, result.Get<ILambdasService>(), DataStore.i);
                 var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
-                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, DataStore.i.featureFlags.flags, KernelConfig.i);
+                return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, featureFlagsDataStore, KernelConfig.i);
             });
 
             result.Register<ITeleportController>(() => new TeleportController());
@@ -133,12 +150,20 @@ namespace DCL
                 new LambdasWearablesCatalogService(DataStore.i.common.wearables,
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
-                    DataStore.i.featureFlags.flags),
+                    featureFlagsDataStore,
+                    DataStore.i),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
                 new WearablesWebInterfaceBridge(),
-                DataStore.i.featureFlags.flags));
+                featureFlagsDataStore));
+
+            result.Register<ICustomNftCollectionService>(WebInterfaceCustomNftCatalogBridge.GetOrCreate);
+
+            result.Register<IEmotesService>(() => new EmotesService(new EmoteAnimationLoaderFactory(addressableResourceProvider),
+                result.Get<IEmotesCatalogService>(),
+                result.Get<IWearablesCatalogService>(),
+                result.Get<IServiceProviders>().catalyst));
 
             result.Register<IProfanityFilter>(() => new ThrottledRegexProfanityFilter(
                 new ProfanityWordProviderFromResourcesJson("Profanity/badwords"), 20));
@@ -175,14 +200,7 @@ namespace DCL
 
             // Map
             result.Register<IHotScenesFetcher>(() => new HotScenesFetcher(60f, 60f * 5f));
-
-            const int ATLAS_CHUNK_SIZE = 1020;
-            const int PARCEL_SIZE = 20;
-
-            // it is quite expensive to disable TextMeshPro so larger bounds should help keeping the right balance
-            const float CULLING_BOUNDS_IN_PARCELS = 10;
-
-            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory(PARCEL_SIZE, ATLAS_CHUNK_SIZE, CULLING_BOUNDS_IN_PARCELS)));
+            result.Register<IMapRenderer>(() => new MapRenderer(new MapRendererChunkComponentsFactory()));
 
             // HUD
             result.Register<IHUDFactory>(() => new HUDFactory(addressableResourceProvider));
@@ -194,11 +212,22 @@ namespace DCL
             result.Register<IAudioDevicesService>(() => new WebBrowserAudioDevicesService(WebBrowserAudioDevicesBridge.GetOrCreate()));
 
             result.Register<IPlacesAPIService>(() => new PlacesAPIService(new PlacesAPIClient(webRequestController)));
+            result.Register<IWorldsAPIService>(() => new WorldsAPIService(new WorldsAPIClient(webRequestController)));
+            result.Register<ICameraReelStorageService>(() => new CameraReelNetworkStorageService(new CameraReelWebRequestClient(webRequestController, environmentProviderService)));
+            result.Register<ISubscriptionsAPIService>(() => new SubscriptionsAPIService(new SubscriptionsAPIClient(webRequestController)));
+
+            var screencaptureCameraExternalDependencies = new ScreencaptureCameraExternalDependencies(CommonScriptableObjects.allUIHidden,
+                CommonScriptableObjects.cameraModeInputLocked, DataStore.i.camera.leftMouseButtonCursorLock, CommonScriptableObjects.cameraBlocked,
+                CommonScriptableObjects.featureKeyTriggersBlocked, CommonScriptableObjects.userMovementKeysBlocked, CommonScriptableObjects.isScreenshotCameraActive);
+
+            result.Register<IScreencaptureCameraService>(() => new ScreencaptureCameraService(addressableResourceProvider, featureFlagsDataStore, DataStore.i.player, userProfileWebInterfaceBridge, screencaptureCameraExternalDependencies));
 
             // Analytics
-
+            result.Register<ICameraReelAnalyticsService>(() => new CameraReelAnalyticsService(Environment.i.platform.serviceProviders.analytics));
             result.Register<IWorldsAnalytics>(() => new WorldsAnalytics(DataStore.i.common, DataStore.i.realm, Environment.i.platform.serviceProviders.analytics));
             result.Register<IDCLFileBrowserService>(DCLFileBrowserFactory.GetFileBrowserService);
+            result.Register<ICopyPasteAnalyticsService>(() => new CopyPasteAnalyticsService(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()));
+            result.Register<IPortableExperiencesAnalyticsService>(() => new PortableExperiencesAnalyticsService(Environment.i.platform.serviceProviders.analytics, new UserProfileWebInterfaceBridge()));
             return result;
         }
     }

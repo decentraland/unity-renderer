@@ -50,10 +50,9 @@ import {
   WorldPosition
 } from 'shared/types'
 import { futures } from './BrowserInterface'
-import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { HotSceneInfo, IUnityInterface, MinimapSceneInfo, setUnityInstance } from './IUnityInterface'
 import { nativeMsgBridge } from './nativeMessagesBridge'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 import { isWorldLoaderActive } from '../shared/realm/selectors'
 import { ensureRealmAdapter } from '../shared/realm/ensureRealmAdapter'
 
@@ -111,6 +110,14 @@ export class UnityInterface implements IUnityInterface {
 
   public SetAudioDevices(devices: SetAudioDevicesPayload) {
     this.SendMessageToUnity('Bridges', 'SetAudioDevices', JSON.stringify(devices))
+  }
+
+  public SetWithCollectionsParam(collectionIds: string[]) {
+    this.SendMessageToUnity('Bridges', 'SetWithCollectionsParam', JSON.stringify({ collectionIds }))
+  }
+
+  public SetWithItemsParam(itemIds: string[]) {
+    this.SendMessageToUnity('Bridges', 'SetWithItemsParam', JSON.stringify({ itemIds }))
   }
 
   public CreateGlobalScene(data: {
@@ -522,7 +529,6 @@ export class UnityInterface implements IUnityInterface {
         this.SetTutorialEnabled(tutorialConfig)
       } else {
         this.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(tutorialConfig)
-        setDelightedSurveyEnabled(true)
       }
     }
   }

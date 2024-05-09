@@ -1,18 +1,19 @@
 ﻿using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Controllers;
-using DCL.Helpers.NFT.Markets;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
-using DCl.Social.Friends;
 using DCL.Social.Friends;
+using DCLServices.CopyPaste.Analytics;
+using DCLServices.CustomNftCollection;
+using DCLServices.PortableExperiences.Analytics;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
-using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using MainScripts.DCL.Helpers.SentryUtils;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
 using Sentry;
 using System;
@@ -36,7 +37,45 @@ namespace DCL
             result.Register<IClipboard>(() => Substitute.For<IClipboard>());
             result.Register<IPhysicsSyncController>(() => Substitute.For<IPhysicsSyncController>());
             result.Register<IWebRequestController>(() => Substitute.For<IWebRequestController>());
-            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
+            result.Register<IWearablesCatalogService>(() =>
+            {
+                IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
+
+                wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
+                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
+
+                wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
+                                       .ReturnsForAnyArgs(UniTask.FromResult<WearableItem>(null));
+
+                wearablesCatalogService.RequestWearableCollection(default, default, default)
+                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+                return wearablesCatalogService;
+            });
+
+            result.Register<IEmotesCatalogService>(() =>
+            {
+                IEmotesCatalogService emotesCatalogService = Substitute.For<IEmotesCatalogService>();
+
+                emotesCatalogService.RequestEmoteCollectionAsync(default, default, default)
+                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+
+                emotesCatalogService.RequestEmoteCollectionInBuilderAsync(default, default)
+                                    .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>)Array.Empty<WearableItem>()));
+
+                emotesCatalogService.RequestEmoteFromBuilderAsync(default, default)
+                                    .ReturnsForAnyArgs(UniTask.FromResult<WearableItem>(null));
+
+                return emotesCatalogService;
+            });
+            result.Register<ICustomNftCollectionService>(() =>
+            {
+                ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+                customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                          .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+                return customNftCollectionService;
+            });
 
             result.Register<IWebRequestMonitor>(() =>
             {
@@ -45,8 +84,6 @@ namespace DCL
                 return subs;
             });
 
-            result.Register<IWearablesCatalogService>(() => Substitute.For<IWearablesCatalogService>());
-
             result.Register<IServiceProviders>(
                 () =>
                 {
@@ -54,7 +91,7 @@ namespace DCL
                     mockedProviders.theGraph.Returns(Substitute.For<ITheGraph>());
                     mockedProviders.analytics.Returns(Substitute.For<IAnalytics>());
                     mockedProviders.catalyst.Returns(Substitute.For<ICatalyst>());
-                    mockedProviders.openSea.Returns(Substitute.For<INFTMarket>());
+                    mockedProviders.openSea.Returns(Substitute.For<IOpenSea>());
                     return mockedProviders;
                 });
 
@@ -138,6 +175,10 @@ namespace DCL
             // HUD
             result.Register<IHUDFactory>(() => Substitute.For<IHUDFactory>());
             result.Register<IHUDController>(() => Substitute.For<IHUDController>());
+
+            // Analytics
+            result.Register<ICopyPasteAnalyticsService>(() => Substitute.For<ICopyPasteAnalyticsService>());
+            result.Register<IPortableExperiencesAnalyticsService>(() => Substitute.For<IPortableExperiencesAnalyticsService>());
 
             return result;
         }

@@ -17,7 +17,7 @@ export function processVoiceFragment(message: Package<rfc4.Voice>) {
   // use getPeer instead of setupPeer to only reproduce voice messages from
   // known avatars
   const peerTrackingInfo = getPeer(message.address)
-
+  
   if (
     voiceHandler &&
     profile &&

@@ -24,6 +24,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     [Header("Sections")]
     [SerializeField] internal PlacesAndEventsSectionComponentView placesAndEventsSection;
     [SerializeField] internal FeatureEncapsulatorComponentView backpackSection;
+    [SerializeField] internal FeatureEncapsulatorComponentView cameraReelSection;
     [SerializeField] internal FeatureEncapsulatorComponentView mapSection;
     [SerializeField] internal FeatureEncapsulatorComponentView questSection;
     [SerializeField] internal FeatureEncapsulatorComponentView settingsSection;
@@ -54,6 +55,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
     public RectTransform currentMapTooltipReference => sectionSelector.GetSection((int)ExploreSection.Map).pivot;
     public RectTransform currentQuestTooltipReference => sectionSelector.GetSection((int)ExploreSection.Quest).pivot;
     public RectTransform currentSettingsTooltipReference => sectionSelector.GetSection((int)ExploreSection.Settings).pivot;
+    public RectTransform cameraReelTooltipReference => sectionSelector.GetSection((int)ExploreSection.CameraReel).pivot;
     public RectTransform currentProfileCardTooltipReference => profileCardTooltipReference;
 
     public event Action<bool> OnCloseButtonPressed;
@@ -90,6 +92,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
             { ExploreSection.Explore, null },
             { ExploreSection.Quest, questSection },
             { ExploreSection.Backpack, backpackSection },
+            { ExploreSection.CameraReel, cameraReelSection },
             { ExploreSection.Map, mapSection },
             { ExploreSection.Settings, settingsSection },
             { ExploreSection.Wallet, walletSection },
@@ -301,9 +304,7 @@ public class ExploreV2MenuComponentView : BaseComponentView, IExploreV2MenuCompo
 
         if (Input.GetMouseButton(0) &&
             !RectTransformUtility.RectangleContainsScreenPoint(profileCardRectTransform, Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
-            !RectTransformUtility.RectangleContainsScreenPoint(DataStore.i.myAccount.isInitialized.Get() ?
-                HUDController.i.profileHud.view.MyAccountCardLayout :
-                HUDController.i.profileHud.view.ExpandedMenu,
+            !RectTransformUtility.RectangleContainsScreenPoint(DataStore.i.myAccount.isInitialized.Get() ? HUDController.i.profileHud.view.MyAccountCardLayout : HUDController.i.profileHud.view.ExpandedMenu,
                 Input.mousePosition, cameraDataStore.hudsCamera.Get()) &&
             !RectTransformUtility.RectangleContainsScreenPoint(HUDController.i.profileHud.view.MyAccountCardMenu, Input.mousePosition, cameraDataStore.hudsCamera.Get()))
             DataStore.i.exploreV2.profileCardIsOpen.Set(false);

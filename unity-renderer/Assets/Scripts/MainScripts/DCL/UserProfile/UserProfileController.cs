@@ -1,11 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL.Interface;
 using DCL.UserProfiles;
-using DCLServices.WearablesCatalogService;
 using System;
 using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -22,7 +20,6 @@ public class UserProfileController : MonoBehaviour
     private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> pendingUserProfileTasks = new (StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, UniTaskCompletionSource<UserProfile>> saveProfileTask = new ();
     private readonly List<WebInterface.SaveLinksPayload.Link> linkList = new ();
-    private bool baseWearablesAlreadyRequested;
 
     public static UserProfileDictionary userProfilesCatalog
     {
@@ -50,25 +47,9 @@ public class UserProfileController : MonoBehaviour
     [PublicAPI]
     public void LoadProfile(string payload)
     {
-        async UniTaskVoid RequestBaseWearablesAsync(CancellationToken ct)
-        {
-            try
-            {
-                await DCL.Environment.i.serviceLocator.Get<IWearablesCatalogService>().RequestBaseWearablesAsync(ct);
-            }
-            catch (Exception e)
-            {
-                OnBaseWereablesFail?.Invoke();
-                Debug.LogError(e.Message);
-            }
-        }
-
-        if (!baseWearablesAlreadyRequested)
-        {
-            baseWearablesAlreadyRequested = true;
-            RequestBaseWearablesAsync(CancellationToken.None).Forget();
-        }
-
+        // We used to request base wearables here but it raises race condition issues
+        // The current realm is not set yet thus ends up requesting wearables to an incorrect catalyst's content url
+        // Resolving inconsistent wearables information
         if (payload == null)
             return;
 

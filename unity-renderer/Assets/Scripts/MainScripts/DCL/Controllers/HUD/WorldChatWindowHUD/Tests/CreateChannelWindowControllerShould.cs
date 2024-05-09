@@ -3,7 +3,7 @@ using DCL.Chat.Channels;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class CreateChannelWindowControllerShould
     {
@@ -30,18 +30,18 @@ namespace DCL.Chat.HUD
         public void Show()
         {
             controller.SetVisibility(true);
-            
+
             view.Received(1).Show();
             view.Received(1).ClearInputText();
             view.Received(1).DisableCreateButton();
             view.Received(1).FocusInputField();
         }
-        
+
         [Test]
         public void Hide()
         {
             controller.SetVisibility(false);
-            
+
             view.Received(1).Hide();
         }
 
@@ -53,7 +53,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
-            
+
             view.Received(1).ClearError();
             view.Received(1).EnableCreateButton();
         }
@@ -67,11 +67,11 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
-            
+
             view.Received(1).ShowChannelExistsError(false);
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void ShowChannelExistsErrorWithJoinOptionEnabled()
         {
@@ -81,11 +81,11 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
-            
+
             view.Received(1).ShowChannelExistsError(true);
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void DisableCreationButtonWhenTextIsEmpty()
         {
@@ -94,7 +94,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("");
-            
+
             view.Received(1).DisableCreateButton();
         }
 
@@ -109,10 +109,10 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>(text);
-            
+
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void CreateChannel()
         {
@@ -120,13 +120,13 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
             view.ClearReceivedCalls();
-            
+
             view.OnCreateSubmit += Raise.Event<Action>();
-            
+
             chatController.Received(1).CreateChannel("foo");
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void JoinChannel()
         {
@@ -134,7 +134,7 @@ namespace DCL.Chat.HUD
             controller.SetVisibility(true);
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("foo");
             view.ClearReceivedCalls();
-            
+
             view.OnJoinChannel += Raise.Event<Action>();
 
             chatController.Received(1).JoinOrCreateChannel("foo");
@@ -145,76 +145,76 @@ namespace DCL.Chat.HUD
         {
             controller.SetVisibility(true);
             var navigatedChannel = "";
-            controller.OnNavigateToChannelWindow += s => navigatedChannel = s; 
+            controller.OnNavigateToChannelWindow += s => navigatedChannel = s;
             view.ClearReceivedCalls();
-            
+
             chatController.OnChannelJoined += Raise.Event<Action<Channel>>(
                 new Channel("foo", "fooName", 0, 2, false, false, ""));
-            
+
             Assert.AreEqual("foo", navigatedChannel);
         }
-        
+
         [Test]
         public void ShowWrongFormatErrorWhenJoiningChannel()
-        {   
+        {
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
-            
+
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
                 "foo", ChannelErrorCode.WrongFormat);
-            
+
             view.Received(1).ShowWrongFormatError();
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void ShowChannelsExceededWhenJoiningChannel()
-        {   
+        {
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
-            
+
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
                 "foo", ChannelErrorCode.LimitExceeded);
-            
+
             view.Received(1).ShowChannelsExceededError();
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void ShowUnknownError()
         {
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
-            
+
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
                 "foo", ChannelErrorCode.Unknown);
-            
+
             view.Received(1).ShowUnknownError();
             view.Received(1).EnableCreateButton();
         }
-        
+
         [Test]
         public void ShowReservedNameError()
         {
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
-            
+
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
                 "foo", ChannelErrorCode.ReservedName);
-            
+
             view.Received(1).ShowChannelExistsError(false);
             view.Received(1).DisableCreateButton();
         }
-        
+
         [Test]
         public void ShowAlreadyExistsError()
         {
             controller.SetVisibility(true);
             view.ClearReceivedCalls();
-            
+
             chatController.OnJoinChannelError += Raise.Event<Action<string, ChannelErrorCode>>(
                 "foo", ChannelErrorCode.AlreadyExists);
-            
+
             view.Received(1).ShowChannelExistsError(true);
             view.Received(1).DisableCreateButton();
         }
@@ -226,7 +226,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnClose += Raise.Event<Action>();
-            
+
             view.Received(1).Hide();
         }
 
@@ -238,11 +238,11 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>("df");
-            
+
             view.Received(1).ShowTooShortError();
             view.Received(1).DisableCreateButton();
         }
-        
+
         [TestCase("cha nnel")]
         [TestCase("cha$nnel")]
         [TestCase("channel_")]
@@ -254,7 +254,7 @@ namespace DCL.Chat.HUD
             view.ClearReceivedCalls();
 
             view.OnChannelNameUpdated += Raise.Event<Action<string>>(name);
-            
+
             view.Received(1).ShowWrongFormatError();
             view.Received(1).DisableCreateButton();
         }

@@ -28,6 +28,10 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
     public IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     public IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     public IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    public IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
+    public IInternalECSComponent<InternalAnimation> Animation { get; }
+    public IInternalECSComponent<InternalTween> TweenComponent { get; }
+    public IInternalECSComponent<InternalAvatarModifierArea> AvatarModifierAreaComponent { get; }
 
     public InternalECSComponents(ECSComponentsManager componentsManager, ECSComponentsFactory componentsFactory,
         IReadOnlyDictionary<int, ICRDTExecutor> crdtExecutors)
@@ -196,6 +200,42 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
             crdtExecutors,
             this
         );
+
+        AnimationPlayer = new InternalECSComponent<InternalAnimationPlayer>(
+            InternalECSComponentsId.ANIMATION_PLAYER,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        Animation = new InternalECSComponent<InternalAnimation>(
+            InternalECSComponentsId.ANIMATION,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        TweenComponent = new InternalECSComponent<InternalTween>(
+            InternalECSComponentsId.TWEEN,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
+
+        AvatarModifierAreaComponent = new InternalECSComponent<InternalAvatarModifierArea>(
+            InternalECSComponentsId.AVATAR_MODIFIER_AREA,
+            componentsManager,
+            componentsFactory,
+            null,
+            crdtExecutors,
+            this
+        );
     }
 
     public void Dispose()
@@ -217,6 +257,10 @@ public class InternalECSComponents : IDisposable, IInternalECSComponents, ICompo
         RegisteredUiPointerEventsComponent.Dispose();
         GltfContainerLoadingStateComponent.Dispose();
         EngineInfo.Dispose();
+        AnimationPlayer.Dispose();
+        Animation.Dispose();
+        TweenComponent.Dispose();
+        AvatarModifierAreaComponent.Dispose();
     }
 
     public void MarkDirtyComponentsUpdate()

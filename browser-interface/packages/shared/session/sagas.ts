@@ -1,5 +1,6 @@
-import { Authenticator } from '@dcl/crypto'
+import { AuthIdentity, Authenticator } from '@dcl/crypto'
 import { createUnsafeIdentity } from '@dcl/crypto/dist/crypto'
+import * as SingleSignOn from '@dcl/single-sign-on-client'
 import {
   DEBUG_KERNEL_LOG,
   ETHEREUM_NETWORK,
@@ -316,7 +317,17 @@ async function createAuthIdentity(requestManager: RequestManager, isGuest: boole
 
   const { address, signer, hasConnectedWeb3, ephemeralLifespanMinutes } = await getSigner(requestManager, isGuest)
 
-  const auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
+  let auth: AuthIdentity
+
+  const ssoIdentity = SingleSignOn.localStorageGetIdentity(address)
+
+  if (!ssoIdentity || isSessionExpired({ identity: ssoIdentity })) {
+    auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
+
+    SingleSignOn.localStorageStoreIdentity(address, auth)
+  } else {
+    auth = ssoIdentity
+  }
 
   return { ...auth, rawAddress: address, address: address.toLowerCase(), hasConnectedWeb3 }
 }
@@ -326,14 +337,12 @@ function* logout() {
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
   if (identity && identity.address && network) {
     yield call(() => localProfilesRepo.remove(identity.address, network))
+    yield call(deleteSession, identity.address)
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
   yield put(setRoomConnection(undefined))
 
-  if (identity?.address) {
-    yield call(deleteSession, identity.address)
-  }
   window.location.reload()
 }
 

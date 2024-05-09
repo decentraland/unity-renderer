@@ -122,7 +122,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
         backgroundImage.sprite = model.type == nameType ? nameBackground : normalBackground;
         backgroundImageGradient.enabled = model.type != nameType;
-        backgroundImage.color = model.type == nameType ? Color.white : new Color(rarityColor.r, rarityColor.g, rarityColor.b, 1f);
+        backgroundImage.color = model.type == nameType ? Color.white : new Color(rarityColor.r, rarityColor.g, rarityColor.b, nftTypesIcons.DoesRarityExist(rarity) ? 1f : 0.5f);
         rarityBackgroundImage.color = rarityColor;
     }
 
@@ -133,7 +133,7 @@ public class NFTIconComponentView : BaseComponentView, INFTIconComponentView, IC
 
     public override void OnFocus()
     {
-        if (!sizeOnHoverComponent.enabled)
+        if (sizeOnHoverComponent == null || !sizeOnHoverComponent.enabled)
             return;
 
         base.OnFocus();

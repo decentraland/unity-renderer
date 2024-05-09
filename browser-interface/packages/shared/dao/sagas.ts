@@ -10,7 +10,8 @@ import {
   getAddedServers,
   getCatalystNodesEndpoint,
   getDisabledCatalystConfig,
-  getPickRealmsAlgorithmConfig
+  getPickRealmsAlgorithmConfig,
+  isMainRealmEnabled
 } from 'shared/meta/selectors'
 import { SET_REALM_ADAPTER, setOnboardingState } from 'shared/realm/actions'
 import { candidateToRealm, urlWithProtocol } from 'shared/realm/resolver'
@@ -68,13 +69,26 @@ function* pickCatalystRealm() {
 
   if (candidates.length === 0) return undefined
 
+  const mainRealmEnabled = yield select(isMainRealmEnabled)
+
   const filteredCandidates = candidates.filter((candidate: Candidate) => {
     const lastConnected = lastConnectedCandidates.get(candidate.domain)
     if (lastConnected && Date.now() - lastConnected < 60 * 1000) {
       return false
     }
+    if (!mainRealmEnabled) {
+      return candidate.catalystName !== 'main'
+    }
     return true
   })
+
+  const mainRealm = filteredCandidates.find((c) => c.catalystName === 'main')
+  if (mainRealm) {
+    const url = urlWithProtocol(mainRealm.domain)
+    if (yield checkValidRealm(url)) {
+      return url
+    }
+  }
 
   const algorithm = createAlgorithm(config)
 
@@ -108,7 +122,6 @@ function clearQsRealm() {
 
 function* tryConnectRealm(realm: string) {
   const realmConfig = yield call(resolveRealmConfigFromString, realm)
-
   const lastConnectedCandidates = yield select(getLastConnectedCandidates)
   lastConnectedCandidates.set(realmConfig.baseUrl, Date.now())
   yield put(setLastConnectedCandidates(lastConnectedCandidates))
@@ -181,7 +194,7 @@ function* selectRealm() {
     )
   }
 
-  console.log(`Trying to connect to realm `, realm)
+  defaultLogger.log(`Trying to connect to realm `, realm)
 
   return realm
 }

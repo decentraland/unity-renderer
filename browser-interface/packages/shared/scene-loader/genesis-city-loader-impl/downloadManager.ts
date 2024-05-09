@@ -14,6 +14,18 @@ export class SceneDataDownloadManager {
     }
   ) {}
 
+  invalidateCache(entity: Entity) {
+    if (this.idToEntity.has(entity.id)) {
+      this.idToEntity.delete(entity.id)
+    }
+
+    for (const pointer of entity.pointers) {
+      if (this.pointerToEntity.has(pointer)) {
+        this.pointerToEntity.delete(pointer)
+      }
+    }
+  }
+
   async resolveEntitiesByPointer(pointers: string[]): Promise<Set<LoadableScene>> {
     const futures: Promise<LoadableScene | null>[] = []
 

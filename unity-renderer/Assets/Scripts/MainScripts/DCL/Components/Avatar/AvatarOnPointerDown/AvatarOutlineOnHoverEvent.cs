@@ -22,17 +22,22 @@ namespace DCL.Components
         public event Action OnPointerEnterReport;
         public event Action OnPointerExitReport;
 
-        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity, IAvatar avatar)
+        private bool isInitialized;
+
+        public void Initialize(IDCLEntity entity, IAvatar avatar)
         {
+            if (isInitialized) return;
             this.entity = entity;
             this.avatar = avatar;
-            this.model = model;
+            model = new OnPointerEvent.Model();
 
             CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenChanged;
+            isInitialized = true;
         }
 
         private void OnDestroy()
         {
+            isInitialized = false;
             CommonScriptableObjects.allUIHidden.OnChange -= AllUIHiddenChanged;
         }
 

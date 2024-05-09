@@ -1,4 +1,4 @@
-import { scenesChanged } from '../loading/actions'
+import { scenesChanged, signalSceneReload } from '../loading/actions'
 import { LoadableScene } from '../types'
 import { SceneWorker } from './SceneWorker'
 import { store } from 'shared/store/isolatedStore'
@@ -157,7 +157,20 @@ export async function setDesiredParcelScenes(desiredParcelScenes: Map<string, Lo
 
 export async function reloadScene(sceneId: string) {
   unloadParcelSceneById(sceneId)
-  await setDesiredParcelScenes(getDesiredParcelScenes())
+
+  const loadableScene = getDesiredParcelScenes().get(sceneId)!
+
+  store.dispatch(signalSceneReload(loadableScene))
+}
+
+export async function reloadSpecificScene(sceneId: string) {
+  unloadParcelSceneById(sceneId)
+  const desiredParcelScenes = getDesiredParcelScenes()
+  const sceneToReload = desiredParcelScenes.get(sceneId)
+  if (sceneToReload) {
+    const sceneToReloadMap = new Map([[sceneId, sceneToReload]])
+    await setDesiredParcelScenes(sceneToReloadMap)
+  }
 }
 
 export function unloadParcelSceneById(sceneId: string) {
@@ -172,7 +185,7 @@ export function unloadParcelSceneById(sceneId: string) {
  * @internal
  **/
 async function loadParcelSceneByIdIfMissing(sceneId: string, entity: LoadableScene) {
-  // create the worker if don't exis
+  // create the worker if don't exist
   if (!getSceneWorkerBySceneID(sceneId)) {
     // If we are running in isolated mode and it is builder mode, we create a stateless worker instead of a normal worker
     const denyListed = isParcelDenyListed(entity.entity.metadata.scene.parcels)
@@ -186,8 +199,6 @@ async function loadParcelSceneByIdIfMissing(sceneId: string, entity: LoadableSce
 
     // add default permissions for Parcel based scenes
     defaultParcelPermissions.forEach(($) => worker.rpcContext.permissionGranted.add($))
-
-    setNewParcelScene(worker)
   }
 }
 
@@ -200,7 +211,7 @@ export function allScenesEvent<T extends IEventNames>(data: AllScenesEvents<T>) 
   for (const [, scene] of loadedSceneWorkers) {
     scene.rpcContext.sendSceneEvent(data.eventType, data.payload)
   }
-  TEST_OBJECT_ObservableAllScenesEvent.notifyObservers(data)
-}
 
-export const TEST_OBJECT_ObservableAllScenesEvent = new Observable<AllScenesEvents<any>>()
+  observableAllScenesEvent.notifyObservers(data)
+}
+export const observableAllScenesEvent = new Observable<AllScenesEvents<keyof IEvents>>()

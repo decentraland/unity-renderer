@@ -14,43 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nftIcons:
   - key: eyes
-    value: {fileID: 21300000, guid: b90a97a10e3a7452988bced1ec1aaf84, type: 3}
+    value: {fileID: 21300000, guid: 03b05b1004b784dc690bbff5ea268de7, type: 3}
   - key: mouth
-    value: {fileID: 21300000, guid: 866efedbbcc38498f9e6136d65695c9c, type: 3}
+    value: {fileID: 21300000, guid: 075c9dd99649649f9869afece52cd35b, type: 3}
   - key: eyebrows
-    value: {fileID: 21300000, guid: 84c790cbe3a484378906dc785b6c5995, type: 3}
+    value: {fileID: 21300000, guid: 15c01427d7e8f4c72a16e8e1368c82a6, type: 3}
   - key: hair
-    value: {fileID: 21300000, guid: 946f30660ef2f4261b313ca749c4127c, type: 3}
+    value: {fileID: 21300000, guid: 9b13173961ced41b287b3ec0d724c585, type: 3}
   - key: upper_body
-    value: {fileID: 21300000, guid: ddce90606ec7d4e5d820390fe246a91b, type: 3}
+    value: {fileID: 21300000, guid: 48d5dd980b244494b9f9d9fc540e0b01, type: 3}
   - key: lower_body
-    value: {fileID: 21300000, guid: d4ee93e9eb8464972b0fd5598a452f50, type: 3}
+    value: {fileID: 21300000, guid: bf9cd8edf950343a9ba38284a615c606, type: 3}
   - key: feet
-    value: {fileID: 21300000, guid: c1bf499699a424df88aa013bd2f32b68, type: 3}
+    value: {fileID: 21300000, guid: 2bd9c7cbf6f504ad89e22e7f1f497fd2, type: 3}
   - key: head
-    value: {fileID: 21300000, guid: 30c54e14722864c70a0e8c28edc2f7e6, type: 3}
+    value: {fileID: 21300000, guid: 9b13173961ced41b287b3ec0d724c585, type: 3}
   - key: facial_hair
-    value: {fileID: 21300000, guid: 06cdeba19874e4ee38010ed40544559d, type: 3}
+    value: {fileID: 21300000, guid: 81132a1626c0d43aabeeec2414a68945, type: 3}
   - key: tiara
-    value: {fileID: 21300000, guid: 4454cae867deb4aea91f4d26c5bc88b1, type: 3}
+    value: {fileID: 21300000, guid: 6a3c7a80a921c458c93852cc9cfa33c1, type: 3}
   - key: hat
-    value: {fileID: 21300000, guid: 2de957f05cca04e4aac38646afee2263, type: 3}
+    value: {fileID: 21300000, guid: ec6e82c586d96441e9a01726eae9c6f8, type: 3}
   - key: helmet
-    value: {fileID: 21300000, guid: 15c0a1185bb524f0c9d7b118e081501f, type: 3}
+    value: {fileID: 21300000, guid: 6bc5be995cfc14e0182a54c5a4fef290, type: 3}
   - key: skin
-    value: {fileID: 21300000, guid: 0bfef183260d34c50b8d971b1400499e, type: 3}
+    value: {fileID: 21300000, guid: bda43422408ca42209dd311b23a1d06f, type: 3}
   - key: mask
-    value: {fileID: 21300000, guid: 90e673ad913664a27b245b61ccdf31bf, type: 3}
+    value: {fileID: 21300000, guid: f88ebb8cd1cd5487ca7c3f4d3e65e76a, type: 3}
   - key: eyewear
-    value: {fileID: 21300000, guid: 18cc300911ff74c3c922eb3a9b346f3c, type: 3}
+    value: {fileID: 21300000, guid: 1f8423c7e44934bc88742ef8c05aa4ee, type: 3}
   - key: top_head
-    value: {fileID: 21300000, guid: 17e4c961a88d74262a222ea008152618, type: 3}
+    value: {fileID: 21300000, guid: 6084de83d5bc748b9a444a61a7c0b96a, type: 3}
   - key: earring
-    value: {fileID: 21300000, guid: 4a803782af3694d97b17f31e269c04d1, type: 3}
+    value: {fileID: 21300000, guid: 98a2ad67412f444ee883c03d3a07dd1e, type: 3}
   - key: emote
     value: {fileID: 21300000, guid: 05bc7d6b12857fb4b9b7634bf2a4f440, type: 3}
   - key: body_shape
-    value: {fileID: 21300000, guid: 7df132fb4eb304d619c7dd33841261a1, type: 3}
+    value: {fileID: 21300000, guid: 98bae2808161c4d678b3f5d109a5ee80, type: 3}
   - key: hands_wear
     value: {fileID: 21300000, guid: 16866e729ce1061429170517e80ef313, type: 3}
   - key: hands

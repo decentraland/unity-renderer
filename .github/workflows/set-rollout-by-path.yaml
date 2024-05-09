@@ -1,0 +1,74 @@
+# This pipeline is triggered after the CDN has succeed uploading a built package
+
+name: Set rollout by path
+
+on: [deployment_status]
+
+jobs:
+  set-rollouts:
+    if: ${{ github.event.deployment.task == 'upload-to-cdn' && github.event.deployment_status.state == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+      # Dev
+      - name: Set Rollout - Zone
+        if: ${{ github.event.deployment.payload.packageTag == 'next' }}
+        uses: decentraland/set-rollout-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentPath: "play"
+          deploymentEnvironment: "zone"
+          deploymentName: "@dcl/explorer"
+          percentage: 100
+
+      # Stg
+      - name: Set Rollout - Today
+        if: ${{ github.event.deployment.payload.packageTag == 'next' }}
+        uses: decentraland/set-rollout-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentPath: "play"
+          deploymentEnvironment: "today"
+          deploymentName: "@dcl/explorer"
+          percentage: 100
+
+      # Prod
+      - name: Set Rollout - Org
+        if: ${{ github.event.deployment.payload.packageTag == 'latest' }}
+        uses: decentraland/set-rollout-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentPath: "play"
+          deploymentEnvironment: "org"
+          deploymentName: "@dcl/explorer"
+          percentage: 0

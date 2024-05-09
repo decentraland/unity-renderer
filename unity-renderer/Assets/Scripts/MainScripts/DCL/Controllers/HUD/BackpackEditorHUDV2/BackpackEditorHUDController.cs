@@ -6,6 +6,7 @@ using MainScripts.DCL.Components.Avatar.VRMExporter;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -14,6 +15,10 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDController
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+        private const string EMOTE_ID = "wave";
+        private const string NOT_LOADED = "NOT_LOADED";
+
         private readonly IBackpackEditorHUDView view;
         private readonly DataStore dataStore;
         private readonly IWearablesCatalogService wearablesCatalogService;
@@ -26,21 +31,53 @@ namespace DCL.Backpack
         private readonly OutfitsController outfitsController;
         private readonly IVRMExporter vrmExporter;
         private readonly IDCLFileBrowserService fileBrowser;
+        private readonly IEmotesCatalogService emotesCatalogService;
+        private readonly Dictionary<string, string> extendedWearableUrns = new ();
+        private readonly Dictionary<string, Dictionary<string, string>> fallbackWearables = new ()
+        {
+            {"urn:decentraland:off-chain:base-avatars:BaseFemale", new Dictionary<string, string>
+            {
+                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:white_top"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:f_jeans"},
+                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:ruby_blue_loafer"},
+                {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:pony_tail"},
+                {WearableLiterals.Categories.MOUTH, "urn:decentraland:off-chain:base-avatars:f_mouth_05"},
+                {WearableLiterals.Categories.EYEBROWS, "urn:decentraland:off-chain:base-avatars:f_eyebrows_02"},
+                {WearableLiterals.Categories.EYES, "urn:decentraland:off-chain:base-avatars:f_eyes_06"},
+            }},
+            {"urn:decentraland:off-chain:base-avatars:BaseMale", new Dictionary<string, string>
+            {
+                {WearableLiterals.Categories.UPPER_BODY, "urn:decentraland:off-chain:base-avatars:m_sweater_02"},
+                {WearableLiterals.Categories.LOWER_BODY, "urn:decentraland:off-chain:base-avatars:soccer_pants"},
+                {WearableLiterals.Categories.FEET, "urn:decentraland:off-chain:base-avatars:sport_colored_shoes"},
+                {WearableLiterals.Categories.HAIR, "urn:decentraland:off-chain:base-avatars:cool_hair"},
+                {WearableLiterals.Categories.FACIAL_HAIR, "urn:decentraland:off-chain:base-avatars:beard"},
+                {WearableLiterals.Categories.EYEBROWS, "urn:decentraland:off-chain:base-avatars:eyebrows_00"},
+                {WearableLiterals.Categories.EYES, "urn:decentraland:off-chain:base-avatars:eyes_00"},
+            }}
+        };
+        private readonly BackpackEditorHUDModel model = new ();
+        private readonly HashSet<string> vrmBlockingWearablesList;
+
         private string currentSlotSelected;
         private bool avatarIsDirty;
         private CancellationTokenSource loadProfileCancellationToken = new ();
         private CancellationTokenSource setVisibilityCancellationToken = new ();
         private CancellationTokenSource outfitLoadCancellationToken = new ();
+        private CancellationTokenSource saveCancellationToken = new ();
         private string categoryPendingToPlayEmote;
+        private bool isTakingSnapshot;
+
+        private bool isNewTermsOfServiceAndEmailSubscriptionEnabled => dataStore.featureFlags.flags.Get().IsFeatureEnabled(NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF);
 
         private BaseCollection<string> previewEquippedWearables => dataStore.backpackV2.previewEquippedWearables;
 
         private UserProfile ownUserProfile => userProfileBridge.GetOwn();
 
-        private readonly BackpackEditorHUDModel model = new ();
-
         private int currentAnimationIndexShown;
         private bool shouldRequestOutfits = true;
+
+        private bool vrmWarningEnabled;
         private CancellationTokenSource vrmExportCts;
 
         public BackpackEditorHUDController(
@@ -55,7 +92,8 @@ namespace DCL.Backpack
             AvatarSlotsHUDController avatarSlotsHUDController,
             OutfitsController outfitsController,
             IVRMExporter vrmExporter,
-            IDCLFileBrowserService fileBrowser)
+            IDCLFileBrowserService fileBrowser,
+            IEmotesCatalogService emotesCatalogService)
         {
             this.view = view;
             this.dataStore = dataStore;
@@ -69,12 +107,14 @@ namespace DCL.Backpack
             this.outfitsController = outfitsController;
             this.vrmExporter = vrmExporter;
             this.fileBrowser = fileBrowser;
+            this.emotesCatalogService = emotesCatalogService;
 
             avatarSlotsHUDController.GenerateSlots();
             ownUserProfile.OnUpdate += LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange += OnBackpackVisibleChanged;
             dataStore.HUDs.isAvatarEditorInitialized.Set(true);
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange += ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange += SaveBackpackBeforeSignUpFinishes;
 
             ConfigureBackpackInFullscreenMenuChanged(dataStore.exploreV2.configureBackpackInFullscreenMenu.Get(), null);
 
@@ -99,18 +139,24 @@ namespace DCL.Backpack
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
             view.OnVRMExport += OnVrmExport;
+            view.OnSignUpBackClicked += OnSignUpBack;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
-            view?.SetVRMButtonActive(this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export"));
-            view?.SetVRMButtonEnabled(true);
-            view?.SetVRMSuccessToastActive(false);
+            bool vrmFeatureEnabled = this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export");
+            view.SetVRMButtonActive(vrmFeatureEnabled);
+            view.SetVRMButtonEnabled(vrmFeatureEnabled);
+            view.SetVRMSuccessToastActive(false);
+
+            vrmBlockingWearablesList = new ();
+            UpdateVRMExportWarning();
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
         {
             Dictionary<string, WearableItem> keyValuePairs = new Dictionary<string, WearableItem>(model.wearables);
+
             foreach (KeyValuePair<string, WearableItem> keyValuePair in keyValuePairs)
                 UnEquipWearable(keyValuePair.Key, UnequipWearableSource.None, false, false);
 
@@ -125,12 +171,13 @@ namespace DCL.Backpack
         {
             if (!wearablesCatalogService.WearablesCatalog.ContainsKey(outfit.outfit.bodyShape))
                 await wearablesCatalogService.RequestWearableAsync(outfit.outfit.bodyShape, cancellationToken);
+
             foreach (string outfitWearable in outfit.outfit.wearables)
             {
-                if (wearablesCatalogService.WearablesCatalog.ContainsKey(outfitWearable)) continue;
+                if (wearablesCatalogService.WearablesCatalog.ContainsKey(ExtendedUrnParser.GetShortenedUrn(outfitWearable))) continue;
 
                 try { await wearablesCatalogService.RequestWearableAsync(outfitWearable, cancellationToken); }
-                catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot}"); }
+                catch (Exception e) { Debug.LogWarning($"Cannot resolve the wearable {outfitWearable} for the outfit {outfit.slot.ToString()}"); }
             }
 
             EquipWearable(outfit.outfit.bodyShape, EquipWearableSource.Outfit, setAsDirty: false, updateAvatarPreview: false);
@@ -158,6 +205,7 @@ namespace DCL.Backpack
             ownUserProfile.OnUpdate -= LoadUserProfileFromProfileUpdate;
             dataStore.HUDs.avatarEditorVisible.OnChange -= OnBackpackVisibleChanged;
             dataStore.exploreV2.configureBackpackInFullscreenMenu.OnChange -= ConfigureBackpackInFullscreenMenuChanged;
+            dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.OnChange -= SaveBackpackBeforeSignUpFinishes;
 
             backpackEmotesSectionController.OnNewEmoteAdded -= OnNewEmoteAdded;
             backpackEmotesSectionController.OnEmotePreviewed -= OnEmotePreviewed;
@@ -178,7 +226,15 @@ namespace DCL.Backpack
 
             view.OnColorChanged -= OnWearableColorChanged;
             view.OnContinueSignup -= SaveAvatarAndContinueSignupProcess;
+            view.OnColorPickerToggle -= OnColorPickerToggled;
+            view.OnAvatarUpdated -= OnAvatarUpdated;
+            view.OnOutfitsOpened -= OnOutfitsOpened;
+            view.OnVRMExport -= OnVrmExport;
+            view.OnSignUpBackClicked -= OnSignUpBack;
+            outfitsController.OnOutfitEquipped -= OnOutfitEquipped;
             view.Dispose();
+
+            vrmBlockingWearablesList.Clear();
         }
 
         private void UpdateOverrideHides(string category, bool toggleOn) =>
@@ -213,10 +269,15 @@ namespace DCL.Backpack
                     wearableGridController.LoadCollections();
                     LoadUserProfile(ownUserProfile);
                     view.Show();
+                    view.SetSignUpModeActive(dataStore.common.isSignUpFlow.Get() && isNewTermsOfServiceAndEmailSubscriptionEnabled);
 
                     if (dataStore.common.isSignUpFlow.Get())
                     {
-                        view.ShowContinueSignup();
+                        if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                            view.HideContinueSignup();
+                        else
+                            view.ShowContinueSignup();
+
                         avatarSlotsHUDController.SelectSlot(WearableLiterals.Categories.BODY_SHAPE);
                     }
                     else
@@ -225,19 +286,7 @@ namespace DCL.Backpack
                 else
                 {
                     if (saveAvatar)
-                    {
-                        try
-                        {
-                            await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
-                            CloseView();
-                        }
-                        catch (OperationCanceledException) { }
-                        catch (Exception e)
-                        {
-                            Debug.LogException(e);
-                            CloseView();
-                        }
-                    }
+                        await SaveAsync(cancellationToken);
                     else
                         CloseView();
 
@@ -251,6 +300,9 @@ namespace DCL.Backpack
 
         private void CloseView()
         {
+            if (isTakingSnapshot)
+                return;
+
             view.Hide();
             view.ResetPreviewPanel();
             wearableGridController.ResetFilters();
@@ -259,6 +311,16 @@ namespace DCL.Backpack
 
         private void ConfigureBackpackInFullscreenMenuChanged(Transform currentParentTransform, Transform previousParentTransform) =>
             view.SetAsFullScreenMenuMode(currentParentTransform);
+
+        private void SaveBackpackBeforeSignUpFinishes(bool isBackpackWaitingToBeSaved, bool _)
+        {
+            if (!isBackpackWaitingToBeSaved)
+                return;
+
+            view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+            saveCancellationToken = saveCancellationToken.SafeRestart();
+            SaveAsync(saveCancellationToken.Token).Forget();
+        }
 
         private void LoadUserProfileFromProfileUpdate(UserProfile userProfile)
         {
@@ -269,55 +331,76 @@ namespace DCL.Backpack
 
         private void LoadUserProfile(UserProfile userProfile)
         {
-            if (avatarIsDirty) return;
-            if (userProfile == null) return;
-
-            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
+            if (avatarIsDirty)
             {
-                Debug.LogWarning("Cannot update the avatar body shape is invalid");
+                Debug.LogWarning("Skip the load of the user profile: avatarIsDirty=true");
                 return;
             }
 
-            async UniTaskVoid LoadUserProfileAsync(UserProfile userProfile, CancellationToken cancellationToken)
+            if (userProfile == null)
+            {
+                Debug.LogWarning("Skip the load of the user profile: userProfile=null");
+                return;
+            }
+
+            if (userProfile.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape))
+            {
+                Debug.LogWarning("Skip the load of the user profile: the avatar body shape is invalid");
+                return;
+            }
+
+            async UniTaskVoid LoadUserAvatarAsync(AvatarModel avatar, CancellationToken cancellationToken)
             {
                 try
                 {
-                    wearablesCatalogService.WearablesCatalog.TryGetValue(userProfile.avatar.bodyShape, out var bodyShape);
-                    bodyShape ??= await wearablesCatalogService.RequestWearableAsync(userProfile.avatar.bodyShape, cancellationToken);
+                    foreach (AvatarModel.AvatarEmoteEntry emote in avatar.emotes)
+                    {
+                        string shortenedEmotedUrn = ExtendedUrnParser.GetShortenedUrn(emote.urn);
+                        if (!emote.urn.Equals(shortenedEmotedUrn))
+                            extendedWearableUrns[shortenedEmotedUrn] = emote.urn;
+                    }
+
+                    wearablesCatalogService.WearablesCatalog.TryGetValue(avatar.bodyShape, out var bodyShape);
+                    bodyShape ??= await wearablesCatalogService.RequestWearableAsync(avatar.bodyShape, cancellationToken);
 
                     UnEquipCurrentBodyShape(false);
                     EquipBodyShape(bodyShape, false);
 
-                    model.skinColor = userProfile.avatar.skinColor;
-                    model.hairColor = userProfile.avatar.hairColor;
-                    model.eyesColor = userProfile.avatar.eyeColor;
-                    model.forceRender = new HashSet<string>(userProfile.avatar.forceRender);
+                    model.skinColor = avatar.skinColor;
+                    model.hairColor = avatar.hairColor;
+                    model.eyesColor = avatar.eyeColor;
+                    model.forceRender = new HashSet<string>(avatar.forceRender);
                     model.wearables.Clear();
                     previewEquippedWearables.Clear();
 
-                    int wearablesCount = userProfile.avatar.wearables.Count;
+                    int wearablesCount = avatar.wearables.Count;
 
                     for (var i = 0; i < wearablesCount; i++)
                     {
-                        string wearableId = userProfile.avatar.wearables[i];
+                        string wearableId = avatar.wearables[i];
+                        string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearableId);
 
-                        if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+                        if (!wearableId.Equals(shortenedWearableId))
+                            extendedWearableUrns[shortenedWearableId] = wearableId;
+
+
+                        if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
                         {
-                            try { wearable = await wearablesCatalogService.RequestWearableAsync(wearableId, cancellationToken); }
+                            try { wearable = await wearablesCatalogService.RequestWearableAsync(shortenedWearableId, cancellationToken); }
                             catch (OperationCanceledException) { throw; }
                             catch (Exception e)
                             {
-                                Debug.LogError($"Cannot load the wearable {wearableId}");
+                                Debug.LogError($"Cannot load the wearable {shortenedWearableId}");
                                 Debug.LogException(e);
                                 continue;
                             }
                         }
 
-                        try { EquipWearable(wearable, EquipWearableSource.None, false, false, false); }
+                        try { EquipWearable(wearableId, wearable, EquipWearableSource.None, false, false, false); }
                         catch (OperationCanceledException) { throw; }
                         catch (Exception e)
                         {
-                            Debug.LogError($"Cannot equip the wearable {wearableId}");
+                            Debug.LogError($"Cannot equip the wearable {shortenedWearableId}");
                             Debug.LogException(e);
                         }
                     }
@@ -325,12 +408,12 @@ namespace DCL.Backpack
                     avatarSlotsHUDController.Recalculate(model.forceRender);
                     UpdateAvatarModel(model.ToAvatarModel());
                 }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) { Debug.LogWarning("Skip the load of the user profile: the operation has been cancelled"); }
                 catch (Exception e) { Debug.LogException(e); }
             }
 
             loadProfileCancellationToken = loadProfileCancellationToken.SafeRestart();
-            LoadUserProfileAsync(userProfile, loadProfileCancellationToken.Token).Forget();
+            LoadUserAvatarAsync(userProfile.avatar, loadProfileCancellationToken.Token).Forget();
         }
 
         private void UpdateAvatarPreview()
@@ -339,7 +422,8 @@ namespace DCL.Backpack
 
             // We always keep the loaded emotes into the Avatar Preview
             foreach (string emoteId in dataStore.emotesCustomization.currentLoadedEmotes.Get())
-                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry() { urn = emoteId });
+                modelToUpdate.emotes.Add(new AvatarModel.AvatarEmoteEntry
+                    { urn = emoteId });
 
             UpdateAvatarModel(modelToUpdate);
         }
@@ -375,23 +459,58 @@ namespace DCL.Backpack
                 avatarIsDirty = true;
         }
 
-        private void SaveAvatarAndContinueSignupProcess() =>
-            SetVisibility(false, saveAvatar: true);
+        private void SaveAvatarAndContinueSignupProcess()
+        {
+            if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+            {
+                SetVisibility(false, saveAvatar: true);
+                return;
+            }
+
+            dataStore.HUDs.signupVisible.Set(true);
+            view.SetSignUpStage(SignUpStage.SetNameAndEmail);
+            view.SetAvatarPreviewFocus(PreviewCameraFocus.FaceEditing);
+            view.PlayPreviewEmote(EMOTE_ID);
+            backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+        }
+
+        private async UniTask SaveAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await TakeSnapshotsAndSaveAvatarAsync(cancellationToken);
+
+                if (dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.Get())
+                    dataStore.backpackV2.isWaitingToBeSavedAfterSignUp.Set(false);
+
+                CloseView();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                CloseView();
+            }
+        }
 
         private UniTask TakeSnapshotsAndSaveAvatarAsync(CancellationToken cancellationToken)
         {
             UniTaskCompletionSource task = new ();
+            isTakingSnapshot = true;
 
             TakeSnapshots(
                 onSuccess: (face256Snapshot, bodySnapshot) =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     SaveAvatar(face256Snapshot, bodySnapshot);
+                    isTakingSnapshot = false;
                     task.TrySetResult();
                 },
                 onFailed: () =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    SaveAvatar(new Texture2D(256, 256), new Texture2D(256, 256));
+                    isTakingSnapshot = false;
                     task.TrySetException(new Exception("Error taking avatar screenshots."));
                 });
 
@@ -409,6 +528,15 @@ namespace DCL.Backpack
         {
             var avatarModel = model.ToAvatarModel();
 
+            // Restore extended urns
+            for (var i = 0; i < avatarModel.wearables.Count; i++)
+            {
+                string shortenedUrn = avatarModel.wearables[i];
+
+                if (extendedWearableUrns.TryGetValue(shortenedUrn, out string urn))
+                    avatarModel.wearables[i] = urn;
+            }
+
             // Add the equipped emotes to the avatar model
             List<AvatarModel.AvatarEmoteEntry> emoteEntries = new List<AvatarModel.AvatarEmoteEntry>();
             int equippedEmotesCount = dataStore.emotesCustomization.unsavedEquippedEmotes.Count();
@@ -420,7 +548,15 @@ namespace DCL.Backpack
                 if (equippedEmote == null)
                     continue;
 
-                emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = equippedEmote.id });
+                string id = equippedEmote.id;
+
+                if (extendedWearableUrns.TryGetValue(id, out string urn))
+                    id = urn;
+                else if (emotesCatalogService.TryGetOwnedUrn(id, out string extendedUrn))
+                    if (!string.IsNullOrEmpty(extendedUrn))
+                        id = extendedUrn;
+
+                emoteEntries.Add(new AvatarModel.AvatarEmoteEntry { slot = i, urn = id });
             }
 
             avatarModel.emotes = emoteEntries;
@@ -433,7 +569,9 @@ namespace DCL.Backpack
             if (dataStore.common.isSignUpFlow.Get())
             {
                 dataStore.HUDs.signupVisible.Set(true);
-                backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
+
+                if (!isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                    backpackAnalyticsService.SendAvatarEditSuccessNuxAnalytic();
             }
 
             avatarIsDirty = false;
@@ -475,27 +613,38 @@ namespace DCL.Backpack
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out WearableItem wearable))
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearableId);
+
+            if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
             {
-                Debug.LogError($"Cannot equip wearable {wearableId}");
-                return;
+                if (!wearablesCatalogService.WearablesCatalog.TryGetValue(wearableId, out wearable))
+                {
+                    Debug.LogError($"Cannot equip wearable {shortenedWearableId}");
+                    return;
+                }
             }
 
-            EquipWearable(wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
+            EquipWearable(wearableId, wearable, source, setAsDirty, updateAvatarPreview, resetOverride);
         }
 
-        private void EquipWearable(WearableItem wearable,
+        private void EquipWearable(
+            string extendedWearableId,
+            WearableItem wearable,
             EquipWearableSource source,
             bool setAsDirty = true,
             bool updateAvatarPreview = true,
             bool resetOverride = true)
         {
-            string wearableId = wearable.id;
+            string shortenWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
+
+            if (ExtendedUrnParser.IsExtendedUrn(extendedWearableId))
+                extendedWearableUrns[shortenWearableId] = extendedWearableId;
 
             if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
                 UnEquipCurrentBodyShape();
                 EquipBodyShape(wearable);
+                ReplaceIncompatibleWearablesWithDefaultWearables();
             }
             else
             {
@@ -508,32 +657,68 @@ namespace DCL.Backpack
                     break;
                 }
 
-                model.wearables.Add(wearableId, wearable);
-                previewEquippedWearables.Add(wearableId);
+                model.wearables.Add(shortenWearableId, wearable);
+                previewEquippedWearables.Add(shortenWearableId);
 
                 if (resetOverride)
                     ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
-                avatarSlotsHUDController.Equip(wearable, ownUserProfile.avatar.bodyShape, model.forceRender);
-                wearableGridController.Equip(wearableId);
+                avatarSlotsHUDController.Equip(wearable, model.bodyShape.id, model.forceRender);
+                wearableGridController.Equip(shortenWearableId);
             }
 
             if (setAsDirty)
                 avatarIsDirty = true;
 
             if (source != EquipWearableSource.None)
-                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendEquipWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             if (updateAvatarPreview)
             {
                 UpdateAvatarModel(model.ToAvatarModel());
                 categoryPendingToPlayEmote = wearable.data.category;
             }
+
+            if (wearable.data.blockVrmExport)
+            {
+                vrmBlockingWearablesList.Add(shortenWearableId);
+                UpdateVRMExportWarning();
+            }
+        }
+
+        private void ReplaceIncompatibleWearablesWithDefaultWearables()
+        {
+            WearableItem bodyShape = model.bodyShape;
+
+            if (bodyShape == null) return;
+            if (!fallbackWearables.ContainsKey(bodyShape.id)) return;
+
+            HashSet<string> replacedCategories = new ();
+
+            foreach (var w in model.wearables.Values.ToArray())
+            {
+                if (w.SupportsBodyShape(bodyShape.id)) continue;
+
+                UnEquipWearable(w, UnequipWearableSource.None, true, false);
+
+                string category = w.data.category;
+
+                if (!string.IsNullOrEmpty(category) && !replacedCategories.Contains(category))
+                    replacedCategories.Add(category);
+            }
+
+            Dictionary<string, string> fallbackWearablesByCategory = fallbackWearables[bodyShape.id];
+
+            foreach (string category in replacedCategories)
+            {
+                if (!fallbackWearablesByCategory.ContainsKey(category)) continue;
+                EquipWearable(fallbackWearablesByCategory[category], EquipWearableSource.None, true, false);
+            }
         }
 
         private void UnEquipCurrentBodyShape(bool setAsDirty = true)
         {
-            if (model.bodyShape.id == "NOT_LOADED") return;
+            if (model.bodyShape.id == NOT_LOADED) return;
 
             if (!wearablesCatalogService.WearablesCatalog.TryGetValue(model.bodyShape.id, out WearableItem wearable))
             {
@@ -560,23 +745,35 @@ namespace DCL.Backpack
             bool setAsDirty = true,
             bool updateAvatarPreview = true)
         {
-            string wearableId = wearable.id;
+            string shortenedWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
 
             if (source != UnequipWearableSource.None)
-                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.data.category, wearable.rarity, source);
+                backpackAnalyticsService.SendUnequippedWearableAnalytic(wearable.id, wearable.data.category, wearable.rarity, source);
 
             ResetOverridesOfAffectedCategories(wearable, setAsDirty);
 
             avatarSlotsHUDController.UnEquip(wearable.data.category, model.forceRender);
-            model.wearables.Remove(wearableId);
-            previewEquippedWearables.Remove(wearableId);
-            wearableGridController.UnEquip(wearableId);
+            model.wearables.Remove(shortenedWearableId);
+            previewEquippedWearables.Remove(shortenedWearableId);
+            wearableGridController.UnEquip(shortenedWearableId);
 
             if (setAsDirty)
                 avatarIsDirty = true;
 
-            if(updateAvatarPreview)
+            if (updateAvatarPreview)
                 UpdateAvatarModel(model.ToAvatarModel());
+
+            if (wearable.data.blockVrmExport)
+            {
+                vrmBlockingWearablesList.Remove(shortenedWearableId);
+                UpdateVRMExportWarning();
+            }
+        }
+
+        private void UpdateVRMExportWarning()
+        {
+            vrmWarningEnabled = vrmBlockingWearablesList.Count > 0;
+            view.SetVRMExportWarning(vrmWarningEnabled);
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
@@ -651,7 +848,7 @@ namespace DCL.Backpack
         private void UpdateAvatarModel(AvatarModel avatarModel)
         {
             view.UpdateAvatarPreview(avatarModel);
-            outfitsController.UpdateAvatarPreview(model.ToAvatarModel());
+            outfitsController.UpdateAvatarPreview(model.ToAvatarModel(extendedWearableUrns));
         }
 
         private void OnColorPickerToggled() =>
@@ -697,7 +894,7 @@ namespace DCL.Backpack
         private string GetRandomizedName(string baseString, int limit)
         {
             currentAnimationIndexShown = (currentAnimationIndexShown + 1) % limit;
-            return baseString + (currentAnimationIndexShown + 1);
+            return $"{baseString}{(currentAnimationIndexShown + 1).ToString()}";
         }
 
         private void OnVrmExport()
@@ -707,9 +904,26 @@ namespace DCL.Backpack
             VrmExport(vrmExportCts.Token).Forget();
         }
 
+        private void OnSignUpBack(SignUpStage stage)
+        {
+            switch (stage)
+            {
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    dataStore.HUDs.signupVisible.Set(false);
+                    view.SetSignUpStage(SignUpStage.CustomizeAvatar);
+                    view.SetAvatarPreviewFocus(PreviewCameraFocus.DefaultEditing);
+                    break;
+            }
+        }
+
         internal async UniTask VrmExport(CancellationToken ct)
         {
             const int SUCCESS_TOAST_ACTIVE_TIME = 2000;
+
             try
             {
                 view?.SetVRMButtonEnabled(false);
@@ -722,6 +936,7 @@ namespace DCL.Backpack
                 try
                 {
                     var wearables = await this.ownUserProfile.avatar.wearables.Select(x => this.wearablesCatalogService.RequestWearableAsync(x, ct));
+
                     foreach (WearableItem wearableItem in wearables)
                     {
                         reference.AppendLine(string.Join(":",
@@ -738,21 +953,19 @@ namespace DCL.Backpack
 
                 byte[] bytes = await vrmExporter.Export($"{this.ownUserProfile.userName} Avatar", reference.ToString(), view?.originalVisibleRenderers, ct);
 
-                string fileName = $"{this.ownUserProfile.userName.Replace("#","_")}_{DateTime.Now.ToString("yyyyMMddhhmmss")}";
+                string fileName = $"{this.ownUserProfile.userName.Replace("#", "_")}_{DateTime.Now.ToString("yyyyMMddhhmmss")}";
                 await fileBrowser.SaveFileAsync("Save your VRM", Application.persistentDataPath, fileName, bytes, new ExtensionFilter("vrm", "vrm"));
 
                 view?.SetVRMSuccessToastActive(true);
                 await UniTask.Delay(SUCCESS_TOAST_ACTIVE_TIME, cancellationToken: ct);
             }
-            catch (OperationCanceledException)
-            {
-
-            }
+            catch (OperationCanceledException) { }
             finally
             {
                 view?.SetVRMButtonEnabled(true);
                 view?.SetVRMSuccessToastActive(false);
             }
+
             backpackAnalyticsService.SendVRMExportSucceeded();
         }
     }

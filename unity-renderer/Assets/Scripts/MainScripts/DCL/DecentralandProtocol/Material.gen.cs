@@ -27,7 +27,7 @@ namespace DCL.ECSComponents {
             "CipkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvbWF0ZXJpYWwucHJvdG8S",
             "G2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cxogZGVjZW50cmFsYW5kL2Nv",
             "bW1vbi9jb2xvcnMucHJvdG8aIWRlY2VudHJhbGFuZC9jb21tb24vdGV4dHVy",
-            "ZS5wcm90byKoCwoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
+            "ZS5wcm90byKGCwoKUEJNYXRlcmlhbBJGCgV1bmxpdBgBIAEoCzI1LmRlY2Vu",
             "dHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQk1hdGVyaWFsLlVubGl0TWF0ZXJp",
             "YWxIABJCCgNwYnIYAiABKAsyMy5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVu",
             "dHMuUEJNYXRlcmlhbC5QYnJNYXRlcmlhbEgAGvMBCg1VbmxpdE1hdGVyaWFs",
@@ -36,7 +36,7 @@ namespace DCL.ECSComponents {
             "X3NoYWRvd3MYAyABKAhIAogBARI3Cg1kaWZmdXNlX2NvbG9yGAQgASgLMhsu",
             "ZGVjZW50cmFsYW5kLmNvbW1vbi5Db2xvcjRIA4gBAUIKCghfdGV4dHVyZUIN",
             "CgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9kaWZmdXNlX2Nv",
-            "bG9yGosICgtQYnJNYXRlcmlhbBI3Cgd0ZXh0dXJlGAEgASgLMiEuZGVjZW50",
+            "bG9yGukHCgtQYnJNYXRlcmlhbBI3Cgd0ZXh0dXJlGAEgASgLMiEuZGVjZW50",
             "cmFsYW5kLmNvbW1vbi5UZXh0dXJlVW5pb25IAIgBARIXCgphbHBoYV90ZXN0",
             "GAIgASgCSAGIAQESGQoMY2FzdF9zaGFkb3dzGAMgASgISAKIAQESPQoNYWxw",
             "aGFfdGV4dHVyZRgEIAEoCzIhLmRlY2VudHJhbGFuZC5jb21tb24uVGV4dHVy",
@@ -50,25 +50,24 @@ namespace DCL.ECSComponents {
             "ElUKEXRyYW5zcGFyZW5jeV9tb2RlGAogASgOMjUuZGVjZW50cmFsYW5kLnNk",
             "ay5jb21wb25lbnRzLk1hdGVyaWFsVHJhbnNwYXJlbmN5TW9kZUgJiAEBEhUK",
             "CG1ldGFsbGljGAsgASgCSAqIAQESFgoJcm91Z2huZXNzGAwgASgCSAuIAQES",
-            "FwoKZ2xvc3NpbmVzcxgNIAEoAkgMiAEBEh8KEnNwZWN1bGFyX2ludGVuc2l0",
-            "eRgOIAEoAkgNiAEBEh8KEmVtaXNzaXZlX2ludGVuc2l0eRgPIAEoAkgOiAEB",
-            "Eh0KEGRpcmVjdF9pbnRlbnNpdHkYECABKAJID4gBAUIKCghfdGV4dHVyZUIN",
-            "CgtfYWxwaGFfdGVzdEIPCg1fY2FzdF9zaGFkb3dzQhAKDl9hbHBoYV90ZXh0",
-            "dXJlQhMKEV9lbWlzc2l2ZV90ZXh0dXJlQg8KDV9idW1wX3RleHR1cmVCDwoN",
-            "X2FsYmVkb19jb2xvckIRCg9fZW1pc3NpdmVfY29sb3JCFQoTX3JlZmxlY3Rp",
-            "dml0eV9jb2xvckIUChJfdHJhbnNwYXJlbmN5X21vZGVCCwoJX21ldGFsbGlj",
-            "QgwKCl9yb3VnaG5lc3NCDQoLX2dsb3NzaW5lc3NCFQoTX3NwZWN1bGFyX2lu",
-            "dGVuc2l0eUIVChNfZW1pc3NpdmVfaW50ZW5zaXR5QhMKEV9kaXJlY3RfaW50",
-            "ZW5zaXR5QgoKCG1hdGVyaWFsKoUBChhNYXRlcmlhbFRyYW5zcGFyZW5jeU1v",
-            "ZGUSDgoKTVRNX09QQVFVRRAAEhIKDk1UTV9BTFBIQV9URVNUEAESEwoPTVRN",
-            "X0FMUEhBX0JMRU5EEAISIgoeTVRNX0FMUEhBX1RFU1RfQU5EX0FMUEhBX0JM",
-            "RU5EEAMSDAoITVRNX0FVVE8QBEIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnBy",
-            "b3RvMw=="));
+            "HwoSc3BlY3VsYXJfaW50ZW5zaXR5GA4gASgCSAyIAQESHwoSZW1pc3NpdmVf",
+            "aW50ZW5zaXR5GA8gASgCSA2IAQESHQoQZGlyZWN0X2ludGVuc2l0eRgQIAEo",
+            "AkgOiAEBQgoKCF90ZXh0dXJlQg0KC19hbHBoYV90ZXN0Qg8KDV9jYXN0X3No",
+            "YWRvd3NCEAoOX2FscGhhX3RleHR1cmVCEwoRX2VtaXNzaXZlX3RleHR1cmVC",
+            "DwoNX2J1bXBfdGV4dHVyZUIPCg1fYWxiZWRvX2NvbG9yQhEKD19lbWlzc2l2",
+            "ZV9jb2xvckIVChNfcmVmbGVjdGl2aXR5X2NvbG9yQhQKEl90cmFuc3BhcmVu",
+            "Y3lfbW9kZUILCglfbWV0YWxsaWNCDAoKX3JvdWdobmVzc0IVChNfc3BlY3Vs",
+            "YXJfaW50ZW5zaXR5QhUKE19lbWlzc2l2ZV9pbnRlbnNpdHlCEwoRX2RpcmVj",
+            "dF9pbnRlbnNpdHlKBAgNEA5CCgoIbWF0ZXJpYWwqhQEKGE1hdGVyaWFsVHJh",
+            "bnNwYXJlbmN5TW9kZRIOCgpNVE1fT1BBUVVFEAASEgoOTVRNX0FMUEhBX1RF",
+            "U1QQARITCg9NVE1fQUxQSEFfQkxFTkQQAhIiCh5NVE1fQUxQSEFfVEVTVF9B",
+            "TkRfQUxQSEFfQkxFTkQQAxIMCghNVE1fQVVUTxAEQhSqAhFEQ0wuRUNTQ29t",
+            "cG9uZW50c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::Decentraland.Common.TextureReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.MaterialTransparencyMode), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial), global::DCL.ECSComponents.PBMaterial.Parser, new[]{ "Unlit", "Pbr" }, new[]{ "Material" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial), global::DCL.ECSComponents.PBMaterial.Types.UnlitMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "DiffuseColor" }, new[]{ "Texture", "AlphaTest", "CastShadows", "DiffuseColor" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial), global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "Glossiness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial), global::DCL.ECSComponents.PBMaterial.Types.PbrMaterial.Parser, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, new[]{ "Texture", "AlphaTest", "CastShadows", "AlphaTexture", "EmissiveTexture", "BumpTexture", "AlbedoColor", "EmissiveColor", "ReflectivityColor", "TransparencyMode", "Metallic", "Roughness", "SpecularIntensity", "EmissiveIntensity", "DirectIntensity" }, null, null, null)})
           }));
     }
     #endregion
@@ -780,7 +779,6 @@ namespace DCL.ECSComponents {
           transparencyMode_ = other.transparencyMode_;
           metallic_ = other.metallic_;
           roughness_ = other.roughness_;
-          glossiness_ = other.glossiness_;
           specularIntensity_ = other.specularIntensity_;
           emissiveIntensity_ = other.emissiveIntensity_;
           directIntensity_ = other.directIntensity_;
@@ -1038,34 +1036,6 @@ namespace DCL.ECSComponents {
           _hasBits0 &= ~16;
         }
 
-        /// <summary>Field number for the "glossiness" field.</summary>
-        public const int GlossinessFieldNumber = 13;
-        private float glossiness_;
-        /// <summary>
-        /// default = 1
-        /// </summary>
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public float Glossiness {
-          get { if ((_hasBits0 & 32) != 0) { return glossiness_; } else { return 0F; } }
-          set {
-            _hasBits0 |= 32;
-            glossiness_ = value;
-          }
-        }
-        /// <summary>Gets whether the "glossiness" field is set</summary>
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public bool HasGlossiness {
-          get { return (_hasBits0 & 32) != 0; }
-        }
-        /// <summary>Clears the value of the "glossiness" field</summary>
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public void ClearGlossiness() {
-          _hasBits0 &= ~32;
-        }
-
         /// <summary>Field number for the "specular_intensity" field.</summary>
         public const int SpecularIntensityFieldNumber = 14;
         private float specularIntensity_;
@@ -1075,9 +1045,9 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public float SpecularIntensity {
-          get { if ((_hasBits0 & 64) != 0) { return specularIntensity_; } else { return 0F; } }
+          get { if ((_hasBits0 & 32) != 0) { return specularIntensity_; } else { return 0F; } }
           set {
-            _hasBits0 |= 64;
+            _hasBits0 |= 32;
             specularIntensity_ = value;
           }
         }
@@ -1085,13 +1055,13 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool HasSpecularIntensity {
-          get { return (_hasBits0 & 64) != 0; }
+          get { return (_hasBits0 & 32) != 0; }
         }
         /// <summary>Clears the value of the "specular_intensity" field</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void ClearSpecularIntensity() {
-          _hasBits0 &= ~64;
+          _hasBits0 &= ~32;
         }
 
         /// <summary>Field number for the "emissive_intensity" field.</summary>
@@ -1103,9 +1073,9 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public float EmissiveIntensity {
-          get { if ((_hasBits0 & 128) != 0) { return emissiveIntensity_; } else { return 0F; } }
+          get { if ((_hasBits0 & 64) != 0) { return emissiveIntensity_; } else { return 0F; } }
           set {
-            _hasBits0 |= 128;
+            _hasBits0 |= 64;
             emissiveIntensity_ = value;
           }
         }
@@ -1113,13 +1083,13 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool HasEmissiveIntensity {
-          get { return (_hasBits0 & 128) != 0; }
+          get { return (_hasBits0 & 64) != 0; }
         }
         /// <summary>Clears the value of the "emissive_intensity" field</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void ClearEmissiveIntensity() {
-          _hasBits0 &= ~128;
+          _hasBits0 &= ~64;
         }
 
         /// <summary>Field number for the "direct_intensity" field.</summary>
@@ -1131,9 +1101,9 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public float DirectIntensity {
-          get { if ((_hasBits0 & 256) != 0) { return directIntensity_; } else { return 0F; } }
+          get { if ((_hasBits0 & 128) != 0) { return directIntensity_; } else { return 0F; } }
           set {
-            _hasBits0 |= 256;
+            _hasBits0 |= 128;
             directIntensity_ = value;
           }
         }
@@ -1141,13 +1111,13 @@ namespace DCL.ECSComponents {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool HasDirectIntensity {
-          get { return (_hasBits0 & 256) != 0; }
+          get { return (_hasBits0 & 128) != 0; }
         }
         /// <summary>Clears the value of the "direct_intensity" field</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void ClearDirectIntensity() {
-          _hasBits0 &= ~256;
+          _hasBits0 &= ~128;
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1177,7 +1147,6 @@ namespace DCL.ECSComponents {
           if (TransparencyMode != other.TransparencyMode) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Metallic, other.Metallic)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Roughness, other.Roughness)) return false;
-          if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Glossiness, other.Glossiness)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(SpecularIntensity, other.SpecularIntensity)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(EmissiveIntensity, other.EmissiveIntensity)) return false;
           if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DirectIntensity, other.DirectIntensity)) return false;
@@ -1200,7 +1169,6 @@ namespace DCL.ECSComponents {
           if (HasTransparencyMode) hash ^= TransparencyMode.GetHashCode();
           if (HasMetallic) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Metallic);
           if (HasRoughness) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Roughness);
-          if (HasGlossiness) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Glossiness);
           if (HasSpecularIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(SpecularIntensity);
           if (HasEmissiveIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(EmissiveIntensity);
           if (HasDirectIntensity) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DirectIntensity);
@@ -1269,10 +1237,6 @@ namespace DCL.ECSComponents {
           if (HasRoughness) {
             output.WriteRawTag(101);
             output.WriteFloat(Roughness);
-          }
-          if (HasGlossiness) {
-            output.WriteRawTag(109);
-            output.WriteFloat(Glossiness);
           }
           if (HasSpecularIntensity) {
             output.WriteRawTag(117);
@@ -1344,10 +1308,6 @@ namespace DCL.ECSComponents {
             output.WriteRawTag(101);
             output.WriteFloat(Roughness);
           }
-          if (HasGlossiness) {
-            output.WriteRawTag(109);
-            output.WriteFloat(Glossiness);
-          }
           if (HasSpecularIntensity) {
             output.WriteRawTag(117);
             output.WriteFloat(SpecularIntensity);
@@ -1404,9 +1364,6 @@ namespace DCL.ECSComponents {
             size += 1 + 4;
           }
           if (HasRoughness) {
-            size += 1 + 4;
-          }
-          if (HasGlossiness) {
             size += 1 + 4;
           }
           if (HasSpecularIntensity) {
@@ -1486,9 +1443,6 @@ namespace DCL.ECSComponents {
           }
           if (other.HasRoughness) {
             Roughness = other.Roughness;
-          }
-          if (other.HasGlossiness) {
-            Glossiness = other.Glossiness;
           }
           if (other.HasSpecularIntensity) {
             SpecularIntensity = other.SpecularIntensity;
@@ -1581,10 +1535,6 @@ namespace DCL.ECSComponents {
               }
               case 101: {
                 Roughness = input.ReadFloat();
-                break;
-              }
-              case 109: {
-                Glossiness = input.ReadFloat();
                 break;
               }
               case 117: {
@@ -1681,10 +1631,6 @@ namespace DCL.ECSComponents {
               }
               case 101: {
                 Roughness = input.ReadFloat();
-                break;
-              }
-              case 109: {
-                Glossiness = input.ReadFloat();
                 break;
               }
               case 117: {

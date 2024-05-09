@@ -68,6 +68,7 @@ namespace DCL.ECSComponents
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, ECSTransform model)
         {
             Transform transform = entity.gameObject.transform;
+
             bool positionChange = transform.localPosition != model.position;
             bool scaleChange = transform.localScale != model.scale;
             bool rotationChange = transform.localRotation != model.rotation;
@@ -77,13 +78,23 @@ namespace DCL.ECSComponents
             transform.localScale = model.scale;
 
             if (entity.parentId != model.parentId)
+            {
+                Vector3 previousGlobalPosition = transform.position;
                 ProcessNewParent(scene, entity, model.parentId);
+
+                // reparenting may end up changing the entity's position...
+                if (!positionChange)
+                    positionChange = transform.position != previousGlobalPosition;
+            }
 
             if (positionChange)
                 sbcInternalComponent.SetPosition(scene, entity, transform.position);
 
             if (scaleChange || rotationChange)
                 sbcInternalComponent.OnTransformScaleRotationChanged(scene, entity);
+
+            // Same AvatarShape interpolation used at DCLTransform from SDK6
+            entity.OnTransformChange?.Invoke(model.position, model.rotation);
         }
 
         private static void ProcessNewParent(IParcelScene scene, IDCLEntity entity, long parentId)

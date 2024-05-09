@@ -1,4 +1,6 @@
 using DCL;
+using ECSSystems.AnimationSystem;
+using ECSSystems.AvatarModifierAreaSystem;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
 using ECSSystems.ECSEngineInfoSystem;
@@ -11,6 +13,7 @@ using ECSSystems.MaterialSystem;
 using ECSSystems.PlayerSystem;
 using ECSSystems.PointerInputSystem;
 using ECSSystems.ScenesUiSystem;
+using ECSSystems.TweenSystem;
 using ECSSystems.UiCanvasInformationSystem;
 using ECSSystems.UIInputSenderSystem;
 using ECSSystems.VideoPlayerSystem;
@@ -37,9 +40,11 @@ public class ECSSystemsController : IDisposable
     private readonly ECSUiCanvasInformationSystem uiCanvasInformationSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
+    private readonly IWorldState worldState;
 
     public ECSSystemsController(SystemsContext context)
     {
+        this.worldState = Environment.i.world.state;
         this.updateEventHandler = Environment.i.platform.updateEventHandler;
         this.internalComponentMarkDirtySystem = context.internalEcsComponents.MarkDirtyComponentsUpdate;
         this.internalComponentRemoveDirtySystem = context.internalEcsComponents.ResetDirtyComponentsUpdate;
@@ -116,8 +121,7 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.PointerEventsComponent,
             interactionHoverCanvas,
             Environment.i.world.state,
-            DataStore.i.ecs7,
-            DataStore.i.rpc.context.restrictedActions);
+            DataStore.i.ecs7);
 
         GltfContainerLoadingStateSystem gltfContainerLoadingStateSystem = new GltfContainerLoadingStateSystem(
             context.ComponentWriters,
@@ -132,8 +136,29 @@ public class ECSSystemsController : IDisposable
         uiCanvasInformationSystem = new ECSUiCanvasInformationSystem(
             context.ComponentWriters,
             context.UiCanvasInformationPool,
-            DataStore.i.ecs7.scenes
-        );
+            DataStore.i.ecs7.scenes);
+
+        ECSInputSenderSystem inputSenderSystem = new ECSInputSenderSystem(
+            context.internalEcsComponents.inputEventResultsComponent,
+            context.internalEcsComponents.EngineInfo,
+            context.ComponentWriters,
+            context.PointerEventsResultPool,
+            () => worldState.GetCurrentSceneNumber());
+
+        AnimationSystem animationSystem = new AnimationSystem(
+            context.componentGroups.AnimationGroup,
+            context.internalEcsComponents.Animation);
+
+        ECSTweenSystem tweenSystem = new ECSTweenSystem(
+            context.internalEcsComponents.TweenComponent,
+            context.ComponentWriters,
+            context.TweenStatePool,
+            context.TransformPool,
+            CommonScriptableObjects.worldOffset,
+            context.internalEcsComponents.sceneBoundsCheckComponent);
+
+        ECSAvatarModifierAreaSystem avatarModifierAreaSystem = new ECSAvatarModifierAreaSystem(
+            context.internalEcsComponents.AvatarModifierAreaComponent, DataStore.i.player);
 
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.Update, Update);
         updateEventHandler.AddListener(IUpdateEventHandler.EventType.LateUpdate, LateUpdate);
@@ -142,26 +167,25 @@ public class ECSSystemsController : IDisposable
         {
             engineInfoSystem.Update,
             ECSTransformParentingSystem.CreateSystem(context.internalEcsComponents.sceneBoundsCheckComponent),
+            tweenSystem.Update,
             ECSMaterialSystem.CreateSystem(context.componentGroups.texturizableGroup,
                 context.internalEcsComponents.texturizableComponent, context.internalEcsComponents.materialComponent),
             ECSVisibilitySystem.CreateSystem(context.componentGroups.visibilityGroup,
                 context.internalEcsComponents.renderersComponent, context.internalEcsComponents.visibilityComponent),
+            avatarModifierAreaSystem.Update,
             uiSystem.Update,
             pointerInputSystem.Update,
             billboardSystem.Update,
             videoPlayerSystem.Update,
-            uiCanvasInformationSystem.Update
+            uiCanvasInformationSystem.Update,
+            animationSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
         {
             uiPointerEventsSystem.Update,
             uiInputSenderSystem.Update, // Input detection happens during Update() so this system has to run in LateUpdate()
-            ECSInputSenderSystem.CreateSystem(
-                context.internalEcsComponents.inputEventResultsComponent,
-                context.internalEcsComponents.EngineInfo,
-                context.ComponentWriters,
-                context.PointerEventsResultPool),
+            inputSenderSystem.Update,
             cameraEntitySystem.Update,
             playerTransformSystem.Update,
             gltfContainerLoadingStateSystem.Update,

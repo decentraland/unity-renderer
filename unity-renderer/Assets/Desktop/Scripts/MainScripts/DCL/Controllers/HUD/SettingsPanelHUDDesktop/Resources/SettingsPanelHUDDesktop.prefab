@@ -5,12 +5,33 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 353294522546651223, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
         type: 3}
       propertyPath: m_Name
       value: SettingsPanelHUDDesktop
+      objectReference: {fileID: 0}
+    - target: {fileID: 353294522546651223, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058724952210762482, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058724952210762482, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058724952210762482, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3164546539369866496, guid: 0b30cc33a2ec8433482cf01cdb31bc5f,
         type: 3}
@@ -150,4 +171,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b30cc33a2ec8433482cf01cdb31bc5f, type: 3}

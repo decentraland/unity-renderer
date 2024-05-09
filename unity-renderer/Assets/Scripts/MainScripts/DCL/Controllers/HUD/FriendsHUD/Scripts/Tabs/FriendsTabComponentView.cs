@@ -64,7 +64,6 @@ public class FriendsTabComponentView : BaseComponentView
     public event Action<string> OnSearchRequested;
 
     public event Action<FriendEntryModel> OnWhisper;
-    public event Action<string> OnDeleteConfirmation;
     public event Action OnRequireMoreEntries;
 
     public void Initialize(IChatController chatController,
@@ -381,8 +380,8 @@ public class FriendsTabComponentView : BaseComponentView
 
     private void OnEntryMenuToggle(FriendEntryBase friendEntry)
     {
-        contextMenuPanel.Show(friendEntry.Model.userId);
         friendEntry.Dock(contextMenuPanel);
+        contextMenuPanel.Show(friendEntry.Model.userId);
     }
 
     private Pool GetEntryPool()
@@ -421,7 +420,6 @@ public class FriendsTabComponentView : BaseComponentView
         var entry = Get(userId);
         if (entry == null) return;
         Remove(userId);
-        OnDeleteConfirmation?.Invoke(userId);
     }
 
     private void UpdateLayout() => isLayoutDirty = true;

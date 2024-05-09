@@ -1,0 +1,78 @@
+syntax = "proto3";
+package decentraland.bff;
+
+message AboutResponse {
+  bool healthy = 1;
+  AboutConfiguration configurations = 2;
+  ContentInfo content = 3;
+  optional CommsInfo comms = 4;
+  LambdasInfo lambdas = 5;
+  optional BffInfo bff = 6;
+  bool accepting_users = 7;
+
+  message MinimapConfiguration {
+    bool enabled = 1;
+    optional string data_image = 2;
+    optional string estate_image = 3;
+  }
+
+  message SkyboxConfiguration {
+    // only one value at a time
+    optional float fixed_hour = 1;
+    repeated string textures = 2;
+  }
+
+  message AboutConfiguration {
+    optional string realm_name = 1;
+    uint32 network_id = 2;
+    repeated string global_scenes_urn = 3;
+    repeated string scenes_urn = 4;
+    optional MinimapConfiguration minimap = 5;
+    optional SkyboxConfiguration skybox = 6;
+
+    // A content server to be used to load the parcels around the user. Uses the POST /entities/active endpoint
+    // to continously fetch the parcels around the users. if null, then the default content server will be used
+    // if == "" then the city_loader will be disabled and the scenes_urn will be used to load the world
+    optional string city_loader_content_server = 7;
+  }
+
+  message ContentInfo {
+    // common properties
+    bool healthy = 1;
+    optional string version = 2;
+    optional string commit_hash = 3;
+    string public_url = 4;
+  }
+  message LambdasInfo {
+    // common properties
+    bool healthy = 1;
+    optional string version = 2;
+    optional string commit_hash = 3;
+    string public_url = 4;
+    optional string public_key = 5;
+    optional string address = 6;
+  }
+  message CommsInfo {
+    // common properties
+    bool healthy = 1;
+    optional string version = 2;
+    optional string commit_hash = 3;
+    optional string public_url = 4;
+    // specific properties
+    string protocol = 50;
+    optional int32 users_count = 51;
+    // Deprecated: Use adapter instead. This field may be removed in the future.
+    optional string fixed_adapter = 52 [deprecated = true];
+    string adapter = 53;
+  }
+  message BffInfo {
+    // common properties
+    bool healthy = 1;
+    optional string version = 2;
+    optional string commit_hash = 3;
+    string public_url = 4;
+    // specific properties
+    optional int32 user_count = 51;
+    optional string protocol_version = 52;
+  }
+}

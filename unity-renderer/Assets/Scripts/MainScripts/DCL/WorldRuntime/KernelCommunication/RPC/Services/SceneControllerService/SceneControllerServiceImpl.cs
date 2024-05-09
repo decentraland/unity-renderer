@@ -174,11 +174,18 @@ namespace RPC.Services
 
             // This line is to avoid a race condition because a CRDT message could be sent before the scene was loaded
             // more info: https://github.com/decentraland/sdk/issues/480#issuecomment-1331309908
-            await UniTask.WaitUntil(() => crdtContext.WorldState.TryGetScene(sceneNumber, out scene),
-                cancellationToken: ct);
+            while (!crdtContext.WorldState.TryGetScene(sceneNumber, out scene))
+            {
+                await UniTask.Yield(ct);
+            }
 
-            await UniTask.WaitWhile(() => crdtContext.MessagingControllersManager.HasScenePendingMessages(sceneNumber),
-                cancellationToken: ct);
+            bool checkPendingMessages = !scene.sceneData.sdk7
+                                        || (scene.sceneData.sdk7 && !scene.IsInitMessageDone());
+
+            while (checkPendingMessages && crdtContext.MessagingControllersManager.HasScenePendingMessages(sceneNumber))
+            {
+                await UniTask.Yield(ct);
+            }
 
             reusableCrdtMessageResult.Payload = ByteString.Empty;
             if (!scene.sceneData.sdk7) return reusableCrdtMessageResult;
@@ -206,7 +213,10 @@ namespace RPC.Services
                     if (crdtContext.GetSceneTick(sceneNumber) == 0)
                     {
                         // pause scene update until GLTFs are loaded
-                        await UniTask.WaitUntil(() => crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber), cancellationToken: ct);
+                        while (!crdtContext.IsSceneGltfLoadingFinished(scene.sceneData.sceneNumber))
+                        {
+                            await UniTask.Yield(ct);
+                        }
 
                         // When sdk7 scene receive it first crdt we set `InitMessagesDone` since
                         // kernel won't be sending that message for those scenes
@@ -384,8 +394,10 @@ namespace RPC.Services
         {
             if (string.Compare(str, "enabled", StringComparison.OrdinalIgnoreCase) == 0)
                 return ScenePortableExperienceFeatureToggles.Enable;
+
             if (string.Compare(str, "disabled", StringComparison.OrdinalIgnoreCase) == 0)
                 return ScenePortableExperienceFeatureToggles.Disable;
+
             if (string.Compare(str, "hideui", StringComparison.OrdinalIgnoreCase) == 0)
                 return ScenePortableExperienceFeatureToggles.HideUi;
 

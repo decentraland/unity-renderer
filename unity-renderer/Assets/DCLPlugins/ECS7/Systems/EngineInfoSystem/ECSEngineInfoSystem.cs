@@ -48,7 +48,7 @@ namespace ECSSystems.ECSEngineInfoSystem
                 var componentPooled = componentPool.Get();
                 var componentModel = componentPooled.WrappedComponent.Model;
                 componentModel.TickNumber = model.SceneTick;
-                componentModel.FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialRunTime);
+                componentModel.FrameNumber = (uint)(currentEngineFrameCount - model.SceneInitialFrameCount);
                 componentModel.TotalRuntime = currentEngineRunTime - model.SceneInitialRunTime;
 
                 writer.Put(SpecialEntityId.SCENE_ROOT_ENTITY, ComponentID.ENGINE_INFO, componentPooled);

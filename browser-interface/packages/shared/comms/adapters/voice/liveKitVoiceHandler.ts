@@ -54,7 +54,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
       participantsInfo.set(participant.identity, $)
 
       participant.on(ParticipantEvent.IsSpeakingChanged, (talking: boolean) => {
-        const audioPublication = participant.getTrack(Track.Source.Microphone)
+        const audioPublication = participant.getTrackPublication(Track.Source.Microphone)
         if (audioPublication && audioPublication.track) {
           const audioTrack = audioPublication.track as RemoteAudioTrack
           onUserTalkingCallback(participant.identity, audioTrack.isMuted ? false : talking)
@@ -137,18 +137,19 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
     .on(RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed)
     .on(RoomEvent.MediaDevicesError, handleMediaDevicesError)
 
-  logger.log('initialized')
-
   return {
-    setRecording(recording) {
-      room.localParticipant
-        .setMicrophoneEnabled(recording)
-        .then(() => {
-          if (recordingListener) {
-            recordingListener(recording)
-          }
-        })
-        .catch((err) => logger.error('Error: ', err, ', recording=', recording))
+    async setRecording(recording) {
+      try {
+        await room.localParticipant.setMicrophoneEnabled(recording)
+        if (recordingListener) {
+          recordingListener(recording)
+        }
+      } catch (err) {
+        logger.error('Error: ', err, ', recording=', recording)
+        if (recordingListener) {
+          recordingListener(false)
+        }
+      }
     },
     onUserTalking(cb) {
       onUserTalkingCallback = cb
@@ -199,7 +200,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         )
       }
 
-      for (const [_, participant] of room.participants) {
+      for (const [_, participant] of room.remoteParticipants) {
         const address = participant.identity
         const peer = getPeer(address)
         const participantInfo = participantsInfo.get(address)
@@ -208,7 +209,7 @@ export function createLiveKitVoiceHandler(room: Room, globalAudioStream: GlobalA
         const profile = getCurrentUserProfile(state)
         if (profile) {
           const muted = !shouldPlayVoice(state, profile, address)
-          const audioPublication = participant.getTrack(Track.Source.Microphone)
+          const audioPublication = participant.getTrackPublication(Track.Source.Microphone)
           if (audioPublication && audioPublication.track) {
             const audioTrack = audioPublication.track as RemoteAudioTrack
             audioTrack.setMuted(muted)

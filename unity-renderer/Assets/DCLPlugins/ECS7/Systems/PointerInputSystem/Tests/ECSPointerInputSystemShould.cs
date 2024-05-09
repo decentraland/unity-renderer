@@ -6,10 +6,8 @@ using DCL.Interface;
 using ECSSystems.PointerInputSystem;
 using NSubstitute;
 using NUnit.Framework;
-using RPC.Context;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Environment = DCL.Environment;
 
 namespace Tests
@@ -19,7 +17,6 @@ namespace Tests
         private Action systemUpdate;
 
         private DataStore_ECS7 dataStoreEcs7;
-        private RestrictedActionsContext restrictedActionsRpcContext;
 
         [SetUp]
         public void SetUp()
@@ -39,17 +36,13 @@ namespace Tests
 
             dataStoreEcs7 = new DataStore_ECS7();
 
-            restrictedActionsRpcContext = new RestrictedActionsContext();
-            restrictedActionsRpcContext.LastFrameWithInput = -1;
-
             ECSPointerInputSystem system = new ECSPointerInputSystem(
                 internalComponents.onPointerColliderComponent,
                 internalComponents.inputEventResultsComponent,
                 internalComponents.PointerEventsComponent,
                 Substitute.For<IECSInteractionHoverCanvas>(),
                 worldState,
-                dataStoreEcs7,
-                restrictedActionsRpcContext);
+                dataStoreEcs7);
 
             systemUpdate = system.Update;
         }
@@ -65,29 +58,6 @@ namespace Tests
             {
                 Assert.AreEqual(inputActionsWebInterface[i], inputActionsProto[i]);
             }
-        }
-
-        [Test]
-        [TestCase(InputAction.IaAction3, ExpectedResult = true)]
-        [TestCase(InputAction.IaAction4, ExpectedResult = true)]
-        [TestCase(InputAction.IaAction5, ExpectedResult = true)]
-        [TestCase(InputAction.IaAction6, ExpectedResult = true)]
-        [TestCase(InputAction.IaPrimary, ExpectedResult = true)]
-        [TestCase(InputAction.IaSecondary, ExpectedResult = true)]
-        [TestCase(InputAction.IaPointer, ExpectedResult = true)]
-        [TestCase(InputAction.IaAny, ExpectedResult = false)]
-        [TestCase(InputAction.IaForward, ExpectedResult = false)]
-        [TestCase(InputAction.IaBackward, ExpectedResult = false)]
-        [TestCase(InputAction.IaRight, ExpectedResult = false)]
-        [TestCase(InputAction.IaLeft, ExpectedResult = false)]
-        [TestCase(InputAction.IaJump, ExpectedResult = false)]
-        [TestCase(InputAction.IaWalk, ExpectedResult = false)]
-        public bool SetCurrentFrameWhenInputActionIsValid(InputAction inputAction)
-        {
-            int currentFrame = Time.frameCount;
-            dataStoreEcs7.inputActionState[(int)inputAction] = true;
-            systemUpdate();
-            return currentFrame == restrictedActionsRpcContext.LastFrameWithInput;
         }
     }
 }

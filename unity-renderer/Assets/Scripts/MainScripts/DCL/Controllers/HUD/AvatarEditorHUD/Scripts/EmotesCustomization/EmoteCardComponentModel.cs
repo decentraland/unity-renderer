@@ -18,6 +18,8 @@ namespace DCL.EmotesCustomization
         public bool isInL2;
         public bool isLoading = false;
         public bool isCollectible = false;
+        public bool hasSound;
+        public string amount;
     }
 
     [Serializable]

@@ -18,6 +18,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         Shortcut,
         Command,
         Backpack,
+        EmoteLoop,
+        EmoteCancel,
     }
 
     private const string FALLBACK_NAME = "fallback";
@@ -61,12 +63,13 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         AvatarModel.FallbackModel(FALLBACK_NAME, this.GetInstanceID());
 
     private int emoteLamportTimestamp = 1;
+    private ClientEmotesKernelService emotes => Environment.i.serviceLocator.Get<IRPC>().Emotes();
 
     public void UpdateData(UserProfileModel newModel)
     {
         if (newModel == null)
         {
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+            if (!Application.isBatchMode)
                 Debug.LogError("Model is null when updating UserProfile! Using fallback or previous model instead.");
 
             // Check if there is a previous model to fallback to. Because default model has everything empty or null.
@@ -77,7 +80,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         {
             model.avatar = new AvatarModel();
 
-            if (DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("user_profile_null_model_exception"))
+            if (!Application.isBatchMode)
                 Debug.LogError("Avatar is null when updating UserProfile! Using fallback or previous avatar instead.");
 
             // Check if there is a previous avatar to fallback to.
@@ -130,22 +133,24 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnUpdate?.Invoke(this);
     }
 
-    public void SetAvatarExpression(string id, EmoteSource source)
+    public void SetAvatarExpression(string id, EmoteSource source, bool rpcOnly = false)
     {
         int timestamp = emoteLamportTimestamp++;
         avatar.expressionTriggerId = id;
         avatar.expressionTriggerTimestamp = timestamp;
 
-        ClientEmotesKernelService emotes = Environment.i.serviceLocator.Get<IRPC>().Emotes();
         // TODO: fix message `Timestamp` should NOT be `float`, we should use `int lamportTimestamp` or `long timeStamp`
         emotes?.TriggerExpression(new TriggerExpressionRequest()
         {
             Id = id,
-            Timestamp = timestamp
+            Timestamp = rpcOnly ? -1 : timestamp
         });
 
-        OnUpdate?.Invoke(this);
-        OnAvatarEmoteSet?.Invoke(id, timestamp, source);
+        if (!rpcOnly)
+        {
+            OnUpdate?.Invoke(this);
+            OnAvatarEmoteSet?.Invoke(id, timestamp, source);
+        }
     }
 
     public void SetInventory(IEnumerable<string> inventoryIds)
@@ -188,9 +193,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         if (IsBlocked(userId))
             return;
         blocked.Add(userId);
+        OnUpdate?.Invoke(this);
     }
 
-    public void Unblock(string userId) { blocked.Remove(userId); }
+    public void Unblock(string userId)
+    {
+        if (!IsBlocked(userId))
+            return;
+        blocked.Remove(userId);
+        OnUpdate?.Invoke(this);
+    }
 
     public bool HasEquipped(string wearableId) => avatar.wearables.Contains(wearableId);
 

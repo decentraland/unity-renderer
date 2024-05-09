@@ -35,7 +35,7 @@ namespace DCL
                 if (pbModel.Texture.HasSrc) pb.src = pbModel.Texture.Src;
                 if (pbModel.Texture.HasWrap) pb.wrap = (BabylonWrapMode)pbModel.Texture.Wrap;
                 if (pbModel.Texture.HasSamplingMode) pb.samplingMode = (FilterMode)pbModel.Texture.SamplingMode;
-                
+
                 return pb;
             }
         }
@@ -47,9 +47,10 @@ namespace DCL
             MIRROR
         }
 
-        AssetPromise_Texture texturePromise;
+        private AssetPromise_Texture texturePromise;
+        private bool wasLoadedFromPromise;
 
-        protected Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
+        protected readonly Dictionary<ISharedComponent, HashSet<long>> attachedEntitiesByComponent =
             new Dictionary<ISharedComponent, HashSet<long>>();
 
         public TextureWrapMode unityWrap;
@@ -103,6 +104,8 @@ namespace DCL
                 {
                     string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
+                    wasLoadedFromPromise = false;
+
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null) { texture = new Texture2D(1, 1); }
 
@@ -137,6 +140,7 @@ namespace DCL
                         if (texturePromise != null)
                             AssetPromiseKeeper_Texture.i.Forget(texturePromise);
 
+                        wasLoadedFromPromise = true;
                         texturePromise = new AssetPromise_Texture(contentsUrl, unityWrap, unitySamplingMode, storeDefaultTextureInAdvance: true);
                         texturePromise.OnSuccessEvent += (x) => texture = x.texture;
                         texturePromise.OnFailEvent += (x, error) => { texture = null; };
@@ -213,9 +217,12 @@ namespace DCL
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
             }
-            else if (texture)
+            // only destroy textures created by this script
+            // textures created by the asset promise should be cleaned up from the asset library
+            else if (!wasLoadedFromPromise)
             {
-                Object.Destroy(texture);
+                if (texture)
+                    Object.Destroy(texture);
             }
         }
 

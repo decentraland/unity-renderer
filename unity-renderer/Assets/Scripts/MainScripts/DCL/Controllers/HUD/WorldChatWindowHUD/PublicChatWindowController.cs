@@ -1,15 +1,15 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections.Generic;
+using DCL.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
+using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 using Channel = DCL.Chat.Channels.Channel;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class PublicChatWindowController : IHUD
     {
@@ -25,6 +25,8 @@ namespace DCL.Chat.HUD
         private readonly IMouseCatcher mouseCatcher;
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
         private readonly ISocialAnalytics socialAnalytics;
+        private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private ChatHUDController chatHudController;
         private string channelId;
         private bool skipChatInputTrigger;
@@ -44,7 +46,9 @@ namespace DCL.Chat.HUD
             IProfanityFilter profanityFilter,
             IMouseCatcher mouseCatcher,
             IChatMentionSuggestionProvider chatMentionSuggestionProvider,
-            ISocialAnalytics socialAnalytics)
+            ISocialAnalytics socialAnalytics,
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
@@ -53,6 +57,8 @@ namespace DCL.Chat.HUD
             this.mouseCatcher = mouseCatcher;
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
             this.socialAnalytics = socialAnalytics;
+            this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
         }
 
         public void Initialize(IPublicChatWindowView view, bool isVisible = true)
@@ -72,6 +78,8 @@ namespace DCL.Chat.HUD
                 (name, count, ct) => chatMentionSuggestionProvider.GetNearbyProfilesStartingWith(name, count, ct),
                 socialAnalytics,
                 chatController,
+                clipboard,
+                copyPasteAnalyticsService,
                 profanityFilter);
             // dont set any message's sorting strategy, just add them sequentally
             // comms cannot calculate a server timestamp for each message

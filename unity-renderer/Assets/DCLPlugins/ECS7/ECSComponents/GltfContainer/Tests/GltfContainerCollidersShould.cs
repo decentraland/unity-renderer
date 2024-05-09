@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Environment = DCL.Environment;
 
-namespace Tests
+namespace Tests.Components.GltfContainer
 {
     public class GltfContainerCollidersShould
     {
@@ -58,8 +58,11 @@ namespace Tests
                 customLayerColliderComponent,
                 internalEcsComponents.renderersComponent,
                 internalEcsComponents.GltfContainerLoadingStateComponent,
+                internalEcsComponents.Animation,
                 new DataStore_ECS7(),
-                new DataStore_FeatureFlag());
+                new DataStore_FeatureFlag(),
+                new DataStore_WorldObjects(),
+                new DebugConfig());
 
             handler.OnComponentCreated(scene, entity);
         }
@@ -315,7 +318,7 @@ namespace Tests
 
         private static bool HasColliderName(Collider collider)
         {
-            const StringComparison IGNORE_CASE = StringComparison.CurrentCultureIgnoreCase;
+            const StringComparison IGNORE_CASE = StringComparison.OrdinalIgnoreCase;
 
             return collider.name.Contains("_collider", IGNORE_CASE)
                    || collider.transform.parent.name.Contains("_collider", IGNORE_CASE);

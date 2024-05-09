@@ -6,7 +6,6 @@ using UIComponents.CollapsableSortedList;
 using UIComponents.Scripts.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DCL.MyAccount
@@ -20,6 +19,7 @@ namespace DCL.MyAccount
         [SerializeField] internal GameObject mainContainer;
         [SerializeField] internal GameObject loadingContainer;
         [SerializeField] internal RectTransform contentTransform;
+        [SerializeField] internal GameObject scrollBar;
 
         [Header("Header")]
         [SerializeField] internal RectTransform headerContainerTransform;
@@ -153,13 +153,29 @@ namespace DCL.MyAccount
             };
             linkListView.OnRemoved += tuple =>
             {
-                OnLinkRemoved?.Invoke((tuple.title, UnityWebRequest.EscapeURL(tuple.url)));
+                OnLinkRemoved?.Invoke((tuple.title, tuple.url));
                 Utils.ForceRebuildLayoutImmediate(linksContainerTransform);
             };
 
             disclaimerButton.OnToggled += _ => Utils.ForceRebuildLayoutImmediate(headerContainerTransform);
             additionalInfoList.OnAdditionalFieldAdded += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
             additionalInfoList.OnAdditionalFieldRemoved += () => Utils.ForceRebuildLayoutImmediate(additionalInfoContainerTransform);
+        }
+
+        public override void Show(bool instant = false)
+        {
+            gameObject.SetActive(true);
+
+            if (scrollBar != null)
+                scrollBar.SetActive(true);
+        }
+
+        public override void Hide(bool instant = false)
+        {
+            gameObject.SetActive(false);
+
+            if (scrollBar != null)
+                scrollBar.SetActive(false);
         }
 
         public void OnPointerClick(PointerEventData eventData)

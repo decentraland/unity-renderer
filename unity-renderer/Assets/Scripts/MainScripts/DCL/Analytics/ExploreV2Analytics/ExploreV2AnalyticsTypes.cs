@@ -9,6 +9,18 @@ namespace ExploreV2Analytics
     public enum ActionSource
     {
         FromExplore,
-        FromSearch
+        FromSearch,
+        FromFavorites,
+        FromNavmap,
+    }
+
+    public enum FilterType
+    {
+        Featured,
+        Trending,
+        WantToGo,
+        Frequency,
+        Category,
+        Time
     }
 }

@@ -1,3 +1,4 @@
+using DCL.Emotes;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
 
@@ -9,10 +10,12 @@ namespace DCL.AvatarEditor
 
         public AvatarEditorHUDPlugin()
         {
+            ServiceLocator serviceLocator = Environment.i.serviceLocator;
+
             hudController = new AvatarEditorHUDController(
                 DataStore.i.featureFlags,
                 Environment.i.platform.serviceProviders.analytics,
-                Environment.i.serviceLocator.Get<IWearablesCatalogService>(),
+                serviceLocator.Get<IWearablesCatalogService>(),
                 new UserProfileWebInterfaceBridge());
 
             // there could be a race condition going on if we initialize the avatar editor before the feature flags are set

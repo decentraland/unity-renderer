@@ -44,25 +44,17 @@ import type {
   NewProfileForRenderer
 } from 'lib/decentraland/profiles/transformations/types'
 import type { Emote } from 'shared/catalogs/types'
-import { AboutResponse } from 'shared/protocol/decentraland/realm/about.gen'
+import { AboutResponse } from 'shared/protocol/decentraland/renderer/about.gen'
 
 export type RealmInfo = {
   serverName: string
-  layer?: string
   usersCount: number
-  usersMax: number
-  userParcels: { x: number; y: number }[]
 }
 
 export type HotSceneInfo = {
   id: string
   name: string
-  creator: string
-  description: string
-  thumbnail: string
   baseCoords: { x: number; y: number }
-  parcels: { x: number; y: number }[]
-  usersTotalCount: number
   realms: RealmInfo[]
 }
 
@@ -264,6 +256,7 @@ export interface IUnityInterface {
   OnBuilderKeyDown(key: string): void
   SetBuilderConfiguration(config: BuilderConfiguration): void
   SendMessageToUnity(object: string, method: string, payload?: any): void
-
   SetAudioDevices(devices: SetAudioDevicesPayload): void
+  SetWithCollectionsParam(collectionIds: string[]): void
+  SetWithItemsParam(collectionIds: string[]): void
 }

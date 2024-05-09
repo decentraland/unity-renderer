@@ -15,13 +15,13 @@ namespace AvatarSystem
         /// </summary>
         /// <param name="avatarTransform"></param>
         void SetAvatarTransform(Transform avatarTransform);
-        
+
         /// <summary>
         /// This will report the change of the transform, so it can be reported to kernel accordingly
         /// </summary>
         /// <param name="position"></param>
         /// <param name="rotation"></param>
-        /// <param name="inmediate"></param>
-        void OnTransformChanged(in Vector3 position, in Quaternion rotation, bool inmediate);
+        /// <param name="immediate"></param>
+        void OnTransformChanged(Vector3 position, Quaternion rotation, bool immediate);
     }
 }

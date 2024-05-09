@@ -1,4 +1,3 @@
-using DCL.Chat.HUD;
 using DCL.Helpers;
 using DCL.Interface;
 using System;
@@ -35,6 +34,7 @@ namespace DCL.Social.Chat
         [SerializeField] internal InputAction_Trigger closeMentionSuggestionsInput;
         [SerializeField] internal ChatMentionSuggestionComponentView chatMentionSuggestions;
         [SerializeField] internal WebGLIMEInput webGlImeInput;
+        [SerializeField] internal Button unblockButton;
         [SerializeField] private Model model;
 
         private readonly Dictionary<string, ChatEntry> entries = new ();
@@ -46,7 +46,7 @@ namespace DCL.Social.Chat
         private bool isSortingDirty;
 
         public event Action<string, int> OnMessageUpdated;
-        public event Action OnOpenedContextMenu;
+        public event Action<string> OnOpenedContextMenu;
 
         public event Action OnShowMenu
         {
@@ -108,8 +108,9 @@ namespace DCL.Social.Chat
         public event Action OnPreviousChatInHistory;
         public event Action OnNextChatInHistory;
         public event Action<string> OnMentionSuggestionSelected;
+        public event Action<ChatEntryModel> OnCopyMessageRequested;
         public event Action<ChatMessage> OnSendMessage;
-
+        public event Action<string> OnUnblockUser;
         public int EntryCount => entries.Count;
         public IChatEntryFactory ChatEntryFactory { get; set; }
         public IComparer<ChatEntryModel> SortingStrategy { get; set; }
@@ -126,6 +127,11 @@ namespace DCL.Social.Chat
             ChatEntryFactory ??= (IChatEntryFactory)poolChatEntryFactory ?? defaultChatEntryFactory;
             model.enableFadeoutMode = true;
             contextMenu.SetPassportOpenSource(true);
+
+            unblockButton.onClick.AddListener(() =>
+            {
+                OnUnblockUser?.Invoke(model.conversationUserId);
+            });
 
 #if (UNITY_WEBGL && !UNITY_EDITOR)
             // WebGLInput plugin breaks many features:
@@ -244,6 +250,12 @@ namespace DCL.Social.Chat
             chatMentionSuggestions.Hide();
         }
 
+        public void SetBlockedStatus(bool blocked)
+        {
+            inputField.gameObject.SetActive(!blocked);
+            unblockButton.gameObject.SetActive(blocked);
+        }
+
         public void AddMentionToInputField(int fromIndex, int length, string userId, string userName)
         {
             string message = inputField.text;
@@ -282,12 +294,13 @@ namespace DCL.Social.Chat
                 chatEntry.OnTriggerHoverGoto += OnMessageCoordinatesTriggerHover;
                 chatEntry.OnCancelHover += OnMessageCancelHover;
                 chatEntry.OnCancelGotoHover += OnMessageCancelGotoHover;
+                chatEntry.OnCopyClicked += OnMessageCopy;
 
                 SetEntry(model.messageId, chatEntry, setScrollPositionToBottom);
             }
         }
 
-        public virtual void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
+        public void SetEntry(string messageId, ChatEntry chatEntry, bool setScrollPositionToBottom = false)
         {
             Dock(chatEntry);
             entries[messageId] = chatEntry;
@@ -339,6 +352,11 @@ namespace DCL.Social.Chat
         {
             entry.Populate(model);
             entry.SetFadeout(this.model.enableFadeoutMode);
+        }
+
+        public void SetConversationUserId(string userId)
+        {
+            model.conversationUserId = userId;
         }
 
         protected void Dock(ChatEntry entry)
@@ -407,7 +425,7 @@ namespace DCL.Social.Chat
 
         private void OnOpenContextMenu(ChatEntry chatEntry)
         {
-            OnOpenedContextMenu?.Invoke();
+            OnOpenedContextMenu?.Invoke(chatEntry.Model.senderId);
             chatEntry.DockContextMenu((RectTransform)contextMenu.transform);
             contextMenu.transform.parent = transform.parent;
             contextMenu.transform.SetAsLastSibling();
@@ -519,6 +537,9 @@ namespace DCL.Social.Chat
             return firstEntry;
         }
 
+        private void OnMessageCopy(ChatEntry entry) =>
+            OnCopyMessageRequested?.Invoke(entry.Model);
+
         [Serializable]
         private struct Model
         {
@@ -526,6 +547,7 @@ namespace DCL.Social.Chat
             public string inputFieldText;
             public bool enableFadeoutMode;
             public ChatEntryModel[] entries;
+            public string conversationUserId;
         }
     }
 }

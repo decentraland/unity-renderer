@@ -5,8 +5,6 @@ using DCL.Components;
 using DCL.FatalErrorReporter;
 using DCL.Interface;
 using DCL.NotificationModel;
-using DCLServices.WearablesCatalogService;
-using GPUSkinning;
 using SocialFeaturesAnalytics;
 using System;
 using System.Collections.Generic;
@@ -47,6 +45,15 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
     private ISocialAnalytics socialAnalytics;
     private BaseVariable<(string playerId, string source)> currentPlayerInfoCardId;
     private IAvatar avatar;
+    private IBaseAvatarReferences baseAvatarReferences;
+    private readonly OnPointerEvent.Model pointerEventModel = new ()
+    {
+        type = OnPointerDown.NAME,
+        button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+        hoverText = "View My Profile",
+    };
+
+    public IAvatar Avatar => avatar;
 
     private void Start()
     {
@@ -94,7 +101,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private IAvatar GetAvatarWithHologram()
     {
-        var baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
+        baseAvatarReferences = baseAvatarContainer.GetComponentInChildren<IBaseAvatarReferences>() ?? Instantiate(baseAvatarReferencesPrefab, baseAvatarContainer);
 
         return Environment.i.serviceLocator.Get<IAvatarFactory>().CreateAvatarWithHologram(
             avatarContainer,
@@ -160,7 +167,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
     private void OnAvatarEmote(string id, long timestamp, UserProfile.EmoteSource source)
     {
-        avatar.PlayEmote(id, timestamp);
+        avatar.GetEmotesController().PlayEmote(id, timestamp);
 
         bool found = DataStore.i.common.wearables.TryGetValue(id, out WearableItem emoteItem);
 
@@ -213,8 +220,9 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
 
                 HashSet<string> emotes = new HashSet<string>(currentAvatar.emotes.Select(x => x.urn));
                 var embeddedEmotesSo = await emotesCatalog.Ref.GetEmbeddedEmotes();
-                emotes.UnionWith(embeddedEmotesSo.emotes.Select(x => x.id));
-                wearableItems.AddRange(embeddedEmotesSo.emotes.Select(x => x.id));
+                string[] emoteIds = embeddedEmotesSo.GetAllIds();
+                emotes.UnionWith(emoteIds);
+                wearableItems.AddRange(emoteIds);
 
                 await avatar.Load(wearableItems, emotes.ToList(), new AvatarSettings
                 {
@@ -228,7 +236,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
                 if (avatar.lodLevel <= 1)
                     AvatarSystemUtils.SpawnAvatarLoadedParticles(avatarContainer.transform, loadingParticlesPrefab);
 
-                avatar.PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
+                avatar.GetEmotesController().PlayEmote(profile.avatar.expressionTriggerId, profile.avatar.expressionTriggerTimestamp);
             }
         }
         catch (Exception e) when (e is not OperationCanceledException)
@@ -241,7 +249,7 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
         finally
         {
             IAvatarAnchorPoints anchorPoints = new AvatarAnchorPoints();
-            anchorPoints.Prepare(avatarContainer.transform, avatar.GetBones(), AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
+            anchorPoints.Prepare(avatarContainer.transform, baseAvatarReferences.Anchors, AvatarSystemUtils.AVATAR_Y_OFFSET + avatar.extents.y);
 
             var player = new Player
             {
@@ -260,19 +268,14 @@ public class PlayerAvatarController : MonoBehaviour, IHideAvatarAreaHandler, IHi
             DataStore.i.common.isPlayerRendererLoaded.Set(true);
 
             onPointerDown.Initialize(
-                new OnPointerEvent.Model
-                {
-                    type = OnPointerDown.NAME,
-                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                    hoverText = "View My Profile",
-                },
+                pointerEventModel,
                 null,
                 player
             );
 
             onPointerDown.ShouldBeInteractableWhenMouseIsLocked = false;
 
-            outlineOnHover.Initialize(new OnPointerEvent.Model(), null, avatar);
+            outlineOnHover.Initialize(null, avatar);
             outlineOnHover.ShouldBeHoveredWhenMouseIsLocked = false;
 
             bool isClickingOwnAvatarEnabled = DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("click_own_avatar_passport");

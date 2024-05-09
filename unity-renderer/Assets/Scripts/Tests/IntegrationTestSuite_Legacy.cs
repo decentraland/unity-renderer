@@ -4,13 +4,14 @@ using DCL.Camera;
 using DCL.CameraTool;
 using DCL.Configuration;
 using DCL.Emotes;
-using DCL.Helpers.NFT.Markets;
+using DCL.Helpers;
 using DCL.ProfanityFiltering;
 using DCL.Providers;
 using DCL.Rendering;
 using DCL.SettingsCommon;
 using DCLServices.MapRendererV2;
 using DCLServices.WearablesCatalogService;
+using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ public class IntegrationTestSuite_Legacy
                 mockedProviders.theGraph.Returns( Substitute.For<ITheGraph>() );
                 mockedProviders.analytics.Returns( Substitute.For<IAnalytics>() );
                 mockedProviders.catalyst.Returns( Substitute.For<ICatalyst>() );
-                mockedProviders.openSea.Returns( Substitute.For<INFTMarket>() );
+                mockedProviders.openSea.Returns(Substitute.For<IOpenSea>());
                 return mockedProviders;
             });
 
@@ -96,7 +97,7 @@ public class IntegrationTestSuite_Legacy
     private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        embeddedEmotes.Clear();
         return embeddedEmotes;
     }
 
@@ -112,9 +113,7 @@ public class IntegrationTestSuite_Legacy
         Settings.i.Dispose();
 
         foreach ( var go in legacySystems )
-        {
-            Object.Destroy(go);
-        }
+            Utils.SafeDestroy(go);
 
         yield return null;
     }

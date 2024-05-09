@@ -7,7 +7,7 @@ import { waitFor } from 'lib/redux'
 import { apply, call, delay, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { BEFORE_UNLOAD } from 'shared/meta/actions'
 import { trackEvent } from 'shared/analytics/trackEvent'
-import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD } from 'shared/loading/actions'
+import { SceneStart, SceneUnload, SCENE_START, SCENE_UNLOAD, SCENE_RELOAD, SceneReload } from 'shared/loading/actions'
 import { getResourcesURL } from 'shared/location'
 import { getAllowedContentServer } from 'shared/meta/selectors'
 import { SetRealmAdapterAction, SET_REALM_ADAPTER } from 'shared/realm/actions'
@@ -135,15 +135,13 @@ function* teleportHandler(action: TeleportToAction) {
   try {
     // look for the target scene
     const pointer = encodeParcelPosition(worldToGrid(action.payload.position))
-    const command: SetDesiredScenesCommand = yield apply(sceneLoader, sceneLoader.fetchScenesByLocation, [[pointer]])
-
+    const command: SetDesiredScenesCommand = yield call(sceneLoader.fetchScenesByLocation, [pointer])
     // is a target scene, then it will be used to settle the position
     if (command && command.scenes && command.scenes.length) {
       // pick always the first scene to unsettle the position once loaded
       const settlerScene = command.scenes[0].id
 
       const scene: SceneWorker | undefined = yield call(getSceneWorkerBySceneID, settlerScene)
-
       const spawnPoint =
         pickWorldSpawnpoint(
           scene?.metadata || command.scenes[0].entity.metadata,
@@ -311,16 +309,24 @@ function* onWorldPositionChange() {
       }
     }
 
-    const { unload } = yield race({
+    const reason: { unload: any; reload: SceneReload } = yield race({
       timeout: delay(5000),
       newSceneLoader: take(SET_SCENE_LOADER),
       newParcel: take(SET_PARCEL_POSITION),
       SCENE_START: take(SCENE_START),
       newLoadingRadius: take(SET_WORLD_LOADING_RADIUS),
+      reload: take(SCENE_RELOAD),
       unload: take(BEFORE_UNLOAD)
     })
 
-    if (unload) return
+    if (reason.unload) return
+
+    if (reason.reload && sceneLoader) {
+      sceneLoader.invalidateCache({
+        ...reason.reload.payload.entity,
+        id: reason.reload.payload.id
+      })
+    }
   }
 }
 function getPositionChangeInfo(state: RootState) {

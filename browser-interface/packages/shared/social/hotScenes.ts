@@ -22,15 +22,9 @@ export async function fetchHotScenes(): Promise<HotSceneInfo[]> {
       return {
         ...scene,
         baseCoords: { x: scene.baseCoords[0], y: scene.baseCoords[1] },
-        parcels: scene.parcels.map((parcel: [number, number]) => {
-          return { x: parcel[0], y: parcel[1] }
-        }),
         realms: scene.realms.map((realm: any) => {
           return {
-            ...realm,
-            userParcels: realm.userParcels.map((parcel: [number, number]) => {
-              return { x: parcel[0], y: parcel[1] }
-            })
+            ...realm
           } as RealmInfo
         })
       } as HotSceneInfo

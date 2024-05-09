@@ -23,7 +23,7 @@ namespace DCLServices.MapRendererV2.Tests.Factory
             serviceLocator.Register<IAddressableResourceProvider>(() => new EditorAddressableResourceProvider());
             Environment.Setup(serviceLocator);
 
-            factory = new MapRendererChunkComponentsFactory(20, 1000, 5);
+            factory = new MapRendererChunkComponentsFactory();
         }
 
         [Test]

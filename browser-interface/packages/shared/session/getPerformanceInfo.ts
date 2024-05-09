@@ -8,6 +8,7 @@ let kernelToRendererMessageCounter = 0
 let rendererToKernelMessageCounter = 0
 let receivedCommsMessagesCounter = 0
 let sentCommsMessagesCounter = 0
+let sentCommsMessages = {}
 let kernelToRendererMessageNativeCounter = 0
 let lastReport = 0
 let commsProtocol = ''
@@ -51,7 +52,15 @@ export function incrementAvatarSceneMessages(value: number) {
   commsPerfObservable.emit('avatar-renderer', { value })
 }
 
-export function incrementCommsMessageSent(_bytes: number) {
+export function incrementCommsMessageSent(type: string, size: number, sceneId?: string) {
+  if (!sceneId || type !== 'scene') {
+    // if type is not scene, we don't care about scene id and we prevent extra cardinality in the metric
+    sceneId = 'noscene'
+  }
+  const key = `${sceneId}-${type}`
+
+  sentCommsMessages[key] = (sentCommsMessages[key] ?? 0) + size
+
   sentCommsMessagesCounter++
 }
 
@@ -173,6 +182,7 @@ export function getPerformanceInfo(data: {
     rendererToKernelMessageCounter,
     receivedCommsMessagesCounter,
     sentCommsMessagesCounter,
+    sentCommsMessages,
     kernelToRendererMessageNativeCounter,
 
     // reserved
@@ -225,6 +235,7 @@ export function getPerformanceInfo(data: {
   pingResponsePercentages.length = 0
 
   sentCommsMessagesCounter = 0
+  sentCommsMessages = {}
   receivedCommsMessagesCounter = 0
   kernelToRendererMessageCounter = 0
   rendererToKernelMessageCounter = 0

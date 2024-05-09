@@ -22,7 +22,7 @@ type Position = {
   rotationW: number
 }
 
-const avatarMap = new Map<string, AvatarEntity>()
+export const avatarMap = new Map<string, AvatarEntity>()
 
 export class AvatarEntity extends Entity {
   visible = true

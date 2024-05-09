@@ -72,6 +72,8 @@ namespace DCL.MyAccount
 
         public void SetOptions(AdditionalInfoOptionsModel model)
         {
+            if (optionsModel != null && optionsModel.Equals(model)) return;
+
             optionsModel = model;
 
             optionToggles.Clear();

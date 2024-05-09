@@ -1,6 +1,7 @@
 using DCL.Components.Video.Plugin;
 using DCL.ECS7.ComponentWrapper;
 using DCL.ECSComponents;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -191,6 +192,7 @@ namespace DCL.ECS7.InternalComponents
             this.shouldSort = false;
 
             this.rootElement = new VisualElement();
+            this.rootElement.pickingMode = PickingMode.Ignore; // ignore pointer by default
             rootElement.name += $"(Id: {entityId})";
         }
     }
@@ -262,7 +264,7 @@ namespace DCL.ECS7.InternalComponents
         public bool dirty { get; set; }
         public uint SceneTick;
         public float SceneInitialRunTime;
-        public float SceneInitialFrameCount;
+        public int SceneInitialFrameCount;
 
         public InternalEngineInfo(uint sceneTick, float sceneInitialRunTime)
         {
@@ -295,5 +297,76 @@ namespace DCL.ECS7.InternalComponents
             this.dirty = false;
             this.Results = results;
         }
+    }
+
+    public struct InternalAnimationPlayer : IInternalComponent
+    {
+        public bool dirty { get; set; }
+
+        public readonly struct State
+        {
+            public readonly string Clip;
+            public readonly bool Playing;
+            public readonly float Weight;
+            public readonly float Speed;
+            public readonly bool Loop;
+            public readonly bool ShouldReset;
+
+            public State(string clip, bool playing, float weight, float speed, bool loop,
+                bool shouldReset)
+            {
+                Clip = clip;
+                Playing = playing;
+                Weight = weight;
+                Speed = speed;
+                Loop = loop;
+                ShouldReset = shouldReset;
+            }
+        }
+
+        public readonly List<State> States;
+
+        public InternalAnimationPlayer(List<State> states)
+        {
+            States = states;
+            dirty = false;
+        }
+    }
+
+    public struct InternalAnimation : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public readonly Animation Animation;
+        public bool IsInitialized;
+
+        public InternalAnimation(Animation animation)
+        {
+            Animation = animation;
+            dirty = false;
+            IsInitialized = false;
+        }
+    }
+
+    public struct InternalTween : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public bool removed;
+        public bool playing;
+        public float currentTime;
+        public Transform transform;
+        public Tweener tweener;
+        public PBTween.ModeOneofCase tweenMode;
+        public PBTween lastModel;
+    }
+
+    public struct InternalAvatarModifierArea : IInternalComponent
+    {
+        public bool dirty { get; set; }
+        public bool removed;
+        public Vector3 area;
+        public HashSet<string> excludedIds;
+        public Action<GameObject> OnAvatarEnter;
+        public Action<GameObject> OnAvatarExit;
+        public HashSet<GameObject> avatarsInArea;
     }
 }

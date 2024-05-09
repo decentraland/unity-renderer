@@ -44,6 +44,12 @@ namespace DCL.Interface
             public string id;
         }
 
+        [Serializable]
+        public class ReloadScenePayload
+        {
+            public Vector2 coords;
+        }
+
         [System.Serializable]
         public abstract class ControlEvent
         {
@@ -401,12 +407,6 @@ namespace DCL.Interface
         public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities> { }
 
         [System.Serializable]
-        public class UserAcceptedCollectiblesPayload
-        {
-            public string id;
-        }
-
-        [System.Serializable]
         public class SendBlockPlayerPayload
         {
             public string userId;
@@ -539,6 +539,20 @@ namespace DCL.Interface
             public string url;
             public bool play;
             public float volume;
+        }
+
+        [System.Serializable]
+        public class AudioStreamingForEntityPayload : AudioStreamingPayload
+        {
+            public int sceneNumber;
+            public long entityId;
+        }
+
+        [System.Serializable]
+        public class AudioStreamingKillPayload
+        {
+            public int sceneNumber;
+            public long entityId;
         }
 
         [System.Serializable]
@@ -895,6 +909,8 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
+    [DllImport("__Internal")] public static extern bool CheckURLParam(string targetParam);
+    [DllImport("__Internal")] public static extern string GetURLParam(string targetParam);
 
     public static System.Action<string, string> OnMessageFromEngine;
 #else
@@ -915,7 +931,11 @@ namespace DCL.Interface
         private static bool hasQueuedMessages = false;
         private static List<(string, string)> queuedMessages = new List<(string, string)>();
         public static void StartDecentraland() { }
+
+        // CheckURLParam() is only available on web builds.
         public static bool CheckURLParam(string targetParam) { return false; }
+
+        // GetURLParam() is only available on web builds.
         public static string GetURLParam(string targetParam) { return String.Empty; }
 
         public static void MessageFromEngine(string type, string message)
@@ -984,6 +1004,7 @@ namespace DCL.Interface
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
+        private static ReloadScenePayload reloadScenePayload = new ReloadScenePayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
         private static Web3UseResponsePayload web3UseResponsePayload = new Web3UseResponsePayload();
         private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
@@ -1003,6 +1024,8 @@ namespace DCL.Interface
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
+        private static AudioStreamingForEntityPayload onAudioStreamingEventForEntity = new AudioStreamingForEntityPayload();
+        private static AudioStreamingKillPayload onAudioStreamingKillEvent = new AudioStreamingKillPayload();
         private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
         private static SetScenesLoadRadiusPayload setScenesLoadRadiusPayload = new SetScenesLoadRadiusPayload();
         private static ApplySettingsPayload applySettingsPayload = new ApplySettingsPayload();
@@ -1062,6 +1085,12 @@ namespace DCL.Interface
             positionPayload.cameraRotation = cameraRotation;
 
             SendMessage("ReportPosition", positionPayload);
+        }
+
+        public static void ReloadScene(Vector2 coords)
+        {
+            reloadScenePayload.coords = coords;
+            SendMessage("ReloadScene", reloadScenePayload);
         }
 
         public static void ReportCameraChanged(CameraMode.ModeId cameraMode) { ReportCameraChanged(cameraMode, -1); }
@@ -1322,12 +1351,6 @@ namespace DCL.Interface
             SendMessage("SendScreenshot", onSendScreenshot);
         }
 
-        public static void SetDelightedSurveyEnabled(bool enabled)
-        {
-            delightedSurveyEnabled.enabled = enabled;
-            SendMessage("SetDelightedSurveyEnabled", delightedSurveyEnabled);
-        }
-
         public static void SetScenesLoadRadius(float newRadius)
         {
             setScenesLoadRadiusPayload.newRadius = newRadius;
@@ -1543,6 +1566,23 @@ namespace DCL.Interface
             onAudioStreamingEvent.play = play;
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
+        }
+
+        public static void SendAudioStreamEventForEntity(string url, bool play, float volume, int sceneNumber, long entityId)
+        {
+            onAudioStreamingEventForEntity.url = url;
+            onAudioStreamingEventForEntity.play = play;
+            onAudioStreamingEventForEntity.volume = volume;
+            onAudioStreamingEventForEntity.sceneNumber = sceneNumber;
+            onAudioStreamingEventForEntity.entityId = entityId;
+            SendMessage("SetAudioStreamForEntity", onAudioStreamingEventForEntity);
+        }
+
+        public static void KillAudioStream(int sceneNumber, long entityId)
+        {
+            onAudioStreamingKillEvent.sceneNumber = sceneNumber;
+            onAudioStreamingKillEvent.entityId = entityId;
+            SendMessage("KillAudioStream", onAudioStreamingKillEvent);
         }
 
         public static void JoinVoiceChat() { SendMessage("JoinVoiceChat"); }
@@ -2014,6 +2054,21 @@ namespace DCL.Interface
         public static void SaveAdditionalInfo(SaveAdditionalInfoPayload payload)
         {
             SendMessage("SaveProfileAdditionalInfo", payload);
+        }
+
+        public static void GetWithCollectionsUrlParam()
+        {
+            SendMessage("GetWithCollectionsUrlParam");
+        }
+
+        public static void GetWithItemsUrlParam()
+        {
+            SendMessage("GetWithItemsUrlParam");
+        }
+
+        public static void FetchRealmsInfo()
+        {
+            SendMessage("FetchRealmsInfo");
         }
     }
 }

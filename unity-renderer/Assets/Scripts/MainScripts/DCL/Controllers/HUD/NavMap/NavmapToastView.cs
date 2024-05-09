@@ -1,7 +1,9 @@
+using DCL.Helpers;
 using DCL.Interface;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL
@@ -11,20 +13,44 @@ namespace DCL
         private static readonly int triggerLoadingComplete = Animator.StringToHash("LoadingComplete");
 
         public event Action<string, bool> OnFavoriteToggleClicked;
+        public event Action<int, int> OnGoto;
+        public event Action OnInfoClick;
+        public event Action<string, bool?> OnVoteChanged;
+        public event Action<Vector2Int> OnPressedLinkCopy;
+        public event Action<Vector2Int, string> OnPressedTwitterButton;
 
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
         [SerializeField] internal TextMeshProUGUI sceneLocationText;
+        [SerializeField] internal TextMeshProUGUI playerCountText;
+        [SerializeField] internal TextMeshProUGUI userVisitsText;
+        [SerializeField] internal TextMeshProUGUI userRatingText;
+        [SerializeField] internal RectTransform numberOfUsersContainer;
+        [SerializeField] internal RectTransform userVisitsAndRatingContainer;
         [SerializeField] internal RectTransform toastContainer;
         [SerializeField] internal GameObject scenePreviewContainer;
         [SerializeField] internal RawImageFillParent scenePreviewImage;
         [SerializeField] internal Sprite scenePreviewFailImage;
         [SerializeField] internal Animator toastAnimator;
+        [SerializeField] internal Image infoButtonImage;
+        [SerializeField] internal Image favoriteButtonImage;
+        [SerializeField] internal Sprite normalFavorite;
+        [SerializeField] internal Sprite blockedFavorite;
+        [SerializeField] internal Color normalImageColor;
+        [SerializeField] internal Color disabledImageColor;
 
         [SerializeField] internal Button goToButton;
-        [SerializeField] internal GameObject favoriteContainer;
+        [SerializeField] internal Button infoButton;
+        [SerializeField] internal Button shareButton;
         [SerializeField] internal FavoriteButtonComponentView favoriteToggle;
         [SerializeField] internal GameObject favoriteLoading;
+        [SerializeField] internal ButtonComponentView upvoteButton;
+        [SerializeField] internal ButtonComponentView downvoteButton;
+        [SerializeField] internal GameObject upvoteOff;
+        [SerializeField] internal GameObject upvoteOn;
+        [SerializeField] internal GameObject downvoteOff;
+        [SerializeField] internal GameObject downvoteOn;
+        [SerializeField] internal PlaceCopyContextualMenu placeCopyContextualMenu;
 
         [field: SerializeField]
         [Tooltip("Distance in units")]
@@ -33,9 +59,13 @@ namespace DCL
         Vector2Int location;
         RectTransform rectTransform;
         MinimapMetadata minimapMetadata;
+        private MinimapMetadata.MinimapSceneInfo sceneInfo;
 
         AssetPromise_Texture texturePromise;
         string currentImageUrl;
+        private bool placeIsUpvote;
+        private bool placeIsDownvote;
+        private string placeId;
 
         public void Open(Vector2Int parcel, Vector2 worldPosition)
         {
@@ -52,8 +82,38 @@ namespace DCL
         private void Awake()
         {
             favoriteToggle.OnFavoriteChange += (uuid, isFavorite) => OnFavoriteToggleClicked?.Invoke(uuid, isFavorite);
+            infoButton.onClick.RemoveAllListeners();
+            infoButton.onClick.AddListener(()=>OnInfoClick?.Invoke());
             minimapMetadata = MinimapMetadata.GetMetadata();
             rectTransform = transform as RectTransform;
+            if(upvoteButton != null)
+                upvoteButton.onClick.AddListener(() => ChangeVote(true));
+
+            if(downvoteButton != null)
+                downvoteButton.onClick.AddListener(() => ChangeVote(false));
+
+            shareButton.onClick.RemoveAllListeners();
+            shareButton.onClick.AddListener(OpenShareContextMenu);
+
+            placeCopyContextualMenu.OnPlaceLinkCopied += OnLinkCopied;
+            placeCopyContextualMenu.OnTwitter += OnOpenTwitter;
+
+            placeCopyContextualMenu.Hide(true);
+        }
+
+        private void OpenShareContextMenu()
+        {
+            placeCopyContextualMenu.Show();
+        }
+
+        private void OnOpenTwitter()
+        {
+            OnPressedTwitterButton?.Invoke(location, sceneInfo.name);
+        }
+
+        private void OnLinkCopied()
+        {
+            OnPressedLinkCopy?.Invoke(location);
         }
 
         private void Start()
@@ -69,6 +129,11 @@ namespace DCL
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
             }
+            if(upvoteButton != null)
+                upvoteButton.onClick.RemoveAllListeners();
+
+            if(downvoteButton != null)
+                downvoteButton.onClick.RemoveAllListeners();
         }
 
         public void Populate(Vector2Int coordinates, Vector2 worldPosition, MinimapMetadata.MinimapSceneInfo sceneInfo)
@@ -76,6 +141,7 @@ namespace DCL
             if (!gameObject.activeSelf)
                 AudioScriptableObjects.dialogOpen.Play(true);
 
+            this.sceneInfo = sceneInfo;
             bool sceneInfoExists = sceneInfo != null;
 
             gameObject.SetActive(true);
@@ -115,7 +181,6 @@ namespace DCL
                     texturePromise = null;
                 }
 
-
                 if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
                 {
                     texturePromise = new AssetPromise_Texture(sceneInfo.previewImageUrl, storeTexAsNonReadable: false);
@@ -146,7 +211,38 @@ namespace DCL
             // By setting the pivot accordingly BEFORE we position the toast, we can have it always visible in an easier way
             toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
             toastContainer.position = worldPosition;
+        }
 
+        public void SetPlaceId(string UUID)
+        {
+            placeId = UUID;
+        }
+
+        public void SetVoteButtons(bool isUpvoted, bool isDownvoted)
+        {
+            placeIsUpvote = isUpvoted;
+            placeIsDownvote = isDownvoted;
+            upvoteOn.SetActive(isUpvoted);
+            upvoteOff.SetActive(!isUpvoted);
+            downvoteOn.SetActive(isDownvoted);
+            downvoteOff.SetActive(!isDownvoted);
+        }
+
+        private void ChangeVote(bool upvote)
+        {
+            if (upvote)
+            {
+                OnVoteChanged?.Invoke(placeId, placeIsUpvote ? (bool?)null : true);
+                placeIsUpvote = !placeIsUpvote;
+                placeIsDownvote = false;
+            }
+            else
+            {
+                OnVoteChanged?.Invoke(placeId, placeIsDownvote ? (bool?)null : false);
+                placeIsUpvote = false;
+                placeIsDownvote = !placeIsDownvote;
+            }
+            SetVoteButtons(placeIsUpvote, placeIsDownvote);
         }
 
         public void Close()
@@ -159,9 +255,7 @@ namespace DCL
 
         private void OnGotoClick()
         {
-            DataStore.i.HUDs.navmapVisible.Set(false);
-            Environment.i.world.teleportController.Teleport(location.x, location.y);
-
+            OnGoto?.Invoke(location.x, location.y);
             Close();
         }
 
@@ -174,7 +268,6 @@ namespace DCL
         public void SetFavoriteLoading(bool isLoading)
         {
             favoriteLoading.SetActive(isLoading);
-            favoriteToggle.gameObject.SetActive(!isLoading);
         }
 
         public void SetCurrentFavoriteStatus(string uuid, bool isFavorite)
@@ -188,7 +281,44 @@ namespace DCL
 
         public void SetIsAPlace(bool isAPlace)
         {
-            favoriteContainer.SetActive(isAPlace);
+            favoriteToggle.SetInteractable(isAPlace);
+            favoriteButtonImage.sprite = isAPlace ? normalFavorite : blockedFavorite;
+            favoriteButtonImage.color = isAPlace ? normalImageColor : disabledImageColor;
+            SetInfoButtonEnabled(isAPlace);
+
+            if(!isAPlace)
+                favoriteLoading.SetActive(false);
+        }
+
+        public void SetInfoButtonEnabled(bool isActive)
+        {
+            infoButton.interactable = isActive;
+            infoButtonImage.color = isActive ? normalImageColor : disabledImageColor;
+        }
+
+        public void SetPlayerCount(int players)
+        {
+            numberOfUsersContainer.gameObject.SetActive(players > 0);
+            playerCountText.text = players.ToString();
+        }
+
+        public void SetUserVisits(int userVisitsCount)
+        {
+            userVisitsText.text = userVisitsCount.ToString();
+        }
+
+        public void SetUserRating(float? userRatingCount)
+        {
+            userRatingText.text = userRatingCount != null ? $"{userRatingCount.Value * 100:0}%" : "-%";
+        }
+
+        public void RebuildLayouts()
+        {
+            if (numberOfUsersContainer != null)
+                Utils.ForceRebuildLayoutImmediate(numberOfUsersContainer);
+
+            if (userVisitsAndRatingContainer != null)
+                Utils.ForceRebuildLayoutImmediate(userVisitsAndRatingContainer);
         }
     }
 }

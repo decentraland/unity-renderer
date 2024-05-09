@@ -10,6 +10,8 @@ namespace Decentraland.Renderer.RendererServices {
 public interface IClientEmotesRendererService
 {
   UniTask<TriggerSelfUserExpressionResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request);
+
+  UniTask<SuccessResponse> TriggerSceneExpression(TriggerSceneExpressionRequest request);
 }
 
 public class ClientEmotesRendererService : IClientEmotesRendererService
@@ -25,6 +27,11 @@ public class ClientEmotesRendererService : IClientEmotesRendererService
   public UniTask<TriggerSelfUserExpressionResponse> TriggerSelfUserExpression(TriggerSelfUserExpressionRequest request)
   {
       return module.CallUnaryProcedure<TriggerSelfUserExpressionResponse>("TriggerSelfUserExpression", request);
+  }
+
+  public UniTask<SuccessResponse> TriggerSceneExpression(TriggerSceneExpressionRequest request)
+  {
+      return module.CallUnaryProcedure<SuccessResponse>("TriggerSceneExpression", request);
   }
 
 }

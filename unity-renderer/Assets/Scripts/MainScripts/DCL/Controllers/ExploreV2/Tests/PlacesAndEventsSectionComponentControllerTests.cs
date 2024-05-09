@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Social.Friends;
 using DCLServices.PlacesAPIService;
+using DCLServices.WorldsAPIService;
 using ExploreV2Analytics;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,8 +22,11 @@ public class PlacesAndEventsSectionComponentControllerTests
             exploreV2Analytics,
             DataStore.i,
             Substitute.For<IUserProfileBridge>(),
-            Substitute.For<IFriendsController>()
-            , Substitute.For<IPlacesAPIService>());
+            Substitute.For<IFriendsController>(),
+            Substitute.For<IPlacesAPIService>(),
+            Substitute.For<IWorldsAPIService>(),
+            Substitute.For<IPlacesAnalytics>()
+            );
     }
 
     [TearDown]
@@ -35,7 +39,6 @@ public class PlacesAndEventsSectionComponentControllerTests
         Assert.AreEqual(placesAndEventsSectionComponentView, placesAndEventsSectionComponentController.view);
         Assert.IsNotNull(placesAndEventsSectionComponentController.placesSubSectionComponentController);
         Assert.IsNotNull(placesAndEventsSectionComponentController.eventsSubSectionComponentController);
-        Assert.IsNotNull(placesAndEventsSectionComponentController.highlightsSubSectionComponentController);
     }
 
     [Test]

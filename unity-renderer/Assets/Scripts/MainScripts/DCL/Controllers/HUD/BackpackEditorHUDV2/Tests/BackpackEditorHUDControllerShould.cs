@@ -1,4 +1,6 @@
-﻿using DCL.Browser;
+﻿using Cysharp.Threading.Tasks;
+using DCL.Browser;
+using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
@@ -18,6 +20,8 @@ namespace DCL.Backpack
 {
     public class BackpackEditorHUDControllerShould
     {
+        private const string NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF = "new_terms_of_service_and_email_subscription";
+
         private UserProfile userProfile;
         private IBackpackEditorHUDView view;
         private DataStore dataStore;
@@ -76,6 +80,12 @@ namespace DCL.Backpack
             ffBaseVariable.Get().Returns(featureFlags);
             avatarSlotsHUDController = new AvatarSlotsHUDController(avatarSlotsView, backpackAnalyticsService, ffBaseVariable);
 
+            ICustomNftCollectionService customNftCollectionService = Substitute.For<ICustomNftCollectionService>();
+            customNftCollectionService.GetConfiguredCustomNftCollectionAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+            customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
+                                      .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
+
             wearableGridController = new WearableGridController(wearableGridView,
                 userProfileBridge,
                 wearablesCatalogService,
@@ -83,7 +93,8 @@ namespace DCL.Backpack
                 Substitute.For<IBrowserBridge>(),
                 backpackFiltersController,
                 avatarSlotsHUDController,
-                Substitute.For<IBackpackAnalyticsService>());
+                Substitute.For<IBackpackAnalyticsService>(),
+                customNftCollectionService);
 
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
@@ -97,7 +108,8 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
                 vrmExporter,
-                fileBrowserService);
+                fileBrowserService,
+                Substitute.For<IEmotesCatalogService>());
         }
 
         [TearDown]
@@ -122,10 +134,16 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void ShowBackpackCorrectly()
+        [TestCase(true, true)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(false, false)]
+        public void ShowBackpackCorrectly(bool isSignUpFlow, bool isNewTermsOfServiceAndEmailSubscriptionEnabled)
         {
             // Arrange
+            dataStore.common.isSignUpFlow.Set(isSignUpFlow, false);
             dataStore.skyboxConfig.avatarMatProfile.Set(AvatarMaterialProfile.InWorld, false);
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             // Act
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
@@ -135,6 +153,7 @@ namespace DCL.Backpack
             backpackEmotesSectionController.Received(1).RestoreEmoteSlots();
             backpackEmotesSectionController.Received(1).LoadEmotes();
             view.Received(1).Show();
+            view.Received(1).SetSignUpModeActive(isSignUpFlow && isNewTermsOfServiceAndEmailSubscriptionEnabled);
         }
 
         [Test]
@@ -320,13 +339,19 @@ namespace DCL.Backpack
         }
 
         [Test]
-        public void ShowSignup()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShowSignup(bool isNewTermsOfServiceAndEmailSubscriptionEnabled)
         {
             dataStore.common.isSignUpFlow.Set(true);
+            dataStore.featureFlags.flags.Set(new FeatureFlag { flags = { [NEW_TOS_AND_EMAIL_SUBSCRIPTION_FF] = isNewTermsOfServiceAndEmailSubscriptionEnabled } });
 
             dataStore.HUDs.avatarEditorVisible.Set(true, true);
 
-            view.Received(1).ShowContinueSignup();
+            if (isNewTermsOfServiceAndEmailSubscriptionEnabled)
+                view.Received(1).HideContinueSignup();
+            else
+                view.Received(1).ShowContinueSignup();
         }
 
         [Test]
@@ -390,6 +415,55 @@ namespace DCL.Backpack
             });
             for (int i = smrs.Count - 1; i >= 0; i--)
                 Object.Destroy(smrs[i].gameObject);
+        }
+
+        [Test]
+        public void FallbackIncompatibleWearablesWhenChangingBodyShape()
+        {
+            userProfile.avatar.bodyShape = WearableLiterals.BodyShapes.FEMALE;
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_sweater");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:f_jeans");
+            userProfile.avatar.wearables.Add("urn:decentraland:off-chain:base-avatars:sneakers");
+
+            view.Configure().TakeSnapshotsAfterStopPreviewAnimation(
+                Arg.InvokeDelegate<IBackpackEditorHUDView.OnSnapshotsReady>(testFace256Texture, testBodyTexture),
+                Arg.Any<Action>());
+
+            dataStore.HUDs.avatarEditorVisible.Set(true, true);
+
+            wearableGridView.OnWearableEquipped += Raise.Event<Action<WearableGridItemModel, EquipWearableSource>>(new WearableGridItemModel
+            {
+                WearableId = WearableLiterals.BodyShapes.MALE,
+            }, EquipWearableSource.Wearable);
+
+            dataStore.HUDs.avatarEditorVisible.Set(false, true);
+
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:m_sweater_02"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:soccer_pants"));
+            Assert.IsTrue(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:sneakers"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_sweater"));
+            Assert.IsFalse(userProfile.avatar.wearables.Contains("urn:decentraland:off-chain:base-avatars:f_jeans"));
+        }
+
+        [Test]
+        [TestCase(SignUpStage.CustomizeAvatar)]
+        [TestCase(SignUpStage.SetNameAndEmail)]
+        public void SignUpBackCorrectly(SignUpStage currentStage)
+        {
+            // Act
+            view.OnSignUpBackClicked += Raise.Event<Action<SignUpStage>>(currentStage);
+
+            switch (currentStage)
+            {
+                // Assert
+                default:
+                case SignUpStage.CustomizeAvatar:
+                    userProfileBridge.Received(1).LogOut();
+                    break;
+                case SignUpStage.SetNameAndEmail:
+                    Assert.IsFalse(dataStore.HUDs.signupVisible.Get());
+                    break;
+            }
         }
 
         private static UserProfileModel GetTestUserProfileModel() =>

@@ -185,7 +185,8 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
             if (lastSelectedWearable.rarity == Rarity.EPIC
                 || lastSelectedWearable.rarity == Rarity.LEGENDARY
                 || lastSelectedWearable.rarity == Rarity.MYTHIC
-                || lastSelectedWearable.rarity == Rarity.UNIQUE)
+                || lastSelectedWearable.rarity == Rarity.UNIQUE
+                || lastSelectedWearable.rarity == Rarity.EXOTIC)
             {
                 eventReaction.RandomizeIndex(14, 28);
                 chanceToPlay = 1f;

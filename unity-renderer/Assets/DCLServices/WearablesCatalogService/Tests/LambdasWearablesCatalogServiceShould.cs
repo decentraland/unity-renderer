@@ -70,7 +70,7 @@ namespace DCLServices.WearablesCatalogService
 
             BaseVariable<FeatureFlag> featureFlags = new BaseVariable<FeatureFlag>();
             featureFlags.Set(new FeatureFlag());
-            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, featureFlags);
+            service = new LambdasWearablesCatalogService(initialCatalog, lambdasService, serviceProviders, featureFlags, new DataStore());
             service.Initialize();
         }
 
@@ -290,6 +290,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -333,6 +335,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -363,6 +367,8 @@ namespace DCLServices.WearablesCatalogService
                                    $"{EXPLORER_URL}/:userId/wearables",
                                    $"{EXPLORER_URL}/{USER_ID}/wearables",
                                    30, 3,
+                                   Arg.Any<bool>(),
+                                   Arg.Any<string>(),
                                    Arg.Any<CancellationToken>(),
                                    Arg.Is<(string paramName, string paramValue)[]>(args =>
                                        args[0].paramName == "pageNum"
@@ -392,7 +398,7 @@ namespace DCLServices.WearablesCatalogService
         [Test]
         public void RemoveWearablesInUse()
         {
-            service.EmbedWearables(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
+            service.AddEmbeddedWearablesToCatalog(new[] { GivenValidWearableItem(VALID_WEARABLE_ID, "baseurl/thumbnail") });
             service.AddWearablesToCatalog(new[] { GivenValidWearableItem(WEARABLE_WITHOUT_THUMBNAIL, null) });
 
             service.RemoveWearablesInUse(new[] { VALID_WEARABLE_ID, WEARABLE_WITHOUT_THUMBNAIL });
@@ -403,25 +409,6 @@ namespace DCLServices.WearablesCatalogService
             Assert.IsFalse(service.IsValidWearable(WEARABLE_WITHOUT_THUMBNAIL));
         }
 
-        private void GivenWearableDefinitionWithSpecificLambdasUrl(WearableItem wearable)
-        {
-            lambdasService.GetFromSpecificUrl<WearableWithDefinitionResponse>(
-                               Arg.Any<string>(),
-                               Arg.Any<string>(),
-                               Arg.Any<int>(),
-                               Arg.Any<int>(),
-                               Arg.Any<CancellationToken>(),
-                               Arg.Any<(string paramName, string paramValue)[]>())
-                          .Returns(UniTask.FromResult<(WearableWithDefinitionResponse response, bool success)>(
-                               (new WearableWithDefinitionResponse(new List<WearableElementV1Dto>
-                               {
-                                   new ()
-                                   {
-                                       definition = wearable
-                                   },
-                               }, 0, 10, 1), true)));
-        }
-
         private void GivenWearableEntityWithSpecificLambdasUrl(EntityDto entity)
         {
             lambdasService.GetFromSpecificUrl<WearableWithEntityResponseDto>(
@@ -429,9 +416,11 @@ namespace DCLServices.WearablesCatalogService
                                Arg.Any<string>(),
                                Arg.Any<int>(),
                                Arg.Any<int>(),
+                               Arg.Any<bool>(),
+                               Arg.Any<string>(),
                                Arg.Any<CancellationToken>(),
                                Arg.Any<(string paramName, string paramValue)[]>())
-                          .Returns(UniTask.FromResult<(WearableWithEntityResponseDto response, bool success)>(
+                          .ReturnsForAnyArgs(UniTask.FromResult<(WearableWithEntityResponseDto response, bool success)>(
                                (new WearableWithEntityResponseDto(new List<WearableWithEntityResponseDto.ElementDto>
                                {
                                    new ()

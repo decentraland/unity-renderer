@@ -23,6 +23,10 @@ export function ensureAvatarCompatibilityFormat(profile: Readonly<Avatar | OldAv
   avatarInfo.emotes = avatar?.emotes
   avatarInfo.snapshots = avatar?.snapshots
 
+  if (profile.links) {
+    profile.links.map(($) => ({ ...$, url: decodeURIComponent($.url) }))
+  }
+
   if (avatar && 'eyeColor' in avatar) {
     const eyes = stripAlpha(analizeColorPart(avatar, 'eyeColor', 'eyes'))
     const hair = stripAlpha(analizeColorPart(avatar, 'hairColor', 'hair'))

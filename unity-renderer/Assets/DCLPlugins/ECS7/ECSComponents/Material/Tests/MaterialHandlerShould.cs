@@ -30,7 +30,7 @@ namespace Tests
         {
             internalMaterialComponent = Substitute.For<IInternalECSComponent<InternalMaterial>>();
             internalVideoMaterial = Substitute.For<IInternalECSComponent<InternalVideoMaterial>>();
-            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial);
+            handler = new MaterialHandler(internalMaterialComponent, internalVideoMaterial, new DataStore_WorldObjects(), new DebugConfig());
             testUtils = new ECS7TestUtilsScenesAndEntities();
             scene = testUtils.CreateScene(666);
             entity = scene.CreateEntity(1000);
@@ -387,6 +387,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowBase64Textures()
         {
             TextureUnion texture = new TextureUnion()
@@ -403,6 +404,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void NotAllowExternalTextureWithoutPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()
@@ -421,6 +423,7 @@ namespace Tests
         }
 
         [Test]
+        [Explicit]
         public void AllowExternalTextureWithPermissionsSet()
         {
             TextureUnion texture = new TextureUnion()

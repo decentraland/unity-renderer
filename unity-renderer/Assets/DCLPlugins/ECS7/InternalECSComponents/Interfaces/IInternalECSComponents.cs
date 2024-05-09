@@ -25,4 +25,8 @@ public interface IInternalECSComponents
     IInternalECSComponent<InternalRaycast> raycastComponent { get; }
     IInternalECSComponent<InternalGltfContainerLoadingState> GltfContainerLoadingStateComponent { get; }
     IInternalECSComponent<InternalEngineInfo> EngineInfo { get; }
+    IInternalECSComponent<InternalAnimationPlayer> AnimationPlayer { get; }
+    IInternalECSComponent<InternalAnimation> Animation { get; }
+    IInternalECSComponent<InternalTween> TweenComponent { get; }
+    IInternalECSComponent<InternalAvatarModifierArea> AvatarModifierAreaComponent { get; }
 }

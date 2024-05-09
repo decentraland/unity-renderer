@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using System;
 using UnityEngine;
 
 namespace DCLServices.MapRendererV2.MapLayers.HomePoint
@@ -7,9 +8,17 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
     {
         private readonly HomePointMarkerObject markerObject;
 
+        private readonly float baseScale;
+
         public HomePointMarker(HomePointMarkerObject markerObject)
         {
             this.markerObject = markerObject;
+            baseScale = markerObject.transform.localScale.x;
+        }
+
+        public void Dispose()
+        {
+            Utils.SafeDestroy(markerObject);
         }
 
         public void SetPosition(Vector3 position)
@@ -22,9 +31,15 @@ namespace DCLServices.MapRendererV2.MapLayers.HomePoint
             markerObject.gameObject.SetActive(active);
         }
 
-        public void Dispose()
+        public void SetZoom(float baseZoom, float zoom)
         {
-            Utils.SafeDestroy(markerObject);
+            float newScale = Math.Max(zoom / baseZoom * baseScale, baseScale);
+            markerObject.transform.localScale = new Vector3(newScale, newScale, 1f);
+        }
+
+        public void ResetToBaseScale()
+        {
+            markerObject.transform.localScale = new Vector3(baseScale, baseScale, 1f);
         }
     }
 }

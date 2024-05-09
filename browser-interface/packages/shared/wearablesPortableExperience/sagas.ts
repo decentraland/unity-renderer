@@ -20,6 +20,7 @@ import {
 } from './actions'
 import { waitForRealm } from 'shared/realm/waitForRealmAdapter'
 import { KeyAndHash } from '../catalogs/types'
+import { urnWithoutToken } from '../catalogs/sagas'
 
 export function* wearablesPortableExperienceSaga(): any {
   yield takeLatest(PROFILE_SUCCESS, handleSelfProfileSuccess)
@@ -29,13 +30,12 @@ export function* wearablesPortableExperienceSaga(): any {
 
 function* handleSelfProfileSuccess(action: ProfileSuccessAction): any {
   const isMyProfile: boolean = yield select(isCurrentUserId, action.payload.profile.userId)
-
   // cancel the saga if we receive a profile from a different user
   if (!isMyProfile) {
     return
   }
 
-  const newProfileWearables = action.payload.profile.avatar?.wearables || []
+  const newProfileWearables = action.payload.profile.avatar?.wearables.map(urnWithoutToken) || []
   const currentDesiredPortableExperiences: Record<string, LoadableScene | null> = yield select(
     getDesiredWearablePortableExpriences
   )
@@ -69,9 +69,9 @@ function* handleProcessWearables(action: ProcessWearablesAction) {
   const currentDesiredPortableExperiences: Record<string, LoadableScene | null> = yield select(
     getDesiredWearablePortableExpriences
   )
-
-  if (payload.wearable.id in currentDesiredPortableExperiences) {
-    yield put(addDesiredPortableExperience(payload.wearable.id, payload.wearable))
+  const wearableId = urnWithoutToken(payload.wearable.id)
+  if (wearableId in currentDesiredPortableExperiences) {
+    yield put(addDesiredPortableExperience(wearableId, payload.wearable))
   }
 }
 
@@ -121,8 +121,8 @@ function findWearableContent(wearable: WearableV2): [KeyAndHash[], KeyAndHash] |
 export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl: string): Promise<LoadableScene> {
   const [wearableContent, mainFile] = findWearableContent(wearable) ?? []
   if (!wearableContent) throw new Error('Invalid wearable')
-  const defaultSceneJson = () => ({
-    main: mainFile?.key ?? 'bin/game.js',
+  const defaultSceneJson: () => Scene = () => ({
+    main: mainFile?.key ? getFile(mainFile?.key) : 'bin/game.js',
     scene: {
       parcels: ['0,0'],
       base: '0,0'
@@ -147,13 +147,16 @@ export async function wearableToSceneEntity(wearable: WearableV2, defaultBaseUrl
   }
 
   const content = wearableContent.map(($) => ({ file: getFile($.key), hash: $.hash }))
-  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson
+  const metadata: Scene = sceneJson ? await jsonFetch(baseUrl + sceneJson.hash) : defaultSceneJson()
 
   return {
-    id: wearable.id,
+    id: urnWithoutToken(wearable.id),
     baseUrl,
     parentCid: 'avatar',
     entity: {
+      // TODO: the wearable.id is an urn because the wearable was fetched
+      //  from `lambdas/wearables` instead of `content/entities/active`
+      id: wearable.id,
       content,
       metadata,
       pointers: [wearable.id],

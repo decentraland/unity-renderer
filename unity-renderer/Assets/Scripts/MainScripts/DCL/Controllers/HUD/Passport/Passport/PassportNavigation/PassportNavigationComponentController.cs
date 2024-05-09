@@ -2,6 +2,7 @@ using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL.Helpers;
 using DCL.ProfanityFiltering;
+using DCLServices.CopyPaste.Analytics;
 using DCLServices.Lambdas.LandsService;
 using DCLServices.Lambdas.NamesService;
 using DCLServices.WearablesCatalogService;
@@ -28,6 +29,8 @@ namespace DCL.Social.Passports
         private readonly DataStore dataStore;
         private readonly ViewAllComponentController viewAllController;
         private readonly IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider;
+        private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private readonly Regex linksRegex = new (@"\[(.*?)\]\((.*?)\)", RegexOptions.Multiline);
         private readonly List<(Sprite logo, string title, string value)> additionalFields = new ();
         private readonly List<UserProfileModel.Link> links = new ();
@@ -57,7 +60,9 @@ namespace DCL.Social.Passports
             IUserProfileBridge userProfileBridge,
             DataStore dataStore,
             ViewAllComponentController viewAllController,
-            IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider)
+            IAdditionalInfoFieldIconProvider additionalInfoFieldIconProvider,
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             const string NAME_TYPE = "name";
             const string PARCEL_TYPE = "parcel";
@@ -74,11 +79,14 @@ namespace DCL.Social.Passports
             this.dataStore = dataStore;
             this.viewAllController = viewAllController;
             this.additionalInfoFieldIconProvider = additionalInfoFieldIconProvider;
+            this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
 
             view.OnClickBuyNft += (wearableId, wearableType) => OnClickBuyNft?.Invoke(wearableType is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : wearableId, wearableType);
             view.OnClickCollectibles += () => OnClickCollectibles?.Invoke();
             view.OnClickedViewAll += ClickedViewAll;
             view.OnClickDescriptionCoordinates += OpenGoToPanel;
+            view.OnCopyDescription += CopyDescriptionToClipboard;
             viewAllController.OnBackFromViewAll += BackFromViewAll;
             viewAllController.OnClickBuyNft += (nftId) => OnClickBuyNft?.Invoke(nftId.Category is NAME_TYPE or PARCEL_TYPE or ESTATE_TYPE ? currentUserId : nftId.Id, nftId.Category);
         }
@@ -93,7 +101,6 @@ namespace DCL.Social.Passports
             view.CloseAllSections();
             viewAllController.SetViewAllVisibility(true);
             viewAllController.OpenViewAllSection(section);
-
         }
 
         public void UpdateWithUserProfile(UserProfile userProfile)
@@ -397,7 +404,7 @@ namespace DCL.Social.Passports
         private void OpenGoToPanel(ParcelCoordinates coordinates)
         {
             dataStore.HUDs.gotoPanelVisible.Set(true, true);
-            dataStore.HUDs.gotoPanelCoordinates.Set(coordinates, true);
+            dataStore.HUDs.gotoPanelCoordinates.Set((coordinates, null, null), true);
 
             dataStore.HUDs.goToPanelConfirmed.OnChange -= CloseUIFromGoToPanel;
             dataStore.HUDs.goToPanelConfirmed.OnChange += CloseUIFromGoToPanel;
@@ -411,7 +418,7 @@ namespace DCL.Social.Passports
             dataStore.HUDs.currentPlayerId.Set((null, null));
         }
 
-        private string ExtractLinks(string description, ICollection<UserProfileModel.Link> linkBuffer)
+        private string ExtractLinks(string description, ICollection<UserProfileModel.Link> linkBuffer = null)
         {
             MatchCollection matches = linksRegex.Matches(description);
 
@@ -419,11 +426,21 @@ namespace DCL.Social.Passports
 
             foreach (Match match in matches)
             {
-                linkBuffer.Add(new UserProfileModel.Link(match.Groups[1].Value, match.Groups[2].Value));
+                linkBuffer?.Add(new UserProfileModel.Link(match.Groups[1].Value, match.Groups[2].Value));
                 description = description.Replace(match.Value, "");
             }
 
             return description;
+        }
+
+        private void CopyDescriptionToClipboard()
+        {
+            UserProfile userProfile = userProfileBridge.Get(currentUserId);
+            if (userProfile == null) return;
+            string description = userProfile.description;
+            description = ExtractLinks(description);
+            clipboard.WriteText(description);
+            copyPasteAnalyticsService.Copy("player_data");
         }
     }
 }

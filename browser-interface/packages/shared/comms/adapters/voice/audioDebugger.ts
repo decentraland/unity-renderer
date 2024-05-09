@@ -1,4 +1,5 @@
 import mitt from 'mitt'
+import defaultLogger from '../../../../lib/logger'
 // eslint-ignore @typescript-eslint/no-unused-vars
 
 type BaseNode = {
@@ -18,7 +19,6 @@ const events = mitt<{
   removeNode: { node: BaseNode }
   graphChanged: Graph
 }>()
-
 // state and redux -------------------------------------------------------------
 
 let currentGraphState: Graph = { edges: {}, nodes: {}, nodeNum: 0 }
@@ -205,7 +205,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioBufferSourceNode.prototype.start = decoratePrototype(
     AudioBufferSourceNode.prototype.start,
     function (this: any, _result: any, _args: any[]) {
-      console.log('WebAudioDebugger: AudioBufferSourceNode start')
+      defaultLogger.log('WebAudioDebugger: AudioBufferSourceNode start')
     }
   )
 
@@ -236,9 +236,9 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createBufferSource = decoratePrototype(
     AudioContext.prototype.createBufferSource,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create BufferSourceNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create BufferSourceNode', { this: this, result, args })
       this.addEventListener('ended', function () {
-        console.log('WebAudioDebugger: AudioBufferSourceNode ended')
+        defaultLogger.log('WebAudioDebugger: AudioBufferSourceNode ended')
       })
       addNode(this)
       addNode(result)
@@ -248,7 +248,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createGain = decoratePrototype(
     AudioContext.prototype.createGain,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create GainNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create GainNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -257,7 +257,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createPanner = decoratePrototype(
     AudioContext.prototype.createPanner,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create PannerNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create PannerNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -266,7 +266,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createDynamicsCompressor = decoratePrototype(
     AudioContext.prototype.createDynamicsCompressor,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create DynamicsCompressorNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create DynamicsCompressorNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -275,7 +275,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createDelay = decoratePrototype(
     AudioContext.prototype.createDelay,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create DelayNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create DelayNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -284,7 +284,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createConvolver = decoratePrototype(
     AudioContext.prototype.createConvolver,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create ConvolverNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create ConvolverNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -293,7 +293,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createAnalyser = decoratePrototype(
     AudioContext.prototype.createAnalyser,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create AnalyserNode', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create AnalyserNode', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -302,7 +302,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createBiquadFilter = decoratePrototype(
     AudioContext.prototype.createBiquadFilter,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create BiquadFilter', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create BiquadFilter', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -311,7 +311,7 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.createOscillator = decoratePrototype(
     AudioContext.prototype.createOscillator,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Create Oscillator', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Create Oscillator', { this: this, result, args })
       addNode(this)
       addNode(result)
     }
@@ -320,14 +320,14 @@ if (document.location.search.includes('AUDIO_DEBUG')) {
   AudioContext.prototype.decodeAudioData = decoratePrototype(
     AudioContext.prototype.decodeAudioData,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger:decodeAudioData', args[0].byteLength, { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger:decodeAudioData', args[0].byteLength, { this: this, result, args })
     }
   )
 
   AudioContext.prototype.constructor = decoratePrototype(
     AudioContext.prototype.constructor,
     function (this: AudioContext, result: any, args: any[]) {
-      console.log('WebAudioDebugger: Constructor', { this: this, result, args })
+      defaultLogger.log('WebAudioDebugger: Constructor', { this: this, result, args })
     }
   )
 }

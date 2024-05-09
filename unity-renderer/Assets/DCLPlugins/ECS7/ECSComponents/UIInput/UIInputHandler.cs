@@ -7,6 +7,7 @@ using DCL.ECSComponents.Utils;
 using DCL.ECSRuntime;
 using DCL.Models;
 using DCL.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DCL.ECSComponents.UIInput
@@ -23,8 +24,9 @@ namespace DCL.ECSComponents.UIInput
         private readonly WrappedComponentPool<IWrappedComponent<PBUiInputResult>> componentPool;
 
         private EventCallback<ChangeEvent<string>> onValueChanged;
+        private EventCallback<NavigationSubmitEvent> onSubmit;
 
-        internal TextField uiElement { get; private set; }
+        public TextField uiElement { get; private set; }
 
         internal TextFieldPlaceholder placeholder { get; private set; }
 
@@ -50,29 +52,65 @@ namespace DCL.ECSComponents.UIInput
             placeholder = new TextFieldPlaceholder(uiElement);
 
             AddElementToRoot(scene, entity, uiElement);
+            uiElement.pickingMode = PickingMode.Position; // force pointer blocking
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
 
             onValueChanged = UIPointerEventsUtils
                .RegisterFeedback<ChangeEvent<string>>
                 (inputResults,
-                    CreateInputResult,
+                    CreateOnChangeInputResult,
+                    scene,
+                    entity,
+                    uiElement,
+                    resultComponentId);
+
+            // We don't use <KeyDownEvent> because that one is called a lot more and is
+            // triggered twice for some reason (probably a unity bug)
+            onSubmit = UIPointerEventsUtils
+               .RegisterFeedback<NavigationSubmitEvent>
+                (inputResults,
+                    CreateOnSubmitInputResult,
                     scene,
                     entity,
                     uiElement,
                     resultComponentId);
         }
 
-        private IPooledWrappedComponent CreateInputResult(ChangeEvent<string> onValueChange)
+        private IPooledWrappedComponent CreateOnChangeInputResult(ChangeEvent<string> evt)
         {
+            evt.StopPropagation();
+
             var componentPooled = componentPool.Get();
             var componentModel = componentPooled.WrappedComponent.Model;
-            componentModel.Value = onValueChange.newValue;
+            componentModel.Value = uiElement.value;
+            componentModel.IsSubmit = false;
+            return componentPooled;
+        }
+
+        private IPooledWrappedComponent CreateOnSubmitInputResult(NavigationSubmitEvent evt)
+        {
+            evt.StopPropagation();
+
+            // Space-bar is also detected as a navigation "submit" event
+            if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.commandKey
+                || (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter)))
+                return null;
+
+            var componentPooled = componentPool.Get();
+            var componentModel = componentPooled.WrappedComponent.Model;
+            componentModel.Value = uiElement.value;
+            componentModel.IsSubmit = true;
+
+            // Clear text field without triggering its onChange event
+            uiElement.SetValueWithoutNotify(string.Empty);
+
             return componentPooled;
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
             uiElement.UnregisterFeedback(onValueChanged);
+            uiElement.UnregisterFeedback(onSubmit);
             RemoveElementFromRoot(scene, entity, uiElement);
             uiElement = null;
             fontUpdater.Dispose();

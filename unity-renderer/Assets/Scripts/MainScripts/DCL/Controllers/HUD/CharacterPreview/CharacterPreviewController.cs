@@ -1,17 +1,16 @@
 using AvatarSystem;
 using Cysharp.Threading.Tasks;
 using DCL;
-using MainScripts.DCL.Components.Avatar.VRMExporter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
+using Environment = DCL.Environment;
 
 namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 {
-    using UnityEngine;
-
     public class CharacterPreviewController : MonoBehaviour, ICharacterPreviewController
     {
         private const int SNAPSHOT_BODY_WIDTH_RES = 256;
@@ -140,7 +139,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         public async UniTask<Texture2D> TakeBodySnapshotAsync()
         {
-            global::DCL.Environment.i.platform.cullingController.Stop();
+            Environment.i.platform.cullingController.Stop();
             if (avatar.status != IAvatar.Status.Loaded)
                 return null;
 
@@ -157,7 +156,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
             SetFocus(PreviewCameraFocus.DefaultEditing, false);
 
             cameraController.SetTargetTexture(current);
-            global::DCL.Environment.i.platform.cullingController.Start();
+            Environment.i.platform.cullingController.Start();
 
             return body;
         }
@@ -175,7 +174,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
         private IEnumerator TakeSnapshots_Routine(OnSnapshotsReady callback)
         {
-            global::DCL.Environment.i.platform.cullingController.Stop();
+            Environment.i.platform.cullingController.Stop();
 
             var current = cameraController.CurrentTargetTexture;
             cameraController.SetTargetTexture(null);
@@ -195,7 +194,7 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
 
             cameraController.SetTargetTexture(current);
 
-            global::DCL.Environment.i.platform.cullingController.Start();
+            Environment.i.platform.cullingController.Start();
             callback?.Invoke(face256, body);
         }
 
@@ -220,8 +219,18 @@ namespace MainScripts.DCL.Controllers.HUD.CharacterPreview
         public void SetCharacterShadowActive(bool isActive) =>
             avatarShadow.SetActive(isActive);
 
-        public void PlayEmote(string emoteId, long timestamp) =>
-            avatar.PlayEmote(emoteId, timestamp);
+        public IAvatarEmotesController GetEmotesController() =>
+            avatar.GetEmotesController();
+
+        public void PlayEmote(string emoteId, long timestamp)
+        {
+            avatar.GetEmotesController().PlayEmote(emoteId, timestamp, false, false, true);
+        }
+
+        public void StopEmote()
+        {
+            avatar.GetEmotesController().StopEmote(true);
+        }
 
         public void Dispose() =>
             Destroy(gameObject);

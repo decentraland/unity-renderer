@@ -4,5 +4,6 @@ namespace DCL
     {
         public readonly BaseCollection<string> previewEquippedWearables = new ();
         public readonly BaseVariable<string> previewBodyShape = new ();
+        public readonly BaseVariable<bool> isWaitingToBeSavedAfterSignUp = new (false);
     }
 }

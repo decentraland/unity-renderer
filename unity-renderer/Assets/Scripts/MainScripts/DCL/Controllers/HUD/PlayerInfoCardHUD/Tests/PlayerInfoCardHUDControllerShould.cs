@@ -221,18 +221,22 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
         controller.currentPlayerId.Set(null);
         controller.currentPlayerId.Set(IDS[4]);
 
-        socialAnalytics.Received(5).SendPassportOpen();
+        socialAnalytics.Received(1).SendPassportOpen(IDS[0]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[1]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[2]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[3]);
+        socialAnalytics.Received(1).SendPassportOpen(IDS[4]);
     }
 
     private void PrepareUsers()
     {
-        var wearables = new[]
-        {
+        string[] wearables = {
             WearableLiterals.ItemRarity.EPIC,
             WearableLiterals.ItemRarity.LEGENDARY,
             WearableLiterals.ItemRarity.MYTHIC,
             WearableLiterals.ItemRarity.RARE,
-            WearableLiterals.ItemRarity.UNIQUE
+            WearableLiterals.ItemRarity.UNIQUE,
+            WearableLiterals.ItemRarity.EXOTIC,
         };
 
         userProfiles = IDS.ToDictionary(x => x, x => GetUserProfile(x, wearables));
@@ -291,7 +295,8 @@ public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
             new WearableItem { id = "legendary", rarity = WearableLiterals.ItemRarity.LEGENDARY },
             new WearableItem { id = "mythic", rarity = WearableLiterals.ItemRarity.MYTHIC },
             new WearableItem { id = "rare", rarity = WearableLiterals.ItemRarity.RARE },
-            new WearableItem { id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE }
+            new WearableItem { id = "unique", rarity = WearableLiterals.ItemRarity.UNIQUE },
+            new WearableItem { id = "exotic", rarity = WearableLiterals.ItemRarity.EXOTIC },
         };
 
         wearablesCatalogService = Substitute.For<IWearablesCatalogService>();

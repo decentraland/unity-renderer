@@ -25,6 +25,7 @@ namespace DCL.Backpack
         [SerializeField] internal RectTransform dynamicSection;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
+        [SerializeField] internal Image vrmBlockedTag;
 
         public event Action OnEquipWearable;
         public event Action OnUnEquipWearable;
@@ -57,6 +58,12 @@ namespace DCL.Backpack
             SetHiddenBy(model.hiddenBy);
             SetNftImage(model.imageUri);
             SetWearableId(model.wearableId);
+            SetVRMBlockedTag(model.blockVrmExport);
+        }
+
+        private void SetVRMBlockedTag(bool vrmBlocked)
+        {
+            vrmBlockedTag.gameObject.SetActive(vrmBlocked);
         }
 
         public void SetName(string nameText)
@@ -74,7 +81,12 @@ namespace DCL.Backpack
         public void SetCategory(string category)
         {
             model.category = category;
-            categoryImage.sprite = typeIcons.GetTypeImage(category);
+
+            var categoryIcon = typeIcons.GetTypeImage(category);
+            if (categoryIcon == null)
+                return;
+
+            categoryImage.sprite = categoryIcon;
         }
 
         public void SetNftImage(string imageUri)
@@ -104,7 +116,13 @@ namespace DCL.Backpack
 
             hidesList.gameObject.SetActive(hideList.Count != 0);
             foreach (string hideCategory in hideList)
-                hidesList.AddIcon(typeIcons.GetTypeImage(hideCategory));
+            {
+                var categoryIcon = typeIcons.GetTypeImage(hideCategory);
+                if (categoryIcon == null)
+                    continue;
+
+                hidesList.AddIcon(categoryIcon);
+            }
 
             Utils.ForceRebuildLayoutImmediate(dynamicSection);
         }
@@ -122,7 +140,7 @@ namespace DCL.Backpack
             unEquipButton.gameObject.SetActive(model.unEquipAllowed && isEquipped);
         }
 
-        public void SetWearableId(string wearableId)
+        private void SetWearableId(string wearableId)
         {
             model.wearableId = wearableId;
         }
@@ -151,7 +169,12 @@ namespace DCL.Backpack
 
             hiddenByDynamicList.gameObject.SetActive(true);
             hiddenByDynamicList.RemoveIcons();
-            hiddenByDynamicList.AddIcon(typeIcons.GetTypeImage(hiddenBy));
+
+            var categoryIcon = typeIcons.GetTypeImage(hiddenBy);
+            if (categoryIcon == null)
+                return;
+
+            hiddenByDynamicList.AddIcon(categoryIcon);
         }
 
         public void SetVisible(bool visible) =>

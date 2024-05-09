@@ -2,8 +2,9 @@ import { CATALYSTS_FROM_DAO_CONTRACT, ethereumConfigurations, ETHEREUM_NETWORK }
 import { bytesToHex, ContractFactory } from 'eth-connect'
 import { retry } from 'lib/javascript/retry'
 import { defaultLogger } from 'lib/logger'
+import { getSelectedNetwork } from 'shared/dao/selectors'
+import { store } from 'shared/store/isolatedStore'
 import { catalystABI } from './catalystABI'
-import { getEthereumNetworkFromProvider } from './getEthereumNetworkFromProvider'
 import { requestManager } from './provider'
 
 export type CatalystNode = {
@@ -20,11 +21,28 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
     throw new Error('requestManager.provider not set')
   }
 
-  const net = await getEthereumNetworkFromProvider()
+  const state = store.getState()
+  const net = getSelectedNetwork(state)
+  const catalysts = await fetchCatalysts(net)
+
+  if (net === ETHEREUM_NETWORK.MAINNET) {
+    catalysts.push({ domain: 'https://realm-provider.decentraland.org/main' })
+  } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
+    catalysts.push({ domain: 'https://realm-provider.decentraland.zone/main' })
+  }
+
+  return catalysts
+}
+
+async function fetchCatalysts(net: ETHEREUM_NETWORK): Promise<CatalystNode[]> {
+  if (!requestManager.provider) {
+    throw new Error('requestManager.provider not set')
+  }
 
   if (!CATALYSTS_FROM_DAO_CONTRACT) {
+    let catalysts: CatalystNode[]
     if (net === ETHEREUM_NETWORK.MAINNET) {
-      return [
+      catalysts = [
         { domain: 'https://peer-wc1.decentraland.org' },
         { domain: 'https://interconnected.online' },
         { domain: 'https://peer-ec2.decentraland.org' },
@@ -37,11 +55,16 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
         { domain: 'https://peer.kyllian.me' },
         { domain: 'https://peer.melonwave.com' }
       ]
-    } else if (net === ETHEREUM_NETWORK.GOERLI) {
-      return [{ domain: 'https://peer.decentraland.zone' }, { domain: 'https://peer-ap1.decentraland.zone' }]
     } else if (net === ETHEREUM_NETWORK.SEPOLIA) {
-      return [{ domain: 'https://peer-ue-2.decentraland.zone' }]
+      catalysts = [
+        { domain: 'https://peer.decentraland.zone' },
+        { domain: 'https://peer-ap1.decentraland.zone' },
+        { domain: 'https://peer-ue-2.decentraland.zone' }
+      ]
+    } else {
+      catalysts = []
     }
+    return catalysts
   }
 
   const contract2: {
@@ -69,5 +92,6 @@ export async function fetchCatalystNodesFromContract(): Promise<CatalystNode[]> 
 
     nodes.push(node)
   }
+
   return nodes
 }

@@ -2,14 +2,11 @@ using Cysharp.Threading.Tasks;
 using DCL.Emotes;
 using DCL.Helpers;
 using DCLServices.EmotesCatalog.EmotesCatalogService;
-using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 
 public class EmotesCatalogServiceProxy : IEmotesCatalogService
 {
-
     private const string FORCE_TO_REQUEST_WEARABLES_THROUGH_KERNEL_FF = "force_to_request_wearables_through_kernel";
 
     private readonly LambdasEmotesCatalogService lambdasEmotesCatalogService;
@@ -19,7 +16,8 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
     private IEmotesCatalogService emotesCatalogServiceInUse;
     private bool isInitialized;
 
-    public EmotesCatalogServiceProxy(LambdasEmotesCatalogService lambdasEmotesCatalogService, WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService,
+    public EmotesCatalogServiceProxy(LambdasEmotesCatalogService lambdasEmotesCatalogService,
+        WebInterfaceEmotesCatalogService webInterfaceEmotesCatalogService,
         BaseVariable<FeatureFlag> featureFlags, KernelConfig kernelCofig)
     {
         this.lambdasEmotesCatalogService = lambdasEmotesCatalogService;
@@ -59,10 +57,10 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
             emotesCatalogServiceInUse = webInterfaceEmotesCatalogService;
         else
             emotesCatalogServiceInUse = lambdasEmotesCatalogService;
+
         emotesCatalogServiceInUse.Initialize();
         isInitialized = true;
     }
-
 
     public void Dispose()
     {
@@ -76,7 +74,16 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
             emote = null;
             return false;
         }
+
         return emotesCatalogServiceInUse.TryGetLoadedEmote(id, out emote);
+    }
+
+    public async UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken)
+    {
+        if (!isInitialized)
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+        return await lambdasEmotesCatalogService.RequestEmoteFromBuilderAsync(emoteId, cancellationToken);
     }
 
     public Promise<IReadOnlyList<WearableItem>> RequestOwnedEmotes(string userId) =>
@@ -84,6 +91,15 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public UniTask<IReadOnlyList<WearableItem>> RequestOwnedEmotesAsync(string userId, CancellationToken ct = default) =>
         emotesCatalogServiceInUse.RequestOwnedEmotesAsync(userId, ct);
+
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
+    {
+        if (!isInitialized)
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionAsync(collectionIds, cancellationToken, emoteBuffer);
+    }
 
     public Promise<WearableItem> RequestEmote(string id) =>
         emotesCatalogServiceInUse.RequestEmote(id);
@@ -99,15 +115,27 @@ public class EmotesCatalogServiceProxy : IEmotesCatalogService
 
     public async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotes()
     {
-        if(!isInitialized)
+        if (!isInitialized)
             await UniTask.WaitUntil(() => isInitialized);
+
         return await emotesCatalogServiceInUse.GetEmbeddedEmotes();
     }
 
+    public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
+        CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
+    {
+        if (!isInitialized)
+            await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
+
+        return await lambdasEmotesCatalogService.RequestEmoteCollectionInBuilderAsync(collectionIds, cancellationToken, emoteBuffer);
+    }
 
     public void ForgetEmote(string id) =>
         emotesCatalogServiceInUse.ForgetEmote(id);
 
     public void ForgetEmotes(IList<string> ids) =>
         emotesCatalogServiceInUse.ForgetEmotes(ids);
+
+    public bool TryGetOwnedUrn(string shortenedUrn, out string extendedUrn) =>
+        emotesCatalogServiceInUse.TryGetOwnedUrn(shortenedUrn, out extendedUrn);
 }

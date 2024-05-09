@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DCL.Social.Chat;
 using DCL.Interface;
 using DCL.ProfanityFiltering;
-using DCL.Social.Chat;
 using DCL.Social.Chat.Mentions;
+using DCLServices.CopyPaste.Analytics;
 using SocialFeaturesAnalytics;
 using UnityEngine;
 using Channel = DCL.Chat.Channels.Channel;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChatChannelHUDController : IHUD
     {
@@ -28,6 +29,8 @@ namespace DCL.Chat.HUD
         private readonly ISocialAnalytics socialAnalytics;
         private readonly IProfanityFilter profanityFilter;
         private readonly IChatMentionSuggestionProvider chatMentionSuggestionProvider;
+        private readonly IClipboard clipboard;
+        private readonly ICopyPasteAnalyticsService copyPasteAnalyticsService;
         private ChatHUDController chatHudController;
         private ChannelMembersHUDController channelMembersHUDController;
         private CancellationTokenSource hideLoadingCancellationToken = new ();
@@ -49,7 +52,9 @@ namespace DCL.Chat.HUD
             IMouseCatcher mouseCatcher,
             ISocialAnalytics socialAnalytics,
             IProfanityFilter profanityFilter,
-            IChatMentionSuggestionProvider chatMentionSuggestionProvider)
+            IChatMentionSuggestionProvider chatMentionSuggestionProvider,
+            IClipboard clipboard,
+            ICopyPasteAnalyticsService copyPasteAnalyticsService)
         {
             this.dataStore = dataStore;
             this.userProfileBridge = userProfileBridge;
@@ -58,6 +63,8 @@ namespace DCL.Chat.HUD
             this.socialAnalytics = socialAnalytics;
             this.profanityFilter = profanityFilter;
             this.chatMentionSuggestionProvider = chatMentionSuggestionProvider;
+            this.clipboard = clipboard;
+            this.copyPasteAnalyticsService = copyPasteAnalyticsService;
         }
 
         public void Initialize(IChatChannelWindowView view, bool isVisible = true)
@@ -72,11 +79,13 @@ namespace DCL.Chat.HUD
             view.OnShowMembersList += ShowMembersList;
             view.OnHideMembersList += HideMembersList;
             view.OnMuteChanged += MuteChannel;
+            view.OnCopyNameRequested += CopyNameToClipboard;
+
             dataStore.mentions.someoneMentionedFromContextMenu.OnChange += SomeoneMentionedFromContextMenu;
 
             chatHudController = new ChatHUDController(dataStore, userProfileBridge, false,
                (name, count, ct) => chatMentionSuggestionProvider.GetProfilesFromChatChannelsStartingWith(name, channelId, count, ct),
-                socialAnalytics, chatController, profanityFilter);
+                socialAnalytics, chatController, clipboard, copyPasteAnalyticsService, profanityFilter);
 
             chatHudController.Initialize(view.ChatHUD);
             chatHudController.SortingStrategy = new ChatEntrySortingByTimestamp();
@@ -91,6 +100,12 @@ namespace DCL.Chat.HUD
 
             SetVisibility(isVisible);
             this.isVisible = isVisible;
+        }
+
+        private void CopyNameToClipboard(string channelName)
+        {
+            clipboard.WriteText(channelName);
+            copyPasteAnalyticsService.Copy("channel_name");
         }
 
         public void Setup(string channelId)

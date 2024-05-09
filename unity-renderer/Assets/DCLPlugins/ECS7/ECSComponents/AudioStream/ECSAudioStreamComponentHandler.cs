@@ -18,19 +18,22 @@ namespace DCL.ECSComponents
         internal bool isPlaying = false;
         internal PBAudioStream model;
         internal IParcelScene scene;
+        internal IDCLEntity entity;
         internal string url;
 
         // Flags to check if we can activate the AudioStream
         internal bool isInsideScene = false;
         internal bool isRendererActive = false;
-        internal bool hadUserInteraction = false;
         internal bool isValidUrl = false;
 
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
+            this.entity = entity;
+
             if (!scene.isPersistent)
                 CommonScriptableObjects.sceneNumber.OnChange += OnSceneChanged;
+
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged += OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
@@ -38,24 +41,16 @@ namespace DCL.ECSComponents
 
             isRendererActive = CommonScriptableObjects.rendererState.Get();
             isInsideScene = scene.isPersistent || scene.sceneData.sceneNumber == CommonScriptableObjects.sceneNumber.Get();
-
-            // Browsers don't allow streaming if the user didn't interact first, ending up in a fake 'playing' state.
-            hadUserInteraction = Utils.IsCursorLocked;
-            if (!hadUserInteraction)
-            {
-                Utils.OnCursorLockChanged += OnCursorLockChanged;
-            }
         }
 
         public void OnComponentRemoved(IParcelScene scene, IDCLEntity entity)
         {
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
             CommonScriptableObjects.sceneNumber.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.audioSettings.OnChanged -= OnSettingsChanged;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
 
-            StopStreaming();
+            WebInterface.KillAudioStream(scene.sceneData.sceneNumber, entity.entityId);
         }
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBAudioStream model)
@@ -70,14 +65,17 @@ namespace DCL.ECSComponents
             isValidUrl = UtilsScene.TryGetMediaUrl(model.Url, scene.contentProvider,
                 scene.sceneData.requiredPermissions, scene.sceneData.allowedMediaHostnames, out string newUrl);
 
+            url = newUrl;
+
             if (!isValidUrl)
+            {
+                url = string.Empty;
                 StopStreaming();
+            }
 
             // In case that the audio stream can't be played we do an early return
             if (!CanAudioStreamBePlayed() || !isValidUrl)
                 return;
-
-            url = newUrl;
 
             // If everything went ok, we update the state
             SendUpdateAudioStreamEvent(model.Playing);
@@ -115,7 +113,7 @@ namespace DCL.ECSComponents
 
         private bool CanAudioStreamBePlayed()
         {
-            return isInsideScene && isRendererActive && hadUserInteraction;
+            return isInsideScene && isRendererActive;
         }
 
         private void OnSceneChanged(int sceneNumber, int prevSceneNumber)
@@ -166,16 +164,7 @@ namespace DCL.ECSComponents
         private void SendUpdateAudioStreamEvent(bool play)
         {
             isPlaying = play;
-            WebInterface.SendAudioStreamEvent(url, isPlaying, currentVolume);
-        }
-
-        private void OnCursorLockChanged(bool isLocked)
-        {
-            if (!isLocked) return;
-
-            hadUserInteraction = true;
-            Utils.OnCursorLockChanged -= OnCursorLockChanged;
-            ConditionsToPlayChanged();
+            WebInterface.SendAudioStreamEventForEntity(url, isPlaying, currentVolume, scene.sceneData.sceneNumber, entity.entityId);
         }
     }
 }

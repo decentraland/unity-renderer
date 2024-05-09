@@ -13,7 +13,7 @@ describe('Wrapped Logger', () => {
       it('should log everything without prefix', () => {
         const spy = sinon.spy(wrapConsole._console, method)
 
-        wrapConsole.default('*')
+        wrapConsole.wrap('*')
         const message = 'Some'
         console[method](message)
         Sinon.assert.calledWith(spy, message)
@@ -21,8 +21,8 @@ describe('Wrapped Logger', () => {
 
       it('should NOT log if the message doenst match the prefix', () => {
         const spy = sinon.spy(wrapConsole._console, method)
-        const prefix = 'kernel: '
-        wrapConsole.default(prefix)
+        const prefix = 'no-prefix: '
+        wrapConsole.wrap(prefix)
 
         // No prefix
         const message = 'Some message without prefix'
@@ -43,7 +43,7 @@ describe('Wrapped Logger', () => {
         const kernelPrefix = 'kernel: '
         const unityPrefix = 'unity: '
         const prefix = `${kernelPrefix},${unityPrefix}`
-        wrapConsole.default(prefix)
+        wrapConsole.wrap(prefix)
         const message = 'Some message without prefix'
 
         // No prefix
@@ -63,7 +63,7 @@ describe('Wrapped Logger', () => {
         const spy = sinon.spy(wrapConsole._console, method)
         if (method === 'warn') return
         const prefix = '*'
-        wrapConsole.default(prefix)
+        wrapConsole.wrap(prefix)
         const message = { someMessage: true }
         defaultLogger[method](message as any)
 

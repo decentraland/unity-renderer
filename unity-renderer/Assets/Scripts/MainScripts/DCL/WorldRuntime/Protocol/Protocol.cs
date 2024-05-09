@@ -32,6 +32,8 @@ namespace DCL.Models
         public const string OnPointerUp = "pointerUp";
         public const string OnPointerHoverEnter = "pointerHoverEnter";
         public const string OnPointerHoverExit = "pointerHoverExit";
+        public const string Transform = "transform";
+        public const string Shape = "shape";
     }
 
     public enum CLASS_ID_COMPONENT

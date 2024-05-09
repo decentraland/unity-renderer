@@ -21,7 +21,7 @@ namespace AvatarSystem
         UniTask Load(List<string> wearablesIds, List<string> emotesIds, AvatarSettings settings, CancellationToken ct = default);
         void AddVisibilityConstraint(string key);
         void RemoveVisibilityConstrain(string key);
-        void PlayEmote(string emoteId, long timestamps);
+        IAvatarEmotesController GetEmotesController();
         void SetLODLevel(int lodIndex);
         void SetAnimationThrottling(int framesBetweenUpdate);
         void SetImpostorTexture(Texture2D impostorTexture);

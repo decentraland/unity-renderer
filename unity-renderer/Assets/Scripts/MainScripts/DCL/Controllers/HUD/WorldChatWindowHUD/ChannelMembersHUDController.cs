@@ -5,21 +5,25 @@ using DCL.Chat.Channels;
 using DCL.Tasks;
 using System.Collections.Generic;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelMembersHUDController : IDisposable
     {
         private const int LOAD_TIMEOUT = 2;
         private const int LOAD_PAGE_SIZE = 30;
         private const int MINUTES_FOR_AUTOMATIC_RELOADING = 1;
+
         private readonly IChatController chatController;
         private readonly IUserProfileBridge userProfileBridge;
         private readonly DataStore_Channels dataStoreChannels;
-        private IChannelMembersComponentView view;
+        private readonly IChannelMembersComponentView view;
+        private readonly CancellationTokenSource showMembersCancellationToken = new ();
+        private readonly UserProfile ownUserProfile;
+
         internal DateTime loadStartedTimestamp = DateTime.MinValue;
-        private CancellationTokenSource loadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource reloadingCancellationToken = new CancellationTokenSource();
-        private CancellationTokenSource showMembersCancellationToken = new ();
+
+        private CancellationTokenSource loadingCancellationToken = new ();
+        private CancellationTokenSource reloadingCancellationToken = new ();
         private string currentChannelId;
         private int lastLimitRequested;
         private bool isSearching;
@@ -38,6 +42,8 @@ namespace DCL.Chat.HUD
             this.chatController = chatController;
             this.userProfileBridge = userProfileBridge;
             this.dataStoreChannels = dataStoreChannels;
+
+            ownUserProfile = userProfileBridge.GetOwn();
         }
 
         public void SetChannelId(string channelId)
@@ -158,7 +164,8 @@ namespace DCL.Chat.HUD
                             thumnailUrl = "",
                             userId = member.userId,
                             userName = member.userId,
-                            isOptionsButtonHidden = member.userId == userProfileBridge.GetOwn().userId
+                            isOptionsButtonHidden = member.userId == userProfileBridge.GetOwn().userId,
+                            blocked = false
                         };
 
                         view.Set(fallbackMemberEntry);
@@ -174,7 +181,8 @@ namespace DCL.Chat.HUD
                         thumnailUrl = memberProfile.face256SnapshotURL,
                         userId = memberProfile.userId,
                         userName = memberProfile.userName,
-                        isOptionsButtonHidden = memberProfile.userId == userProfileBridge.GetOwn().userId
+                        isOptionsButtonHidden = memberProfile.userId == userProfileBridge.GetOwn().userId,
+                        blocked = IsUserBlocked(memberProfile.userId)
                     };
 
                     view.Set(userToAdd);
@@ -194,6 +202,14 @@ namespace DCL.Chat.HUD
             }
 
             UpdateChannelMembersAsync(channelMembers, showMembersCancellationToken.Token).Forget();
+        }
+
+        private bool IsUserBlocked(string userId)
+        {
+            if (ownUserProfile != null && ownUserProfile.blocked != null)
+                return ownUserProfile.blocked.Contains(userId);
+
+            return false;
         }
 
         private void LoadMoreMembers()

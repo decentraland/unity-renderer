@@ -25,10 +25,17 @@ public class PlacesSubSectionComponentControllerTests
     {
         placesSubSectionComponentView = Substitute.For<IPlacesSubSectionComponentView>();
         placesAPIService = Substitute.For<IPlacesAPIService>();
-        placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)>((new List<IHotScenesController.PlaceInfo>(), 0)));
+        placesAPIService.GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(),Arg.Any<CancellationToken>()).Returns( new UniTask<(IReadOnlyList<IHotScenesController.PlaceInfo> places, int total)>((new List<IHotScenesController.PlaceInfo>(), 0)));
         friendsController = Substitute.For<IFriendsController>();
         exploreV2Analytics = Substitute.For<IExploreV2Analytics>();
-        placesSubSectionComponentController = new PlacesSubSectionComponentController(placesSubSectionComponentView, placesAPIService, friendsController, exploreV2Analytics, DataStore.i);
+        placesSubSectionComponentController = new PlacesSubSectionComponentController(
+            placesSubSectionComponentView,
+            placesAPIService,
+            friendsController,
+            exploreV2Analytics,
+            Substitute.For<IPlacesAnalytics>(),
+            DataStore.i,
+            Substitute.For<IUserProfileBridge>());
     }
 
     [TearDown]
@@ -90,7 +97,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentView.Received().RestartScrollViewPosition();
         placesSubSectionComponentView.Received().SetAllAsLoading();
         placesSubSectionComponentView.Received().SetShowMoreButtonActive(false);
-        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(),Arg.Any<CancellationToken>());
         Assert.IsFalse(placesSubSectionComponentController.cardsReloader.reloadSubSection);
     }
 
@@ -101,7 +108,7 @@ public class PlacesSubSectionComponentControllerTests
         placesSubSectionComponentController.RequestAllFromAPI();
 
         // Assert
-        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(),Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -127,7 +134,7 @@ public class PlacesSubSectionComponentControllerTests
         // Act
         placesSubSectionComponentController.ShowMorePlaces();
         // Assert
-        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>());
+        placesAPIService.Received().GetMostActivePlaces(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(),Arg.Any<CancellationToken>());
     }
 
     [Test]

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Chat.HUD
+namespace DCL.Social.Chat
 {
     public class ChannelMemberEntry : BaseComponentView, IComponentModelConfig<ChannelMemberEntryModel>
     {
@@ -13,6 +13,7 @@ namespace DCL.Chat.HUD
         [SerializeField] internal GameObject optionsButtonContainer;
         [SerializeField] internal Button optionsButton;
         [SerializeField] internal RectTransform userContextMenuPositionReference;
+        [SerializeField] internal Image playerBlockedImage;
 
         [Header("Configuration")]
         [SerializeField] internal ChannelMemberEntryModel model;
@@ -27,8 +28,8 @@ namespace DCL.Chat.HUD
 
             optionsButton.onClick.AddListener(() =>
             {
-                userContextMenu.Show(model.userId);
                 Dock(userContextMenu);
+                userContextMenu.Show(model.userId);
             });
         }
 
@@ -45,6 +46,8 @@ namespace DCL.Chat.HUD
             SetUserThumbnail(model.thumnailUrl);
             SetUserOnlineStatus(model.isOnline);
             SetIsOptionsButtonHidden(model.isOptionsButtonHidden);
+
+            playerBlockedImage.enabled = Model.blocked;
         }
 
         public void SetUserContextMenu(UserContextMenu userContextMenu)

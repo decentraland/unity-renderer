@@ -18,11 +18,12 @@ namespace DCL.EmotesCustomization
         [SerializeField] internal EmoteSlotSelectorComponentView emoteSlotSelector;
         [SerializeField] internal GridContainerComponentView emotesGrid;
         [SerializeField] internal NFTItemInfo emoteInfoPanel;
+        [SerializeField] internal ColumnsOrganizerComponentView columnsOrganizerComponentView;
 
         public event Action<string, int> onEmoteEquipped;
         public event Action<string, int> onEmoteUnequipped;
         public event Action<string> onSellEmoteClicked;
-        public event Action<string, int> onSlotSelected;
+        public event Action<string, int, bool> onSlotSelected;
 
         internal Pool emoteCardsPool;
 
@@ -51,6 +52,7 @@ namespace DCL.EmotesCustomization
         {
             emoteSlotSelector.RefreshControl();
             emotesGrid.RefreshControl();
+            columnsOrganizerComponentView?.RefreshControl();
         }
 
         public override void Dispose()
@@ -156,8 +158,9 @@ namespace DCL.EmotesCustomization
             emoteInfoPanel.SetBackgroundColor(backgroundColor);
             emoteInfoPanel.SetRarityName(emoteModel.rarity);
             SetEmoteInfoPanelActive(true);
-            emoteInfoPanel.transform.SetParent(anchorTransform);
-            emoteInfoPanel.transform.localPosition = Vector3.zero;
+            var emoteInfoPanelTransform = emoteInfoPanel.transform;
+            emoteInfoPanelTransform.SetParent(anchorTransform);
+            emoteInfoPanelTransform.localPosition = Vector3.zero;
             emoteInfoPanel.sellButton.onClick.RemoveAllListeners();
             emoteInfoPanel.sellButton.onClick.AddListener(() => onSellEmoteClicked?.Invoke(emoteModel.id));
         }
@@ -169,6 +172,14 @@ namespace DCL.EmotesCustomization
         public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
         public EmoteSlotCardComponentView GetSlot(int slotNumber) { return currentSlots.FirstOrDefault(x => x.model.slotNumber == slotNumber); }
+
+        public void Refresh()
+        {
+            RefreshControl();
+        }
+
+        public void RefreshEmotesGrid() =>
+            emotesGrid.RefreshControl();
 
         internal void ClickOnEmote(string emoteId, string emoteName, int slotNumber, bool isAssignedInSelectedSlot)
         {
@@ -214,7 +225,7 @@ namespace DCL.EmotesCustomization
             return emoteGO;
         }
 
-        internal void OnSlotSelected(int slotNumber, string emoteId)
+        internal void OnSlotSelected(int slotNumber, string emoteId, bool playEmote)
         {
             List<EmoteCardComponentView> currentEmoteCards = GetAllEmoteCards();
             foreach (var existingEmoteCard in currentEmoteCards)
@@ -223,7 +234,7 @@ namespace DCL.EmotesCustomization
             }
 
             SetEmoteInfoPanelActive(false);
-            onSlotSelected?.Invoke(emoteId, slotNumber);
+            onSlotSelected?.Invoke(emoteId, slotNumber, playEmote);
         }
 
         internal List<EmoteCardComponentView> GetAllEmoteCards()

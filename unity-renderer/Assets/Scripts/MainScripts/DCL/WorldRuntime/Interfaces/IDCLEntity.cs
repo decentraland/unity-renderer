@@ -31,7 +31,7 @@ namespace DCL.Models
         Action<CLASS_ID_COMPONENT, IDCLEntity> OnBaseComponentAdded { get; set; }
 
         Action<object> OnNameChange { get; set; }
-        Action<object> OnTransformChange { get; set; }
+        Action<Vector3, Quaternion> OnTransformChange { get; set; }
         Action<IDCLEntity, bool> OnInsideBoundariesChanged { get; set; }
         Action<IDCLEntity, bool> OnOuterBoundariesChanged { get; set; }
         long parentId { get; set; }

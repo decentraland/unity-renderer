@@ -1,7 +1,9 @@
 ﻿using DCL.Browser;
 using DCL.Providers;
+using DCL.Social.Friends;
 using DCL.Tasks;
 using DCLServices.Lambdas.NamesService;
+using DCLServices.SubscriptionsAPIService;
 using SocialFeaturesAnalytics;
 using System.Threading;
 
@@ -13,6 +15,8 @@ namespace DCL.MyAccount
 
         private MyAccountSectionHUDController myAccountSectionHUDController;
         private MyProfileController myProfileController;
+        private EmailNotificationsController emailNotificationsController;
+        private BlockedListController blockedListController;
 
         public MyAccountPlugin()
         {
@@ -24,30 +28,35 @@ namespace DCL.MyAccount
             var myAccountSectionView = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                         .Instantiate<MyAccountSectionHUDComponentView>("MyAccountSectionHUD", "MyAccountSectionHUD", cancellationToken: ct);
 
+            var updateEmailConfirmationHUD = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
+                                                              .Instantiate<UpdateEmailConfirmationHUDComponentView>("UpdateEmailConfirmationHUD", "UpdateEmailConfirmationHUD", cancellationToken: ct);
+
             ProfileAdditionalInfoValueListScriptableObject countryListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
                                                                                                   .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileCountries", ct);
 
             ProfileAdditionalInfoValueListScriptableObject genderListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                          .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileGenders", ct);
+                                                                                                 .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileGenders", ct);
 
             ProfileAdditionalInfoValueListScriptableObject sexualOrientationProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                 .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileSexualOrientations", ct);
+                                                                                                        .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileSexualOrientations", ct);
 
             ProfileAdditionalInfoValueListScriptableObject employmentStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileEmploymentStatus", ct);
+                                                                                                       .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileEmploymentStatus", ct);
 
             ProfileAdditionalInfoValueListScriptableObject relationshipStatusProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                                  .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileRelationshipStatus", ct);
+                                                                                                         .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileRelationshipStatus", ct);
 
             ProfileAdditionalInfoValueListScriptableObject languageListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                            .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileLanguages", ct);
+                                                                                                   .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfileLanguages", ct);
 
             ProfileAdditionalInfoValueListScriptableObject pronounListProvider = await Environment.i.serviceLocator.Get<IAddressableResourceProvider>()
-                                                                                           .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfilePronouns", ct);
+                                                                                                  .GetAddressable<ProfileAdditionalInfoValueListScriptableObject>("ProfilePronouns", ct);
 
             var dataStore = DataStore.i;
 
             var userProfileWebInterfaceBridge = new UserProfileWebInterfaceBridge();
+
+            var socialAnalytics = new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge);
 
             myAccountSectionHUDController = new MyAccountSectionHUDController(
                 myAccountSectionView,
@@ -62,7 +71,7 @@ namespace DCL.MyAccount
                 myAccountSectionHUDController,
                 KernelConfig.i,
                 new MyAccountAnalyticsService(Environment.i.platform.serviceProviders.analytics),
-                new SocialAnalytics(Environment.i.platform.serviceProviders.analytics, userProfileWebInterfaceBridge),
+                socialAnalytics,
                 countryListProvider,
                 genderListProvider,
                 sexualOrientationProvider,
@@ -70,13 +79,31 @@ namespace DCL.MyAccount
                 relationshipStatusProvider,
                 languageListProvider,
                 pronounListProvider);
+
+            emailNotificationsController = new EmailNotificationsController(
+                myAccountSectionView.CurrentEmailNotificationsView,
+                updateEmailConfirmationHUD,
+                myAccountSectionHUDController,
+                dataStore,
+                Environment.i.serviceLocator.Get<ISubscriptionsAPIService>(),
+                socialAnalytics);
+
+            blockedListController = new BlockedListController(
+                myAccountSectionView.CurrentBlockedListComponentView,
+                dataStore,
+                userProfileWebInterfaceBridge,
+                new WebInterfaceBlockedListApiBridge(),
+                socialAnalytics,
+                Environment.i.serviceLocator.Get<IFriendsController>());
         }
 
         public void Dispose()
         {
             cts.SafeCancelAndDispose();
             myProfileController.Dispose();
+            emailNotificationsController.Dispose();
             myAccountSectionHUDController.Dispose();
+            blockedListController.Dispose();
         }
     }
 }

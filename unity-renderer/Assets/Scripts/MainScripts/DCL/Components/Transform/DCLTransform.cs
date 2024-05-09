@@ -74,7 +74,7 @@ namespace DCL.Components
             // and those values are used for the interpolation.
             if (entity.OnTransformChange != null)
             {
-                entity.OnTransformChange.Invoke(DCLTransform.model);
+                entity.OnTransformChange.Invoke(DCLTransform.model.position, DCLTransform.model.rotation);
             }
             else
             {

@@ -26,14 +26,15 @@ public class EmotesCatalogServiceShould
         emotesRequestSource = Substitute.For<IEmotesRequestSource>();
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetEmbeddedEmotesSO());
-        catalog = new LambdasEmotesCatalogService(emotesRequestSource, addressableResourceProvider);
+        catalog = new LambdasEmotesCatalogService(emotesRequestSource, addressableResourceProvider, Substitute.For<ICatalyst>(),
+            Substitute.For<ILambdasService>(), new DataStore());
         catalog.Initialize();
     }
 
     private async UniTask<EmbeddedEmotesSO> GetEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = new EmbeddedEmote[] { };
+        embeddedEmotes.Clear();
         return embeddedEmotes;
     }
 
@@ -340,7 +341,8 @@ public class EmotesCatalogServiceShould
 
         IAddressableResourceProvider addressableResourceProvider = Substitute.For<IAddressableResourceProvider>();
         addressableResourceProvider.GetAddressable<EmbeddedEmotesSO>(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GetExampleEmbeddedEmotesSO());
-        catalog = new LambdasEmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider);
+        catalog = new LambdasEmotesCatalogService(Substitute.For<IEmotesRequestSource>(), addressableResourceProvider,
+            Substitute.For<ICatalyst>(), Substitute.For<ILambdasService>(), new DataStore());
         catalog.Initialize();
 
         Assert.AreEqual(catalog.emotes["id1"], embededEmotes[0]);
@@ -354,7 +356,8 @@ public class EmotesCatalogServiceShould
     private async UniTask<EmbeddedEmotesSO> GetExampleEmbeddedEmotesSO()
     {
         EmbeddedEmotesSO embeddedEmotes = ScriptableObject.CreateInstance<EmbeddedEmotesSO>();
-        embeddedEmotes.emotes = embededEmotes;
+        embeddedEmotes.Clear();
+        embeddedEmotes.OverrideEmotes(embededEmotes);
         return embeddedEmotes;
     }
 

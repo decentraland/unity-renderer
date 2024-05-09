@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using MainScripts.DCL.Controllers.HotScenes;
 using System.Threading;
 using Environment = DCL.Environment;
 using static MainScripts.DCL.Controllers.HotScenes.IHotScenesController;
@@ -18,24 +17,36 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 {
     public event Action OnCloseExploreV2;
 
-    internal const int INITIAL_NUMBER_OF_ROWS = 5;
+    internal const int INITIAL_NUMBER_OF_ROWS = 4;
     private const int PAGE_SIZE = 12;
+    private const string MOST_ACTIVE_FILTER_ID = "most_active";
 
     internal readonly IPlacesSubSectionComponentView view;
     internal readonly IPlacesAPIService placesAPIService;
     internal readonly FriendTrackerController friendsTrackerController;
     private readonly IExploreV2Analytics exploreV2Analytics;
+    private readonly IPlacesAnalytics placesAnalytics;
     private readonly DataStore dataStore;
+    private readonly IUserProfileBridge userProfileBridge;
+    private IReadOnlyList<string> allPointOfInterest;
 
     internal readonly PlaceAndEventsCardsReloader cardsReloader;
 
     internal readonly List<PlaceInfo> placesFromAPI = new ();
     internal int availableUISlots;
+    private CancellationTokenSource getCategoriesCts;
     private CancellationTokenSource getPlacesCts = new ();
     private CancellationTokenSource showMoreCts = new ();
     private CancellationTokenSource disposeCts = new ();
 
-    public PlacesSubSectionComponentController(IPlacesSubSectionComponentView view, IPlacesAPIService placesAPI, IFriendsController friendsController, IExploreV2Analytics exploreV2Analytics, DataStore dataStore)
+    public PlacesSubSectionComponentController(
+        IPlacesSubSectionComponentView view,
+        IPlacesAPIService placesAPI,
+        IFriendsController friendsController,
+        IExploreV2Analytics exploreV2Analytics,
+        IPlacesAnalytics placesAnalytics,
+        DataStore dataStore,
+        IUserProfileBridge userProfileBridge)
     {
         cardsReloader = new PlaceAndEventsCardsReloader(view, this, dataStore.exploreV2);
 
@@ -46,7 +57,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         this.view.OnInfoClicked += ShowPlaceDetailedInfo;
         this.view.OnJumpInClicked += OnJumpInToPlace;
         this.view.OnFavoriteClicked += View_OnFavoritesClicked;
-
+        this.view.OnVoteChanged += View_OnVoteChanged;
         this.view.OnShowMorePlacesClicked += ShowMorePlaces;
 
         this.view.OnFriendHandlerAdded += View_OnFriendHandlerAdded;
@@ -59,6 +70,9 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         friendsTrackerController = new FriendTrackerController(friendsController, view.currentFriendColors);
 
         this.exploreV2Analytics = exploreV2Analytics;
+        this.placesAnalytics = placesAnalytics;
+
+        this.userProfileBridge = userProfileBridge;
 
         view.ConfigurePools();
     }
@@ -67,13 +81,17 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
     {
         disposeCts?.SafeCancelAndDispose();
         showMoreCts?.SafeCancelAndDispose();
+        getCategoriesCts?.SafeCancelAndDispose();
         getPlacesCts?.SafeCancelAndDispose();
 
         view.OnReady -= FirstLoading;
         view.OnInfoClicked -= ShowPlaceDetailedInfo;
         view.OnJumpInClicked -= OnJumpInToPlace;
-        this.view.OnFavoriteClicked += View_OnFavoritesClicked;
-        view.OnPlacesSubSectionEnable -= RequestAllPlaces;
+        view.OnFavoriteClicked -= View_OnFavoritesClicked;
+        this.view.OnVoteChanged -= View_OnVoteChanged;
+        view.OnPlacesSubSectionEnable -= OpenTab;
+        view.OnFilterChanged -= ApplyFilters;
+        view.OnSortingChanged -= ApplySorting;
         view.OnFriendHandlerAdded -= View_OnFriendHandlerAdded;
         view.OnShowMorePlacesClicked -= ShowMorePlaces;
 
@@ -82,24 +100,70 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         cardsReloader.Dispose();
     }
 
-    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    private void View_OnVoteChanged(string placeId, bool? isUpvote)
     {
-        if (isFavorite)
-        {
-            exploreV2Analytics.AddFavorite(placeUUID);
-        }
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
         else
         {
-            exploreV2Analytics.RemoveFavorite(placeUUID);
-        }
+            if (isUpvote != null)
+            {
+                if (isUpvote.Value)
+                    placesAnalytics.Like(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+                else
+                    placesAnalytics.Dislike(placeId, IPlacesAnalytics.ActionSource.FromExplore);
+            }
+            else
+                placesAnalytics.RemoveVote(placeId, IPlacesAnalytics.ActionSource.FromExplore);
 
-        placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+            placesAPIService.SetPlaceVote(isUpvote, placeId, disposeCts.Token);
+        }
+    }
+
+    private void View_OnFavoritesClicked(string placeUUID, bool isFavorite)
+    {
+        if (userProfileBridge.GetOwn().isGuest)
+            dataStore.HUDs.connectWalletModalVisible.Set(true);
+        else
+        {
+            if (isFavorite)
+                placesAnalytics.AddFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+            else
+                placesAnalytics.RemoveFavorite(placeUUID, IPlacesAnalytics.ActionSource.FromExplore);
+
+            placesAPIService.SetPlaceFavorite(placeUUID, isFavorite, disposeCts.Token);
+        }
     }
 
     private void FirstLoading()
     {
-        view.OnPlacesSubSectionEnable += RequestAllPlaces;
+        view.OnPlacesSubSectionEnable += OpenTab;
+        view.OnFilterChanged += ApplyFilters;
+        view.OnSortingChanged += ApplySorting;
         cardsReloader.Initialize();
+
+        getCategoriesCts = getCategoriesCts.SafeRestart();
+        RequestPlaceCategoriesAsync(getCategoriesCts.Token).Forget();
+    }
+
+    private void OpenTab()
+    {
+        exploreV2Analytics.SendPlacesTabOpen();
+        RequestAllPlaces();
+    }
+
+    private void ApplyFilters()
+    {
+        if (!string.IsNullOrEmpty(view.filter))
+            placesAnalytics.Filter(view.filter.Replace("categories=", ""));
+
+        RequestAllPlaces();
+    }
+
+    private void ApplySorting()
+    {
+        placesAnalytics.Sort(view.sort == MOST_ACTIVE_FILTER_ID ? IPlacesAnalytics.SortingType.MostActive : IPlacesAnalytics.SortingType.Best);
+        RequestAllPlaces();
     }
 
     internal void RequestAllPlaces()
@@ -121,23 +185,38 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         RequestAllFromAPIAsync(getPlacesCts.Token).Forget();
     }
 
+    private async UniTaskVoid RequestPlaceCategoriesAsync(CancellationToken ct)
+    {
+        try
+        {
+            var allCategories = await placesAPIService.GetPlaceCategories(ct);
+            view.SetPlaceCategories(allCategories.Select(x => (x.name, x.i18n.en)).ToList());
+        }
+        catch (OperationCanceledException) { }
+    }
+
     private async UniTaskVoid RequestAllFromAPIAsync(CancellationToken ct)
     {
         try
         {
-            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, ct);
+            allPointOfInterest = await placesAPIService.GetPointsOfInterestCoords(ct);
+
+            if (allPointOfInterest != null)
+                view.SetPOICoords(allPointOfInterest.ToList());
+
+            (IReadOnlyList<PlaceInfo> places, int total) firstPage = await placesAPIService.GetMostActivePlaces(0, PAGE_SIZE, view.filter, view.sort, ct);
             friendsTrackerController.RemoveAllHandlers();
             placesFromAPI.Clear();
             placesFromAPI.AddRange(firstPage.places);
             if (firstPage.total > PAGE_SIZE)
             {
-                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, ct);
+                (IReadOnlyList<PlaceInfo> places, int total) secondPage = await placesAPIService.GetMostActivePlaces(1, PAGE_SIZE, view.filter, view.sort, ct);
                 placesFromAPI.AddRange(secondPage.places);
             }
 
             view.SetPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(placesFromAPI, availableUISlots));
-
             view.SetShowMorePlacesButtonActive(placesFromAPI.Count < firstPage.total);
+            view.SetResultCounter(firstPage.total);
         }
         catch (OperationCanceledException) { }
     }
@@ -151,7 +230,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
 
     private async UniTask ShowMorePlacesAsync(CancellationToken ct)
     {
-        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, showMoreCts.Token);
+        (IReadOnlyList<PlaceInfo> places, int total) = await placesAPIService.GetMostActivePlaces((placesFromAPI.Count/PAGE_SIZE), PAGE_SIZE, view.filter, view.sort, showMoreCts.Token);
 
         placesFromAPI.AddRange(places);
         view.AddPlaces(PlacesAndEventsCardsFactory.ConvertPlaceResponseToModel(places));
@@ -176,7 +255,7 @@ public class PlacesSubSectionComponentController : IPlacesSubSectionComponentCon
         exploreV2Analytics.SendPlaceTeleport(placeFromAPI.id, placeFromAPI.title, Utils.ConvertStringToVector(placeFromAPI.base_position));
     }
 
-    private void View_OnFriendHandlerAdded(FriendsHandler friendsHandler) =>
+    private void View_OnFriendHandlerAdded(IFriendTrackerHandler friendsHandler) =>
         friendsTrackerController.AddHandler(friendsHandler);
 
     private void OnChannelToJoinChanged(string currentChannelId, string previousChannelId)

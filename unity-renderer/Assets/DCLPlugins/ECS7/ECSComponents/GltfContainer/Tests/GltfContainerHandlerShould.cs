@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.Components.GltfContainer
 {
     public class GltfContainerHandlerShould
     {
@@ -58,8 +58,11 @@ namespace Tests
                 customLayerColliderComponent,
                 renderersComponent,
                 gltfContainerLoadingStateComponent,
+                internalEcsComponents.Animation,
                 dataStoreEcs7,
-                new DataStore_FeatureFlag());
+                new DataStore_FeatureFlag(),
+                new DataStore_WorldObjects(),
+                new DebugConfig());
 
             handler.OnComponentCreated(scene, entity);
         }

@@ -9,10 +9,12 @@ namespace MainScripts.DCL.Controllers.HotScenes
         public enum UpdateMode
         {
             FOREGROUND,
-            BACKGROUND
+            BACKGROUND,
+            IMMEDIATELY_ONCE,
         }
 
         IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotSceneInfo>> ScenesInfo { get; }
+        IReadOnlyAsyncReactiveProperty<IReadOnlyList<IHotScenesController.HotWorldInfo.WorldInfo>> WorldsInfo { get; }
 
         public void SetUpdateMode(UpdateMode mode);
     }
