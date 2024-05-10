@@ -133,6 +133,7 @@ namespace DCL.Backpack
                     void UpdateEmotes()
                     {
                         dataStore.emotesCustomization.UnequipMissingEmotes(allEmotes);
+                        Debug.Log($"All emotes: {string.Join(",", allEmotes.Select(item => item.id))}");
                         emotesCustomizationComponentController.SetEmotes(allEmotes.ToArray());
                     }
                 }
