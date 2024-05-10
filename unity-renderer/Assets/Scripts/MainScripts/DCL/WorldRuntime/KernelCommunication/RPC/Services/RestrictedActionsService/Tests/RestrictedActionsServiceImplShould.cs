@@ -153,8 +153,8 @@ namespace Tests
                 out contractAddress,
                 out tokenId));
 
-            // "chain" invalid
-            Assert.IsFalse(NFTUtils.TryParseUrn(
+            // "we don't have invalid chains now. OpenSea handles them"
+            Assert.IsTrue(NFTUtils.TryParseUrn(
                 $"urn:decentraland:some-chain:erc1150:0x0000temptation:666",
                 out chain,
                 out contractAddress,
@@ -216,7 +216,8 @@ namespace Tests
                 Assert.IsTrue(result.Success);
                 Assert.IsTrue(requested);
                 Assert.AreEqual(contractAddress, EXPECTED_CONTRACT_ADDRESS);
-                Assert.AreEqual(tokenId, EXPECTED_CHAIN);
+                Assert.AreEqual(tokenId, EXPECTED_TOKEN_ID);
+                Assert.AreEqual(chainId, EXPECTED_CHAIN);
             });
         }
 
