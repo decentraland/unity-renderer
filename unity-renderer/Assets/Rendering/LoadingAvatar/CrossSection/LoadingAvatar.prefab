@@ -4933,6 +4933,20 @@ MonoBehaviour:
     Bone: {fileID: 1012629841675324211}
   - AnchorName: Avatar_RightHand
     Bone: {fileID: 8806991813208880745}
+  - AnchorName: Avatar_Head
+    Bone: {fileID: 4479254020327503826}
+  - AnchorName: Avatar_Back
+    Bone: {fileID: 2449413715865180720}
+  - AnchorName: Avatar_LeftFoot
+    Bone: {fileID: 4650995663620939331}
+  - AnchorName: Avatar_RightFoot
+    Bone: {fileID: 6016975871246788600}
+  - AnchorName: Avatar_LeftShoulder
+    Bone: {fileID: 83039310312422164}
+  - AnchorName: Avatar_RightShoulder
+    Bone: {fileID: 6204464764418522040}
+  - AnchorName: Avatar_Hip
+    Bone: {fileID: 1112770709559191755}
   ghostMinColor: {r: 0.24313726, g: 0.7372549, b: 1.4980392, a: 0.24705882}
   ghostMaxColor: {r: 0.24313726, g: 1.4980392, b: 0.7607843, a: 0}
   fadeGhostSpeed: 2.5
@@ -19523,9 +19537,51 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ffee176dc073145748f97a170835fe04, type: 3}
+--- !u!4 &83039310312422164 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5114216961475161787, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1012629841675324211 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5319823815903354524, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1112770709559191755 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5237407066908114276, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2449413715865180720 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7358963322329010079, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4479254020327503826 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8788734155581940349, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4650995663620939331 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 528606720655854572, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6016975871246788600 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1467836229357892183, guid: ffee176dc073145748f97a170835fe04,
+    type: 3}
+  m_PrefabInstance: {fileID: 5178676586828895663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6204464764418522040 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1280417842260766231, guid: ffee176dc073145748f97a170835fe04,
     type: 3}
   m_PrefabInstance: {fileID: 5178676586828895663}
   m_PrefabAsset: {fileID: 0}

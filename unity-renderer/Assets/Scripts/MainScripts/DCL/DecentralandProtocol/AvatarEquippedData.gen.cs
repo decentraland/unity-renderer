@@ -25,14 +25,14 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjZkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXZhdGFyX2VxdWlwcGVk",
-            "X2RhdGEucHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJCChRQ",
-            "QkF2YXRhckVxdWlwcGVkRGF0YRIVCg13ZWFyYWJsZV91cm5zGAEgAygJEhMK",
-            "C2Vtb3Rlc191cm5zGAIgAygJQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
-            "dG8z"));
+            "X2RhdGEucHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJBChRQ",
+            "QkF2YXRhckVxdWlwcGVkRGF0YRIVCg13ZWFyYWJsZV91cm5zGAEgAygJEhIK",
+            "CmVtb3RlX3VybnMYAiADKAlCFKoCEURDTC5FQ1NDb21wb25lbnRzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarEquippedData), global::DCL.ECSComponents.PBAvatarEquippedData.Parser, new[]{ "WearableUrns", "EmotesUrns" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarEquippedData), global::DCL.ECSComponents.PBAvatarEquippedData.Parser, new[]{ "WearableUrns", "EmoteUrns" }, null, null, null, null)
           }));
     }
     #endregion
@@ -79,7 +79,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarEquippedData(PBAvatarEquippedData other) : this() {
       wearableUrns_ = other.wearableUrns_.Clone();
-      emotesUrns_ = other.emotesUrns_.Clone();
+      emoteUrns_ = other.emoteUrns_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -100,15 +100,15 @@ namespace DCL.ECSComponents {
       get { return wearableUrns_; }
     }
 
-    /// <summary>Field number for the "emotes_urns" field.</summary>
-    public const int EmotesUrnsFieldNumber = 2;
-    private static readonly pb::FieldCodec<string> _repeated_emotesUrns_codec
+    /// <summary>Field number for the "emote_urns" field.</summary>
+    public const int EmoteUrnsFieldNumber = 2;
+    private static readonly pb::FieldCodec<string> _repeated_emoteUrns_codec
         = pb::FieldCodec.ForString(18);
-    private readonly pbc::RepeatedField<string> emotesUrns_ = new pbc::RepeatedField<string>();
+    private readonly pbc::RepeatedField<string> emoteUrns_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<string> EmotesUrns {
-      get { return emotesUrns_; }
+    public pbc::RepeatedField<string> EmoteUrns {
+      get { return emoteUrns_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -127,7 +127,7 @@ namespace DCL.ECSComponents {
         return true;
       }
       if(!wearableUrns_.Equals(other.wearableUrns_)) return false;
-      if(!emotesUrns_.Equals(other.emotesUrns_)) return false;
+      if(!emoteUrns_.Equals(other.emoteUrns_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -136,7 +136,7 @@ namespace DCL.ECSComponents {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= wearableUrns_.GetHashCode();
-      hash ^= emotesUrns_.GetHashCode();
+      hash ^= emoteUrns_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -156,7 +156,7 @@ namespace DCL.ECSComponents {
       output.WriteRawMessage(this);
     #else
       wearableUrns_.WriteTo(output, _repeated_wearableUrns_codec);
-      emotesUrns_.WriteTo(output, _repeated_emotesUrns_codec);
+      emoteUrns_.WriteTo(output, _repeated_emoteUrns_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -168,7 +168,7 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       wearableUrns_.WriteTo(ref output, _repeated_wearableUrns_codec);
-      emotesUrns_.WriteTo(ref output, _repeated_emotesUrns_codec);
+      emoteUrns_.WriteTo(ref output, _repeated_emoteUrns_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -180,7 +180,7 @@ namespace DCL.ECSComponents {
     public int CalculateSize() {
       int size = 0;
       size += wearableUrns_.CalculateSize(_repeated_wearableUrns_codec);
-      size += emotesUrns_.CalculateSize(_repeated_emotesUrns_codec);
+      size += emoteUrns_.CalculateSize(_repeated_emoteUrns_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -194,7 +194,7 @@ namespace DCL.ECSComponents {
         return;
       }
       wearableUrns_.Add(other.wearableUrns_);
-      emotesUrns_.Add(other.emotesUrns_);
+      emoteUrns_.Add(other.emoteUrns_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -215,7 +215,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 18: {
-            emotesUrns_.AddEntriesFrom(input, _repeated_emotesUrns_codec);
+            emoteUrns_.AddEntriesFrom(input, _repeated_emoteUrns_codec);
             break;
           }
         }
@@ -238,7 +238,7 @@ namespace DCL.ECSComponents {
             break;
           }
           case 18: {
-            emotesUrns_.AddEntriesFrom(ref input, _repeated_emotesUrns_codec);
+            emoteUrns_.AddEntriesFrom(ref input, _repeated_emoteUrns_codec);
             break;
           }
         }

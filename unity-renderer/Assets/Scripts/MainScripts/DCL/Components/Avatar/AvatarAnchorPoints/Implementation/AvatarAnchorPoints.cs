@@ -7,6 +7,13 @@ public class AvatarAnchorPoints : IAvatarAnchorPoints
     {
         { AvatarAnchorPointIds.LeftHand, "Avatar_LeftHand" },
         { AvatarAnchorPointIds.RightHand, "Avatar_RightHand" },
+        { AvatarAnchorPointIds.Head, "Avatar_Head" },
+        { AvatarAnchorPointIds.Back, "Avatar_Back" },
+        { AvatarAnchorPointIds.LeftFoot, "Avatar_LeftFoot" },
+        { AvatarAnchorPointIds.RightFoot, "Avatar_RightFoot" },
+        { AvatarAnchorPointIds.LeftShoulder, "Avatar_LeftShoulder" },
+        { AvatarAnchorPointIds.RightShoulder, "Avatar_RightShoulder" },
+        { AvatarAnchorPointIds.Hip, "Avatar_Hip" },
     };
 
     private readonly Dictionary<AvatarAnchorPointIds, Transform> boneTransformMapping = new ();

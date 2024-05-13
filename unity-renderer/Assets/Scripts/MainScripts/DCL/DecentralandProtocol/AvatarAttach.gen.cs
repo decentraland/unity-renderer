@@ -28,10 +28,13 @@ namespace DCL.ECSComponents {
             "cm90bxIbZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzIoMBCg5QQkF2YXRh",
             "ckF0dGFjaBIWCglhdmF0YXJfaWQYASABKAlIAIgBARJLCg9hbmNob3JfcG9p",
             "bnRfaWQYAiABKA4yMi5kZWNlbnRyYWxhbmQuc2RrLmNvbXBvbmVudHMuQXZh",
-            "dGFyQW5jaG9yUG9pbnRUeXBlQgwKCl9hdmF0YXJfaWQqZgoVQXZhdGFyQW5j",
-            "aG9yUG9pbnRUeXBlEhEKDUFBUFRfUE9TSVRJT04QABIRCg1BQVBUX05BTUVf",
-            "VEFHEAESEgoOQUFQVF9MRUZUX0hBTkQQAhITCg9BQVBUX1JJR0hUX0hBTkQQ",
-            "A0IUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
+            "dGFyQW5jaG9yUG9pbnRUeXBlQgwKCl9hdmF0YXJfaWQq7AEKFUF2YXRhckFu",
+            "Y2hvclBvaW50VHlwZRIRCg1BQVBUX1BPU0lUSU9OEAASEQoNQUFQVF9OQU1F",
+            "X1RBRxABEhIKDkFBUFRfTEVGVF9IQU5EEAISEwoPQUFQVF9SSUdIVF9IQU5E",
+            "EAMSDQoJQUFQVF9IRUFEEAQSDQoJQUFQVF9CQUNLEAUSEgoOQUFQVF9MRUZU",
+            "X0ZPT1QQBhITCg9BQVBUX1JJR0hUX0ZPT1QQBxIWChJBQVBUX0xFRlRfU0hP",
+            "VUxERVIQCBIXChNBQVBUX1JJR0hUX1NIT1VMREVSEAkSDAoIQUFQVF9ISVAQ",
+            "CkIUqgIRRENMLkVDU0NvbXBvbmVudHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.AvatarAnchorPointType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -50,6 +53,13 @@ namespace DCL.ECSComponents {
     [pbr::OriginalName("AAPT_NAME_TAG")] AaptNameTag = 1,
     [pbr::OriginalName("AAPT_LEFT_HAND")] AaptLeftHand = 2,
     [pbr::OriginalName("AAPT_RIGHT_HAND")] AaptRightHand = 3,
+    [pbr::OriginalName("AAPT_HEAD")] AaptHead = 4,
+    [pbr::OriginalName("AAPT_BACK")] AaptBack = 5,
+    [pbr::OriginalName("AAPT_LEFT_FOOT")] AaptLeftFoot = 6,
+    [pbr::OriginalName("AAPT_RIGHT_FOOT")] AaptRightFoot = 7,
+    [pbr::OriginalName("AAPT_LEFT_SHOULDER")] AaptLeftShoulder = 8,
+    [pbr::OriginalName("AAPT_RIGHT_SHOULDER")] AaptRightShoulder = 9,
+    [pbr::OriginalName("AAPT_HIP")] AaptHip = 10,
   }
 
   #endregion
