@@ -110,7 +110,7 @@ public class NFTPromptHUDController : IHUD
         view.SetNFTInfo(info, comment);
         if (shouldRefreshOwners)
         {
-            ownersInfoController.SetOwners(info.owners);
+            if(info.owners != null) ownersInfoController.SetOwners(info.owners);
         }
     }
 

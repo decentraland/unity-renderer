@@ -191,14 +191,14 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         textNftName.text = info.name;
         textNftName.gameObject.SetActive(true);
 
-        bool hasMultipleOwners = info.owners.Length > 1;
+        bool hasMultipleOwners = info.owners is { Length: > 1 };
         if (hasMultipleOwners)
         {
             textMultipleOwner.text = string.Format(MULTIPLE_OWNERS_FORMAT, info.owners.Length);
         }
         else
         {
-            textOwner.text = info.owners.Length == 1
+            textOwner.text = info.owners is { Length: 1 }
                 ? NFTPromptHUDController.FormatOwnerAddress(info.owners[0].address, ADDRESS_MAX_CHARS)
                 : NFTPromptHUDController.FormatOwnerAddress("0x0000000000000000000000000000000000000000", ADDRESS_MAX_CHARS);
         }
