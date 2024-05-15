@@ -766,5 +766,10 @@ namespace DCL.Helpers
             set.CopyTo(result);
             return result;
         }
+
+        public static bool CanBeUnEquipped(this WearableItem wearable) =>
+            wearable.data.category != WearableLiterals.Categories.BODY_SHAPE &&
+            wearable.data.category != WearableLiterals.Categories.EYES &&
+            wearable.data.category != WearableLiterals.Categories.MOUTH;
     }
 }

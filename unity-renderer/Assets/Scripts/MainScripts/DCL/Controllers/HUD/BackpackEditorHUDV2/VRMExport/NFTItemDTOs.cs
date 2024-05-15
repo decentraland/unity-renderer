@@ -18,6 +18,7 @@ namespace DCL.Backpack
         public string creatorName;
         public string creatorImageUrl;
         public string urn;
+        public bool canBeUnEquipped;
     }
 
     [Serializable]

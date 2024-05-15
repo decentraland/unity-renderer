@@ -48,29 +48,34 @@ namespace DCL.Backpack
             OnWearableUnequipped?.Invoke(vrmItemModel.wearableUrn, unEquipWearableSource);
         }
 
-        public void Initialize(List<string> vrmBlockingWearablesList)
+        /// <summary>
+        /// Initializes the controller.
+        /// </summary>
+        /// <param name="vrmBlockingWearables"> A dictionary where the Key is the wearable urn and the Value is whether the wearable can be unequipped</param>
+        public void Initialize(Dictionary<string, bool> vrmBlockingWearables)
         {
-            PopulateDetails(vrmBlockingWearablesList).Forget();
+            PopulateDetails(vrmBlockingWearables).Forget();
         }
 
-        private async UniTask PopulateDetails(List<string> vrmBlockingWearablesList)
+        private async UniTask PopulateDetails(Dictionary<string, bool> vrmBlockingWearables)
         {
             List<NFTDataDTO> itemsToDisplay = new ();
+
             // Copy the list from params since it's used for other checks elsewhere
-            List<string> itemsToProcess = new (vrmBlockingWearablesList);
+            Dictionary<string, bool> itemsToProcess = new (vrmBlockingWearables);
 
             // Get cached items first, to reduce api calls.
-            for (int i = itemsToProcess.Count - 1; i >= 0; i--)
-                if (nftDataCache.TryGetValue(itemsToProcess[i], out NFTDataDTO itemData))
+            foreach ((string id, NFTDataDTO data) in nftDataCache)
+                if (itemsToProcess.ContainsKey(id))
                 {
-                    itemsToDisplay.Add(itemData);
-                    itemsToProcess.RemoveAt(i);
+                    itemsToDisplay.Add(data);
+                    itemsToProcess.Remove(id);
                 }
 
             // If we're still missing items, fetch them.
             if (itemsToProcess.Count > 0)
             {
-                string nftItemRawData = await nftFetchHelper.GetNFTItems(itemsToProcess, environmentProviderService);
+                string nftItemRawData = await nftFetchHelper.GetNFTItems(new List<string>(itemsToProcess.Keys), environmentProviderService);
                 var nftItemsData = JsonUtility.FromJson<NFTItemsDTO>(nftItemRawData);
 
                 for (var i = 0; i < nftItemsData.data.Length; i++)
@@ -95,6 +100,8 @@ namespace DCL.Backpack
                         nftDataDto.creatorName = creatorProfile.userName;
                         nftDataDto.creatorImageUrl = creatorProfile.face256SnapshotURL;
                     }
+
+                    nftDataDto.canBeUnEquipped = itemsToProcess[nftDataDto.urn];
 
                     nftDataCache.Add(nftDataDto.urn, nftDataDto);
                     itemsToDisplay.Add(nftDataDto);

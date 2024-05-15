@@ -63,6 +63,13 @@ namespace DCL.Backpack
 
             SetWearableCreatorImage(model.wearableCreatorImageUrl);
             SetWearableCreatorName(model.wearableCreatorName);
+
+            SetActionButtonEnableState(model.wearableCanBeUnEquipped);
+        }
+
+        private void SetActionButtonEnableState(bool state)
+        {
+            actionButton.gameObject.SetActive(state);
         }
 
         private void SetWearableImage(string modelWearableImageUrl)

@@ -11,5 +11,6 @@ namespace DCL.Backpack
         public string wearableCategoryName;
         public string wearableCreatorName;
         public string wearableCreatorImageUrl;
+        public bool wearableCanBeUnEquipped;
     }
 }
