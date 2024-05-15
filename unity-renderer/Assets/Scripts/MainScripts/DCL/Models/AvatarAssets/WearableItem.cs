@@ -103,6 +103,7 @@ public class WearableItem
         public string[] hides;
         public string[] removesDefaultHiding;
         public bool loop;
+        public bool blockVrmExport;
     }
 
     public Data data;

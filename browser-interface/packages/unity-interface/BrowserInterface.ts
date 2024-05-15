@@ -26,7 +26,7 @@ import { notifyStatusThroughChat } from 'shared/chat'
 import { sendMessage } from 'shared/chat/actions'
 import { sendPublicChatMessage } from 'shared/comms'
 import { changeRealm } from 'shared/dao'
-import {getExploreRealmsService, getSelectedNetwork} from 'shared/dao/selectors'
+import { getExploreRealmsService, getSelectedNetwork } from 'shared/dao/selectors'
 import { getERC20Balance } from 'lib/web3/EthereumService'
 import { leaveChannel, updateUserData } from 'shared/friends/actions'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
@@ -113,13 +113,15 @@ import {
 } from 'shared/world/parcelSceneManager'
 import { receivePositionReport } from 'shared/world/positionThings'
 import { TeleportController } from 'shared/world/TeleportController'
-import { setAudioStream } from './audioStream'
+import { setAudioStream, killAudioStream, setAudioStreamForEntity } from './audioStream'
 import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { GIFProcessor } from './gif-processor'
 import { getUnityInstance } from './IUnityInterface'
 import { encodeParcelPosition } from 'lib/decentraland'
 import { Vector2 } from 'shared/protocol/decentraland/common/vectors.gen'
-import {fetchAndReportRealmsInfo} from "../shared/renderer/sagas";
+import { fetchAndReportRealmsInfo } from '../shared/renderer/sagas'
+import { playerClickedEvent } from '../shared/world/runtime-7/engine'
+import { Entity } from '@dcl/ecs/dist-cjs'
 
 declare const globalThis: { gifProcessor?: GIFProcessor; __debug_wearables: any }
 export const futures: Record<string, IFuture<any>> = {}
@@ -390,10 +392,10 @@ export class BrowserInterface {
     )
   }
 
-  public ReloadScene(data: {coords: Vector2}) {
+  public ReloadScene(data: { coords: Vector2 }) {
     const sceneToReload = getLoadedParcelSceneByParcel(encodeParcelPosition(data.coords))
     if (sceneToReload) {
-      reloadSpecificScene(sceneToReload.loadableScene.id)
+      reloadSpecificScene(sceneToReload.loadableScene.id).catch(console.error)
     }
   }
 
@@ -408,6 +410,14 @@ export class BrowserInterface {
 
     if (scene) {
       scene.rpcContext.sendSceneEvent(data.eventType as IEventNames, data.payload)
+
+      // Backwards compability with SDK7 observables. See InternalEngine
+      if (data.eventType === 'playerClicked') {
+        playerClickedEvent.emit('add', {
+          data: data.payload as IEvents['playerClicked'],
+          sceneNumber: data.sceneNumber
+        })
+      }
 
       // Keep backward compatibility with old scenes using deprecated `pointerEvent`
       if (data.eventType === 'actionButtonEvent') {
@@ -644,13 +654,23 @@ export class BrowserInterface {
     store.dispatch(saveProfileDelta({ description: changes.description }))
   }
 
-  public SaveProfileLinks(changes: { links: { title: string, url: string }[] }) {
+  public SaveProfileLinks(changes: { links: { title: string; url: string }[] }) {
     store.dispatch(saveProfileDelta({ links: changes.links }))
   }
 
-  public SaveProfileAdditionalInfo(changes: { country: string, employmentStatus: string, gender: string,
-    pronouns: string, relationshipStatus: string, sexualOrientation: string, language: string,
-    profession: string, birthdate: number, realName: string, hobbies: string}) {
+  public SaveProfileAdditionalInfo(changes: {
+    country: string
+    employmentStatus: string
+    gender: string
+    pronouns: string
+    relationshipStatus: string
+    sexualOrientation: string
+    language: string
+    profession: string
+    birthdate: number
+    realName: string
+    hobbies: string
+  }) {
     store.dispatch(saveProfileDelta(changes))
   }
 
@@ -847,6 +867,22 @@ export class BrowserInterface {
 
   public SetAudioStream(data: { url: string; play: boolean; volume: number }) {
     setAudioStream(data.url, data.play, data.volume).catch((err) => defaultLogger.log(err))
+  }
+
+  public SetAudioStreamForEntity(data: {
+    url: string
+    play: boolean
+    volume: number
+    sceneNumber: number
+    entityId: Entity
+  }) {
+    setAudioStreamForEntity(data.url, data.play, data.volume, data.sceneNumber, data.entityId).catch((err) =>
+      defaultLogger.log(err)
+    )
+  }
+
+  public KillAudioStream(data: { sceneNumber: number; entityId: Entity }) {
+    killAudioStream(data.sceneNumber, data.entityId).catch((err) => defaultLogger.log(err))
   }
 
   public SendChatMessage(data: { message: ChatMessage }) {
@@ -1073,7 +1109,7 @@ export class BrowserInterface {
   }
 
   public async FetchRealmsInfo() {
-    const url = getExploreRealmsService(store.getState());
+    const url = getExploreRealmsService(store.getState())
     if (url) {
       await fetchAndReportRealmsInfo(url)
     }

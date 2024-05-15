@@ -25,6 +25,7 @@ namespace DCL.Backpack
         [SerializeField] internal RectTransform dynamicSection;
         [SerializeField] internal DynamicListComponentView hidesList;
         [SerializeField] internal DynamicListComponentView hiddenByDynamicList;
+        [SerializeField] internal Image vrmBlockedTag;
 
         public event Action OnEquipWearable;
         public event Action OnUnEquipWearable;
@@ -57,6 +58,12 @@ namespace DCL.Backpack
             SetHiddenBy(model.hiddenBy);
             SetNftImage(model.imageUri);
             SetWearableId(model.wearableId);
+            SetVRMBlockedTag(model.blockVrmExport);
+        }
+
+        private void SetVRMBlockedTag(bool vrmBlocked)
+        {
+            vrmBlockedTag.gameObject.SetActive(vrmBlocked);
         }
 
         public void SetName(string nameText)

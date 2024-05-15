@@ -83,6 +83,7 @@ namespace DCLServices.WearablesCatalogService
                         public string[] replaces;
                         public string[] hides;
                         public string[] removesDefaultHiding;
+                        public bool blockVrmExport;
                     }
 
                     public DataDto data;
@@ -120,6 +121,7 @@ namespace DCLServices.WearablesCatalogService
                             replaces = metadata.data.replaces,
                             tags = metadata.data.tags,
                             removesDefaultHiding = metadata.data.removesDefaultHiding,
+                            blockVrmExport = metadata.data.blockVrmExport,
                         },
                         baseUrl = contentBaseUrl,
                         baseUrlBundles = bundlesBaseUrl,
