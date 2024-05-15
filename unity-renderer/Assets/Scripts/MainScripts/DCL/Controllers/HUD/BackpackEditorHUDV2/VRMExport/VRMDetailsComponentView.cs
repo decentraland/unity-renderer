@@ -110,6 +110,7 @@ namespace DCL.Backpack
                     wearableCategoryName = itemData.data.wearable.category,
                     wearableCreatorImageUrl = itemData.creatorImageUrl,
                     wearableCreatorName = itemData.creatorName,
+                    wearableCanBeUnEquipped = itemData.canBeUnEquipped,
                 };
 
                 detailComponentView.SetModel(vrmItemModel);
