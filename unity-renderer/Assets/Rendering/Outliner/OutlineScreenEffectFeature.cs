@@ -23,8 +23,8 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
         private readonly Material material = null;
 
         private ScriptableRenderer renderer { get; set; }
-        private RenderTargetHandle destination { get; set; }
-        private RenderTargetHandle outlineMask { get; set; }
+        private RTHandle destination { get; set; }
+        private RTHandle outlineMask { get; set; }
 
         private enum ShaderPasses
         {
@@ -40,10 +40,10 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
             material = CoreUtils.CreateEngineMaterial("DCL/OutlinerEffect");
         }
 
-        public void Setup(ScriptableRenderer renderer, RenderTargetHandle destination, RenderTargetHandle outlineTexture)
+        public void Setup(ScriptableRenderer renderer, RTHandle outlineTexture)
         {
             this.renderer = renderer;
-            this.destination = destination;
+            this.destination = k_CameraTarget;
             this.outlineMask = outlineTexture;
         }
 
@@ -75,27 +75,27 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
                 lowResDescriptor.height = Mathf.RoundToInt(lowResDescriptor.height * resolutionScale);
                 lowResDescriptor.depthBufferBits = 0;
 
-                RenderTargetHandle camera = new RenderTargetHandle { id = OUTLINER_EFFECT };
-                RenderTargetHandle outline1 = new RenderTargetHandle { id = OUTLINE_HORIZONTAL };
-                RenderTargetHandle outline2 = new RenderTargetHandle { id = OUTLINE_VERTICAL };
+                RTHandle camera = RTHandles.Alloc("_OutlinerEffect_Camera", "_OutlinerEffect_Camera");
+                RTHandle outline1 = RTHandles.Alloc("_OutlinerEffect_Outline1", "_OutlinerEffect_Outline1");
+                RTHandle outline2 = RTHandles.Alloc("_OutlinerEffect_Outline2", "_OutlinerEffect_Outline2");
 
-                cmd.GetTemporaryRT(camera.id, mainDescriptor, FilterMode.Point);
-                cmd.GetTemporaryRT(outline1.id, lowResDescriptor, (FilterMode)settings.filterMode);
-                cmd.GetTemporaryRT(outline2.id, lowResDescriptor, (FilterMode)settings.filterMode);
+                cmd.GetTemporaryRT(OUTLINER_EFFECT, mainDescriptor, FilterMode.Point);
+                cmd.GetTemporaryRT(OUTLINE_HORIZONTAL, lowResDescriptor, (FilterMode)settings.filterMode);
+                cmd.GetTemporaryRT(OUTLINE_VERTICAL, lowResDescriptor, (FilterMode)settings.filterMode);
 
-                Blit(cmd, outlineMask.id, outline1.id, material, (int)ShaderPasses.Outline); // Get the outline. Output in outline1
-                Blit(cmd, outline1.id, outline2.id, material, (int)ShaderPasses.BlurHorizontal); // Apply Vertical blur. Output in outline2
-                Blit(cmd, outline2.id, outline1.id, material, (int)ShaderPasses.BlurVertical); // Apply Horizontal blur. Output in outline1
+                Blit(cmd, outlineMask, camera, material, (int)ShaderPasses.Outline); // Get the outline. Output in outline1
+                Blit(cmd, outline1, outline2, material, (int)ShaderPasses.BlurHorizontal); // Apply Vertical blur. Output in outline2
+                Blit(cmd, outline2, outline1, material, (int)ShaderPasses.BlurVertical); // Apply Horizontal blur. Output in outline1
 
-                Blit(cmd, renderer.cameraColorTargetHandle, camera.id); // Get camera in a RT
-                cmd.SetGlobalTexture("_Source", camera.id); // Apply RT as _Source for the material
-                cmd.SetGlobalTexture("_ComposeMask", outlineMask.id); // Set the original outline mask
+                Blit(cmd, renderer.cameraColorTargetHandle, camera); // Get camera in a RT
+                cmd.SetGlobalTexture("_Source", OUTLINER_EFFECT); // Apply RT as _Source for the material
+                cmd.SetGlobalTexture("_ComposeMask", Shader.PropertyToID(outlineMask.name)); // Set the original outline mask
 
-                Blit(cmd, outline1.id, renderer.cameraColorTargetHandle, material, (int)ShaderPasses.Compose);
+                Blit(cmd, outline1, renderer.cameraColorTargetHandle, material, (int)ShaderPasses.Compose);
 
-                cmd.ReleaseTemporaryRT(camera.id);
-                cmd.ReleaseTemporaryRT(outline1.id);
-                cmd.ReleaseTemporaryRT(outline2.id);
+                cmd.ReleaseTemporaryRT(OUTLINER_EFFECT);
+                cmd.ReleaseTemporaryRT(OUTLINE_HORIZONTAL);
+                cmd.ReleaseTemporaryRT(OUTLINE_VERTICAL);
             }
 
             context.ExecuteCommandBuffer(cmd);
@@ -124,7 +124,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
     public OutlineSettings settings = new ();
     private OutlinePass outlinePass;
-    private RenderTargetHandle outlineTexture;
+    private RTHandle outlineTexture;
 
     public override void Create()
     {
@@ -133,12 +133,12 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
             renderPassEvent = RenderPassEvent.AfterRenderingTransparents,
         };
 
-        outlineTexture.Init("_OutlineTexture");
+        outlineTexture = RTHandles.Alloc("_OutlineTexture", "_OutlineTexture");
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        outlinePass.Setup(renderer, RenderTargetHandle.CameraTarget, outlineTexture);
+        outlinePass.Setup(renderer, outlineTexture);
         renderer.EnqueuePass(outlinePass);
     }
 }

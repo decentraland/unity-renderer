@@ -26,6 +26,7 @@
     "com.unity.scriptablebuildpipeline": "2.1.2",
     "com.unity.shadergraph": "17.0.3",
     "com.unity.testtools.codecoverage": "1.2.5",
+    "com.unity.test-framework": "2.0.1-exp.2",
     "com.unity.timeline": "1.8.6",
     "com.unity.ugui": "2.0.0",
     "com.unity.xr.legacyinputhelpers": "2.1.10",

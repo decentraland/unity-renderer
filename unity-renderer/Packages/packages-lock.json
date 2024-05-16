@@ -310,8 +310,8 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.4.3",
-      "depth": 1,
+      "version": "2.0.1-exp.2",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.ext.nunit": "2.0.3",

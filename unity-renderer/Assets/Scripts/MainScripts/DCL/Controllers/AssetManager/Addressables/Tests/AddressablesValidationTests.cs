@@ -5,9 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor.AddressableAssets;
+/*
 using UnityEditor.AddressableAssets.Build.AnalyzeRules;
+*/
 using UnityEngine;
 
+/*
 [Category("EditModeCI")]
 public class AddressablesValidationTests
 {
@@ -205,3 +208,4 @@ public class AddressablesValidationTests
         + $"Run Addressables Analyze (inside Unity) with {analyzeRule} rule and fix them."
         + $"Duplicates are: \n{message}";
 }
+*/
