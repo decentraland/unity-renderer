@@ -19,7 +19,8 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2445
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -342,10 +343,10 @@ Material:
     - _color01: {r: 1, g: 1, b: 1, a: 1}
     - _color02: {r: 1, g: 1, b: 1, a: 1}
     - _color_0: {r: 1, g: 1, b: 1, a: 0}
-    - _color_1: {r: 11.596564, g: 8.85336, b: 6.875362, a: 1}
-    - _color_2: {r: 0.9885101, g: 0.9885101, b: 0.9885101, a: 1}
-    - _color_3: {r: 0.99393624, g: 0.9116563, b: 0.87692153, a: 0.83033574}
-    - _color_4: {r: 0.5214305, g: 0.44483685, b: 0.43208694, a: 1}
+    - _color_1: {r: 12.9299755, g: 3.287858, b: 1.0627394, a: 0.7698662}
+    - _color_2: {r: 0.96378434, g: 0.96378434, b: 0.96378434, a: 1}
+    - _color_3: {r: 0.9446303, g: 0.7804242, b: 0.7422339, a: 0.7374601}
+    - _color_4: {r: 0.5465689, g: 0.5207822, b: 0.506672, a: 1}
     - _distortIntAndSize_0: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_1: {r: 0, g: 0, b: 0, a: 0}
     - _distortIntAndSize_2: {r: 0, g: 0, b: 0, a: 0}
@@ -356,13 +357,13 @@ Material:
     - _distortSpeedAndSharp_2: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_3: {r: 0, g: 0, b: 0, a: 0}
     - _distortSpeedAndSharp_4: {r: 0, g: 0, b: 0, a: 0}
-    - _groundColor: {r: 0.14501658, g: 0.21563289, b: 0.2935776, a: 1}
-    - _horizonColor: {r: 0.9284764, g: 0.7446045, b: 0.5658943, a: 1}
+    - _groundColor: {r: 0.14489847, g: 0.2155555, b: 0.29279473, a: 1}
+    - _horizonColor: {r: 0.7715027, g: 0.51478225, b: 0.30532843, a: 1}
     - _horizonMaskValues: {r: 0, g: 0, b: 0, a: 0}
-    - _horizonPlaneColor: {r: 0.40604538, g: 0.42863938, b: 0.28809363, a: 1}
+    - _horizonPlaneColor: {r: 0.37871224, g: 0.40840486, b: 0.28781596, a: 1}
     - _horizonPlaneValues: {r: 0, g: 0, b: 0, a: 0}
-    - _lightDirection: {r: 356.18976, g: 134.99998, b: 90, a: 0}
-    - _lightTint: {r: 0.8841162, g: 0.92493737, b: 0.8722226, a: 1}
+    - _lightDirection: {r: 35.097702, g: 134.99992, b: 90.00009, a: 0}
+    - _lightTint: {r: 0.8700488, g: 0.5520737, b: 0.19780737, a: 1}
     - _particlesMainParameters_0: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_1: {r: 0, g: 0, b: 0, a: 0}
     - _particlesMainParameters_2: {r: 0, g: 0, b: 0, a: 0}
@@ -378,7 +379,7 @@ Material:
     - _rowAndCollumns_2: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_3: {r: 0, g: 0, b: 0, a: 0}
     - _rowAndCollumns_4: {r: 0, g: 0, b: 0, a: 0}
-    - _skyColor: {r: 0.37966043, g: 0.70908374, b: 0.98990154, a: 1}
+    - _skyColor: {r: 0.47051406, g: 0.5831567, b: 0.8233543, a: 1}
     - _smoothRange: {r: 0.25362316, g: 0.84967387, b: 0, a: 0}
     - _speedAndRotation_0: {r: 0, g: 0, b: 0, a: 0}
     - _speedAndRotation_1: {r: 0, g: 0, b: 0, a: 0}
@@ -392,7 +393,7 @@ Material:
     - _tilingAndOffset01: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset02: {r: 1, g: 1, b: 0, a: 0}
     - _tilingAndOffset_0: {r: 1, g: 1, b: 0, a: 0}
-    - _tilingAndOffset_1: {r: 4.2143083, g: 4.2143083, b: 45, a: 107.414055}
+    - _tilingAndOffset_1: {r: 3.4619315, g: 3.4619315, b: 45, a: 43.364227}
     - _tilingAndOffset_2: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_3: {r: 0, g: 0, b: 0, a: 0}
     - _tilingAndOffset_4: {r: 0, g: 0, b: 0, a: 0}
@@ -405,6 +406,7 @@ Material:
     - _timeFrame_3: {r: 0, g: 24, b: 0, a: 0}
     - _timeFrame_4: {r: 0, g: 24, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &148324288816126808
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -417,4 +419,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 9
