@@ -8584,6 +8584,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: VRMExportDetailsPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 1867043590541468515, guid: 69126f78740701f4c92edc3b2ec82a85,
+        type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3085825811402149663, guid: 69126f78740701f4c92edc3b2ec82a85,
         type: 3}
       propertyPath: m_AnchorMax.y
