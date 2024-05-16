@@ -247,6 +247,10 @@ namespace DCL.Backpack
             view.Dispose();
 
             vrmBlockingWearables.Clear();
+            view.OnVRMDetailsOpened -= OnVRMDetailsOpened;
+            view.OnVRMDetailsClosed -= UpdateVRMExportWarning;
+            vrmDetailsController.OnWearableUnequipped -= UnEquipWearableFromGrid;
+            vrmDetailsController.OnWearableEquipped -= EquipWearableFromGrid;
         }
 
         private void UpdateOverrideHides(string category, bool toggleOn) =>
@@ -394,7 +398,6 @@ namespace DCL.Backpack
 
                         if (!wearableId.Equals(shortenedWearableId))
                             extendedWearableUrns[shortenedWearableId] = wearableId;
-
 
                         if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
                         {
@@ -692,9 +695,10 @@ namespace DCL.Backpack
             }
 
             if (wearable.data.blockVrmExport && !vrmBlockingWearables.ContainsKey(shortenWearableId))
+            {
                 vrmBlockingWearables.Add(shortenWearableId, wearable.CanBeUnEquipped());
-
-            UpdateVRMExportWarning();
+                UpdateVRMExportWarning();
+            }
         }
 
         private void ReplaceIncompatibleWearablesWithDefaultWearables()
@@ -776,8 +780,8 @@ namespace DCL.Backpack
 
             if (wearable.data.blockVrmExport)
             {
-                vrmBlockingWearables.Remove(shortenedWearableId);
-                UpdateVRMExportWarning();
+                if (vrmBlockingWearables.Remove(shortenedWearableId))
+                    UpdateVRMExportWarning();
             }
         }
 

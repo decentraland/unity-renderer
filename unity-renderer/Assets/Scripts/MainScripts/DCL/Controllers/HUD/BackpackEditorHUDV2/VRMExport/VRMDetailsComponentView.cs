@@ -39,6 +39,8 @@ namespace DCL.Backpack
         {
             base.Dispose();
             TearDown();
+            vrmExportButton.onClick.RemoveAllListeners();
+            backButton.onClick.RemoveAllListeners();
         }
 
         public override void OnDisable()

@@ -25,23 +25,24 @@ namespace DCL.Backpack
 
         public void Start()
         {
-            actionButton.SetText(UNEQUIP_TEXT);
             actionButton.onClick.RemoveAllListeners();
-            actionButton.onClick.AddListener(() =>
+            actionButton.onClick.AddListener(OnActionButtonClicked);
+        }
+
+        private void OnActionButtonClicked()
+        {
+            if (isUnEquipAction)
             {
-                if(isUnEquipAction)
-                {
-                    actionButton.SetText(EQUIP_TEXT);
-                    isUnEquipAction = false;
-                    OnUnEquipWearable?.Invoke();
-                }
-                else
-                {
-                    actionButton.SetText(UNEQUIP_TEXT);
-                    isUnEquipAction = true;
-                    OnEquipWearable?.Invoke();
-                }
-            });
+                actionButton.SetText(EQUIP_TEXT);
+                isUnEquipAction = false;
+                OnUnEquipWearable?.Invoke();
+            }
+            else
+            {
+                actionButton.SetText(UNEQUIP_TEXT);
+                isUnEquipAction = true;
+                OnEquipWearable?.Invoke();
+            }
         }
 
         public void ClearOnWearableUnequippedEvents()
@@ -54,6 +55,9 @@ namespace DCL.Backpack
         {
             if (model == null)
                 return;
+
+            isUnEquipAction = true;
+            actionButton.SetText(UNEQUIP_TEXT);
 
             SetWearableImage(model.wearableImageUrl);
             SetWearableName(model.wearableName);

@@ -35,7 +35,7 @@ namespace DCL.Backpack
         public void Dispose()
         {
             view.OnWearableUnequipped -= HandleWearableUnequipped;
-            view.OnWearableEquipped += HandleWearableEquipped;
+            view.OnWearableEquipped -= HandleWearableEquipped;
         }
 
         private void HandleWearableEquipped(VRMItemModel vrmItemModel, EquipWearableSource equipWearableSource)

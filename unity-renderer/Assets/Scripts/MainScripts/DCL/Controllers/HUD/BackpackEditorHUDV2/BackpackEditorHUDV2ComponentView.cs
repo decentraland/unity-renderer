@@ -136,7 +136,7 @@ namespace DCL.Backpack
             vrmExportButton.onClick.RemoveAllListeners();
             vrmExportButton.onClick.AddListener(OnVRMExportButtonClicked);
 
-            vrmDetailsComponentView.OnVRMExportButtonPressed += OnVRMExportButtonClicked;
+            vrmDetailsComponentView.OnVRMExportButtonPressed += OnDetailsPanelVRMExportButtonClicked;
             vrmDetailsComponentView.OnBackButtonPressed += BackFromDetails;
             outfitsSectionComponentView.OnBackButtonPressed += ToggleNormalSection;
         }
@@ -149,16 +149,22 @@ namespace DCL.Backpack
 
         private void OnVRMExportButtonClicked()
         {
-            if (!vrmDetailsSection.activeInHierarchy)
+            if (vrmDetailsSection.activeInHierarchy) return;
+
+            if (vrmWarningEnabled)
             {
-                if (vrmWarningEnabled)
-                {
-                    SetWarningForVRMExportButton(false);
-                    ToggleVRMDetailsSection();
-                }
-                else
-                    OnVRMExport?.Invoke();
+                SetWarningForVRMExportButton(false);
+                ToggleVRMDetailsSection();
             }
+            else
+                OnVRMExport?.Invoke();
+        }
+
+        private void OnDetailsPanelVRMExportButtonClicked()
+        {
+            if (vrmWarningEnabled) return;
+
+            OnVRMExport?.Invoke();
         }
 
         public void SetOutfitsEnabled(bool isEnabled) =>
@@ -219,7 +225,13 @@ namespace DCL.Backpack
 
             colorPickerComponentView.OnColorChanged -= OnColorPickerColorChanged;
             colorPickerComponentView.OnColorPickerToggle -= ColorPickerToggle;
+
             outfitsSectionComponentView.OnBackButtonPressed -= ToggleNormalSection;
+            outfitButton.onClick.RemoveAllListeners();
+
+            vrmExportButton.onClick.RemoveAllListeners();
+            vrmDetailsComponentView.OnVRMExportButtonPressed -= OnDetailsPanelVRMExportButtonClicked;
+            vrmDetailsComponentView.OnBackButtonPressed -= BackFromDetails;
         }
 
         public static BackpackEditorHUDV2ComponentView Create() =>
