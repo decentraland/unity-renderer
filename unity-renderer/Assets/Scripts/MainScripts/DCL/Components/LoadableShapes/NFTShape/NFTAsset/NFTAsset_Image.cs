@@ -7,7 +7,7 @@ namespace NFTShape_Internal
     public class NFTAsset_Image : INFTAsset
     {
         private const int RESOLUTION_HQ = 1024;
-        public bool isHQ => hqTexture != null;
+        public bool isHQ => true; // hqTexture != null;
         public ITexture previewAsset { get; }
         public ITexture hqAsset => hqTexture?.asset;
 

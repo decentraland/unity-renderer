@@ -34,7 +34,7 @@ namespace Tests
         [Test]
         public void OpenAndCloseCorrectly()
         {
-            controller.OpenNftInfoDialog(new NFTPromptModel("0xf64dc33a192e056bb5f0e5049356a0498b502d50",
+            controller.OpenNftInfoDialog(new NFTPromptModel("ethereum", "0xf64dc33a192e056bb5f0e5049356a0498b502d50",
                 "2481", null), null);
             Assert.IsTrue(view.content.activeSelf, "NFT dialog should be visible");
             view.buttonClose.onClick.Invoke();
@@ -96,7 +96,7 @@ namespace Tests
         [Test]
         public void PromptWhenNftPromptIsRequestedByRpcService()
         {
-            restrictedActionsContext.OpenNftPrompt("0x00", "123");
+            restrictedActionsContext.OpenNftPrompt("ethereum", "0x00", "123");
             Assert.IsTrue(view.content.activeSelf, "NFT dialog should be visible");
         }
     }

@@ -17,7 +17,7 @@ public static class TestUtils_NFT
         INFTAsset mockedNftAsset = Substitute.For<INFTAsset>();
 
         infoRetriever
-            .When((x) => { x.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>()); })
+            .When((x) => { x.FetchNFTInfo(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()); })
             .Do((x) =>
             {
                 infoRetriever.OnFetchInfoSuccess += Raise.Event<Action<NFTInfo>>(mockedNftInfo);

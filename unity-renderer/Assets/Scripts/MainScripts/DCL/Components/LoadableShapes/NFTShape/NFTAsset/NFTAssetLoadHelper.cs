@@ -21,7 +21,7 @@ namespace DCL
         private const string CONTENT_LENGTH = "Content-Length";
         private const string CONTENT_TYPE_GIF = "image/gif";
         private const string CONTENT_TYPE_WEBP = "image/webp";
-        private const long PREVIEW_IMAGE_SIZE_LIMIT = 750000;
+        private const long PREVIEW_IMAGE_SIZE_LIMIT = 6000000;
 
         protected AssetPromise_Texture imagePromise = null;
         protected AssetPromise_Gif gifPromise = null;
