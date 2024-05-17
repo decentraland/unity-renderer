@@ -2,6 +2,7 @@
 using DCL.Browser;
 using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
+using DCLServices.EnvironmentProvider;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Components.Avatar.VRMExporter;
@@ -96,6 +97,7 @@ namespace DCL.Backpack
                 Substitute.For<IBackpackAnalyticsService>(),
                 customNftCollectionService);
 
+
             backpackEditorHUDController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -106,8 +108,19 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 wearableGridController,
                 avatarSlotsHUDController,
-                new OutfitsController(Substitute.For<IOutfitsSectionComponentView>(), new LambdaOutfitsService(Substitute.For<ILambdasService>(), Substitute.For<IServiceProviders>()), userProfileBridge, Substitute.For<DataStore>(), Substitute.For<IBackpackAnalyticsService>()),
+                new OutfitsController(
+                    Substitute.For<IOutfitsSectionComponentView>(),
+                    new LambdaOutfitsService(
+                        Substitute.For<ILambdasService>(),
+                        Substitute.For<IServiceProviders>()),
+                    userProfileBridge, Substitute.For<DataStore>(),
+                    Substitute.For<IBackpackAnalyticsService>()),
                 vrmExporter,
+                new VRMDetailsController(
+                    Substitute.For<IVRMDetailsComponentView>(),
+                    userProfileBridge,
+                    Substitute.For<INFTFetchHelper>(), 
+                    Substitute.For<IEnvironmentProviderService>()),
                 fileBrowserService,
                 Substitute.For<IEmotesCatalogService>());
         }
