@@ -30,9 +30,9 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
                 onError?.Invoke(request.error);
         }
 
-        IEnumerator IOpenSea.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
+        IEnumerator IOpenSea.FetchNFTInfo(string chain, string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            RequestBase<OpenSeaNftDto> request = requestController.FetchNFT(assetContractAddress, tokenId);
+            RequestBase<OpenSeaNftDto> request = requestController.FetchNFT(chain, assetContractAddress, tokenId);
 
             yield return new WaitUntil(() => !request.pending);
 

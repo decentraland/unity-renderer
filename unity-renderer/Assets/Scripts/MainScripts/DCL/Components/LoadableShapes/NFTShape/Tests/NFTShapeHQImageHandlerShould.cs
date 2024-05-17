@@ -61,6 +61,7 @@ public class NFTShapeHQImageHandlerShould
     }
 
     [Test]
+     [Ignore("We are not using this till we implement an image resizer")]
     public void SetHQImageCorrectly()
     {
         Assert.IsFalse(isHQAsset, "Shouldn't use HQ image");
@@ -69,6 +70,7 @@ public class NFTShapeHQImageHandlerShould
     }
 
     [Test]
+     [Ignore("We are not using this till we implement an image resizer")]
     public void SetPreviewImageWhenCameraIsBehind()
     {
         SetInFrontAndLookingToNFT();
@@ -80,6 +82,7 @@ public class NFTShapeHQImageHandlerShould
     }
 
     [Test]
+     [Ignore("We are not using this till we implement an image resizer")]
     public void SetPreviewImageWhenCameraLookAway()
     {
         SetInFrontAndLookingToNFT();
@@ -90,6 +93,7 @@ public class NFTShapeHQImageHandlerShould
     }
 
     [Test]
+     [Ignore("We are not using this till we implement an image resizer")]
     public void SetPreviewImageWhenPlayerMovesAway()
     {
         SetInFrontAndLookingToNFT();

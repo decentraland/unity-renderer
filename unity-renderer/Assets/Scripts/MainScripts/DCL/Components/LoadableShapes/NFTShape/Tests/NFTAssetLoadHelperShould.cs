@@ -69,7 +69,7 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
         Assert.That(success, Is.True);
         Assert.That(resultAsset is NFTAsset_Gif, Is.True);
     }
-    
+
     [UnityTest]
     public IEnumerator FailWhenImageIsTooBig()
     {
@@ -82,7 +82,7 @@ public class NFTAssetLoadHelperShould : IntegrationTestSuite
 
         Assert.That(success, Is.True);
 
-        retriever.contentLengthToReturn = 1000000;
+        retriever.contentLengthToReturn = 7000000;
         retriever.contentTypeToReturn = "image/png";
 
         success = false;

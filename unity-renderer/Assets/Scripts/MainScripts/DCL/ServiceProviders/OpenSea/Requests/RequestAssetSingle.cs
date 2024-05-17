@@ -2,12 +2,15 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea.Requests
 {
     public class RequestAssetSingle : RequestBase<OpenSeaNftDto>
     {
+        public string chain { get; }
         public string contractAddress { get; }
         public string tokenId { get; }
         public override string requestId => GetId(contractAddress, tokenId);
 
-        internal RequestAssetSingle(string contractAddress, string tokenId)
+        internal RequestAssetSingle(string chain, string contractAddress, string tokenId)
         {
+
+            this.chain = chain;
             this.contractAddress = contractAddress;
             this.tokenId = tokenId;
         }

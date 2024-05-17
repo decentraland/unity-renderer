@@ -31,12 +31,12 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea
 
         public void Dispose() { requestScheduler.OnRequestReadyToSend -= SendRequest; }
 
-        public RequestBase<OpenSeaNftDto> FetchNFT(string contractAddress, string tokenId)
+        public RequestBase<OpenSeaNftDto> FetchNFT(string chain, string contractAddress, string tokenId)
         {
             if (cacheAssetResponses.TryGetValue(RequestAssetSingle.GetId(contractAddress, tokenId), out RequestBase<OpenSeaNftDto> request))
                 return request;
 
-            var newRequest = new RequestAssetSingle(contractAddress, tokenId);
+            var newRequest = new RequestAssetSingle(chain, contractAddress, tokenId);
 
             AddToCache(newRequest);
 

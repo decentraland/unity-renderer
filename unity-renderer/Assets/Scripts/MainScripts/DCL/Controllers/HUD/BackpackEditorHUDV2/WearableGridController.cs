@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
+using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.CustomNftCollection;
 using DCLServices.WearablesCatalogService;
@@ -374,7 +375,7 @@ namespace DCL.Backpack
                 IsEquipped = IsEquipped(ExtendedUrnParser.GetShortenedUrn(wearable.id)),
                 IsNew = (DateTime.UtcNow - wearable.MostRecentTransferredDate).TotalHours < 24,
                 IsSelected = false,
-                UnEquipAllowed = CanWearableBeUnEquipped(wearable),
+                UnEquipAllowed = wearable.CanBeUnEquipped(),
                 IsCompatibleWithBodyShape = IsCompatibleWithBodyShape(currentBodyShapeId, wearable),
                 IsSmartWearable = wearable.IsSmart(),
                 Amount = wearable.amount > 1 ? $"x{wearable.amount.ToString()}" : "",
@@ -415,7 +416,7 @@ namespace DCL.Backpack
                 isEquipped = IsEquipped(shortenedWearableId),
                 removeList = wearable.data.replaces != null ? wearable.data.replaces.ToList() : new List<string>(),
                 wearableId = wearableId,
-                unEquipAllowed = CanWearableBeUnEquipped(wearable),
+                unEquipAllowed = wearable.CanBeUnEquipped(),
                 blockVrmExport = wearable.data.blockVrmExport,
             });
 
@@ -526,11 +527,6 @@ namespace DCL.Backpack
             await UniTask.NextFrame(cancellationToken);
             LoadWearables();
         }
-
-        private bool CanWearableBeUnEquipped(WearableItem wearable) =>
-            wearable.data.category != WearableLiterals.Categories.BODY_SHAPE &&
-            wearable.data.category != WearableLiterals.Categories.EYES &&
-            wearable.data.category != WearableLiterals.Categories.MOUTH;
 
         private bool IsCompatibleWithBodyShape(string bodyShapeId, WearableItem wearable)
         {

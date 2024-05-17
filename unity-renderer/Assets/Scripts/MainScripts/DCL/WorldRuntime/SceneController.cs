@@ -303,8 +303,9 @@ namespace DCL
                     }
                     case MessagingTypes.OPEN_NFT_DIALOG:
                     {
+                        // TODO: update protocol
                         if (msgPayload is Protocol.OpenNftDialog payload)
-                            DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId, payload.comment), true);
+                            DataStore.i.common.onOpenNFTPrompt.Set(new NFTPromptModel("ethereum", payload.contactAddress, payload.tokenId, payload.comment), true);
 
                         break;
                     }

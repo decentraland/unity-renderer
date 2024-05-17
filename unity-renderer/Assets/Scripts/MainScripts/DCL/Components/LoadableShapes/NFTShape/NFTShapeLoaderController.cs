@@ -140,15 +140,6 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
         }
 
         darURLProtocol = match.Groups["protocol"].ToString();
-        if (darURLProtocol != "ethereum")
-        {
-            Debug.LogError(string.Format(COULD_NOT_FETCH_DAR_URL + " " + SUPPORTED_PROTOCOL + " " + ACCEPTED_URL_FORMAT, url));
-            ShowErrorFeedback(true);
-            OnLoadingAssetFail?.Invoke();
-
-            return;
-        }
-
         darURLRegistry = match.Groups["registry"].ToString();
         darURLAsset = match.Groups["asset"].ToString();
 
@@ -168,7 +159,7 @@ public class NFTShapeLoaderController : MonoBehaviour, INFTShapeLoaderController
     private void FetchNFTContents()
     {
         ShowLoading(true);
-        nftInfoRetriever.FetchNFTInfo(darURLRegistry, darURLAsset);
+        nftInfoRetriever.FetchNFTInfo(darURLProtocol, darURLRegistry, darURLAsset);
     }
 
     private void FetchNftInfoSuccess(NFTInfo nftInfo)

@@ -17,14 +17,14 @@ public class NFTInfoLoadHelperShould
         //Act - Assert
         retriever.OnFetchInfoSuccess += info => Assert.Fail();
         retriever.OnFetchInfoFail += Assert.Pass;
-        retriever.FetchNFTInfo("testAddress", "testId");
+        retriever.FetchNFTInfo("ethereum", "testAddress", "testId");
     }
 
     [Test]
     public void DisposeCorrectly()
     {
         //Arrange
-        retriever.FetchNFTInfo("testAddress", "testId");
+        retriever.FetchNFTInfo("ethereum", "testAddress", "testId");
 
         //Act
         retriever.Dispose();

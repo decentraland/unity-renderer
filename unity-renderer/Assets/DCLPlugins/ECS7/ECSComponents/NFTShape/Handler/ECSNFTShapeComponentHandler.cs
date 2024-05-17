@@ -117,8 +117,8 @@ namespace DCL.ECSComponents
             try
             {
                 infoRetrieverDisposed = false;
-                NFTUtils.TryParseUrn(urn, out string contractAddress, out string tokenId);
-                NFTInfo? info = await infoRetriever.FetchNFTInfoAsync(contractAddress, tokenId);
+                NFTUtils.TryParseUrn(urn, out string chain, out string contractAddress, out string tokenId);
+                NFTInfo? info = await infoRetriever.FetchNFTInfoAsync(chain, contractAddress, tokenId);
 
                 if (!info.HasValue)
                 {
@@ -135,7 +135,6 @@ namespace DCL.ECSComponents
                     LoadFailed();
                     return;
                 }
-
                 shapeFrame.SetImage(nftInfo.name, nftInfo.imageUrl, nftAsset);
                 nftLoadedScr = urn;
             }
