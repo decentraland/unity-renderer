@@ -65,7 +65,7 @@
     "@dcl/legacy-ecs": "^6.11.11",
     "@dcl/protocol": "1.0.0-8789372854.commit-f692c7a",
     "@dcl/rpc": "^1.1.1",
-    "@dcl/scene-runtime": "7.0.6-20240220184109.commit-cf1e4e2",
+    "@dcl/scene-runtime": "7.0.6-20240515153908.commit-adbf9e7",
     "@dcl/schemas": "^9.1.1",
     "@dcl/single-sign-on-client": "^0.1.0",
     "@dcl/urn-resolver": "^2.2.0",
