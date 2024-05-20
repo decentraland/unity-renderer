@@ -31,7 +31,7 @@ namespace MainScripts.DCL.ServiceProviders.OpenSea.RequestHandlers
         }
 
         string IRequestHandler.GetUrl() =>
-            OpenSeaAPI.GetSingleAssetUrl(request.contractAddress, request.tokenId, kernelConfig.Get().GetTld());
+            OpenSeaAPI.GetSingleAssetUrl(request.chain, request.contractAddress, request.tokenId, kernelConfig.Get().GetTld());
 
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {

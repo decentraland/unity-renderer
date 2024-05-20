@@ -1,9 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DCL.Browser;
-using DCL.Emotes;
 using DCL.Providers;
 using DCLServices.CustomNftCollection;
 using DCLServices.DCLFileBrowser;
+using DCLServices.EnvironmentProvider;
 using DCLServices.Lambdas;
 using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Components.Avatar.VRMExporter;
@@ -77,6 +77,15 @@ namespace DCL.Backpack
                 backpackAnalyticsService,
                 Environment.i.serviceLocator.Get<ICustomNftCollectionService>());
 
+            var wearablesNFTFetchHelper = new WearablesNFTFetchHelper();
+            var environmentProvider = Environment.i.serviceLocator.Get<IEnvironmentProviderService>();
+            var vrmExportController = new VRMDetailsController(
+                view.VrmDetailsComponentView,
+                userProfileBridge,
+                wearablesNFTFetchHelper,
+                environmentProvider
+                );
+
             hudController = new BackpackEditorHUDController(
                 view,
                 dataStore,
@@ -89,6 +98,7 @@ namespace DCL.Backpack
                 avatarSlotsHUDController,
                 outfitsController,
                 new VRMExporter(vrmExporterReferences),
+                vrmExportController,
                 Environment.i.platform.serviceLocator.Get<IDCLFileBrowserService>(),
                 Environment.i.platform.serviceLocator.Get<IEmotesCatalogService>());
 

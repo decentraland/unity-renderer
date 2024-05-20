@@ -334,7 +334,7 @@ namespace DCL.ECSComponents {
     public const int WeightFieldNumber = 4;
     private float weight_;
     /// <summary>
-    /// the "weight" of this animation (see below, default: 1.0)
+    /// @experimental the "weight" of this animation (see below, default: 1.0)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -390,7 +390,7 @@ namespace DCL.ECSComponents {
     public const int LoopFieldNumber = 6;
     private bool loop_;
     /// <summary>
-    /// whether the animation repeats until stopped (default: true)
+    /// whether the animation repeats (**) until is manually stopped (default: true)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -418,7 +418,7 @@ namespace DCL.ECSComponents {
     public const int ShouldResetFieldNumber = 7;
     private bool shouldReset_;
     /// <summary>
-    /// whether the Entity is restored to its prior state when done
+    /// whether the animation is restored to the initial state (*) when it changes from stopped to playing (default: false)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

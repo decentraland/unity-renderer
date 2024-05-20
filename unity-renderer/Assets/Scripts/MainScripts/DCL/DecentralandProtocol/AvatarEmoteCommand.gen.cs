@@ -25,16 +25,14 @@ namespace DCL.ECSComponents {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjZkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvYXZhdGFyX2Vtb3RlX2Nv",
-            "bW1hbmQucHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyKeAQoU",
-            "UEJBdmF0YXJFbW90ZUNvbW1hbmQSVQoNZW1vdGVfY29tbWFuZBgBIAEoCzI+",
-            "LmRlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cy5QQkF2YXRhckVtb3RlQ29t",
-            "bWFuZC5FbW90ZUNvbW1hbmQaLwoMRW1vdGVDb21tYW5kEhEKCWVtb3RlX3Vy",
-            "bhgBIAEoCRIMCgRsb29wGAIgASgIQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IG",
-            "cHJvdG8z"));
+            "bW1hbmQucHJvdG8SG2RlY2VudHJhbGFuZC5zZGsuY29tcG9uZW50cyJKChRQ",
+            "QkF2YXRhckVtb3RlQ29tbWFuZBIRCgllbW90ZV91cm4YASABKAkSDAoEbG9v",
+            "cBgCIAEoCBIRCgl0aW1lc3RhbXAYAyABKA1CFKoCEURDTC5FQ1NDb21wb25l",
+            "bnRzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarEmoteCommand), global::DCL.ECSComponents.PBAvatarEmoteCommand.Parser, new[]{ "EmoteCommand" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand), global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand.Parser, new[]{ "EmoteUrn", "Loop" }, null, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBAvatarEmoteCommand), global::DCL.ECSComponents.PBAvatarEmoteCommand.Parser, new[]{ "EmoteUrn", "Loop", "Timestamp" }, null, null, null, null)
           }));
     }
     #endregion
@@ -79,7 +77,9 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PBAvatarEmoteCommand(PBAvatarEmoteCommand other) : this() {
-      emoteCommand_ = other.emoteCommand_ != null ? other.emoteCommand_.Clone() : null;
+      emoteUrn_ = other.emoteUrn_;
+      loop_ = other.loop_;
+      timestamp_ = other.timestamp_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -89,15 +89,42 @@ namespace DCL.ECSComponents {
       return new PBAvatarEmoteCommand(this);
     }
 
-    /// <summary>Field number for the "emote_command" field.</summary>
-    public const int EmoteCommandFieldNumber = 1;
-    private global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand emoteCommand_;
+    /// <summary>Field number for the "emote_urn" field.</summary>
+    public const int EmoteUrnFieldNumber = 1;
+    private string emoteUrn_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand EmoteCommand {
-      get { return emoteCommand_; }
+    public string EmoteUrn {
+      get { return emoteUrn_; }
       set {
-        emoteCommand_ = value;
+        emoteUrn_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "loop" field.</summary>
+    public const int LoopFieldNumber = 2;
+    private bool loop_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Loop {
+      get { return loop_; }
+      set {
+        loop_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "timestamp" field.</summary>
+    public const int TimestampFieldNumber = 3;
+    private uint timestamp_;
+    /// <summary>
+    /// monotonic counter
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public uint Timestamp {
+      get { return timestamp_; }
+      set {
+        timestamp_ = value;
       }
     }
 
@@ -116,7 +143,9 @@ namespace DCL.ECSComponents {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(EmoteCommand, other.EmoteCommand)) return false;
+      if (EmoteUrn != other.EmoteUrn) return false;
+      if (Loop != other.Loop) return false;
+      if (Timestamp != other.Timestamp) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -124,7 +153,9 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (emoteCommand_ != null) hash ^= EmoteCommand.GetHashCode();
+      if (EmoteUrn.Length != 0) hash ^= EmoteUrn.GetHashCode();
+      if (Loop != false) hash ^= Loop.GetHashCode();
+      if (Timestamp != 0) hash ^= Timestamp.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -143,9 +174,17 @@ namespace DCL.ECSComponents {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (emoteCommand_ != null) {
+      if (EmoteUrn.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteMessage(EmoteCommand);
+        output.WriteString(EmoteUrn);
+      }
+      if (Loop != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(Loop);
+      }
+      if (Timestamp != 0) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(Timestamp);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -157,9 +196,17 @@ namespace DCL.ECSComponents {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (emoteCommand_ != null) {
+      if (EmoteUrn.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteMessage(EmoteCommand);
+        output.WriteString(EmoteUrn);
+      }
+      if (Loop != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(Loop);
+      }
+      if (Timestamp != 0) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(Timestamp);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -171,8 +218,14 @@ namespace DCL.ECSComponents {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (emoteCommand_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(EmoteCommand);
+      if (EmoteUrn.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(EmoteUrn);
+      }
+      if (Loop != false) {
+        size += 1 + 1;
+      }
+      if (Timestamp != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Timestamp);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -186,11 +239,14 @@ namespace DCL.ECSComponents {
       if (other == null) {
         return;
       }
-      if (other.emoteCommand_ != null) {
-        if (emoteCommand_ == null) {
-          EmoteCommand = new global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand();
-        }
-        EmoteCommand.MergeFrom(other.EmoteCommand);
+      if (other.EmoteUrn.Length != 0) {
+        EmoteUrn = other.EmoteUrn;
+      }
+      if (other.Loop != false) {
+        Loop = other.Loop;
+      }
+      if (other.Timestamp != 0) {
+        Timestamp = other.Timestamp;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -208,10 +264,15 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (emoteCommand_ == null) {
-              EmoteCommand = new global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand();
-            }
-            input.ReadMessage(EmoteCommand);
+            EmoteUrn = input.ReadString();
+            break;
+          }
+          case 16: {
+            Loop = input.ReadBool();
+            break;
+          }
+          case 24: {
+            Timestamp = input.ReadUInt32();
             break;
           }
         }
@@ -230,250 +291,21 @@ namespace DCL.ECSComponents {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            if (emoteCommand_ == null) {
-              EmoteCommand = new global::DCL.ECSComponents.PBAvatarEmoteCommand.Types.EmoteCommand();
-            }
-            input.ReadMessage(EmoteCommand);
+            EmoteUrn = input.ReadString();
+            break;
+          }
+          case 16: {
+            Loop = input.ReadBool();
+            break;
+          }
+          case 24: {
+            Timestamp = input.ReadUInt32();
             break;
           }
         }
       }
     }
     #endif
-
-    #region Nested types
-    /// <summary>Container for nested types declared in the PBAvatarEmoteCommand message type.</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static partial class Types {
-      public sealed partial class EmoteCommand : pb::IMessage<EmoteCommand>
-      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          , pb::IBufferMessage
-      #endif
-      {
-        private static readonly pb::MessageParser<EmoteCommand> _parser = new pb::MessageParser<EmoteCommand>(() => new EmoteCommand());
-        private pb::UnknownFieldSet _unknownFields;
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public static pb::MessageParser<EmoteCommand> Parser { get { return _parser; } }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public static pbr::MessageDescriptor Descriptor {
-          get { return global::DCL.ECSComponents.PBAvatarEmoteCommand.Descriptor.NestedTypes[0]; }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        pbr::MessageDescriptor pb::IMessage.Descriptor {
-          get { return Descriptor; }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public EmoteCommand() {
-          OnConstruction();
-        }
-
-        partial void OnConstruction();
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public EmoteCommand(EmoteCommand other) : this() {
-          emoteUrn_ = other.emoteUrn_;
-          loop_ = other.loop_;
-          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public EmoteCommand Clone() {
-          return new EmoteCommand(this);
-        }
-
-        /// <summary>Field number for the "emote_urn" field.</summary>
-        public const int EmoteUrnFieldNumber = 1;
-        private string emoteUrn_ = "";
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public string EmoteUrn {
-          get { return emoteUrn_; }
-          set {
-            emoteUrn_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-          }
-        }
-
-        /// <summary>Field number for the "loop" field.</summary>
-        public const int LoopFieldNumber = 2;
-        private bool loop_;
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public bool Loop {
-          get { return loop_; }
-          set {
-            loop_ = value;
-          }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public override bool Equals(object other) {
-          return Equals(other as EmoteCommand);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public bool Equals(EmoteCommand other) {
-          if (ReferenceEquals(other, null)) {
-            return false;
-          }
-          if (ReferenceEquals(other, this)) {
-            return true;
-          }
-          if (EmoteUrn != other.EmoteUrn) return false;
-          if (Loop != other.Loop) return false;
-          return Equals(_unknownFields, other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public override int GetHashCode() {
-          int hash = 1;
-          if (EmoteUrn.Length != 0) hash ^= EmoteUrn.GetHashCode();
-          if (Loop != false) hash ^= Loop.GetHashCode();
-          if (_unknownFields != null) {
-            hash ^= _unknownFields.GetHashCode();
-          }
-          return hash;
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public override string ToString() {
-          return pb::JsonFormatter.ToDiagnosticString(this);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public void WriteTo(pb::CodedOutputStream output) {
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          output.WriteRawMessage(this);
-        #else
-          if (EmoteUrn.Length != 0) {
-            output.WriteRawTag(10);
-            output.WriteString(EmoteUrn);
-          }
-          if (Loop != false) {
-            output.WriteRawTag(16);
-            output.WriteBool(Loop);
-          }
-          if (_unknownFields != null) {
-            _unknownFields.WriteTo(output);
-          }
-        #endif
-        }
-
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-          if (EmoteUrn.Length != 0) {
-            output.WriteRawTag(10);
-            output.WriteString(EmoteUrn);
-          }
-          if (Loop != false) {
-            output.WriteRawTag(16);
-            output.WriteBool(Loop);
-          }
-          if (_unknownFields != null) {
-            _unknownFields.WriteTo(ref output);
-          }
-        }
-        #endif
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public int CalculateSize() {
-          int size = 0;
-          if (EmoteUrn.Length != 0) {
-            size += 1 + pb::CodedOutputStream.ComputeStringSize(EmoteUrn);
-          }
-          if (Loop != false) {
-            size += 1 + 1;
-          }
-          if (_unknownFields != null) {
-            size += _unknownFields.CalculateSize();
-          }
-          return size;
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public void MergeFrom(EmoteCommand other) {
-          if (other == null) {
-            return;
-          }
-          if (other.EmoteUrn.Length != 0) {
-            EmoteUrn = other.EmoteUrn;
-          }
-          if (other.Loop != false) {
-            Loop = other.Loop;
-          }
-          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        public void MergeFrom(pb::CodedInputStream input) {
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          input.ReadRawMessage(this);
-        #else
-          uint tag;
-          while ((tag = input.ReadTag()) != 0) {
-            switch(tag) {
-              default:
-                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-                break;
-              case 10: {
-                EmoteUrn = input.ReadString();
-                break;
-              }
-              case 16: {
-                Loop = input.ReadBool();
-                break;
-              }
-            }
-          }
-        #endif
-        }
-
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-          uint tag;
-          while ((tag = input.ReadTag()) != 0) {
-            switch(tag) {
-              default:
-                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-                break;
-              case 10: {
-                EmoteUrn = input.ReadString();
-                break;
-              }
-              case 16: {
-                Loop = input.ReadBool();
-                break;
-              }
-            }
-          }
-        }
-        #endif
-
-      }
-
-    }
-    #endregion
 
   }
 

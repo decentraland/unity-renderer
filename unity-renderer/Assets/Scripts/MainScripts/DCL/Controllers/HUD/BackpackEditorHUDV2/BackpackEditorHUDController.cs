@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DCL.Helpers;
 using DCL.Tasks;
 using DCLServices.DCLFileBrowser;
 using DCLServices.WearablesCatalogService;
@@ -30,6 +31,7 @@ namespace DCL.Backpack
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private readonly OutfitsController outfitsController;
         private readonly IVRMExporter vrmExporter;
+        private readonly VRMDetailsController vrmDetailsController;
         private readonly IDCLFileBrowserService fileBrowser;
         private readonly IEmotesCatalogService emotesCatalogService;
         private readonly Dictionary<string, string> extendedWearableUrns = new ();
@@ -57,7 +59,7 @@ namespace DCL.Backpack
             }}
         };
         private readonly BackpackEditorHUDModel model = new ();
-        private readonly HashSet<string> vrmBlockingWearablesList;
+        private readonly Dictionary<string, bool> vrmBlockingWearables = new (); // Key: id, Value: canBeUnEquipped
 
         private string currentSlotSelected;
         private bool avatarIsDirty;
@@ -77,7 +79,6 @@ namespace DCL.Backpack
         private int currentAnimationIndexShown;
         private bool shouldRequestOutfits = true;
 
-        private bool vrmWarningEnabled;
         private CancellationTokenSource vrmExportCts;
 
         public BackpackEditorHUDController(
@@ -92,6 +93,7 @@ namespace DCL.Backpack
             AvatarSlotsHUDController avatarSlotsHUDController,
             OutfitsController outfitsController,
             IVRMExporter vrmExporter,
+            VRMDetailsController vrmDetailsController,
             IDCLFileBrowserService fileBrowser,
             IEmotesCatalogService emotesCatalogService)
         {
@@ -106,6 +108,7 @@ namespace DCL.Backpack
             this.avatarSlotsHUDController = avatarSlotsHUDController;
             this.outfitsController = outfitsController;
             this.vrmExporter = vrmExporter;
+            this.vrmDetailsController = vrmDetailsController;
             this.fileBrowser = fileBrowser;
             this.emotesCatalogService = emotesCatalogService;
 
@@ -138,19 +141,28 @@ namespace DCL.Backpack
             view.OnColorPickerToggle += OnColorPickerToggled;
             view.OnAvatarUpdated += OnAvatarUpdated;
             view.OnOutfitsOpened += OnOutfitsOpened;
-            view.OnVRMExport += OnVrmExport;
             view.OnSignUpBackClicked += OnSignUpBack;
             outfitsController.OnOutfitEquipped += OnOutfitEquipped;
 
             view.SetOutfitsEnabled(dataStore.featureFlags.flags.Get().IsFeatureEnabled("outfits"));
             SetVisibility(dataStore.HUDs.avatarEditorVisible.Get(), saveAvatar: false);
+
             bool vrmFeatureEnabled = this.dataStore.featureFlags.flags.Get().IsFeatureEnabled("vrm_export");
+            view.OnVRMExport += OnVrmExport;
+            view.OnVRMDetailsOpened += OnVRMDetailsOpened;
+            view.OnVRMDetailsClosed += UpdateVRMExportWarning;
             view.SetVRMButtonActive(vrmFeatureEnabled);
             view.SetVRMButtonEnabled(vrmFeatureEnabled);
             view.SetVRMSuccessToastActive(false);
 
-            vrmBlockingWearablesList = new ();
+            vrmDetailsController.OnWearableUnequipped += UnEquipWearableFromGrid;
+            vrmDetailsController.OnWearableEquipped += EquipWearableFromGrid;
             UpdateVRMExportWarning();
+        }
+
+        private void OnVRMDetailsOpened()
+        {
+            vrmDetailsController.Initialize(vrmBlockingWearables);
         }
 
         private void OnOutfitEquipped(OutfitItem outfit)
@@ -234,7 +246,11 @@ namespace DCL.Backpack
             outfitsController.OnOutfitEquipped -= OnOutfitEquipped;
             view.Dispose();
 
-            vrmBlockingWearablesList.Clear();
+            vrmBlockingWearables.Clear();
+            view.OnVRMDetailsOpened -= OnVRMDetailsOpened;
+            view.OnVRMDetailsClosed -= UpdateVRMExportWarning;
+            vrmDetailsController.OnWearableUnequipped -= UnEquipWearableFromGrid;
+            vrmDetailsController.OnWearableEquipped -= EquipWearableFromGrid;
         }
 
         private void UpdateOverrideHides(string category, bool toggleOn) =>
@@ -382,7 +398,6 @@ namespace DCL.Backpack
 
                         if (!wearableId.Equals(shortenedWearableId))
                             extendedWearableUrns[shortenedWearableId] = wearableId;
-
 
                         if (!wearablesCatalogService.WearablesCatalog.TryGetValue(shortenedWearableId, out WearableItem wearable))
                         {
@@ -679,9 +694,9 @@ namespace DCL.Backpack
                 categoryPendingToPlayEmote = wearable.data.category;
             }
 
-            if (wearable.data.blockVrmExport)
+            if (wearable.data.blockVrmExport && !vrmBlockingWearables.ContainsKey(shortenWearableId))
             {
-                vrmBlockingWearablesList.Add(shortenWearableId);
+                vrmBlockingWearables.Add(shortenWearableId, wearable.CanBeUnEquipped());
                 UpdateVRMExportWarning();
             }
         }
@@ -703,7 +718,7 @@ namespace DCL.Backpack
 
                 string category = w.data.category;
 
-                if (!string.IsNullOrEmpty(category) && !replacedCategories.Contains(category))
+                if (!string.IsNullOrEmpty(category))
                     replacedCategories.Add(category);
             }
 
@@ -765,15 +780,15 @@ namespace DCL.Backpack
 
             if (wearable.data.blockVrmExport)
             {
-                vrmBlockingWearablesList.Remove(shortenedWearableId);
-                UpdateVRMExportWarning();
+                if (vrmBlockingWearables.Remove(shortenedWearableId))
+                    UpdateVRMExportWarning();
             }
         }
 
         private void UpdateVRMExportWarning()
         {
-            vrmWarningEnabled = vrmBlockingWearablesList.Count > 0;
-            view.SetVRMExportWarning(vrmWarningEnabled);
+            bool vrmWarningEnabled = vrmBlockingWearables.Count > 0;
+            view.SetWarningForVRMExportButton(vrmWarningEnabled);
         }
 
         private void ResetOverridesOfAffectedCategories(WearableItem wearable, bool setAsDirty = true)
@@ -899,6 +914,8 @@ namespace DCL.Backpack
 
         private void OnVrmExport()
         {
+            if(vrmBlockingWearables.Count > 0) return;
+
             vrmExportCts?.SafeCancelAndDispose();
             vrmExportCts = new CancellationTokenSource();
             VrmExport(vrmExportCts.Token).Forget();

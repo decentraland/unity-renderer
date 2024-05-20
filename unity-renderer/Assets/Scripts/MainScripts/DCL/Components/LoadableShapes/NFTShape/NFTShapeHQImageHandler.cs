@@ -32,8 +32,13 @@ namespace NFTShape_Internal
             {
                 return null;
             }
-
-            return new NFTShapeHQImageHandler(config);
+            /**
+            * We dont have HQ images now.
+            * OpenSEA returns always the best image, there are no thumbnails images.
+            * BUT we keep this function, so when we add a transform image worker so we can resize them,
+            * we can use this mechanism again.
+            */
+            return null; // new NFTShapeHQImageHandler(config);
         }
 
         public void Dispose()

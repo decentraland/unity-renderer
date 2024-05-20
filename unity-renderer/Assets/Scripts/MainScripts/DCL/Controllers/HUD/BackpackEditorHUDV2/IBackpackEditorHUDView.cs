@@ -19,6 +19,8 @@ namespace DCL.Backpack
         event Action OnAvatarUpdated;
         event Action OnOutfitsOpened;
         event Action OnVRMExport;
+        event Action OnVRMDetailsOpened;
+        event Action OnVRMDetailsClosed;
         event Action<SignUpStage> OnSignUpBackClicked;
 
         delegate void OnSnapshotsReady(Texture2D face256, Texture2D body);
@@ -46,7 +48,7 @@ namespace DCL.Backpack
         void SetVRMButtonActive(bool enabled);
         void SetVRMButtonEnabled(bool enabled);
         void SetVRMSuccessToastActive(bool active);
-        void SetVRMExportWarning(bool enable);
+        void SetWarningForVRMExportButton(bool enable);
         void SetSignUpModeActive(bool isActive);
         void SetSignUpStage(SignUpStage stage);
     }
