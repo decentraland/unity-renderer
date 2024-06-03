@@ -142,15 +142,14 @@ namespace DCL.Helpers.NFT
                 var contractStandardSpan = urnSpan.Slice(0, urnSpan.IndexOf(SEPARATOR));
                 urnSpan = urnSpan.Slice(contractStandardSpan.Length + 1);
 
-                // Check if the URN contains "collections-thirdparty"
+                // check if wearables is third-party
                 if (contractStandardSpan.ToString().Equals(COLLECTIONS_THIRDPARTY, StringComparison.Ordinal))
                 {
                     // 4: contract address
                     var contractAddressSpan = urnSpan;
                     contractAddress = contractAddressSpan.ToString();
-                    chain = chainSpan.ToString();
 
-                    return true;
+                    // NOTE: Third Party wearables do not have token id at the moment
                 }
                 else
                 {
@@ -162,13 +161,14 @@ namespace DCL.Helpers.NFT
                     var tokenIdSpan = urnSpan;
                     contractAddress = contractAddressSpan.ToString();
                     tokenId = tokenIdSpan.ToString();
-                    chain = chainSpan.ToString();
-
-                    return true;
                 }
+
+                chain = chainSpan.ToString();
+                return true;
             }
             catch (Exception e)
-            { // ignored
+            {
+                // ignored
             }
 
             return false;
