@@ -558,7 +558,8 @@ namespace DCLServices.WearablesCatalogService
 
             ct.ThrowIfCancellationRequested();
 
-            return result.FirstOrDefault(x => x.id == ExtendedUrnParser.GetShortenedUrn(newWearableId));
+            return result.FirstOrDefault(x => string.Equals(x.id, ExtendedUrnParser.GetShortenedUrn(newWearableId),
+                StringComparison.OrdinalIgnoreCase));
         }
 
         private List<WearableItem> ValidateWearables(
