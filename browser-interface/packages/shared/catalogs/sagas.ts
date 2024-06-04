@@ -264,7 +264,7 @@ function fetchOwnedEmotes(ethAddress: string, client: CatalystClient) {
 
 export function urnWithoutToken(urn: string): string {
   const value = urn.split(':')
-  if (value.length === 7) {
+  if (value.length === 7 && !urn.includes("collections-thirdparty")) {
     return value.slice(0, 6).join(':')
   }
   return urn
