@@ -4,7 +4,7 @@ namespace DCL
     {
         public readonly BaseVariable<bool> isSignUpFlow = new ();
         public readonly BaseVariable<bool> isApplicationQuitting = new ();
-        public readonly BaseDictionary<string, WearableItem> wearables = new ();
+        public readonly BaseDictionary<string, WearableItem> wearables = new (StringIgnoreCaseEqualityComparer.Default);
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new ();
         public readonly BaseVariable<AppMode> appMode = new ();
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new ();
