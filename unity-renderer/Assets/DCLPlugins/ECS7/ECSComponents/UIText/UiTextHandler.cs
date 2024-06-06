@@ -24,6 +24,7 @@ namespace DCL.ECSComponents.UIText
         public void OnComponentCreated(IParcelScene scene, IDCLEntity entity)
         {
             uiElement = new Label { text = string.Empty };
+            uiElement.style.whiteSpace = WhiteSpace.Normal;
             fontUpdater = new UIFontUpdater(uiElement, fontPromiseKeeper);
             UiElementUtils.SetElementDefaultStyle(uiElement.style);
             AddElementToRoot(scene, entity, uiElement);
