@@ -1,4 +1,5 @@
 ﻿using DCL;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -108,7 +109,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
         public override void FrameCleanup(CommandBuffer cmd) { }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class OutlineSettings
     {
         public float outlineThickness;
@@ -138,7 +139,7 @@ public class OutlineScreenEffectFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        outlinePass.Setup(renderer, outlineTexture);
-        renderer.EnqueuePass(outlinePass);
+        //outlinePass.Setup(renderer, outlineTexture);
+        //renderer.EnqueuePass(outlinePass);
     }
 }
