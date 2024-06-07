@@ -33,6 +33,7 @@ namespace DCL.Backpack
         private readonly AvatarSlotsHUDController avatarSlotsHUDController;
         private readonly IBackpackAnalyticsService backpackAnalyticsService;
         private readonly ICustomNftCollectionService customNftCollectionService;
+        private readonly List<WearableItem> customWearablesBuffer = new ();
 
         private Dictionary<string, WearableGridItemModel> currentWearables = new ();
         private CancellationTokenSource requestWearablesCancellationToken = new ();
@@ -265,18 +266,31 @@ namespace DCL.Backpack
 
                 try
                 {
-                    int customWearablesCount = wearables.Count;
+                    int ownedWearablesCount = wearables.Count;
+                    int ownedWearablesTotalAmount = totalAmount;
 
-                    await UniTask.WhenAll(FetchCustomWearableCollections(wearables, cancellationToken),
-                        FetchCustomWearableItems(wearables, cancellationToken));
+                    customWearablesBuffer.Clear();
 
-                    customWearablesCount = wearables.Count - customWearablesCount;
+                    await UniTask.WhenAll(FetchCustomWearableCollections(customWearablesBuffer, cancellationToken),
+                        FetchCustomWearableItems(customWearablesBuffer, cancellationToken));
+
+                    int customWearablesCount = customWearablesBuffer.Count;
                     totalAmount += customWearablesCount;
 
-                    // clamp wearables size to page size
-                    // TODO: remove wearables that dont applies to the current filters
-                    for (int i = wearables.Count - 1; i >= PAGE_SIZE; i--)
-                        wearables.RemoveAt(i);
+                    if (ownedWearablesCount < PAGE_SIZE && customWearablesCount > 0)
+                    {
+                        int ownedWearablesStartingPage = (ownedWearablesTotalAmount / PAGE_SIZE) + 1;
+                        int customWearablesOffsetPage = page - ownedWearablesStartingPage;
+                        int skip = customWearablesOffsetPage * PAGE_SIZE;
+                        // Fill the page considering the existing owned wearables
+                        int count = PAGE_SIZE - ownedWearablesCount;
+                        int until = skip + count;
+
+                        for (int i = skip; i < customWearablesBuffer.Count && i < until; i++)
+                            wearables.Add(customWearablesBuffer[i]);
+                    }
+
+                    customWearablesBuffer.Clear();
                 }
                 catch (Exception e) when (e is not OperationCanceledException) { Debug.LogError(e); }
 
