@@ -70,7 +70,7 @@ PlayerSettings:
   androidRenderOutsideSafeArea: 0
   androidUseSwappy: 0
   androidBlitType: 1
-  androidResizableWindow: 0
+  androidResizeableActivity: 0
   androidDefaultWindowWidth: 1920
   androidDefaultWindowHeight: 1080
   androidMinimumWindowWidth: 400
@@ -857,7 +857,7 @@ PlayerSettings:
   webGLShowDiagnostics: 0
   webGLDataCaching: 0
   webGLDebugSymbols: 1
-  webGLEmscriptenArgs: ' --profiling-funcs -s ALLOW_MEMORY_GROWTH=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 '
+  webGLEmscriptenArgs: ' --profiling-funcs '
   webGLModulesDirectory: 
   webGLTemplate: PROJECT:decentraland
   webGLAnalyzeBuildSize: 1
@@ -893,7 +893,7 @@ PlayerSettings:
     Stadia: UNITY_POST_PROCESSING_STACK_V2
     Standalone: UNITY_POST_PROCESSING_STACK_V2;GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE;GLTFAST_SAFE;UNITASK_DOTWEEN_SUPPORT;IGNORE_UNIVRM_IMPORTERS;DOTWEEN_ENABLED
     VisionOS: UNITY_POST_PROCESSING_STACK_V2
-    WebGL: UNITY_POST_PROCESSING_STACK_V2;GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE;GLTFAST_SAFE;UNITASK_DOTWEEN_SUPPORT;IGNORE_UNIVRM_IMPORTERS
+    WebGL: UNITY_POST_PROCESSING_STACK_V2;GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE;GLTFAST_SAFE;UNITASK_DOTWEEN_SUPPORT;IGNORE_UNIVRM_IMPORTERS;DOTWEEN_ENABLED
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
     tvOS: UNITY_POST_PROCESSING_STACK_V2
