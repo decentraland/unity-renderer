@@ -23,7 +23,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_mac_image: &unity_mac_image
-    - image: unityci/editor-ubuntu-6000.0.1f1-mac-mono-3.1.0
+    - image: unityci/editor:ubuntu-6000.0.1f1-mac-mono-3.1.0
       environment:
         DCL_OUTPUT_NAME: mac
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -34,7 +34,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_windows_image: &unity_windows_image
-    - image: unityci/editor-ubuntu-6000.0.1f1-windows-mono-3.1.0
+    - image: unityci/editor:ubuntu-6000.0.1f1-windows-mono-3.1.0
       environment:
         DCL_OUTPUT_NAME: windows
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
@@ -45,7 +45,7 @@ references:
         #                                                ~~~~~~~~~~~~~~~~~~~~~~ <- folder name
 
   .unity_webgl_image: &unity_webgl_image
-    - image: unityci/editor-ubuntu-6000.0.1f1-webgl-3.1.0
+    - image: unityci/editor:ubuntu-6000.0.1f1-webgl-3.1.0
       environment:
         DCL_OUTPUT_NAME: webgl
         PROJECT_PATH: /tmp/workspace/unity-renderer/unity-renderer
