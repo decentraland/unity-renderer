@@ -47,7 +47,7 @@ namespace DCLServices.WearablesCatalogService
         private const int MAX_WEARABLES_PER_REQUEST = 200;
 
         private readonly ILambdasService lambdasService;
-        private readonly Dictionary<string, int> wearablesInUseCounters = new ();
+        private readonly Dictionary<string, int> wearablesInUseCounters = new (new Dictionary<string, int>(), StringIgnoreCaseEqualityComparer.Default);
         private readonly Dictionary<(string userId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> ownerWearablesPagePointers = new ();
         private readonly Dictionary<(string userId, string collectionId, int pageSize), LambdaResponsePagePointer<WearableWithDefinitionResponse>> thirdPartyCollectionPagePointers = new ();
         private readonly List<string> pendingWearablesToRequest = new ();
