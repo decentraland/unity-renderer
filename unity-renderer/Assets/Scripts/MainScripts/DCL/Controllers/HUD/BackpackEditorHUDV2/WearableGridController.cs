@@ -299,7 +299,7 @@ namespace DCL.Backpack
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => ExtendedUrnParser.GetShortenedUrn(item.WearableId), model => model);
 
-                view.SetWearablePages(page, Mathf.Max(1, Mathf.CeilToInt((float) totalAmount / PAGE_SIZE)));
+                view.SetWearablePages(page, Mathf.CeilToInt((float) totalAmount / PAGE_SIZE));
 
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
