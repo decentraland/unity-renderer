@@ -197,7 +197,7 @@ export namespace ethereumConfigurations {
     wss: 'wss://rpc.decentraland.org/mainnet',
     http: 'https://rpc.decentraland.org/mainnet',
     etherscan: 'https://etherscan.io',
-    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace',
+    names: 'https://subgraph.decentraland.org/marketplace',
 
     // contracts
     LANDProxy: assertValue(contractInfo.mainnet.LANDProxy),
