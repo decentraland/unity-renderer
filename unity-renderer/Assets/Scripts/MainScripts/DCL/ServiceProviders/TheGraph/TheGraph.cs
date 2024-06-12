@@ -11,12 +11,12 @@ using UnityEngine.Networking;
 public class TheGraph : ITheGraph
 {
     private const float DEFAULT_CACHE_TIME = 5 * 60;
-    private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
-    private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-sepolia";
-    private const string MANA_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/mana-ethereum-mainnet";
-    private const string MANA_SUBGRAPH_URL_POLYGON = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
-    private const string NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM = "https://api.thegraph.com/subgraphs/name/decentraland/collections-ethereum-mainnet";
-    private const string NFT_COLLECTIONS_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/collections-matic-mainnet";
+    private const string LAND_SUBGRAPH_URL_ORG = "https://subgraph.decentraland.org/land-manager";
+    private const string LAND_SUBGRAPH_URL_ZONE = "https://api.studio.thegraph.com/query/49472/land-manager-sepolia/version/latest";
+    private const string MANA_SUBGRAPH_URL_ETHEREUM = "https://subgraph.decentraland.org/mana-ethereum-mainnet";
+    private const string MANA_SUBGRAPH_URL_POLYGON = "https://subgraph.decentraland.org/mana-matic-mainnet";
+    private const string NFT_COLLECTIONS_SUBGRAPH_URL_ETHEREUM = "https://subgraph.decentraland.org/collections-ethereum-mainnet";
+    private const string NFT_COLLECTIONS_SUBGRAPH_URL_MATIC = "https://subgraph.decentraland.org/collections-matic-mainnet";
 
     private readonly IDataCache<List<Land>> landQueryCache = new DataCache<List<Land>>();
 
