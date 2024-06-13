@@ -8,7 +8,7 @@ var IntercomWindow = {
     const top = Math.max(windowHeight - popupHeight, 0)
     const left = Math.max(windowWidth - popupWidth - 20, 0)
     
-    window.open('https://intercom.decentraland.org', 'intercom', `popup,top=${top},left=${left},width=${popupWidth},height=${popupHeight}`)
+    window.open('https://decentraland.org/help', 'intercom', `popup,top=${top},left=${left},width=${popupWidth},height=${popupHeight}`)
   }
 };
 
