@@ -2,10 +2,13 @@ using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using NSubstitute;
+using NSubstitute.Extensions;
 
 namespace DCL.EmotesCustomization.Tests
 {
-    [TestFixture, RequiresPlayMode]
+    // [TestFixture, RequiresPlayMode]
+    [TestFixture]
     public class EmoteCardComponentViewTests
     {
         private EmoteCardComponentView emoteCardComponent;

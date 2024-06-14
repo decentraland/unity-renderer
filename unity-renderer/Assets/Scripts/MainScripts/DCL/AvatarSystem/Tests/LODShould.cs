@@ -26,7 +26,8 @@ namespace Test.AvatarSystem
             lod = new LOD(impostorContainer, visibility, avatarMovementController);
         }
 
-        [Test, RequiresPlayMode]
+        // [Test, RequiresPlayMode]
+        [Test]
         public void EnsureImpostor()
         {
             Assert.Null(lod.impostorRenderer);
@@ -38,7 +39,8 @@ namespace Test.AvatarSystem
             Assert.NotNull(lod.impostorMeshFilter);
         }
 
-        [Test, RequiresPlayMode]
+        // [Test, RequiresPlayMode]
+        [Test]
         [TestCase(1, 0, 0)]
         [TestCase(0, 1, 0)]
         public void TintImpostor(float r, float g, float b)
@@ -51,7 +53,8 @@ namespace Test.AvatarSystem
             Assert.AreEqual(color, impostorColor);
         }
 
-        [Test, RequiresPlayMode]
+        // [Test, RequiresPlayMode]
+        [Test]
         public void MakeTheBillboardLookAt()
         {
             lod.EnsureImpostor();
@@ -67,7 +70,8 @@ namespace Test.AvatarSystem
             Utils.SafeDestroy(lookAtTarget);
         }
 
-        [Test,RequiresPlayMode]
+        // [Test,RequiresPlayMode]
+        [Test]
         [TestCase(0, true)]
         [TestCase(1, false)]
         [TestCase(2, false)]
@@ -102,7 +106,8 @@ namespace Test.AvatarSystem
             avatarMovementController.Received().SetMovementLerpWait(expected);
         }
 
-        [Test, RequiresPlayMode]
+        // [Test, RequiresPlayMode]
+        [Test]
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]

@@ -6,7 +6,8 @@ using UnityEngine.TestTools;
 
 namespace DCL.EmotesCustomization.Tests
 {
-    [TestFixture, RequiresPlayMode]
+    // [TestFixture, RequiresPlayMode]
+    [TestFixture]
     public class EmoteSlotSelectorComponentViewTests
     {
         private EmoteSlotSelectorComponentView emoteSlotSelectorComponent;

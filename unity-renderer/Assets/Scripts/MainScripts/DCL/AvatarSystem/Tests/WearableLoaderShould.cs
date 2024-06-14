@@ -36,7 +36,7 @@ namespace Test.AvatarSystem
             retriever = Substitute.For<IWearableRetriever>();
         }
 
-        [RequiresPlayMode]
+        // [RequiresPlayMode]
         [UnityTest]
         public IEnumerator LoadWearable() =>
             UniTask.ToCoroutine(async () =>
@@ -71,7 +71,7 @@ namespace Test.AvatarSystem
                 Assert.AreEqual(Color.blue, skinRenderer.material.color);
             });
 
-        [RequiresPlayMode]
+        // [RequiresPlayMode]
         [UnityTest]
         public IEnumerator FallbackIfFailsWithRequiredCategory() =>
             UniTask.ToCoroutine(async () =>
@@ -135,7 +135,7 @@ namespace Test.AvatarSystem
                 Assert.AreEqual(Color.blue, skinRenderer.material.color);
             });
 
-        [RequiresPlayMode]
+        // [RequiresPlayMode]
         [UnityTest]
         public IEnumerator FallbackIfThrowsWithRequiredCategory() =>
             UniTask.ToCoroutine(async () =>

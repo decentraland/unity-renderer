@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Test.AvatarSystem
 {
-    [RequiresPlayMode]
+    // [RequiresPlayMode]
     public class BaseAvatarShould
     {
         private BaseAvatar baseAvatar;

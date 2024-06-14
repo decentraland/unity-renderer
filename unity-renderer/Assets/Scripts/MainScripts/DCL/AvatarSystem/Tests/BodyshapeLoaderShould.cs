@@ -66,7 +66,8 @@ namespace Test.AvatarSystem
                 bodyWearables);
         }
 
-        [UnityTest, RequiresPlayMode]
+        // [UnityTest, RequiresPlayMode]
+        [UnityTest]
         public IEnumerator LoadBodyshape() =>
             UniTask.ToCoroutine(async () =>
             {
@@ -283,7 +284,8 @@ namespace Test.AvatarSystem
                 bodyshapeLoader.mouthRetriever.Received().Dispose();
             });
 
-        [Test, RequiresPlayMode]
+        // [Test, RequiresPlayMode]
+        [Test]
         public void DisablesFacialRenderersOnHideFace()
         {
             bodyshapeLoader.eyesRenderer = (SkinnedMeshRenderer)GetPrimitiveMockingBodypart(container.transform, "eyes");
