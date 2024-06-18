@@ -13,6 +13,7 @@ namespace DCLPlugins.SentryPlugin
 
         public SentryPlugin()
         {
+            /*
             // Sentry doesn't provide a public getter accessor to its instance
             // So we unfortunately need a bit of magic
             Type type = typeof(SentrySdk);
@@ -24,11 +25,14 @@ namespace DCLPlugins.SentryPlugin
             }
 
             controller = new SentryController(DataStore.i.player, DataStore.i.realm, info.GetValue(null) as IHub);
+            */
         }
 
         public void Dispose()
         {
+            /*
             controller?.Dispose();
+            */
         }
     }
 }
