@@ -20,9 +20,11 @@ namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
 
         public async UniTask SaveFileAsync(string title, string directory, string defaultName, byte[] content, ExtensionFilter[] extensions)
         {
+            UnityEngine.Debug.Log($"FileBrowserWrapper.SaveFileAsync start of method");
             UniTaskCompletionSource<string> completionSource = new UniTaskCompletionSource<string>();
             FileBrowser.Instance.SaveFileAsync(path => completionSource.TrySetResult(path), title, directory, defaultName, ConvertExtensionFilters(extensions));
             var path = await completionSource.Task;
+            UnityEngine.Debug.Log($"FileBrowserWrapper.SaveFileAsync path:{path} before calling System.IO.File.WriteAllBytesAsync");
             await System.IO.File.WriteAllBytesAsync(path, content);
         }
 
