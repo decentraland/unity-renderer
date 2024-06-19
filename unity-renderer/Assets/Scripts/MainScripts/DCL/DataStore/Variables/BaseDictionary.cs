@@ -9,11 +9,19 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>, IEnum
     public event Action<TKey, TValue> OnAdded;
     public event Action<TKey, TValue> OnRemoved;
 
-    internal readonly Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+    internal readonly Dictionary<TKey, TValue> dictionary;
 
     public TValue this[TKey key] { get => dictionary[key]; set => dictionary[key] = value; }
 
-    public BaseDictionary() { }
+    public BaseDictionary()
+    {
+        dictionary = new Dictionary<TKey, TValue>();
+    }
+
+    public BaseDictionary(IEqualityComparer<TKey> comparer)
+    {
+        dictionary = new Dictionary<TKey, TValue>(new Dictionary<TKey, TValue>(), comparer);
+    }
 
     public BaseDictionary(IEnumerable<(TKey, TValue)> elements)
     {

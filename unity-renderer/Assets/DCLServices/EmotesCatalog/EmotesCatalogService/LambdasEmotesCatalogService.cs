@@ -25,17 +25,19 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         public EmoteEntityDto[] entities;
     }
 
-    internal readonly Dictionary<string, WearableItem> emotes = new ();
-    internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new ();
-    internal readonly Dictionary<string, int> emotesOnUse = new ();
-    internal readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new ();
+    internal readonly Dictionary<string, WearableItem> emotes = new (new Dictionary<string, WearableItem>(), StringIgnoreCaseEqualityComparer.Default);
+    internal readonly Dictionary<string, HashSet<Promise<WearableItem>>> promises = new (new Dictionary<string, HashSet<Promise<WearableItem>>>(),
+        StringIgnoreCaseEqualityComparer.Default);
+    internal readonly Dictionary<string, int> emotesOnUse = new (new Dictionary<string, int>(), StringIgnoreCaseEqualityComparer.Default);
+    internal readonly Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>> ownedEmotesPromisesByUser = new (
+        new Dictionary<string, HashSet<Promise<IReadOnlyList<WearableItem>>>>(), StringIgnoreCaseEqualityComparer.Default);
 
     private readonly IEmotesRequestSource emoteSource;
     private readonly IAddressableResourceProvider addressableResourceProvider;
     private readonly ICatalyst catalyst;
     private readonly ILambdasService lambdasService;
     private readonly DataStore dataStore;
-    private readonly Dictionary<string, string> ownedUrns = new ();
+    private readonly Dictionary<string, string> ownedUrns = new (new Dictionary<string, string>(), StringIgnoreCaseEqualityComparer.Default);
 
     private EmbeddedEmotesSO embeddedEmotesSo;
     private CancellationTokenSource addressableCts;

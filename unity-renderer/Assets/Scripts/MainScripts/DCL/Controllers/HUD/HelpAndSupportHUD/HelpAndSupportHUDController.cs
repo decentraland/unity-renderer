@@ -9,7 +9,7 @@ namespace DCL.HelpAndSupportHUD
 {
     public class HelpAndSupportHUDController : IHUD
     {
-        internal const string CONTACT_SUPPORT_URL = "https://intercom.decentraland.org";
+        internal const string CONTACT_SUPPORT_URL = "https://decentraland.org/help";
         internal const string JOIN_DISCORD_URL = "https://dcl.gg/discord";
         internal const string FAQ_URL = "https://docs.decentraland.org/decentraland/faq/";
         public IHelpAndSupportHUDView view {  get; }
