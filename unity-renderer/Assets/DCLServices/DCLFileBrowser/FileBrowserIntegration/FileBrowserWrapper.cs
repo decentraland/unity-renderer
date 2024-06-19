@@ -1,6 +1,7 @@
 ﻿using Crosstales.FB;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using System.Threading.Tasks;
 
 namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
 {
@@ -25,7 +26,8 @@ namespace DCLServices.DCLFileBrowser.FileBrowserIntegration
             FileBrowser.Instance.SaveFileAsync(path => completionSource.TrySetResult(path), title, directory, defaultName, ConvertExtensionFilters(extensions));
             var path = await completionSource.Task;
             UnityEngine.Debug.Log($"FileBrowserWrapper.SaveFileAsync path:{path} before calling System.IO.File.WriteAllBytesAsync");
-            await System.IO.File.WriteAllBytesAsync(path, content);
+            //await System.IO.File.WriteAllBytesAsync(path, content);
+            await Task.CompletedTask;
         }
 
         private static Crosstales.FB.ExtensionFilter[] ConvertExtensionFilters(ExtensionFilter[] extensions)
