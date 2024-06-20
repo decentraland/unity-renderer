@@ -983,7 +983,7 @@ namespace DCL.Backpack
                 view?.SetVRMSuccessToastActive(false);
             }
 
-            backpackAnalyticsService.SendVRMExportSucceeded();
+            //backpackAnalyticsService.SendVRMExportSucceeded();
         }
     }
 }
