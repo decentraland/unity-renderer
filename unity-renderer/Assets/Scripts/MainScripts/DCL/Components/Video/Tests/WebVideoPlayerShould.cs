@@ -18,7 +18,7 @@ namespace Tests
         public void Setup()
         {
             plugin = Substitute.For<IVideoPluginWrapper>();
-            webVideoPlayer = new WebVideoPlayer(ID, "url", true, plugin);
+            webVideoPlayer = new WebVideoPlayer(ID, "url", true, plugin, Vector2Int.zero);
             plugin.GetError(ID).Returns(ERROR_MESSAGE);
         }
 

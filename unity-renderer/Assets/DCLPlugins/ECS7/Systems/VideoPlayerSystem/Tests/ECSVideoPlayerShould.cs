@@ -68,7 +68,7 @@ namespace Tests.Systems.VideoPlayer
             scene0 = testUtils.CreateScene(666);
             scene1 = testUtils.CreateScene(678);
 
-            videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock());
+            videoPlayer = new WebVideoPlayer("test", "test.mp4", true, new VideoPluginWrapper_Mock(), Vector2Int.zero);
 
             internalEcsComponents.EngineInfo.PutFor(scene0, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());
             internalEcsComponents.EngineInfo.PutFor(scene1, SpecialEntityId.SCENE_ROOT_ENTITY, new InternalEngineInfo());

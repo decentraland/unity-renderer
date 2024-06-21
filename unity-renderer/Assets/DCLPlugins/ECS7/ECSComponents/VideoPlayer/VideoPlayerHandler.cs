@@ -105,7 +105,7 @@ namespace DCL.ECSComponents
                 if (!isValidUrl)
                     return;
 
-                videoPlayer = new WebVideoPlayer(id, videoUrl, videoType, DCLVideoTexture.videoPluginWrapperBuilder.Invoke());
+                videoPlayer = new WebVideoPlayer(id, videoUrl, videoType, DCLVideoTexture.videoPluginWrapperBuilder.Invoke(), scene.sceneData.basePosition);
                 videoPlayerInternalComponent.PutFor(scene, entity, new InternalVideoPlayer()
                 {
                     videoPlayer = videoPlayer,
