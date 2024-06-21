@@ -30,6 +30,8 @@ namespace DCL
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
 
+            OnToggleDebugMode(true, false);
+
             OnKernelConfigChanged(KernelConfig.i.Get(), null);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
 
@@ -62,8 +64,8 @@ namespace DCL
             }
             else
             {
-                Debug.Log("Client logging DISABLED");
-                Debug.unityLogger.logEnabled = false;
+                // Debug.Log("Client logging DISABLED");
+                // Debug.unityLogger.logEnabled = false;
             }
 
             OnDebugModeSet?.Invoke();
@@ -83,7 +85,7 @@ namespace DCL
         {
             isFPSPanelVisible.Set(true);
         }
-        
+
         public void ToggleFPSPanel()
         {
             isFPSPanelVisible.Set(!isFPSPanelVisible.Get());
@@ -182,7 +184,7 @@ namespace DCL
         {
             Environment.i.platform.cullingController.SetAnimationCulling(enabled);
         }
-       
+
 
         public void Dispose()
         {
