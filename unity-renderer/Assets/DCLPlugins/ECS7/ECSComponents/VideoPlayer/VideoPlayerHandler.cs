@@ -89,7 +89,7 @@ namespace DCL.ECSComponents
             {
                 videoPlayer?.Dispose();
 
-                var id = entity.entityId.ToString();
+                var id = $"{scene.sceneData.id}-{entity.entityId.ToString()}";
 
                 VideoType videoType = VideoType.Common;
                 if (model.Src.StartsWith("livekit-video://"))
