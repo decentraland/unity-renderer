@@ -35,7 +35,6 @@ namespace DCL.Components.Video.Plugin
             this.plugin = plugin;
             this.url = url;
             this.sceneCoord = sceneCoord;
-            Debug.Log($"WebVideoPlayer.ctor: id:{id} url:{url} coord:{sceneCoord} type:{videoType}");
             plugin.Create(id, url, videoType);
         }
 
@@ -52,8 +51,6 @@ namespace DCL.Components.Video.Plugin
                         Debug.LogError(lastError);
                     }
 
-                    // Debug.Log($"WebVideoPlayer.Update.ERROR: url:{url} error:{newError}");
-
                     break;
                 case VideoState.READY:
                     if (!isReady)
@@ -69,14 +66,10 @@ namespace DCL.Components.Video.Plugin
                         playWhenReady = false;
                     }
 
-                    // Debug.Log($"WebVideoPlayer.Update.READY: url:{url} playWhenReady:{playWhenReady}");
-
                     break;
                 case VideoState.PLAYING:
                     if (visible)
                         plugin.TextureUpdate(videoPlayerId);
-
-                    // Debug.Log($"WebVideoPlayer.Update.PLAYING: url:{url} visible:{visible}");
 
                     break;
             }
@@ -84,13 +77,8 @@ namespace DCL.Components.Video.Plugin
 
         public void Play()
         {
-            Debug.Log($"WebVideoPlayer.Play: url:{url} coord:{sceneCoord} error:{isError} ready:{isReady}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.Play.error: {lastError}");
                 return;
-            }
 
             if (!isReady)
             {
@@ -103,20 +91,14 @@ namespace DCL.Components.Video.Plugin
 
         private void PlayInternal()
         {
-            Debug.Log($"WebVideoPlayer.PlayInternal: url:{url} coord:{sceneCoord}");
             plugin.Play(videoPlayerId, playStartTime);
             playStartTime = -1;
         }
 
         public void Pause()
         {
-            Debug.Log($"WebVideoPlayer.Pause: url:{url} coord:{sceneCoord} error: {isError}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.Pause.error: {lastError}");
                 return;
-            }
 
             playStartTime = plugin.GetTime(videoPlayerId);
             plugin.Pause(videoPlayerId);
@@ -125,13 +107,8 @@ namespace DCL.Components.Video.Plugin
 
         public void SetVolume(float volume)
         {
-            Debug.Log($"WebVideoPlayer.SetVolume: url:{url} coord:{sceneCoord} error: {isError} volume: {volume}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.SetVolume.error: {lastError}");
                 return;
-            }
 
             plugin.SetVolume(videoPlayerId, volume);
             this.volume = volume;
@@ -139,13 +116,8 @@ namespace DCL.Components.Video.Plugin
 
         public void SetTime(float timeSecs)
         {
-            Debug.Log($"WebVideoPlayer.SetTime: url:{url} coord:{sceneCoord} error: {isError} time: {timeSecs}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.SetTime.error: {lastError}");
                 return;
-            }
 
             playStartTime = timeSecs;
             plugin.SetTime(videoPlayerId, timeSecs);
@@ -153,26 +125,16 @@ namespace DCL.Components.Video.Plugin
 
         public void SetLoop(bool loop)
         {
-            Debug.Log($"WebVideoPlayer.SetLoop: url:{url} coord:{sceneCoord} error: {isError} loop: {loop}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.SetLoop.error: {lastError}");
                 return;
-            }
 
             plugin.SetLoop(videoPlayerId, loop);
         }
 
         public void SetPlaybackRate(float playbackRate)
         {
-            Debug.Log($"WebVideoPlayer.SetPlaybackRate: url:{url} coord:{sceneCoord} error: {isError} rate: {playbackRate}");
-
             if (isError)
-            {
-                Debug.Log($"WebVideoPlayer.SetPlaybackRate.error: {lastError}");
                 return;
-            }
 
             plugin.SetPlaybackRate(videoPlayerId, playbackRate);
         }
@@ -205,7 +167,6 @@ namespace DCL.Components.Video.Plugin
 
         public void Dispose()
         {
-            Debug.Log($"WebVideoPlayer.Dispose: url:{url} coord:{sceneCoord}");
             plugin.Remove(videoPlayerId);
         }
     }
