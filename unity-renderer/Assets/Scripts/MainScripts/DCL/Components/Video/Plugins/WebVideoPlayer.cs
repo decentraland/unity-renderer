@@ -5,7 +5,6 @@ namespace DCL.Components.Video.Plugin
 {
     public class WebVideoPlayer : IDisposable
     {
-        private readonly Vector2Int sceneCoord;
         public Texture2D texture { private set; get; }
         public float volume { private set; get; }
         public bool playing => GetState() == VideoState.PLAYING;
@@ -24,17 +23,16 @@ namespace DCL.Components.Video.Plugin
 
         private string lastError = "";
 
-        public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin, Vector2Int sceneCoord)
-            : this(id, url, useHls? VideoType.Hls : VideoType.Common, plugin, sceneCoord)
+        public WebVideoPlayer(string id, string url, bool useHls, IVideoPluginWrapper plugin)
+            : this(id, url, useHls? VideoType.Hls : VideoType.Common, plugin)
         {
         }
 
-        public WebVideoPlayer(string id, string url, VideoType videoType, IVideoPluginWrapper plugin, Vector2Int sceneCoord)
+        public WebVideoPlayer(string id, string url, VideoType videoType, IVideoPluginWrapper plugin)
         {
             videoPlayerId = id;
             this.plugin = plugin;
             this.url = url;
-            this.sceneCoord = sceneCoord;
             plugin.Create(id, url, videoType);
         }
 

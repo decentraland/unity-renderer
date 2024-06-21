@@ -171,8 +171,7 @@ namespace DCL.Components
             isInitialized = true;
 
             string videoId = scene.sceneData.sceneNumber > 0 ? scene.sceneData.sceneNumber + id : scene.GetHashCode().ToString() + id;
-            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke(),
-                scene.sceneData.basePosition);
+            texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream, videoPluginWrapperBuilder.Invoke());
             texturePlayerUpdateRoutine = CoroutineStarter.Start(OnUpdate());
 
             CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;

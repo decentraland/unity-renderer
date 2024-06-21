@@ -30,8 +30,6 @@ namespace DCL
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
 
-            OnToggleDebugMode(true, false);
-
             OnKernelConfigChanged(KernelConfig.i.Get(), null);
             KernelConfig.i.OnChange += OnKernelConfigChanged;
 
@@ -64,8 +62,8 @@ namespace DCL
             }
             else
             {
-                // Debug.Log("Client logging DISABLED");
-                // Debug.unityLogger.logEnabled = false;
+                Debug.Log("Client logging DISABLED");
+                Debug.unityLogger.logEnabled = false;
             }
 
             OnDebugModeSet?.Invoke();
