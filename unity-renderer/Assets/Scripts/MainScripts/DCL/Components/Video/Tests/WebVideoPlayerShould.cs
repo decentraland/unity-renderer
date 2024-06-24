@@ -1,4 +1,3 @@
-using System.Collections;
 using DCL.Components.Video.Plugin;
 using NSubstitute;
 using NUnit.Framework;
@@ -161,7 +160,7 @@ namespace Tests
 
             plugin.Received(1).GetError(ID);
             Assert.IsTrue(webVideoPlayer.isError);
-            UnityEngine.TestTools.LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
+            LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
         }
 
         [Test]
@@ -187,7 +186,7 @@ namespace Tests
             plugin.Received(0).SetPlaybackRate(ID, Arg.Any<float>());
             plugin.Received(0).GetTime(ID);
             plugin.Received(0).GetDuration(ID);
-            UnityEngine.TestTools.LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
+            LogAssert.Expect(LogType.Error, ERROR_MESSAGE);
         }
 
         [Test]

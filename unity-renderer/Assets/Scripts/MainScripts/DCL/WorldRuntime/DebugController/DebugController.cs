@@ -83,7 +83,7 @@ namespace DCL
         {
             isFPSPanelVisible.Set(true);
         }
-        
+
         public void ToggleFPSPanel()
         {
             isFPSPanelVisible.Set(!isFPSPanelVisible.Get());
@@ -182,7 +182,7 @@ namespace DCL
         {
             Environment.i.platform.cullingController.SetAnimationCulling(enabled);
         }
-       
+
 
         public void Dispose()
         {
