@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
             base.Initialize();
 
             if (lightweightRenderPipelineAsset == null)
-                lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+                lightweightRenderPipelineAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
         }
 
         public override object GetStoredValue()

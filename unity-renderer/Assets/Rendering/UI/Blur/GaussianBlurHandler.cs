@@ -32,8 +32,8 @@ public class GaussianBlurHandler : ScriptableRendererFeature
         int tmpID1;
         int tmpID2;
 
-        RenderTargetIdentifier tmpRT1;
-        RenderTargetIdentifier tmpRT2;
+        RTHandle tmpRT1;
+        RTHandle tmpRT2;
 
         private ScriptableRenderer renderer {get; set;}
 
@@ -58,8 +58,8 @@ public class GaussianBlurHandler : ScriptableRendererFeature
             cmd.GetTemporaryRT(tmpID1, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
             cmd.GetTemporaryRT(tmpID2, width, height, 0, FilterMode.Bilinear, RenderTextureFormat.ARGB32);
 
-            tmpRT1 = new RenderTargetIdentifier(tmpID1);
-            tmpRT2 = new RenderTargetIdentifier(tmpID2);
+            tmpRT1 = RTHandles.Alloc("tmpBlurRT1", "tmpBlurRT1");
+            tmpRT2 = RTHandles.Alloc("tmpBlurRT2", "tmpBlurRT2");
 
             ConfigureTarget(tmpRT1);
             ConfigureTarget(tmpRT2);
@@ -74,7 +74,7 @@ public class GaussianBlurHandler : ScriptableRendererFeature
 
             //first pass
             cmd.SetGlobalFloat("_offset", 1.5f);
-            cmd.Blit(renderer.cameraColorTarget, tmpRT1, blurMat);
+            cmd.Blit(renderer.cameraColorTargetHandle, tmpRT1, blurMat);
 
             for (int i = 1; i < passes - 1; i++)
             {

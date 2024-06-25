@@ -9,11 +9,11 @@ public class BlurFeature : IPlugin
 {
     public BlurFeature()
     {
-        (GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset).ToggleRenderFeature<GaussianBlurHandler>(true);
+        (GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset).ToggleRenderFeature<GaussianBlurHandler>(true);
     }
 
     public void Dispose()
     {
-        (GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset).ToggleRenderFeature<GaussianBlurHandler>(false);
+        (GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset).ToggleRenderFeature<GaussianBlurHandler>(false);
     }
 }

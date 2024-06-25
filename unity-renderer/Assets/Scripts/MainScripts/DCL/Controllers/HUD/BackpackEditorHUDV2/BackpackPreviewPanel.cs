@@ -165,7 +165,7 @@ namespace DCL.Backpack
         private void FixThePreviewRenderingSomehowRelatedToTheRenderScale(bool isEnabled)
         {
             // NOTE(Brian): SSAO doesn't work correctly with the offset avatar preview if the renderScale != 1.0
-            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            var asset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
 
             if (asset == null)
                 return;

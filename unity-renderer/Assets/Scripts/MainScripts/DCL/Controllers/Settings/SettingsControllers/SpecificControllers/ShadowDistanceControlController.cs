@@ -14,7 +14,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.Initialize();
 
-            lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            lightweightRenderPipelineAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
         }
 
         public override object GetStoredValue() { return currentQualitySetting.shadowDistance; }

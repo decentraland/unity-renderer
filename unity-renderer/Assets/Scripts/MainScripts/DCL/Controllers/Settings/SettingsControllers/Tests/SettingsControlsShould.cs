@@ -52,7 +52,7 @@ namespace DCL.SettingsCommon.SettingsControllers.Tests
             legacySystems.Add(MainSceneFactory.CreateEnvironment());
             legacySystems.AddRange(MainSceneFactory.CreatePlayerSystems());
 
-            urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            urpAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
             Assert.IsNotNull(urpAsset, "urpAsset is null!");
 
             lwrpaShadowField = urpAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);

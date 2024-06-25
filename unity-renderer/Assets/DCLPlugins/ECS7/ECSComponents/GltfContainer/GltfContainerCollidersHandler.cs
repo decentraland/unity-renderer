@@ -56,6 +56,7 @@ namespace DCL.ECSComponents
                     continue;
                 }
 
+                Physics.BakeMesh(meshFilters[i].sharedMesh.GetInstanceID(), false, MeshColliderCookingOptions.None);
                 MeshCollider newCollider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
                 newCollider.sharedMesh = meshFilters[i].sharedMesh;
                 newCollider.enabled = false;
