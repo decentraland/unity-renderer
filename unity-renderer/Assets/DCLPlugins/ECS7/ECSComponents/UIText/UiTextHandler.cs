@@ -38,7 +38,13 @@ namespace DCL.ECSComponents.UIText
 
         public void OnComponentModelUpdated(IParcelScene scene, IDCLEntity entity, PBUiText model)
         {
+            var wrapMode = WhiteSpace.NoWrap; // Default mode is No Wrap enabled
+
+            if (model.HasTextWrap && model.TextWrap == TextWrap.TwWrap)
+                wrapMode = WhiteSpace.Normal;
+
             uiElement.text = model.Value;
+            uiElement.style.whiteSpace = wrapMode;
             uiElement.style.color = model.GetColor().ToUnityColor();
             uiElement.style.fontSize = model.GetFontSize();
             uiElement.style.unityTextAlign = model.GetTextAlign().ToUnityTextAlign();

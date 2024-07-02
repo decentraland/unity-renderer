@@ -27,23 +27,34 @@ namespace DCL.ECSComponents {
             "CilkZWNlbnRyYWxhbmQvc2RrL2NvbXBvbmVudHMvdWlfdGV4dC5wcm90bxIb",
             "ZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzGiBkZWNlbnRyYWxhbmQvY29t",
             "bW9uL2NvbG9ycy5wcm90bxouZGVjZW50cmFsYW5kL3Nkay9jb21wb25lbnRz",
-            "L2NvbW1vbi90ZXh0cy5wcm90byKbAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
+            "L2NvbW1vbi90ZXh0cy5wcm90byLoAgoIUEJVaVRleHQSDQoFdmFsdWUYASAB",
             "KAkSLwoFY29sb3IYAiABKAsyGy5kZWNlbnRyYWxhbmQuY29tbW9uLkNvbG9y",
             "NEgAiAEBEkoKCnRleHRfYWxpZ24YAyABKA4yMS5kZWNlbnRyYWxhbmQuc2Rr",
             "LmNvbXBvbmVudHMuY29tbW9uLlRleHRBbGlnbk1vZGVIAYgBARI7CgRmb250",
             "GAQgASgOMiguZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLmNvbW1vbi5G",
-            "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQFCCAoGX2NvbG9yQg0K",
-            "C190ZXh0X2FsaWduQgcKBV9mb250QgwKCl9mb250X3NpemVCFKoCEURDTC5F",
-            "Q1NDb21wb25lbnRzYgZwcm90bzM="));
+            "b250SAKIAQESFgoJZm9udF9zaXplGAUgASgFSAOIAQESPQoJdGV4dF93cmFw",
+            "GAYgASgOMiUuZGVjZW50cmFsYW5kLnNkay5jb21wb25lbnRzLlRleHRXcmFw",
+            "SASIAQFCCAoGX2NvbG9yQg0KC190ZXh0X2FsaWduQgcKBV9mb250QgwKCl9m",
+            "b250X3NpemVCDAoKX3RleHRfd3JhcConCghUZXh0V3JhcBILCgdUV19XUkFQ",
+            "EAASDgoKVFdfTk9fV1JBUBABQhSqAhFEQ0wuRUNTQ29tcG9uZW50c2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Decentraland.Common.ColorsReflection.Descriptor, global::DCL.ECSComponents.TextsReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize" }, new[]{ "Color", "TextAlign", "Font", "FontSize" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::DCL.ECSComponents.TextWrap), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::DCL.ECSComponents.PBUiText), global::DCL.ECSComponents.PBUiText.Parser, new[]{ "Value", "Color", "TextAlign", "Font", "FontSize", "TextWrap" }, new[]{ "Color", "TextAlign", "Font", "FontSize", "TextWrap" }, null, null, null)
           }));
     }
     #endregion
 
   }
+  #region Enums
+  public enum TextWrap {
+    [pbr::OriginalName("TW_WRAP")] TwWrap = 0,
+    [pbr::OriginalName("TW_NO_WRAP")] TwNoWrap = 1,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class PBUiText : pb::IMessage<PBUiText>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -86,6 +97,7 @@ namespace DCL.ECSComponents {
       textAlign_ = other.textAlign_;
       font_ = other.font_;
       fontSize_ = other.fontSize_;
+      textWrap_ = other.textWrap_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -99,7 +111,7 @@ namespace DCL.ECSComponents {
     public const int ValueFieldNumber = 1;
     private string value_ = "";
     /// <summary>
-    /// the text content
+    /// the text content, tag &lt;b> and &lt;i> are supported
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -209,6 +221,34 @@ namespace DCL.ECSComponents {
       _hasBits0 &= ~4;
     }
 
+    /// <summary>Field number for the "text_wrap" field.</summary>
+    public const int TextWrapFieldNumber = 6;
+    private global::DCL.ECSComponents.TextWrap textWrap_;
+    /// <summary>
+    /// wrap text when the border is reached (default: TW_WRAP)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::DCL.ECSComponents.TextWrap TextWrap {
+      get { if ((_hasBits0 & 8) != 0) { return textWrap_; } else { return global::DCL.ECSComponents.TextWrap.TwWrap; } }
+      set {
+        _hasBits0 |= 8;
+        textWrap_ = value;
+      }
+    }
+    /// <summary>Gets whether the "text_wrap" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTextWrap {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "text_wrap" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTextWrap() {
+      _hasBits0 &= ~8;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -229,6 +269,7 @@ namespace DCL.ECSComponents {
       if (TextAlign != other.TextAlign) return false;
       if (Font != other.Font) return false;
       if (FontSize != other.FontSize) return false;
+      if (TextWrap != other.TextWrap) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -241,6 +282,7 @@ namespace DCL.ECSComponents {
       if (HasTextAlign) hash ^= TextAlign.GetHashCode();
       if (HasFont) hash ^= Font.GetHashCode();
       if (HasFontSize) hash ^= FontSize.GetHashCode();
+      if (HasTextWrap) hash ^= TextWrap.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -279,6 +321,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(40);
         output.WriteInt32(FontSize);
       }
+      if (HasTextWrap) {
+        output.WriteRawTag(48);
+        output.WriteEnum((int) TextWrap);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -309,6 +355,10 @@ namespace DCL.ECSComponents {
         output.WriteRawTag(40);
         output.WriteInt32(FontSize);
       }
+      if (HasTextWrap) {
+        output.WriteRawTag(48);
+        output.WriteEnum((int) TextWrap);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -333,6 +383,9 @@ namespace DCL.ECSComponents {
       }
       if (HasFontSize) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(FontSize);
+      }
+      if (HasTextWrap) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TextWrap);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -363,6 +416,9 @@ namespace DCL.ECSComponents {
       }
       if (other.HasFontSize) {
         FontSize = other.FontSize;
+      }
+      if (other.HasTextWrap) {
+        TextWrap = other.TextWrap;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -402,6 +458,10 @@ namespace DCL.ECSComponents {
             FontSize = input.ReadInt32();
             break;
           }
+          case 48: {
+            TextWrap = (global::DCL.ECSComponents.TextWrap) input.ReadEnum();
+            break;
+          }
         }
       }
     #endif
@@ -438,6 +498,10 @@ namespace DCL.ECSComponents {
           }
           case 40: {
             FontSize = input.ReadInt32();
+            break;
+          }
+          case 48: {
+            TextWrap = (global::DCL.ECSComponents.TextWrap) input.ReadEnum();
             break;
           }
         }
