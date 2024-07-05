@@ -18,7 +18,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.Initialize();
 
-            lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            lightweightRenderPipelineAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
 
             if (lightweightRenderPipelineAsset == null)
                 return;

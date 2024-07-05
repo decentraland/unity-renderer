@@ -331,7 +331,7 @@ namespace DCL.Helpers
 
         public static void SetSSAOActive(bool active)
         {
-            var urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            var urpAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
 
             ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0);
             FieldInfo featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);

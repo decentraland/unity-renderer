@@ -88,6 +88,7 @@ SpriteAtlas:
     - 903e82323051c41339d97e1f52c7c984: 21300000
     - 3511e442bc30148ee990f816a8fbf595: 21300000
     - 49fc3b42abb07486dab054df04dd6782: 21300000
+    - 18e8a062e074b4b35a0a1c05fd97640e: 21300000
     - 16a5648277f4daa4d9c15a5365076da6: 21300000
     - 03b222c2450ce4c57ba7e9d6268b0c92: 21300000
     - 147d94c24838a2647bbaf2fb16ac913c: 21300000
@@ -259,6 +260,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 903e82323051c41339d97e1f52c7c984, type: 3}
   - {fileID: 21300000, guid: 3511e442bc30148ee990f816a8fbf595, type: 3}
   - {fileID: 21300000, guid: 49fc3b42abb07486dab054df04dd6782, type: 3}
+  - {fileID: 21300000, guid: 18e8a062e074b4b35a0a1c05fd97640e, type: 3}
   - {fileID: 21300000, guid: 16a5648277f4daa4d9c15a5365076da6, type: 3}
   - {fileID: 21300000, guid: 03b222c2450ce4c57ba7e9d6268b0c92, type: 3}
   - {fileID: 21300000, guid: 147d94c24838a2647bbaf2fb16ac913c, type: 3}
@@ -429,6 +431,7 @@ SpriteAtlas:
   - Container12Shadow10
   - HandleThick
   - CameraReelOn
+  - BlockPlayerBlackIcon
   - SmartItemIcn
   - WifiIcn
   - PolygonManaIcon
@@ -470,7 +473,7 @@ SpriteAtlas:
   - MapOff
   - QuestOff
   - DislikeSolidIcn
-  - BlockPlayerIcon
+  - BlockPlayerWhiteIcon
   - BackgroundPattern
   - CheckmarkContainer
   - PlacesIcn

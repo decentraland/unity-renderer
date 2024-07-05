@@ -21,7 +21,7 @@ namespace DCL.SettingsCommon.SettingsControllers.SpecificControllers
         {
             base.Initialize();
 
-            urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            urpAsset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
 
             ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0) as ScriptableRenderer;
             var featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);

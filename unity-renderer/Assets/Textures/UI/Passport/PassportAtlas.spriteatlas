@@ -56,6 +56,7 @@ SpriteAtlas:
     - 392db073fc28e45fcb6cd495341a8005: 21300000
     - f5c69b65210ee4d918cee88989f0b22e: 21300000
     - 7f02a0d56dde24665b43d5483b653d47: 21300000
+    - 686758069f8a14776994a397af7581cd: 21300000
     - b3148da633cc64974a01bd0083bd1e59: 21300000
     - 419076073bb23470898b3a2689515b64: 21300000
     - f8ce386703bdd44f2b6d80232b03f124: 21300000
@@ -68,7 +69,6 @@ SpriteAtlas:
     - cf7f4a0baae9142968ca27a5ed8993d9: 21300000
     - a6c2677ba0c2a49de93b1237c458b0b0: 21300000
     - d680666c4c5134b9f8615ffaaf5da043: 21300000
-    - 9fb5589c5caac46e5882f2be6709b03d: 21300000
     - be9fdcad4c4cb403eab27ebae8e9c3e1: 21300000
     - ae432d6ee3307da4aac59db911ad410f: 21300000
     - eafeb5ee04f824648b1a9f8b4412d485: 21300000
@@ -80,6 +80,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 392db073fc28e45fcb6cd495341a8005, type: 3}
   - {fileID: 21300000, guid: f5c69b65210ee4d918cee88989f0b22e, type: 3}
   - {fileID: 21300000, guid: 7f02a0d56dde24665b43d5483b653d47, type: 3}
+  - {fileID: 21300000, guid: 686758069f8a14776994a397af7581cd, type: 3}
   - {fileID: 21300000, guid: b3148da633cc64974a01bd0083bd1e59, type: 3}
   - {fileID: 21300000, guid: 419076073bb23470898b3a2689515b64, type: 3}
   - {fileID: 21300000, guid: f8ce386703bdd44f2b6d80232b03f124, type: 3}
@@ -92,7 +93,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cf7f4a0baae9142968ca27a5ed8993d9, type: 3}
   - {fileID: 21300000, guid: a6c2677ba0c2a49de93b1237c458b0b0, type: 3}
   - {fileID: 21300000, guid: d680666c4c5134b9f8615ffaaf5da043, type: 3}
-  - {fileID: 21300000, guid: 9fb5589c5caac46e5882f2be6709b03d, type: 3}
   - {fileID: 21300000, guid: be9fdcad4c4cb403eab27ebae8e9c3e1, type: 3}
   - {fileID: 21300000, guid: ae432d6ee3307da4aac59db911ad410f, type: 3}
   - {fileID: 21300000, guid: eafeb5ee04f824648b1a9f8b4412d485, type: 3}
@@ -103,6 +103,7 @@ SpriteAtlas:
   - RealNameIcn
   - PassportBackground
   - BlockedImg
+  - NameBackground
   - CornerFlap
   - FlapShadow
   - LinkIcon
@@ -115,7 +116,6 @@ SpriteAtlas:
   - BirthdayIcn
   - GenderIcn
   - WearablesIcn
-  - RadialGradient
   - SexOrientationIcn
   - 360Icon
   - EmotesIcn

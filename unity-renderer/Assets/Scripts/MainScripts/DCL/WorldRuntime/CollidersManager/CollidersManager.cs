@@ -163,6 +163,8 @@ namespace DCL
 
                 if (shouldCreateCollider)
                 {
+                    Physics.BakeMesh(meshFilters[i].sharedMesh.GetInstanceID(), false, MeshColliderCookingOptions.None);
+
                     if (collider == null)
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
 

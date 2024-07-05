@@ -793,7 +793,7 @@ public class AvatarEditorHUDController : IHUD
             }
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
-            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            var asset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
             asset.renderScale = prevRenderScale;
 
             if (isSignUpFlow)
@@ -831,7 +831,7 @@ public class AvatarEditorHUDController : IHUD
                 Utils.UnlockCursor();
 
             // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
-            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            var asset = GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
             prevRenderScale = asset.renderScale;
             asset.renderScale = 1.0f;
 
