@@ -41,7 +41,6 @@ export function ensureEqualFiles(first: string, second: string) {
     if (contentsFirst[i] !== contentsSecond[i])
       throw new Error(`Files ${first} and ${second} are different, on line ${line}, char ${i}`)
   }
-
   return true
 }
 
