@@ -35,8 +35,7 @@ export async function startPreview(unityInterface: IUnityInterface) {
   const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
 
   ws.addEventListener('message', (msg) => {
-    if (msg.data.startsWith('{')) {
-      logger.log('Update message from CLI', msg.data)
+    if (typeof msg.data === 'string' && msg.data.startsWith('{')) {
       const message: sdk.Messages = JSON.parse(msg.data)
       handleServerMessage(message)
     }
