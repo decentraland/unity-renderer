@@ -12,10 +12,8 @@ using DCLServices.WearablesCatalogService;
 using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
-using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.ServiceProviders.OpenSea.Interfaces;
 using NSubstitute;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -75,13 +73,6 @@ namespace DCL
                 customNftCollectionService.GetConfiguredCustomNftItemsAsync(default)
                                           .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<string>>(Array.Empty<string>()));
                 return customNftCollectionService;
-            });
-
-            result.Register<IWebRequestMonitor>(() =>
-            {
-                var subs = Substitute.For<IWebRequestMonitor>();
-                subs.TrackWebRequest(default, default).Returns(new DisposableTransaction(Substitute.For<ISpan>()));
-                return subs;
             });
 
             result.Register<IServiceProviders>(

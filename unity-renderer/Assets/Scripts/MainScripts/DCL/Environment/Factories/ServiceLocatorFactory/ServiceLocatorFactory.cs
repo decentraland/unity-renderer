@@ -35,7 +35,6 @@ using MainScripts.DCL.Controllers.AssetManager;
 using MainScripts.DCL.Controllers.FriendsController;
 using MainScripts.DCL.Controllers.HotScenes;
 using MainScripts.DCL.Controllers.HUD.CharacterPreview;
-using MainScripts.DCL.Helpers.SentryUtils;
 using MainScripts.DCL.WorldRuntime.Debugging.Performance;
 using System.Collections.Generic;
 using WorldsFeaturesAnalytics;
@@ -89,7 +88,6 @@ namespace DCL
             result.Register<INamesService>(() => new NamesService());
             result.Register<ILandsService>(() => new LandsService());
             result.Register<IUpdateEventHandler>(() => new UpdateEventHandler());
-            result.Register<IWebRequestMonitor>(() => new SentryWebRequestMonitor());
 
             // World runtime
             result.Register<IIdleChecker>(() => new IdleChecker());
