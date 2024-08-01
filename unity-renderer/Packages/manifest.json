@@ -37,7 +37,6 @@
     "com.vrmc.univrm": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRM#master",
     "com.vrmc.vrm": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRM10#master",
     "com.vrmc.vrmshaders": "https://github.com/decentraland/UniVRM.git?path=/Assets/VRMShaders#master",
-    "io.sentry.unity": "https://github.com/getsentry/unity.git#1.8.0",
     "net.tnrd.nsubstitute": "https://github.com/decentraland/Unity3D-NSubstitute.git",
     "ru.threedisevenzeror.unitygifdecoder": "https://github.com/decentraland/Unity-GifDecoder.git",
     "com.unity.modules.animation": "1.0.0",

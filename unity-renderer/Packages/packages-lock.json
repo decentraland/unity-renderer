@@ -381,13 +381,6 @@
       },
       "hash": "36366769363b862446f411870ec19594bf7cb81a"
     },
-    "io.sentry.unity": {
-      "version": "https://github.com/getsentry/unity.git#1.8.0",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "cfd1f01ace2495f712f4f7329d14cf020e3e4724"
-    },
     "net.tnrd.nsubstitute": {
       "version": "https://github.com/decentraland/Unity3D-NSubstitute.git",
       "depth": 0,

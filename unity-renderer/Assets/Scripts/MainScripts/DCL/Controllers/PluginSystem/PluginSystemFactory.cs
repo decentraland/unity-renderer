@@ -24,7 +24,6 @@ using DCLPlugins.ECS6.HidePortableExperiencesUiFeatureToggle;
 using DCLPlugins.FallbackFontsLoader;
 using DCLPlugins.LoadingScreenPlugin;
 using DCLPlugins.RealmPlugin;
-using DCLPlugins.SentryPlugin;
 using DCLPlugins.SignupHUDPlugin;
 using DCLPlugins.ToSPopupHUDPlugin;
 using DCLPlugins.UIRefresherPlugin;
@@ -67,7 +66,6 @@ namespace DCL
             pluginSystem.Register<ChatNotificationsFeature>(() => new ChatNotificationsFeature());
             pluginSystem.Register<ConnectWalletModalPlugin>(() => new ConnectWalletModalPlugin());
             pluginSystem.Register<FallbackFontsLoaderPlugin>(() => new FallbackFontsLoaderPlugin());
-            pluginSystem.Register<SentryPlugin>(() => new SentryPlugin());
             pluginSystem.Register<LoadingScreenPlugin>(() => new LoadingScreenPlugin());
             pluginSystem.Register<SignupHUDPlugin>(() => new SignupHUDPlugin());
             pluginSystem.Register<PortableExperiencesTogglePlugin>(() => new PortableExperiencesTogglePlugin());
