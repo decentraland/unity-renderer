@@ -1,9 +1,7 @@
 ﻿using DCL;
-using MainScripts.DCL.Helpers.SentryUtils;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
-using Sentry;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -30,9 +28,6 @@ namespace DCLServices.Lambdas.Tests
 
         private LambdasService lambdasService;
         private ServiceLocator serviceLocator;
-        private IWebRequestMonitor transactionMonitor;
-        private DisposableTransaction disposableTransaction;
-        private ISpan span;
 
         [SetUp]
         public void Setup()
@@ -43,9 +38,6 @@ namespace DCLServices.Lambdas.Tests
             Environment.Setup(serviceLocator);
             var catalyst = serviceLocator.Get<IServiceProviders>().catalyst;
             catalyst.lambdasUrl.Returns(TEST_URL);
-
-            transactionMonitor = serviceLocator.Get<IWebRequestMonitor>();
-            disposableTransaction = new DisposableTransaction(span = Substitute.For<ISpan>());
         }
 
         [Test][Category("ToFix")]
@@ -66,21 +58,19 @@ namespace DCLServices.Lambdas.Tests
         public void InvokeTransactionMonitorOnGet()
         {
             lambdasService.Get<TestClass>(END_POINT, END_POINT, timeout: 60, attemptsNumber: 5, cancellationToken: CancellationToken.None, urlEncodedParams: ("param1", "45"));
-            transactionMonitor.Received(1).TrackWebRequest(Arg.Any<IWebRequestAsyncOperation>(), END_POINT);
         }
 
         [Test]
         public void InvokeTransactionMonitorOnPost()
         {
             lambdasService.Post<TestClass, TestResponse>(END_POINT, END_POINT, new TestResponse(), 50, 4, CancellationToken.None, ("param2", "str"));
-            transactionMonitor.Received(1).TrackWebRequest(Arg.Any<IWebRequestAsyncOperation>(), END_POINT, data: JsonUtility.ToJson(new TestResponse()));
         }
 
         [Test]
         public void ParseCorrectResponse()
         {
             Assert.AreEqual(true,
-                LambdasService.TryParseResponse(END_POINT, disposableTransaction, "{\"value\":10}", out TestResponse testResponse));
+                LambdasService.TryParseResponse(END_POINT, "{\"value\":10}", out TestResponse testResponse));
 
             Assert.AreEqual(10, testResponse.value);
         }
@@ -91,7 +81,7 @@ namespace DCLServices.Lambdas.Tests
             LogAssert.ignoreFailingMessages = true;
 
             Assert.AreEqual(false,
-                LambdasService.TryParseResponse(END_POINT, disposableTransaction, "{incorrectJson}", out TestResponse testResponse));
+                LambdasService.TryParseResponse(END_POINT, "{incorrectJson}", out TestResponse testResponse));
 
             Assert.AreEqual(default, testResponse);
         }
@@ -102,9 +92,7 @@ namespace DCLServices.Lambdas.Tests
             LogAssert.ignoreFailingMessages = true;
 
             Assert.AreEqual(false,
-                LambdasService.TryParseResponse(END_POINT, disposableTransaction, "{incorrectJson}", out TestResponse _));
-
-            span.Received(1).Status = SpanStatus.DataLoss;
+                LambdasService.TryParseResponse(END_POINT, "{incorrectJson}", out TestResponse _));
         }
 
         [Test]

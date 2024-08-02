@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "inject-sentry-params": "ts-node --project src/tsconfig.json src/inject-sentry-params.ts",
     "build-protocol": "ts-node --project src/tsconfig.json src/build-protocol.ts"
   },
   "private": true,

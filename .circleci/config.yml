@@ -228,11 +228,10 @@ jobs:
             sudo apt-get install -y jq
       - checkout
       - run:
-          name: Update sentry params and Components and Renderer Protocol code generation
+          name: Update Components and Renderer Protocol code generation
           command: |
             cd scripts
             npm install
-            npm run inject-sentry-params
             npm run build-protocol
 
       # persist to workspace to use in downstream jobs
