@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using DCL.Controllers;
 using DCL.ECS7.InternalComponents;
 using DCL.ECSRuntime;
@@ -60,10 +61,7 @@ namespace DCL.ECSComponents
             dataStore.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
             sceneNumber.OnChange += OnCurrentSceneChanged;
 
-            audioSourceInternalComponent.PutFor(scene, entity, new InternalAudioSource()
-            {
-                audioSource = this.audioSource
-            });
+
 
             sbcInternalComponent.RegisterOnSceneBoundsStateChangeCallback(scene, entity, OnSceneBoundsStateChange);
 
@@ -149,17 +147,13 @@ namespace DCL.ECSComponents
             audioSource.spatialBlend = 1;
             audioSource.dopplerLevel = 0.1f;
 
-            if (model.Playing != audioSource.isPlaying)
-            {
-                if (audioSource.isPlaying)
-                    audioSource.Stop();
-                else if (isAudioClipReady)
-                    audioSource.Play();
-            }
-            else if (audioSource.isPlaying)
-            {
+            if (model.Playing == audioSource.isPlaying)
+                return;
+
+            if (!model.Playing && audioSource.isPlaying)
                 audioSource.Stop();
-            }
+            if (model.Playing && !audioSource.isPlaying && isAudioClipReady)
+                audioSource.Play();
         }
 
         private void ApplyLoadedAudioClip(AudioClip clip)
