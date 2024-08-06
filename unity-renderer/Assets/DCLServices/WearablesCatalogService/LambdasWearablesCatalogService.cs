@@ -132,7 +132,7 @@ namespace DCLServices.WearablesCatalogService
                 queryParams.Add(("collectionType", "on-chain"));
 
             if ((collectionTypeMask & NftCollectionType.ThirdParty) != 0)
-                queryParams.Add(("collectionType", "linked-wearable"));
+                queryParams.Add(("collectionType", "third-party"));
 
             if (thirdPartyCollectionIds != null)
                 foreach (string collectionId in thirdPartyCollectionIds)
