@@ -32,7 +32,7 @@ namespace DCL.GLTFast.Wrappers
             this.texturePromiseKeeper = texturePromiseKeeper;
         }
 
-        public async Task<IDownload> Request(Uri uri)
+        public async Task<IDownload> RequestAsync(Uri uri)
         {
             if (isDisposed)
                 return null;
@@ -75,7 +75,7 @@ namespace DCL.GLTFast.Wrappers
             return uri.OriginalString;
         }
 
-        public async Task<ITextureDownload> RequestTexture(Uri uri, bool nonReadable, bool forceLinear)
+        public async Task<ITextureDownload> RequestTextureAsync(Uri uri, bool nonReadable, bool forceLinear)
         {
             if (isDisposed)
                 return null;
