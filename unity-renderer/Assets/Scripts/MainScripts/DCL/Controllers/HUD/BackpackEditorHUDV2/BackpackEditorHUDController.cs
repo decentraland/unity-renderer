@@ -651,9 +651,7 @@ namespace DCL.Backpack
             bool resetOverride = true)
         {
             string shortenWearableId = ExtendedUrnParser.GetShortenedUrn(wearable.id);
-
-            if (ExtendedUrnParser.IsExtendedUrn(extendedWearableId))
-                extendedWearableUrns[shortenWearableId] = extendedWearableId;
+            extendedWearableUrns[shortenWearableId] = extendedWearableId;
 
             if (wearable.data.category == WearableLiterals.Categories.BODY_SHAPE)
             {
