@@ -55,7 +55,9 @@ namespace DCL.Emotes
             {
                 foreach (Renderer renderer in renderers)
                 {
-                    if (renderer.name.Contains("_reference", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (renderer.name.EndsWith("_reference", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (renderer.name.EndsWith("_basemesh", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (renderer.name.StartsWith("m_mask_", StringComparison.OrdinalIgnoreCase)) continue;
 
                     renderer.enabled = true;
                     renderer.gameObject.layer = gameObjectLayer;
