@@ -143,8 +143,7 @@ function* authenticate(action: AuthenticateAction) {
   // 3. continue with signin/signup (only not in preview)
   let isSignUp = avatar.version <= 0 && !PREVIEW
   if (getFeatureFlagVariantName(store.getState(), 'seamless_login_variant') === 'enabled') {
-
-    const isNewUser : boolean = avatar.version <= 0
+    const isNewUser: boolean = avatar.version <= 0
     const tosAccepted: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_accepted')) as boolean)
     const tosShown: boolean = !!((yield call(getFromPersistentStorage, 'tos_popup_shown')) as boolean)
     isSignUp = !PREVIEW && (isNewUser || tosShown) && !tosAccepted
@@ -170,7 +169,10 @@ function* SetupTutorial() {
   // from the renderer
   const onboardingRealmName: string | undefined = yield select(getFeatureFlagVariantName, 'new_tutorial_variant')
   const isNewTutorialDisabled =
-    onboardingRealmName === 'disabled' || onboardingRealmName === 'undefined' || HAS_INITIAL_POSITION_MARK || HAS_INITIAL_REALM_MARK
+    onboardingRealmName === 'disabled' ||
+    onboardingRealmName === 'undefined' ||
+    HAS_INITIAL_POSITION_MARK ||
+    HAS_INITIAL_REALM_MARK
   if (!isNewTutorialDisabled) {
     try {
       const realm: string | undefined = yield select(getFeatureFlagVariantValue, 'new_tutorial_variant')
@@ -338,12 +340,11 @@ function* logout() {
   if (identity && identity.address && network) {
     yield call(() => localProfilesRepo.remove(identity.address, network))
     yield call(deleteSession, identity.address)
+    // Page reload is called in the system that is listening to this event
     globalObservable.emit('logout', { address: identity.address, network })
   }
 
   yield put(setRoomConnection(undefined))
-
-  window.location.reload()
 }
 
 function* redirectToSignUp() {
