@@ -74,6 +74,10 @@ export async function createArchipelagoConnection(
 
       switch (message.$case) {
         case 'challengeResponse': {
+          if (!message.challengeResponse.challengeToSign.match(/^dcl-[^:]*$/)) {
+            throw new Error('Protocol error: invalid challenge')
+          }
+          
           const authChainJson = JSON.stringify(
             Authenticator.signPayload(identity, message.challengeResponse.challengeToSign)
           )
