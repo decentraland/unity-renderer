@@ -87,6 +87,10 @@ export class WebSocketAdapter implements MinimumCommunicationsAdapter {
             return this.handleWelcomeMessage(message.welcomeMessage, ws)
           }
           case 'challengeMessage': {
+            if (!message.challengeMessage.challengeToSign.match(/^dcl-[^:]*$/)) {
+              throw new Error('Protocol error: invalid challenge')
+            }
+
             const authChainJson = JSON.stringify(
               Authenticator.signPayload(this.identity, message.challengeMessage.challengeToSign)
             )
