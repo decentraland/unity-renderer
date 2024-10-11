@@ -96,6 +96,18 @@ references:
           -  /^hotfix\/.*/
           -  /^gh-readonly-queue\/main.*/
 
+  .all_branches_except_profile: &all_branches_except_profile
+    filters:
+      branches:
+        ignore:
+          -  /^profile\/.*/
+
+  .profile: &profile
+    filters:
+      branches:
+        only:
+          -  /^profile\/.*/
+
 commands:
   build-unity-generic:
     steps:
@@ -214,6 +226,22 @@ commands:
           name: Upload artifacts
           command: |
             ./ci-publish-preview-artifacts.sh
+  build-browser-interface:
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: &node_workspace browser-interface
+          name: clean install
+          command: npm ci
+      - run:
+          working_directory: *node_workspace
+          name: run build
+          command: make build
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - *node_workspace
 
 jobs:
   checkout:
@@ -413,22 +441,14 @@ jobs:
   build-browser-interface:
     <<: *working_directory_root
     docker: *image_kernel
-
     steps:
-      - <<: *attach_root
-      - run:
-          working_directory: &node_workspace browser-interface
-          name: clean install
-          command: npm ci
-      - run:
-          working_directory: *node_workspace
-          name: run build
-          command: make build
-      # persist to workspace to use in downstream jobs
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - *node_workspace
+      - build-browser-interface
+
+  build-browser-interface-profile:
+    <<: *working_directory_root
+    docker: *image_kernel
+    steps:
+      - build-browser-interface
 
   publish-webgl-artifacts-release:
     <<: *working_directory_root
@@ -488,6 +508,7 @@ workflows:
             - build-unity-for-windows
             - build-unity-for-mac
             - build-browser-interface
+            - build-browser-interface-profile
             - test-browser-interface
             - test-browser-file-size
             - test-unity-playmode
@@ -500,11 +521,17 @@ workflows:
             - build-unity-for-windows
             - build-unity-for-mac
             - build-browser-interface
+            - build-browser-interface-profile
 
       - build-browser-interface:
-          <<: *all_branches
+          <<: *all_branches_except_profile
           requires:
             - checkout
+
+      - build-browser-interface-profile:
+          <<: *profile
+          requires:
+            - build-unity-for-webgl
 
       - test-browser-interface:
           <<: *all_branches
@@ -516,12 +543,14 @@ workflows:
           requires:
             - build-unity-for-webgl
             - build-browser-interface
+            - build-browser-interface-profile
 
       - publish-webgl-artifacts-release:
           <<: *only_dev_and_main
           requires:
             - build-unity-for-webgl
             - build-browser-interface
+            - build-browser-interface-profile
             - test-browser-interface
             - test-browser-file-size
             - test-unity-playmode

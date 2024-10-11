@@ -38,6 +38,8 @@ namespace DCL
 
         protected virtual void Awake()
         {
+            Debug.unityLogger.logEnabled = false;
+
             if (i != null)
             {
                 Utils.SafeDestroy(this);
