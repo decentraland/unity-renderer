@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 /// </summary>
 public class Analytics : IAnalytics
 {
-    private static bool VERBOSE = false;
+    private static bool VERBOSE = true;
 
     public void SendAnalytic(string eventName, Dictionary<string, string> data)
     {
