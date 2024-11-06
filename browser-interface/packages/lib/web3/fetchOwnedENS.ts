@@ -11,7 +11,7 @@ export type GraphResponse = {
 export async function fetchOwnedENS(theGraphBaseUrl: string, ethAddress: string): Promise<string[]> {
   const query = `
 query GetNameByBeneficiary($beneficiary: String) {
-  nfts(where: { owner: $beneficiary, category: ens }) {
+  nfts(where: { owner_: {address: $beneficiary}, category: ens }) {
     ens {
       labelHash
       beneficiary
