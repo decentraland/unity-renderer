@@ -118,6 +118,9 @@ namespace DCL.Social.Passports
             SetHasBlockedOwnUser(model.hasBlocked);
             SetFriendStatus(model.friendshipStatus);
             SetFriendshipVisibility(model.isFriendshipVisible);
+
+            bool isOwnUser = UserProfile.GetOwnUserProfile().userId == model.userId;
+            optionsButton.gameObject.SetActive(!isOwnUser);
         }
 
         public override void Dispose()
