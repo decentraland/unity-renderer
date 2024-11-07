@@ -46,7 +46,7 @@ node_modules/
 npm-debug.log
 .DS_Store
 static/dist
-public/systems
+public/empty-scenes/common/contents
 static/systems
 static/loader
 static/lifecycle
