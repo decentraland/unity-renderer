@@ -6,7 +6,7 @@
     "strictNullChecks": true,
     "lib": ["es2020", "dom"],
     "baseUrl": "../packages",
-    "types": ["mocha", "@dcl/posix"],
+    "types": ["@types/mocha", "@dcl/posix"],
     "typeRoots": ["../node_modules/"]
   },
   "exclude": ["../packages/engine"],
