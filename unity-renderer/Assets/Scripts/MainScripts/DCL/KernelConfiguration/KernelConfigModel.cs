@@ -21,7 +21,7 @@ public class KernelConfigModel
     public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
     public string avatarTextureAPIBaseUrl = string.Empty;
     public bool urlParamsForWearablesDebug = false;
-    public string builderUrl;
+    public string builderUrl = string.Empty;
 
     public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
