@@ -37,6 +37,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
     private readonly ICatalyst catalyst;
     private readonly ILambdasService lambdasService;
     private readonly DataStore dataStore;
+    private readonly KernelConfig kernelConfig;
     private readonly Dictionary<string, string> ownedUrns = new (new Dictionary<string, string>(), StringIgnoreCaseEqualityComparer.Default);
 
     private EmbeddedEmotesSO embeddedEmotesSo;
@@ -49,13 +50,15 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
         IAddressableResourceProvider addressableResourceProvider,
         ICatalyst catalyst,
         ILambdasService lambdasService,
-        DataStore dataStore)
+        DataStore dataStore,
+        KernelConfig kernelConfig)
     {
         this.emoteSource = emoteSource;
         this.addressableResourceProvider = addressableResourceProvider;
         this.catalyst = catalyst;
         this.lambdasService = lambdasService;
         this.dataStore = dataStore;
+        this.kernelConfig = kernelConfig;
     }
 
     private async UniTaskVoid InitializeAsyncEmbeddedEmotes()
@@ -108,13 +111,14 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
     public async UniTask<WearableItem> RequestEmoteFromBuilderAsync(string emoteId, CancellationToken cancellationToken)
     {
-        const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:emoteId/";
-        string url = TEMPLATE_URL.Replace(":emoteId", emoteId);
+        string domain = GetBuilderDomainUrl();
+        string url = $"{domain}/items/{emoteId}/";
+        string templateUrl = $"{domain}/items/{emoteId}/";
 
         try
         {
             (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
-                TEMPLATE_URL, url,
+                templateUrl, url,
                 isSigned: true,
                 cancellationToken: cancellationToken);
 
@@ -122,7 +126,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
                 throw new Exception($"The request of wearables from builder '{emoteId}' failed!");
 
             WearableItem wearable = response.data.ToWearableItem(
-                "https://builder-api.decentraland.org/v1/storage/contents/",
+                $"{domain}/storage/contents/",
                 assetBundlesUrl);
 
             if (!wearable.IsEmote()) return null;
@@ -348,8 +352,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
     public async UniTask<IReadOnlyList<WearableItem>> RequestEmoteCollectionInBuilderAsync(IEnumerable<string> collectionIds,
         CancellationToken cancellationToken, List<WearableItem> emoteBuffer = null)
     {
-        const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items/";
-
+        string domain = GetBuilderDomainUrl();
         var emotes = emoteBuffer ?? new List<WearableItem>();
 
         var queryParams = new[]
@@ -360,10 +363,11 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
         foreach (string collectionId in collectionIds)
         {
-            string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
+            var url = $"{domain}/collections/{collectionId}";
+            var templateUrl = $"{domain}/collections/:collectionId/items/";
 
             (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
-                TEMPLATE_URL, url,
+                templateUrl, url,
                 cancellationToken: cancellationToken,
                 isSigned: true,
                 urlEncodedParams: queryParams);
@@ -373,7 +377,7 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
 
             foreach (BuilderWearable bw in response.data.results)
             {
-                var wearable = bw.ToWearableItem("https://builder-api.decentraland.org/v1/storage/contents/",
+                var wearable = bw.ToWearableItem($"{domain}/storage/contents/",
                     assetBundlesUrl);
                 if (!wearable.IsEmote()) continue;
                 emotes.Add(wearable);
@@ -459,5 +463,14 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             emotes[embeddedEmote.id] = embeddedEmote;
             emotesOnUse[embeddedEmote.id] = 5000;
         }
+    }
+
+    private string GetBuilderDomainUrl()
+    {
+        string domain = kernelConfig.Get().builderUrl;
+
+        if (string.IsNullOrEmpty(domain))
+            domain = "https://builder-api.decentraland.org/v1";
+        return domain;
     }
 }
