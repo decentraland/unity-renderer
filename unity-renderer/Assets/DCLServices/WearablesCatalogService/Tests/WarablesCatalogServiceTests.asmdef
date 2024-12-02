@@ -14,7 +14,8 @@
         "CatalystInterfaces",
         "FeatureFlagData",
         "Utils",
-        "DataStore"
+        "DataStore",
+        "KernelConfiguration"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

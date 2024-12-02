@@ -21,6 +21,7 @@ public class KernelConfigModel
     public ProceduralSkybox proceduralSkyboxConfig = new ProceduralSkybox();
     public string avatarTextureAPIBaseUrl = string.Empty;
     public bool urlParamsForWearablesDebug = false;
+    public string builderUrl;
 
     public override bool Equals(object obj) { return obj is KernelConfigModel other && Equals(other); }
 
@@ -48,7 +49,8 @@ public class KernelConfigModel
                && debugConfig.Equals(other.debugConfig)
                && proceduralSkyboxConfig.Equals(other.proceduralSkyboxConfig)
                && avatarTextureAPIBaseUrl == other.avatarTextureAPIBaseUrl
-               && urlParamsForWearablesDebug == other.urlParamsForWearablesDebug;
+               && urlParamsForWearablesDebug == other.urlParamsForWearablesDebug
+               && builderUrl == other.builderUrl;
     }
 
     public string GetTld() =>
@@ -70,6 +72,7 @@ public class KernelConfigModel
         clone.proceduralSkyboxConfig = proceduralSkyboxConfig.Clone();
         clone.avatarTextureAPIBaseUrl = avatarTextureAPIBaseUrl;
         clone.urlParamsForWearablesDebug = urlParamsForWearablesDebug;
+        clone.builderUrl = builderUrl;
         return clone;
     }
 }

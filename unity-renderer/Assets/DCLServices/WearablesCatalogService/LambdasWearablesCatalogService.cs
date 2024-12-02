@@ -53,6 +53,7 @@ namespace DCLServices.WearablesCatalogService
         private readonly List<string> pendingWearablesToRequest = new ();
         private readonly BaseVariable<FeatureFlag> featureFlags;
         private readonly DataStore dataStore;
+        private readonly KernelConfig kernelConfig;
         private readonly ICatalyst catalyst;
 
         private string assetBundlesUrl => featureFlags.Get().IsFeatureEnabled("ab-new-cdn") ? "https://ab-cdn.decentraland.org/" : "https://content-assets-as-bundle.decentraland.org/";
@@ -64,10 +65,12 @@ namespace DCLServices.WearablesCatalogService
             ILambdasService lambdasService,
             IServiceProviders serviceProviders,
             BaseVariable<FeatureFlag> featureFlags,
-            DataStore dataStore)
+            DataStore dataStore,
+            KernelConfig kernelConfig)
         {
             this.featureFlags = featureFlags;
             this.dataStore = dataStore;
+            this.kernelConfig = kernelConfig;
             this.lambdasService = lambdasService;
             WearablesCatalog = wearablesCatalog;
             catalyst = serviceProviders.catalyst;
@@ -285,11 +288,11 @@ namespace DCLServices.WearablesCatalogService
                 return wearable;
             }
 
-            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/items/:wearableId/";
-            string url = TEMPLATE_URL.Replace(":wearableId", wearableId);
+            string domain = GetBuilderDomainUrl();
+            var url = $"{domain}/items/{wearableId}";
 
             (WearableItemResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableItemResponseFromBuilder>(
-                TEMPLATE_URL, url,
+                domain, url,
                 isSigned: true,
                 cancellationToken: ct);
 
@@ -299,7 +302,7 @@ namespace DCLServices.WearablesCatalogService
             List<WearableItem> ws = new List<WearableItem>
             {
                 response.data.ToWearableItem(
-                    "https://builder-api.decentraland.org/v1/storage/contents/",
+                    $"{domain}/storage/contents/",
                     assetBundlesUrl),
             };
 
@@ -346,8 +349,7 @@ namespace DCLServices.WearablesCatalogService
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
             CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null)
         {
-            const string TEMPLATE_URL = "https://builder-api.decentraland.org/v1/collections/:collectionId/items/";
-
+            string domain = GetBuilderDomainUrl();
             var wearables = collectionBuffer ?? new List<WearableItem>();
 
             var queryParams = new[]
@@ -358,10 +360,11 @@ namespace DCLServices.WearablesCatalogService
 
             foreach (string collectionId in collectionIds)
             {
-                string url = TEMPLATE_URL.Replace(":collectionId", collectionId);
+                var url = $"{domain}/collections/{collectionId}/items/";
+                var templateUrl = $"{domain}/collections/:collectionId/items/";
 
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
-                    TEMPLATE_URL, url,
+                    templateUrl, url,
                     isSigned: true,
                     urlEncodedParams: queryParams,
                     cancellationToken: cancellationToken);
@@ -371,7 +374,7 @@ namespace DCLServices.WearablesCatalogService
 
                 List<WearableItem> ws = response.data.results
                                                 .Select(bw => bw.ToWearableItem(
-                                                     "https://builder-api.decentraland.org/v1/storage/contents/",
+                                                     $"{domain}/storage/contents/",
                                                      assetBundlesUrl))
                                                 .Where(bw => !bw.IsEmote())
                                                 .ToList();
@@ -701,5 +704,14 @@ namespace DCLServices.WearablesCatalogService
 
         private bool IsLocalPreview() =>
             dataStore.realm.playerRealm.Get()?.serverName?.Equals("LocalPreview", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        private string GetBuilderDomainUrl()
+        {
+            string domain = kernelConfig.Get().builderUrl;
+
+            if (string.IsNullOrEmpty(domain))
+                domain = "https://builder-api.decentraland.org/v1";
+            return domain;
+        }
     }
 }

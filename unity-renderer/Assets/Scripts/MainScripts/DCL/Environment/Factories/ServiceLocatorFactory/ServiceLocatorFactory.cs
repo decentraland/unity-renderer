@@ -133,7 +133,7 @@ namespace DCL
                     featureFlagsDataStore);
 
                 var lambdasEmotesCatalogService = new LambdasEmotesCatalogService(emotesRequest, addressableResourceProvider,
-                    result.Get<IServiceProviders>().catalyst, result.Get<ILambdasService>(), DataStore.i);
+                    result.Get<IServiceProviders>().catalyst, result.Get<ILambdasService>(), DataStore.i, KernelConfig.i);
                 var webInterfaceEmotesCatalogService = new WebInterfaceEmotesCatalogService(EmotesCatalogBridge.GetOrCreate(), addressableResourceProvider);
                 return new EmotesCatalogServiceProxy(lambdasEmotesCatalogService, webInterfaceEmotesCatalogService, featureFlagsDataStore, KernelConfig.i);
             });
@@ -149,7 +149,8 @@ namespace DCL
                     result.Get<ILambdasService>(),
                     result.Get<IServiceProviders>(),
                     featureFlagsDataStore,
-                    DataStore.i),
+                    DataStore.i,
+                    KernelConfig.i),
                 WebInterfaceWearablesCatalogService.Instance,
                 DataStore.i.common.wearables,
                 KernelConfig.i,
