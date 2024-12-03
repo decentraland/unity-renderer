@@ -8,7 +8,7 @@ import {
   PREVIEW,
   DEBUG,
   getTLD,
-  ETHEREUM_NETWORK
+  ETHEREUM_NETWORK, BUILDER_SERVER_URL
 } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'lib/decentraland/profiles/names'
 import { getWorld } from '@dcl/schemas'
@@ -31,6 +31,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
 
   const urlParamsForWearablesDebug = !!(WITH_FIXED_ITEMS || WITH_FIXED_COLLECTIONS || COLLECTIONS_OR_ITEMS_ALLOWED)
+  const builderUrl = BUILDER_SERVER_URL;
 
   return {
     ...globalState.meta.config.world,
@@ -54,6 +55,7 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     /** @deprecated */
     rendererVersion: explorerVersion,
     avatarTextureAPIBaseUrl: getAvatarTextureAPIBaseUrl(getSelectedNetwork(globalState)),
-    urlParamsForWearablesDebug: urlParamsForWearablesDebug
+    urlParamsForWearablesDebug: urlParamsForWearablesDebug,
+    builderUrl: builderUrl
   }
 }
