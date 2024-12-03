@@ -131,7 +131,7 @@ namespace DCLServices.WearablesCatalogService
             throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
 
         public UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null) =>
+            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null, string nameFilter = null) =>
             throw new NotImplementedException("Supported by LambdasWearablesCatalogService");
 
         private async UniTask<IReadOnlyList<WearableItem>> RequestWearablesByContextAsync(

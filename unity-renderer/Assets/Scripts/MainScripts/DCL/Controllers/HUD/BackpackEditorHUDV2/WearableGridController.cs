@@ -357,7 +357,7 @@ namespace DCL.Backpack
             }
 
             await UniTask.WhenAll(wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer),
-                wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer));
+                wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer, nameFilter));
 
             HashSetPool<string>.Release(publishedCollections);
             HashSetPool<string>.Release(collectionsInBuilder);

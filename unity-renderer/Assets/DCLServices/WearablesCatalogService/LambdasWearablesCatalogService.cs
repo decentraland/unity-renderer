@@ -347,7 +347,7 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null)
+            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null, string nameFilter = null)
         {
             string domain = GetBuilderDomainUrl();
             var wearables = collectionBuffer ?? new List<WearableItem>();
@@ -355,13 +355,17 @@ namespace DCLServices.WearablesCatalogService
             var queryParams = new[]
             {
                 ("page", "1"),
-                ("limit", "5000"),
+                // TODO: we should properly calculate pagination from the ui instead of requesting all at once
+                ("limit", "15000"),
             };
 
             foreach (string collectionId in collectionIds)
             {
                 var url = $"{domain}/collections/{collectionId}/items/";
                 var templateUrl = $"{domain}/collections/:collectionId/items/";
+
+                if (!string.IsNullOrEmpty(nameFilter))
+                    url += $"?name={nameFilter}";
 
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     templateUrl, url,

@@ -125,12 +125,12 @@ namespace DCLServices.WearablesCatalogService
         }
 
         public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null)
+            CancellationToken cancellationToken, List<WearableItem> wearableBuffer = null, string nameFilter = null)
         {
             if (!isInitialized)
                 await UniTask.WaitUntil(() => isInitialized, cancellationToken: cancellationToken);
 
-            return await lambdasWearablesCatalogService.RequestWearableCollectionInBuilder(collectionIds, cancellationToken, wearableBuffer);
+            return await lambdasWearablesCatalogService.RequestWearableCollectionInBuilder(collectionIds, cancellationToken, wearableBuffer, nameFilter);
         }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems) =>
