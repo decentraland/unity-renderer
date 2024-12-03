@@ -84,6 +84,8 @@ namespace DCL.EmotesCustomization
             //Find loaded emotes that are not contained in emotesToSet
             List<string> idsToRemove = emotesCustomizationDataStore.currentLoadedEmotes.Get().Where(x => ownedEmotes.All(y => x != y.id)).ToList();
 
+            Debug.Log($"IdsToRemove: {string.Join(",", idsToRemove)}");
+
             foreach (string emoteId in idsToRemove)
                 RemoveEmote(emoteId);
 
@@ -175,13 +177,21 @@ namespace DCL.EmotesCustomization
         internal void AddEmote(WearableItem emote)
         {
             var emoteId = emote.id;
+
             if (!emote.IsEmote() || emotesCustomizationDataStore.currentLoadedEmotes.Contains(emoteId))
+            {
+                Debug.LogError($"Skip emote, is not an emote or is not loaded: {emoteId}");
                 return;
+            }
 
             emotesCustomizationDataStore.currentLoadedEmotes.Add(emoteId);
 
             if (!emote.ShowInBackpack())
+            {
+                Debug.LogError($"Skip emote, dont show on backpack: {emoteId}");
                 return;
+            }
+
 
             EmoteCardComponentModel emoteToAdd = ParseWearableItemIntoEmoteCardModel(emote);
             EmoteCardComponentView newEmote = view.AddEmote(emoteToAdd);
