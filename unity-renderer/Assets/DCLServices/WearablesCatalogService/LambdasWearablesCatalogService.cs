@@ -346,30 +346,40 @@ namespace DCLServices.WearablesCatalogService
             return wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null, string nameFilter = null)
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null, string nameFilter = null,
+            int pageNumber = 1, int pageSize = 5000)
         {
             string domain = GetBuilderDomainUrl();
             var wearables = collectionBuffer ?? new List<WearableItem>();
 
+            // Dictionary<string, string> queryParams = new ()
+            // {
+            //     { "page", pageNumber.ToString() },
+            //     { "limit", pageSize.ToString() },
+            // };
+            //
+            // if (!string.IsNullOrEmpty(nameFilter))
+            //     queryParams["name"] = nameFilter;
+
             var queryParams = new[]
             {
-                ("page", "1"),
-                // TODO: we should properly calculate pagination from the ui instead of requesting all at once
-                ("limit", "15000"),
+                ("page", pageNumber.ToString()),
+                ("limit", pageSize.ToString()),
+                ("name", nameFilter),
             };
+
+            var totalAmount = 0;
 
             foreach (string collectionId in collectionIds)
             {
                 var url = $"{domain}/collections/{collectionId}/items/";
                 var templateUrl = $"{domain}/collections/:collectionId/items/";
 
-                if (!string.IsNullOrEmpty(nameFilter))
-                    url += $"?name={nameFilter}";
-
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     templateUrl, url,
                     isSigned: true,
+                    // urlEncodedParams: queryParams.Select(pair => (pair.Key, pair.Value)).ToArray(),
                     urlEncodedParams: queryParams,
                     cancellationToken: cancellationToken);
 
@@ -386,9 +396,10 @@ namespace DCLServices.WearablesCatalogService
                 AddWearablesToCatalog(ws);
 
                 wearables.AddRange(ws);
+                totalAmount = response.data.total;
             }
 
-            return wearables;
+            return (wearables, totalAmount);
         }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)

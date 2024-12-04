@@ -1126,7 +1126,7 @@ namespace DCL.Backpack
                                     {
                                         List<WearableItem> wearables = (List<WearableItem>) call[2];
                                         wearables.AddRange(nonPublishedWearableList);
-                                        return UniTask.FromResult(nonPublishedWearableList);
+                                        return UniTask.FromResult((nonPublishedWearableList, nonPublishedWearableList.Count));
                                     });
 
             wearablesCatalogService.RequestWearableCollection(Arg.Is<IEnumerable<string>>(i => i.Count() == 1 && i.ElementAt(0) == "urn:collection"),

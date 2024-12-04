@@ -39,8 +39,10 @@ namespace DCL
             {
                 IWearablesCatalogService wearablesCatalogService = Substitute.For<IWearablesCatalogService>();
 
+
+
                 wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
-                                       .ReturnsForAnyArgs(UniTask.FromResult((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>()));
+                                       .ReturnsForAnyArgs(UniTask.FromResult(((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>(), 0)));
 
                 wearablesCatalogService.RequestWearableFromBuilderAsync(default, default)
                                        .ReturnsForAnyArgs(UniTask.FromResult<WearableItem>(null));

@@ -91,7 +91,7 @@ namespace MainScripts.DCL.Models.AvatarAssets.Tests.Helpers
                                    .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<WearableItem>>(Array.Empty<WearableItem>()));
 
             wearablesCatalogService.RequestWearableCollectionInBuilder(default, default, default)
-                                   .ReturnsForAnyArgs(UniTask.FromResult<IReadOnlyList<WearableItem>>(Array.Empty<WearableItem>()));
+                                   .ReturnsForAnyArgs(UniTask.FromResult(((IReadOnlyList<WearableItem>) Array.Empty<WearableItem>(), 0)));
 
             return wearablesCatalogService;
         }
