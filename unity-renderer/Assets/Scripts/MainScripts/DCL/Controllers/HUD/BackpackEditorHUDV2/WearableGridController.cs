@@ -267,8 +267,8 @@ namespace DCL.Backpack
 
                 try
                 {
-                    totalAmount += await MergeBuilderWearableCollections(page, wearables, totalAmount, cancellationToken);
                     totalAmount += await MergePublishedWearableCollections(page, wearables, totalAmount, cancellationToken);
+                    totalAmount += await MergeBuilderWearableCollections(page, wearables, totalAmount, cancellationToken);
                     totalAmount += await MergeCustomWearableItems(page, wearables, totalAmount, cancellationToken);
 
                     customWearablesBuffer.Clear();
@@ -300,7 +300,7 @@ namespace DCL.Backpack
 
         private async UniTask<int> MergePublishedWearableCollections(int page, List<WearableItem> wearables, int totalAmount,
             CancellationToken cancellationToken) =>
-            await MergeToWearableResults(page, wearables, totalAmount, FetchPublishedWearableCollections, cancellationToken);
+             await MergeToWearableResults(page, wearables, totalAmount, FetchPublishedWearableCollections, cancellationToken);
 
         private async UniTask<int> MergeToWearableResults(int page, List<WearableItem> wearables, int totalAmount,
             Func<List<WearableItem>, CancellationToken, UniTask> fetchOperation,
@@ -315,6 +315,8 @@ namespace DCL.Backpack
             customWearablesBuffer.Clear();
 
             await fetchOperation.Invoke(customWearablesBuffer, cancellationToken);
+
+            if (skip < 0) return customWearablesBuffer.Count;
 
             for (int i = skip; i < customWearablesBuffer.Count && i < until; i++)
                 wearables.Add(customWearablesBuffer[i]);
