@@ -346,17 +346,21 @@ namespace DCLServices.WearablesCatalogService
             return wearables;
         }
 
-        public async UniTask<IReadOnlyList<WearableItem>> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
-            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null)
+        public async UniTask<(IReadOnlyList<WearableItem> wearables, int totalAmount)> RequestWearableCollectionInBuilder(IEnumerable<string> collectionIds,
+            CancellationToken cancellationToken, List<WearableItem> collectionBuffer = null, string nameFilter = null,
+            int pageNumber = 1, int pageSize = 5000)
         {
             string domain = GetBuilderDomainUrl();
             var wearables = collectionBuffer ?? new List<WearableItem>();
 
             var queryParams = new[]
             {
-                ("page", "1"),
-                ("limit", "5000"),
+                ("page", pageNumber.ToString()),
+                ("limit", pageSize.ToString()),
+                ("name", nameFilter),
             };
+
+            var totalAmount = 0;
 
             foreach (string collectionId in collectionIds)
             {
@@ -366,6 +370,7 @@ namespace DCLServices.WearablesCatalogService
                 (WearableCollectionResponseFromBuilder response, bool success) = await lambdasService.GetFromSpecificUrl<WearableCollectionResponseFromBuilder>(
                     templateUrl, url,
                     isSigned: true,
+                    // urlEncodedParams: queryParams.Select(pair => (pair.Key, pair.Value)).ToArray(),
                     urlEncodedParams: queryParams,
                     cancellationToken: cancellationToken);
 
@@ -382,9 +387,10 @@ namespace DCLServices.WearablesCatalogService
                 AddWearablesToCatalog(ws);
 
                 wearables.AddRange(ws);
+                totalAmount = response.data.total;
             }
 
-            return wearables;
+            return (wearables, totalAmount);
         }
 
         public void AddWearablesToCatalog(IEnumerable<WearableItem> wearableItems)

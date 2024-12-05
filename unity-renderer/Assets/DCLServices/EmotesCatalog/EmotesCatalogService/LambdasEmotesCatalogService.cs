@@ -375,6 +375,8 @@ public class LambdasEmotesCatalogService : IEmotesCatalogService
             if (!success)
                 throw new Exception($"The request for collection of emotes '{collectionId}' failed!");
 
+            if (response.data?.results == null) continue;
+
             foreach (BuilderWearable bw in response.data.results)
             {
                 var wearable = bw.ToWearableItem($"{domain}/storage/contents/",
