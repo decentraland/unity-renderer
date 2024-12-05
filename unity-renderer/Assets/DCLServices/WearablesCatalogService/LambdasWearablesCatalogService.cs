@@ -353,15 +353,6 @@ namespace DCLServices.WearablesCatalogService
             string domain = GetBuilderDomainUrl();
             var wearables = collectionBuffer ?? new List<WearableItem>();
 
-            // Dictionary<string, string> queryParams = new ()
-            // {
-            //     { "page", pageNumber.ToString() },
-            //     { "limit", pageSize.ToString() },
-            // };
-            //
-            // if (!string.IsNullOrEmpty(nameFilter))
-            //     queryParams["name"] = nameFilter;
-
             var queryParams = new[]
             {
                 ("page", pageNumber.ToString()),
