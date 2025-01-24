@@ -107,6 +107,8 @@ export const BYPASS_CONTENT_ALLOWLIST = qs.has('BYPASS_CONTENT_ALLOWLIST')
   ? qs.get('BYPASS_CONTENT_ALLOWLIST') === 'true'
   : PIN_CATALYST || globalThis.location.hostname !== 'play.decentraland.org'
 
+export const PEER_TESTING_CATALYST = 'https://peer-testing.decentraland.org'
+
 const META_CONFIG_URL = ensureSingleString(qs.get('META_CONFIG_URL'))
 
 export const CHANNEL_TO_JOIN_CONFIG_URL = ensureSingleString(qs.get('CHANNEL'))
