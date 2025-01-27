@@ -9,7 +9,8 @@ import {
   ETHEREUM_NETWORK,
   BUILDER_SERVER_URL,
   rootURLPreviewMode,
-  WITH_FIXED_ITEMS
+  WITH_FIXED_ITEMS,
+  PEER_TESTING_CATALYST
 } from 'config'
 
 import { authorizeBuilderHeaders } from 'lib/decentraland/authentication/authorizeBuilderHeaders'
@@ -122,8 +123,12 @@ function* fetchItemsFromCatalyst(
   const identity: ExplorerIdentity = yield select(getCurrentIdentity)
   const client: CatalystClient = new CatalystClient({ catalystUrl })
   const network: ETHEREUM_NETWORK = yield select(getSelectedNetwork)
-  const COLLECTIONS_OR_ITEMS_ALLOWED =
-    PREVIEW || ((DEBUG || getTLD() !== 'org') && network !== ETHEREUM_NETWORK.MAINNET)
+  const isPreviewMode = PREVIEW
+  const isDebugOrNonOrgTLD = DEBUG || getTLD() !== 'org'
+  const isNonMainnetOrTestingPeer =
+    network !== ETHEREUM_NETWORK.MAINNET ||
+    (network === ETHEREUM_NETWORK.MAINNET && catalystUrl === PEER_TESTING_CATALYST)
+  const COLLECTIONS_OR_ITEMS_ALLOWED = isPreviewMode || (isDebugOrNonOrgTLD && isNonMainnetOrTestingPeer)
   const isRequestingEmotes = action.type === EMOTES_REQUEST
   const catalystFetchFn = isRequestingEmotes ? client.fetchEmotes : client.fetchWearables
   const result: PartialItem[] = []
@@ -264,7 +269,7 @@ function fetchOwnedEmotes(ethAddress: string, client: CatalystClient) {
 
 export function urnWithoutToken(urn: string): string {
   const value = urn.split(':')
-  if (value.length === 7 && !urn.includes("collections-thirdparty")) {
+  if (value.length === 7 && !urn.includes('collections-thirdparty')) {
     return value.slice(0, 6).join(':')
   }
   return urn

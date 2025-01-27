@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -266,29 +267,9 @@ namespace DCL.Backpack
 
                 try
                 {
-                    int ownedWearablesCount = wearables.Count;
-                    int ownedWearablesTotalAmount = totalAmount;
-
-                    customWearablesBuffer.Clear();
-
-                    await UniTask.WhenAll(FetchCustomWearableCollections(customWearablesBuffer, cancellationToken),
-                        FetchCustomWearableItems(customWearablesBuffer, cancellationToken));
-
-                    int customWearablesCount = customWearablesBuffer.Count;
-                    totalAmount += customWearablesCount;
-
-                    if (ownedWearablesCount < PAGE_SIZE && customWearablesCount > 0)
-                    {
-                        int ownedWearablesStartingPage = (ownedWearablesTotalAmount / PAGE_SIZE) + 1;
-                        int customWearablesOffsetPage = page - ownedWearablesStartingPage;
-                        int skip = customWearablesOffsetPage * PAGE_SIZE;
-                        // Fill the page considering the existing owned wearables
-                        int count = PAGE_SIZE - ownedWearablesCount;
-                        int until = skip + count;
-
-                        for (int i = skip; i < customWearablesBuffer.Count && i < until; i++)
-                            wearables.Add(customWearablesBuffer[i]);
-                    }
+                    totalAmount += await MergePublishedWearableCollections(page, wearables, totalAmount, cancellationToken);
+                    totalAmount += await MergeBuilderWearableCollections(page, wearables, totalAmount, cancellationToken);
+                    totalAmount += await MergeCustomWearableItems(page, wearables, totalAmount, cancellationToken);
 
                     customWearablesBuffer.Clear();
                 }
@@ -299,7 +280,7 @@ namespace DCL.Backpack
                 currentWearables = wearables.Select(ToWearableGridModel)
                                             .ToDictionary(item => ExtendedUrnParser.GetShortenedUrn(item.WearableId), model => model);
 
-                view.SetWearablePages(page, Mathf.CeilToInt((float) totalAmount / PAGE_SIZE));
+                view.SetWearablePages(page, Mathf.CeilToInt((float)totalAmount / PAGE_SIZE));
 
                 // TODO: mark the wearables to be disposed if no references left
                 view.ClearWearables();
@@ -311,6 +292,53 @@ namespace DCL.Backpack
             catch (Exception e) { Debug.LogException(e); }
 
             return 0;
+        }
+
+        private async UniTask<int> MergeCustomWearableItems(int page, List<WearableItem> wearables,
+            int totalAmount, CancellationToken cancellationToken) =>
+            await MergeToWearableResults(page, wearables, totalAmount, FetchCustomWearableItems, cancellationToken);
+
+        private async UniTask<int> MergePublishedWearableCollections(int page, List<WearableItem> wearables, int totalAmount,
+            CancellationToken cancellationToken) =>
+             await MergeToWearableResults(page, wearables, totalAmount, FetchPublishedWearableCollections, cancellationToken);
+
+        private async UniTask<int> MergeToWearableResults(int page, List<WearableItem> wearables, int totalAmount,
+            Func<List<WearableItem>, CancellationToken, UniTask> fetchOperation,
+            CancellationToken cancellationToken)
+        {
+            int startingPage = (totalAmount / PAGE_SIZE) + 1;
+            int pageOffset = page - startingPage;
+            int pageSize = PAGE_SIZE - wearables.Count;
+            int skip = pageOffset * PAGE_SIZE;
+            int until = skip + pageSize;
+
+            customWearablesBuffer.Clear();
+
+            await fetchOperation.Invoke(customWearablesBuffer, cancellationToken);
+
+            if (skip < 0) return customWearablesBuffer.Count;
+
+            for (int i = skip; i < customWearablesBuffer.Count && i < until; i++)
+                wearables.Add(customWearablesBuffer[i]);
+
+            return customWearablesBuffer.Count;
+        }
+
+        private async UniTask<int> MergeBuilderWearableCollections(int page, List<WearableItem> wearables, int totalAmount, CancellationToken cancellationToken)
+        {
+            int startingPage = (totalAmount / PAGE_SIZE) + 1;
+            int pageOffset = Mathf.Max(1, page - startingPage);
+            int pageSize = PAGE_SIZE - wearables.Count;
+
+            customWearablesBuffer.Clear();
+
+            int collectionsWearableCount = await FetchBuilderWearableCollections(pageOffset, PAGE_SIZE,
+                customWearablesBuffer, cancellationToken);
+
+            for (var i = 0; i < pageSize && i < customWearablesBuffer.Count; i++)
+                wearables.Add(customWearablesBuffer[i]);
+
+            return collectionsWearableCount;
         }
 
         private async UniTask FetchCustomWearableItems(ICollection<WearableItem> wearables, CancellationToken cancellationToken)
@@ -337,30 +365,46 @@ namespace DCL.Backpack
             }
         }
 
-        private async UniTask FetchCustomWearableCollections(
+        private async UniTask FetchPublishedWearableCollections(
             List<WearableItem> wearableBuffer, CancellationToken cancellationToken)
         {
             IReadOnlyList<string> customCollections =
                 await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
 
-            Debug.Log($"FetchCustomWearableCollections: {customCollections}");
-
-            HashSet<string> publishedCollections = HashSetPool<string>.Get();
-            HashSet<string> collectionsInBuilder = HashSetPool<string>.Get();
+            HashSet<string> collectionsToRequest = HashSetPool<string>.Get();
 
             foreach (string collectionId in customCollections)
-            {
                 if (collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
-                    publishedCollections.Add(collectionId);
-                else
-                    collectionsInBuilder.Add(collectionId);
-            }
+                    collectionsToRequest.Add(collectionId);
 
-            await UniTask.WhenAll(wearablesCatalogService.RequestWearableCollection(publishedCollections, cancellationToken, wearableBuffer),
-                wearablesCatalogService.RequestWearableCollectionInBuilder(collectionsInBuilder, cancellationToken, wearableBuffer));
+            await wearablesCatalogService.RequestWearableCollection(collectionsToRequest, cancellationToken, wearableBuffer);
 
-            HashSetPool<string>.Release(publishedCollections);
-            HashSetPool<string>.Release(collectionsInBuilder);
+            HashSetPool<string>.Release(collectionsToRequest);
+        }
+
+        private async UniTask<int> FetchBuilderWearableCollections(
+            int pageNumber, int pageSize,
+            List<WearableItem> wearableBuffer,
+            CancellationToken cancellationToken)
+        {
+            IReadOnlyList<string> customCollections =
+                await customNftCollectionService.GetConfiguredCustomNftCollectionAsync(cancellationToken);
+
+            HashSet<string> collectionsToRequest = HashSetPool<string>.Get();
+
+            foreach (string collectionId in customCollections)
+                if (!collectionId.StartsWith("urn", StringComparison.OrdinalIgnoreCase))
+                    collectionsToRequest.Add(collectionId);
+
+            (IReadOnlyList<WearableItem> _, int totalAmount) = await wearablesCatalogService.RequestWearableCollectionInBuilder(
+                collectionsToRequest, cancellationToken,
+                collectionBuffer: wearableBuffer,
+                nameFilter: nameFilter,
+                pageNumber: pageNumber, pageSize: pageSize);
+
+            HashSetPool<string>.Release(collectionsToRequest);
+
+            return totalAmount;
         }
 
         private WearableGridItemModel ToWearableGridModel(WearableItem wearable)
@@ -369,8 +413,7 @@ namespace DCL.Backpack
 
             if (string.IsNullOrEmpty(wearable.rarity))
                 rarity = NftRarity.None;
-            else
-            if (!Enum.TryParse(wearable.rarity, true, out NftRarity result))
+            else if (!Enum.TryParse(wearable.rarity, true, out NftRarity result))
             {
                 rarity = NftRarity.None;
                 Debug.LogWarning($"Could not parse the rarity \"{wearable.rarity}\" of the wearable '{wearable.id}'. Fallback to common.");
