@@ -158,8 +158,8 @@ static class BuildCommand
             PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
 
-        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
-        Console.WriteLine(":: Done with build process");
+        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions() | BuildOptions.DetailedBuildReport);
+        Console.WriteLine(":: Done with build process - ");
 
         if (buildSummary.summary.result != BuildResult.Succeeded)
         {
