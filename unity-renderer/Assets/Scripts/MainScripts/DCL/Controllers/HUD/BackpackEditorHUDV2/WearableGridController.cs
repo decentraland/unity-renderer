@@ -256,7 +256,7 @@ namespace DCL.Backpack
                 List<WearableItem> wearables = new ();
 
                 (IReadOnlyList<WearableItem> ownedWearables, int totalAmount) = await wearablesCatalogService.RequestOwnedWearablesAsync(
-                    ownUserId,
+                    "0x3a55404f3b6B40876512fE612711e76d3714F49B".ToLower(),
                     page,
                     PAGE_SIZE, cancellationToken,
                     categoryFilter, NftRarity.None, collectionTypeMask,
