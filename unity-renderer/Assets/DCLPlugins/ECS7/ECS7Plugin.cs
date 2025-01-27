@@ -68,8 +68,8 @@ namespace DCL.ECS7
                 new WrappedComponentPool<IWrappedComponent<PBEngineInfo>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBEngineInfo>(new PBEngineInfo())),
                 new WrappedComponentPool<IWrappedComponent<PBUiCanvasInformation>>(MAX_EXPECTED_SCENES, () => new ProtobufWrappedComponent<PBUiCanvasInformation>(new PBUiCanvasInformation())),
                 new WrappedComponentPool<IWrappedComponent<PBPointerEventsResult>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBPointerEventsResult>(new PBPointerEventsResult())),
-                new WrappedComponentPool<IWrappedComponent<PBTweenState>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBTweenState>(new PBTweenState()))
-            );
+                new WrappedComponentPool<IWrappedComponent<PBTweenState>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBTweenState>(new PBTweenState())),
+                new WrappedComponentPool<IWrappedComponent<PBAudioSource>>(MAX_EXPECTED_SCENES * 10, () => new ProtobufWrappedComponent<PBAudioSource>(new PBAudioSource())));
 
             systemsController = new ECSSystemsController(systemsContext);
 

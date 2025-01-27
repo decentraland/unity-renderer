@@ -1,5 +1,6 @@
 using DCL;
 using ECSSystems.AnimationSystem;
+using ECSSystems.AudioSourceSystem;
 using ECSSystems.AvatarModifierAreaSystem;
 using ECSSystems.BillboardSystem;
 using ECSSystems.CameraSystem;
@@ -38,6 +39,7 @@ public class ECSSystemsController : IDisposable
     private readonly ECSPlayerTransformSystem playerTransformSystem;
     private readonly ECSSceneBoundsCheckerSystem sceneBoundsCheckerSystem;
     private readonly ECSUiCanvasInformationSystem uiCanvasInformationSystem;
+    private readonly ECSAudioSourceSystem audioSourceSystem;
     private readonly GameObject hoverCanvas;
     private readonly GameObject scenesUi;
     private readonly IWorldState worldState;
@@ -97,6 +99,11 @@ public class ECSSystemsController : IDisposable
             context.internalEcsComponents.EngineInfo,
             context.ComponentWriters,
             context.RaycastResultPool);
+
+        audioSourceSystem = new ECSAudioSourceSystem(
+            context.internalEcsComponents.audioSourceComponent,
+            context.ComponentWriters,
+            context.AudioSourcePool);
 
         sceneBoundsCheckerSystem = new ECSSceneBoundsCheckerSystem(
             DataStore.i.ecs7.scenes,
@@ -178,7 +185,8 @@ public class ECSSystemsController : IDisposable
             billboardSystem.Update,
             videoPlayerSystem.Update,
             uiCanvasInformationSystem.Update,
-            animationSystem.Update
+            animationSystem.Update,
+            audioSourceSystem.Update
         };
 
         lateUpdateSystems = new ECS7System[]
