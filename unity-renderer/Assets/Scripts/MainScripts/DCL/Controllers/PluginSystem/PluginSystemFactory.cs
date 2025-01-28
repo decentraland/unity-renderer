@@ -39,7 +39,7 @@ namespace DCL
             // Ideally the Plugin class itself should be a really small entry point with a parameterless constructor
             // the heavy lifting should be done by another class (following the Humble Object Pattern)
 
-            pluginSystem.Register<DebugPluginFeature>(() => new DebugPluginFeature());
+            // pluginSystem.Register<DebugPluginFeature>(() => new DebugPluginFeature());
             pluginSystem.Register<ShortcutsFeature>(() => new ShortcutsFeature());
             pluginSystem.Register<ExploreV2Feature>(() => new ExploreV2Feature());
             pluginSystem.Register<DebugShapesBoundingBoxDisplayer>(() => new DebugShapesBoundingBoxDisplayer());
