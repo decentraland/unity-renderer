@@ -48,7 +48,8 @@ public class TaskbarHUDController : IHUD
     private LeaveChannelConfirmationWindowController channelLeaveWindow;
     private CancellationTokenSource openPrivateChatCancellationToken = new ();
 
-    private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
+    // private bool isFriendsFeatureEnabled => DataStore.i.featureFlags.flags.Get().IsFeatureEnabled("friends_enabled");
+    private bool isFriendsFeatureEnabled => false;
 
     public event Action OnAnyTaskbarButtonClicked;
 
@@ -93,24 +94,24 @@ public class TaskbarHUDController : IHUD
 
         view.leftWindowContainerLayout.enabled = false;
 
-        view.OnChatToggle += HandleChatToggle;
-        view.OnFriendsToggle += HandleFriendsToggle;
+        // view.OnChatToggle += HandleChatToggle;
+        // view.OnFriendsToggle += HandleFriendsToggle;
         view.OnEmotesToggle += HandleEmotesToggle;
         view.OnExperiencesToggle += HandleExperiencesToggle;
-        view.OnVoiceChatToggle += HandleVoiceChatToggle;
-        view.OnIntercomPressed += OpenIntercom;
+        // view.OnVoiceChatToggle += HandleVoiceChatToggle;
+        // view.OnIntercomPressed += OpenIntercom;
 
-        toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
-        toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
-        toggleFriendsTrigger.OnTriggered += ToggleFriendsTrigger_OnTriggered;
-
-        closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
-        closeWindowTrigger.OnTriggered -= CloseWindowTrigger_OnTriggered;
-        closeWindowTrigger.OnTriggered += CloseWindowTrigger_OnTriggered;
-
-        toggleWorldChatTrigger = Resources.Load<InputAction_Trigger>("ToggleWorldChat");
-        toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
-        toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
+        // toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
+        // toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
+        // toggleFriendsTrigger.OnTriggered += ToggleFriendsTrigger_OnTriggered;
+        //
+        // closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
+        // closeWindowTrigger.OnTriggered -= CloseWindowTrigger_OnTriggered;
+        // closeWindowTrigger.OnTriggered += CloseWindowTrigger_OnTriggered;
+        //
+        // toggleWorldChatTrigger = Resources.Load<InputAction_Trigger>("ToggleWorldChat");
+        // toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
+        // toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
 
         isEmotesWheelInitialized.OnChange += InitializeEmotesSelector;
         InitializeEmotesSelector(isEmotesWheelInitialized.Get(), false);
@@ -348,10 +349,10 @@ public class TaskbarHUDController : IHUD
 
         worldChatWindowHud = controller;
 
-        view.ShowChatButton();
-        worldChatWindowHud.OnCloseView += ToggleOffChatIcon;
-        worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
-        worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
+        // view.ShowChatButton();
+        // worldChatWindowHud.OnCloseView += ToggleOffChatIcon;
+        // worldChatWindowHud.OnOpenChannelCreation += OpenChannelCreation;
+        // worldChatWindowHud.OnOpenChannelLeave += OpenChannelLeaveConfirmation;
     }
 
     private void ToggleOffChatIcon() =>
